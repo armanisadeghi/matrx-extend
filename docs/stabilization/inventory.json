@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T23:57:35.408357+00:00",
+  "updated_at": "2026-10-08T00:17:48.222435+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -7518,7 +7518,22 @@
           "expected": [
             "Email is shown as unavailable (\u2014), no Name or admin badge appears, and the footer action is Sign in both before and after reload."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "37705986945",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "build_tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+              "evidence": [
+                ".research/guest-settings-breadth-native-20261007.json",
+                ".research/native-breadth-batch-peer-20261007.json"
+              ],
+              "detail": "Guest Account section: email unavailable, Name and role absent, Sign in footer; verified warm and after full extension reload.",
+              "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T74",
@@ -7575,7 +7590,22 @@
           "expected": [
             "The archive filter is absent because organization choices require sign-in; no organization read or implicit organization choice is triggered."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "37705986945",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "build_tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+              "evidence": [
+                ".research/guest-settings-breadth-native-20261007.json",
+                ".research/native-breadth-batch-peer-20261007.json"
+              ],
+              "detail": "Guest Organization section: archive filter and Acting as row absent; zero organization requests observed; verified warm and after full extension reload.",
+              "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T77",
@@ -8169,8 +8199,17 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "detail": "Source census only; current-build native acceptance and owned fixture setup pending."
+              "status": "pass",
+              "run_id": "37705986945",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "build_tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+              "evidence": [
+                ".research/guest-settings-breadth-native-20261007.json",
+                ".research/native-breadth-batch-peer-20261007.json"
+              ],
+              "detail": "Guest negative access only: sole signed-out prompt row; no extra membership text, archived marker, restoration action, or organization request; verified warm and after full extension reload.",
+              "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
             },
             "member": {
               "status": "unverified",
@@ -8184,6 +8223,13 @@
           "source_evidence": ".research/contained-inventory-drift-census.json",
           "readiness_gaps": [
             "Owned archived membership fixture and actual destination acceptance remain unverified."
+          ],
+          "result_history": [
+            {
+              "mode": "guest",
+              "status": "unverified",
+              "detail": "Source census only; current-build native acceptance and owned fixture setup pending."
+            }
           ]
         }
       ],

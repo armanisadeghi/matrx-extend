@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "85c6a4c74ddef6851c29a1d935e849a2d6080f31",
+  "independent_review": {
+    "A_isolation": {
+      "verdict": "pass",
+      "evidence": "The focused workflow has a distinct concurrency group and job. Its automatic run 37707039862 completed successfully in 26 seconds on the reviewed commit, independently of full CI run 37707039853."
+    },
+    "A_shared_command": {
+      "verdict": "pass",
+      "evidence": "The single package.json test:focused-acceptance command names all four guards and is invoked by both workflows. The later broad CI browser-test command no longer repeats the showcase stale-runtime guard."
+    },
+    "A_path_coverage": {
+      "verdict": "needs_followup",
+      "evidence": "The push filter covers the four test files, workflow/dependency files, and several feature sources, but omits src/lib/audit/**, src/lib/settings/**, src/state/settings.ts, and src/state/showcase-tab.ts. Changes to these related sources alone will not start the focused lane. It also omits scripts/**, which supplies imported acceptance helpers.",
+      "suggested_followup": "Add the related source and harness-helper paths to the focused workflow push filter, keeping the lane restricted to the four guards."
+    },
+    "B_guard_quality": {
+      "verdict": "limited_pass",
+      "evidence": "The four tests exercise audit fault injection, a simulated guest Settings panel, guest SEO clipboard formatting, and the showcase runtime boundary. They are useful fast source and harness guards; the successful run does not establish native browser or full release acceptance."
+    }
+  },
+  "lint_diagnosis": {
+    "failing_runs": [37706798809, 37706921993, 37707039853],
+    "cause": "Biome organizeImports rejected the order of two imports in tests/browser/seo-guest-acceptance.mjs. The order originated in accbad52 and predates the reviewed focused-lane commit.",
+    "red_command": "pnpm exec biome check . --diagnostic-level=error --max-diagnostics=none",
+    "red_result": "exit 1; one organizeImports error in tests/browser/seo-guest-acceptance.mjs",
+    "repair": "Swap the two imports and make the existing CI lint invocation show all error-level diagnostics without changing rule severity.",
+    "green_command": "pnpm lint --diagnostic-level=error --max-diagnostics=none",
+    "green_result": "exit 0; 1922 files checked, no fixes applied",
+    "verification_scope": "The lint command was an unguarded local static diagnosis and verification. No guarded local test, native acceptance, build, or release was run. A new automatic full CI run on the repaired commit is required to confirm the hosted gate."
+  }
+}

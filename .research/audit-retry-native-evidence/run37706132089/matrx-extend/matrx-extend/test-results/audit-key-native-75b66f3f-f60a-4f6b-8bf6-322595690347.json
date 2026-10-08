@@ -1,0 +1,1069 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0093",
+  "status": "pass",
+  "source": {
+    "sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793"
+  },
+  "artifact_id": 11516342905,
+  "run_id": 37698216289,
+  "cases": [
+    {
+      "name": "T86 details read failure and read-only retry",
+      "status": "pass",
+      "before": {
+        "keyId": "—",
+        "generated": "—",
+        "receiptCount": "—",
+        "recent": null,
+        "detailsUnavailable": true,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": true,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "977675d9bcac109c",
+        "generated": "10/8/2026, 12:14:39 AM",
+        "receiptCount": "0",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 0,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 0,
+              "selected": false
+            }
+          },
+          "rows": [],
+          "empty": "No receipts yet.",
+          "last": "last 0"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "activeWrites": 0
+      }
+    },
+    {
+      "name": "T60 export failure and retry",
+      "status": "pass",
+      "before": {
+        "keyId": "977675d9bcac109c",
+        "generated": "10/8/2026, 12:14:39 AM",
+        "receiptCount": "0",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 0,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 0,
+              "selected": false
+            }
+          },
+          "rows": [],
+          "empty": "No receipts yet.",
+          "last": "last 0"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": true,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": true,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "977675d9bcac109c",
+        "generated": "10/8/2026, 12:14:39 AM",
+        "receiptCount": "0",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 0,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 0,
+              "selected": false
+            }
+          },
+          "rows": [],
+          "empty": "No receipts yet.",
+          "last": "last 0"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": true,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "mode": "clipboard-once",
+        "activeWrites": 0,
+        "historyWrites": 0,
+        "activeReads": 1,
+        "clipboardWrites": 1,
+        "clipboardSucceeded": 0,
+        "faulted": 1,
+        "held": false
+      }
+    },
+    {
+      "name": "T27 admin audit key fields and recent rows survive Settings reload",
+      "status": "pass",
+      "before": {
+        "keyId": "977675d9bcac109c",
+        "generated": "10/8/2026, 12:14:39 AM",
+        "receiptCount": "2",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 2,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 2,
+              "selected": false
+            }
+          },
+          "rows": [
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:42 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:42 AM"
+            }
+          ],
+          "empty": null,
+          "last": "last 2"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "977675d9bcac109c",
+        "generated": "10/8/2026, 12:14:39 AM",
+        "receiptCount": "2",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 2,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 2,
+              "selected": false
+            }
+          },
+          "rows": [
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:42 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:42 AM"
+            }
+          ],
+          "empty": null,
+          "last": "last 2"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "receipt_count": 2
+      }
+    },
+    {
+      "name": "T62 origin filters match visible rows counts and empty state",
+      "status": "pass",
+      "before": {
+        "keyId": "977675d9bcac109c",
+        "generated": "10/8/2026, 12:14:39 AM",
+        "receiptCount": "2",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 2,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 2,
+              "selected": false
+            }
+          },
+          "rows": [
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:42 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:42 AM"
+            }
+          ],
+          "empty": null,
+          "last": "last 2"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "977675d9bcac109c",
+        "generated": "10/8/2026, 12:14:39 AM",
+        "receiptCount": "2",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 2,
+              "selected": false
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 2,
+              "selected": true
+            }
+          },
+          "rows": [
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:42 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:42 AM"
+            }
+          ],
+          "empty": null,
+          "last": "last 2"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "origins": {
+          "agent": {
+            "count": 0,
+            "rows": 0,
+            "empty": "No receipts with origin=agent."
+          },
+          "pilot": {
+            "count": 0,
+            "rows": 0,
+            "empty": "No receipts with origin=pilot."
+          },
+          "parallel": {
+            "count": 0,
+            "rows": 0,
+            "empty": "No receipts with origin=parallel."
+          },
+          "webmcp": {
+            "count": 2,
+            "rows": 2,
+            "empty": null
+          },
+          "all": {
+            "count": 2,
+            "rows": 2,
+            "empty": null
+          }
+        }
+      }
+    },
+    {
+      "name": "T61 cancel preserves key then confirmation rotates",
+      "status": "pass",
+      "before": {
+        "keyId": "977675d9bcac109c",
+        "generated": "10/8/2026, 12:14:39 AM",
+        "receiptCount": "2",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 2,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 2,
+              "selected": false
+            }
+          },
+          "rows": [
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:42 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:42 AM"
+            }
+          ],
+          "empty": null,
+          "last": "last 2"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "de9bfc6645b2ebc6",
+        "generated": "10/8/2026, 12:14:47 AM",
+        "receiptCount": "2",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 2,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 2,
+              "selected": false
+            }
+          },
+          "rows": [
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:42 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:42 AM"
+            }
+          ],
+          "empty": null,
+          "last": "last 2"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": true,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "cancelled_key_unchanged": true,
+        "confirmed_key_changed": true
+      }
+    },
+    {
+      "name": "T87 failed pre-mutation rotation needs fresh confirmation",
+      "status": "pass",
+      "before": {
+        "keyId": "977675d9bcac109c",
+        "generated": "10/8/2026, 12:14:39 AM",
+        "receiptCount": "2",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 2,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 2,
+              "selected": false
+            }
+          },
+          "rows": [
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:42 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:42 AM"
+            }
+          ],
+          "empty": null,
+          "last": "last 2"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": true,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "de9bfc6645b2ebc6",
+        "generated": "10/8/2026, 12:14:47 AM",
+        "receiptCount": "2",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 2,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 2,
+              "selected": false
+            }
+          },
+          "rows": [
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:42 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:42 AM"
+            }
+          ],
+          "empty": null,
+          "last": "last 2"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": true,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "mode": "reject-history",
+        "activeWrites": 0,
+        "historyWrites": 1,
+        "activeReads": 1,
+        "clipboardWrites": 0,
+        "clipboardSucceeded": 0,
+        "faulted": 1,
+        "held": false,
+        "prior_receipt": {
+          "publicKeyId": "977675d9bcac109c",
+          "originalValid": true,
+          "tamperedRejected": true
+        }
+      }
+    },
+    {
+      "name": "T88 successful rotation and failed refresh never re-rotates",
+      "status": "pass",
+      "before": {
+        "keyId": "—",
+        "generated": "—",
+        "receiptCount": "—",
+        "recent": null,
+        "detailsUnavailable": true,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": true,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": true,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "ec32e1624f37bbd9",
+        "generated": "10/8/2026, 12:14:49 AM",
+        "receiptCount": "2",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 2,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 2,
+              "selected": false
+            }
+          },
+          "rows": [
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:42 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:42 AM"
+            }
+          ],
+          "empty": null,
+          "last": "last 2"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": true,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "mode": "after-active-read",
+        "activeWrites": 1,
+        "historyWrites": 1,
+        "activeReads": 3,
+        "clipboardWrites": 0,
+        "clipboardSucceeded": 0,
+        "faulted": 1,
+        "held": false
+      }
+    },
+    {
+      "name": "T89 uncertain active write blocks mutation until read",
+      "status": "pass",
+      "before": {
+        "keyId": "—",
+        "generated": "—",
+        "receiptCount": "—",
+        "recent": null,
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": true,
+        "lockUnavailable": false,
+        "retryDetails": true,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": true,
+        "exportDisabled": false
+      },
+      "after": {
+        "keyId": "33be5c5227ccf1c3",
+        "generated": "10/8/2026, 12:14:52 AM",
+        "receiptCount": "4",
+        "recent": {
+          "filters": {
+            "all": {
+              "count": 4,
+              "selected": true
+            },
+            "agent": {
+              "count": 0,
+              "selected": false
+            },
+            "pilot": {
+              "count": 0,
+              "selected": false
+            },
+            "parallel": {
+              "count": 0,
+              "selected": false
+            },
+            "webmcp": {
+              "count": 4,
+              "selected": false
+            }
+          },
+          "rows": [
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:51 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:51 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "ok",
+              "time": "12:14:42 AM"
+            },
+            {
+              "origin": "webmcp",
+              "toolName": "list_open_tabs",
+              "status": "pending",
+              "time": "12:14:42 AM"
+            }
+          ],
+          "empty": null,
+          "last": "last 4"
+        },
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": false,
+        "retryDetails": false,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": false,
+        "exportDisabled": false
+      },
+      "boundary": {
+        "mode": "unknown-write",
+        "activeWrites": 1,
+        "historyWrites": 1,
+        "activeReads": 2,
+        "clipboardWrites": 0,
+        "clipboardSucceeded": 0,
+        "faulted": 2,
+        "held": false,
+        "prior_receipt": {
+          "publicKeyId": "ec32e1624f37bbd9",
+          "originalValid": true,
+          "tamperedRejected": true
+        }
+      }
+    },
+    {
+      "name": "T91 unsupported Web Locks blocks and read-only retry recovers",
+      "status": "pass",
+      "before": {
+        "keyId": "—",
+        "generated": "—",
+        "receiptCount": "—",
+        "recent": null,
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": true,
+        "retryDetails": true,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": true,
+        "exportDisabled": true
+      },
+      "after": {
+        "keyId": "—",
+        "generated": "—",
+        "receiptCount": "—",
+        "recent": null,
+        "detailsUnavailable": false,
+        "exportFailed": false,
+        "rotationFailed": false,
+        "rotated": false,
+        "unknown": false,
+        "lockUnavailable": true,
+        "retryDetails": true,
+        "retryExport": false,
+        "copied": false,
+        "rekeyDisabled": true,
+        "exportDisabled": true
+      },
+      "boundary": {
+        "details_recovered": true,
+        "history_unchanged": true
+      }
+    },
+    {
+      "name": "T90 two same-origin activations retain and verify signed key history",
+      "status": "pass",
+      "before": {
+        "activeId": "33be5c5227ccf1c3",
+        "historyIds": [
+          "977675d9bcac109c",
+          "de9bfc6645b2ebc6",
+          "ec32e1624f37bbd9",
+          "33be5c5227ccf1c3"
+        ]
+      },
+      "after": {
+        "activeId": "53dc7eeabb07ae38",
+        "historyIds": [
+          "977675d9bcac109c",
+          "de9bfc6645b2ebc6",
+          "ec32e1624f37bbd9",
+          "33be5c5227ccf1c3",
+          "72198011beb4e25e",
+          "53dc7eeabb07ae38"
+        ]
+      },
+      "boundary": {
+        "first_write_held": true,
+        "signer_queued_before_second_rotation": true,
+        "second_lock_queued": true,
+        "second_write_held": true,
+        "first_activated_id": "72198011beb4e25e",
+        "first_context_receipts": [
+          {
+            "publicKeyId": "33be5c5227ccf1c3",
+            "originalValid": true,
+            "tamperedRejected": true
+          },
+          {
+            "publicKeyId": "72198011beb4e25e",
+            "originalValid": true,
+            "tamperedRejected": true
+          },
+          {
+            "publicKeyId": "53dc7eeabb07ae38",
+            "originalValid": true,
+            "tamperedRejected": true
+          }
+        ],
+        "sibling_context_receipts": [
+          {
+            "publicKeyId": "33be5c5227ccf1c3",
+            "originalValid": true,
+            "tamperedRejected": true
+          },
+          {
+            "publicKeyId": "72198011beb4e25e",
+            "originalValid": true,
+            "tamperedRejected": true
+          },
+          {
+            "publicKeyId": "53dc7eeabb07ae38",
+            "originalValid": true,
+            "tamperedRejected": true
+          }
+        ]
+      }
+    }
+  ],
+  "failure_stage": null,
+  "failure_code": null,
+  "reload_boundaries": [
+    {
+      "boundary": "enable_page",
+      "outcome": "started"
+    },
+    {
+      "boundary": "enable_page",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "read_previous_document",
+      "outcome": "started"
+    },
+    {
+      "boundary": "read_previous_document",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "install_script",
+      "outcome": "started"
+    },
+    {
+      "boundary": "install_script",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "request_reload",
+      "outcome": "started"
+    },
+    {
+      "boundary": "request_reload",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "wait_new_document",
+      "outcome": "started"
+    },
+    {
+      "boundary": "document_probe",
+      "outcome": "completed",
+      "newDocument": true,
+      "settingsReady": false,
+      "preludeInstalled": true
+    },
+    {
+      "boundary": "document_probe",
+      "outcome": "completed",
+      "newDocument": true,
+      "settingsReady": true,
+      "preludeInstalled": true
+    },
+    {
+      "boundary": "wait_new_document",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "check_marker",
+      "outcome": "started"
+    },
+    {
+      "boundary": "check_marker",
+      "outcome": "completed"
+    },
+    {
+      "boundary": "remove_script",
+      "outcome": "started"
+    },
+    {
+      "boundary": "remove_script",
+      "outcome": "completed"
+    }
+  ],
+  "artifacts": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-AhmAN4"
+}
