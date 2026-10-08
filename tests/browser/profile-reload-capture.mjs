@@ -304,6 +304,11 @@ export function captureReloadLifetime(value) {
               ? value.fresh_replacement.status
               : null,
             observations: safeCount(value.fresh_replacement.observations),
+            cleanup: ['confirmed', 'unconfirmed', 'not_acquired'].includes(
+              value.fresh_replacement.cleanup,
+            )
+              ? value.fresh_replacement.cleanup
+              : 'unconfirmed',
           }
         : null,
   };

@@ -189,3 +189,91 @@ test('fresh replacement observer distinguishes activation from stale, wrong, and
     await diagnostic.close();
   }
 });
+
+test('fresh replacement observation bounds nonsettling create, enable, disable, and detach', async () => {
+  const never = new Promise(() => {});
+  for (const phase of ['create', 'enable', 'disable', 'detach']) {
+    const f = fixture();
+    const diagnostic = await startReloadLifetimeDiagnostic({ ...f, extensionId });
+    diagnostic.correlateOld('old-worker');
+    f.pageSession.emit('ServiceWorker.workerVersionUpdated', {
+      versions: [
+        {
+          versionId: 'version-new',
+          registrationId: 'registration-2',
+          scriptURL: `${prefix}background.js`,
+          targetId: 'new-worker',
+          runningStatus: 'starting',
+          status: 'new',
+        },
+      ],
+    });
+    const fresh = new Session((method, _, session) => {
+      if (method === 'ServiceWorker.enable') {
+        if (phase === 'enable') return never;
+        session.emit('ServiceWorker.workerVersionUpdated', {
+          versions: [
+            {
+              versionId: 'version-new',
+              registrationId: 'registration-2',
+              scriptURL: `${prefix}background.js`,
+              targetId: 'new-worker',
+              runningStatus: 'running',
+              status: 'activated',
+            },
+          ],
+        });
+      }
+      if (method === 'ServiceWorker.disable' && phase === 'disable') return never;
+      return {};
+    });
+    if (phase === 'detach') fresh.detach = async () => never;
+    f.context.newCDPSession = async () => (phase === 'create' ? never : fresh);
+    const started = performance.now();
+    const result = await diagnostic.observeFreshReplacement('new-worker', 45);
+    assert.ok(performance.now() - started < 250, `${phase} exceeded bounded observation`);
+    assert.equal(result.outcome, 'unavailable', phase);
+    assert.equal(
+      result.cleanup,
+      phase === 'create' || phase === 'disable' || phase === 'detach' ? 'unconfirmed' : 'confirmed',
+    );
+    if (phase !== 'create')
+      assert.equal(fresh.listenerCount('ServiceWorker.workerVersionUpdated'), 0);
+    if (phase === 'disable') assert.equal(fresh.detached, true);
+    assert.equal(diagnostic.executionRetired('old-worker', 'new-worker'), false);
+    await diagnostic.close();
+  }
+});
+
+test('late session creation attempts bounded cleanup without claiming it succeeded', async () => {
+  const f = fixture();
+  const diagnostic = await startReloadLifetimeDiagnostic({ ...f, extensionId });
+  diagnostic.correlateOld('old-worker');
+  f.pageSession.emit('ServiceWorker.workerVersionUpdated', {
+    versions: [
+      {
+        versionId: 'version-new',
+        registrationId: 'registration-2',
+        scriptURL: `${prefix}background.js`,
+        targetId: 'new-worker',
+        runningStatus: 'starting',
+        status: 'new',
+      },
+    ],
+  });
+  let resolveCreation;
+  f.context.newCDPSession = async () =>
+    new Promise((resolve) => {
+      resolveCreation = resolve;
+    });
+  const result = await diagnostic.observeFreshReplacement('new-worker', 45);
+  assert.equal(result.outcome, 'unavailable');
+  assert.equal(result.cleanup, 'unconfirmed');
+  const late = new Session(() => ({}));
+  resolveCreation(late);
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.deepEqual(late.calls, ['ServiceWorker.disable']);
+  assert.equal(late.detached, true);
+  assert.equal(late.listenerCount('ServiceWorker.workerVersionUpdated'), 0);
+  await diagnostic.close();
+});

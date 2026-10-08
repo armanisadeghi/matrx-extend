@@ -1,8 +1,9 @@
 {
   "task": "scrape-reload-observer-20261008",
-  "status": "source_diagnostic_ready_native_unverified",
+  "status": "bounded_source_diagnostic_ready_for_independent_recheck_native_unverified",
   "trigger": "Resource-valid B37755458660 stopped at reload: old version stopped/redundant, replacement target present, original ServiceWorker observer last reported replacement starting/new with no dropped event.",
-  "change": "Only after the existing reload predicate fails, create a separate CDP session on the surviving page, subscribe to ServiceWorker.workerVersionUpdated before ServiceWorker.enable, record the first matching fresh replacement-version snapshot, then disable and detach. The observer only calls enable/disable and never starts, inspects, stops, reloads, or evaluates the worker. It records bounded sanitized version/registration/target IDs, running/version status, outcome and count, or explicit unavailable/unmeasured. The original event sequence remains intact.",
+  "change": "Only after the existing reload predicate fails, create a separate CDP session on the surviving page, subscribe to ServiceWorker.workerVersionUpdated before ServiceWorker.enable, record the first matching fresh replacement-version snapshot, then disable and detach. The observer only calls enable/disable and never starts, inspects, stops, reloads, or evaluates the worker. It records bounded sanitized version/registration/target IDs, running/version status, outcome, count and cleanup verdict, or explicit unavailable/unmeasured. The original event sequence remains intact.",
+  "peer_repair": "The first candidate eacb7c1c bounded only the event wait; fresh session creation, enable, disable and detach could hang. The repaired observer uses one absolute deadline with work time reserved before bounded cleanup. On timeout it removes its listener synchronously and returns unavailable; cleanup is confirmed only if both disable and detach settle. If creation settles after timeout, a separate bounded best-effort disable/detach is attempted without claiming confirmed cleanup. No unconfirmed result can be promoted as activated.",
   "identity_rule": "Fresh activated requires the exact version ID, registration ID and target ID already correlated to the replacement by the original observer, plus running/activated status. Wrong version, registration or target is identity_mismatch; still starting/new is not_activated; protocol refusal is unavailable. A second snapshot cannot repair absent original old-worker retirement proof.",
   "acceptance_rule": "Unchanged. reloadExecutionRetired and the complete old-panel/worker absence, sole replacement target, target-created event, management, replacement panel/context and downstream cases remain mandatory. Fresh status is diagnostic only; even a matching activated fresh snapshot cannot currently turn the failed predicate green. This avoids a false pass if independent watcher semantics differ from current-version semantics.",
   "source_basis": [
@@ -19,7 +20,7 @@
     "tests/browser/profile-reload-capture.mjs"
   ],
   "checks": {
-    "focused": "25/25 source tests pass including same-identity activated, still-new, wrong version/registration/target and unavailable; fresh does not alter original execution verdict.",
+    "focused": "27/27 source tests pass including same-identity activated, still-new, wrong version/registration/target and unavailable; nonsettling create/enable/disable/detach are bounded, a late created session receives cleanup attempt, and fresh does not alter original execution verdict.",
     "real_harness": "27/27 existing native harness source tests pass; dedicated full reload failure route 1/1 records fresh activated but still refuses current acceptance.",
     "red_mutation": "Scratch-copy replacement of activated outcome with not_activated made the focused test fail on expected activated vs actual not_activated; shared source was untouched.",
     "style": "Biome check on all six changed code/test paths and git diff --check pass."

@@ -176,7 +176,7 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
       evidence.old_host_probe = await probeOne(oldTargetId, 'worker');
       evidence.replacement_host_probe = await probeOne(replacementTargetId, 'worker');
     },
-    async observeFreshReplacement(replacementTargetId) {
+    async observeFreshReplacement(replacementTargetId, budgetMs = 3000) {
       const expected = [...versions.values()].filter(
         (item) =>
           item.target_id === replacementTargetId && item.version_id !== evidence.old_version_id,
@@ -189,12 +189,30 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
         running_status: null,
         status: null,
         observations: 0,
+        cleanup: 'not_acquired',
       };
       evidence.fresh_replacement = result;
       if (!safeId(replacementTargetId) || expected.length !== 1) return result;
       let freshSession;
       let finish;
-      let timer;
+      let abandoned = false;
+      let creation;
+      const finalDeadline = performance.now() + budgetMs;
+      const workDeadline = finalDeadline - Math.min(500, budgetMs / 3);
+      const within = async (promise, deadline) => {
+        const remaining = Math.max(0, deadline - performance.now());
+        let timer;
+        try {
+          return await Promise.race([
+            promise,
+            new Promise((_, reject) => {
+              timer = setTimeout(() => reject(new Error('fresh_observer_deadline')), remaining);
+            }),
+          ]);
+        } finally {
+          clearTimeout(timer);
+        }
+      };
       const completion = new Promise((resolve) => {
         finish = resolve;
       });
@@ -225,18 +243,61 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
         if (matchingSnapshot) finish();
       };
       try {
-        freshSession = await context.newCDPSession(page);
+        creation = Promise.resolve().then(() => context.newCDPSession(page));
+        freshSession = await within(creation, workDeadline);
         freshSession.on('ServiceWorker.workerVersionUpdated', onVersion);
-        timer = setTimeout(finish, 3000);
-        await freshSession.send('ServiceWorker.enable');
-        await completion;
+        await within(
+          Promise.resolve().then(() => freshSession.send('ServiceWorker.enable')),
+          workDeadline,
+        );
+        await within(completion, workDeadline);
       } catch {
+        abandoned = true;
         result.outcome = 'unavailable';
+        if (!freshSession && creation)
+          void creation.then(
+            (lateSession) => {
+              // A timed-out create may still settle; no listener was installed.
+              void (async () => {
+                const cleanupDeadline = performance.now() + 500;
+                await within(
+                  Promise.resolve().then(() => lateSession.send('ServiceWorker.disable')),
+                  cleanupDeadline,
+                ).catch(() => {});
+                await within(
+                  Promise.resolve().then(() => lateSession.detach()),
+                  cleanupDeadline,
+                ).catch(() => {});
+              })();
+            },
+            () => {},
+          );
       } finally {
-        clearTimeout(timer);
         freshSession?.off('ServiceWorker.workerVersionUpdated', onVersion);
-        await freshSession?.send('ServiceWorker.disable').catch(() => {});
-        await freshSession?.detach().catch(() => {});
+        if (freshSession) {
+          const disabled = await within(
+            Promise.resolve()
+              .then(() => freshSession.send('ServiceWorker.disable'))
+              .then(
+                () => true,
+                () => false,
+              ),
+            finalDeadline,
+          ).catch(() => false);
+          const detached = await within(
+            Promise.resolve()
+              .then(() => freshSession.detach())
+              .then(
+                () => true,
+                () => false,
+              ),
+            finalDeadline,
+          ).catch(() => false);
+          result.cleanup = disabled && detached ? 'confirmed' : 'unconfirmed';
+          if (result.cleanup !== 'confirmed') result.outcome = 'unavailable';
+        } else if (abandoned) {
+          result.cleanup = 'unconfirmed';
+        }
       }
       return result;
     },
