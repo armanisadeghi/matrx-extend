@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "lane": "independent native evidence review of one Intel headed startup diagnostic",
+  "reviewed_run": 37710954422,
+  "reviewed_workflow_head": "6943b056ce9f3dce32948ea8895e3cad2f8c286b",
+  "scope": "Original extracted diagnostic, frozen build receipts, three current-run resource journals, source timer boundaries, and worker report; no native launch, API or guest acceptance, tests, release, or secret access.",
+  "verdict_a_endpoint_and_child_discrimination": {
+    "status": "PASS_WITH_REPORT_CORRECTION_REQUIRED",
+    "observed": "The original diagnostic reports one cdp_connected observation at 2026-10-08T01:09:33.014Z: endpointPresent=true, inspectionFailed=false, exitObserved=false, elapsedMs=4894, polls=0. The harness reached panel_context and exercise_panel; no cdp_timeout or post_timeout observation exists. The timeout branch was not exercised, so this run does not distinguish a late endpoint from an endpoint remaining absent or child exit after timeout.",
+    "timer_boundary": "The successful-path elapsedMs starts immediately before Chromium spawn and ends after connectOwnedCdp returns, which includes endpoint read plus record, owner, and WebSocket checks. The unchanged 5000 ms deadline starts later, inside connectOwnedCdp, and bounds its endpoint-file read loop. polls=0 is a literal success-path value, not a count of endpoint probes. The worker report's 106 ms margin-before-deadline and near-boundary claims are unsupported and require removal.",
+    "limits": "A single successful headed Intel connection does not explain earlier timeouts or attribute timing to headed mode, Chromium, GPU, or host scheduling. The subsequent endpoint_read stage is a separate post-connect validation; it is not the first DevToolsActivePort read. No product acceptance follows from panel readiness."
+  },
+  "verdict_b_journal_provenance_and_privacy": {
+    "status": "PASS_WITH_LIMITATIONS",
+    "provenance": "The diagnostic and retained original CI provenance agree on frozen CI run 37698216289, artifact 11516342905, source 52487361b1b6a8663b958dbb2196cbcc9b1af31c, version 0.2.391, and matching tree SHA-256. The worker's workflow-run metadata identifies a distinct workflow head 6943b056ce9f3dce32948ea8895e3cad2f8c286b for diagnostic run 37710954422; these original extracted files do not themselves attest that workflow head.",
+    "journals": "All three retained current-run journals parse and end RESOURCE_FINAL_DECISION valid with admitted=true, resourceInvalid=false, and exitCode=0. Startup journal has a CPU-high-load pending event at 01:09:35.877Z after cdp_connected, followed by CPU recovery and healthy samples. The guard decision is valid; the later CPU sample does not establish startup causality.",
+    "privacy": "Original retained files contain bounded diagnostic observations, build metadata, resource samples, process names/PIDs, and a CI workspace path. A keyword inspection found no email, credential, bearer token, or personal-data field. The path is CI-local. Screenshots and stale-run journals are absent from the retained evidence directory.",
+    "limits": "The workflow head and hosted artifact ZIP digest are sourced from the worker report rather than an original run-metadata receipt in this evidence directory. A scan cannot prove absence of every possible secret. Runtime extension ID is absent from the diagnostic receipt; the expected ID is build provenance only."
+  },
+  "readiness": "DIAGNOSTIC_ONLY. Correct the worker report's deadline-margin language before relying on its interpretation. No guest/API acceptance or complete root-cause claim is supported.",
+  "changed_files": [".research/intel-startup-native-peer-20261007.json"]
+}

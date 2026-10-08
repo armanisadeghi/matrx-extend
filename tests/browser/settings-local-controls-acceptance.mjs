@@ -8,6 +8,7 @@ import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-iden
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { GUEST_PREFERENCES, runGuestPreferenceCase } from './settings-guest-preference-batch.mjs';
 import {
   click,
   evaluate,
@@ -27,7 +28,9 @@ const DEV_EXTENSION_DIR = process.env.SETTINGS_DEV_EXTENSION_DIR
 const DEV_BUILD_RECEIPT = process.env.SETTINGS_DEV_BUILD_RECEIPT;
 const EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const CASE_PORT = 65001;
-const IDS = ['T22', 'T37', 'T46', 'T70', 'T73', 'T76', 'T92'].map((id) => `EXT-F-1003-${id}`);
+const IDS = ['T04', 'T10', 'T13', 'T22', 'T37', 'T46', 'T70', 'T73', 'T76', 'T92'].map(
+  (id) => `EXT-F-1003-${id}`,
+);
 const report = {
   schema_version: 1,
   scope: 'real isolated Chrome-for-Testing native side panel; signed-out guest',
@@ -471,6 +474,31 @@ try {
     }),
     exercisePanel: async ({ panel, attachWorker, reloadExtension }) => {
       await settings(panel);
+      for (const preference of GUEST_PREFERENCES) {
+        await runCase(byId(preference.caseId), async () => {
+          const c = byId(preference.caseId);
+          await runGuestPreferenceCase(
+            panel,
+            reloadSettings,
+            preference,
+            (name, observation, passed) => {
+              c.steps.push({
+                phase: name.includes('reload') ? 'reload' : 'warm',
+                action: name,
+                observation,
+              });
+              criterion(c, name, passed ? 'pass' : 'fail', observation);
+            },
+          );
+          if (preference.caseId === 'T10')
+            criterion(
+              c,
+              'new chat inherits selected default mode',
+              'unverified',
+              'Chat creation is outside this non-Chat batch.',
+            );
+        });
+      }
       await runCase(byId('T22'), async () => {
         const c = byId('T22');
         for (const phase of ['warm', 'reload']) {

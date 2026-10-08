@@ -292,8 +292,8 @@ export async function click(panel, kind, label, onPhase = undefined) {
     }
     else if (kind === 'section') candidates = [...document.querySelectorAll('button[aria-expanded]')]
       .filter((el) => el.textContent.trim() === label);
-    else if (kind === 'theme') candidates = [...document.querySelectorAll('span')]
-      .filter((el) => el.textContent.trim() === 'Theme')
+    else if (kind === 'theme' || kind === 'settings-select') candidates = [...(${activeTabPanelExpression('Settings')}?.querySelectorAll('span') ?? [])]
+      .filter((el) => el.textContent.trim() === (kind === 'theme' ? 'Theme' : label))
       .flatMap((el) => [...el.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
     else if (kind === 'organization') candidates = [...document.querySelectorAll('span')]
       .filter((el) => el.textContent.trim() === 'Acting as')
