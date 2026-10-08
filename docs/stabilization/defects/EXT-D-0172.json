@@ -37,7 +37,8 @@
     ".research/guest409-live-retest-20261008.json",
     ".research/guest409-live-retest-peer-20261008.json",
     ".research/guest-resume-runtimeerror-fix-20261008.json",
-    ".research/guest-resume-runtimeerror-peer-20261008.json"
+    ".research/guest-resume-runtimeerror-peer-20261008.json",
+    ".research/guest-position-deployment-observation-20261008.json"
   ],
   "transition_history": [
     {
@@ -83,15 +84,15 @@
       "reason": "Second source repair7ec6c76205 independently accepted16a32d73: rebuilt model history and physical database positions differ. Source/guard pass only; production remains5be and original guest acceptance remains fail."
     }
   ],
-  "next_action": "Observe authorized automatic deployment containing7ec6c76205; then resource-admitted original public205 first/followup/reload/new-conversation test and fresh independent review. Do not close or promote guest fail from source checks.",
+  "next_action": "Complete original public205 native37770686993 and fresh independent review. Retain guest failure until grounded first/followup/reload tool-continuation terminal answers are proven with valid resources.",
   "closure_requirement": "Original public guest reproduction and surrounding first/followup cases pass independently on real browser/live server with valid resources; actual Store installation remains separately unverified.",
   "source_candidate": {
     "repository": "aidream",
     "sha": "7ec6c76205f8625bcbd0a70a9f40b417c20a84af",
     "contract_review": "PASS: independent16a32d73",
     "guard_review": "PASS: independent17 checkpoint tests; builder29 focused tests; actual rebuild and orchestrator callback exercised",
-    "deployment": "Pending: latest observed live5be7a37ba1e53ca311f3787bb041a402ec863052 does not include second repair",
-    "runtime_retest": "Pending after actual deployment; previous37764808590 remains failed"
+    "deployment": "Observed production 32f3a398789e0a56b590089ff47b90aff6abe159 at2026-10-08T11:34:20.769003+00:00; ancestry verified; external release37768140185 successful.",
+    "runtime_retest": "Pending original public205 native37770686993; prior37764808590 remains fail."
   },
   "latest_retest": {
     "run_id": "37764808590",

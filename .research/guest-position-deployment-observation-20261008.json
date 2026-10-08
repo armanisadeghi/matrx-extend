@@ -1,0 +1,15 @@
+{
+  "observed_at": "2026-10-08T11:34:20.769003+00:00",
+  "live_endpoint": "https://server.app.matrxserver.com/health/version",
+  "live": {
+    "git_sha": "32f3a398789e0a56b590089ff47b90aff6abe159",
+    "built_at": "2026-10-08T11:13:28Z",
+    "branch": null
+  },
+  "repair_sha": "7ec6c76205f8625bcbd0a70a9f40b417c20a84af",
+  "ancestry_verified": true,
+  "external_release_run": 37768140185,
+  "native_retest_run": 37770686993,
+  "native_result": "pending; previous original-reproduction failure remains current until peer-verified retest",
+  "manual_deploy_performed": false
+}
