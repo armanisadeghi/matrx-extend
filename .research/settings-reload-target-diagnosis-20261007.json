@@ -2,7 +2,7 @@
   "schema_version": 1,
   "date": "2026-10-07",
   "task_id": "settings_reload_target_diagnosis",
-  "status": "source_repair_verified_native_retest_pending",
+  "status": "focused_ci_coverage_added_native_retest_pending",
   "scope": "Frozen development artifact 0.2.391 Settings guest full-extension-reload boundary in workflows 37712686956 and 37714389856",
   "cause": {
     "finding": "The shared Settings acceptance driver clicks immediately after the replacement CDP panel target appears. A target and runtime context can exist before React mounts the Settings tab. The fresh receipt records the first click failing with matchedTargetCount=0, followed by a same-panel probe with settingsTabCount=1. This supports an early click race in the driver; it does not establish a Settings product defect.",
@@ -16,17 +16,18 @@
     "tests/browser/settings-local-controls-acceptance.mjs",
     "tests/browser/settings-reload-boundary.mjs",
     "tests/browser/settings-replacement-tab.test.mjs",
+    "package.json",
     ".research/settings-reload-target-diagnosis-20261007.json"
   ],
   "verification": {
-    "negative_control": "node --test tests/browser/settings-replacement-tab.test.mjs failed before the repair because the readiness helper was absent. The new test drives the real evaluate/waitFor seam with a replacement panel whose Settings tab is first missing, then hidden, then uniquely visible; a second case rejects a tab that never renders.",
-    "focused_after": "node --test tests/browser/settings-replacement-tab.test.mjs tests/browser/settings-reload-boundary.test.mjs: 6/6 passed",
+    "negative_control": "The original pre-repair red run only proved a missing helper export. A causal bypass run with SETTINGS_NEGATIVE_CONTROL_BYPASS_READINESS=1 node --test tests/browser/settings-replacement-tab.test.mjs produced 2 pass, 1 fail: the actual native settings() function issued trusted_click without tab_ready. The test extracts that function from the production acceptance driver; the bypass changes only the extracted function in memory, not repository source.",
+    "focused_after": "pnpm test:focused-acceptance: 37/37 passed locally with settings-replacement-tab.test.mjs explicitly included by package.json. This is source/test coverage, not native product acceptance.",
     "typescript": "pnpm compile passed",
-    "format": "Focused pnpm exec biome check passed for all four changed source/test files; git diff --check passed. Biome excludes the research report JSON from its explicit-path check.",
+    "format": "Focused pnpm exec biome check passed for package.json and settings-replacement-tab.test.mjs; git diff --check passed. Biome excludes the research report JSON from its explicit-path check.",
     "native": "Not run: this machine prohibits manual build/release/deploy and this lane forbids browser dispatch. Existing native guest full-reload acceptance remains unverified."
   },
   "resource_status": "No heavy job, browser, build, release, deployment, credential access, or secret staging was started by this lane.",
   "questions": [],
-  "next_action": "Independent review, then one admitted frozen-artifact native retest of the original guest Settings full reload. Credit product cases only from that native result.",
+  "next_action": "Confirm automatic focused CI at the exact pushed SHA, obtain independent review, then one admitted frozen-artifact native retest of the original guest Settings full reload. Credit product cases only from that native result.",
   "commit_shas": ["65637cd5"]
 }
