@@ -1,0 +1,42 @@
+{
+  "incident": "EXT-D-0172",
+  "role": "independent read-only source and contract peer",
+  "reviewed_at": "2026-10-08",
+  "verdict_a_contract": {
+    "status": "gap confirmed in source; production root cause unproven",
+    "facts": [
+      "The observed guest request has an answered client-delegated tool call, but its assistant reservation at logical position 1 remains pending with empty content; its snapshot contains the assistant tool call. The incident report attributes resume_context_not_ready 409 to reconstruction without that assistant turn. These are supplied incident facts, not independently queried live rows.",
+      "executor.py:6410-6459 calls _flush_assistant_message_mid_loop only when _response_has_live_client_delegated_call matches the response against the current AppContext client_tools. It calls coordinator.finalize for the assistant only if that helper returns a message ID; otherwise it proceeds into handle_tool_calls.",
+      "executor.py:1384-1429 catches queue exceptions from the assistant checkpoint, logs a warning, and returns None; this makes assistant precommit optional on failure. The assistant reservation begins pending/content=[] at executor.py:4699-4711.",
+      "tools/executor.py:2973-3005 separately calls execution_logger.delegate_durably, which proves the cx_tool_call row on disk, and then emits tool_delegated. This readback proves the tool ledger, not the assistant cx_message content/status.",
+      "_conversation_rebuild_impl.py:486-509 synthesizes a completed tool result only while iterating a rebuilt assistant tool_use. An empty assistant reservation cannot supply the matching tool_use; continue_conversation.py:1269-1290 rejects a resume whose model-visible tail is not a tool result."
+    ],
+    "hypotheses_to_distinguish_with_trace": [
+      "The live delegation predicate was false despite dispatch selecting the client tool; prediction: no mid-loop assistant queue update or delegate_precommit finalize for the request.",
+      "The predicate was true but checkpoint queuing failed or returned None; prediction: a warning at executor.py:1423-1427 and no assistant precommit finalize.",
+      "The assistant update was queued and finalize reported success but did not persist the active content; prediction: delegate_precommit marker exists, yet DB readback of the assistant row is pending/empty. This requires investigating queue coalescing/flush, not assuming the predicate failed."
+    ],
+    "canonical_fix_requirements": [
+      "Make the assistant tool_use durability checkpoint mandatory for every actual client delegation at the shared delegation boundary: before tool_delegated is published, prove the matching assistant cx_message row is active and contains the call ID, or fail loudly and do not publish the handoff. The cx_tool_call readback alone is insufficient.",
+      "Preserve the user trigger and assistant reservation updates in the pre-suspend commit, and advance committed_position only after that commit is confirmed. Do not repair the missing assistant from request_snapshot on resume as a substitute for the original durable turn."
+    ],
+    "limitations": "No live trace, DB query, code change, or runtime test was performed in this peer lane. The concrete failed boundary remains to be determined by the implementation worker."
+  },
+  "verdict_b_regression_guard": {
+    "status": "current guards do not prove publish-before-assistant-persistence invariant",
+    "facts": [
+      "test_executor_user_message_reservation.py proves user reservation content/status and a helper's queue shape. Its mid-loop test uses an assistant TextContent response and does not drive a delegated tool_call through the executor to publication.",
+      "test_conversation_resume_admission.py checks that a terminal assistant prefill returns 409 and a tool result tail passes; this correctly detects an unreconstructable transcript but does not prevent the handoff that created it."
+    ],
+    "required_guard": "Drive the real executor/delegation caller chain with a captured-shaped assistant response containing get_page_text's tool_call and a controlled client tool router. Keep message queue, coordinator flush, and rebuild responsibilities real; replace external DB/stream I/O beneath them. Assert that the emitted tool_delegated event occurs only after DB readback shows an active assistant row containing that call ID, then resolve the tool and rebuild to a paired assistant tool_use/tool_result. Inject a skipped checkpoint or queue failure and assert no event is published and the failure is explicit. Prove RED against the unfixed behavior and GREEN after repair; a helper-only queue assertion is insufficient.",
+    "quality_limit": "This is a review specification, not a run result or independent completion verification."
+  },
+  "source_paths": [
+    "/Volumes/Samsung2TB/code/aidream/packages/matrx-ai/matrx_ai/orchestrator/executor.py",
+    "/Volumes/Samsung2TB/code/aidream/packages/matrx-ai/matrx_ai/tools/executor.py",
+    "/Volumes/Samsung2TB/code/aidream/packages/matrx-ai/matrx_ai/db/_conversation_rebuild_impl.py",
+    "/Volumes/Samsung2TB/code/aidream/aidream/services/conversation_context/continue_conversation.py",
+    "/Volumes/Samsung2TB/code/aidream/packages/matrx-ai/tests/test_executor_user_message_reservation.py",
+    "/Volumes/Samsung2TB/code/aidream/aidream/api/tests/test_conversation_resume_admission.py"
+  ]
+}
