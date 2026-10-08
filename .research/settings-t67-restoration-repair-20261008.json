@@ -49,12 +49,12 @@
     "conclusion": "failure",
     "frozen_ci_run": 37818621428,
     "frozen_artifact_id": 11568846736,
-    "frozen_source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55c",
+    "frozen_source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
     "development_version": 414,
     "resource_journals": {
-      "package": "raw/hosted-package-37850621932-1.jsonl.raw",
-      "browser": "raw/hosted-browser-37850621932-1.jsonl.raw",
-      "guest": "raw/hosted-guest-37850621932-1.jsonl.raw",
+      "package": ".research/settings-t67-restoration-repair-20261008/raw/hosted-package-37850621932-1.jsonl.raw",
+      "browser": ".research/settings-t67-restoration-repair-20261008/raw/hosted-browser-37850621932-1.jsonl.raw",
+      "guest": ".research/settings-t67-restoration-repair-20261008/raw/hosted-guest-37850621932-1.jsonl.raw",
       "all_terminal": true,
       "package_and_browser_valid": true,
       "guest_admitted": true,
@@ -87,6 +87,13 @@
       "name": "hosted-guest-37850621932-1",
       "downloaded": true,
       "contains_native_receipt": false
+    },
+    "frozen_artifact_name": "matrx-extend-development-test-5f7fe7c29d7dd78528161c8928d3da78b41aa55b-37818621428-1",
+    "prior_attempt_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37850621932",
+    "raw_sha256": {
+      ".research/settings-t67-restoration-repair-20261008/raw/hosted-package-37850621932-1.jsonl.raw": "5880c17b8b3585fddd7b9447b578aa5f640b13e6d8492383e29f1d7d89fd03eb",
+      ".research/settings-t67-restoration-repair-20261008/raw/hosted-browser-37850621932-1.jsonl.raw": "e8d02904adc2bef94655a442117f8e6428c9941d2f6c109fda4c6f9b00758b34",
+      ".research/settings-t67-restoration-repair-20261008/raw/hosted-guest-37850621932-1.jsonl.raw": "1c9ba5468f4d7b38ca4d3f42b991d966f3fdb7a99031cf7b4e29d15eb4d0042c"
     }
   }
 }
