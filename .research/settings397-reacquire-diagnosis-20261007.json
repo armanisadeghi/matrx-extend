@@ -35,11 +35,11 @@
   "candidate_discriminators_for_one_guarded_retest": [
     {
       "hypothesis": "Same CDP panel remains on extension URL but React never mounts Settings after cleanup Page.reload.",
-      "prediction": "At the failure boundary the target ID, URL, runtime ID, and document readiness remain valid, while Settings count is zero; app mount/error observations separate render failure from slow mount."
+      "prediction": "At the failure boundary the observed target/frame/document have the expected sidepanel URL and runtime identity, while Settings count is zero; mount and late-transition evidence must further separate render failure from slow mount."
     },
     {
       "hypothesis": "The CDP session points at a stale or navigated document after Page.reload.",
-      "prediction": "At failure the target ID or URL diverges from the pre-reload owned panel, or runtime ID is absent/mismatched; a fresh owned panel attachment differs."
+      "prediction": "At failure the target, frame, or renderer has the wrong sidepanel URL, or runtime identity is absent/mismatched. Target-ID equality to the pre-reload panel remains unknown without separately supplied owned metadata."
     },
     {
       "hypothesis": "The Settings tab mounts after the fixed observation window.",
@@ -47,15 +47,16 @@
     }
   ],
   "diagnostic_repair": {
-    "scope": "At the same-panel reload failure, serialize only allowlisted target identity equality, expected sidepanel URL booleans from target/frame/renderer, renderer readiness and visibility, runtime identity, app root and Settings tab counts, and exact side-panel context count. No raw IDs, URLs, text, or CDP errors enter the diagnostic.",
+    "scope": "Only after same-panel reload failure, serialize allowlisted target/frame/renderer expected-sidepanel URL booleans, renderer readiness and visibility, runtime identity, app root and Settings tab counts, and exact side-panel context count. Pre-reload target identity is explicitly unobserved and same-as-before is null. No raw IDs, URLs, text, or CDP errors enter the diagnostic.",
     "source": [
       "tests/browser/settings-local-controls-acceptance.mjs",
       "tests/browser/settings-reload-boundary.mjs",
       "tests/browser/settings-reload-boundary.test.mjs"
     ],
-    "guard": "The focused test drives the real Settings readiness waiter through the native reloadSettings and runCase seams, then asserts the serialized receipt. Dropping the receipt field via SETTINGS_NEGATIVE_CONTROL_DROP_REACQUIRE makes the test fail; restored test passes. Existing focused CI script includes the test. The diagnostic does not alter readiness, timeout, case result, or product behavior."
+    "guard": "The focused test drives the real Settings readiness waiter through native reloadSettings and runCase seams, then asserts the serialized failure receipt. Dropping the receipt field via SETTINGS_NEGATIVE_CONTROL_DROP_REACQUIRE makes it fail. A separate successful reload test asserts Page.reload is the first CDP command and no diagnostic lookup occurs even if Target.getTargetInfo is unavailable; SETTINGS_NEGATIVE_CONTROL_PREFLIGHT reintroduces the lookup and makes this guard fail. Restored focused tests pass. Existing focused CI script includes both tests. Readiness, timeout, and case status are unchanged.",
+    "peer_finding_resolved_in_source": "The fresh peer found that a pre-reload Target.getTargetInfo could time out and poison the shared CDP transport before Page.reload. That preflight call was removed; the diagnostic now runs only inside the original reload failure catch."
   },
-  "next_action": "On one resource-admitted hosted run with this diagnostic, distinguish valid document with missing app mount from changed/stale panel target, navigation, or delayed mount. Preserve T34 restoration and downstream consumer criteria as unverified until native proof. Record a separate T64 signed-out predicate sample before fixture action if it fails again; do not infer an auth regression from the prior zero-step failure.",
+  "next_action": "On one resource-admitted hosted run with this diagnostic, distinguish an expected sidepanel document with missing Settings mount from navigation or runtime mismatch. Exact pre/post target-ID equality remains unknown in this repair. Preserve T34 restoration and downstream consumer criteria as unverified until native proof. Record a separate T64 signed-out predicate sample before fixture action if it fails again; do not infer an auth regression from the prior zero-step failure.",
   "limits": [
     "No native retest was authorized in this lane; source review cannot establish the root cause.",
     "No product auth defect is inferred from T64; no restoration or downstream consumer pass is inferred from T34's four prior checks.",

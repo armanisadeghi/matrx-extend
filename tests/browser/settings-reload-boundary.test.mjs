@@ -122,6 +122,80 @@ test('replacement-panel probe admits only fixed typed fields into receipt', asyn
   }
 });
 
+test('successful native Settings reload sends no diagnostic command before Page.reload', async () => {
+  const source = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const start = source.indexOf('async function settings(panel, onStep = () => {}) {');
+  const end = source.indexOf('\nasync function guestSections(', start);
+  assert.ok(start >= 0 && end > start);
+  const commands = [];
+  const settingsTab = {
+    getBoundingClientRect: () => ({ width: 28, height: 28 }),
+    closest: () => null,
+  };
+  const document = {
+    readyState: 'complete',
+    body: { innerText: "You're using Matrx as a guest." },
+    querySelectorAll: (selector) =>
+      selector === 'button[role="tab"][title="Settings"]' ? [settingsTab] : [],
+    querySelector: (selector) =>
+      selector === 'button[title="Settings"][data-state="active"]' ? settingsTab : null,
+  };
+  const panel = {
+    async send(method, params) {
+      commands.push(method);
+      if (method === 'Page.reload') return {};
+      if (method === 'Target.getTargetInfo') throw new Error('diagnostic lookup unavailable');
+      assert.equal(method, 'Runtime.evaluate');
+      const value = await runInNewContext(params.expression, {
+        document,
+        getComputedStyle: () => ({ visibility: 'visible', display: 'block' }),
+      });
+      return { result: { value } };
+    },
+  };
+  let trustedClicks = 0;
+  let diagnosticCalls = 0;
+  const opening = source.slice(start, end);
+  const subject =
+    process.env.SETTINGS_NEGATIVE_CONTROL_PREFLIGHT === '1'
+      ? opening.replace(
+          'async function reloadSettings(panel) {',
+          "async function reloadSettings(panel) { await panel.send('Target.getTargetInfo');",
+        )
+      : opening;
+  const reloadSettings = new Function(
+    'waitForReplacementSettingsTab',
+    'click',
+    'waitFor',
+    'evaluate',
+    'observeSettingsReacquisition',
+    'EXTENSION_ID',
+    `${subject}\nreturn reloadSettings;`,
+  )(
+    (ownedPanel) => waitForReplacementSettingsTab(ownedPanel, 120),
+    async () => {
+      trustedClicks++;
+    },
+    waitFor,
+    evaluate,
+    async () => {
+      diagnosticCalls++;
+    },
+    'owned-extension',
+  );
+  await reloadSettings(panel);
+  assert.equal(commands[0], 'Page.reload');
+  assert.equal(
+    commands.every((method) => ['Page.reload', 'Runtime.evaluate'].includes(method)),
+    true,
+  );
+  assert.equal(trustedClicks, 1);
+  assert.equal(diagnosticCalls, 0);
+});
+
 test('failed native Settings panel reload serializes the owned document and context boundary', async () => {
   const extensionId = 'owned-extension';
   const panelUrl = `chrome-extension://${extensionId}/sidepanel.html`;
@@ -206,8 +280,8 @@ test('failed native Settings panel reload serializes the owned document and cont
   assert.equal(receipt.status, 'fail');
   assert.match(receipt.error, /replacement_settings_tab_ready_not_observed/);
   assert.deepEqual(receipt.reacquireDiagnostic, {
-    beforeTargetObserved: true,
-    target: { sampled: true, sameAsBefore: true, expectedPanelUrl: true, typePage: true },
+    beforeTargetObserved: false,
+    target: { sampled: true, sameAsBefore: null, expectedPanelUrl: true, typePage: true },
     frame: { sampled: true, expectedPanelUrl: true, navigationError: false },
     renderer: {
       sampled: true,
@@ -242,8 +316,8 @@ test('failed native Settings panel reload serializes the owned document and cont
       return { result: { value } };
     },
   };
-  const mismatch = await observeSettingsReacquisition(wrongPanel, extensionId, 'private-target-id');
-  assert.equal(mismatch.target.sameAsBefore, false);
+  const mismatch = await observeSettingsReacquisition(wrongPanel, extensionId);
+  assert.equal(mismatch.target.sameAsBefore, null);
   assert.equal(mismatch.target.expectedPanelUrl, false);
   assert.equal(mismatch.frame.expectedPanelUrl, false);
   assert.equal(mismatch.frame.navigationError, true);

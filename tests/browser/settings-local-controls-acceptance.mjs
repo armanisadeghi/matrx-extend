@@ -129,10 +129,6 @@ async function settings(panel, onStep = () => {}) {
 }
 
 async function reloadSettings(panel) {
-  let beforeTargetId = null;
-  try {
-    beforeTargetId = (await panel.send('Target.getTargetInfo')).targetInfo?.targetId ?? null;
-  } catch {}
   try {
     await panel.send('Page.reload', { ignoreCache: true });
     await waitFor(
@@ -150,8 +146,8 @@ async function reloadSettings(panel) {
     await settings(panel);
   } catch (error) {
     error.reacquireDiagnostic = {
-      beforeTargetObserved: beforeTargetId !== null,
-      ...(await observeSettingsReacquisition(panel, EXTENSION_ID, beforeTargetId)),
+      beforeTargetObserved: false,
+      ...(await observeSettingsReacquisition(panel, EXTENSION_ID)),
     };
     throw error;
   }

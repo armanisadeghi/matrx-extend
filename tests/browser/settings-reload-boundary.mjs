@@ -129,7 +129,7 @@ export async function observeReloadSettingsPanel(panel, extensionId) {
 
 // Failure-only probe for the same-panel Page.reload path. Raw target IDs,
 // URLs, page text, and CDP errors stay inside this function.
-export async function observeSettingsReacquisition(panel, extensionId, beforeTargetId = null) {
+export async function observeSettingsReacquisition(panel, extensionId) {
   const expectedUrl = `chrome-extension://${extensionId}/sidepanel.html`;
   const result = {
     target: { sampled: false },
@@ -141,7 +141,7 @@ export async function observeSettingsReacquisition(panel, extensionId, beforeTar
     if (targetInfo) {
       result.target = {
         sampled: true,
-        sameAsBefore: beforeTargetId === null ? null : targetInfo.targetId === beforeTargetId,
+        sameAsBefore: null,
         expectedPanelUrl: targetInfo.url === expectedUrl,
         typePage: targetInfo.type === 'page',
       };
