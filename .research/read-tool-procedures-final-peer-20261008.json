@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-final-procedure-review",
+  "reviewed_commit": "09576b1a",
+  "reviewed_path": ".research/read-tool-procedures-20261008.json",
+  "prior_findings_path": ".research/read-tool-procedures-peer-20261008.json",
+  "scope": "Fresh static review of EXT-F-4145-T01, EXT-F-4148-T01, and EXT-F-4149-T01 against current source and inventory. No browser, handler, database, network, test, or runtime execution; no canonical inventory edit.",
+  "prior_findings": {
+    "EXT-F-4145-T01": {
+      "status": "ADDRESSED",
+      "evidence": "The procedure now uses [] as invalid input and separately explains that {\"unexpected\":true} passes the non-strict empty object schema after Zod strips the key. ToolsView safeParse invokes the handler with the parsed {} for that object."
+    },
+    "EXT-F-4148-T01": {
+      "status": "ADDRESSED",
+      "evidence": "The Tools run special case calls openSavedPatternOperation, whose local run reconstructs args and sets localInvocation=true. The procedure correctly treats rows_limit as omitted on this route and run-health writes as suppressed. The generic manual direct-handler description is correctly qualified by this special route."
+    },
+    "EXT-F-4148-T01-manual-css": {
+      "status": "ADDRESSED",
+      "evidence": "The proposal distinguishes the Tools save branch (list_root_selector=null; document is one root, scalar fields read their first match, so at most one row) from a separately provisioned list-root pattern for multirow replay."
+    },
+    "EXT-F-4149-T01": {
+      "status": "ADDRESSED",
+      "evidence": "Current build non-runnability is conditional on absence of handler/catalog, and the future procedure requires restoration plus an owned fixture. It preserves the case and leaves retirement, replacement, applicability, and owner intent unresolved."
+    }
+  },
+  "verdict_A_per_case_conditional_usability": {
+    "verdict": "PASS_FOR_PROPOSED_CONDITIONAL_SOURCE_PROCEDURES",
+    "cases": {
+      "EXT-F-4145-T01": "Usable conditionally with owned tone/silent tabs and a build receipt; the procedure limits conclusions to direct handler behavior and keeps dispatcher permissions and role outcomes unverified.",
+      "EXT-F-4148-T01": "Usable conditionally with owned fixture, exact pattern IDs, and write/cleanup permit. The revised distinctions make the Tools saved-run, normal dispatcher, single-root save, and separately configured multirow fixture observable without conflating them.",
+      "EXT-F-4149-T01": "Correctly non-executable on the current build; future route is conditional on a current handler/catalog contract and owned HTTP fixture. No present result is claimed."
+    }
+  },
+  "verdict_B_source_quality": {
+    "verdict": "PASS",
+    "addressed_findings": [
+      "Empty object schema negative case distinguishes invalid array rejection from unknown-key stripping.",
+      "Manual saved-pattern route omission of rows_limit and localInvocation suppression of run-health updates are accurately described.",
+      "manual_css saved with null list root is correctly scoped to one document-root row; multirow fixture is separate.",
+      "fetch_url_as_markdown remains absent/current-build non-runnable with unresolved stable scope and owner intent."
+    ],
+    "not_addressed": [],
+    "new_findings": []
+  },
+  "overall": "The prior source findings are addressed, and I found no additional breakage in the revised conditional procedures. This approves source and procedure quality only; it does not establish runtime behavior, permissions, role outcomes, or inventory closure.",
+  "source_evidence": [
+    "src/features/tools/ToolsView.tsx:416-463",
+    "src/lib/tools/handlers/extras.ts:85-96",
+    "src/lib/tools/handlers/data-patterns.ts:313-340,365-372",
+    "src/lib/data-pattern/document-network-transport.ts:234",
+    "src/lib/data-pattern/modes/manual-css.ts:41-82",
+    "src/lib/tools/registry.ts",
+    "types/tool-catalog.json",
+    "docs/stabilization/inventory.json:62580-62720",
+    ".research/inventory-current-source-reconcile-20261007.json",
+    ".research/inventory-reconciliation-peer-20261007.json"
+  ],
+  "limits": [
+    "No runtime or browser execution, live role observation, backend/database access, network operation, heavy check, or canonical inventory edit.",
+    "Owned fixtures and permits are not available in this source-only review."
+  ]
+}

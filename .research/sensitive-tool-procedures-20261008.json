@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "sensitive-tool-procedures-20261008",
+  "patch_id": "sensitive-tool-procedures-20261008",
+  "source": {
+    "source_inventory": "docs/stabilization/inventory.json",
+    "scope": "Source-traced proposals for exactly EXT-F-4089-T01, EXT-F-4090-T01, and EXT-F-4092-T01; no runtime execution, inventory/status/applicability edit, credential access, prospect write, or email send.",
+    "source_files_reviewed": [
+      "docs/stabilization/inventory.json",
+      "docs/stabilization/PLAN.md",
+      "src/features/tools/ToolsView.tsx",
+      "src/lib/tools/dispatch.ts",
+      "src/lib/tools/handlers/credential-login.ts",
+      "src/lib/credentials/sensitive-fields.ts",
+      "src/lib/tools/handlers/prospects.ts",
+      "src/lib/api/routes/prospects.ts",
+      "src/lib/tools/handlers/google-email-send.ts",
+      "src/features/chat/GmailReviewCard.tsx",
+      "src/lib/api/routes/google-workspace.ts",
+      "src/hooks/use-tool-inbox.ts",
+      "src/features/chat/ChatView.tsx",
+      "src/features/chat/PilotView.tsx",
+      "/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md",
+      "/Users/armanisadeghi/code/common-docs/systems/apps/extension/WIRE_CONTRACT.md",
+      "/Users/armanisadeghi/code/common-docs/systems/integrations/google/FEATURE.md",
+      "/Users/armanisadeghi/code/common-docs/projects/credential-sharing-browser-login/REGISTER.md"
+    ],
+    "anchors": [
+      "docs/stabilization/inventory.json (three T01 cases, C01 controls, member/admin applicable and guest N/A)",
+      "docs/stabilization/PLAN.md:24-40 (resource permit and build receipt before tests)",
+      "src/features/tools/ToolsView.tsx:390-490,557 (Catalog Run validates then directly invokes handler.run with conversationId:null, assignedTabId:null, permissionMode:act; test mode bypasses approval)",
+      "src/lib/tools/dispatch.ts:805-839 (effective tier and dispatcher Ask/Act/privileged confirmation)",
+      "src/lib/tools/handlers/credential-login.ts:79-97,206-335,1718-2170 (status/schema, signed-in gate, assigned tab, safe origin/form, fill, terminal classification)",
+      "src/lib/credentials/sensitive-fields.ts:1-92 (filled field selector memory and redaction markers hold no values)",
+      "src/lib/tools/handlers/prospects.ts:47-156 and src/lib/api/routes/prospects.ts:1-112 (preview vs capture and single import route)",
+      "src/lib/tools/handlers/google-email-send.ts:1-148 and src/features/chat/GmailReviewCard.tsx:1-190 (card owns one-send authorization and result receipt)",
+      "src/lib/api/routes/google-workspace.ts:1-80 (reviewed endpoint only from card Send)",
+      "src/hooks/use-tool-inbox.ts:1-210 and src/features/chat/ChatView.tsx:192-210,664-666 (conversation-scoped card rendering)"
+    ],
+    "limits": [
+      "All three cases are NOT_EXECUTABLE until a valid stabilization resource permit, exact build/runtime receipt, and owned disposable fixtures exist. This file reports no real browser, Vault, CRM, Google, network, or UI observations.",
+      "The Tools Catalog manual runner bypasses dispatcher permission confirmation and sends assignedTabId:null. Its direct handler result can test handler behavior only; it cannot prove agent routing, Ask/Act/privileged approval, Pilot scope, or assigned-tab pinning. Those require a separate admitted chat-dispatch run with its own receipt and are outside these T01 manual cases.",
+      "The referenced outreach-system INTEGRATION_MAP.md path in repo instructions is absent in this workspace. The prospect route and the extension system-of-record establish the one import path; no missing-contract content is inferred.",
+      "Never collect or place secret values, tokens, codes, real email content, unrelated CRM rows, or Vault inventory in this report. Preserve all preexisting records and grants."
+    ]
+  },
+  "selectedCaseIDs": ["EXT-F-4089-T01", "EXT-F-4090-T01", "EXT-F-4092-T01"],
+  "shared_setup": {
+    "resource_and_build": [
+      "Before any future execution, obtain the stabilization resource permit and receipt with source/output identity, Chrome/profile and extension runtime ID, role, authenticated organization, permission state, backend identity, fixture IDs, timestamp, and reload state. Record no secrets.",
+      "Run member and admin in separate existing signed-in profiles and owned organizations. Do not alter memberships, Google grants, unrelated Vault entries, prospect rows, or active chats. Guest stays N/A under the inventory applicability.",
+      "Use Tools → Catalog → canonical Agent surface → exact tool name → expanded row → JSON input → Run for the manual T01 case. Record the visible inline result and separately observe the owned external effect. Valid JSON with an invalid schema tests only pre-handler rejection.",
+      "For warm and post-extension-reload passes, use a newly reset owned fixture, the same receipt-bound unpacked build, Chrome extension Reload, and a reopened side panel. HMR or panel reopen alone is not an extension reload."
+    ],
+    "fixture_and_cleanup": [
+      "For login, provision an owned HTTPS login fixture (or explicit localhost) with a disposable account, a stable top-frame POST login, visible signed-in marker, reset/logout path, and a browser-fill-enabled Vault item matched only to that fixture origin. A fixture owner must stage the secret privately; the tester never reads or records it. No real personal account or third-party login.",
+      "For prospect capture, provision a disposable company website/domain owned by the tester, a single known target site or an explicitly selected site_id, a baseline proving no existing party/prospect for the domain, and an authorized exact-ID delete/undo path. Never use a person page, unrelated prospect, or blocked production domain.",
+      "For Gmail, provision a connected disposable Google sending account and an owned receiving inbox controlled by the tester, with one unique non-sensitive message marker and explicit authorization for the real human reviewer to press Send once. Capture only a sanitized receipt/message ID and inbox count; do not include addresses or content in the report.",
+      "If exact prospect/Vault cleanup cannot be executed and verified, do not start those positive tests. A sent email cannot be recalled: run its positive test only when the owner accepts one immutable test message, the owned receiving inbox can be checked, and the receipt can be retained. Delete only owned receiver mail if supported; never promise sender recall."
+    ]
+  },
+  "case_updates": {
+    "EXT-F-4089-T01": {
+      "feature_id": "EXT-F-4089",
+      "title": "Controlled manual execution: credential_login",
+      "control_ids": ["EXT-F-4089-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "NOT_EXECUTABLE",
+      "preconditions": [
+        "Complete shared receipt and private owned login fixture setup. Signed-in extension identity, owned assigned/focused tab, Vault browser-fill match, and a clean logged-out fixture state must be proven before a positive run. No fixture, matching item, or private staging receipt exists in this source-only task.",
+        "Manual Tools Run uses the focused tab because assignedTabId is null. Verify that exact tab is the owned fixture immediately before each call and do not switch tabs. Use only action:auto and omit URLs, selectors, usernames, passwords, OTPs, scripts, and secret values."
+      ],
+      "steps": [
+        "Record the fixture logged-out baseline and exact tab identity. In Tools Catalog run {\"action\":\"auto\"} against the owned top-frame HTTPS fixture. Observe the inline fixed-status result and independently inspect only the fixture signed-in marker or authenticated session state. Require status authenticated AND the owned fixture authenticated; status unknown is never success.",
+        "Run a separate negative on an owned HTTPS fixture login page that has no matching Vault item: {\"action\":\"auto\"} must return no_matching_login or a specific safe refusal and leave the page logged out. A non-HTTPS non-localhost test, if safely provisioned, must return unsafe_destination before materialization; do not navigate to or submit a real third-party login.",
+        "Run valid JSON {\"action\":\"auto\",\"credential_item_id\":7} as a schema negative; require inline Schema mismatch before handler execution and no change to the fixture session. Keep the negative separate from the missing-match handler branch.",
+        "After an actual extension Reload, reset/logout the disposable fixture account and repeat the positive and negative on a fresh owned tab with its identity rechecked. Stop if tab identity, Vault match, or private fixture staging cannot be re-established.",
+        "For cleanup, log out only the disposable account, close only the owned fixture tab, and have the fixture owner remove the run-specific Vault item through the supported UI. Verify the fixture returns to logged-out state and the exact item no longer matches, without listing or opening unrelated Vault records."
+      ],
+      "expected": [
+        "Success is a fixed status authenticated plus an independently visible signed-in state on the owned fixture. No credential value, code, field content, or raw page data appears in the result/evidence. A mismatch between result and page is failure.",
+        "No-match and unsafe-destination negatives do not fill or submit. Schema mismatch is a pre-handler rejection, not a Vault negative. A challenge, rejection, unknown, or other non-authenticated status is not a pass.",
+        "Manual execution does not establish dispatcher action approval, privileged authenticator approval, agent assigned-tab pinning, or other action branches C02-C10."
+      ],
+      "dimensions": [
+        "owned-login-fixture",
+        "valid-input",
+        "schema-negative",
+        "no-matching-login",
+        "unsafe-destination-conditional",
+        "member",
+        "admin",
+        "warm",
+        "extension-reload",
+        "exact-item-cleanup"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/credential-login.ts:79-97,206-335,1718-2170",
+        "src/features/tools/ToolsView.tsx:390-490",
+        "src/lib/tools/dispatch.ts:805-839",
+        "/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md:42-43"
+      ],
+      "access_context_permission_limits": [
+        "No actual credential, Vault item, or real login is accessed in this proposal. The fixture owner stages and removes the disposable item privately.",
+        "The manual runner cannot prove user approval or assigned-tab pinning; the tester must capture focused-tab identity and independently verify the owned page.",
+        "Do not use action:list, attempt, authenticator, report, capture, or propose_recipe for this C01 procedure; their inventory controls need separate cases."
+      ],
+      "limits": [
+        "No owned login site, disposable account, private Vault staging receipt, or browser run was available. Runtime outcome and cleanup remain unverified."
+      ]
+    },
+    "EXT-F-4090-T01": {
+      "feature_id": "EXT-F-4090",
+      "title": "Controlled manual execution: capture_prospect",
+      "control_ids": ["EXT-F-4090-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "NOT_EXECUTABLE",
+      "preconditions": [
+        "Complete shared receipt and use only an owned disposable company domain with a known site association. Capture writes remotely; require a baseline and supported exact-ID cleanup path before clicking Run.",
+        "Record the owned tab URL from Chrome or pass the exact owned url explicitly. If multiple websites exist, preview must return site choices and the tester must use the exact owned site_id; do not let the server guess."
+      ],
+      "steps": [
+        "Run {\"action\":\"preview\",\"url\":\"<owned company URL>\"} and record only the sanitized verdict, selected site, and prior_relationship summary for that exact domain. Require verdict new and no pre/post preview delta in the prospect/party view before any capture. If existing, blocklisted, unusable, or site choice is unresolved, stop and record the honest refusal; do not force a write.",
+        "Run valid JSON {\"action\":\"capture\",\"url\":\"<owned company URL>\",\"site_id\":\"not-a-uuid\"} as a schema negative. Require inline Schema mismatch and no prospect delta. This is only pre-handler validation.",
+        "With the new verdict, site fixed, and exact-ID deletion path confirmed, run {\"action\":\"capture\",\"url\":\"<owned company URL>\",\"site_id\":\"<owned site UUID>\"} once. Observe ok:true/action:capture and outcome created; independently find the exact newly owned prospect/party row in the target site and confirm its domain and organization. A result alone is not proof of persistence.",
+        "Preview the same owned domain again to test duplicate/warm-contact handling: it must now report existing/prior relationship or the matching state, and no second prospect row. Do not call capture again unless an owned duplicate-specific fixture has separately been admitted.",
+        "After actual extension Reload, repeat preview for the same owned domain and require it still resolves to the same persistent record. For a new write after reload, use a second distinct owned domain with the same baseline and cleanup controls.",
+        "Delete/undo only each run-owned exact prospect/party ID through the supported path; verify the exact owned domain is absent from the target site and the pre-run baseline rows remain. If deletion semantics preserve a party, report that state honestly and retain the artifact ID; do not claim complete cleanup."
+      ],
+      "expected": [
+        "Preview writes nothing and reports the true verdict/site/prior relationship. Capture uses the single prospect-import endpoint and creates or matches only the owned company in the chosen site.",
+        "Schema rejection creates no record. A 401, 409 site_choice_required, blocklisted, unusable, or matched outcome is not a new-created positive.",
+        "Manual result does not prove action-tier dispatcher approval; exact-ID UI/server readback and cleanup are separate observations."
+      ],
+      "dimensions": [
+        "owned-company-domain",
+        "preview-before-write",
+        "schema-negative",
+        "capture-once",
+        "duplicate-preview",
+        "member",
+        "admin",
+        "warm",
+        "extension-reload",
+        "exact-id-cleanup"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/prospects.ts:47-156",
+        "src/lib/api/routes/prospects.ts:1-112",
+        "src/features/tools/ToolsView.tsx:390-490",
+        "/Users/armanisadeghi/code/common-docs/systems/apps/extension/STATE.md:44"
+      ],
+      "access_context_permission_limits": [
+        "Member/admin run separately in an owned organization and site; never inspect unrelated party details.",
+        "Manual direct handler execution bypasses dispatcher confirmation and does not prove agent routing or permission policy.",
+        "A fixture with no supported exact-ID cleanup remains NOT_EXECUTABLE; do not convert production data into a disposable fixture."
+      ],
+      "limits": [
+        "No owned domain/site/cleanup receipt or CRM runtime was provisioned. No preview, capture, duplicate, or cleanup observation is claimed."
+      ]
+    },
+    "EXT-F-4092-T01": {
+      "feature_id": "EXT-F-4092",
+      "title": "Controlled manual execution: google_email_send",
+      "control_ids": ["EXT-F-4092-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "NOT_EXECUTABLE",
+      "preconditions": [
+        "Complete shared receipt and use an owned disposable connected Google sender plus an owned recipient inbox. A real user reviewer must be present to read sender, recipient, CC, subject, and body and choose Send for exactly one test message; no proxy click, preapproval, or tool argument substitutes for that act.",
+        "The manual runner calls the ask-user handler with conversationId:null. Confirm an email_review card can be reached and rendered for the current signed-in profile before claiming this manual T01 path executable. If it is not visibly reachable, stop; do not invoke sendReviewedGmail or its endpoint directly."
+      ],
+      "steps": [
+        "First run a valid-JSON schema negative, for example {\"to\":\"<owned inbox>\",\"subject\":\"<unique harmless marker>\"} with body absent. Require inline Schema mismatch and no review card, request, or inbox delta.",
+        "Submit one harmless draft through Tools Catalog with {\"to\":\"<owned inbox>\",\"subject\":\"<unique harmless marker>\",\"body\":\"<harmless owned test text>\"}. Switch to the corresponding chat surface only if its email_review card is visibly present. Before any click, check the exact sender and every editable field against the owned fixture; verify no inbox delivery yet. If the card is absent or bound to another conversation, dismiss/let it expire and mark the manual path unverified.",
+        "Exercise Don't send on a first draft: require sent:false/declined:true, no message ID, and no delivered message in the owned inbox. Exercise Dismiss on a separate fresh draft: require sent:false/cancelled:true and no delivery. These are distinct no-send branches, not send approvals.",
+        "For one new draft with a fresh unique marker, have the real reviewer edit at least one visible field, recheck all fields, then press Send exactly once. Require sent:true with non-empty message_id and edited:true; independently observe exactly one matching message in the owned inbox with the reviewed fields. If the endpoint fails, the card must stay open saying nothing was sent; verify no inbox delivery and do not call that a pass.",
+        "After actual extension Reload, use a fresh harmless marker and repeat the no-send branch. A second real Send requires a newly admitted owned message and another explicit human review/click; do not replay the first approval.",
+        "Cleanup closes only owned draft/cards. The delivered test mail cannot be unsent: retain its exact receipt, and remove it only from the owned receiver inbox if that inbox owner has a supported delete path. Verify the sender Sent count and recipient inbox count against the baseline; if state cannot be verified, keep the artifact and report cleanup incomplete."
+      ],
+      "expected": [
+        "Neither valid draft invocation nor card appearance sends mail. Only the real reviewer pressing the card Send button may yield a reviewed-send request and sent:true with a receipt for the exact reviewed fields.",
+        "Decline, dismiss, timeout, missing connection, and failed send must not be reported as sent. A failed send leaves the card open with an error; schema rejection never invokes the handler.",
+        "The review card is the authorization for one message. There is no extra consent argument or server executor. Manual Tools execution cannot prove dispatcher routing, and the conversationId:null card-rendering question remains runtime-unverified."
+      ],
+      "dimensions": [
+        "owned-sender-and-inbox",
+        "schema-negative",
+        "visible-review-card",
+        "no-send-decline",
+        "no-send-dismiss",
+        "edited-send-once",
+        "inbox-readback",
+        "member",
+        "admin",
+        "warm",
+        "extension-reload",
+        "immutable-send-receipt"
+      ],
+      "source_evidence": [
+        "src/lib/tools/handlers/google-email-send.ts:1-148",
+        "src/features/chat/GmailReviewCard.tsx:1-190",
+        "src/lib/api/routes/google-workspace.ts:1-80",
+        "src/features/tools/ToolsView.tsx:390-490",
+        "src/hooks/use-tool-inbox.ts:1-210"
+      ],
+      "access_context_permission_limits": [
+        "No email or Google connection was accessed in this source-only task. Never use an unowned address or live personal mailbox as a fixture.",
+        "A manual runner draft may not route to a visible conversation card because conversationId is null; no direct endpoint or alternate sender call is an acceptable workaround.",
+        "Do not interpret card display, a Send click without receipt, or a tool-only success as proof of exactly one delivered email; require the owned inbox readback."
+      ],
+      "limits": [
+        "No owned connected sender, recipient inbox, card-rendering receipt, human review, or runtime send existed. Sending and cleanup remain unverified."
+      ]
+    }
+  }
+}

@@ -40,13 +40,13 @@
         "If and only if both owned fixture tabs and the current-build receipt exist, open the tone page and start its loop through a visible user gesture; leave the silent fixture open. In Tools run {}.",
         "Observe audible_now contains the tone tab with audible=true; total_tabs_inspected covers the open tabs; the silent fixture is absent from audible_now. Record the result JSON and fixture tab IDs.",
         "Stop the tone using the fixture page's visible control. Run {} again within 60 seconds. If the service worker's audible log observed the transition, recently_audible may contain the tone tab; do not require it when the worker was not watching. Confirm muted and audible_now reflect current tab state.",
-        "Run {\"unexpected\":true} in Tools and confirm local schema validation rejects the extra field before handler invocation.",
+        "Run [] in Tools and confirm the object schema rejects this array before handler invocation. As a separate schema observation, {\"unexpected\":true} is accepted after Zod strips the unknown key; do not count it as negative validation.",
         "Reload the extension, reopen Tools, restart the tone by user gesture and repeat {} once. Repeat the member and admin observations separately.",
         "For permission coverage, exercise the normal agent dispatcher in an owned agent-dispatch fixture with Ask/Act modes and record its gate separately. The direct Tools run cannot prove a permission prompt or denial."
       ],
       "expected": [
         "Given the stated fixtures, the direct handler returns ok=true, a total tab count and lists matching current audible/muted states; recently_audible is conditional on the extension having observed the audible transition.",
-        "Extra input is rejected locally by the empty object schema.",
+        "Array input is rejected locally by the empty object schema. Unknown object keys are stripped by the non-strict Zod schema and do not cause rejection.",
         "No permission conclusion follows from the manual handler path; dispatcher gating and role outcomes remain unverified until tested through dispatch."
       ],
       "cleanup": "Stop the fixture tone, close only the two recorded owned fixture tabs, and verify no fixture audio remains. Do not alter unrelated tabs or mute state.",
@@ -82,7 +82,7 @@
       "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
       "execution_status": "NOT_EXECUTABLE",
       "preconditions_fixtures": [
-        "No owned page/data-pattern fixture, exact disposable pattern IDs, or cleanup receipt is identified. Provision an owned local page with stable synthetic product rows (name and price), and create one owned manual_css pattern for that page in the signed-in test organization. Record its exact UUID and confirm it is disposable. Do not use a production site or real personal data.",
+        "No owned page/data-pattern fixture, exact disposable pattern IDs, or cleanup receipt is identified. Provision an owned local page with stable synthetic product rows (name and price), and one owned manual_css pattern with list_root_selector set to the fixture product-card selector for multi-row replay. Record its exact UUID and confirm it is disposable. Do not use a production site or real personal data.",
         "Because save/delete and run can write database state or pattern health, obtain a resource permit naming the exact test organization, pattern IDs, and cleanup procedure before future execution. The source-only procedure does not authorize those writes.",
         "The direct Tools runner uses its focused tab by resolving assignedTabId=null; keep only the owned fixture page as the focused tab during manual calls."
       ],
@@ -90,16 +90,16 @@
         "If the owned fixture and write/cleanup permit are present, in Tools run {\"action\":\"list\",\"domain\":\"<owned-fixture-host>\"}; confirm only the expected host-scoped fixture patterns are relevant.",
         "Run {\"action\":\"describe\",\"pattern_id\":\"<owned-pattern-uuid>\"}; compare the returned kind/config/fields with the owned pattern record.",
         "Run {\"action\":\"recipes\"}; compare returned recipe names with recipesForUrl for the fixture URL; an empty recipe list is valid if no curated recipe matches.",
-        "Run {\"action\":\"run\",\"pattern_id\":\"<owned-pattern-uuid>\",\"rows_limit\":2}; expect at most two returned rows and the fixture's synthetic name/price values. Capture before/after pattern health because run may update it.",
-        "With the write permit still in force, run {\"action\":\"save\",\"name\":\"procedure-disposable-<unique-suffix>\",\"kind\":\"manual_css\",\"fields\":[{\"name\":\"name\",\"selector\":\".fixture-product .name\"},{\"name\":\"price\",\"selector\":\".fixture-product .price\"}]}; record the returned exact UUID. Describe and run that UUID once, then delete that exact new UUID.",
+        "Run {\"action\":\"run\",\"pattern_id\":\"<owned-pattern-uuid>\",\"rows_limit\":2}; Tools routes this branch through openSavedPatternOperation, which sends only patternId/tabId and reconstructs localInvocation=true. Record all returned rows and their fixture values; rows_limit is not applied on this manual route. Treat failure to honor the requested two-row bound as unverified/known manual-path behavior, not as proof the bounded agent contract passes. Confirm last_status, last_run_at and last_run_count remain unchanged for this local invocation.",
+        "With the write permit still in force, run {\"action\":\"save\",\"name\":\"procedure-disposable-<unique-suffix>\",\"kind\":\"manual_css\",\"fields\":[{\"name\":\"name\",\"selector\":\".fixture-product .name\"},{\"name\":\"price\",\"selector\":\".fixture-product .price\"}]}; record the returned exact UUID. This save fixes list_root_selector=null, so describe and run it once to verify the single document-root row uses the first matching scalar field values; it does not test multirow extraction. Then delete that exact new UUID.",
         "Run {\"action\":\"delete\",\"pattern_id\":\"<owned-pattern-uuid>\"} only if the permit explicitly designates the original fixture pattern disposable; otherwise skip this destructive branch and keep C07 untested. Do not delete the fixture needed for other cases.",
-        "Run negative inputs {\"action\":\"describe\"}, {\"action\":\"run\",\"pattern_id\":\"not-a-uuid\"}, and {\"action\":\"save\",\"name\":\"invalid\"}; confirm local schema validation rejects missing/invalid required data before handler invocation.",
+        "Run negative inputs [], {\"action\":\"describe\"}, {\"action\":\"run\",\"pattern_id\":\"not-a-uuid\"}, and {\"action\":\"save\",\"name\":\"invalid\"}. Confirm Tools rejects the array and the locally parsed args lacking required values; an unknown extra key on an otherwise valid object is stripped, not rejected.",
         "Reload extension and repeat list, describe and bounded run against the same owned fixture. Repeat in member and admin separately. To assess permissions, separately invoke through a real agent dispatcher fixture; Tools' direct call is not permission evidence."
       ],
       "expected": [
         "Read actions list, describe and recipes return values derived from the assigned/focused owned fixture and curated recipes. A pattern from another site should not be represented as matching this fixture.",
-        "The bounded run returns no more than rows_limit rows; the saved synthetic pattern extracts the known name/price fields. Save returns an ID that is used for describe/run/delete; delete is verified by a subsequent list/describe absence only where permitted.",
-        "Invalid input is rejected by ToolsView's local schema validation. Direct manual execution does not demonstrate dispatcher action approval, server tool lifecycle or role permission enforcement."
+        "The manual saved-run route returns the full extracted row set because openSavedPatternOperation omits rows_limit and marks localInvocation; run-health fields remain unchanged. The separately provisioned list-root pattern should yield its fixture product rows. The Tools save branch stores list_root_selector=null and should yield at most one document-root row, using the first matching scalar fields. Save returns an ID used for describe/run/delete; delete is verified by subsequent list/describe absence only where permitted. The bounded rows_limit behavior remains unverified on normal agent dispatch and must not be marked passed from this Tools route.",
+        "Array and missing/invalid required input are rejected by ToolsView's local schema validation; unknown keys on otherwise valid object inputs are stripped. Direct manual execution does not demonstrate dispatcher action approval, server tool lifecycle or role permission enforcement."
       ],
       "cleanup": "Delete only the unique disposable pattern UUID created by this procedure and only under its recorded permit. Restore no production data; verify the owned fixture patterns match their recorded baseline. If exact ID cleanup cannot be confirmed, stop before save/delete and keep the case NOT_EXECUTABLE.",
       "source_refs": [
@@ -108,6 +108,9 @@
         "src/lib/data-pattern/FEATURE.md: saved-pattern lifecycle and supported kinds",
         "src/lib/data-pattern/recipes.ts: recipe matching and recipesForUrl",
         "src/lib/data-pattern/run-interactive.ts: saved pattern execution",
+        "src/lib/data-pattern/document-network-transport.ts:234: openSavedPatternOperation sends only patternId and tabId",
+        "src/lib/tools/handlers/data-patterns.ts:313-340: localInvocation suppresses run-health writes and applies an unbounded local result slice",
+        "src/lib/data-pattern/modes/manual-css.ts:41-82: null list root uses document as one root; scalar fields query their first match",
         "src/lib/supabase/queries.ts: fetchPatternsForDomain, savePattern, deletePattern and bumpPatternRun",
         "src/features/tools/ToolsView.tsx: manual direct handler path and special saved-run route",
         "docs/stabilization/PLAN.md: resource permit and reload receipt requirements"
@@ -116,6 +119,7 @@
         "owned page/pattern fixtures and cleanup permit absent",
         "no runtime extraction or database observation",
         "save/delete effects require explicit fixture permit",
+        "rows_limit agent-dispatch behavior remains unverified; the Tools saved-run route omits rows_limit",
         "dispatcher permission and agent path",
         "reload behavior",
         "network_capture approval path is not exercised by manual direct run"

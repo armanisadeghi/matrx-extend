@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0170 controlled native acceptance partition",
+  "status": "source_ready_native_unverified",
+  "source_commit": "ad3a7c3a394a07bf5ea2518d89073719e3b37b60",
+  "source_scope": {
+    "workflow_input": "seo_case_scope: full (default) or controlled; other values rejected",
+    "controlled": "Existing native runner executes common public-page checks plus controlled T14 before, T02 changed-metadata recapture, and T14 after; the volatile T09 public-detail phase and optional metadata fixture are excluded explicitly in the receipt.",
+    "full": "Existing sequence still runs controlled checks followed by volatile T09 public-detail checks; any refusal propagates.",
+    "closure_guard": "Controlled mode requires passing receipt entries for both T14 social copy states and T02 changed-metadata recapture before the existing post-case build identity recheck."
+  },
+  "verification": {
+    "local": "Formatting, JavaScript syntax, and git diff checks only; no local tests, install, build, native browser, or release because system disk is below the 20 GiB floor.",
+    "focused_ci": {
+      "run_id": 37744762528,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37744762528",
+      "head_sha": "ad3a7c3a394a07bf5ea2518d89073719e3b37b60",
+      "conclusion": "success",
+      "step": "Focused acceptance guards"
+    },
+    "full_ci": {
+      "run_id": 37744762381,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37744762381",
+      "head_sha": "ad3a7c3a394a07bf5ea2518d89073719e3b37b60",
+      "status_at_observation": "pending"
+    }
+  },
+  "limits": [
+    "No native controlled-scope acceptance run or resource-valid receipt exists yet.",
+    "No T02/T14 inventory promotion, D170 closure, or current-main/Store health claim is made.",
+    "The prior D170 native attempt remains resource-invalid and earns zero acceptance credit."
+  ]
+}
