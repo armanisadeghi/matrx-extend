@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-auth-recovery-native-20261007",
+  "status": "terminal_original_picker_failure_at_reinjection_count",
+  "scope": "One authenticated native A showcase-stale-admin diagnostic against the original frozen development artifact; no retry, product edit, account change, local build, or release.",
+  "run": {
+    "id": 37714880948,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37714880948",
+    "lane": "A",
+    "runner": "macos-15 ARM",
+    "workflow_head_sha": "3131ed79bea2b8e46e260cae95dce074376f8365",
+    "status": "completed",
+    "conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "artifact_upload_step": "success"
+  },
+  "exact_imported_artifact": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793"
+  },
+  "safe_native_observation": {
+    "real_admin_signin_and_device_organization": "pass",
+    "picker_reached": true,
+    "passed_case_count": 11,
+    "passed_case_ids": [
+      "guest_nonchat_control_and_showcase_gate",
+      "real_admin_signin_and_device_organization",
+      "genuine_A_exit_relay_rejected_while_B_active",
+      "same_page_cancel_A_start_B",
+      "current_B_detection_relayed",
+      "B_card_field_done_extract",
+      "ordinary_page_click_after_cancel",
+      "genuine_A_detected_rejected_B_extracted",
+      "genuine_A_result_rejected_B_extracted",
+      "genuine_delayed_A_cancel_B_extracted",
+      "genuine_delayed_A_install_B_extracted"
+    ],
+    "first_failure": {
+      "stage": "lifecycle_B_detection_count",
+      "failure_code": "lifecycle_B_detection_count_failed",
+      "channel": "reinject",
+      "producer_current_detected_count": 1,
+      "current_session_detected_count": 2,
+      "other_session_detected_count": 0,
+      "detected_count": 2,
+      "install_count": 2,
+      "relay_count": 36,
+      "listener_click_count": 0,
+      "listener_hover_count": 0,
+      "context_start_distinct": true,
+      "context_teardown_distinct": false
+    },
+    "product_cause": "unknown; the count mismatch is observed, while its cause is not established",
+    "nonadmin_role_gating": "unverified"
+  },
+  "resource_admission": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": { "admitted": true, "resource_invalid": false, "exit_code": 1, "decision": "child_failed" }
+  },
+  "credential_handling": {
+    "canonical_preflight": "passed with named AI_ADMIN_USERNAME and AI_ADMIN_PASSWORD fields from the existing 0600 aidream dotenv file, the approved 0600 organization fixture, and requireHostedAcceptanceCredential",
+    "staging": "both approved temporary GitHub secret names staged through stdin and name presence verified before dispatch",
+    "cleanup": "both names deleted immediately after authoritative completed/failure terminal and absence verified",
+    "credential_sources_modified": false,
+    "credential_values_recorded": false
+  },
+  "evidence": {
+    "directory": ".research/picker-auth-recovery-native-evidence/run37714880948",
+    "terminal": ".research/picker-auth-recovery-native-evidence/run37714880948/terminal.json",
+    "native_receipt": ".research/picker-auth-recovery-native-evidence/run37714880948/native-receipt.json",
+    "package_journal": ".research/picker-auth-recovery-native-evidence/run37714880948/package.jsonl",
+    "browser_journal": ".research/picker-auth-recovery-native-evidence/run37714880948/browser.jsonl",
+    "acceptance_journal": ".research/picker-auth-recovery-native-evidence/run37714880948/acceptance.jsonl"
+  },
+  "interpretation": {
+    "EXT-D-0158": "The original-artifact picker retest passed prior stale-event cases but failed the B reinjection detection count check; no closure claim.",
+    "EXT-D-0042": "The bounded run passed 11 named native cases, then stopped at the B reinjection count mismatch; remaining exact-listener and nonadmin criteria are unverified.",
+    "auth_diagnosis": "The previous admin completion failure did not reproduce in this run. Native auth passed, so this run does not establish why the earlier attempt remained a guest."
+  }
+}

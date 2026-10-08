@@ -22,12 +22,13 @@
   "verification": {
     "negative_control": "The original pre-repair red run only proved a missing helper export. A causal bypass run with SETTINGS_NEGATIVE_CONTROL_BYPASS_READINESS=1 node --test tests/browser/settings-replacement-tab.test.mjs produced 2 pass, 1 fail: the actual native settings() function issued trusted_click without tab_ready. The test extracts that function from the production acceptance driver; the bypass changes only the extracted function in memory, not repository source.",
     "focused_after": "pnpm test:focused-acceptance: 37/37 passed locally with settings-replacement-tab.test.mjs explicitly included by package.json. This is source/test coverage, not native product acceptance.",
+    "automatic_focused_ci": "GitHub Actions Focused acceptance run 37715732203 completed success at exact pushed source SHA c8459a93f67cff9319e24841cfe69edb4be05f3f; the workflow invokes pnpm test:focused-acceptance, which now explicitly includes settings-replacement-tab.test.mjs. https://github.com/armanisadeghi/matrx-extend/actions/runs/37715732203",
     "typescript": "pnpm compile passed",
     "format": "Focused pnpm exec biome check passed for package.json and settings-replacement-tab.test.mjs; git diff --check passed. Biome excludes the research report JSON from its explicit-path check.",
     "native": "Not run: this machine prohibits manual build/release/deploy and this lane forbids browser dispatch. Existing native guest full-reload acceptance remains unverified."
   },
   "resource_status": "No heavy job, browser, build, release, deployment, credential access, or secret staging was started by this lane.",
   "questions": [],
-  "next_action": "Confirm automatic focused CI at the exact pushed SHA, obtain independent review, then one admitted frozen-artifact native retest of the original guest Settings full reload. Credit product cases only from that native result.",
-  "commit_shas": ["65637cd5"]
+  "next_action": "Obtain independent review, then one admitted frozen-artifact native retest of the original guest Settings full reload. Credit product cases only from that native result.",
+  "commit_shas": ["65637cd5", "c8459a93"]
 }
