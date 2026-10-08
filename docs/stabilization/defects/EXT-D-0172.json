@@ -1,0 +1,40 @@
+{
+  "id": "EXT-D-0172",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T10"],
+  "surface": "Public guest Chat / client-tool continuation",
+  "auth_mode": "guest",
+  "title": "Post-reload guest conversation receives continuation HTTP 409 after page tool, without assistant reply",
+  "severity": "S1: public guest conversation cannot finish an otherwise accepted request",
+  "priority": "P0",
+  "state": "open",
+  "owner": "root/guest409_diagnose_fix",
+  "preconditions": [
+    "Public Store CRX0.2.205 loaded unpacked with matching public identity in isolated signed-out Chromium; tree08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8.",
+    "Live aidream53aec906f047b524495ff0d93bae8e67eb55537f before/after/post; actual hosted run37748038743 with all three resource journals valid."
+  ],
+  "reproduction": [
+    "Open owned public demo page in existing registered guest-chat hosted harness with published_store_crx=true.",
+    "Ask opening code and ordered workflow stages, then same-conversation follow-up code and heading. Both yield grounded terminal HTTP200 answers.",
+    "Reload side panel, begin a new conversation, and ask page code and heading.",
+    "Observe initial HTTP200 request and completed get_page_text on correct page; continuation HTTP409 and no visible assistant reply until terminal assertion expires."
+  ],
+  "expected": "New conversation after reload completes client-tool continuation and displays a grounded terminal assistant answer.",
+  "actual": "Continuation HTTP409; zero visible assistant replies; terminal_not_observed. First and same-conversation turns pass.",
+  "reproducibility": "One current resource-valid native failure; no blind retry. Previous Oct7 same public tree passed all three turns against older server; comparison does not establish cause.",
+  "cause": "Unassigned; independent evidence review and source-boundary diagnosis active.",
+  "evidence": [
+    ".research/daily-guest-20261008.json",
+    ".research/daily-guest-20261008-run37748038743/raw/guest-chat.receipt.original.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T08:23:24.687969+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Self-contained resource-valid published-payload/native failure recorded."
+    }
+  ],
+  "next_action": "Fresh independent evidence review then prove failing continuation boundary/cause. Fix canonical origin, verify gates and authorized automatic deployment, retest actual public guest first/followup/reload flow on exact stable server.",
+  "closure_requirement": "Original public guest reproduction and surrounding first/followup cases pass independently on real browser/live server with valid resources; actual Store installation remains separately unverified."
+}
