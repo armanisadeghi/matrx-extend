@@ -12,24 +12,24 @@
     "updated_through": "mcp__codex_app__automation_update; readback verified"
   },
   "app_goal": {
-    "status": "blocked",
+    "status": "active",
     "objective_replacement": "not_supported_by_available_tools",
     "verified_errors": [
       "create_goal: cannot create a new goal because this thread has an unfinished goal; complete the existing goal first",
       "Computer Use is not allowed to use the app com.openai.codex for safety reasons"
     ],
-    "disposition": "Old objective not falsely marked complete. Approved execution goal saved in canonical PLAN and daily automation; app goal text/status unchanged. No UI restriction bypass attempted."
+    "disposition": "Active app objective cannot be replaced through the available API. Approved parallel execution goal is saved in canonical PLAN and daily automation; no false completion or app-text update is claimed."
   },
   "evidence_limits": [
     "No product health claim follows from goal/documentation/automation alignment.",
     "Independent guard review does not establish actual simultaneous native test success."
   ],
   "current_observation": {
-    "observed_at": "2026-10-08T10:00:15.756715+00:00",
+    "observed_at": "2026-10-08T11:37:33.726005+00:00",
     "app_goal_status": "active",
     "app_goal_objective": "Existing inventory-first text cannot be edited by available goal API; approved parallel PLAN governs.",
     "automation_status": "ACTIVE",
     "approved_parallel_prompt_verified": true,
-    "evidence": "Fresh get_goal readback: active with old objective; discovered goal tool schemas offer creation/status only. automation_update view and saved automation readback confirm approved parallel prompt and daily09:00 schedule. No false completion or UI bypass used."
+    "evidence": "Fresh get_goal readback active with old objective; available API supports creation/status only. Existing approved daily automation was viewed this turn; prior exact parallel prompt verification retained. Canonical PLAN governs accelerated parallel execution."
   }
 }
