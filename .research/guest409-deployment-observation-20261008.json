@@ -1,0 +1,34 @@
+{
+  "incident": "EXT-D-0172",
+  "observed_at_utc": "2026-10-08T08:54:15Z",
+  "scope": "Read-only production version and deployment-path observation; no release/deployment dispatch or runtime mutation.",
+  "production": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "method": "GET with User-Agent matrx-deployed-schema-guard/1.0 and Accept application/json",
+    "http_status": 200,
+    "git_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
+    "built_at": "2026-10-08T07:42:57Z",
+    "evidence": "scripts/browser/guest-chat-store-acceptance.mjs uses this same endpoint. aidream db/schema_analysis/check_deployed_schema.py documents that urllib requires the explicit user agent because the edge returns 403 to its default user agent."
+  },
+  "candidate": {
+    "sha": "ffba17ba25c98599d78566bc8a74fce1c3dbe91e",
+    "source": "aidream main candidate; ffba is an ancestor of fetched origin/main 0d88421ddcaef4fb5df895dd5ae7b401e21fab93.",
+    "production_contains_candidate": false,
+    "proof": "Live git_sha differs; local Git confirms deployed 53aec is an ancestor of ffba, and ffba is not an ancestor of deployed 53aec."
+  },
+  "automatic_deployment": {
+    "main_push_triggers_deploy": false,
+    "path": "aidream .github/workflows/deploy.yml declares only workflow_dispatch. aidream scripts/release.sh pushes an immutable release tag and then runs gh workflow run deploy.yml with release_ref=<tag>.",
+    "status": "No deployment run for ffba was visible through the authenticated GitHub Actions API query (reported total_count 0). The production health identity independently confirms that ffba is not deployed.",
+    "authorized_next_step": "Use the existing authorized release/integration dispatcher to complete the follow-up, create the immutable release tag, and dispatch deploy.yml for that tag; then verify /health/version before native guest acceptance. This observer did not dispatch anything."
+  },
+  "upcoming_followup": {
+    "status": "No committed SHA yet at observation time.",
+    "evidence": "The shared aidream checkout had three modified tracked files for the checkpoint follow-up and was 14 commits behind origin/main after fetch; the candidate ffba itself is already an ancestor of origin/main.",
+    "limit": "The follow-up owner has not committed/pushed the observed working-tree changes, so its exact eventual SHA and inclusion in any release cannot yet be verified."
+  },
+  "limits": [
+    "The observed health response is a point-in-time identity and does not prove guest behavior.",
+    "No build, release, deployment, browser, or workflow mutation was performed."
+  ]
+}
