@@ -1,0 +1,378 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "unverified",
+  "scope": "public-page guest SEO actions in an owned native side panel",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_0_title_and_headings",
+      "status": "pass",
+      "evidence": {
+        "publicTitle": "Example Domain",
+        "titleMatches": true,
+        "headingsPresenceMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+      "status": "pass",
+      "evidence": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_1_title_and_headings",
+      "status": "pass",
+      "evidence": {
+        "publicTitle": "IANA-managed Reserved Domains",
+        "titleMatches": true,
+        "headingsPresenceMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+      "status": "pass",
+      "evidence": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "new_url_replaces_visible_title",
+      "status": "pass",
+      "evidence": {
+        "twoDistinctPublicTitles": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "manual_button_returns_to_current_page",
+      "status": "pass",
+      "evidence": {
+        "currentTitlePreserved": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+      "status": "pass",
+      "evidence": {
+        "textChoice": true,
+        "agentChoice": true,
+        "jsonAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "reload_audits_current_url",
+      "status": "pass",
+      "evidence": {
+        "currentUrl": "https://www.iana.org/domains/reserved",
+        "currentTitleMatched": true,
+        "headingsPresenceMatched": true,
+        "reselectedAfterReload": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_role_gate_after_reload",
+      "status": "pass",
+      "evidence": {
+        "textChoice": true,
+        "agentChoice": true,
+        "jsonAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+      "status": "pass",
+      "evidence": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "subtarget": "about_blank_clear_error_without_stale_audit",
+      "status": "pass",
+      "evidence": {
+        "scopeValid": true,
+        "expectedErrorVisible": true,
+        "staleAuditAbsent": true,
+        "copyAuditAbsent": true,
+        "retryOffered": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "subtarget": "public_page_recovers_after_restricted_url",
+      "status": "pass",
+      "evidence": {
+        "publicTitleMatched": true,
+        "headingsPresenceMatched": true,
+        "auditErrorAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "sparse_public_detail_groups",
+      "status": "pass",
+      "evidence": {
+        "descriptionAbsent": true,
+        "canonicalAbsent": true,
+        "groupsMatchPublicDom": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "rich_public_detail_groups_and_canonical_door",
+      "status": "pass",
+      "evidence": {
+        "descriptionMatchesPublicDom": true,
+        "canonicalMatchesPublicDom": true,
+        "groupsMatchPublicDom": true,
+        "outboundAnchorSafe": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "canonical_outbound_opens_expected_public_tab",
+      "status": "pass",
+      "evidence": {
+        "trustedInput": true,
+        "destinationMatchesPublicDom": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_link_counts_match_live_dom",
+      "status": "pass",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/HTML",
+        "internal": 1785,
+        "external": 410
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+      "status": "pass",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/HTML",
+        "total": 29,
+        "missingAlt": 10
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+      "status": "pass",
+      "evidence": {
+        "publicBodyHasText": true,
+        "displayed": {
+          "words": "10,467",
+          "sentences": "784",
+          "score": "44.51",
+          "summary": "Difficult — college"
+        },
+        "metricValueCorrectness": "unverified"
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_performance_reflects_current_navigation",
+      "status": "pass",
+      "evidence": {
+        "pageResponseStatus": 200,
+        "exposedNavigation": {
+          "type": "navigate",
+          "durationMs": 1312,
+          "transferSizeBytes": 123930,
+          "responseStatus": 200
+        },
+        "displayed": {
+          "status": "200",
+          "navigation": "navigate",
+          "duration": "1,312 ms",
+          "transfer": "121 KB"
+        }
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+      "status": "unverified",
+      "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+    }
+  ],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04-T06,T08",
+      "part": "database save, history, and diff flows"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "broken social preview image and detail controls beyond the bounded next batch; optional hreflang/schema doors remain unverified when their live source data is absent"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "social_before_reaudit_copy_feedback_sample",
+  "last_safe_observable": false,
+  "current_operation": "social_before_reaudit_copy_feedback",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.397",
+      "treeSha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed"
+    },
+    "after": null
+  },
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "runId": 37724859892,
+    "runAttempt": 1,
+    "artifactId": 11527132614,
+    "githubArtifactDigest": "sha256:5a9092de49bc5fa47a0ca907e86104519397d9977c3344a482173fc61f2e004f",
+    "treeSha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "source": {
+      "originMain": "35d2ef9c430fe59c50f0d9e536a350587cf00c77",
+      "localHead": "a58478db6db8024f2b6bbef7afb549d6496a19b1",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "next_detail_public_counts": {
+    "links": {
+      "internal": 1785,
+      "external": 410
+    },
+    "images": {
+      "total": 29,
+      "missingAlt": 10
+    },
+    "bodyHasText": true,
+    "alternateCount": 0,
+    "schemaTypeCount": 3
+  },
+  "next_detail_auto_observed": {
+    "links": {
+      "internal": "1,781",
+      "external": "409",
+      "hint": "2190"
+    },
+    "images": {
+      "total": "28",
+      "missingAlt": "10",
+      "hint": "28"
+    },
+    "performance": {
+      "status": "200",
+      "navigation": "navigate",
+      "duration": null,
+      "transfer": "121 KB"
+    },
+    "exactDataStatus": "unverified"
+  },
+  "next_detail_manual_public": {
+    "before": {
+      "links": {
+        "internal": 1785,
+        "external": 410
+      },
+      "images": {
+        "total": 29,
+        "missingAlt": 10
+      },
+      "bodyHasText": true,
+      "alternateCount": 0,
+      "schemaTypeCount": 3,
+      "navigation": {
+        "type": "navigate",
+        "durationMs": 1312,
+        "transferSizeBytes": 123930,
+        "responseStatus": 200
+      },
+      "responseStatus": 200
+    },
+    "after": {
+      "links": {
+        "internal": 1785,
+        "external": 410
+      },
+      "images": {
+        "total": 29,
+        "missingAlt": 10
+      },
+      "bodyHasText": true,
+      "alternateCount": 0,
+      "schemaTypeCount": 3,
+      "navigation": {
+        "type": "navigate",
+        "durationMs": 1312,
+        "transferSizeBytes": 123930,
+        "responseStatus": 200
+      },
+      "responseStatus": 200
+    }
+  },
+  "next_detail_public_navigation": {
+    "type": "navigate",
+    "durationMs": 1312,
+    "transferSizeBytes": 123930,
+    "responseStatus": 200,
+    "pageResponseStatus": 200
+  },
+  "failure_stage": "social_before_reaudit_copy_feedback"
+}
