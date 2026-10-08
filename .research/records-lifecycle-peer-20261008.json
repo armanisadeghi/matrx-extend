@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "reviewed_commits": ["62e8f541", "a3ad68b9"],
+  "reviewed_evidence": ".research/records-request-lifecycle-repair-20261008.json",
+  "verdict_a": {
+    "status": "PARTIAL",
+    "finding": "The request lifecycle behavior is exercised at the helper boundary; native hosted behavior remains unverified.",
+    "proof": [
+      "node --test tests/browser/records-positive-fixture.test.mjs: 21 passed, 0 failed",
+      "Slow-fetch case observes one fetch while multiple short evaluator calls complete.",
+      "Timeout case observes POST abort, durable pending_write_unknown, and a subsequent cleanup-only recovery that refuses absence as proof."
+    ],
+    "spec_checks": {
+      "browser_side_credentials_and_response": "PASS: only fixed-shape observations leave browser; token/hash and raw response stay in page context.",
+      "single_request_no_retry": "PASS: one fetch asserted for slow request; request helper contains one fetch and polling only reads its result.",
+      "principal_org_owned_fixture": "PASS in implementation: bearer digest, organization header, principal/org marker, exact owned-name cleanup; existing focused suite covers principal refusal and ownership selection.",
+      "cancel_late_write_durability": "PASS for helper timeout: cancellation is followed by journaled ambiguity; visible late fixture is discoverable by exact owned marker/name and cleanup path.",
+      "cross_run_recovery": "PARTIAL: modeled timeout recovery retains ambiguity; process interruption after create_sent is not separately forced in this change's tests."
+    },
+    "unverified": ["Hosted native replay", "C04/C05 acceptance", "browser build and release"]
+  },
+  "verdict_b": {
+    "status": "FAIL",
+    "findings": [
+      {
+        "severity": "important",
+        "location": "tests/browser/records-positive-fixture.mjs: create_sent journal before call(); preserveUnknownWrite() only runs after a caught/timeout/transport failure",
+        "issue": "A process can die after the durable create_sent journal and after the POST reaches the server, before the response path writes pending_write_unknown. On recovery, an empty list takes the create_sent -> no_fixture_created branch, clearing the durable indication that the write outcome was unknown. The resumed call still fails cleanup-only, so this does not currently grant read credit or return successful fixture completion, but the journal loses the uncertainty the repair is intended to preserve.",
+        "evidence": "The timeout regression covers an in-process timeout and pending flag; no test simulates a restarted process loading create_sent with no pending flag and an empty recovery scan. The branch is at lines 471-474 in the reviewed source."
+      }
+    ],
+    "test_quality": "The new tests execute recordsFixtureRequest and withRecordsPositiveFixture with network/CDP dependencies stubbed beneath the helper; assertions cover request count, abort signal, persisted journal, and recovery refusal. They are stronger than source-string checks or a green mock-owned result. No mutation test was run."
+  },
+  "reviewer_scope": "Zero authorship; no source edits. Focused fixture suite only.",
+  "review_time": "2026-10-08"
+}
