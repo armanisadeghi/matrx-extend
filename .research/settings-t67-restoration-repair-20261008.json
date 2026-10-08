@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "task": "Bounded T67 full-extension failure diagnosis and safe stage capture",
-  "status": "focused-gate-passed; independent-review-complete; native-retest-pending",
+  "status": "focused-gate-passed; independent-review-complete; native-attempt-terminal-before-T67",
   "independent_review": ".research/settings-t67-stage-root-review-20261008.json",
   "source_commit": "53685685b5101628ad9f24d30c16804a73a2b407",
   "integration_commit": "744f0bbdf52a48c6b5fa3d93abe8cff20fe8f1d9",
@@ -33,7 +33,67 @@
     }
   },
   "limitations": [
-    "The exact T67 cleanup operation in the earlier native failure remains unknown; the added stage field requires a later native run to distinguish it.",
-    "No native rerun or acceptance claim in this repair turn."
-  ]
+    "The exact cleanup operation in prior native failure 37847922569 remains unknown; this attempt did not reach the browser or the T67 diagnostic stage.",
+    "The single authorized native attempt terminated before browser acceptance: frozen development artifact import failed after a GitHub API connection error. T67 was not exercised; no product-level native conclusion or retry.",
+    "Native run journals and workflow timings are retained; failed run emitted no settings acceptance receipt."
+  ],
+  "native_retest": {
+    "run_id": 37850621932,
+    "workflow": "Hosted guest side-panel acceptance",
+    "job": "guest",
+    "lane": "B guest Settings",
+    "runner": "macos-15",
+    "head_sha": "8269c7492753b529b9ea24e65b8fad5e2eaebf4d",
+    "started_at": "2026-10-08T22:00:18Z",
+    "completed_at": "2026-10-08T22:07:03Z",
+    "conclusion": "failure",
+    "frozen_ci_run": 37818621428,
+    "frozen_artifact_id": 11568846736,
+    "frozen_source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "development_version": 414,
+    "resource_journals": {
+      "package": ".research/settings-t67-restoration-repair-20261008/raw/hosted-package-37850621932-1.jsonl.raw",
+      "browser": ".research/settings-t67-restoration-repair-20261008/raw/hosted-browser-37850621932-1.jsonl.raw",
+      "guest": ".research/settings-t67-restoration-repair-20261008/raw/hosted-guest-37850621932-1.jsonl.raw",
+      "all_terminal": true,
+      "package_and_browser_valid": true,
+      "guest_admitted": true,
+      "guest_final_decision": "child_failed",
+      "admission_sample": {
+        "availableMemoryGiB": 5.88,
+        "requiredMemoryGiB": 4,
+        "swapUsedMiB": 0
+      }
+    },
+    "workflow_step_durations_seconds": {
+      "package_readiness": 33,
+      "pinned_browser_driver_prep": 83,
+      "browser_readiness": 33,
+      "chromium_prep": 83,
+      "acceptance_readiness": 34,
+      "actual_acceptance_until_failure": 99,
+      "upload": 20
+    },
+    "acceptance_boundary": {
+      "t67_executed": false,
+      "stage": "prepareDevelopment/import frozen authenticated CI artifact",
+      "safe_failure_class": "test_artifact_operation_failed",
+      "bounded_reason": "runner reported GitHub API connection error; authenticated development artifact import assertion failed",
+      "product_observation": "none; no panel or T67 assertion was reached",
+      "retry": "none"
+    },
+    "artifact": {
+      "id": 11581419776,
+      "name": "hosted-guest-37850621932-1",
+      "downloaded": true,
+      "contains_native_receipt": false
+    },
+    "frozen_artifact_name": "matrx-extend-development-test-5f7fe7c29d7dd78528161c8928d3da78b41aa55b-37818621428-1",
+    "prior_attempt_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37850621932",
+    "raw_sha256": {
+      ".research/settings-t67-restoration-repair-20261008/raw/hosted-package-37850621932-1.jsonl.raw": "5880c17b8b3585fddd7b9447b578aa5f640b13e6d8492383e29f1d7d89fd03eb",
+      ".research/settings-t67-restoration-repair-20261008/raw/hosted-browser-37850621932-1.jsonl.raw": "e8d02904adc2bef94655a442117f8e6428c9941d2f6c109fda4c6f9b00758b34",
+      ".research/settings-t67-restoration-repair-20261008/raw/hosted-guest-37850621932-1.jsonl.raw": "1c9ba5468f4d7b38ca4d3f42b991d966f3fdb7a99031cf7b4e29d15eb4d0042c"
+    }
+  }
 }
