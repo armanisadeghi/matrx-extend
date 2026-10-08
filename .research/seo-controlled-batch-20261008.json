@@ -29,5 +29,19 @@
     "No native controlled-scope acceptance run or resource-valid receipt exists yet.",
     "No T02/T14 inventory promotion, D170 closure, or current-main/Store health claim is made.",
     "The prior D170 native attempt remains resource-invalid and earns zero acceptance credit."
-  ]
+  ],
+  "focused_gate_registration": {
+    "commit": "8b796abd",
+    "pushed_merge_sha": "e69745283b59426ed5fc6532871f4c1609c10fda",
+    "change": "The existing scripts/test-hosted-acceptance-lanes.mjs YAML admission guard is included in package.json test:focused-acceptance.",
+    "automatic_focused_ci": {
+      "run_id": 37745523179,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37745523179",
+      "head_sha": "e69745283b59426ed5fc6532871f4c1609c10fda",
+      "conclusion": "success",
+      "observed_guard": "lane admission refuses unknown lanes and isolates shared credentials: ok 6",
+      "suite": "102 passed, 0 failed"
+    },
+    "earlier_guard_failure": "Full CI 37744762381 failed scripts/test-hosted-acceptance-lanes.mjs:72 because its shell fixture omitted SEO_CASE_SCOPE after the new admission validation. b6b4eb0e supplied full and negative controlled/unknown cases; the automatic focused run above executed this repaired guard."
+  }
 }
