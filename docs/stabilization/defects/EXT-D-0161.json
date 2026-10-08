@@ -1,0 +1,48 @@
+{
+  "id": "EXT-D-0161",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T63", "EXT-F-1003-T73", "EXT-F-1003-T76", "EXT-F-1003-T92"],
+  "surface": "Testing infrastructure / Settings full-extension reload",
+  "auth_mode": "guest",
+  "title": "Settings reload driver discards the first failing substep and safe replacement-panel observations",
+  "severity": "S2: obstructs diagnosis and acceptance of Settings reload; product cause unknown",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/nonchat_batch_execution",
+  "preconditions": [
+    "Use frozen CI37698216289/artifact11516342905/source52487361/version0.2.391 on an isolated guest profile via guarded settings-controls workflow."
+  ],
+  "reproduction": [
+    "Run37712686956 recorded successful preference assertions and all four extension replacement flags true.",
+    "Driver sets guestStage=reload_settings and invokes settings(replacement.panel); the subsequent catch discards the exception.",
+    "Inspect the original native receipt: reload_settings is known, but failing trusted click versus guest-readiness wait and replacement-panel state are absent."
+  ],
+  "expected": "Preserve an allowlisted failing boundary and safe panel readiness observations without credentials, raw errors, URLs, or private page content.",
+  "actual": "The run is unverified at reload_settings; the first substep and product cause cannot be reconstructed from its receipt.",
+  "evidence": [
+    ".research/settings-batch-native-20261007.json",
+    ".research/settings-native-newcases-peer-20261007.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T01:37:08.426904+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-valid native receipt loses first reload Settings failure boundary."
+    },
+    {
+      "at": "2026-10-08T01:37:08.426904+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent source review confirms catch discards error; no product cause inferred."
+    },
+    {
+      "at": "2026-10-08T01:37:08.426904+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Assigned categorical boundary and panel-state diagnostic repair with negative controls."
+    }
+  ],
+  "closure_requirement": "Independent source/privacy review and exact CI, then native full-reload observation showing the failure boundary is retained or original reproduction and surroundings pass. No source-only closure.",
+  "next_action": "Review safe diagnostic repair, then run original full-reload path and new guest T63/T64 candidates once under guard."
+}
