@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "scope": "Independent read-only review of retained native receipts, resource journals, frozen source, and EXT-D-0175 closure terms for hosted runs 37776597696 and 37776576395. No native rerun, build, release, product edit, or inventory change.",
+  "verdict_A": {
+    "run_id": 37776597696,
+    "case_id": "EXT-F-1012-T57",
+    "status": "UNVERIFIED",
+    "artifact": "Development 0.2.407; source 5d845f42cb22c10e2486af8048d1ac9f3ac8e114; CI 37754055905/artifact 11539827040; tree f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0. These identifiers agree between the report and original receipt.",
+    "resource_finals": "Package and browser admitted, valid, exit 0; guest admitted, resourceInvalid=false, child_failed, exit 1. Original journal hashes agree with the report. A transient CPU_PENDING recovered before the guest final decision.",
+    "actual_outcome": "Admin identity and rendered organization matched, the Tools panel was active, and the Records row had zero matching and zero visible targets at organization_records_click. The driver stopped with pointer_target_not_unique before any product request. The original receipt explicitly records product_request_observed=false, product_response_observed=false, and an empty click_observations array; no GET /tools/test/list, organization header, bearer principal, HTTP 200/finished response, or Network race is evidenced.",
+    "source_boundary": "At workflow source 24ee7e35, showcase-organization-checkpoint.mjs clicks kind tool-row with label records; settings-panel-driver.mjs resolves that as a button under the active Tools panel whose span.font-mono text equals records. The receipt proves zero matches for that exact lookup, but does not establish whether product data, rendered layout, or the selector caused it.",
+    "next_action": "Inspect the frozen UI's actual Tools row markup and loading state against the exact records selector, then correct the causal source or diagnostic gap before a separately authorized fresh native attempt. Keep the GET/header/principal/finished-response and full T57 race gates intact; this attempt gives no product acceptance credit."
+  },
+  "verdict_B": {
+    "run_id": 37776576395,
+    "defect_id": "EXT-D-0175",
+    "diagnostic_status": "DIAGNOSTIC_ONLY_UNVERIFIED; zero native Scrape acceptance credit",
+    "artifact_and_source": "The imported frozen extension is development 0.2.407, source 5d845f42cb22c10e2486af8048d1ac9f3ac8e114, CI 37754055905/artifact 11539827040, matching the retained receipt. The workflow ran at 24ee7e35, which contains serializer fix 8c4db823. The focused source gate passed; full CI for 8c4db823 was cancelled, so it is not a full-CI success claim.",
+    "resource_finals": "Package and browser admitted, valid, exit 0; guest admitted, resourceInvalid=false, child_failed, exit 1. Thus the diagnostic reached its guest child and was not rejected by the resource guard.",
+    "serializer_loss_result": "The actual persisted native receipt contains retirement_evidence.open_panel_request.fixture, open_panel_diagnostic, and replacement_panel_created_event=false. This independently resolves the original missing-fields reproduction through the real native success receipt, beyond the focused synthetic JSON-persistence guard. The current source routes both success and failure through captureLifecycleEvidence; this particular run directly proves the success path only. Fourteen focused tests passed locally, including synthetic success/failure persistence and opt-in classification.",
+    "observed_lifecycle": "The old worker/panel retired; a replacement worker was created and activated. The fixture records click, send invocation/return, callback entry/reply, and no lastError. The attached worker observer records ingress and sidePanel.open resolved. A replacement panel target was present and attached in the final CDP snapshot. No target_created event for that panel appears in the retained timeline, so replacement_panel_created_event=false is a real event-observation gap in this receipt, not evidence that the panel failed to exist. Its cause is undetermined.",
+    "remaining_limit": "CDP worker attachment and synchronous sidePanel.open wrapping perturb the path; sendResponse inside the frozen extension is explicitly unobservable. The later post_reload_empty_media_capture failed with ready=true and fixture_title_matches=true but article_selected=false, visible=false, and fixture_text_present=false. Do not infer a product bug or a successful Scrape reload acceptance from these observations.",
+    "closure_ruling": "EXT-D-0175 can close under its documented diagnostic-infrastructure scope: independent source review, red-to-green serializer guard, privacy/default classification, and now actual retained native success-receipt milestone delivery. This does not close EXT-F-1007-T08, the later post-reload visibility gap, or native product acceptance. Retain those as separate unverified work."
+  },
+  "evidence": [
+    ".research/t57-records-counts-native-20261008.json",
+    ".research/t57-records-counts-native-20261008-originals/raw/receipt.raw.json.txt",
+    ".research/t57-records-counts-native-20261008-originals/raw/hosted-guest-37776597696-1.jsonl",
+    ".research/scrape-optin-diagnostic-native-20261008.json",
+    ".research/scrape-optin-diagnostic-native-20261008-evidence/run37776576395/scrape-guest-native-receipt.json",
+    ".research/scrape-optin-diagnostic-native-20261008-evidence/run37776576395/hosted-guest-37776576395-1.jsonl",
+    "docs/stabilization/defects/EXT-D-0175.json",
+    "tests/browser/profile-reload-capture.mjs",
+    "tests/browser/scrape-guest-native-acceptance.mjs"
+  ]
+}
