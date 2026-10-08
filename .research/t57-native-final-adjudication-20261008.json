@@ -13,7 +13,13 @@
     "artifact_identity": "artifacts.raw.json names hosted-guest-37780192222-1, id 11552830587, digest sha256:22b85b58c27dc8b56b5ba467b9fcb549d8e8fb9fcdf7c4c1e7e6b6b277188b35",
     "source_ancestry": "Both 0eebbca39c95d62f401f3866123177ce92c4d51a and a7340e6ca0c5f6860ac19440644d4b38b84e203d are ancestors of the workflow head",
     "resources": "Raw package and browser journals end admitted=true/resourceInvalid=false/exitCode=0/decision=valid. Guest ends admitted=true/resourceInvalid=false/exitCode=1/decision=child_failed after healthy samples; the child failure is the test assertion, not a resource-invalid result.",
-    "auth_and_cleanup_limit": "The hosted job records successful selected-auth preflight and reaches admin_rendered_identity. Correct stdin command shape, deletion of both temporary repository secret names, independent absence listing, and local private-file cleanup are statements in the source report; the archived raw originals do not contain those operations or a secret-name listing. This review performed no secret operations and cannot independently attest terminal secret cleanup."
+    "auth_and_cleanup_limit": "The hosted job records successful selected-auth preflight and reaches admin_rendered_identity. A fresh read-only repository secret-name listing independently confirms both temporary names absent at the observation time. Correct stdin command shape, private schema validation, and local private-file cleanup remain statements in the source report; the archived raw originals do not show those operations. No secret values were read.",
+    "secret_name_listing": {
+      "observed_at_utc": "2026-10-08T13:13:34Z",
+      "method": "read-only gh secret list; compared names locally; no values read or mutations",
+      "admin_temporary_name_absent": true,
+      "organization_temporary_name_absent": true
+    }
   },
   "defects": {
     "EXT-D-0173": {
@@ -32,10 +38,10 @@
     },
     "EXT-D-0179": {
       "verdict_A_live_spec": "PASS",
-      "closure": "PREFLIGHT PASS; full defect closure conditional on independently verifying terminal temporary-secret cleanup",
+      "closure": "YES for the bounded credential staging defect, including independently observed terminal absence of both temporary repository secret names",
       "evidence": "The hosted selected-auth job step passed, the receipt reached admin_rendered_identity and later product request/capture, and all three resource phases were admitted. The prior d87_auth_secret_invalid preflight boundary did not recur.",
-      "verdict_B_evidence_quality": "PARTIAL",
-      "limits": "The source report states corrected stdin upload, private schema validation and terminal deletion/absence of temporary secret names, but the archived originals independently establish only successful hosted preflight and later native execution. No raw operation or independent name listing is retained for secret cleanup; closure's cleanup clause remains externally unverified by this review."
+      "verdict_B_evidence_quality": "PASS with stated provenance limit",
+      "limits": "The hosted originals independently establish successful preflight and native execution; a fresh read-only repository listing confirms both temporary secret names absent at 2026-10-08T13:13:34Z. The historical deletion command, corrected stdin invocation, private fixture validation, and local temporary-file removal are source-report claims rather than archived raw observations."
     }
   },
   "t57_boundary": {
@@ -44,5 +50,5 @@
     "observed": "The public HN request was captured and an owned recipe was observed and removed. The attempt stopped at public_race_prior_document_load with public_race_old_response_missing. Raw preflight reports no paused old response, no release order or release attempts, no extension capture at current pause, no matching current binding, and saved_result=null. Interception disable/detach and probe removal were recorded.",
     "remaining": "A fresh resource-valid original public race must pause the old response, establish the current capture/binding, release in the intended order, and observe a terminal saved result or refusal with provenance. This run cannot establish the prior-versus-current response result or a product defect."
   },
-  "scope_limit": "Review of tracked evidence and source control only. No native rerun, secret operation, build, deployment, source modification or product retest."
+  "scope_limit": "Review of tracked evidence and source control plus one read-only GitHub secret-name listing. No native rerun, secret-value access or mutation, build, deployment, source modification or product retest."
 }
