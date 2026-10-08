@@ -1,24 +1,27 @@
 #!/usr/bin/env node
 /** EXT-F-1009-T03: real full-page capture on an owned, three-screen page. */
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { createHash, randomUUID } from 'node:crypto';
 import { lstat, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
+import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { matchesFullPageAspect } from './full-page-aspect.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3-dev');
+const EXTENSION_DIR = resolve(
+  REPO,
+  process.env.SCREENSHOT_CAPTURE_EXTENSION_DIR ?? 'missing-artifact',
+);
 const RECEIPT = resolve(
   REPO,
-  process.env.SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT ??
-    'test-results/source-dev-build-093-contained-20260927.json',
+  process.env.SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT ?? 'missing-receipt',
 );
 const OUTPUT = join(REPO, 'test-results', `screenshot-full-page-${randomUUID()}.json`);
 const RECOVERY = OUTPUT.replace(/\.json$/, '.private-recovery.json');
@@ -37,9 +40,14 @@ const report = {
   schema_version: 1,
   feature: 'EXT-F-1009-T03',
   status: 'unverified',
-  scope: 'owned localhost three-screen full-page capture and persisted gallery image',
+  scope:
+    'root and nested scrolling capture, persisted image, local viewer, reload, and canonical public sharing',
   cases: {
-    tallPersistence: 'unverified',
+    rootPersistence: 'unverified',
+    nestedPersistence: 'unverified',
+    localViewer: 'unverified',
+    reloadPersistence: 'unverified',
+    canonicalShare: 'unverified',
     unsupportedPage: 'unverified',
     persistenceFailure: 'unverified',
     tileCap: 'unverified',
@@ -65,26 +73,19 @@ function safeFailure(error) {
   };
 }
 async function buildIdentity() {
-  if (dirname(RECEIPT) !== join(REPO, 'test-results')) fail('receipt_path_refused');
-  const [receipt, manifest, pkg] = await Promise.all([
-    readFile(RECEIPT, 'utf8').then(JSON.parse),
-    readFile(join(EXTENSION_DIR, 'manifest.json'), 'utf8').then(JSON.parse),
-    readFile(join(REPO, 'package.json'), 'utf8').then(JSON.parse),
-  ]);
-  requireLocalDevReceipt(receipt, EXTENSION_DIR);
+  const evidence = await verifyImportedNativeEvidence(EXTENSION_DIR, RECEIPT);
   if (
-    !manifest.key ||
-    manifest.version !== pkg.version ||
-    manifest.version !== receipt.version ||
-    hashReleaseTree(EXTENSION_DIR) !== receipt.treeSha256
+    evidence.sourceSha !== process.env.SCREENSHOT_CAPTURE_SOURCE_SHA ||
+    String(evidence.runId) !== process.env.SCREENSHOT_CAPTURE_RUN_ID ||
+    String(evidence.artifactId) !== process.env.SCREENSHOT_CAPTURE_ARTIFACT_ID
   )
-    fail('dev_build_identity_mismatch');
-  return {
-    kind: receipt.kind,
-    publishState: receipt.publish_state,
-    version: receipt.version,
-    treeSha256: receipt.treeSha256,
-  };
+    fail('selected_ci_artifact_mismatch');
+  // These two fixes must be in the artifact, not only in the current checkout.
+  for (const sha of ['59617c92', '854323c7'])
+    execFileSync('git', ['merge-base', '--is-ancestor', sha, evidence.sourceSha], { cwd: REPO });
+  const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
+  if (hashReleaseTree(EXTENSION_DIR) !== evidence.treeSha256) fail('dev_build_identity_mismatch');
+  return { ...receipt, provenance: evidence };
 }
 async function approvedOrganization() {
   const stat = await lstat(PRIVATE_CONFIG).catch(() => fail('approved_config_missing'));
@@ -244,7 +245,8 @@ async function cardState(panel) {
     const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
     const pane=tab&&document.getElementById(tab.getAttribute('aria-controls'));
     const cards=[...(pane?.querySelectorAll('div.group')??[])]
-      .filter(card => card.querySelectorAll('button[title="Open in Files"]').length===2);
+      .filter(card => card.querySelectorAll('button[aria-label="View screenshot"]').length===1 &&
+        card.querySelectorAll('button[title="Open in Files"],button[data-matrx-title="Open in Files"]').length===1);
     const image=cards[0]?.querySelector('img');
     if (cards.length!==1 || !image?.complete || !image.src.startsWith('blob:') ||
         image.naturalWidth<10 || image.naturalHeight<10)
@@ -265,6 +267,353 @@ async function cardState(panel) {
       warning:!!pane?.innerText.includes('Captured, but failed to save')};
   })()`,
   );
+}
+// A thumbnail click must expose the already downloaded image, including its pixels.
+async function verifyLocalViewer(panel, expected) {
+  stage = 'local_image_viewer';
+  const loadedSource = await evaluate(
+    panel,
+    `document.querySelector('button[aria-label="View screenshot"] img')?.src`,
+  );
+  if (typeof loadedSource !== 'string' || !loadedSource.startsWith('blob:'))
+    fail('viewer_thumbnail_not_loaded');
+  let downloads = 0;
+  const offDownload = panel.on('Network.requestWillBeSent', ({ request }) => {
+    if (request.method === 'GET' && /\/(?:files|assets)\//.test(new URL(request.url).pathname))
+      downloads++;
+  });
+  try {
+    await click(panel, 'title', 'View screenshot');
+    await waitFor(
+      'loaded_local_viewer',
+      () =>
+        evaluate(
+          panel,
+          `(() => {
+    const dialogs=[...document.querySelectorAll('[role="dialog"]')];
+    const image=dialogs.length===1 ? dialogs[0].querySelector('img') : null;
+    if (!image?.complete || image.src!==${JSON.stringify(loadedSource)} ||
+        image.naturalWidth!==${expected.width} || image.naturalHeight!==${expected.height}) return false;
+    const canvas=document.createElement('canvas'); canvas.width=1; canvas.height=1;
+    const ctx=canvas.getContext('2d',{willReadFrequently:true});
+    return [[.16,[24,67,107]],[.50,[237,86,123]],[.84,[57,199,142]]].every(([fraction,rgb])=>{
+      ctx.drawImage(image,Math.floor(image.naturalWidth/2),Math.floor(image.naturalHeight*fraction),1,1,0,0,1,1);
+      const pixel=ctx.getImageData(0,0,1,1).data;
+      return rgb.every((channel,i)=>Math.abs(pixel[i]-channel)<=32)&&pixel[3]===255;
+    });
+  })()`,
+        ),
+      (value) => value === true,
+      30_000,
+    );
+    if (downloads !== 0) fail('viewer_downloaded_image_again');
+  } finally {
+    offDownload();
+  }
+  await click(panel, 'button-text', 'Close');
+  await waitFor(
+    'viewer_closed',
+    () => evaluate(panel, `document.querySelectorAll('[role="dialog"]').length`),
+    (count) => count === 0,
+  );
+}
+function watchShareRpcs(panel) {
+  const entries = new Map();
+  const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
+    try {
+      const operation = new URL(request.url).pathname.split('/').pop();
+      if (
+        request.method !== 'POST' ||
+        !['create_share_link', 'list_share_links', 'revoke_share_link'].includes(operation)
+      )
+        return;
+      entries.set(requestId, {
+        operation,
+        request: JSON.parse(request.postData),
+        organization: Object.entries(request.headers ?? {}).find(
+          ([key]) => key.toLowerCase() === 'x-organization-id',
+        )?.[1],
+        status: null,
+        response: null,
+      });
+    } catch {
+      /* unrelated requests */
+    }
+  });
+  const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
+    const entry = entries.get(requestId);
+    if (entry) entry.status = response.status;
+  });
+  const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
+    const entry = entries.get(requestId);
+    if (!entry) return;
+    void panel
+      .send('Network.getResponseBody', { requestId })
+      .then(({ body, base64Encoded }) => {
+        entry.response = JSON.parse(
+          base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body,
+        );
+      })
+      .catch(() => {});
+  });
+  return {
+    entries: () => [...entries.values()],
+    stop: () => {
+      offRequest();
+      offResponse();
+      offFinished();
+    },
+  };
+}
+// No session/store injection: create and revoke through the UI, observe real RPCs,
+// then open the actual public URL in a fresh, unauthenticated browser context.
+async function verifyCanonicalShare(page, panel, row, recovery) {
+  stage = 'canonical_public_share';
+  const expectedOrganization = await evaluate(
+    panel,
+    `(async () => (await chrome.storage.local.get('matrx.org.active'))['matrx.org.active']?.id)()`,
+  );
+  if (typeof expectedOrganization !== 'string') fail('share_active_organization_unverified');
+  const originalImageSha = await evaluate(
+    panel,
+    `(async () => {
+    const image=document.querySelector('button[aria-label="View screenshot"] img');
+    if (!image?.complete || !image.src.startsWith('blob:')) return null;
+    const bytes=await (await fetch(image.src)).arrayBuffer();
+    return [...new Uint8Array(await crypto.subtle.digest('SHA-256',bytes))]
+      .map(byte=>byte.toString(16).padStart(2,'0')).join('');
+  })()`,
+  );
+  if (!/^[a-f0-9]{64}$/.test(originalImageSha ?? '')) fail('original_image_digest_unverified');
+  const journal = watchShareRpcs(panel);
+  let created;
+  let anonymous;
+  let revoked = false;
+  let createAttempted = false;
+  try {
+    await click(panel, 'title', 'Share');
+    await waitFor(
+      'canonical_share_body',
+      () =>
+        evaluate(
+          panel,
+          `document.body.innerText.includes('Public links use Matrx sharing') &&
+       [...document.querySelectorAll('button')].some(el=>el.textContent.includes('Manage all links'))`,
+        ),
+      (value) => value === true,
+    );
+    const manageLabel = await evaluate(
+      panel,
+      `(() => {
+      const buttons=[...document.querySelectorAll('button')].filter(el=>el.textContent.includes('Manage all links'));
+      return buttons.length===1 ? buttons[0].textContent.trim() : null;
+    })()`,
+    );
+    if (!manageLabel) fail('canonical_share_manager_not_unique');
+    await click(panel, 'button-text', manageLabel);
+    await waitFor(
+      'real_share_list',
+      () => journal.entries(),
+      (entries) =>
+        entries.some(
+          (entry) =>
+            entry.operation === 'list_share_links' &&
+            entry.status === 200 &&
+            Array.isArray(entry.response) &&
+            entry.request.p_resource_id === row.file_id &&
+            entry.response.length === 0,
+        ),
+      30_000,
+    );
+    createAttempted = true;
+    await click(panel, 'button-text', 'Create public link');
+    created = await waitFor(
+      'real_owned_share_created',
+      () =>
+        journal
+          .entries()
+          .find(
+            (entry) =>
+              entry.operation === 'create_share_link' &&
+              entry.status === 200 &&
+              entry.response?.success === true,
+          ),
+      (entry) => !!entry,
+      30_000,
+    );
+    if (
+      created.request.p_resource_type !== 'file' ||
+      created.request.p_resource_id !== row.file_id ||
+      created.request.p_permission_level !== 'viewer' ||
+      created.organization !== expectedOrganization ||
+      typeof created.response.token !== 'string'
+    )
+      fail('share_write_contract_failed');
+    const link = await waitFor(
+      'owned_share_listed',
+      () =>
+        journal
+          .entries()
+          .flatMap((entry) =>
+            entry.operation === 'list_share_links' && Array.isArray(entry.response)
+              ? entry.response
+              : [],
+          )
+          .find((link) => link.token === created.response.token && link.is_active === true),
+      (value) => !!value,
+      30_000,
+    );
+    // Retain recovery privately before opening a public surface or making assertions.
+    const prior = JSON.parse(await readFile(recovery, 'utf8'));
+    await writeFile(recovery, JSON.stringify({ ...prior, shareLinkId: link.id }), { mode: 0o600 });
+    const url = await waitFor(
+      'new_public_url',
+      () => evaluate(panel, `document.querySelector('input[aria-label="New public link"]')?.value`),
+      (value) => typeof value === 'string',
+      30_000,
+    );
+    const parsed = new URL(url);
+    if (
+      !['aimatrx.com', 'www.aimatrx.com'].includes(parsed.hostname) ||
+      parsed.protocol !== 'https:' ||
+      parsed.search ||
+      !/^\/(?:r|s)\/[^/]+$/.test(parsed.pathname)
+    )
+      fail('canonical_public_url_failed');
+    if (
+      parsed.pathname !==
+      (link.short_token ? `/r/${link.short_token}` : `/s/${encodeURIComponent(link.token)}`)
+    )
+      fail('public_url_not_owned_grant');
+    anonymous = await page.context().browser().newContext();
+    const publicPage = await anonymous.newPage();
+    await publicPage.goto(url, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+    await waitFor(
+      'anonymous_shared_image_loaded',
+      () =>
+        publicPage.evaluate(
+          ({ width, height }) =>
+            [...document.querySelectorAll('img')].filter(
+              (image) =>
+                image.complete && image.naturalWidth === width && image.naturalHeight === height,
+            ).length,
+          { width: row.width, height: row.height },
+        ),
+      (count) => count === 1,
+      60_000,
+    );
+    const publicImageUrl = await publicPage.evaluate(
+      ({ width, height }) =>
+        [...document.querySelectorAll('img')].find(
+          (image) =>
+            image.complete && image.naturalWidth === width && image.naturalHeight === height,
+        )?.src,
+      { width: row.width, height: row.height },
+    );
+    if (!publicImageUrl || !/^https:\/\//.test(publicImageUrl))
+      fail('anonymous_image_source_unverified');
+    const publicImageResponse = await publicPage.request.get(publicImageUrl);
+    if (
+      !publicImageResponse.ok() ||
+      createHash('sha256')
+        .update(await publicImageResponse.body())
+        .digest('hex') !== originalImageSha
+    )
+      fail('anonymous_shared_image_bytes_differ');
+    report.evidence.publicShare = {
+      canonicalBody: true,
+      realOwnerGrant: true,
+      anonymousImageLoaded: true,
+      anonymousBytesMatchOwnedImage: true,
+    };
+  } finally {
+    await anonymous?.close();
+    // Revoke even when the anonymous surface fails; never leave a test grant active.
+    const candidate =
+      created ?? journal.entries().find((entry) => entry.operation === 'create_share_link');
+    try {
+      if (createAttempted || candidate) {
+        report.shareCleanup = 'unverified';
+        // A committed POST can lose its response. Recover using this new file's
+        // real grant list rather than assuming no write happened.
+        await click(panel, 'button-text', 'Refresh');
+        const grant = await waitFor(
+          'owned_grant_recovery_read',
+          () =>
+            journal
+              .entries()
+              .toReversed()
+              .find(
+                (entry) =>
+                  entry.operation === 'list_share_links' &&
+                  entry.request.p_resource_id === row.file_id &&
+                  entry.status === 200 &&
+                  Array.isArray(entry.response) &&
+                  entry.response.some((link) => link.is_active === true),
+              )
+              ?.response.find((link) => link.is_active === true),
+          (value) => !!value,
+          30_000,
+        );
+        const prior = JSON.parse(await readFile(recovery, 'utf8'));
+        await writeFile(recovery, JSON.stringify({ ...prior, shareLinkId: grant.id }), {
+          mode: 0o600,
+        });
+        try {
+          await waitFor(
+            'revoke_owned_share_ready',
+            () =>
+              evaluate(
+                panel,
+                `[...document.querySelectorAll('[role="dialog"] button')].filter(el=>el.textContent.trim()==='Revoke'&&!el.disabled).length`,
+              ),
+            (count) => count === 1,
+            30_000,
+          );
+          await click(panel, 'button-text', 'Revoke');
+          const write = await waitFor(
+            'real_owned_share_revoked',
+            () =>
+              journal
+                .entries()
+                .find(
+                  (entry) =>
+                    entry.operation === 'revoke_share_link' &&
+                    entry.status === 200 &&
+                    entry.response?.success === true,
+                ),
+            (entry) => !!entry,
+            30_000,
+          );
+          await waitFor(
+            'real_revoked_grant_read',
+            () => journal.entries(),
+            (entries) =>
+              entries.some(
+                (entry) =>
+                  entry.operation === 'list_share_links' &&
+                  Array.isArray(entry.response) &&
+                  entry.response.some(
+                    (link) =>
+                      link.id === write.request.p_link_id &&
+                      link.id === grant.id &&
+                      link.is_active === false,
+                  ),
+              ),
+            30_000,
+          );
+          revoked = true;
+        } finally {
+          report.shareCleanup = revoked ? 'pass' : 'unverified';
+        }
+      }
+      if ((createAttempted || candidate) && !revoked) fail('owned_share_cleanup_unverified');
+    } finally {
+      journal.stop();
+      if (await evaluate(panel, `document.querySelectorAll('[role="dialog"]').length`))
+        await click(panel, 'button-text', 'Close');
+    }
+  }
 }
 async function cleanup(panel, journal, row, fixtureUrl, fixtureCanonical, page) {
   stage = 'exact_owned_row_cleanup';
@@ -309,7 +658,7 @@ async function cleanup(panel, journal, row, fixtureUrl, fixtureCanonical, page) 
   if (rows.some((entry) => entry.id === row.id)) fail('owned_row_still_present');
   return true;
 }
-async function exercise({ page, panel }) {
+async function exerciseCase({ page, panel }, mode) {
   let server;
   let journal;
   let fixtureUrl;
@@ -318,29 +667,45 @@ async function exercise({ page, panel }) {
   let captureClicked = false;
   let cleaned = false;
   try {
-    const approved = await approvedOrganization();
-    await signIn(page, panel);
-    await selectOrganization(panel, approved);
     server = createServer((_request, response) =>
       response
         .writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' })
-        .end(HTML),
+        .end(
+          mode === 'nested'
+            ? `${HTML.replace(
+                '<section>',
+                '<style>html,body{height:100%;overflow:hidden}main{height:100vh;overflow-y:auto}</style><main id="appointment-pane"><section>',
+              )}</main>`
+            : HTML,
+        ),
     );
     await new Promise((resolveListen, reject) => {
       server.once('error', reject);
       server.listen(0, '127.0.0.1', resolveListen);
     });
-    fixtureUrl = `http://127.0.0.1:${server.address().port}/harbor-dental/appointment-guide/${randomUUID()}`;
-    stage = 'owned_tall_page';
+    fixtureUrl = `http://127.0.0.1:${server.address().port}/harbor-dental/appointment-guide/${mode}/${randomUUID()}`;
+    stage = `owned_${mode}_page`;
     await page.goto(fixtureUrl, { waitUntil: 'domcontentloaded' });
     if (page.url() !== fixtureUrl || (await page.title()) !== 'Harbor Dental appointment guide')
       fail('fixture_identity_unverified');
-    const metrics = await page.evaluate(() => ({
-      innerWidth,
-      innerHeight,
-      scrollHeight: document.documentElement.scrollHeight,
-      scrollY,
-    }));
+    const metrics = await page.evaluate((layout) => {
+      const pane = document.getElementById('appointment-pane');
+      const scroller = layout === 'nested' ? pane : document.documentElement;
+      if (!scroller) throw new Error('owned_scroller_missing');
+      if (layout === 'nested') pane.scrollTop = 37;
+      else window.scrollTo(0, 37);
+      return {
+        innerWidth: layout === 'nested' ? pane.clientWidth : innerWidth,
+        innerHeight: layout === 'nested' ? pane.clientHeight : innerHeight,
+        scrollHeight: scroller.scrollHeight,
+        scrollY: layout === 'nested' ? pane.scrollTop : scrollY,
+        rootScrollY: scrollY,
+        rootHeight: document.documentElement.scrollHeight,
+        viewportHeight: innerHeight,
+      };
+    }, mode);
+    if (mode === 'nested' && metrics.rootHeight > metrics.viewportHeight + 1)
+      fail('nested_fixture_document_scrolls');
     if (
       metrics.innerWidth < 100 ||
       metrics.innerHeight < 100 ||
@@ -377,6 +742,7 @@ async function exercise({ page, panel }) {
       await writeFile(
         RECOVERY,
         JSON.stringify({
+          ...JSON.parse(await readFile(RECOVERY, 'utf8')),
           fixtureUrl,
           fixtureCanonical,
           screenshotId: ownedRow.id,
@@ -402,10 +768,18 @@ async function exercise({ page, panel }) {
     );
     if (image.height <= image.width || image.cardCount !== 1) fail('persisted_image_not_tall');
     capturePhase = 'scroll_restoration';
-    const finalScroll = await page.evaluate(() => scrollY);
-    if (Math.abs(finalScroll - metrics.scrollY) > 2) fail('original_scroll_not_restored');
-    report.cases.tallPersistence = 'pass';
-    report.evidence = {
+    const finalScroll = await page.evaluate(() => ({
+      root: scrollY,
+      pane: document.getElementById('appointment-pane')?.scrollTop,
+    }));
+    if (
+      Math.abs((mode === 'nested' ? finalScroll.pane : finalScroll.root) - metrics.scrollY) > 2 ||
+      Math.abs(finalScroll.root - metrics.rootScrollY) > 2
+    )
+      fail('original_scroll_not_restored');
+    report.cases[`${mode}Persistence`] = 'pass';
+    report.evidence ??= {};
+    report.evidence[mode] = {
       realZeroRowBaseline: true,
       persistedOwnedRow: true,
       imageLoadedFromGallery: true,
@@ -413,8 +787,35 @@ async function exercise({ page, panel }) {
       tallImage: true,
       originalScrollRestored: true,
     };
+    await verifyLocalViewer(panel, image);
+    report.cases.localViewer = 'pass';
+    const reloadMarker = journal.marker();
+    await panel.send('Page.reload');
+    await click(panel, 'title', 'Screenshots');
+    const reloadedRows = await nextRead(journal, reloadMarker, 1);
+    if (reloadedRows[0].id !== ownedRow.id || reloadedRows[0].file_id !== ownedRow.file_id)
+      fail('reload_owned_row_identity_changed');
+    await waitFor(
+      'reload_persisted_pixels',
+      () => cardState(panel),
+      (state) =>
+        state.decoded &&
+        state.first &&
+        state.middle &&
+        state.last &&
+        state.sourceYou &&
+        !state.warning,
+      45_000,
+    );
+    await verifyLocalViewer(panel, image);
+    report.cases.reloadPersistence = 'pass';
+    if (mode === 'root') {
+      await verifyCanonicalShare(page, panel, ownedRow, RECOVERY);
+      report.cases.canonicalShare = 'pass';
+    }
     cleaned = await cleanup(panel, journal, ownedRow, fixtureUrl, fixtureCanonical, page);
-    report.cleanup = { exactOwnedRowAbsentAfterRealRead: cleaned };
+    report.cleanup ??= {};
+    report.cleanup[mode] = { exactOwnedRowAbsentAfterRealRead: cleaned };
     await rm(RECOVERY);
     report.status = 'partial';
   } catch (error) {
@@ -460,6 +861,7 @@ async function exercise({ page, panel }) {
       await writeFile(
         RECOVERY,
         JSON.stringify({
+          ...JSON.parse(await readFile(RECOVERY, 'utf8')),
           fixtureUrl,
           fixtureCanonical,
           screenshotId: ownedRow.id,
@@ -475,7 +877,7 @@ async function exercise({ page, panel }) {
       }
     }
     if (cleaned) report.cleanup = { exactOwnedRowAbsentAfterRealRead: true };
-    if (cleaned) await rm(RECOVERY).catch(() => {});
+    if (cleaned && report.shareCleanup !== 'unverified') await rm(RECOVERY).catch(() => {});
     report.failure.createdRowMayNeedUiCleanup = captureClicked && !cleaned;
     throw error;
   } finally {
@@ -483,9 +885,15 @@ async function exercise({ page, panel }) {
     if (server) await new Promise((resolveClose) => server.close(resolveClose));
   }
 }
+async function exercise(context) {
+  const approved = await approvedOrganization();
+  await signIn(context.page, context.panel);
+  await selectOrganization(context.panel, approved);
+  for (const mode of ['nested', 'root']) await exerciseCase(context, mode);
+}
 try {
   const before = await buildIdentity();
-  report.build = { version: before.version, treeSha256: before.treeSha256 };
+  report.build = { version: before.version, treeSha256: before.treeSha256, ...before.provenance };
   stage = 'owned_native_profile';
   const run = await runNativeSidepanelQa({
     extensionDir: EXTENSION_DIR,
@@ -499,6 +907,7 @@ try {
   if (after.treeSha256 !== before.treeSha256 || after.version !== before.version)
     fail('dev_build_changed_during_run');
   report.profileOwned = true;
+  report.targetedVerdict = 'pass';
 } catch (error) {
   report.status = 'unverified';
   report.failure ??= { stage, code: 'owned_harness_or_ui_stage_failed' };
