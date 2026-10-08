@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-4130",
+  "status": "BLOCKED_BEFORE_WRITES",
+  "scope": "Source-only investigation of an owned disposable Records table and row for positive C11, C06, C04, C05 and C07. No native launch, product request, fixture creation, user-data mutation, build or release occurred.",
+  "current_credit": "C02 and C03 positives already have hosted credit. C03, C04 and C05 malformed-input negatives are source-ready in the existing native driver; this unit does not count them again or alter their assertions.",
+  "required_order": [
+    "C11 applied table_propose receipt supplies the owned table id and field keys",
+    "C06 applied record_write receipt supplies the owned record id and version",
+    "C04 record_read checks that exact id and the case-owned value",
+    "C05 record_aggregate checks the owned table count against the one case row",
+    "C07 record_delete soft-deletes only the owned row after dependent reads, with its own observable receipt",
+    "Cleanup archives the owned table and rows and verifies completion even after an earlier assertion fails"
+  ],
+  "source_findings": [
+    {
+      "fact": "The 25-action Records agent contract has table_propose, record_write and record_delete, but no table deletion or archival action. C07 is a soft delete and cannot remove the table fixture.",
+      "sources": [
+        "../aidream/packages/matrx-records/matrx_records/agent/args.py",
+        ".research/records-control-procedures-20261008.json"
+      ]
+    },
+    {
+      "fact": "The separate authenticated person-facing DELETE /api/v1/tables/{table} archives a table and its rows, preserving a restorable artifact. It requires the current person's organization context; a busy result requires repeating the same call until done=true.",
+      "sources": [
+        "../aidream/aidream/api/routers/table_api.py:122",
+        "../aidream/aidream/services/table_api/schema.py:425",
+        "../aidream/packages/matrx-records/matrx_records/store/client.py:2681"
+      ]
+    },
+    {
+      "fact": "table_propose asks the organization's approval policy before creation. In always_ask it files a durable table_add approval request rather than producing an applied table; record_write can likewise file a durable record_add approval. A queued approval can be applied later, so archiving only an already-created table cannot clean a held proposal.",
+      "sources": [
+        "../aidream/packages/matrx-records/matrx_records/store/client.py:3451",
+        "../aidream/packages/matrx-records/matrx_records/store/client.py:3799",
+        "../aidream/packages/matrx-records/matrx_records/store/client.py:1539"
+      ]
+    },
+    {
+      "fact": "When no Home is supplied, table_propose calls ensure_home before its held-versus-applied branch; a held request can therefore leave an additional Home artifact in a blank organization.",
+      "sources": ["../aidream/packages/matrx-records/matrx_records/store/client.py:3810"]
+    }
+  ],
+  "blocking_gap": "The current native driver has no verified same-principal approval preflight or rejection path and no authenticated, exact-table archival path with durable recovery after partial failure. Table archive is the supported cleanup but is not deletion, and its live availability and ownership have not been proven in this harness. Encoding C11/C06 writes now could leave an owned table, Home or pending approval beyond the test run.",
+  "safe_next_step": "First prove, without a fixture write, the current authenticated organization and approval policy through the canonical agent_change_approval door; identify an existing Home so C11 need not create one. Prove that the same person can call DELETE /api/v1/tables/{owned-id} and can reject a held request through the canonical work_approval_decide door, using an already-owned disposable target and safe receipts. Only then encode C11/C06 in a try/finally lifecycle that records the returned owned IDs in a local cleanup journal before subsequent assertions, rejects any held approvals, repeats archive through done=true, and verifies table invisibility. A failed cleanup must fail the run and retain only nonsecret receipt metadata for recovery.",
+  "positive_native_status": "NOT_RUN; C11/C06/C04/C05/C07 positive credit remains pending. No new native procedure or executable assertion was added because the pre-write cleanup and held-approval contract has not been established."
+}
