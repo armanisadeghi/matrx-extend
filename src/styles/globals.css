@@ -43,7 +43,7 @@
 @source "../../node_modules/@ai-matrx/agents/dist";
 @source "../../node_modules/@ai-matrx/associations/dist";
 @source "../../node_modules/@ai-matrx/chat/dist";
-@source "../../node_modules/@ai-matrx/rich-content/dist";
+@source "../../node_modules/.pnpm/@ai-matrx+rich-content@*/node_modules/@ai-matrx/rich-content/dist";
 
 @custom-variant dark (&:is(.dark *));
 
