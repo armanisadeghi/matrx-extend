@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T21:19:48.501595+00:00",
+  "updated_at": "2026-10-08T21:53:49.775225+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -4942,15 +4942,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37712686956",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
+              "run_id": "37847922569",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "build_version": "0.2.414",
+              "resource_valid": true,
+              "detail": "System baseline and appearance survive full extension reload; Dark/Light/System cycle with panel reload and restore. Nondefault full-extension persistence remains unverified.",
               "evidence": [
-                ".research/settings-batch-native-20261007.json",
-                ".research/settings-native-newcases-peer-20261007.json"
+                ".research/settings-full-extension-native-20261008.json",
+                ".research/parallel-lifecycle-native-peer-20261008.json"
               ],
-              "detail": "Dark/Light/System trusted selection, displayed option, persisted value and document dark class match current OS preference through each panel reload. Rendered appearance and preference through full extension Reload remain unverified.",
-              "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
+              "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -5001,6 +5002,23 @@
               },
               "superseded_at": "2026-10-08T01:37:08.426904+00:00",
               "reason": "Fresh independently reviewed scoped guest Settings native evidence; retain historical scope without transferring it to current artifact."
+            },
+            {
+              "at": "2026-10-08T21:53:49.775225+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37712686956",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/settings-batch-native-20261007.json",
+                  ".research/settings-native-newcases-peer-20261007.json"
+                ],
+                "detail": "Dark/Light/System trusted selection, displayed option, persisted value and document dark class match current OS preference through each panel reload. Rendered appearance and preference through full extension Reload remain unverified.",
+                "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
+              },
+              "reason": "Preserve previous scoped evidence."
             }
           ],
           "attempt_history": [
@@ -5278,12 +5296,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37729701473",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-              "evidence": ".research/settings397-fresh-native-20261007.json",
-              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
-              "verified_at": "2026-10-08T05:10:28.331547+00:00",
-              "detail": "Ask/Act choice UI/storage persists across panel-document reload; new-chat inheritance and full-extension default behavior unverified. No Store/current-main/whole-feature health claim."
+              "run_id": "37847922569",
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "build_version": "0.2.414",
+              "resource_valid": true,
+              "detail": "Ask baseline survives full extension reload; Act/Ask new-chat inheritance and panel persistence pass with restoration. Actual tool behavior and nondefault full-extension persistence remain unverified.",
+              "evidence": [
+                ".research/settings-full-extension-native-20261008.json",
+                ".research/parallel-lifecycle-native-peer-20261008.json"
+              ],
+              "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -5314,6 +5336,20 @@
                 "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
               },
               "superseded_at": "2026-10-08T05:10:28.331547+00:00"
+            },
+            {
+              "at": "2026-10-08T21:53:49.775225+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37729701473",
+                "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+                "evidence": ".research/settings397-fresh-native-20261007.json",
+                "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+                "verified_at": "2026-10-08T05:10:28.331547+00:00",
+                "detail": "Ask/Act choice UI/storage persists across panel-document reload; new-chat inheritance and full-extension default behavior unverified. No Store/current-main/whole-feature health claim."
+              },
+              "reason": "Preserve previous scoped evidence."
             }
           ],
           "attempt_history": [
@@ -6286,14 +6322,17 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37843040511",
-              "evidence": [".research/settings-sections-fixed-native-20261008.json"],
+              "status": "pass",
+              "run_id": "37847922569",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "build_version": "0.2.414",
-              "detail": "Independent review verifies44/44 checks across11sections warm/panel reload, preferences unchanged and original section state restored. Exact frozen414artifact11568846736; all3current resource journals valid. Full-extension reload repeat remains unverified.",
               "resource_valid": true,
-              "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
+              "detail": "All11 guest sections verified warm and after full extension reload with content, empty-state and expand/collapse checks;44 post-extension criteria pass.",
+              "evidence": [
+                ".research/settings-full-extension-native-20261008.json",
+                ".research/parallel-lifecycle-native-peer-20261008.json"
+              ],
+              "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
             }
           },
           "preparation_history": [
@@ -6362,6 +6401,21 @@
               "detail": "Resource-valid census fails before actions: active true,11 expected headings plus4 nested expanded controls. Source selector overbreadth repaired0c8ae904; hosted37842734890 passed. Native section behavior and full-extension repeat remain unverified.",
               "resource_valid": true,
               "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
+            },
+            {
+              "at": "2026-10-08T21:53:49.775225+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37843040511",
+                "evidence": [".research/settings-sections-fixed-native-20261008.json"],
+                "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+                "build_version": "0.2.414",
+                "detail": "Independent review verifies44/44 checks across11sections warm/panel reload, preferences unchanged and original section state restored. Exact frozen414artifact11568846736; all3current resource journals valid. Full-extension reload repeat remains unverified.",
+                "resource_valid": true,
+                "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
+              },
+              "reason": "Preserve previous scoped evidence."
             }
           ]
         },
@@ -7010,13 +7064,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37837587382",
-              "evidence": [".research/settings-sections-scrape-native-20261008.json"],
+              "run_id": "37847922569",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "build_version": "0.2.414",
-              "detail": "Toggle UI and stored scrapeAutoOnLoad matched warm/panel reload; baseline restored. Actual background capture/disabled behavior on fresh document and full-extension-reload preference recheck remain unverified.",
               "resource_valid": true,
-              "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
+              "detail": "Full-extension preference checks pass; downstream background capture remains unverified.",
+              "evidence": [
+                ".research/settings-full-extension-native-20261008.json",
+                ".research/parallel-lifecycle-native-peer-20261008.json"
+              ],
+              "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -7078,6 +7135,21 @@
                 ]
               },
               "reason": "Preserve earlier-artifact evidence separately from current414 run; not current-main or full reload proof."
+            },
+            {
+              "at": "2026-10-08T21:53:49.775225+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37837587382",
+                "evidence": [".research/settings-sections-scrape-native-20261008.json"],
+                "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+                "build_version": "0.2.414",
+                "detail": "Toggle UI and stored scrapeAutoOnLoad matched warm/panel reload; baseline restored. Actual background capture/disabled behavior on fresh document and full-extension-reload preference recheck remain unverified.",
+                "resource_valid": true,
+                "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
+              },
+              "reason": "Preserve previous scoped evidence."
             }
           ]
         },
@@ -8774,13 +8846,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37837587382",
-              "evidence": [".research/settings-sections-scrape-native-20261008.json"],
+              "run_id": "37847922569",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "build_version": "0.2.414",
-              "detail": "Capture and Scroll & capture UI/stored modes matched across panel reload and baseline restoration. No preference recheck after full extension reload; prior175 full-reload evidence remains historical.",
               "resource_valid": true,
-              "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
+              "detail": "Four mode/panel-reload criteria pass after full extension reload; subsequent generic exception leaves restoration unresolved, not proven product failure.",
+              "evidence": [
+                ".research/settings-full-extension-native-20261008.json",
+                ".research/parallel-lifecycle-native-peer-20261008.json"
+              ],
+              "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -8834,6 +8909,21 @@
                 "detail": "Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload."
               },
               "reason": "Preserve earlier-artifact evidence separately from current414 run; not current-main or full reload proof."
+            },
+            {
+              "at": "2026-10-08T21:53:49.775225+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37837587382",
+                "evidence": [".research/settings-sections-scrape-native-20261008.json"],
+                "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+                "build_version": "0.2.414",
+                "detail": "Capture and Scroll & capture UI/stored modes matched across panel reload and baseline restoration. No preference recheck after full extension reload; prior175 full-reload evidence remains historical.",
+                "resource_valid": true,
+                "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
+              },
+              "reason": "Preserve previous scoped evidence."
             }
           ]
         },
@@ -65116,6 +65206,18 @@
               "resource_valid": true,
               "evidence": [".research/records-cdp-native-peer-20261008.json"],
               "detail": "Independent raw review confirms recovery-list GET fails at owned CDP command_timeout; null HTTP status, planned journal with no create. C04/C05 remain unverified. Both temporarysecret names independently absent. Existing driver awaits full network operation inside5s CDP command; next repair must separate request lifetime and transport commands, preserving credentials inbrowser and fixture ownership. No server-cause claim."
+            },
+            {
+              "at": "2026-10-08T21:53:49.775225+00:00",
+              "mode": "admin",
+              "run_id": "37847790922",
+              "status": "partial",
+              "resource_invalid": false,
+              "evidence": [
+                ".research/records-lifecycle-native-20261008.json",
+                ".research/parallel-lifecycle-native-peer-20261008.json"
+              ],
+              "detail": "C04/C05 finish visibly with HTTP200 and exact owned-fixture matches. Cleanup list lacked marker; operator verified canonical detail marker, archived exact fixture and checked absence. Root reviewed evidence without authenticated cleanup replay; full Records remains partial."
             }
           ],
           "results": {
