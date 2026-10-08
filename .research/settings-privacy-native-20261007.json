@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "settings-privacy-native",
+  "status": "partial_native_resource_valid_independent_review_pending",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37722572578",
+    "run_id": 37722572578,
+    "job_id": 113133381229,
+    "status": "completed",
+    "conclusion": "success",
+    "head_branch": "main",
+    "head_sha": "6d8fb6945877592b35b5ed74d00472b03841ebbe",
+    "acceptance_lane": "B",
+    "acceptance_case": "settings-controls",
+    "auth_mode": "signed-out guest",
+    "runner_label": "macos-15-intel",
+    "runner_architecture": "X64",
+    "chromium_version": "141.0.7390.37",
+    "playwright_build": "1194",
+    "duration": "8m11s"
+  },
+  "source_reviews": {
+    "final_peer": ".research/settings-privacy-final-peer-20261007.json",
+    "batch_peer": ".research/settings-privacy-batch-peer-20261007.json",
+    "builder_record": ".research/next-settings-coverage-batch-20261007.json",
+    "focused_ci": {
+      "run_id": 37722302031,
+      "conclusion": "success",
+      "head_sha": "ff548299f0c6b34541c0409ea8173e069f8d91a1",
+      "scope": "Focused source checks only; native behavior comes from this separate run."
+    }
+  },
+  "driver_identity": {
+    "path": "tests/browser/settings-local-controls-acceptance.mjs",
+    "workflow_source_sha": "6d8fb6945877592b35b5ed74d00472b03841ebbe",
+    "driver_sha256": "0b5963f4af06970aaf3428a1c7f78f33b4af1f27da7765cff317a137551c49b9",
+    "workflow_path": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_file_sha256": "7d53dcc41676c898b21eb504f0a4d4623c18edced97c375cb9980aed6a7573f3"
+  },
+  "selected_development_artifact": {
+    "run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "verification": "Native PREPARED_DEVELOPMENT identity and tree hash match the frozen CI artifact receipt/provenance."
+  },
+  "native_outcome": {
+    "driver_report_status": "unverified",
+    "scope": "Four requested guest Privacy preferences only; broader settings-controls receipt is retained for context.",
+    "cases": {
+      "EXT-F-1003-T16": {
+        "case_status": "unverified",
+        "switch_key": "sharePageIdentity",
+        "warm_and_reload": {
+          "off": "UI false, storage false; pass",
+          "on": "UI true, storage true; pass"
+        },
+        "restoration": "Runner finally block restored the UI/storage baseline and reloaded to verify it; no assertion failure occurred.",
+        "downstream": "Agent identity and email context sharing remains unverified."
+      },
+      "EXT-F-1003-T19": {
+        "case_status": "unverified",
+        "switch_key": "captureLoginsEnabled",
+        "warm_and_reload": {
+          "off": "UI false, storage false; pass",
+          "on": "UI true, storage true; pass"
+        },
+        "restoration": "Runner finally block restored the UI/storage baseline and reloaded to verify it; no assertion failure occurred.",
+        "downstream": "Post-login save offer remains unverified."
+      },
+      "EXT-F-1003-T31": {
+        "case_status": "unverified",
+        "switch_key": "offerSavedLoginsEnabled",
+        "warm_and_reload": {
+          "off": "UI false, storage false; pass",
+          "on": "UI true, storage true; pass"
+        },
+        "restoration": "Runner finally block restored the UI/storage baseline and reloaded to verify it; no assertion failure occurred.",
+        "downstream": "Saved-login offer on a supported sign-in form remains unverified."
+      },
+      "EXT-F-1003-T34": {
+        "case_status": "unverified",
+        "switch_key": "credentialAssistancePresentation",
+        "warm_and_reload": {
+          "off": "UI false, storage quiet; pass",
+          "on": "UI true, storage on_page; pass"
+        },
+        "restoration": "Runner finally block restored the UI/storage baseline and reloaded to verify it; no assertion failure occurred.",
+        "downstream": "On-page suggestion presentation on a supported site remains unverified."
+      }
+    },
+    "baseline": "Each case requires the visible switch and stored preference to agree before mutation; the run completed without a baseline assertion failure.",
+    "broader_receipt": "The raw driver report contains 16 cases: 9 pass, 7 unverified, overall unverified. These surrounding observations are retained without promoting them in this focused report."
+  },
+  "resource_gate": {
+    "decision": "valid",
+    "journal_count": 3,
+    "journals": [
+      {
+        "file": ".research/settings-privacy-native-20261007-originals/resource-journals/hosted-package-37722572578-1.jsonl",
+        "sha256": "3155db6d7e9c141b410237909e293618d2c3447a61a4f7311780fa42123268eb",
+        "resource_invalid": false,
+        "exit_code": 0
+      },
+      {
+        "file": ".research/settings-privacy-native-20261007-originals/resource-journals/hosted-browser-37722572578-1.jsonl",
+        "sha256": "d6b200fa724fa90bcd66de90b091564adeecefe3b6e26f0cd7e2c0a91125451a",
+        "resource_invalid": false,
+        "exit_code": 0
+      },
+      {
+        "file": ".research/settings-privacy-native-20261007-originals/resource-journals/hosted-guest-37722572578-1.jsonl",
+        "sha256": "c152161c7e70484f4640d9251c2f7e814e6022b75b65656349531ffd82e761d3",
+        "resource_invalid": false,
+        "exit_code": 0,
+        "healthy_watch_samples": 3
+      }
+    ],
+    "provenance": "The workflow artifact omitted the journal files despite the upload glob. Each JSONL preserves the exact RESOURCE_* event JSON emitted by stabilization-resource.mjs and recovered from the complete GitHub job log. Originals are labeled as log-extracted streams, not downloaded journal files."
+  },
+  "evidence": {
+    "directory": ".research/settings-privacy-native-20261007-originals/",
+    "raw_files": [
+      {
+        "file": "settings-local-controls-acceptance.json",
+        "sha256": "e0d25551a4a8928d571c25dcef39f2acbf992b2bfbd9e3e98c2b576a5b961f50"
+      },
+      {
+        "file": "screenshots/native-side-panel.png",
+        "sha256": "1d63139057f53ee3ac982ae29568b45d67ea403a3e151bad798d84a8c3d27f1a"
+      },
+      {
+        "file": "screenshots/normal-target-after-open.png",
+        "sha256": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c"
+      }
+    ],
+    "native_artifact": {
+      "id": 11526223459,
+      "name": "hosted-guest-37722572578-1",
+      "digest": "sha256:2f175aadb7074f707fd4884232baf2f17ff154849ebbbefecb734a1451cba02e",
+      "expired": false
+    },
+    "screenshot_scope": "Setup screenshots only; they do not show the Settings interaction or establish downstream behavior."
+  },
+  "limits": [
+    "Focused CI success is source evidence, not whole native acceptance.",
+    "This is frozen 0.2.391 product evidence; it does not prove current-main, Store, member, or admin behavior.",
+    "No inventory cells are changed by this report; root owns integration and independent native review.",
+    "No retry, local browser/build, release/deploy, secret access, or code edit occurred in this lane."
+  ],
+  "sensitive_output": "No credentials or tokens were collected or retained."
+}
