@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "task": "Independent EXT-D-0178 timeout receipt review of c4291783",
+  "verdict_a": "SOURCE READY, NATIVE PENDING: both real-helper wait timeouts now preserve the last successfully read Article predicates in the boundary attached to the native report; no fresh native run establishes the original UI scenario end to end.",
+  "verdict_b": "PASS: the repair preserves observed false versus unobserved null, original timeout errors and content oracle, existing success branches, bounded receipt privacy, and cleanup behavior.",
+  "prior_gap": "The previous review reproduced true Article predicates in the timeout diagnostic but false constructor defaults in the persisted receipt. The new read callbacks assign only fixed scalar diagnostic fields to the attached boundary after successful UI reads.",
+  "red": "The two new serialized-failure tests were independently run against c4291783^ real helper with the real bounded waitFor: both failed, persisting [false,false,false,false,false] instead of [true,true,true,true,false].",
+  "green": "node --test tests/browser/scrape-post-reload-capture-boundary.test.mjs tests/browser/scrape-native-recapture.test.mjs: 14 passed, 0 failed; targeted pnpm exec biome check passed.",
+  "native_writer": "tests/browser/scrape-guest-native-acceptance.mjs attaches the mutable boundary to report before runPostReloadCaptureBoundary and serializes report after the catch path, so the same values survive a timeout into the native receipt.",
+  "branches": "First-wait timeout leaves branch null because no branch was accepted; confirmation-wait timeout keeps discard_confirmation and trusted_confirmation_returned=true after the owned dialog click returns. Existing already_captured and successful confirmation tests passed.",
+  "privacy": "Persisted receipt tests assert fixed booleans/nulls and reject private page text, media URL, and raw state; timeout diagnostic still excludes them. The capturedReferrals acceptance predicate was unchanged.",
+  "scope": "Independent source and focused-test review only; no native UI, build, release, or source/inventory changes."
+}
