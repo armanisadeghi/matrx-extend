@@ -1,18 +1,26 @@
 {
-  "schema_version": 1,
-  "case": "EXT-F-1003-T28 guest",
-  "reported_run": "37837587382",
-  "finding": "The assertion reported only guest_settings_sections_missing and discarded the observed active flag and section roster. The report cannot establish whether the Settings pane was inactive or the roster differed; no product cause is proven.",
-  "repair": "Preserve a bounded census diagnostic on initial failure: active boolean, total heading count, labels only from the source-owned expected Settings section list, and count of unrecognized labels. The initial gate now verifies the exact ordered roster before section actions; all later section behavior assertions remain unchanged.",
-  "guard": "Added a focused integrated onFailure test forcing both an inactive empty census and same-count roster drift containing a synthetic private-looking label. The receipt must retain only safe diagnostic fields and no section actions or reload may occur.",
-  "verification": {
-    "format": "pnpm exec biome format --write tests/browser/settings-guest-scrape-controls.mjs tests/browser/settings-guest-scrape-controls.test.mjs completed with no formatting changes.",
-    "focused_test": "Not run locally under the bounded source-only assignment; pushed test changes are expected to trigger the hosted focused gate.",
-    "native": "Not run. The prior T28 native result remains unverified as product behavior; actual expand/collapse behavior and full-extension reload remain unproven."
+  "status": "source-repair-complete; hosted-focused-gate-and-independent-review-pending",
+  "commit": "0c8ae904c926a360fe1c05d63dc19628e42183fb",
+  "native_failure": {
+    "run_id": "37840985992",
+    "cause": "T28 observed 15 aria-expanded buttons for 11 Settings sections; four nested expanded controls were misclassified as section headings.",
+    "behavior_claim": "No Settings section actions ran after the roster guard failed. T04 and T10 passed panel reload; no full-extension-reload or downstream behavior credit."
   },
-  "files": [
-    "tests/browser/settings-guest-scrape-controls.mjs",
-    "tests/browser/settings-guest-scrape-controls.test.mjs",
-    ".research/settings-census-repair-20261008.json"
+  "repair": {
+    "files": [
+      "tests/browser/settings-guest-scrape-controls.mjs",
+      "tests/browser/settings-guest-scrape-controls.test.mjs"
+    ],
+    "method": "Observe only direct children of SettingsView's scroll list that match the live Collapsible wrapper/header/controlled-content DOM shape. Preserve counts for all expanded controls and non-section controls. Do not use a hardcoded expected DOM count as a selector."
+  },
+  "verification": {
+    "command": "node --test tests/browser/settings-guest-scrape-controls.test.mjs",
+    "result": "6 passed, 0 failed",
+    "additional": "Biome formatted both owned files; git diff --check passed before commit."
+  },
+  "limitations": [
+    "Hosted focused gate and independent source review are pending.",
+    "No native rerun occurred; do not promote T28 acceptance from source tests.",
+    "Full extension reload and downstream capture behavior remain unverified."
   ]
 }
