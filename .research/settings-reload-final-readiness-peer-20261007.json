@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "settings-reload-final-readiness-peer",
+  "status": "review_complete_native_retest_pending",
+  "scope": "Fresh zero-authorship scoped re-review of repair 65637cd5, correction c8459a93, and exact-SHA focused CI; no native browser rerun or product credit",
+  "prior_finding": {
+    "result": "ADDRESSED",
+    "finding": "The replacement Settings readiness regression was absent from the explicit focused acceptance script.",
+    "evidence": "package.json now includes tests/browser/settings-replacement-tab.test.mjs in test:focused-acceptance. Both .github/workflows/ci.yml and .github/workflows/focused-acceptance.yml invoke that script. Focused acceptance workflow 37715732203 completed SUCCESS at c8459a93f67cff9319e24841cfe69edb4be05f3f."
+  },
+  "verdict_a_native_rerun_readiness": {
+    "result": "PASS_FOR_ONE_RERUN",
+    "reason": "The same replacement-panel settings() call path now waits for exactly one visible Settings tab before the original trusted click. The click and subsequent guest-state acceptance remain required. A missing tab times out and is classified; there is no retry of a failed click, longer timeout, or relaxed product criterion.",
+    "native_product_result": "UNVERIFIED: no post-repair native full-extension-reload run was performed in this review. The previous frozen-artifact receipt stopped at the first Settings click with matchedTargetCount=0, then observed settingsTabCount=1 on the same panel. That supports a timing race but does not prove product recovery.",
+    "next_action": "Run one admitted native full-extension-reload guest Settings rerun on the frozen artifact and credit post-reload cases only from that native receipt."
+  },
+  "verdict_b_quality_forcing_test": {
+    "result": "PASS_WITH_SCOPE_LIMIT",
+    "reason": "The new test extracts and executes the actual acceptance driver's settings() body. Its call-path assertion observes readiness before trusted click and guest observation; the helper tests exercise absent, hidden, and uniquely visible tab states through the real evaluate/waitFor seam. The focused CI omission is repaired. Reload diagnostics emit allowlisted step/category/pointer fields rather than raw transient error text.",
+    "negative_control": "SETTINGS_NEGATIVE_CONTROL_BYPASS_READINESS=1 node --test tests/browser/settings-replacement-tab.test.mjs: 2 pass, 1 assertion failure because trusted_click occurred without tab_ready. Normal direct node --test of settings-replacement-tab.test.mjs and settings-reload-boundary.test.mjs: 7/7 pass.",
+    "scope_limit": "Controlled panel and dependency doubles verify the readiness gate and call ordering; they do not stand in for the native extension lifecycle or guest UI result. The extracted function has an exact source-text locator, so an equivalent refactor may require test maintenance."
+  },
+  "evidence": [
+    "git show --stat -U10 65637cd5 c8459a93",
+    "package.json",
+    ".github/workflows/ci.yml",
+    ".github/workflows/focused-acceptance.yml",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/settings-reload-boundary.mjs",
+    "tests/browser/settings-replacement-tab.test.mjs",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37715732203",
+    ".research/settings-unrecorded-native-20261007/evidence/raw/settings-local-controls-acceptance.json"
+  ],
+  "commit_shas_reviewed": ["65637cd5", "c8459a93"]
+}
