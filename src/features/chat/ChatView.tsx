@@ -9,7 +9,7 @@ import { ContextRulesComposerChip } from '@/features/chat/ContextRulesComposerCh
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
 import { GoogleFileAttachmentChip } from '@/features/chat/GoogleFileAttachmentChip';
 import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
-import { LanguagePicker } from '@/features/chat/LanguagePicker';
+import { VoiceLanguagePicker } from '@/features/chat/VoiceLanguagePicker';
 import { QueuedMessageStack } from '@/features/chat/QueuedMessageCard';
 import { SandboxPickerChip } from '@/features/chat/SandboxPickerChip';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
@@ -881,7 +881,7 @@ function ChatHeader({
       )}
       <div className="ml-auto flex items-center gap-1">
         <TaskPanelChip conversationId={selectedConversationId} onClick={onToggleTaskPanel} />
-        <LanguagePicker />
+        <VoiceLanguagePicker />
         <SandboxPickerChip disabled={!signedIn || !organizationReady} />
         <PermissionModeChip
           mode={permissionMode}

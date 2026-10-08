@@ -25,7 +25,7 @@ import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
-import { LanguagePicker } from '@/features/chat/LanguagePicker';
+import { VoiceLanguagePicker } from '@/features/chat/VoiceLanguagePicker';
 import { ServerToolRow } from '@/features/chat/ServerToolRow';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
@@ -510,7 +510,7 @@ function PilotHeader({
         </span>
       )}
       <div className="ml-auto flex items-center gap-1">
-        <LanguagePicker />
+        <VoiceLanguagePicker />
         <PermissionModeChip
           mode={permissionMode}
           disabled={!selectedAgentId}
