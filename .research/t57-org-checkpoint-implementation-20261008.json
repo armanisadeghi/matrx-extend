@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "status": "implementation_candidate_source_tests_pass_native_unverified",
+  "scope": "T57 native acceptance checkpoint, private organization fixture validation, request observer, and focused probes only; no product, authentication, storage, database, or release change",
+  "cause": "The frozen 0.2.407 run stopped at d87_required_organization_storage_not_observed after the approved organization name was rendered. The product's load ladder may select a current membership without writing a device-choice storage entry, so unconditional device-storage acceptance was false.",
+  "approved_identity_provenance": "The verified mode-0600 fixture carries approved_organization_name and approved_organization_id. The independent authenticated public.mbr_for_user plus iam.organizations current, active, non-archived, unique exact-name membership proof is recorded in .research/t57-membership-rpc-diagnosis-20261008.json. No UUID or membership row is committed in this report.",
+  "new_checkpoint": [
+    "Require the approved name and UUID in the private T57 fixture and hosted T57 preflight.",
+    "Verify signed-in admin role, first-party profile, visible approved organization name, and any explicit device choice against the approved UUID.",
+    "Allow absent device-choice storage only when the load-ladder visible choice matches the approved name; never write or fake storage.",
+    "Within the native panel, open Tools and the server-owned Records row; observe its actual GET /tools/test/list on the production API origin through CDP.",
+    "Bind one exact request ID to its HTTP 200 response and loadingFinished; compare its X-Organization-Id to the approved UUID and its Bearer token hash to the panel's current token hash. No raw token, UUID, or organization name enters the hosted receipt."
+  ],
+  "red_green": {
+    "old_red": "The documented frozen native receipt failed d87_required_organization_storage_not_observed on a ladder state with approved visible name and absent device storage.",
+    "new_green": "Focused source tests pass the ladder probe with absent device storage and matching real-path CDP request/response semantics; wrong or absent organization header, wrong bearer, failed response, wrong stored UUID, missing fixture UUID, and unverified admin role reject.",
+    "limit": "Probe events model the CDP boundary and are not a native product acceptance. No new native run was launched."
+  },
+  "verification": {
+    "focused_tests": "node --test tests/browser/showcase-organization-diagnostic.test.mjs scripts/hosted-profile-route.test.mjs tests/browser/settings-native-auth-driver.test.mjs: 27 passed",
+    "format": "pnpm exec biome format --write on all touched JavaScript files; git diff --check passed",
+    "compile": "pnpm compile failed on pre-existing unrelated @ai-matrx/media/react useReadAloud, @ai-matrx/chat/host createMemoryNavigation, @ai-matrx/media/speech, and dependent implicit-any errors. No touched TypeScript files."
+  },
+  "next_gate": "Fresh independent source peer review, privately update the hosted T57 organization secret to carry the already verified UUID, then native test the exact frozen artifact. Do not claim product T57 acceptance from source tests."
+}

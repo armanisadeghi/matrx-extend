@@ -9,6 +9,7 @@ const SUBSTAGES = new Set([
   'organization_rendered_identity',
   'organization_identity_read',
   'organization_identity_compare',
+  'organization_product_request',
 ]);
 const OBSERVATIONS = new Set([
   'admin_role_verified',
@@ -21,6 +22,10 @@ const OBSERVATIONS = new Set([
   'rendered_role_matches',
   'rendered_profile_matches',
   'rendered_organization_matches',
+  'product_request_observed',
+  'product_response_success',
+  'product_header_matches',
+  'product_principal_matches',
   'menu_open',
   'visible_option_count',
   'exact_match_count',
@@ -35,10 +40,16 @@ const KNOWN_FAILURES = new Set([
   'd87_required_organization_picker_not_observed',
   'd87_member_organization_option_unavailable',
   'd87_required_organization_storage_not_observed',
+  'd87_approved_organization_id_required',
   'd87_rendered_identity_not_observed',
   'd87_required_rendered_identity_unverified',
   'showcase_profile_changed',
   'showcase_organization_changed',
+  'showcase_product_organization_request_not_observed',
+  'showcase_product_organization_header_mismatch',
+  'showcase_product_principal_mismatch',
+  'showcase_product_response_failed',
+  'showcase_authenticated_token_unavailable',
 ]);
 const POINTER_FAILURES = new Set([
   'pointer_target_not_unique',

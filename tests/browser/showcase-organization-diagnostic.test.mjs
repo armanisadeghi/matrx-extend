@@ -12,7 +12,11 @@ import {
   safeShowcaseOrganizationFailure,
   stageShowcaseOrganization,
 } from './showcase-organization-diagnostic.mjs';
-import { organizationProbePanel, probeAuth } from './showcase-organization-probe.mjs';
+import {
+  ORGANIZATION_ID,
+  organizationProbePanel,
+  probeAuth,
+} from './showcase-organization-probe.mjs';
 
 // Hosted picker setup must retain its exact safe substage/reason through the real receipt writer.
 test('organization failures persist bounded diagnostics through the native driver catch', () => {
@@ -30,19 +34,6 @@ test('organization failures persist bounded diagnostics through the native drive
         'organization_picker',
         'd87_required_organization_picker_not_observed',
         { admin_role_verified: true, picker_available: null, picker_has_selection: null },
-      ],
-      [
-        'storage',
-        'organization_storage',
-        'd87_required_organization_storage_not_observed',
-        {
-          admin_role_verified: true,
-          picker_available: true,
-          picker_has_selection: true,
-          selection_required: false,
-          storage_has_uuid: false,
-          storage_name_matches: false,
-        },
       ],
     ]) {
       const output = join(directory, `${probe}.json`);
@@ -102,26 +93,12 @@ test('the real organization helper completes through the shared checkpoint with 
     resourceAction: (action) => action(),
     report,
     requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+    requiredOrganizationId: ORGANIZATION_ID,
   });
-  assert.equal(
-    organization.renderedIdentity.selected_organization_matches_stored_uuid_and_name,
-    true,
-  );
-  assert.deepEqual(report.organization_diagnostic, {
-    substage: 'organization_identity_compare',
-    observations: {
-      admin_role_verified: true,
-      picker_available: true,
-      picker_has_selection: true,
-      selection_required: false,
-      storage_has_uuid: true,
-      storage_name_matches: true,
-      rendered_email_matches: true,
-      rendered_role_matches: true,
-      rendered_profile_matches: true,
-      rendered_organization_matches: true,
-    },
-  });
+  assert.equal(organization.renderedIdentity.selected_organization_matches_approved_request, true);
+  assert.equal(report.organization_diagnostic.substage, 'organization_identity_compare');
+  assert.equal(report.organization_diagnostic.observations.product_header_matches, true);
+  assert.equal(report.organization_diagnostic.observations.product_response_success, true);
 });
 
 test('admin selection uses the approved fixture name and verifies the stored organization', async () => {
@@ -133,6 +110,7 @@ test('admin selection uses the approved fixture name and verifies the stored org
     resourceAction: (action) => action(),
     report,
     requiredOrganizationName: 'Matrx Org',
+    requiredOrganizationId: ORGANIZATION_ID,
   });
   assert.equal(panel.selectionClicks, 1);
   assert.equal(organization.organizationName, 'Matrx Org');
@@ -149,12 +127,37 @@ test('admin selection uses the approved fixture name and verifies the stored org
       resourceAction: (action) => action(),
       report: wrongReport,
       requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+      requiredOrganizationId: ORGANIZATION_ID,
     }),
     /d87_member_organization_option_unavailable/,
   );
   assert.equal(wrongFixture.selectionClicks, 0);
   assert.equal(wrongReport.organization_diagnostic.observations.exact_match_count, 0);
   assert.equal(wrongReport.organization_diagnostic.observations.archive_filter, 'active');
+});
+
+test('ladder-selected approved org passes only with successful authenticated product header', async () => {
+  const run = async (scenario) => {
+    const report = { organization_diagnostic: null };
+    const result = await runShowcaseOrganizationCheckpoint({
+      panel: organizationProbePanel(scenario),
+      auth: probeAuth,
+      resourceAction: (action) => action(),
+      report,
+      requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+      requiredOrganizationId: ORGANIZATION_ID,
+    });
+    return { result, report };
+  };
+  const { result, report } = await run('ladder');
+  assert.equal(result.organizationId, ORGANIZATION_ID);
+  assert.equal(report.organization_diagnostic.observations.storage_has_uuid, false);
+  assert.equal(report.organization_diagnostic.observations.product_header_matches, true);
+  assert.equal(report.organization_diagnostic.observations.product_principal_matches, true);
+  for (const scenario of ['wrong_header', 'missing_header', 'wrong_bearer', 'failed_response']) {
+    await assert.rejects(run(scenario), /showcase_product_/);
+  }
+  await assert.rejects(run('wrong_storage'), /showcase_organization_changed/);
 });
 
 test('admin selection refuses an absent approved fixture before opening Settings', async () => {

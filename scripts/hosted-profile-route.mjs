@@ -78,14 +78,14 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
     acceptanceCase.startsWith('showcase-') ||
     scrapeMode === 'admin'
   )
-    profileOrganizationConfig(env);
+    profileOrganizationConfig(env, acceptanceCase === 'showcase-picker-admin');
   // The native journal is private and fsynced, but its hosted VM is disposable.
   // A write cannot start until each intent is durably recoverable elsewhere.
   if (acceptanceCase === 'profile-admin' || acceptanceCase === 'profile-member')
     throw new Error('hosted_profile_durable_recovery_unavailable');
 }
 
-export function profileOrganizationConfig(env) {
+export function profileOrganizationConfig(env, requireId = false) {
   assert.ok(env.MATRX_HOSTED_PROFILE_ORGANIZATION_JSON, 'hosted_profile_org_secret_required');
   let config;
   try {
@@ -98,7 +98,14 @@ export function profileOrganizationConfig(env) {
     typeof name === 'string' && name.trim() && name === name.trim(),
     'hosted_profile_org_name_invalid',
   );
-  return { approved_organization_name: name };
+  const id = config?.approved_organization_id;
+  if (requireId || id !== undefined)
+    assert.match(
+      id ?? '',
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+      'hosted_profile_org_id_invalid',
+    );
+  return { approved_organization_name: name, ...(id && { approved_organization_id: id }) };
 }
 
 export async function stageProfileOrganizationConfig(path, env) {

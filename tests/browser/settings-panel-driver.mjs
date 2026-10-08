@@ -285,6 +285,8 @@ export async function click(panel, kind, label, onPhase = undefined) {
     }
     else if (kind === 'button-text') candidates = [...document.querySelectorAll('button')]
       .filter((el) => el.textContent.trim() === label);
+    else if (kind === 'tool-row') candidates = [...(${activeTabPanelExpression('Tools')}?.querySelectorAll('button') ?? [])]
+      .filter((el) => el.querySelector('span.font-mono')?.textContent.trim() === label);
     else if (kind === 'save-pattern-name') candidates = [...document.querySelectorAll('[data-radix-popper-content-wrapper]')]
       .filter((wrapper) => [...wrapper.querySelectorAll('button')]
         .some((button) => button.textContent.trim() === 'Save'))

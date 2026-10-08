@@ -107,9 +107,20 @@ test('Showcase and Scrape admin routes require the approved fixture before brows
     assert.doesNotThrow(() =>
       requireHostedAcceptanceCredential(acceptanceCase, {
         ...env,
-        MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: '{"approved_organization_name":"Matrx Org"}',
+        MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: acceptanceCase.startsWith('showcase-')
+          ? '{"approved_organization_name":"Matrx Org","approved_organization_id":"72336a38-f816-442f-ad48-18610128fb67"}'
+          : '{"approved_organization_name":"Matrx Org"}',
       }),
     );
+    if (acceptanceCase.startsWith('showcase-'))
+      assert.throws(
+        () =>
+          requireHostedAcceptanceCredential(acceptanceCase, {
+            ...env,
+            MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: '{"approved_organization_name":"Matrx Org"}',
+          }),
+        /hosted_profile_org_id_invalid/,
+      );
     const preflight = spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
       env: {
         GITHUB_ACTIONS: 'true',

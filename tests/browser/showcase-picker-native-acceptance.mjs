@@ -9,7 +9,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
   MEMBER_TEST_ORGANIZATION_NAME,
-  approvedAdminOrganizationName,
+  approvedShowcaseOrganization,
   signInSettings,
 } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -951,7 +951,7 @@ try {
     const probe = process.env.MATRX_SHOWCASE_DIAGNOSTIC_PROBE;
     if (probe === 'unknown')
       throw new Error('private@example.invalid https://private.invalid/token');
-    const { organizationProbePanel, probeAuth, withFastProbeClock } = await import(
+    const { organizationProbePanel, probeAuth, ORGANIZATION_ID, withFastProbeClock } = await import(
       './showcase-organization-probe.mjs'
     );
     await withFastProbeClock(() =>
@@ -961,6 +961,7 @@ try {
         resourceAction: (action) => action(),
         report,
         requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+        requiredOrganizationId: ORGANIZATION_ID,
       }),
     );
   }
@@ -981,7 +982,7 @@ try {
     /^[1-9][0-9]*$/,
     'showcase_ci_artifact_required',
   );
-  const requiredOrganizationName = await approvedAdminOrganizationName(
+  const approvedOrganization = await approvedShowcaseOrganization(
     process.env.MATRX_APPROVED_ADMIN_ORGANIZATION_FILE,
   );
   const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
@@ -1045,9 +1046,10 @@ try {
         auth,
         resourceAction,
         report,
-        requiredOrganizationName,
+        requiredOrganizationName: approvedOrganization.name,
+        requiredOrganizationId: approvedOrganization.id,
       });
-      passed('real_admin_signin_and_device_organization', { rendered: true });
+      passed('real_admin_signin_and_approved_product_organization', { rendered: true });
       await resourceAction(() => reopenPanel());
       await waitFor(
         'showcase_panel_visible',

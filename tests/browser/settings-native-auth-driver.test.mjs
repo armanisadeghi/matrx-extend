@@ -7,6 +7,7 @@ import { runInNewContext } from 'node:vm';
 import {
   MEMBER_TEST_ORGANIZATION_NAME,
   approvedAdminOrganizationName,
+  approvedShowcaseOrganization,
   currentSettingsIdentityMatches,
   observeOrganizationOption,
   panelIdentity,
@@ -257,6 +258,33 @@ test('approved admin organization is read only from a private named fixture', as
     await chmod(fixture, 0o644);
     await assert.rejects(
       approvedAdminOrganizationName(fixture),
+      /d87_approved_admin_organization_file_not_private/,
+    );
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('showcase requires a private name and UUID fixture before native setup', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'showcase-approved-org-'));
+  const fixture = join(directory, 'approved.json');
+  try {
+    await writeFile(fixture, '{"approved_organization_name":"Matrx Org"}', { mode: 0o600 });
+    await assert.rejects(
+      approvedShowcaseOrganization(fixture),
+      /d87_approved_admin_organization_id_invalid/,
+    );
+    await writeFile(
+      fixture,
+      '{"approved_organization_name":"Matrx Org","approved_organization_id":"72336a38-f816-442f-ad48-18610128fb67"}',
+    );
+    assert.deepEqual(await approvedShowcaseOrganization(fixture), {
+      name: 'Matrx Org',
+      id: '72336a38-f816-442f-ad48-18610128fb67',
+    });
+    await chmod(fixture, 0o644);
+    await assert.rejects(
+      approvedShowcaseOrganization(fixture),
       /d87_approved_admin_organization_file_not_private/,
     );
   } finally {

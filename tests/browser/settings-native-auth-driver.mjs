@@ -81,6 +81,18 @@ export async function approvedAdminOrganizationName(file) {
   return name;
 }
 
+export async function approvedShowcaseOrganization(file) {
+  const config = await privateJson(file, 'd87_approved_admin_organization');
+  const name = config?.approved_organization_name;
+  const id = config?.approved_organization_id;
+  assert.ok(
+    typeof name === 'string' && name.trim() === name && name.length > 0,
+    'd87_approved_admin_organization_invalid',
+  );
+  assert.match(id ?? '', UUID, 'd87_approved_admin_organization_id_invalid');
+  return { name, id };
+}
+
 export async function panelIdentity(panel) {
   return evaluate(
     panel,
@@ -96,7 +108,7 @@ export async function panelIdentity(panel) {
   );
 }
 
-async function accountIdentity(panel, email) {
+export async function accountIdentity(panel, email) {
   return evaluate(
     panel,
     `(() => {
