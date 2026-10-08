@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "settings-reload-readiness-peer",
+  "status": "review_complete_changes_requested",
+  "scope": "Independent source and evidence review of 65637cd5 and diagnosis report 6a2b719d; no native rerun or product credit",
+  "verdict_a_spec_observable_outcome": {
+    "result": "PARTIAL",
+    "source_result": "The replacement-panel Settings path now waits for exactly one visible role=tab/title=Settings target before the trusted CDP click. The existing click path still requires a unique visible, stable, hit-tested target, and the subsequent guest-state assertion remains required. A missing Settings tab times out rather than passing.",
+    "native_result": "Unverified after repair. The original resource-valid native receipt from workflow 37714389856 records a first trusted click with matchedTargetCount=0, then a same-panel probe with settingsTabCount=1, matching runtime, and a ready document. It supports a driver timing race but does not establish the cause conclusively or prove post-reload guest Settings behavior.",
+    "missing": [
+      "A fresh admitted native full-extension-reload result must show the repaired Settings navigation and subsequent guest checks before T63 post-reload product credit. Ordinary-member denial remains outside the guest runner."
+    ],
+    "extra_or_misunderstood": []
+  },
+  "verdict_b_quality": {
+    "result": "FAIL",
+    "important_findings": [
+      {
+        "severity": "Important",
+        "finding": "The new readiness regression test is not in package.json test:focused-acceptance. Both .github/workflows/ci.yml and .github/workflows/focused-acceptance.yml run that explicit script. The automatic focused CI result can therefore pass while the replacement-tab wait is absent or broken.",
+        "remedy": "Add tests/browser/settings-replacement-tab.test.mjs to test:focused-acceptance, then run that exact script and the automatic focused workflow."
+      }
+    ],
+    "passing_observations": [
+      "Direct node --test of settings-replacement-tab.test.mjs and settings-reload-boundary.test.mjs passed 6/6 locally; the missing-tab negative case rejects as intended.",
+      "The new readiness condition uses the existing evaluate/waitFor seam and does not alter trusted click dispatch, guest-state acceptance, or timeouts.",
+      "The new diagnostic stage is allowlisted. Readiness timeout is classified as settings_tab_not_ready, and receipt fields remain fixed safe values; raw transient error text is not emitted by the classifier.",
+      "The diagnosis report correctly calls the timing cause supported rather than established and keeps native product recovery pending."
+    ],
+    "further_limit": "The direct regression test exercises the DOM-readiness seam with controlled panel states, not the real extension reload; native verification remains necessary."
+  },
+  "source_evidence": [
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/settings-reload-boundary.mjs",
+    "tests/browser/settings-replacement-tab.test.mjs",
+    "package.json",
+    ".github/workflows/ci.yml",
+    ".github/workflows/focused-acceptance.yml",
+    ".research/settings-unrecorded-native-20261007/evidence/raw/settings-local-controls-acceptance.json",
+    ".research/settings-reload-target-diagnosis-20261007.json"
+  ],
+  "commit_shas_reviewed": ["65637cd5", "6a2b719d"]
+}
