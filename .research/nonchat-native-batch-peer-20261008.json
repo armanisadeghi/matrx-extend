@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at_utc": "2026-10-08T09:29:18Z",
+  "reviewed_at_utc": "2026-10-08T09:30:56Z",
   "review_role": "independent byte-exact evidence and resource review",
   "batch_report": ".research/nonchat-native-batch-20261008.json",
   "native_run_id": 37755458660,
@@ -51,13 +51,27 @@
     "reload_timeline": {
       "old_panel_absent": true,
       "old_worker_absent_from_final_target_snapshot": true,
-      "old_version_status": "redundant; final observed running_status stopped",
+      "old_version_last_observed": {
+        "running_status": "stopped",
+        "status": "redundant"
+      },
       "replacement_worker_created_and_present": true,
+      "replacement_version_last_observed": {
+        "version_id": "1",
+        "running_status": "starting",
+        "status": "new",
+        "target_id": "replacement worker"
+      },
+      "replacement_running_activated_event_observed": false,
       "old_worker_destroyed_event_observed": false,
-      "old_host_execution_retired_observation": false,
+      "old_host_probe": "present, attached=false; this is not an execution-retired observation",
+      "version_events_dropped": 0,
+      "helper_source_anchor": "tests/browser/reload-lifetime-diagnostic.mjs:190",
+      "helper_contract": "reloadExecutionRetired requires both the old correlated version to end stopped/redundant and a distinct, identity-consistent replacement version to end running/activated. It does not require a TargetDestroyed event.",
+      "helper_replay": "The byte-exact receipt returns false. Adding only a same-identity replacement running/activated event returns true; removing the old stopped/redundant retirement event makes the counterfactual false.",
       "strict_final_predicate": false,
-      "interpretation": "Old target absence and a stopped/redundant old version are evidence of transition, but the receipt lacks the destroyed event and host execution-retired observation required by its strict predicate. The lifecycle remains unproven; the evidence does not distinguish a Chrome target-observation gap from an extension reload defect.",
-      "old_host_probe": "present, attached=false; execution-retired condition was not observed"
+      "interpretation": "The old version retirement evidence is present. The retained replacement version sequence ends at starting/new, so the helper returns false because replacement execution/activation is unproven in the observed event sequence. The trace cannot distinguish a replacement that did not activate from an activation event not delivered to this observer; zero dropped events were recorded.",
+      "causal_limit": "No product defect is established; missing TargetDestroyed alone is not a failure condition."
     },
     "warm_media_only": {
       "EXT-F-1007-T10": "Three image rows were observed, removed sequentially to empty, and a synthetic image was added. No post-reload image control was observed.",
@@ -137,5 +151,9 @@
   "limits": [
     "No native run, live call, source edit, or status promotion was performed during this review.",
     "Root owns canonical inventory updates; this report makes no inventory changes."
-  ]
+  ],
+  "interpretation_correction": {
+    "corrected_at_utc": "2026-10-08T09:30:56Z",
+    "note": "An earlier peer-report sentence incorrectly implied that the missing TargetDestroyed event was required by the helper. Source and receipt replay show the decisive missing criterion is replacement running/activated; old stopped/redundant retirement is observed, and TargetDestroyed is not part of the helper predicate."
+  }
 }
