@@ -22,7 +22,7 @@
     "negative_control": "node --test tests/browser/settings-replacement-tab.test.mjs failed before the repair because the readiness helper was absent. The new test drives the real evaluate/waitFor seam with a replacement panel whose Settings tab is first missing, then hidden, then uniquely visible; a second case rejects a tab that never renders.",
     "focused_after": "node --test tests/browser/settings-replacement-tab.test.mjs tests/browser/settings-reload-boundary.test.mjs: 6/6 passed",
     "typescript": "pnpm compile passed",
-    "format": "pnpm exec biome format --write on all four changed source/test files; focused biome check pending final commit check",
+    "format": "Focused pnpm exec biome check passed for all four changed source/test files; git diff --check passed. Biome excludes the research report JSON from its explicit-path check.",
     "native": "Not run: this machine prohibits manual build/release/deploy and this lane forbids browser dispatch. Existing native guest full-reload acceptance remains unverified."
   },
   "resource_status": "No heavy job, browser, build, release, deployment, credential access, or secret staging was started by this lane.",
