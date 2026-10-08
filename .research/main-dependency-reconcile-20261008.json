@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "defect_id": "EXT-D-0171",
+  "lane": "main dependency reconcile",
+  "source_before": "bceeca4eb0270acb40a0d6e4e4cc9f2a732ac6ad",
+  "ci_failure_source": "dddb795c",
+  "source_fix_commit": "23d348750ae3547d14354d0eb1f486fe458d542a",
+  "observed_failure": "CI pnpm postinstall rejected duplicate @ai-matrx/kit 0.38.0 and 0.39.0 in the committed lockfile.",
+  "cause": "The root importer and multiple latest-specified transitive edges still resolved kit 0.38.0 while other latest-specified edges resolved 0.39.0. npm latest was 0.39.0; sampled published dependency manifests requested kit as latest, so no producer pin blocked a consumer refresh.",
+  "repair": "Ran the resource-admitted pnpm update -r '@ai-matrx/*' --latest --ignore-scripts. It refreshed the lockfile to one kit 0.39.0 graph and also brought design-system to 0.81.0, records to 0.83.0, and rich-editor to 0.5.2. package.json remains unchanged with latest specifiers; no override or guard change was made.",
+  "integration": "While verification ran, a concurrent contributor pushed source_fix_commit to origin/main with a pnpm-lock.yaml byte-identical to the locally refreshed graph. This lane therefore did not commit or push a duplicate lockfile change.",
+  "consumer_actions": "Checked current CHANGELOG entries: kit 0.39.0 and rich-editor 0.5.2 require none; design-system 0.81.0 preserves formulas via re-export; records 0.83.0 renames two exports that src does not import.",
+  "verification": [
+    "Before repair, node scripts/check-matrx-packages.mjs --duplicates exited 1 with kit 0.38.0 and 0.39.0; local node_modules also contained unreferenced older residue.",
+    "After repair, the same duplicate guard exited 0: 21 @ai-matrx packages, one installed version each.",
+    "node scripts/check-matrx-packages.mjs --self-test passed.",
+    "Resource-admitted pnpm install --frozen-lockfile --ignore-scripts exited 0 with resolution skipped and lockfile up to date.",
+    "git diff --check -- pnpm-lock.yaml passed."
+  ],
+  "resource_runs": [
+    "main-dependency-reconcile-20261008",
+    "main-dependency-frozen-20261008"
+  ],
+  "limits": "No manual build, browser test, release, deploy, or claim that current-main CI passed. Automatic CI and an independent peer own broader verification."
+}
