@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "lane": "A",
+  "scope": "One hosted native public T57 attempt after independently reviewed D47 UUID handoff fix and guard, on exact frozen 0.2.407 artifact; no product, test, harness, build, release or deployment edit.",
+  "run": {
+    "id": 37769779267,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37769779267",
+    "status": "completed",
+    "conclusion": "failure",
+    "checkout_sha": "66b7b5c8bdd590134035cea6c5338901f46706eb",
+    "checkout_includes_uuid_fix_sha": "0eebbca39c95d62f401f3866123177ce92c4d51a",
+    "checkout_includes_guard_sha": "3749335640ea68887e00e38560fab302cda03aca",
+    "acceptance_case": "showcase-d47-public-admin",
+    "d47_public_race_preflight": true,
+    "runner_label": "macos-15",
+    "attempt_count": 1
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "version": "0.2.407",
+    "exact_import_observed_in_hosted_log": true
+  },
+  "native_receipt": {
+    "stage": "organization",
+    "auth_stage": "admin_rendered_identity",
+    "organization_substage": "organization_product_request",
+    "organization_observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": true,
+      "selection_required": false,
+      "storage_has_uuid": false,
+      "storage_name_matches": false,
+      "rendered_email_matches": true,
+      "rendered_role_matches": true,
+      "rendered_profile_matches": true,
+      "rendered_organization_matches": true
+    },
+    "failure_name": "Error",
+    "failure_message_code": "unclassified_error",
+    "capture": null,
+    "saved_result": null
+  },
+  "resource_journals": {
+    "package": {
+      "run_id": "hosted-package-37769779267-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "run_id": "hosted-browser-37769779267-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "run_id": "hosted-guest-37769779267-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "boundary": "Admin sign-in completed and the organization checkpoint accepted the private UUID/name arguments. Rendered email/role/profile/organization checks were true; picker already had the approved selection, so no explicit device choice was written. The driver entered organization_product_request and failed with a sanitized unclassified Error before recording request, successful HTTP response, X-Organization-Id comparison or bearer-principal comparison. The raw receipt cannot identify which observer setup or UI action failed. No T57 public Network race, capture or saved replay occurred.",
+  "source_context": "The unchanged checkpoint starts a CDP observer, clicks Tools then the records row, waits for GET /tools/test/list to finish, and only then writes product request/header/principal observations. The empty product observation set places the failure before that final measurement; it does not prove whether a request was sent.",
+  "credential_lifecycle": {
+    "canonical_private_preflight": "passed before staging",
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "both_deleted_immediately_after_terminal": true,
+    "independent_name_listing_absent": true,
+    "approved_fixture_mode": "0600",
+    "credential_values_retained": false
+  },
+  "originals": {
+    "hosted_artifact_id": 11547334906,
+    "hosted_artifact_digest": "sha256:a9e572b74e5ab4b1f8b34395e183be139d87acb13696ec78e54f868124345223",
+    "private_recursive_download": "/Volumes/Samsung2TB/.stabilization-scratch/t57-uuid-wiring-37769779267",
+    "tracked_raw_directory": ".research/t57-uuid-wiring-native-20261008-originals/raw",
+    "raw_sha256": {
+      "receipt.raw.json.txt": "770ad82dfe5c0d1561f84c89af0c5429f23eab2e7c01c2a34ab9260c995d5e39",
+      "hosted-package-37769779267-1.jsonl": "026be5d8b975647a8f8128c5482602b6f5008985d8231cea73ba2d31823f2af7",
+      "hosted-browser-37769779267-1.jsonl": "a83942c7ea84a51aad32f72709a147b9e07aff7d8e0afdcb110f25d617f1f1bd",
+      "hosted-guest-37769779267-1.jsonl": "3c2a0b180f53ad9f40769e1008eefcef8940a36a176374cb9450243eb3eadee9",
+      "run.raw.json": "e95331f26d8ec0e925ba750a620432e7d1f171b904807c71e54eb19e6b64e54f",
+      "artifacts.raw.json": "f5ce9964420299fd9c4652ce67055c7ddae3352983c6e4f38ac4d0231110ba3c"
+    },
+    "private_failed_step_log_sha256": "e4a5d5289c75e24be822a930905df3d24aef72fe35965a886b5810c82f7e1166"
+  },
+  "claim_limit": "Resource-valid child failure. The D47 UUID caller omission no longer blocks at resource_gate; approved product request/header remains unverified, and original T57 race acceptance remains unverified. This attempt does not establish a product defect or acceptance. No retry launched.",
+  "next_action": "Diagnose the organization_product_request observer/UI action boundary using a safe step-specific diagnostic that retains no token or organization value, independently review the finding, then decide whether a new native attempt is warranted."
+}
