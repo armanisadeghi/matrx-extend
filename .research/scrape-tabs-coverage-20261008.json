@@ -6,7 +6,7 @@
   "change": "The controlled intake capture now records and revisits all six rendered result panes both warm and after reload, then captures the media-free referrals fixture again after reload to assert both active empty media panes. Before and after pane switching, the native driver copies the product full-capture export through its real UI and compares SHA-256 of every copied byte and the included capturedAt identity in memory. Admin receives Full capture (JSON); guest/member receive For AI agent, which includes the full Markdown export and millisecond capture timestamp.",
   "forcing_guard": "assertCompleteTabCoverage rejects missing warm/reload export comparison or empty media observations. Focused tests reject changed visible pane data, missing reload empties, changed exported identity, and a hidden JSON audio mutation while the rendered pane data stays unchanged. Raw copied content and hashes are not written to receipts or error messages.",
   "source_verification": [
-    "node --test tests/browser/scrape-tab-coverage.test.mjs tests/browser/scrape-media-assertions.test.mjs tests/browser/scrape-empty-media-branch.test.mjs: 14 passed, 0 failed",
+    "node --test tests/browser/scrape-tab-coverage.test.mjs tests/browser/scrape-media-assertions.test.mjs tests/browser/scrape-empty-media-branch.test.mjs: 15 passed, 0 failed",
     "pnpm exec biome check on four owned browser files: passed",
     "node --check on driver and helper: passed",
     "git diff --check: passed"
@@ -14,5 +14,6 @@
   "native_run": null,
   "remaining": "Fresh exact-artifact native execution and independent receipt review are required. T08 remains partial; this source check does not claim guest, member, or admin acceptance.",
   "peer_followup": "Peer 7ea466f9 found rendered-pane comparison alone could not establish capture identity or hidden payload invariance.",
-  "export_limit": "For AI agent is the broadest full-capture export available to guest/member and includes the complete Markdown representation plus capturedAt; it does not expose every SoupResult field. Only admin Full capture (JSON) permits byte-for-byte comparison of the entire exported capture object. A native run is still required to verify these real UI paths."
+  "export_limit": "For AI agent is the broadest full-capture export available to guest/member and includes the complete Markdown representation plus capturedAt; it does not expose every SoupResult field. Only admin Full capture (JSON) permits byte-for-byte comparison of the entire exported capture object. A native run is still required to verify these real UI paths.",
+  "peer_followup_2": "Independent peer found Node assert.equal serialized both SHA-256 values in AssertionError.message; the native receipt retains String(error.message). Comparisons now throw fixed error codes with no captured values, and a focused regression inspects the exact 300-character receipt message for digest, timestamp, and content leakage while retaining a failing mismatch."
 }

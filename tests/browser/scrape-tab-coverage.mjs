@@ -40,8 +40,9 @@ export function captureExportFingerprint(value, { mode, url, title }) {
 }
 
 export function assertCaptureExportUnchanged(before, after, phase) {
-  assert.equal(after?.identity, before?.identity, `scrape_${phase}_capture_identity_changed`);
-  assert.equal(after?.digest, before?.digest, `scrape_${phase}_capture_payload_changed`);
+  if (after?.identity !== before?.identity)
+    throw new Error(`scrape_${phase}_capture_identity_changed`);
+  if (after?.digest !== before?.digest) throw new Error(`scrape_${phase}_capture_payload_changed`);
   return {
     export_format: before.format,
     bytes_compared: before.bytes,

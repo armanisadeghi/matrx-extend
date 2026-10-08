@@ -165,3 +165,35 @@ test('non-admin capture export requires source identity and compares complete co
     /scrape_capture_export_identity_missing/,
   );
 });
+
+test('native receipt error message never includes capture hashes, timestamps, or content', () => {
+  const before = {
+    digest: 'a'.repeat(64),
+    identity: '2026-10-08T10:20:00.123Z',
+    bytes: 120,
+    format: 'full_capture_json',
+  };
+  const after = { ...before, digest: 'b'.repeat(64) };
+  const replaced = { ...after, identity: '2026-10-08T10:20:00.999Z' };
+  for (const [candidate, code] of [
+    [after, 'scrape_warm_capture_payload_changed'],
+    [replaced, 'scrape_warm_capture_identity_changed'],
+  ]) {
+    let message;
+    try {
+      assertCaptureExportUnchanged(before, candidate, 'warm');
+    } catch (error) {
+      message = String(error.message).slice(0, 300);
+    }
+    assert.equal(message, code);
+    for (const secret of [
+      before.digest,
+      after.digest,
+      before.identity,
+      replaced.identity,
+      'Private capture body',
+    ]) {
+      assert.equal(message.includes(secret), false);
+    }
+  }
+});
