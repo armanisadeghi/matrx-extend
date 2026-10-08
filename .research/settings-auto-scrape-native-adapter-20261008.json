@@ -1,0 +1,22 @@
+{
+    "task": "EXT-F-1003-T40 native page-load auto-scrape adapter source audit",
+    "status": "adapter_not_implementable_from_current_rendered_preview_without_new_surface",
+    "source_proof": {
+        "preview_builder": "src/features/chat/ContextRulesComposerChip.tsx calls buildChatContextValues and stores contextRowSources(values) in useContextRulesStore; this is the no-send path.",
+        "content_value": "The default v2-bundled builder emits page_full_content only when a trustworthy scrape is available. It can contain the unique controlled-page marker.",
+        "rendered_table": "The installed @ai-matrx/agents ContextRulesTable renders item label, inclusion, and character count; raw row values are intentionally not rendered.",
+        "detail_loader": "ContextRulesPanelBody supports optional loadView to fetch exact text, but ContextRulesComposerChip does not pass loadView. The current full-value view therefore cannot provide the page text to a CDP DOM reader.",
+        "unsupported_shortcut": "No helper was added that fabricates rendered page text, inspects private React state, or treats row presence/character count as proof of a unique marker."
+    },
+    "missing_native_trigger": "An adapter needs a supported rendered value-view path for the no-send preview that returns exact page_full_content and a completion/document identity signal. With that surface, a fresh page after enabling and no manual capture can prove the unique marker; OFF can inspect complete preview state for absent page_full_content during a bounded window.",
+    "scope": {
+        "product_changes": false,
+        "native_run": false,
+        "acceptance_credit": false,
+        "helper_or_tests_added": false
+    },
+    "limits": [
+        "The absence of a Page content row or its character count cannot prove the marker text was captured or omitted.",
+        "A bounded OFF observation can only establish absence during the observed interval."
+    ]
+}
