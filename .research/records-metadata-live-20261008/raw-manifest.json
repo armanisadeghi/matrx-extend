@@ -1,0 +1,127 @@
+{
+	"schema_version": 1,
+	"hash_algorithm": "sha256",
+	"source_note": "Exact downloaded native artifact content is preserved in native-artifact-download.tar.gz; raw JSON responses and receipt are stored as .json.txt and hashed without parse/re-serialization.",
+	"files": [
+		{
+			"path": "raw/backend-version-after-response.raw.json.txt",
+			"bytes": 103,
+			"sha256": "852d35a6e92b1ecc7a37175b9f51334fbebc9933bb89f6fffe3f021e35c157da"
+		},
+		{
+			"path": "raw/backend-version-after.json.txt",
+			"bytes": 103,
+			"sha256": "852d35a6e92b1ecc7a37175b9f51334fbebc9933bb89f6fffe3f021e35c157da"
+		},
+		{
+			"path": "raw/backend-version-before-attempt2.json.txt",
+			"bytes": 102,
+			"sha256": "1a8c94c952b0844f939d3057ffdc25967886d39d8560f1168dc62d57f1ab07b7"
+		},
+		{
+			"path": "raw/backend-version-before-response.raw.json.txt",
+			"bytes": 102,
+			"sha256": "1a8c94c952b0844f939d3057ffdc25967886d39d8560f1168dc62d57f1ab07b7"
+		},
+		{
+			"path": "raw/backend-version-before.json.txt",
+			"bytes": 102,
+			"sha256": "1a8c94c952b0844f939d3057ffdc25967886d39d8560f1168dc62d57f1ab07b7"
+		},
+		{
+			"path": "raw/download/hosted-guest-37819336224-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37105304739-1.jsonl",
+			"bytes": 1532,
+			"sha256": "6c45eac59dd17d7194ac61d92a8571331e9db92593361e9a622a461786b58dea"
+		},
+		{
+			"path": "raw/download/hosted-guest-37819336224-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37724762467-1.jsonl",
+			"bytes": 991,
+			"sha256": "70dd9b6fb4de6e5f119e939acd296782dfb56cf5cdd091c056f09d73c18a0344"
+		},
+		{
+			"path": "raw/download/hosted-guest-37819336224-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37105304739-1.jsonl",
+			"bytes": 1530,
+			"sha256": "1a2654d74ad70721a101c9710333ced8d23da567266d2f5653db2849e8ea51d2"
+		},
+		{
+			"path": "raw/download/hosted-guest-37819336224-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37724762467-1.jsonl",
+			"bytes": 6443,
+			"sha256": "c36252c0fe502603e65d7fb7a4435642035ebacadc52757c1930fffe04e33d3a"
+		},
+		{
+			"path": "raw/download/hosted-guest-37819336224-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37105304739-1.jsonl",
+			"bytes": 1057,
+			"sha256": "15fbd74ef4739e033a278c80463ff29b182947b96eb802f93473d88c6e978692"
+		},
+		{
+			"path": "raw/download/hosted-guest-37819336224-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37724762467-1.jsonl",
+			"bytes": 986,
+			"sha256": "3410f7e6f9442f56e34a9bd6f9c381de721bff440e31487f370e0d094733e3a0"
+		},
+		{
+			"path": "raw/hosted-browser-37819517326-1.jsonl",
+			"bytes": 986,
+			"sha256": "9ef3a103ee5f31186896578bb22a490dde24a9ae72bc1f720a90af5f63e8b799"
+		},
+		{
+			"path": "raw/hosted-guest-37819517326-1.jsonl",
+			"bytes": 1843,
+			"sha256": "373aeb18690eabe6498f782eb8bc657d5613008364b4f6992844c976163b9f0e"
+		},
+		{
+			"path": "raw/hosted-package-37819517326-1.jsonl",
+			"bytes": 985,
+			"sha256": "59bd0db51cdf62d74185a570879cb90a7114172664429c127390fa45ea29cd0b"
+		},
+		{
+			"path": "raw/native-artifact-download.tar.gz",
+			"bytes": 62401,
+			"sha256": "236597f8c33930b16ed18ceb537e406a0c3187f9c43623452b576095629fa1bf"
+		},
+		{
+			"path": "raw/native-artifacts.raw.json.txt",
+			"bytes": 737,
+			"sha256": "3b75440323edf9ece7fe0a310114e90c87e6a8d67a7e2033ac4c45f64640e3ad"
+		},
+		{
+			"path": "raw/native-receipt.json.txt",
+			"bytes": 1487,
+			"sha256": "771c3690870ca9247aef792fa9bf169c81a9f95a411ebd115ffcd5db81a85c67"
+		},
+		{
+			"path": "raw/native-receipt.original.json.txt",
+			"bytes": 1487,
+			"sha256": "771c3690870ca9247aef792fa9bf169c81a9f95a411ebd115ffcd5db81a85c67"
+		},
+		{
+			"path": "raw/native-run.log",
+			"bytes": 120649,
+			"sha256": "b842c5518dbac4af2646a14bed2a840939c53c4ffdd7fba723ea96aed0779efe"
+		},
+		{
+			"path": "raw/native-run.raw.json.txt",
+			"bytes": 2476,
+			"sha256": "7534607ec5588ca22851c006b17c39b41ca376c385f75d2e48dfeb41989903d5"
+		},
+		{
+			"path": "raw/preflight-artifacts.raw.json.txt",
+			"bytes": 736,
+			"sha256": "ebf75a6856017a4e0ad3742500e12003d9d65741c9f28a257291f9d8a752cdf7"
+		},
+		{
+			"path": "raw/preflight-run.log",
+			"bytes": 93283,
+			"sha256": "cf3bd6857ffc7f24e2fa9641ccc3064444dd710c8693c92dfa463a513a9bcced"
+		},
+		{
+			"path": "raw/preflight-run.raw.json.txt",
+			"bytes": 3965,
+			"sha256": "6f36c51ef7f48d56d610bd4781c2ada5e2b9a10b43cbd27b2ce41d4cce7f1378"
+		},
+		{
+			"path": "raw/secrets-after-cleanup.raw.json.txt",
+			"bytes": 391,
+			"sha256": "bc98de12aa7a4d95fe6d2f28bf6576006fb127c0746ddab02ebcdb1a020dda13"
+		}
+	]
+}

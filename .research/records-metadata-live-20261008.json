@@ -1,0 +1,167 @@
+{
+	"schema_version": 1,
+	"observed_at_utc": "2026-10-08T17:59:00Z",
+	"scope": "One hosted native lane A Records execution against the exact frozen CI development artifact. The first attempt stopped at credential preflight and is recorded separately; only the corrected attempt reached native Chrome. No product source changes, local browser run, build, release, or deployment.",
+	"verdicts": {
+		"A_native": "UNVERIFIED. The corrected native run passed artifact import, admin identity, approved-organization checkpoint, current Records schema guard, and the first table_list request assertions. It stopped in the completion-and-visible-output correlation interval. No accepted C02 positive result, invalid-argument refusal, reload result, or C03 metadata_search result was retained.",
+		"B_source_and_evidence": "PASS for source and artifact provenance, live table_list schema guard, request-boundary evidence, and all three resource journals. Native completion/UI evidence is insufficient for a product verdict. No product failure is inferred."
+	},
+	"workflow_source": {
+		"dispatch_source_commit": "69840cf2dd6c59b356051c997596ce2c16f83108",
+		"workflow_blob": "fcac62245af47d4b9b0c67a08d4f0c30d32db976",
+		"records_driver_blob": "f2f559247634376600ca105cf16221070a4eafe2",
+		"records_driver_commit": "e45baf440d23106cf031ceeaccd5432e7bdbf610",
+		"driver_blob_matches_focused_commit": true,
+		"focused_ci_run_id": 37815661278,
+		"focused_ci_conclusion": "success",
+		"focused_ci_source_commit": "e45baf440d23106cf031ceeaccd5432e7bdbf610",
+		"source_review": ".research/records-contract-fresh-peer-20261008.json",
+		"source_review_verdict": "PASS source preparation and acceptance quality; native execution was pending at review time."
+	},
+	"frozen_product_artifact": {
+		"ci_run_id": 37790643945,
+		"ci_conclusion": "success",
+		"artifact_id": 11556064167,
+		"artifact_name": "matrx-extend-development-test-e7b7dc1ecae946369cebb482915faf7ef792c692-37790643945-1",
+		"artifact_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+		"product_source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+		"version": "0.2.414",
+		"tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+		"verified_imported_by_native_run": true
+	},
+	"native_execution": {
+		"run_id": 37819517326,
+		"url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37819517326",
+		"event": "workflow_dispatch",
+		"acceptance_lane": "A",
+		"acceptance_case": "records-readonly-admin",
+		"runner_label": "macos-15",
+		"runner_image": "macos-15-arm64",
+		"runner_architecture_gate": "passed; workflow log reports RUNNER_ARCH=ARM64 and uname=arm64",
+		"workflow_source_commit": "69840cf2dd6c59b356051c997596ce2c16f83108",
+		"created_at": "2026-10-08T17:49:21Z",
+		"started_at": "2026-10-08T17:49:31Z",
+		"completed_at": "2026-10-08T17:56:07Z",
+		"job_conclusion": "failure",
+		"native_step_conclusion": "failure",
+		"artifact_id": 11568198847,
+		"artifact_digest": "sha256:6e970ec27866009b49e34231802fb975646668684480699c76138a6624fff560",
+		"artifact_name": "hosted-guest-37819517326-1",
+		"receipt_path": ".research/records-metadata-live-20261008/raw/native-receipt.original.json.txt",
+		"receipt_sha256": "771c3690870ca9247aef792fa9bf169c81a9f95a411ebd115ffcd5db81a85c67",
+		"receipt_status": "unverified",
+		"receipt_stage": "records_completion",
+		"receipt_native_stage": "admin_rendered_identity",
+		"failure_code": "records_completion_failed",
+		"first_action": {
+			"action": "table_list",
+			"live_schema_guard": "passed; current visible schema has include_platform_tables:boolean and omits include_app_tables",
+			"request_boundary": "The driver advanced to records_completion only after checking one finished POST, exact tool/action body, approved organization header, matching authenticated bearer hash, and HTTP 200. These checks are established by the driver's sequential stage and receipt, not by a persisted request body.",
+			"completion_and_visible_output": "The driver failed during the bounded completion extraction, visible-output wait, or equality assertion interval. The receipt retains no completion/result body, so the specific failure within this interval is unknown.",
+			"accepted_positive_result": false
+		},
+		"c02_invalid_input": "not reached",
+		"c02_full_panel_reload": "not reached",
+		"c03_metadata_search": "not reached",
+		"approved_organization_checkpoint": {
+			"completed": true,
+			"admin_role_verified": true,
+			"rendered_email_matches": true,
+			"rendered_role_matches": true,
+			"rendered_profile_matches": true,
+			"rendered_organization_matches": true,
+			"product_request_observed": true,
+			"product_response_finished": true,
+			"product_response_success": true,
+			"product_header_matches": true,
+			"product_principal_matches": true,
+			"observer_cleanup_success": true,
+			"device_choice_storage_has_uuid": false,
+			"selection_required": false,
+			"interpretation": "The diagnostic snapshot records the load-ladder selection and successful matching product request; absent device-choice storage is allowed when selection_required is false. This checkpoint is not the failure stage."
+		}
+	},
+	"setup_only_attempt": {
+		"run_id": 37819336224,
+		"url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37819336224",
+		"status": "completed",
+		"conclusion": "failure",
+		"failed_step": "Require selected authentication before browser setup",
+		"failure_code": "d87_admin_identity_required",
+		"classification": "setup-only credential-shape error: the staged admin address used username; current validator requires email",
+		"browser_or_product_steps_started": false,
+		"secret_cleanup_verified": true
+	},
+	"backend_health_observations": {
+		"endpoint": "https://server.app.matrxserver.com/health/version",
+		"before": {
+			"git_sha": "18df5c94ad6acf2f0fecfa83eccceaef70063d89",
+			"http_status": 200,
+			"observed_at_utc": "2026-10-08T17:49:20Z",
+			"timestamp_basis": "Saved curl response body file mtime; fetched immediately before dispatch at 17:49:21Z."
+		},
+		"after": {
+			"git_sha": "40750ce285ece13e8c4b0bf1628cc7f6296df6c4",
+			"built_at": "2026-10-08T17:32:45Z",
+			"http_status": 200,
+			"request_started_at_utc": "2026-10-08T17:57:33.133Z",
+			"request_completed_at_utc": "2026-10-08T17:57:33.629Z"
+		},
+		"sampled_sha_changed": true,
+		"claim_limit": "The endpoint observations bracket the workflow run, but the sampled SHAs do not establish the backend SHA at the Records request time. built_at is reported separately from observation times."
+	},
+	"resource_phases": [
+		{
+			"run_id": "hosted-package-37819517326-1",
+			"journal": ".research/records-metadata-live-20261008/raw/hosted-package-37819517326-1.jsonl",
+			"sha256": "59bd0db51cdf62d74185a570879cb90a7114172664429c127390fa45ea29cd0b",
+			"admitted": true,
+			"resource_invalid": false,
+			"exit_code": 0,
+			"decision": "valid"
+		},
+		{
+			"run_id": "hosted-browser-37819517326-1",
+			"journal": ".research/records-metadata-live-20261008/raw/hosted-browser-37819517326-1.jsonl",
+			"sha256": "9ef3a103ee5f31186896578bb22a490dde24a9ae72bc1f720a90af5f63e8b799",
+			"admitted": true,
+			"resource_invalid": false,
+			"exit_code": 0,
+			"decision": "valid"
+		},
+		{
+			"run_id": "hosted-guest-37819517326-1",
+			"journal": ".research/records-metadata-live-20261008/raw/hosted-guest-37819517326-1.jsonl",
+			"sha256": "373aeb18690eabe6498f782eb8bc657d5613008364b4f6992844c976163b9f0e",
+			"admitted": true,
+			"resource_invalid": false,
+			"exit_code": 1,
+			"decision": "child_failed"
+		}
+	],
+	"credential_lifecycle": {
+		"required_secret_names": [
+			"MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+			"MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+		],
+		"absent_before_first_stage": true,
+		"first_attempt_admin_payload_shape": "username/password; rejected by existing validator before browser setup",
+		"corrected_payload_shape": "email/password; parsed only named AI_ADMIN_USERNAME and AI_ADMIN_PASSWORD values from aidream/.env and validated with requireSettingsCredential; approved-org fixture validated with profileOrganizationConfig",
+		"staged_via_stdin": true,
+		"values_printed_or_committed": false,
+		"deleted_after_terminal_run": true,
+		"absence_verified_after_delete": true,
+		"absence_evidence": ".research/records-metadata-live-20261008/raw/secrets-after-cleanup.raw.json",
+		"both_local_mode_0600_staging_directories_removed": true,
+		"approved_org_fixture_mutated": false,
+		"owned_runs_terminal": true
+	},
+	"raw_evidence": {
+		"directory": ".research/records-metadata-live-20261008/raw/",
+		"manifest": ".research/records-metadata-live-20261008/raw-manifest.json",
+		"artifact_download_contains_unrelated_historical_journals": true,
+		"unrelated_historical_journals_used_as_evidence": false,
+		"exact_current_run_journals_checked": 3
+	},
+	"claim_limit": "The Records action's current visible schema guard and first request boundary passed, but the completion/output was not correlated and the remaining C02/C03 interactions did not run. This is an unverified native acceptance attempt, not a product failure or acceptance pass."
+}
