@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "review_of": "510538cce1941180d7edcbf1e29d4859096a34f5",
+  "scope": "EXT-D-0170 source-only peer review of the SEO native acceptance driver sequence",
+  "verdict_a_native_readiness": {
+    "status": "PARTIAL",
+    "finding": "The driver now invokes controlled Example.org observations before the Wikipedia detail batch, but no new native run establishes that T02 and T14 execute successfully in a browser.",
+    "evidence": [
+      "tests/browser/seo-guest-acceptance.mjs:1340 invokes runSeoCaseSequence with controlled then dynamic callbacks inside exercisePanel",
+      "tests/browser/seo-guest-acceptance.mjs:1074-1339 retains preceding T01/T02/T03/T07/T09 baseline checks",
+      "tests/browser/seo-guest-acceptance.mjs:1651 retains optional metadata fixture continuation after both callbacks"
+    ],
+    "native_limit": "No browser, native, build, or release run was allowed in this review. EXT-D-0169 product behavior and current build readiness remain unknown."
+  },
+  "verdict_b_implementation_evidence": {
+    "status": "IMPORTANT_FINDING",
+    "passed": [
+      "The actual driver uses the helper; controlled callback comes first, Wikipedia detail callback second, both awaited.",
+      "The moved controlled block retains its copy, recapture, and DOM restoration assertions; the dynamic block retains exact counts, readability, performance, and door checks.",
+      "tests/browser/seo-guest-acceptance.mjs:1545-1563 records an explicit unverified T09 source-stability target and rethrows; exact T09 data targets occur only after that assertion. The outer catch at 1842-1846 sets unverified and exit code 1.",
+      "The helper propagates controlled target, resource, and dynamic assertion errors; no new early return or broad pass conversion was found."
+    ],
+    "finding": {
+      "severity": "Important",
+      "location": "tests/browser/seo-new-coverage-oracle.test.mjs:15",
+      "detail": "The new old-order RED/new-order GREEN test invokes only runSeoCaseSequence with synthetic callbacks. It does not execute or constrain the native driver's callback wiring. Reversing the two callbacks in tests/browser/seo-guest-acceptance.mjs:1340, or leaving the helper imported but unused there, would leave this guard green.",
+      "impact": "The sequence regression that caused EXT-D-0170 can return without a failing automated guard; a driver-level causal guard is still needed."
+    }
+  },
+  "verification": {
+    "focused_tests": "node --test tests/browser/seo-new-coverage-oracle.test.mjs tests/browser/clipboard-observation.test.mjs: 29 passed, 0 failed",
+    "syntax": "node --check tests/browser/seo-guest-acceptance.mjs: passed",
+    "format": "pnpm exec biome check on the three changed browser files: passed",
+    "diff": "git diff --check 510538cc^ 510538cc: passed"
+  }
+}
