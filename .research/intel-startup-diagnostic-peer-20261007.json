@@ -22,7 +22,7 @@
     "evidence": [
       "The added report observation is allowlisted to phase, booleans, and nonnegative integer timings/counts; arbitrary paths and raw Chromium stderr are excluded. The preexisting browserDiagnosticFlags still classifies stderr at the five-second timeout.",
       "The post-timeout observer uses only lstat on the owned profile and the direct ChildProcess exitCode/signalCode, stops on endpoint, exit, inspection failure, or elapsed bound, and performs no second CDP attach or acceptance retry.",
-      "The new test file is included in package.json test:focused-acceptance, which both focused-acceptance.yml and ci.yml execute on pushes to main. Worker-reported exact-head focused CI run 37710773847 succeeded at 59ae5fec. The 28/28 local test result is supporting evidence, not guarded acceptance."
+      "The new test file is included in package.json test:focused-acceptance, which both focused-acceptance.yml and ci.yml execute on pushes to main. Root independently verified by GitHub API that exact-head focused CI run 37710773847 completed successfully at 59ae5fec. The 28/28 local test result is supporting evidence, not guarded acceptance."
     ],
     "limitations": [
       "New tests cover the observer helper, report writer, and workflow text, but do not drive the actual harness timeout branch through a spawned child; the successful focused CI therefore validates wiring and pure decisions, not the live Intel failure. The preexisting native-sidepanel-qa-harness.test.mjs hang was stopped and its unchanged file is outside the worker diff.",
@@ -31,6 +31,6 @@
     ]
   },
   "readiness": "READY_TO_DISPATCH_EXACTLY_ONE_DIAGNOSTIC: use macos-15-intel, the frozen development artifact, startup-resource-diagnostic, and the existing guarded lane. Interpret the result as diagnostic evidence only; do not credit product acceptance or alter the normal CDP deadline on this source review.",
-  "verification": "Independent static review of git show 59ae5fec, the owning caller chain, resource policy and guard, workflow, tests, and prior failure evidence. CI outcome supplied by the owning worker/root; no independent CI poll or local execution in this lane.",
+  "verification": "Independent static review of git show 59ae5fec, the owning caller chain, resource policy and guard, workflow, tests, and prior failure evidence. Root independently confirmed exact-head CI by GitHub API; this lane did not redundantly poll CI or run local tests.",
   "changed_files": [".research/intel-startup-diagnostic-peer-20261007.json"]
 }
