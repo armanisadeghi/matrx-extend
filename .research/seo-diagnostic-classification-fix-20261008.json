@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0176",
+  "status": "SOURCE_FIXED_REVIEW_PENDING_NATIVE_UNRUN",
+  "own_source_sha": "744b92e9",
+  "red": "node --test scripts/hosted-seo-route.test.mjs: instrumented pass summarized as pass; expected diagnostic_only",
+  "green": "22/22 focused hosted SEO, interval attribution, and resource journal tests",
+  "change": "Opted-in writer maps success and unfamiliar statuses to diagnostic_only, preserves fail/unverified and original status, and clears acceptance targets; default-off remains identity.",
+  "causal_rule": "Only matched surviving process CPU is bracketed; the snapshot ps processes and their CPU overhead are not measured by that intersection.",
+  "limits": "No native run, build, release, or independent review in this lane. Guard thresholds unchanged. Hosted diagnostic and native acceptance remain unverified."
+}
