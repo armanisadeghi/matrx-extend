@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "public_guest_current_server_recheck",
+  "run": {
+    "id": 37709629346,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37709629346",
+    "workflow": "hosted-guest-acceptance.yml",
+    "event": "workflow_dispatch",
+    "runner": "macos-15-intel",
+    "acceptance_lane": "B",
+    "acceptance_case": "guest-chat",
+    "published_store_crx": true,
+    "head_sha": "c7b12a827568fd4d57c45737819bd4fa8e42ac13",
+    "conclusion": "failure",
+    "completed_at_utc": "2026-10-08T00:54:07Z",
+    "artifact_id": 11520979119,
+    "artifact_name": "hosted-guest-37709629346-1",
+    "artifact_zip_sha256": "26fa3eac6b928514ad159a4ce4136ebca45db6f2f98168c4a1d3cf52b8a3a76b"
+  },
+  "verdict": {
+    "bounded_acceptance": "unverified",
+    "overall_product_health": "not_established",
+    "reason": "The one run terminated before the browser profile connected to its owned CDP endpoint. No Chat request or assistant turn ran. Resource guards passed; this is an environment/browser-startup failure, not a guest-chat product verdict.",
+    "retry": "not attempted; one-run limit"
+  },
+  "published_store_artifact": {
+    "kind": "published_store_crx_unpacked",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "artifact_unchanged_during_acceptance": "not established; browser did not connect"
+  },
+  "server": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "pre_dispatch_observation": {
+      "status": 200,
+      "git_sha": "c44c96c5e2c436f0efe076905bb25bf6b907bdaa",
+      "observed_at_utc": "2026-10-08T00:47Z"
+    },
+    "run_before_git_sha": "1d535d990e3d85eaa24e526a531e49951cfacd07",
+    "run_after_git_sha": "1d535d990e3d85eaa24e526a531e49951cfacd07",
+    "post_run_git_sha": "1d535d990e3d85eaa24e526a531e49951cfacd07",
+    "run_http_status": 200,
+    "stable_during_run": true,
+    "note": "The server changed between the pre-dispatch observation and the workflow's own before-run check; it remained stable during and after the attempted case."
+  },
+  "guest_chat": {
+    "first_failure_boundary": "owned_profile",
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "failure_observation": {
+      "elapsed_ms": 5024,
+      "spawn_observed": true,
+      "launch_failed": false,
+      "exit_code": null,
+      "signal_code": null,
+      "stderr_present": false,
+      "code_signature": false,
+      "dynamic_loader": false,
+      "permission_denied": false,
+      "sandbox": false,
+      "crash": false,
+      "devtools_listening": false,
+      "endpoint_poll_count": 115,
+      "endpoint_wait_elapsed_ms": 5013,
+      "endpoint_longest_read_ms": 238
+    },
+    "opening": null,
+    "same_conversation_followup": null,
+    "post_reload_new_conversation": null,
+    "assistant_content": null,
+    "terminal_completion": null,
+    "guest_ai_requests": [],
+    "chat_turns_executed": 0
+  },
+  "resources": {
+    "journals": {
+      "package": {
+        "file": "public-guest-current-server-20261007-evidence/run37709629346/hosted-package-37709629346-1.jsonl",
+        "admitted": true,
+        "child_exit_code": 0,
+        "final_decision": "valid",
+        "resource_invalid": false,
+        "reasons": []
+      },
+      "browser": {
+        "file": "public-guest-current-server-20261007-evidence/run37709629346/hosted-browser-37709629346-1.jsonl",
+        "admitted": true,
+        "child_exit_code": 0,
+        "final_decision": "valid",
+        "resource_invalid": false,
+        "reasons": []
+      },
+      "guest": {
+        "file": "public-guest-current-server-20261007-evidence/run37709629346/hosted-guest-37709629346-1.jsonl",
+        "admitted": true,
+        "child_exit_code": 1,
+        "final_decision": "child_failed",
+        "resource_invalid": false,
+        "reasons": []
+      }
+    }
+  },
+  "evidence": {
+    "directory": ".research/public-guest-current-server-20261007-evidence/run37709629346",
+    "files": [
+      "guest-chat-store.json",
+      "hosted-package-37709629346-1.jsonl",
+      "hosted-browser-37709629346-1.jsonl",
+      "hosted-guest-37709629346-1.jsonl"
+    ],
+    "sanitization": "Extracted only this run's report and three resource journals. The uploaded artifact also contained stale journals from run37105304739; those were excluded. No screenshots or chat transcript exist because the browser did not connect. The selected files were reviewed for credential values and personal content."
+  },
+  "limits": [
+    "No assistant content or terminal completion was observed; all three requested guest-chat turns remain unverified.",
+    "The failure identifies a hosted Chromium/CDP startup boundary but does not establish why the browser failed to expose its endpoint.",
+    "This run does not establish Store UI installation or overall product health."
+  ],
+  "next_action": "Report the owned CDP endpoint startup failure with its diagnostic evidence. Do not rerun under this one-run assignment."
+}
