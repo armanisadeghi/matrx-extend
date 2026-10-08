@@ -28,7 +28,10 @@
     ".research/daily-guest-20261008-run37748038743/raw/guest-chat.receipt.original.json",
     ".research/daily-guest-409-peer-20261008.json",
     ".research/guest409-diagnosis-fix-20261008.json",
-    ".research/guest409-fix-source-peer-20261008.json"
+    ".research/guest409-fix-source-peer-20261008.json",
+    ".research/guest409-authoritative-fix-20261008.json",
+    ".research/guest409-authoritative-source-peer-20261008.json",
+    ".research/guest409-deployment-observation-20261008.json"
   ],
   "transition_history": [
     {
@@ -51,5 +54,13 @@
     }
   ],
   "next_action": "Second implementation owns durable context at actual delegation; require independent source review, verified automatic production deployment, then resource-valid public guest first/followup/reload browser retest. No manual deployment from this machine.",
-  "closure_requirement": "Original public guest reproduction and surrounding first/followup cases pass independently on real browser/live server with valid resources; actual Store installation remains separately unverified."
+  "closure_requirement": "Original public guest reproduction and surrounding first/followup cases pass independently on real browser/live server with valid resources; actual Store installation remains separately unverified.",
+  "source_candidate": {
+    "repository": "aidream",
+    "sha": "54a1e1b978a8efde6b9232aa56aad9f12a1bf214",
+    "contract_review": "pass in source",
+    "guard_review": "important gap: real dispatch callback plumbing and mixed sibling lineage not exercised; narrow repair active",
+    "deployment": "not included in observed production 8de41d9c36c1251240ea68fd5d41afcaa80b4ee1 at 2026-10-08T08:58:34Z",
+    "runtime_retest": "pending"
+  }
 }
