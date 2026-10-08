@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T10:51:52.019728+00:00",
+  "updated_at": "2026-10-08T11:20:44+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -15757,6 +15757,23 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained. Actual error/recovery controls remain untested."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -15858,6 +15875,23 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained. Deep failure/retry and postreloaddeep capture remain unverified."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -16065,6 +16099,23 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -16211,6 +16262,23 @@
                 ".research/scrape-tabs-native-20261008-evidence/run37764002686/"
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: six populated panes matched warm and after extension reload; both empty media panes were observed warm. Post-reload empty-media capture produced no result or error within 30 seconds after Capture; receipt cannot distinguish timing race from product failure. No acceptance credit; member/admin and other widths remain outside this run."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -16325,6 +16393,23 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -16472,6 +16557,23 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -16612,6 +16714,23 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -16771,6 +16890,23 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -16935,6 +17071,23 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained. Independent per-mode review confirms all guestcase criteria; receipt aggregatepartial reflects othermodes only."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -17020,6 +17173,23 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained. Natural failure/recovery/deepretry remain unverified."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -17279,6 +17449,23 @@
                 ".research/scrape-reload-observer-native-peer-20261008.json"
               ],
               "detail": "Frozen407 guest600px warm/fullreload revalidation. Original strict watcher proved oldworker retirement and exactreplacement running/activated; allthree resourcejournals valid. No member/admin, Store or latermain proof; fresh diagnostic notexercised and prior intermittentfailure unexplained."
+            },
+            {
+              "at": "2026-10-08T11:12:57Z",
+              "mode": "guest",
+              "run_id": "37767763301",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/scrape-boundary-native-retest-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767763301"
+              ],
+              "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
           ]
         },
@@ -23153,7 +23340,8 @@
           ],
           "defect_ids": [
             "EXT-D-0047",
-            "EXT-D-0049"
+            "EXT-D-0049",
+            "EXT-D-0173"
           ],
           "preconditions": [
             "Fresh development build; verify receipt and reload the extension and page in Chrome. Use a real public website with a reproducible request during initial document load and an owned recipe. No localhost/test server. Guest/member denial uses EXT-F-1012-T38."
@@ -23223,6 +23411,9 @@
               "detail": "Original D47 remains closed under independent audit39e564ba. Full T57 remains unverified. Native preflight37608190442 on exact0.2.360/62142e74 imported artifact11474839620 captured/saved a genuine public HN request and paused two matching HTTP200 responses with original-body hashes and distinct loaders. Extension capture-hook attestation was positive; composite row/activity predicate false is inconclusive. Old lifecycle failed, current finished, first release did not complete and exact protocol exception was not retained; release order empty, no terminal saved result/refusal. Fresh peer95f4475c classifies driver/browser lifecycle boundary, not proved product defect. All permits admitted/resourceInvalid=false despite guest child_failed exit1. Owned recipe/probe removed and both temporary secret names independently absent; interception cleanup unverified. Accepted architectural-exclusion ruling still applies; no old callback delivery inferred.",
               "remaining_criteria": [
                 "Receipt-bound installed development extension on a real public site: an owned initial-load Network recipe, matching prior response pending across navigation, old-then-current release, exact current-only terminal saved output or honest provenance refusal, positive current context/binding and lifecycle controls, independent review."
+              ],
+              "defect_ids": [
+                "EXT-D-0173"
               ]
             }
           },
@@ -23336,6 +23527,22 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37766646825"
               ],
               "detail": "Fresh-runner setup failed at module import before package installation, artifact import, resource admission, browser setup or sign-in. Current-run resource journals are absent and resource validity is unverified. T57 product behavior, organization/header checkpoint and original race remain unverified; no product verdict or acceptance credit."
+            },
+            {
+              "at": "2026-10-08",
+              "mode": "admin",
+              "run_id": "37767661089",
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/t57-preflight-repaired-native-20261008.json",
+                ".research/parallel-native-failure-peer-20261008.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767661089"
+              ],
+              "detail": "Admin rendered identity reached the organization resource gate, but the D47 driver omitted the required approved organization UUID; no product organization request, capture, saved result, or T57 acceptance was observed. The guest resource journal was invalid (resource_invalid=true, exit 3). Independent review classifies this as a harness wiring failure, with no product organization defect established."
             }
           ]
         },
