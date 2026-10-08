@@ -25,9 +25,13 @@ export function classifySeoResourceDiagnosticReport(report, enabled) {
   return {
     ...report,
     evidence_classification: 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT',
+    diagnostic_source_status: report.status,
     diagnostic_targets: report.targets,
     targets: [],
-    status: report.status === 'partial' ? 'diagnostic_only' : report.status,
+    status:
+      report.status === 'unverified' || report.status === 'fail'
+        ? report.status
+        : 'diagnostic_only',
   };
 }
 

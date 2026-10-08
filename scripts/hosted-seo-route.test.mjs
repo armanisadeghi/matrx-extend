@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { readFile } from 'node:fs/promises';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
+import { buildEvidenceRecord } from './record-stabilization-evidence.mjs';
 import {
   classifySeoResourceDiagnosticReport,
   hostedGuestSeoRoute,
@@ -65,11 +68,58 @@ test('resource bracket requires explicit full Airbnb SEO diagnostic and cannot p
   assert.equal(classifySeoResourceDiagnosticReport(ordinary, false), ordinary);
   assert.deepEqual(classifySeoResourceDiagnosticReport(ordinary, true), {
     status: 'diagnostic_only',
+    diagnostic_source_status: 'partial',
     targets: [],
     diagnostic_targets: [{ case: 'T09', status: 'passed' }],
     evidence_classification: 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT',
   });
   assert.deepEqual(ordinary.targets, [{ case: 'T09', status: 'passed' }]);
+});
+
+test('instrumented SEO writer outcomes never become native pass in the evidence summary', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'seo-diagnostic-contract-'));
+  const guardLogPath = join(directory, 'guard.jsonl');
+  const resultPath = join(directory, 'seo.json');
+  const runId = 'seo-diagnostic-contract';
+  const at = '2026-10-08T12:00:00.000Z';
+  const guard = [
+    { schema: 1, code: 'RESOURCE_ADMITTED', runId, at },
+    { schema: 1, code: 'RESOURCE_JOB_EXIT', runId, at, childExitCode: 0 },
+  ];
+  try {
+    await writeFile(guardLogPath, `${guard.map((event) => JSON.stringify(event)).join('\n')}\n`);
+    for (const [sourceStatus, expectedStatus] of [
+      ['pass', 'diagnostic_only'],
+      ['partial', 'diagnostic_only'],
+      ['unverified', 'unverified'],
+      ['fail', 'fail'],
+      ['future_success', 'diagnostic_only'],
+    ]) {
+      const source = {
+        status: sourceStatus,
+        targets: [{ case_id: 'EXT-F-1008-T09', status: 'pass' }],
+        build: { version: '0.2.407', treeSha256: 'a'.repeat(64) },
+      };
+      const written = classifySeoResourceDiagnosticReport(source, true);
+      await writeFile(resultPath, JSON.stringify(written));
+      const summary = await buildEvidenceRecord({ runId, guardLogPath, resultPath });
+      assert.equal(summary.raw_result.status, expectedStatus, sourceStatus);
+      assert.equal(written.diagnostic_source_status, sourceStatus);
+      assert.deepEqual(written.targets, [], sourceStatus);
+      assert.deepEqual(written.diagnostic_targets, source.targets, sourceStatus);
+      assert.equal(written.evidence_classification, 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT');
+    }
+    const ordinary = { status: 'pass', targets: [{ case_id: 'EXT-F-1008-T09', status: 'pass' }] };
+    await writeFile(
+      resultPath,
+      JSON.stringify(classifySeoResourceDiagnosticReport(ordinary, false)),
+    );
+    const ordinarySummary = await buildEvidenceRecord({ runId, guardLogPath, resultPath });
+    assert.equal(ordinarySummary.raw_result.status, 'pass');
+    assert.equal(classifySeoResourceDiagnosticReport(ordinary, false), ordinary);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test('hosted preflight rejects invalid metadata and diagnostic selection before browser setup', () => {
