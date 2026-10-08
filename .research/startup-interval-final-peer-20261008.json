@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "source_commit": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+  "reviewer_role": "independent_peer_no_authorship",
+  "scope": "Bounded repair of 364c2ca0 startup CPU interval instrumentation; no native browser or hosted run.",
+  "verdict_a_source_conformance": {
+    "status": "PASS_FOR_BOUNDED_SOURCE_TARGET",
+    "evidence": [
+      "The actual driver starts its bracket before spawn and records it after CDP success, CDP failure, or synchronous spawn failure. Its once flag prevents an outer catch from emitting a second bracket.",
+      "Begin and finish observation failures produce an unavailable interval record without replacing the original startup outcome. The recorder catches its own stderr write failure. Existing finally cleanup still detaches, stops the owned child, and removes the profile.",
+      "With MATRX_STARTUP_INTERVAL_DIAGNOSTIC disabled, the driver performs no process snapshots and emits no CPU interval record.",
+      "The logged process data contains PIDs, executable basenames, CPU times, timestamps, and fixed diagnostic labels; it does not include process arguments or captured exception messages."
+    ],
+    "limitation": "Native browser startup and hosted runner behavior remain unverified in this review."
+  },
+  "verdict_b_quality": {
+    "status": "PASS_FOR_BOUNDED_REPAIR",
+    "evidence": [
+      "The new VM seam executes the complete current runNativeSidepanelQa driver, including its original finally, while substituting external artifact, runtime, OS, and CDP boundaries.",
+      "Five callsite tests passed on repaired source. Against an isolated copy of committed 364c2ca0, the same suite had 3 pass and 2 assertion failures: missing post-spawn snapshot and diagnostic failure changing startup/cleanup behavior.",
+      "The focused 15-test set passed and scoped Biome check passed. No native or heavy build was run."
+    ],
+    "caveat": "The VM test extracts the driver by source markers and uses an intentional endpoint_read stop after successful CDP connection; it proves startup behavior and finally cleanup, not later panel work or native Chrome behavior. A return-expected gut-check mutation was not executed in this peer review."
+  },
+  "commands": [
+    "node --test tests/browser/native-startup-interval-callsite.test.mjs scripts/test-startup-process-interval.mjs scripts/test-startup-interval-attribution.mjs scripts/test-hosted-startup-interval-diagnostic.mjs tests/browser/native-cdp-startup-deadline.test.mjs",
+    "pnpm exec biome check tests/browser/native-startup-interval-callsite.test.mjs tests/browser/native-sidepanel-qa-harness.mjs scripts/startup-process-interval.mjs scripts/startup-interval-attribution.mjs package.json",
+    "node --test isolated-scratch/tests/browser/native-startup-interval-callsite.test.mjs against git-show 364c2ca0 driver (3 pass, 2 fail; scratch automatically removed)"
+  ]
+}
