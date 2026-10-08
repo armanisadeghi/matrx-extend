@@ -1,0 +1,36 @@
+{
+  "reviewed_at": "2026-10-08",
+  "scope": "Independent receipt/resource review only; no product closure or new passes claimed.",
+  "A": {
+    "run_id": 37767661089,
+    "receipt": ".research/t57-preflight-repaired-native-20261008.json",
+    "receipt_sha256": "404b8815901fed5006753bf5cea067f1173efb4af44be754df7ab95f02d57415",
+    "verdict": "Behavior bounded: admin rendered identity reached organization/resource gate; approved organization UUID was omitted by driver before product request. AssertionError, empty observations; no product organization result, T57 acceptance, capture, or save established.",
+    "resource_verdict": "package valid; browser valid; guest resource_invalid=true, exit 3, decision invalid. Guest failure is resource-invalid and must not be treated as behavioral evidence.",
+    "privacy": "Receipt records temporary secret variable names only; claims both deleted after terminal and absent from independent name listing. No credential values retained in receipt."
+  },
+  "B": {
+    "run_id": 37767763301,
+    "receipt": ".research/scrape-boundary-native-retest-20261008.json",
+    "receipt_sha256": "e9441562687fcf32bc68dc5abdafe7b10441730b83bcbfe257b029542959c4ee",
+    "verdict": "Evidence-quality failure at replacement panel reopening: old worker retired, replacement activated, but open-panel request received no reply; fresh replacement and post-reload capture boundary absent. Capture probe was not exercised; warm observations remain partial.",
+    "resource_verdict": "package valid; browser valid; guest resource_invalid=false, exit 1, decision child_failed. This is a valid resource admission with child failure, distinct from A's resource-invalid guest attempt.",
+    "privacy": "Raw native receipt hash and metadata reviewed; no credential values surfaced in report."
+  },
+  "provenance": {
+    "A_raw_receipt_sha256": "2760adfc5c38cb415e0214b1e95aa704c9542d9c6aef54bf7a84cdf4c2f21c67",
+    "A_artifact_id": 11546187451,
+    "A_artifact_digest": "sha256:5834d20cc53aacddde21e906ef7cff31f71d983bd45b8f03f40eb939a94ff585",
+    "A_journals": {
+      "package": "771d4969271b7223b0002cb9f99f68ac4295b0c5d2b8a395c6c46e16a15da981",
+      "browser": "bce6ea7b983de2f7ae38ce61ab10c857df154d9e78e967e6bfcecdba656a641c",
+      "guest": "04da436cd47cfbef8ab8736ca72af1802b9747cdad4051996a64acbf6a3b24cf"
+    },
+    "B_native_receipt_sha256": "3819625637e7fc2c410154e51552bdc450794a30899988be72d7abeb27844254",
+    "B_journals": {
+      "package": "157010ce60f9b35cc460d6bcc22f11bad243ac0bc1b6328a8cb3282516c293e7",
+      "browser": "385923eabab3c691bf0184ea31426ad8a4f7b57bd31298d287751cdbc6d9b343",
+      "guest": "77c34e62e62ae8339f526405d90700453052b34d682f78a119c3217997142a5c"
+    }
+  }
+}
