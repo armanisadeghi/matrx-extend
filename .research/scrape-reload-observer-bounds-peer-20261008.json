@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T09:52:57Z",
+  "reviewed_commit": "dd16ccc992c0070c50a868cece267a6c20a0421f",
+  "scope": "Independent boundedness review of reload fresh-observer repair and focused source tests; no browser, native, build, deploy, or source mutation",
+  "verdict": "PRIMARY_CALLER_HANG_FINDING_RESOLVED_WITH_EXPLICIT_CLEANUP_UNCERTAINTY",
+  "source_findings": {
+    "single_observer_deadline": "observeFreshReplacement establishes finalDeadline once and derives workDeadline before it. Session creation, ServiceWorker.enable, and waiting for the matching event are raced against workDeadline. Normal disable and detach are each raced against the same finalDeadline, so the caller does not await any of those protocol operations indefinitely.",
+    "cleanup_truth": "The listener is removed synchronously. Cleanup is confirmed only when both disable and detach settle successfully; otherwise result.cleanup is unconfirmed and result.outcome is forced to unavailable. A failed or timed-out diagnostic cannot become activated.",
+    "late_creation": "When creation misses workDeadline, the call returns unavailable/unconfirmed and installs a settlement handler that attempts disable then detach. Those late cleanup attempts have a separate 500 ms deadline created when the late session resolves, not the observer's original finalDeadline. They are best effort and never change the already-returned result. Thus caller boundedness is preserved, but post-return cleanup is not under one end-to-end absolute deadline.",
+    "observer_scope": "The fresh session only subscribes to ServiceWorker.workerVersionUpdated and calls ServiceWorker.enable/disable. No worker wake/start/stop command or worker evaluation was added. Event identity must match the expected replacement version, registration, and target before activated can be reported.",
+    "acceptance_unchanged": "Fresh observation remains diagnostic after the existing strict reload predicate fails. The actual failure harness records a matching fresh activated snapshot and still rejects with native_extension_worker_retirement_unverified; no reload acceptance shortcut was introduced."
+  },
+  "tests": {
+    "command": "node --test tests/browser/reload-lifetime-diagnostic.test.mjs tests/browser/reload-fresh-observer-harness.test.mjs",
+    "result": "PASS: 6/6 tests. The harness failure test takes the existing full timeout path, records fresh activated identity, and asserts the strict failure remains. Separate cases bound never-settling create, enable, disable, and detach; late creation attempts cleanup and remains unconfirmed.",
+    "guard_assessment": "The failure harness and nonsettling protocol cases fail closed. The late-creation case checks that disable and detach are attempted after resolution. The detach-never-settles case proves bounded unavailable/unconfirmed outcome; the source also visibly invokes detach after disable."
+  },
+  "limits": "No native Chromium observation or product/reload acceptance is claimed. If the intended contract requires even late-created-session cleanup to finish by the initial observation deadline, the current asynchronous 500 ms post-resolution cleanup budget is a narrow remaining distinction; it is explicitly unconfirmed and cannot promote acceptance."
+}
