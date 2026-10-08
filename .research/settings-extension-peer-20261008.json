@@ -1,0 +1,20 @@
+{
+  "review_of": "9fc2c925449dd89a7d94281b87981c18de068bc5",
+  "reviewed_against": "368f98b3",
+  "verdict_a_coverage_source": {
+    "status": "PARTIAL",
+    "evidence": "Harness calls the T04/T10 preference runners and T28/T40/T67 case runners on replacement.panel after extension reload and Settings-open boundary. Missing/failed full-extension results are forced to fail the respective cases. Lightweight tests pass 8/8.",
+    "native": "UNVERIFIED; no hosted/native rerun was performed.",
+    "findings": [
+      "T04/T10 recheck exercises each preference choice but runGuestPreferenceCase leaves the final choice selected; it does not capture and restore the pre-run preference. The T04/T10 warm phase has the same behavior, so it remains a coverage and cleanup gap.",
+      "T40 downstream background capture and T67 downstream capture remain explicitly unverified, as reported."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "CONCERN",
+    "evidence": "The helper guard checks missing and thrown rechecks, but its native-harness test is a source-string/order assertion. Helper behavior is simulated separately; no test invokes rerunGuestSettingsAfterExtensionReload with a representative callback or proves the actual callback records every runner result.",
+    "finding": "The native callback can regress to a no-op while the static source test still passes if the call expression remains. A behavioral seam/integration test is needed for durable enforcement."
+  },
+  "verification": "node --test tests/browser/settings-full-extension-rechecks.test.mjs tests/browser/settings-guest-scrape-controls.test.mjs — 8 passed; native run not performed.",
+  "authorship": "Zero authorship; review only."
+}
