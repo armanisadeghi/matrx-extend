@@ -54,7 +54,14 @@
     ],
     "mutation_safety": "All four executed via forcing-function-tests/plant.py; restored IDENTICAL; no native browser launched.",
     "ci": "Added receipt guard to test:focused-acceptance; existing focused-acceptance.yml and full ci.yml both run that command.",
-    "focused_acceptance": "pnpm test:focused-acceptance: 52 passed, 0 failed"
+    "focused_acceptance": "pnpm test:focused-acceptance: 52 passed, 0 failed",
+    "automatic_ci": {
+      "run_id": 37724470683,
+      "head_sha": "503eec1f3443e897a20ae69c81b6aa0f1e81a308",
+      "conclusion": "success",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37724470683",
+      "log_verified": "52 tests, 52 passed, 0 failed; command includes scrape-copy-receipt.test.mjs"
+    }
   },
   "limitations": [
     "No native/browser/build/release launched. Original native failure remains unresolved.",
