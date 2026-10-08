@@ -31,7 +31,7 @@
       },
       "reason": "The saved native receipt identifies the owned edited pre-state, exact visible discard confirmation, returned trusted confirmation action, and visible expected referrals Article title and sentinel. This is the actual confirmation branch, not the already-captured alternate branch. The downloaded artifact receipt and decompressed retained raw receipt both hash to f799be3adeb1a90206c2bff4dd0f391fa454f6feca0539b2d1cef290d5196f84; the separate readable receipt is sanitized and has a different hash.",
       "cancel_semantics": "The post-reload fast boundary itself did not exercise Cancel. The same native run's earlier warm deep path did: the exact helper requires both dialog buttons, clicks Cancel, waits for the dialog to close while edited state remains and the deep control is restored, then opens the dialog again, confirms, and proceeds to the lazy-content deep result. This is runtime coverage for warm deep Cancel; the receipt has no dedicated persisted Cancel sub-boundary, so that substep is supported by the exact driver control flow and the run's later stage/deep result.",
-      "recommendation": "Close EXT-D-0178 for its stated confirmation-recapture defect. T03 is pass-revalidated for guest across warm deep Cancel/confirm and reload fast confirm; do not claim reload-time Cancel."
+      "recommendation": "Close EXT-D-0178 for its stated confirmation-recapture defect. T03 is a newly supported guest pass across warm deep Cancel/confirm and reload fast confirm; do not claim reload-time Cancel."
     },
     "guest_case_verdicts": [
       {
@@ -46,7 +46,7 @@
       },
       {
         "case_id": "EXT-F-1007-T03",
-        "verdict": "pass-revalidated",
+        "verdict": "pass; newly supported guest promotion",
         "reason": "The same run exercises warm deep Cancel and confirmation: exact dialog actions are required, Cancel is clicked, and edited state plus the restored deep control are awaited before the dialog is reopened and confirmed; the subsequent deep result contains lazy content. After reload, the receipt separately proves the fast confirmation branch through visible expected Article. Cancel was not repeated after reload."
       },
       {
@@ -96,7 +96,6 @@
       }
     ],
     "guest_passes_revalidated": [
-      "EXT-F-1007-T03",
       "EXT-F-1007-T07",
       "EXT-F-1007-T09",
       "EXT-F-1007-T10",
@@ -105,6 +104,7 @@
       "EXT-F-1007-T13",
       "EXT-F-1007-T20"
     ],
+    "new_guest_promotions": ["EXT-F-1007-T03"],
     "dimension_limits": "Only guest/normal-width development 0.2.414 is evidenced. Member/admin modes, alternate widths, Store artifact, later-main adoption, natural error recovery, deep failure/retry, and reload-time Cancel are not inferred. Other guest cells retain canonical status absent run-specific evidence."
   },
   "verdict_b_evidence_and_source_quality": {
@@ -129,7 +129,7 @@
       },
       "terminal_decisions": "All three run-specific journals have matching run IDs and end admitted=true, resourceInvalid=false, exitCode=0, decision=valid. The guest journal also retains healthy watcher samples throughout the acceptance action."
     },
-    "historical_scope_comparison": "Compared with scrape-case-scope-adjudication-20261008.json: the seven complete guest cells remain passes and T03 now also passes its guest warm/reload criteria because this run supplies the formerly missing post-reload confirmation branch. T01, T02, T08, and T14 remain partial for their independent case criteria. The run satisfies EXT-D-0178's branch-specific native closure gate without promoting the whole feature."
+    "historical_scope_comparison": "Compared with scrape-case-scope-adjudication-20261008.json: its seven complete guest cells remain revalidated passes; T03 is a newly supported guest pass because this run supplies the formerly missing post-reload confirmation branch and its warm deep Cancel/confirm path. T01, T02, T08, and T14 remain partial for their independent case criteria. The run satisfies EXT-D-0178's branch-specific native closure gate without promoting the whole feature."
   },
   "evidence_paths": [
     ".research/scrape-arm-414-native-20261008-1532-evidence/run-37801787667/driver-receipt.json",
