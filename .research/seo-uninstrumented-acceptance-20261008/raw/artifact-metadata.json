@@ -1,0 +1,20 @@
+{
+  "id": 11553217233,
+  "node_id": "MDg6QXJ0aWZhY3QxMTU1MzIxNzIzMw==",
+  "name": "hosted-guest-37783095637-1",
+  "size_in_bytes": 11148,
+  "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/artifacts/11553217233",
+  "archive_download_url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/artifacts/11553217233/zip",
+  "expired": false,
+  "digest": "sha256:44c543d35fae8f543bf39a1ec364cbbf18538f2ca4a0bce1ef6f9560361ab5ad",
+  "created_at": "2026-10-08T13:23:37Z",
+  "updated_at": "2026-10-08T13:23:37Z",
+  "expires_at": "2027-01-06T13:16:45Z",
+  "workflow_run": {
+    "id": 37783095637,
+    "repository_id": 1225111202,
+    "head_repository_id": 1225111202,
+    "head_branch": "main",
+    "head_sha": "5569ae6410ad56c68e5243d80bbd57d2bbfbeec6"
+  }
+}

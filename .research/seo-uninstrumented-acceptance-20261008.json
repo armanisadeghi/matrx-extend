@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-uninstrumented-acceptance-20261008",
+  "status": "TERMINAL_RESOURCE_INVALID_NO_ACCEPTANCE_CREDIT",
+  "lane": "A hosted guest SEO native acceptance",
+  "workflow": {
+    "run_id": 37783095637,
+    "job_id": 113330881388,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37783095637",
+    "head_sha": "5569ae6410ad56c68e5243d80bbd57d2bbfbeec6",
+    "workflow_sha": "5569ae6410ad56c68e5243d80bbd57d2bbfbeec6",
+    "conclusion": "failure",
+    "started_at": "2026-10-08T13:16:52Z",
+    "completed_at": "2026-10-08T13:23:39Z",
+    "dispatch_inputs": {
+      "acceptance_lane": "A",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "full",
+      "seo_metadata_fixture": "airbnb",
+      "seo_resource_diagnostic": false,
+      "development_run_id": 37754055905,
+      "development_artifact_id": 11539827040
+    }
+  },
+  "frozen_product": {
+    "development_run_id": 37754055905,
+    "development_artifact_id": 11539827040,
+    "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1",
+    "artifact_digest": "sha256:1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893",
+    "artifact_expired": false,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "extension_version": "0.2.407",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "exact_identity_verified_by_workflow": true
+  },
+  "receipt": {
+    "path": "raw/matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json",
+    "status": "unverified",
+    "evidence_classification": "ZERO_ACCEPTANCE_CREDIT_RESOURCE_INVALID",
+    "last_safe_stage": "build_identity_verified",
+    "failure_stage": "build_identity_verified",
+    "last_safe_observable": null,
+    "current_operation": null,
+    "targets": [],
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "executed_cases": [],
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "claim": "exact_pushed_commit_only",
+    "acceptance_credit": "none"
+  },
+  "resource_admission": {
+    "package": { "decision": "valid", "final_exit_code": 0 },
+    "browser": { "decision": "valid", "final_exit_code": 0 },
+    "guest_acceptance": {
+      "decision": "invalid",
+      "admitted": true,
+      "resource_invalid": true,
+      "final_exit_code": 3
+    },
+    "guest_final_watch": {
+      "at": "2026-10-08T13:23:20.343Z",
+      "code": "RESOURCE_WATCH_HEALTHY",
+      "one_minute_load": 0.85,
+      "cpu_busy_fraction": 0.64
+    },
+    "guest_invalidating_sample": {
+      "at": "2026-10-08T13:23:20.343Z",
+      "code": "RESOURCE_CPU_PENDING",
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "one_minute_load": 12.26,
+      "logical_cpus": 4,
+      "cpu_busy_fraction": 1.0,
+      "available_memory_gib": 12.46,
+      "swap_used_mib": 0
+    },
+    "interpretation": "Resource policy invalidated the guest phase after admission. The pending interval includes substantial host-side process load; exact cause of the later CDP endpoint timeout is not established."
+  },
+  "native_observation": {
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "elapsed_ms": 5022,
+    "exit_code": null,
+    "signal_code": null,
+    "launch_failed": false,
+    "spawn_observed": true,
+    "devtools_listening_observed": false,
+    "endpoint_poll_count": 116,
+    "endpoint_wait_elapsed_ms": 5006,
+    "product_actions_started": false,
+    "acceptance_result": "unverified"
+  },
+  "retained_evidence": {
+    "raw_directory": ".research/seo-uninstrumented-acceptance-20261008/raw/",
+    "receipt": ".research/seo-uninstrumented-acceptance-20261008/raw/matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json",
+    "resource_journals": [
+      "hosted-package-37783095637-1.jsonl",
+      "hosted-browser-37783095637-1.jsonl",
+      "hosted-guest-37783095637-1.jsonl"
+    ],
+    "artifact_id": 11553217233,
+    "artifact_digest": "sha256:44c543d35fae8f543bf39a1ec364cbbf18538f2ca4a0bce1ef6f9560361ab5ad",
+    "artifact_name": "hosted-guest-37783095637-1",
+    "resource_journal_hashes": {
+      "hosted-package-37783095637-1.jsonl": "sha256:0679474b393c92b5012fb1ced88ae67297398a51df871fd4d00cc3cd5c187ff0",
+      "hosted-browser-37783095637-1.jsonl": "sha256:eeda7f79787ccaec9876ddec5c44aaa9b2c9a0cf5406e9e6e4198c32310978ec",
+      "hosted-guest-37783095637-1.jsonl": "sha256:b6724637b7f10eb3ffbc203848a62cd7ff722b712f79ab1b0486b97316224ce6"
+    },
+    "run_metadata": "raw/hosted-run-metadata.json",
+    "remote_artifact_listing": "raw/remote-artifact-listing.json",
+    "artifact_metadata": "raw/artifact-metadata.json",
+    "sha256_manifest": "raw/sha256-manifest.txt",
+    "artifact_contains_other_run_journals": [37105304739, 37724762467],
+    "other_run_journal_note": "The uploaded artifact glob also included older checked-out journals; only the three files whose run IDs equal 37783095637 are this attempt's resource evidence. Their hashes are recorded above."
+  },
+  "scope_limits": {
+    "attempts": 1,
+    "retry_dispatched": false,
+    "acceptance_targets_passed": 0,
+    "acceptance_targets_failed": 0,
+    "acceptance_targets_unverified": 6,
+    "remaining": [
+      "T01: one audit per URL and slow-old-result race",
+      "T02: stale advice replacement and failure report after re-audit",
+      "T03: unreachable HTTP(S), other restricted schemes, and reload dimension",
+      "T07: member/admin role gates and JSON contents; guest clipboard formats checked separately",
+      "T09: broken social preview image and detail controls beyond this batch; optional hreflang/schema doors remain unverified when live source data is absent",
+      "T14: social snippet behavior beyond two controlled public page states",
+      "All selected cases: no product action executed because CDP endpoint was not available",
+      "T04-T06,T08 database save/history/diff flows; T10-T13 recommendations and Chat staging; member and admin modes"
+    ]
+  },
+  "next_action": "Keep guest SEO acceptance unverified. The single authorized attempt ended resource-invalid; use the retained journal and runner evidence in the root-owned routing decision."
+}
