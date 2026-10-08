@@ -891,6 +891,7 @@ async function reloadOwnedExtension({
       management_before: managementBefore,
       management_after: managementAfter,
       panel: await attachTargetSession(cdp, replacementPanel.targetId),
+      replacement_panel_target_id: replacementPanel.targetId,
       worker_replaced: replacementWorker.targetId !== oldWorkerId,
       panel_replaced: replacementPanel.targetId !== oldPanelId,
       old_targets_retired: true,
@@ -1165,6 +1166,7 @@ async function captureTarget(cdp, targetId, output) {
 async function attachTargetSession(cdp, targetId) {
   const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
   return Object.freeze({
+    targetId,
     async send(method, params = {}) {
       return cdp.send(method, params, sessionId);
     },
@@ -1180,6 +1182,43 @@ async function attachTargetSession(cdp, targetId) {
     },
     async detachVerified() {
       await cdp.send('Target.detachFromTarget', { sessionId });
+    },
+  });
+}
+
+export function createOwnedExtensionReloadController(initialPanelTargetId, performReload) {
+  if (typeof initialPanelTargetId !== 'string' || !initialPanelTargetId)
+    throw new Error('native_extension_initial_panel_target_missing');
+  if (typeof performReload !== 'function')
+    throw new Error('native_extension_reload_operation_missing');
+  let currentPanelTargetId = initialPanelTargetId;
+  return Object.freeze({
+    async reload() {
+      const previousPanelTargetId = currentPanelTargetId;
+      const result = await performReload(previousPanelTargetId);
+      const replacementTargetId = result?.panel?.targetId;
+      const lifecycleProven =
+        result?.management_reload_clicked === true &&
+        result?.old_targets_retired === true &&
+        result?.worker_replaced === true &&
+        result?.panel_replaced === true &&
+        result?.retirement_evidence?.timeline?.final_predicate === true;
+      if (
+        !lifecycleProven ||
+        typeof replacementTargetId !== 'string' ||
+        !replacementTargetId ||
+        replacementTargetId === previousPanelTargetId ||
+        result?.replacement_panel_target_id !== replacementTargetId
+      ) {
+        throw new Error('native_extension_replacement_panel_unverified');
+      }
+      currentPanelTargetId = replacementTargetId;
+      return result;
+    },
+    adoptLivePanel(panel) {
+      if (typeof panel?.targetId !== 'string' || !panel.targetId)
+        throw new Error('native_extension_live_panel_target_missing');
+      currentPanelTargetId = panel.targetId;
     },
   });
 }
@@ -1684,6 +1723,19 @@ export async function runNativeSidepanelQa({
     onStage('exercise_panel');
     if (exercisePanel) {
       const panel = await attachTargetSession(cdp, panelTarget.targetId);
+      const reloadController = createOwnedExtensionReloadController(
+        panelTarget.targetId,
+        (oldPanelId) =>
+          reloadOwnedExtension({
+            cdp,
+            browser: playwrightBrowser,
+            context,
+            page,
+            extensionId: expectedExtensionId,
+            oldPanelId,
+            scrapeOpenDiagnostic: reloadOpenDiagnostic,
+          }),
+      );
       try {
         await exercisePanel(
           Object.freeze({
@@ -1736,18 +1788,16 @@ export async function runNativeSidepanelQa({
                 throw new Error('native_sidepanel_offscreen_target_missing');
               return attachTargetSession(cdp, targets[0].targetId);
             },
-            reloadExtension: () =>
-              reloadOwnedExtension({
+            reloadExtension: () => reloadController.reload(),
+            acquireLivePanel: async () => {
+              const livePanel = await acquireLiveExtensionPanel({
                 cdp,
-                browser: playwrightBrowser,
-                context,
                 page,
                 extensionId: expectedExtensionId,
-                oldPanelId: panelTarget.targetId,
-                scrapeOpenDiagnostic: reloadOpenDiagnostic,
-              }),
-            acquireLivePanel: () =>
-              acquireLiveExtensionPanel({ cdp, page, extensionId: expectedExtensionId }),
+              });
+              reloadController.adoptLivePanel(livePanel);
+              return livePanel;
+            },
           }),
         );
       } finally {

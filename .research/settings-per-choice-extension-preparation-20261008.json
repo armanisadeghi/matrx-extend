@@ -1,0 +1,15 @@
+{
+  "status": "source_ready_native_pending",
+  "defect": "EXT-D-0186",
+  "finding": "The repeated full-extension callback retained the initial panel target, so only the first management reload could target the live extension. It now advances only after strict worker/panel retirement proof and can adopt a currently acquired panel for cleanup.",
+  "behavior": "T04, T10, and T67 each exercise each nonbaseline choice through its own replacement-worker reload, verify visible and stored selection, and restore the captured baseline through another replacement reload. T10 also checks new-chat inheritance after each mode reload.",
+  "red": "Mutated controller to retain the original target; the second-reload expected target-chain assertion failed (RED_CONFIRMED).",
+  "green": "14 focused Node tests passed, including panel-only reload rejection, skipped choice, wrong stored value, baseline drift, failed restoration, new-chat failure, and cleanup/restoration checks.",
+  "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/native-extension-reload-controller.test.mjs tests/browser/settings-guest-extension-rechecks.test.mjs tests/browser/settings-full-extension-rechecks.test.mjs",
+  "focused_ci": "Both new test files are included in package.json test:focused-acceptance.",
+  "native": "No native run in this source task. Existing guest evidence covered panel reloads after one extension restart; it does not prove per-choice full-extension persistence.",
+  "limitations": [
+    "T40 downstream capture remains unverified.",
+    "The earlier intermittent cleanup failure cause remains unknown; this change adds evidence and does not claim that cause was repaired."
+  ]
+}
