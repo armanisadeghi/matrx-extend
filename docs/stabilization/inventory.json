@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T05:05:00.613049+00:00",
+  "updated_at": "2026-10-08T05:08:04.308991+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -15194,13 +15194,13 @@
           "linked_defects": ["EXT-D-0163"],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37726590928",
+              "status": "pass",
+              "run_id": "37729682008",
               "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-              "evidence": ".research/scrape397-final-native-20261007.json",
-              "independent_review": ".research/scrape397-native-peer-20261007.json",
-              "verified_at": "2026-10-08T04:28:35.530547+00:00",
-              "detail": "Warm on/off passes: page650\u21920 with Article310 held after Stop; full extension reload replacement panel unverified. Peer checked original receipt/journals; no separate browser replay or Store/current-main claim. Original CI artifact provenance independently checked in d165-full-ci-closure-peer-20261007.json."
+              "evidence": ".research/scrape397-reply-native-20261007.json",
+              "independent_review": ".research/scrape397-reload-pass-peer-20261007.json",
+              "verified_at": "2026-10-08T05:08:04.308991+00:00",
+              "detail": "Native warm and full-extension-reload on/off scroll synchronization passes: Article follows live page while enabled and holds measured position after Stop during reverse page scroll. Fresh peer verified original receipt, driver predicates and current resource journals. This bounded guest pass does not establish member/admin, Store, current-main or complete Scrape health; D166 historical panel absence cause remains open."
             }
           },
           "result_history": [
@@ -15216,6 +15216,19 @@
                 "detail": "Guest warm on/off native scroll proof passes; measured Article310 remains310 after Stop and reverse page650\u21920. Full extension reload not reached, member/admin unverified."
               },
               "superseded_at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37726590928",
+                "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+                "evidence": ".research/scrape397-final-native-20261007.json",
+                "independent_review": ".research/scrape397-native-peer-20261007.json",
+                "verified_at": "2026-10-08T04:28:35.530547+00:00",
+                "detail": "Warm on/off passes: page650\u21920 with Article310 held after Stop; full extension reload replacement panel unverified. Peer checked original receipt/journals; no separate browser replay or Store/current-main claim. Original CI artifact provenance independently checked in d165-full-ci-closure-peer-20261007.json."
+              },
+              "superseded_at": "2026-10-08T05:08:04.308991+00:00"
             }
           ],
           "defect_ids": ["EXT-D-0166"]
