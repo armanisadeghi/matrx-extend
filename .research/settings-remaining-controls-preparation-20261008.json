@@ -1,29 +1,29 @@
 {
   "schema_version": 1,
-  "scope": "Prepared three previously unverified guest Settings cases in the real native side-panel driver; no native run or acceptance credit is claimed.",
+  "scope": "Prepared guest Settings T28, T40, and T67 native-driver assertions and failure-path cleanup; hosted focused and native acceptance remain separately tracked.",
   "cases": {
     "EXT-F-1003-T28": {
       "behavior": "Each guest section opens with content and closes with that content inaccessible; Data and SEO show No options yet.",
-      "assertions": "Exact guest heading roster, aria-expanded, aria-hidden, inert, nonempty or explicit empty content, and unchanged persisted Settings digest, before and after panel reload.",
-      "restoration": "Each section returns to its starting expanded state after exercise."
+      "assertions": "Exact guest heading roster, accessibility state, measured rendered content height, empty hints, and unchanged persisted Settings digest before and after panel reload.",
+      "restoration": "Each section returns to its recorded initial expanded and rendered state; cleanup waits for and asserts restoration."
     },
     "EXT-F-1003-T40": {
       "behavior": "Auto-scrape on load toggles in both directions.",
       "assertions": "Visible switch state and persisted scrapeAutoOnLoad agree after each trusted click and panel reload.",
-      "restoration": "The original visible and persisted value is restored.",
+      "restoration": "When UI and storage drift, cleanup drives the switch away and back through trusted clicks, then verifies UI and storage after panel reload.",
       "limit": "A page-load background capture is not exercised; downstream capture behavior remains unverified."
     },
     "EXT-F-1003-T67": {
       "behavior": "Capture and Scroll & capture are each selected through the real picker.",
       "assertions": "Visible picker label and persisted scrapeAutoMode agree after each trusted selection and panel reload.",
-      "restoration": "The original visible and persisted mode is restored."
+      "restoration": "When UI shows baseline but storage differs, cleanup selects the alternate mode and then baseline through the picker, then verifies UI and storage after panel reload."
     }
   },
   "verification": {
-    "static": "node --check passed for driver, helper, and focused comparator test; git diff --check passed before final edit; Biome formatting applied to the three files.",
-    "focused_test": "tests/browser/settings-guest-scrape-controls.test.mjs is written for the automatic focused acceptance suite; no local test execution occurred.",
-    "native": "Unverified. The hosted/native runner must use a newly built and identity-verified artifact containing this commit; an existing frozen run cannot cover it.",
-    "resource_limit": "Local browser, test, and build execution prohibited: system volume had 116 MiB available, below the 20 GiB floor."
+    "source": "Driver now observes rendered section height and executes restoration checks; focused tests call the actual T28/T40/T67 case runners through an injected driver seam, including failure and cleanup paths. Node syntax checks and Biome formatting passed.",
+    "focused_test": "Pending automatic hosted focused-acceptance result for the pushed commit. No local test was run.",
+    "native": "Unverified until a hosted native run executes this driver. Existing product blobs may be reused only when their frozen artifact identity and tree hash match; these harness-only changes do not themselves require rebuilding product binaries.",
+    "resource_limit": "No local tests, browser, or build, as instructed for low system disk."
   },
   "source_files": [
     "package.json",

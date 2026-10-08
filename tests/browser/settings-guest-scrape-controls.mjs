@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const STORAGE_KEY = 'matrx.settings.v1';
+const nativeDriver = { click, evaluate, openSection, waitFor };
 const SECTIONS = [
   'Account',
   'Organization',
@@ -36,8 +37,8 @@ export function scrapeModeMatches(state, value, label) {
   );
 }
 
-async function observeScrape(panel) {
-  return evaluate(
+async function observeScrape(panel, driver = nativeDriver) {
+  return driver.evaluate(
     panel,
     `(async () => {
     const tab = [...document.querySelectorAll('button[role="tab"][title="Settings"][data-state="active"]')];
@@ -63,9 +64,9 @@ async function observeScrape(panel) {
   );
 }
 
-export async function runGuestAutoScrapeCase(panel, reloadSettings, record) {
-  await openSection(panel, 'Scrape');
-  const initial = await observeScrape(panel);
+export async function runGuestAutoScrapeCase(panel, reloadSettings, record, driver = nativeDriver) {
+  await driver.openSection(panel, 'Scrape');
+  const initial = await observeScrape(panel, driver);
   assert.equal(
     initial.active && initial.sectionOpen && initial.toggle.count === 1,
     true,
@@ -79,10 +80,10 @@ export async function runGuestAutoScrapeCase(panel, reloadSettings, record) {
   const baseline = initial.toggle.visible;
   try {
     for (const expected of [!baseline, baseline]) {
-      await click(panel, 'switch', 'Auto-scrape on load');
-      const warm = await waitFor(
+      await driver.click(panel, 'switch', 'Auto-scrape on load');
+      const warm = await driver.waitFor(
         `auto_scrape_${expected}_warm`,
-        () => observeScrape(panel),
+        () => observeScrape(panel, driver),
         (state) =>
           scrapeSwitchMatches(
             { ...state?.toggle, active: state?.active, sectionOpen: state?.sectionOpen },
@@ -91,8 +92,8 @@ export async function runGuestAutoScrapeCase(panel, reloadSettings, record) {
       );
       record('warm', `Auto-scrape ${expected ? 'on' : 'off'} appears and persists`, warm, true);
       await reloadSettings(panel);
-      await openSection(panel, 'Scrape');
-      const reloaded = await observeScrape(panel);
+      await driver.openSection(panel, 'Scrape');
+      const reloaded = await observeScrape(panel, driver);
       record(
         'reload',
         `Auto-scrape ${expected ? 'on' : 'off'} survives reload`,
@@ -104,25 +105,47 @@ export async function runGuestAutoScrapeCase(panel, reloadSettings, record) {
       );
     }
   } finally {
-    await openSection(panel, 'Scrape');
-    const current = await observeScrape(panel);
-    if (current.toggle.visible !== baseline) await click(panel, 'switch', 'Auto-scrape on load');
-    const restored = await waitFor(
+    await driver.openSection(panel, 'Scrape');
+    const current = await observeScrape(panel, driver);
+    // A stale UI can already show the baseline while storage still holds the other value.
+    // Drive away and back so the baseline write is exercised by a real control click.
+    if (current.toggle.visible === baseline && current.toggle.stored !== baseline) {
+      await driver.click(panel, 'switch', 'Auto-scrape on load');
+    }
+    if ((await observeScrape(panel, driver)).toggle.visible !== baseline)
+      await driver.click(panel, 'switch', 'Auto-scrape on load');
+    const restored = await driver.waitFor(
       'auto_scrape_baseline_restored',
-      () => observeScrape(panel),
+      () => observeScrape(panel, driver),
       (state) =>
         scrapeSwitchMatches(
           { ...state?.toggle, active: state?.active, sectionOpen: state?.sectionOpen },
           baseline,
         ),
     );
+    await reloadSettings(panel);
+    await driver.openSection(panel, 'Scrape');
+    const persisted = await observeScrape(panel, driver);
+    assert.equal(
+      scrapeSwitchMatches(
+        { ...persisted.toggle, active: persisted.active, sectionOpen: persisted.sectionOpen },
+        baseline,
+      ),
+      true,
+      'auto_scrape_baseline_not_restored_after_reload',
+    );
     record('cleanup', 'Original Auto-scrape value restored in UI and storage', restored, true);
   }
 }
 
-export async function runGuestAutoScrapeModeCase(panel, reloadSettings, record) {
-  await openSection(panel, 'Scrape');
-  const initial = await observeScrape(panel);
+export async function runGuestAutoScrapeModeCase(
+  panel,
+  reloadSettings,
+  record,
+  driver = nativeDriver,
+) {
+  await driver.openSection(panel, 'Scrape');
+  const initial = await observeScrape(panel, driver);
   const labels = { capture: 'Capture', 'scroll-capture': 'Scroll & capture' };
   const baseline = initial.mode.stored;
   assert.ok(Object.hasOwn(labels, baseline), 'auto_scrape_mode_requires_saved_baseline');
@@ -135,11 +158,11 @@ export async function runGuestAutoScrapeModeCase(panel, reloadSettings, record) 
     for (const value of Object.keys(labels)
       .filter((choice) => choice !== baseline)
       .concat(baseline)) {
-      await click(panel, 'settings-select', 'Auto-scrape mode');
-      await click(panel, 'option', labels[value]);
-      const warm = await waitFor(
+      await driver.click(panel, 'settings-select', 'Auto-scrape mode');
+      await driver.click(panel, 'option', labels[value]);
+      const warm = await driver.waitFor(
         `auto_scrape_mode_${value}_warm`,
-        () => observeScrape(panel),
+        () => observeScrape(panel, driver),
         (state) =>
           scrapeModeMatches(
             { ...state?.mode, active: state?.active, sectionOpen: state?.sectionOpen },
@@ -149,8 +172,8 @@ export async function runGuestAutoScrapeModeCase(panel, reloadSettings, record) 
       );
       record('warm', `${labels[value]} appears and persists`, warm, true);
       await reloadSettings(panel);
-      await openSection(panel, 'Scrape');
-      const reloaded = await observeScrape(panel);
+      await driver.openSection(panel, 'Scrape');
+      const reloaded = await observeScrape(panel, driver);
       record(
         'reload',
         `${labels[value]} survives reload`,
@@ -163,15 +186,20 @@ export async function runGuestAutoScrapeModeCase(panel, reloadSettings, record) 
       );
     }
   } finally {
-    await openSection(panel, 'Scrape');
-    const current = await observeScrape(panel);
-    if (current.mode.stored !== baseline || current.mode.visible !== labels[baseline]) {
-      await click(panel, 'settings-select', 'Auto-scrape mode');
-      await click(panel, 'option', labels[baseline]);
+    await driver.openSection(panel, 'Scrape');
+    const current = await observeScrape(panel, driver);
+    if (current.mode.visible === labels[baseline] && current.mode.stored !== baseline) {
+      const alternate = Object.keys(labels).find((value) => value !== baseline);
+      await driver.click(panel, 'settings-select', 'Auto-scrape mode');
+      await driver.click(panel, 'option', labels[alternate]);
     }
-    const restored = await waitFor(
+    if ((await observeScrape(panel, driver)).mode.visible !== labels[baseline]) {
+      await driver.click(panel, 'settings-select', 'Auto-scrape mode');
+      await driver.click(panel, 'option', labels[baseline]);
+    }
+    const restored = await driver.waitFor(
       'auto_scrape_mode_baseline_restored',
-      () => observeScrape(panel),
+      () => observeScrape(panel, driver),
       (state) =>
         scrapeModeMatches(
           { ...state?.mode, active: state?.active, sectionOpen: state?.sectionOpen },
@@ -179,12 +207,24 @@ export async function runGuestAutoScrapeModeCase(panel, reloadSettings, record) 
           labels[baseline],
         ),
     );
+    await reloadSettings(panel);
+    await driver.openSection(panel, 'Scrape');
+    const persisted = await observeScrape(panel, driver);
+    assert.equal(
+      scrapeModeMatches(
+        { ...persisted.mode, active: persisted.active, sectionOpen: persisted.sectionOpen },
+        baseline,
+        labels[baseline],
+      ),
+      true,
+      'auto_scrape_mode_baseline_not_restored_after_reload',
+    );
     record('cleanup', 'Original Auto-scrape mode restored in UI and storage', restored, true);
   }
 }
 
-async function observeSection(panel, label) {
-  return evaluate(
+async function observeSection(panel, label, driver = nativeDriver) {
+  return driver.evaluate(
     panel,
     `(async () => {
     const tab = [...document.querySelectorAll('button[role="tab"][title="Settings"][data-state="active"]')];
@@ -199,6 +239,8 @@ async function observeSection(panel, label) {
       headings, count: matches.length, expanded: matches[0]?.getAttribute('aria-expanded') ?? null,
       contentAriaHidden: content?.getAttribute('aria-hidden') ?? null, contentInert: content?.inert ?? null,
       contentNonempty: !!content?.textContent.trim(),
+      contentRendered: !!content && content.getBoundingClientRect().height > 1 &&
+        getComputedStyle(content).visibility !== 'hidden' && getComputedStyle(content).display !== 'none',
       emptyHint: ['Data', 'SEO'].includes(${JSON.stringify(label)}) ? content?.textContent.trim() === 'No options yet' : null,
       settingsDigest: await digest(raw) };
   })()`,
@@ -215,61 +257,74 @@ export function sectionMatches(state, label, expanded, baselineDigest) {
     state?.contentAriaHidden === String(!expanded) &&
     state?.contentInert === !expanded &&
     state?.contentNonempty === true &&
+    state?.contentRendered === expanded &&
     (!['Data', 'SEO'].includes(label) || state.emptyHint === true) &&
     state?.settingsDigest === baselineDigest
   );
 }
 
-export async function runGuestSectionsCase(panel, reloadSettings, record) {
-  const baseline = await observeSection(panel, 'Account');
+export async function runGuestSectionsCase(panel, reloadSettings, record, driver = nativeDriver) {
+  const baseline = await observeSection(panel, 'Account', driver);
   assert.equal(
     baseline.active && baseline.headings.length === SECTIONS.length,
     true,
     'guest_settings_sections_missing',
   );
   for (const label of SECTIONS) {
-    const initial = await observeSection(panel, label);
+    const initial = await observeSection(panel, label, driver);
     try {
-      if (initial.expanded !== 'true') await click(panel, 'section', label);
-      const open = await waitFor(
+      if (initial.expanded !== 'true') await driver.click(panel, 'section', label);
+      const open = await driver.waitFor(
         `${label}_section_open`,
-        () => observeSection(panel, label),
+        () => observeSection(panel, label, driver),
         (state) => sectionMatches(state, label, true, baseline.settingsDigest),
       );
       record('warm', `${label} opens with honest content`, open, true);
-      await click(panel, 'section', label);
-      const closed = await waitFor(
+      await driver.click(panel, 'section', label);
+      const closed = await driver.waitFor(
         `${label}_section_closed`,
-        () => observeSection(panel, label),
+        () => observeSection(panel, label, driver),
         (state) => sectionMatches(state, label, false, baseline.settingsDigest),
       );
       record('warm', `${label} closes without changing preferences`, closed, true);
     } finally {
-      const current = await observeSection(panel, label);
-      if (current.expanded !== initial.expanded) await click(panel, 'section', label);
+      const current = await observeSection(panel, label, driver);
+      if (current.expanded !== initial.expanded) await driver.click(panel, 'section', label);
+      await driver.waitFor(
+        `${label}_section_restored`,
+        () => observeSection(panel, label, driver),
+        (state) =>
+          sectionMatches(state, label, initial.expanded === 'true', baseline.settingsDigest),
+      );
     }
   }
   await reloadSettings(panel);
   for (const label of SECTIONS) {
-    const initial = await observeSection(panel, label);
+    const initial = await observeSection(panel, label, driver);
     try {
-      if (initial.expanded !== 'true') await click(panel, 'section', label);
-      const open = await waitFor(
+      if (initial.expanded !== 'true') await driver.click(panel, 'section', label);
+      const open = await driver.waitFor(
         `${label}_section_reload_open`,
-        () => observeSection(panel, label),
+        () => observeSection(panel, label, driver),
         (state) => sectionMatches(state, label, true, baseline.settingsDigest),
       );
       record('reload', `${label} opens after reload`, open, true);
-      await click(panel, 'section', label);
-      const closed = await waitFor(
+      await driver.click(panel, 'section', label);
+      const closed = await driver.waitFor(
         `${label}_section_reload_closed`,
-        () => observeSection(panel, label),
+        () => observeSection(panel, label, driver),
         (state) => sectionMatches(state, label, false, baseline.settingsDigest),
       );
       record('reload', `${label} closes after reload`, closed, true);
     } finally {
-      const current = await observeSection(panel, label);
-      if (current.expanded !== initial.expanded) await click(panel, 'section', label);
+      const current = await observeSection(panel, label, driver);
+      if (current.expanded !== initial.expanded) await driver.click(panel, 'section', label);
+      await driver.waitFor(
+        `${label}_section_reload_restored`,
+        () => observeSection(panel, label, driver),
+        (state) =>
+          sectionMatches(state, label, initial.expanded === 'true', baseline.settingsDigest),
+      );
     }
   }
 }
