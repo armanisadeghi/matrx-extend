@@ -1,0 +1,22 @@
+{
+  "reviewed_commit": "f7ab7f55",
+  "scope": "Independent review of the first read-only native Records table_list case (D91 / EXT-F-4130-C02)",
+  "verdict_a_executable_target": "FAIL: native execution remains pending and the driver has a deterministic sign-in blocker.",
+  "verdict_a_evidence": [
+    "The hosted workflow routes records-readonly-admin to the new native driver with a CI development artifact, approved organization fixture, resource guard, and uploaded receipt path; route tests pass.",
+    "The driver calls signInSettings without onStage (tests/browser/records-readonly-native-acceptance.mjs:152-159). Its admin branch calls onStage(value) unconditionally (tests/browser/settings-native-auth-driver.mjs:414-417), beginning with admin_web_navigation in admin-settings-signin.mjs. This prevents the first live action.",
+    "The driver prepares the canonical {action:'table_list',args:{organization_id,include_app_tables:true,limit:50}} envelope and checks an exact execute POST, X-Organization-Id, HTTP 200, loadingFinished, and a visible nonempty table list for the approved organization. This has not been exercised against a current hosted artifact.",
+    "The execute observer checks only that a Bearer header exists (records-readonly-native-acceptance.mjs:42-45, 241). The preceding schema checkpoint hashes the actual panel token and compares it for /tools/test/list; the execute call needs the same principal correlation. It currently cannot prove that the action request used the signed-in admin actor.",
+    "The visible result is read from the card after a finished execute request, but no response-body or completion-event comparison binds that result to the observed request. A stale or independently produced successful output can satisfy the visible-result assertions if the UI does not clear as expected. Require a bounded output transition and/or same-request completion correlation before calling it a runtime receipt.",
+    "The source report states no hosted native Records execution has run; D91 remains open. The prior /tools/test/list checkpoint is a prerequisite, not an action receipt."
+  ],
+  "verdict_b_quality": "FAIL: the route guard is useful, but it does not exercise the native driver and missed its sign-in blocker and request-principal gap.",
+  "verdict_b_evidence": [
+    "node --test scripts/hosted-showcase-route.test.mjs: 15 passed; node --check tests/browser/records-readonly-native-acceptance.mjs: passed. These cover route and syntax, not the live action.",
+    "The request observer collects matching execute calls by CDP requestId and requires exactly one finished 200 POST; this is a meaningful guard against dropped or altered request fields, but its bearerPresent assertion is weaker than the existing authenticated-principal helper.",
+    "Failure receipts expose only bounded stage and diagnostic flags; no credential, raw network body, table names, or private rows are written. The test performs only table_list and creates no case-owned rows, so no data cleanup is required.",
+    "The observer stop loop does not report listener-removal failures, unlike the existing organization checkpoint; fail-safe cleanup evidence is therefore incomplete."
+  ],
+  "required_reverify": "Supply onStage, correlate the execute bearer with the panel session, bind the visible output to the finished request, then run the hosted case against an exact current CI artifact with a real approved-organization table. Keep D91 open until the resulting private receipt proves the action; do not upload raw table or credential data.",
+  "limitations": "No hosted native run or private fixture access was performed in this independent source review."
+}
