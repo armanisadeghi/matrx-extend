@@ -42,7 +42,7 @@ importers:
         version: 0.9.1(react@19.3.0)
       '@ai-matrx/records':
         specifier: latest
-        version: 0.81.0(@tanstack/react-query@5.104.0(react@19.3.0))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+        version: 0.81.1(@tanstack/react-query@5.104.0(react@19.3.0))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/tap-target':
         specifier: latest
         version: 0.2.21(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -367,8 +367,8 @@ packages:
       react-native:
         optional: true
 
-  '@ai-matrx/records@0.81.0':
-    resolution: {integrity: sha512-nBJAeNH2XIAAiXbyCAa+53Eku1F4nmC8c4kLknDGQiml1mSv8MAl0Xe0i1BtTUFohC6+FaGg+HRX9cwRR3T+ow==}
+  '@ai-matrx/records@0.81.1':
+    resolution: {integrity: sha512-OE7+2M6cSzxC+0mi39/gGehG2vd7SjKTWl8JmJLjr13O+BPrenW/JWd1/xyJM+6CXJ62NsU0hiPimqq1hl4V+A==}
     engines: {node: '>=20'}
     peerDependencies:
       '@tanstack/react-query': '>=5.100.0'
@@ -5392,7 +5392,7 @@ snapshots:
     optionalDependencies:
       react: 19.3.0
 
-  '@ai-matrx/records@0.81.0(@tanstack/react-query@5.104.0(react@19.3.0))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
+  '@ai-matrx/records@0.81.1(@tanstack/react-query@5.104.0(react@19.3.0))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@ai-matrx/alchemy': 0.20.5(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/design-system': 0.80.4(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
