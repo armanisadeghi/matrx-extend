@@ -1,0 +1,45 @@
+{
+  "run_id": 37778965029,
+  "job_id": 113316912751,
+  "attempt": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "event": "workflow_dispatch",
+  "head_sha": "3d0d9b1ffbbdd8058bf652d3dbbe532155a08e52",
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029",
+  "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029/job/113316912751",
+  "run_created_at_utc": "2026-10-08T12:43:51Z",
+  "job_started_at_utc": "2026-10-08T12:44:05Z",
+  "job_completed_at_utc": "2026-10-08T12:53:01Z",
+  "status": "completed",
+  "conclusion": "success",
+  "dispatch_inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-scrape-development",
+    "development_run_id": 37754055905,
+    "development_artifact_id": 11539827040,
+    "scrape_auth_mode": "guest",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": "600",
+    "scrape_reload_open_diagnostic": "omitted; workflow default false",
+    "scrape_diagnostic_cpu_rate": "omitted"
+  },
+  "artifact": {
+    "id": 11551029635,
+    "name": "hosted-guest-37778965029-1",
+    "size_in_bytes": 201905,
+    "expired": false
+  },
+  "source_gate": {
+    "candidate_source": "175718392f597d214caaf9310afc5122a2f4ae62",
+    "focused_acceptance_run": 37778587645,
+    "focused_acceptance_conclusion": "success",
+    "independent_review_commit": "9fc0a22159d7285679d5280bc18a55abf4b77dac"
+  },
+  "resource_journal_selection": [
+    "hosted-package-37778965029-1.jsonl",
+    "hosted-browser-37778965029-1.jsonl",
+    "hosted-guest-37778965029-1.jsonl"
+  ],
+  "note": "The downloaded hosted artifact also included journals for previous run IDs left in the hosted checkout workspace. Those files are excluded from this run-specific evidence selection."
+}

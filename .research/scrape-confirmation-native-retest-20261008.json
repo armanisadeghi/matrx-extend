@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "task": "scrape-confirmation-native-retest-20261008",
+  "defect_id": "EXT-D-0178",
+  "case_id": "EXT-F-1007-T08",
+  "status": "PARTIAL_CONFIRMATION_UNVERIFIED",
+  "scope": "One uninstrumented hosted lane B guest-scrape-development normal 600px attempt; no retry, build, release, deployment, product change, or inventory change.",
+  "source_gate": {
+    "source_commit": "175718392f597d214caaf9310afc5122a2f4ae62",
+    "focused_acceptance_run": 37778587645,
+    "focused_acceptance": "success",
+    "independent_review_commit": "9fc0a22159d7285679d5280bc18a55abf4b77dac",
+    "independent_review": "PASS for source boundary and guard quality; native confirmation still pending"
+  },
+  "dispatch": {
+    "run_id": 37778965029,
+    "job_id": 113316912751,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37778965029",
+    "event": "workflow_dispatch",
+    "workflow": "Hosted guest side-panel acceptance",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "workflow_head_sha": "3d0d9b1ffbbdd8058bf652d3dbbe532155a08e52",
+    "started_at_utc": "2026-10-08T12:44:05Z",
+    "completed_at_utc": "2026-10-08T12:53:01Z",
+    "inputs": {
+      "acceptance_lane": "B",
+      "runner_label": "macos-15",
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37754055905,
+      "development_artifact_id": 11539827040,
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "normal",
+      "scrape_normal_width_px": 600,
+      "scrape_reload_open_diagnostic": false,
+      "scrape_diagnostic_cpu_rate": null
+    },
+    "admission": {
+      "lane_b_active_before_dispatch": false,
+      "lane_b_queued_before_dispatch": false,
+      "other_lane": "SEO run 37777965952 was terminal before dispatch",
+      "secret_inputs": "none"
+    }
+  },
+  "frozen_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.407",
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1",
+    "artifact_bytes": 41766868,
+    "imported_and_matched_by_hosted_workflow": true
+  },
+  "native_receipt": {
+    "path": ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/native-receipt.json",
+    "sha256": "8812b69e42135eaa34b9b429a76e7f3d3918c5eaa527b9144510f36e7e20f8b1",
+    "overall_status": "partial",
+    "guest_account_observed": true,
+    "guest_auth_storage_empty": true,
+    "browser_version": "Chrome/141.0.7390.37",
+    "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "width_mode": "normal",
+    "reload_open_diagnostic": {
+      "enabled": false,
+      "evidence_class": "acceptance_eligible",
+      "perturbation": "none"
+    },
+    "stage": "post_reload_empty_media_capture",
+    "failure": null,
+    "post_reload_capture_boundary": {
+      "pointer_phase": "release_returned",
+      "click_events": 1,
+      "busy_observed": true
+    },
+    "post_reload_article_result": "The boundary helper returned and the procedure advanced to post-reload empty-media observations without a failure. Its success predicate requires the visible Harbor Dental referral Article and the sentence 'Referral coordinators answer weekday calls.' either immediately after Capture or after confirming the owned recapture dialog. The receipt does not persist which branch occurred or the Article text itself.",
+    "case_verdict": "T08 remains partial for this guest receipt because member/admin modes remain unverified; this run exercised guest only."
+  },
+  "confirmation_result": {
+    "status": "UNVERIFIED",
+    "reason": "The native helper accepts either an already captured Article or the exact owned 'Discard unsaved edits?' dialog, and chooses 'Re-capture' only in the dialog branch. The receipt records pointer/click/busy evidence but no dialog-observed or confirmation-click field; the completed job log also contains no dialog observation. Therefore this receipt cannot prove that the expected dialog appeared and was confirmed, even though the Article boundary completed.",
+    "next_evidence_needed": "A receipt-bound observation that records the exact visible owned dialog and trusted Re-capture action, plus the subsequent Article predicate, on one native run."
+  },
+  "resource_journals": {
+    "package": {
+      "path": ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/hosted-package.jsonl",
+      "sha256": "10d01e92e09e66aa50cad6cc757877922009093b829d2000d2ae59d4c6f7ae19",
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "browser": {
+      "path": ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/hosted-browser.jsonl",
+      "sha256": "93b37293667b3b1bbd31c5de320eb81b0f45527fe731a26e72b0f545ded140c1",
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "guest": {
+      "path": ".research/scrape-confirmation-native-retest-20261008-evidence/selected/run37778965029/hosted-guest.jsonl",
+      "sha256": "338c3a41a4701240a7a1d9561d6b7abfa72fd716cee59240826eeb7e334a7ec4",
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  },
+  "evidence_metadata": {
+    "path": ".research/scrape-confirmation-native-retest-20261008-evidence/run37778965029-metadata.json",
+    "note": "Selected evidence files above are copied from the run artifact. The original downloaded artifact contains unrelated prior-run resource journals from the runner workspace; only the three run-37778965029 journals are selected here."
+  },
+  "limits": [
+    "A green workflow conclusion means the native script exited successfully; it does not alone prove the specific confirmation branch.",
+    "No retry was made.",
+    "No acceptance credit is claimed for the actual discard-dialog confirmation criterion."
+  ]
+}
