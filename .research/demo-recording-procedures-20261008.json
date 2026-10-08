@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "artifact_type": "inventory-case-procedure-patch",
+  "task_id": "demo-recording-procedures-20261008",
+  "patch_id": "demo-recording-procedures-20261008",
+  "source": {
+    "source_inventory": "docs/stabilization/inventory.json",
+    "scope": "Source-traced proposals for exactly EXT-F-4131-T01 through EXT-F-4136-T01. No runtime execution, inventory/status/applicability edits, or pass claims.",
+    "source_files_reviewed": [
+      "docs/stabilization/inventory.json",
+      "src/features/tools/ToolsView.tsx",
+      "src/lib/tools/handlers/demos.ts",
+      "src/lib/tools/handlers/video.ts",
+      "src/lib/tools/handlers/_active-tab.ts",
+      "src/lib/demos/recorder.ts",
+      "src/lib/demos/storage.ts",
+      "src/lib/demos/cloud-sync.ts",
+      "src/lib/demos/replayer.ts",
+      "src/lib/background/bootstrap.ts",
+      "src/lib/video/video-sw.ts",
+      "src/features/tools/TabCaptureDialog.tsx",
+      "docs/feature-tests.md",
+      "docs/stabilization/defects/EXT-D-0070.json"
+    ],
+    "anchors": [
+      "src/features/tools/ToolsView.tsx:390-490 (Catalog Run parses and schema-validates JSON, then invokes handler.run directly with assignedTabId=null)",
+      "src/lib/tools/dispatch.ts:779-839 (dispatcher permission and privileged confirmation gates are bypassed by the manual runner)",
+      "src/lib/tools/handlers/demos.ts:112-275 (record/list/describe/replay/delete contracts and result shapes)",
+      "src/lib/demos/recorder.ts:19-92 and src/lib/background/bootstrap.ts:546-553 (recorder state is module-local; DEMO_EVENT is consumed in the service worker)",
+      "src/lib/demos/storage.ts:12-83 and src/lib/demos/cloud-sync.ts:79-117,159-183 (local index/body persistence, async cloud mirror, tombstone and read-repair behavior)",
+      "src/lib/demos/replayer.ts:39-155,194-285 (replay navigates/reloads start_url; dry_run still navigates but resolves selectors and skips DOM actions)",
+      "src/lib/tools/handlers/video.ts:28-146 and src/lib/video/video-sw.ts:47-112 (tab capture, offscreen recording, upload to cld_files, result fields)",
+      "src/lib/permissions/optional.ts:65 and src/features/tools/TabCaptureDialog.tsx:1-22 (tabCapture is optional; native request is a user-gesture flow, not exercised by direct handler invocation)",
+      "docs/stabilization/defects/EXT-D-0070.json (read outage/refusal must remain distinct from absent/tombstoned demo)",
+      "docs/feature-tests.md:529-553,1031-1055,1120-1138 (intended UI observables and cloud-sync behavior)"
+    ],
+    "limits": [
+      "No owned demo page, demo body, target tab, or expendable remote video asset is identified by this source-only lane. All cases remain NOT_EXECUTABLE until a controlled fixture and matching build/resource receipt exist; instructions are conditional future procedures, not completed setup or runtime evidence.",
+      "Tools → Catalog → Run calls local handler.run directly. It bypasses dispatcher Ask/Act, privileged confirmation, admin enforcement, and required_optional_permissions checks. A result through this runner cannot prove those controls or a permission-denied branch. Do not revoke/change permissions to manufacture a negative case.",
+      "record_demo is NOT_EXECUTABLE through this manual path: ToolsView executes the handler in the side-panel module, but DEMO_EVENT is delivered to the service worker's separately instantiated recorder module state. A successful start result alone cannot prove any event reached the saved body. Do not claim the manual route records a demo until the boundary is repaired and independently reviewed.",
+      "Video upload creates a remote cld_files asset. No remote-delete operation is in this tool's contract. Retain the exact returned file_id and URL as an owned artifact; do not imply deleting a local list entry deletes that remote file.",
+      "Cloud demo save/delete mirroring is fire-and-forget. Local list/body absence after delete proves local cleanup only; cloud tombstone completion needs separately observable authorized evidence. Never expand inspection to unrelated demos or files.",
+      "Only the inventory modes member and admin are in scope. Run each role in its existing signed-in profile; do not infer one role's result from the other. Guest is N/A under the existing Tools UI sign-in applicability."
+    ]
+  },
+  "selectedCaseIDs": [
+    "EXT-F-4131-T01",
+    "EXT-F-4132-T01",
+    "EXT-F-4133-T01",
+    "EXT-F-4134-T01",
+    "EXT-F-4135-T01",
+    "EXT-F-4136-T01"
+  ],
+  "shared_setup": {
+    "resource_and_build": [
+      "Before any future execution, obtain the stabilization resource permit and a receipt satisfying docs/stabilization/PLAN.md, including source/output identity, browser/profile, extension runtime ID, role/auth/org state, current permission state, fixture IDs, timestamp and build/environment details. Do not include secrets or unrelated profile/storage contents.",
+      "Use existing signed-in member and admin profiles separately. Do not alter memberships, organizations, accounts, or permissions. The Tools manual runner is a direct handler diagnostic, not proof of dispatcher controls.",
+      "For warm and post-extension-reload passes, keep the exact receipt-bound unpacked build, reload the extension through Chrome, reopen the side panel, and repeat against freshly verified owned fixtures. A panel reopen or HMR is not an extension reload. No browser, build, upload, or runtime execution occurred while authoring this proposal."
+    ],
+    "fixture_and_cleanup": [
+      "A future run needs a dedicated owned demo fixture on a controlled page that has only harmless local interactions, a known start URL, stable visible controls, no login/payment/send/delete side effects, and no real personal data. Obtain the page/recording using a validated native path and record its exact owned URL, tab ID and demo_id in the run receipt. This proposal does not create or nominate that fixture.",
+      "Use only a demo created for this run and its exact demo_id. Keep a pre-run list_demos result as baseline; after creation require exactly the expected owned ID/name/start URL/step count delta. Delete only that exact demo_id when its case is complete; verify it is absent from list_demos and describe_demo returns demo_not_found. Preserve every baseline item.",
+      "For video, use only an owned harmless page, audio=false, a short duration and an explicit unique filename. Record exact returned file_id/file_url, MIME type, duration and size; open only that returned URL (when present) and verify the actual clip is playable and depicts the owned page. Retain the remote file because this handler exposes no remote deletion path. Do not claim remote cleanup."
+    ],
+    "manual_runner": [
+      "Open the signed-in side panel → Tools → Catalog, use the canonical surface filter, search the exact tool name, expand its row, enter the exact JSON fixture, and click Run. JSON parse/schema errors appear inline; handler results are rendered as formatted JSON and also broadcast to the tool timeline.",
+      "A schema-negative fixture must be valid JSON but violate the Zod schema (for example null or a wrong field type); malformed JSON is rejected before tool invocation and is not evidence of handler behavior. Do not use guessed IDs or another user's data."
+    ],
+    "unresolved_coverage": [
+      "Optional permission denial for chrome_record_tab_video, confirmation enforcement for replay_demo, and all ordinary dispatcher gates remain unresolved because this manual runner bypasses them. Existing permission or a direct handler result cannot prove denial/enforcement.",
+      "Do not use record_demo through the manual Tools runner until its side-panel/service-worker recorder-state boundary is fixed and reviewed. The inventory's manual path cannot currently produce a trustworthy saved body.",
+      "If no pre-provisioned owned fixture, valid build receipt, observable file URL, or safe exact-ID cleanup exists, stop and leave that condition unverified. No live-agent fixture path is presumed available."
+    ]
+  },
+  "case_updates": {
+    "EXT-F-4131-T01": {
+      "feature_id": "EXT-F-4131",
+      "title": "Controlled manual execution: chrome_record_tab_video",
+      "control_ids": ["EXT-F-4131-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "NOT_EXECUTABLE",
+      "preconditions": [
+        "Complete shared build/resource receipt and role setup. Run member and admin separately.",
+        "Requires a fresh owned, harmless page and exact focused tab ID; tabCapture must already be granted for the positive handler run. No permission prompt can be initiated from this manual call.",
+        "The result creates a remote cld_files asset. Accept and retain that exact artifact; do not test with private content or claim that clearing the Recorder list deletes it."
+      ],
+      "steps": [
+        "When the fixture and receipt exist, open the owned page in a fresh tab and note the exact tab ID from the creation receipt. Search chrome_record_tab_video and run {\"duration_ms\":3000,\"audio\":false,\"tab_id\":<owned tab id>,\"filename\":\"owned-demo-video-<run id>\"}. Do not omit the tab ID or switch tabs during capture.",
+        "Run the valid-JSON schema negative {\"duration_ms\":0,\"audio\":false,\"tab_id\":<owned tab id>}; require an inline Schema mismatch and no upload result. Then run the valid fixture again so a schema rejection is not mistaken for capture success.",
+        "If the valid call returns ok:true, record only its exact file_id, returned file_url, mime_type, duration_ms and size_bytes. Open that exact returned URL in a separate tab only if present; verify the video loads and shows the owned page during capture. Close only that owned preview tab and original owned target after recording. Retain the remote file.",
+        "If tabCapture is missing, the direct handler may fail or show an API error; do not use that as proof of permission gating and do not request/change permission here. An absent/unplayable URL leaves content verification unresolved."
+      ],
+      "expected": [
+        "A valid result, when capture and upload are available, has ok:true, a non-empty file_id, MIME type, positive size_bytes, duration_ms near the requested short duration, audio:false and source:'tab'. The inline result alone is insufficient: the exact returned file URL must expose a playable clip showing the owned target.",
+        "duration_ms:0 is rejected by the local Zod runner before handler invocation and yields no file_id/upload result. The manual path cannot exercise or prove missing-tabCapture denial; permission dimension remains unresolved.",
+        "Any uploaded file remains a remote user-owned artifact. No remote deletion is specified or claimed."
+      ],
+      "dimensions": ["valid-input", "schema-negative", "tabCapture-present", "member", "admin", "warm", "extension-reload", "owned-target", "remote-asset-observation"],
+      "source_evidence": ["src/lib/tools/handlers/video.ts:29-146", "src/lib/video/video-sw.ts:47-112", "src/features/tools/ToolsView.tsx:390-490"],
+      "access_context_permission_limits": ["Manual direct handler execution bypasses required_optional_permissions and cannot prove permission denial or enforcement.", "Role-specific runtime status remains unverified for member and admin.", "Keep the exact file_id/file_url from this run; do not inspect unrelated cloud files or claim remote cleanup."],
+      "limits": ["Proposal only. An owned fixture, receipt and actual playable returned asset are not available in this source-only task; no runtime result is claimed."]
+    },
+    "EXT-F-4132-T01": {
+      "feature_id": "EXT-F-4132",
+      "title": "Controlled manual execution: record_demo",
+      "control_ids": ["EXT-F-4132-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "NOT_EXECUTABLE",
+      "preconditions": ["Complete shared receipt and provide an owned harmless demo page with stable controls. The manual Tools path is presently unavailable for recording due to recorder state being split across the side panel and service worker."],
+      "steps": [
+        "Do not run record_demo from Tools → Catalog as a positive recording test until the event/state boundary is repaired and independently reviewed. Source shows the side panel invokes startRecording in its module instance while background/bootstrap receives DEMO_EVENT through its separate recorder instance.",
+        "After a separately reviewed repair, use a fresh owned page and baseline list_demos. Start with {\"action\":\"start\",\"tab_id\":<owned tab id>}; perform only a harmless visible click and type into a local fixture field; query {\"action\":\"status\"} and require steps_captured to increase. Stop with {\"action\":\"stop\",\"name\":\"Owned fixture <run id>\",\"description\":\"Harmless local demo fixture\"}; record returned exact demo_id and verify list_demos plus describe_demo show the visible steps and no secret values.",
+        "Use valid JSON {\"action\":\"start\",\"tab_id\":\"wrong\"} as a schema negative; require Schema mismatch and no recording start. Then use status to confirm the preexisting recording state is unchanged. If another recording is already active, do not stop or discard it; leave this case unavailable.",
+        "After the proposed successful run, delete only the exact newly created demo_id and verify it is absent from list_demos and now returns demo_not_found. Preserve all baseline demos. Cloud mirror/tombstone completion is separate and must not be inferred from local results."
+      ],
+      "expected": ["Current manual route cannot establish captured steps or a saved body; any start success alone is not a pass. The conditional future oracle is the exact owned demo visible in list_demos/describe_demo with harmless captured steps, followed by exact-ID local cleanup."],
+      "dimensions": ["valid-input", "schema-negative", "recording-state-boundary", "member", "admin", "warm", "extension-reload", "owned-target", "exact-demo-id-cleanup"],
+      "source_evidence": ["src/features/tools/ToolsView.tsx:453-462", "src/lib/tools/handlers/demos.ts:112-195", "src/lib/demos/recorder.ts:19-92", "src/lib/background/bootstrap.ts:546-553"],
+      "access_context_permission_limits": ["Manual direct invocation bypasses dispatcher action confirmation and does not establish agent routing.", "Existing permission state must not be changed to manufacture a negative result.", "Only member/admin are in scope; never touch another active recording or baseline demo."],
+      "limits": ["NOT_EXECUTABLE through current manual runner due separate panel/worker in-memory recorder state. No execution or pass is claimed."]
+    },
+    "EXT-F-4133-T01": {
+      "feature_id": "EXT-F-4133",
+      "title": "Controlled manual execution: list_demos",
+      "control_ids": ["EXT-F-4133-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "NOT_EXECUTABLE",
+      "preconditions": ["Complete shared receipt and have an exact owned demo fixture created through a validated recording path. Keep unrelated baseline demos untouched."],
+      "steps": [
+        "Record a baseline by running list_demos with {} and note only the fixture summaries and exact owned demo_id. Without an owned fixture, do not treat an arbitrary existing user demo as test data.",
+        "Run valid {} and inspect the actual formatted result: demos must contain the owned fixture summary with its exact id, name, start_url, step_count and parameter_names. Verify no unrelated data was modified.",
+        "Run valid JSON null as a schema-negative; expect local Schema mismatch. Run {} again and verify the same exact fixture remains present, proving the rejected call did not remove or alter it.",
+        "After extension Reload, rerun {} and verify the same fixture summary remains available from local storage. This checks persisted local index content; it does not prove cross-device cloud sync. Preserve the owned fixture until its designated delete_demo case, then clean up by exact ID."
+      ],
+      "expected": ["The result is {ok:true,demos:[...]}; list comes from chrome.storage.local summary index. The owned summary is visible in the JSON result before and after reload. No content/body read or cloud sync is implied by a summary. Null is rejected before handler invocation."],
+      "dimensions": ["valid-input", "schema-negative", "owned-demo-summary", "member", "admin", "warm", "extension-reload", "local-storage-persistence"],
+      "source_evidence": ["src/lib/tools/handlers/demos.ts:197-208", "src/lib/demos/storage.ts:12-26", "src/features/tools/ToolsView.tsx:390-490"],
+      "access_context_permission_limits": ["The manual runner bypasses dispatcher policy checks; storage permission enforcement is not established by a successful call.", "Do not open or delete baseline demo IDs outside the exact owned fixture."],
+      "limits": ["Requires an owned demo fixture, which this source-only task does not provision. No runtime result is claimed."]
+    },
+    "EXT-F-4134-T01": {
+      "feature_id": "EXT-F-4134",
+      "title": "Controlled manual execution: describe_demo",
+      "control_ids": ["EXT-F-4134-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "NOT_EXECUTABLE",
+      "preconditions": ["Complete shared receipt and use only the exact demo_id of a controlled owned fixture; fixture must contain harmless steps and no credentials."],
+      "steps": [
+        "Run describe_demo with {\"demo_id\":\"<exact owned demo_id>\"}. Inspect the formatted JSON body and verify its name, start_url, step_count, ordered step kinds and selector chains match the harmless visible fixture workflow.",
+        "For a non-sensitive type step, verify input_text is a readable fixture value. If a sensitive step exists, verify returned input_text is empty; never record or display a real password. Prefer a fixture without sensitive fields.",
+        "Run valid JSON {\"demo_id\":\"\"} as a schema negative; expect Schema mismatch. Then describe the exact valid ID again and verify the same step body remains readable.",
+        "After extension Reload, describe the same exact owned ID again. If the body is local, inspect the same visible step sequence. If the procedure deliberately depends on cloud on-miss repair, require a pre-provisioned owned cloud fixture and separately record successful returned body; do not simulate outage by changing auth/database state.",
+        "An arbitrary bogus ID may be used only as a non-mutating missing case: expect error demo_not_found. Do not use another user's demo reference. Keep read outage/body_unavailable separate from not-found; no outage injection is included."
+      ],
+      "expected": ["A found demo returns {ok:true,demo:{...steps:[...]}} with safe step content; sensitive input_text is redacted. Empty demo_id is rejected by Zod before handler invocation. A bogus unknown ID yields demo_not_found; a cloud read error must not be relabeled as absence. The output itself, not only ok:true, is the content oracle."],
+      "dimensions": ["valid-owned-id", "schema-negative", "sensitive-redaction", "unknown-id", "member", "admin", "warm", "extension-reload", "cloud-read-limit"],
+      "source_evidence": ["src/lib/tools/handlers/demos.ts:211-230", "src/lib/demos/cloud-sync.ts:159-183", "docs/stabilization/defects/EXT-D-0070.json"],
+      "access_context_permission_limits": ["Direct handler invocation cannot prove storage permission or dispatcher gates.", "Do not intentionally break cloud access or alter account/org/permission state to exercise an outage."],
+      "limits": ["Requires exact owned fixture. Cloud outage/refusal branch and independent repair retry are not executable in this manual proposal; they remain unresolved."]
+    },
+    "EXT-F-4135-T01": {
+      "feature_id": "EXT-F-4135",
+      "title": "Controlled manual execution: replay_demo",
+      "control_ids": ["EXT-F-4135-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "NOT_EXECUTABLE",
+      "preconditions": ["Complete shared receipt and provide the exact owned harmless demo and a fresh dedicated target tab on the demo's controlled start URL. No real account, external action, or personal data may appear in the workflow."],
+      "steps": [
+        "Do not invoke replay_demo without dry_run:true through Tools → Catalog: this direct runner bypasses the privileged confirmation gate. For a future controlled selector-resolution diagnostic, focus a fresh owned target and run {\"demo_id\":\"<exact owned demo_id>\",\"tab_id\":<owned target tab id>,\"dry_run\":true}.",
+        "Expect the owned tab to navigate/reload to demo.start_url even in dry-run mode. Inspect the actual visible page after that navigation and the result's steps_attempted, steps_succeeded, failed_at_index and per-step resolved_via values. Dry run resolves selectors but skips click/type/select/check/submit/key DOM actions; it is not a full workflow replay.",
+        "Run valid JSON {\"demo_id\":\"<exact owned demo_id>\",\"tab_id\":\"wrong\",\"dry_run\":true}; require Schema mismatch and no navigation. Re-run the valid owned dry-run after the negative; verify the same target reaches start_url and the page content remains in its pre-action state.",
+        "After extension Reload, use a newly created owned target tab and rerun dry_run:true. Close only that exact target tab after checking visible content. Do not run dry_run:false here; a native agent/dispatcher path with its real user confirmation is required before any side-effecting replay can be tested."
+      ],
+      "expected": ["A dry-run result can prove saved body lookup and selector resolution on the owned page, but cannot prove side effects or ordinary confirmation enforcement. Replay still navigates/reloads start_url before the dry-run loop. The schema-negative does not navigate; the subsequent positive dry-run is the preservation check."],
+      "dimensions": ["owned-demo", "dry-run-selector-resolution", "schema-negative", "navigation-boundary", "member", "admin", "warm", "extension-reload", "confirmation-unresolved"],
+      "source_evidence": ["src/lib/tools/handlers/demos.ts:232-258", "src/lib/demos/replayer.ts:39-155,194-285", "src/lib/tools/dispatch.ts:823-839", "src/features/tools/ToolsView.tsx:453-462"],
+      "access_context_permission_limits": ["Tools manual Run skips privileged confirmation; never use dry_run:false through it.", "Only the owned exact tab and fixture may be navigated. The dry-run still reloads start_url and is not read-only with respect to navigation/history."],
+      "limits": ["No owned demo/target fixture is provided, so this remains NOT_EXECUTABLE. Full side-effect replay and dispatcher confirmation remain unverified."]
+    },
+    "EXT-F-4136-T01": {
+      "feature_id": "EXT-F-4136",
+      "title": "Controlled manual execution: delete_demo",
+      "control_ids": ["EXT-F-4136-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "NOT_EXECUTABLE",
+      "preconditions": ["Complete shared receipt and use one fresh demo created solely for this run through a validated path. Preserve a pre-run list_demos baseline and exact returned demo_id; this delete is irreversible locally."],
+      "steps": [
+        "Before deletion, run list_demos and describe_demo for the exact owned demo_id. Verify visible step content and ensure no baseline ID is selected.",
+        "Run valid JSON {\"demo_id\":\"\"} as a schema-negative; require Schema mismatch. Re-run list_demos and describe_demo for the valid exact ID to prove the negative call did not mutate local state.",
+        "Run delete_demo with {\"demo_id\":\"<exact owned demo_id>\"}. Require {ok:true,deleted:true}. Then run list_demos and verify only the exact owned ID disappeared while all baseline summaries remain. Run describe_demo for that exact ID and require {ok:false,error:\"demo_not_found\"}.",
+        "Run delete_demo again for the same exact ID and require {ok:false,reason:'No demo with id=...'}; list_demos must remain unchanged. The cloud tombstone is asynchronous; do not claim remote completion from local results. Inspect only authorized evidence for this exact demo_id if cloud completion is separately part of the future run.",
+        "Repeat with a newly owned fixture after extension Reload only if cleanup can still be attributed to that new exact ID. Never delete an existing baseline row to satisfy the reload dimension."
+      ],
+      "expected": ["The first exact-ID delete returns deleted:true and removes the local summary/body; describe then distinguishes it as demo_not_found. A repeated delete returns a no-demo reason and does not change baseline rows. Fire-and-forget remote tombstone completion is not observable from this handler result and is not claimed."],
+      "dimensions": ["exact-owned-id", "schema-negative", "first-delete", "repeat-delete", "local-list-and-body", "member", "admin", "warm", "extension-reload", "remote-tombstone-limit"],
+      "source_evidence": ["src/lib/tools/handlers/demos.ts:261-275", "src/lib/demos/storage.ts:63-83", "src/lib/demos/cloud-sync.ts:93-102"],
+      "access_context_permission_limits": ["The manual runner bypasses dispatcher gates; result does not establish ordinary action authorization.", "Delete only the exact run-owned ID. Preserve baseline demo IDs and do not claim asynchronous remote deletion without separate authorized verification."],
+      "limits": ["Requires an owned disposable demo and exact ID, neither provisioned here. No deletion or runtime result is claimed."]
+    }
+  }
+}
