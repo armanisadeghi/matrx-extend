@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "defect_id": "EXT-D-0171",
+  "reviewed_at_utc": "2026-10-08T07:06:28Z",
+  "build_verified": "23d348750ae3547d14354d0eb1f486fe458d542a",
+  "evidence_commit": "ecdf2a47",
+  "verdict_a_original_install_failure_repaired": {
+    "status": "PASS",
+    "basis": [
+      "At dddb795c, focused acceptance run 37740515314 reports failure; the defect record identifies postinstall's duplicate @ai-matrx/kit 0.38.0 and 0.39.0 as the install blocker. Public run page does not expose logs while signed out.",
+      "At exact repair SHA 23d34875, focused acceptance run 37741062392 reports Success. This establishes that its installation and focused acceptance job passed on the repaired committed source.",
+      "Independent parse of git show 23d34875:pnpm-lock.yaml found 21 @ai-matrx package entries, no duplicate package versions, only kit 0.39.0, and no kit 0.38.0 references."
+    ],
+    "sources": [
+      "https://github.com/armanisadeghi/matrx-extend/actions/runs/37740515314",
+      "https://github.com/armanisadeghi/matrx-extend/actions/runs/37741062392",
+      "pnpm-lock.yaml:378",
+      "docs/stabilization/defects/EXT-D-0171.json"
+    ],
+    "findings": []
+  },
+  "verdict_b_change_and_evidence_quality": {
+    "status": "PASS",
+    "basis": [
+      "Fix commit changes pnpm-lock.yaml only. Its importer, package, and transitive snapshot references move kit to 0.39.0; design-system, records, and rich-editor also move forward. package.json keeps latest specifiers and the dependency guard and workflows are unchanged.",
+      "Evidence file in ecdf2a47 matches the reviewed working file byte for byte. The two resource journals each end with RESOURCE_FINAL_DECISION valid, admitted true, child exit 0.",
+      "The worker reports frozen-lockfile install and duplicate guard passing. Those local command outputs are represented by its evidence and resource journals; the independent focused CI success supplies a clean remote control."
+    ],
+    "sources": [
+      "23d34875:pnpm-lock.yaml",
+      "23d34875:package.json",
+      "23d34875:scripts/check-matrx-packages.mjs",
+      "ecdf2a47:.research/main-dependency-reconcile-20261008.json",
+      "ecdf2a47:docs/stabilization/resource-journals/main-dependency-frozen-20261008.jsonl",
+      "ecdf2a47:docs/stabilization/resource-journals/main-dependency-reconcile-20261008.jsonl"
+    ],
+    "findings": []
+  },
+  "cannot_verify": [
+    "At review time, public full CI run 37741062335 at 23d34875 showed In progress; its install step or logs were unavailable without sign-in. gh run view returned HTTP 403 API rate limit. Do not claim full CI passed.",
+    "No browser or product UI test was run for this dependency-only review; no UI health or release claim."
+  ],
+  "full_ci_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37741062335",
+  "overall": "FLIP for the specific duplicate-kit installation blocker; retain full-CI and UI limits."
+}

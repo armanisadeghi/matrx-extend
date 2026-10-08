@@ -7,8 +7,8 @@
   "title": "Concurrent package adoption leaves two kit versions in dependency graph",
   "severity": "S2: current-main installation and acceptance pipeline blocked",
   "priority": "P1",
-  "state": "in-fix",
-  "owner": "root/main_dependency_reconcile",
+  "state": "closed",
+  "owner": "root",
   "preconditions": [
     "Source dddb795c; frozen pnpm dependency installation in focused acceptance CI37740515314."
   ],
@@ -19,7 +19,12 @@
   ],
   "expected": "One version of each shared package in installed graph; installation completes before tests.",
   "actual": "Duplicate kit versions trip required postinstall guard; tests not reached.",
-  "evidence": ["https://github.com/armanisadeghi/matrx-extend/actions/runs/37740515314"],
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37740515314",
+    ".research/main-dependency-reconcile-20261008.json",
+    ".research/dependency-fresh-peer-20261008.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37741062392"
+  ],
   "cause": "Root lock importer still selects kit0.38.0 while newly adopted transitive packages resolve kit0.39.0; no producer pin established.",
   "transition_history": [
     {
@@ -39,7 +44,29 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Forward package refresh under resource admission; no pins or weakened guards."
+    },
+    {
+      "at": "2026-10-08T07:07:24.286868+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Concurrent contributor committed byte-identical forward graph repair23d34875; no duplicate source patch."
+    },
+    {
+      "at": "2026-10-08T07:07:24.286868+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Resource-valid frozen install and duplicate guard pass; independent peer confirms 21 unique packages and focused CI success at fix SHA."
+    },
+    {
+      "at": "2026-10-08T07:07:24.286868+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original CI installation blocker repaired and independently verified. Full CI, native UI and release health remain outside this closure."
     }
   ],
-  "closure_requirement": "Independent graph review plus successful clean CI dependency installation and relevant checks on repaired source; no product/UI health claim."
+  "closure_requirement": "Independent graph review plus successful clean CI dependency installation and relevant checks on repaired source; no product/UI health claim.",
+  "fix_commit": "23d348750ae3547d14354d0eb1f486fe458d542a",
+  "limits": [
+    "Latest full CI was still in progress at independent public-page observation. API later rate-limited; no overall CI/native/release claim."
+  ]
 }
