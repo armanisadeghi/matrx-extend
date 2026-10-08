@@ -456,7 +456,11 @@ function watchShareRpcs(panel) {
       entries.set(requestId, {
         operation,
         ...(quickCreate
-          ? { fileId: quickCreate[1], requestOrigin: new URL(request.url).origin }
+          ? {
+              fileId: quickCreate[1],
+              requestOrigin: new URL(request.url).origin,
+              requestBasePath: path.slice(0, quickCreate.index),
+            }
           : {}),
         request: JSON.parse(request.postData),
         organization: Object.entries(request.headers ?? {}).find(
@@ -692,7 +696,7 @@ async function verifyCanonicalShare(context, row, recovery, flow) {
     if (flow === 'quick') {
       if (
         parsed.origin !== created.requestOrigin ||
-        parsed.pathname !== `/share/${encodeURIComponent(link.token)}` ||
+        parsed.pathname !== `${created.requestBasePath}/share/${encodeURIComponent(link.token)}` ||
         link.permission_level !== 'viewer' ||
         link.expires_at ||
         link.max_uses
