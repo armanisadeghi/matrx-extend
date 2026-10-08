@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "status": "partial_procedure_integration",
+  "cases": ["EXT-F-4089-T01", "EXT-F-4090-T01", "EXT-F-4092-T01"],
+  "proposal": ".research/sensitive-tool-procedures-20261008.json",
+  "peer_reviews": [
+    ".research/sensitive-tool-procedures-peer-20261008.json",
+    ".research/sensitive-tool-procedures-final-peer-20261008.json"
+  ],
+  "review_verdict": "PASS_WITH_LIMITS",
+  "procedure_gaps_before": {
+    "missing_steps": 9,
+    "missing_expected": 9,
+    "missing_control_links": 27
+  },
+  "procedure_gaps_after": {
+    "missing_steps": 6,
+    "missing_expected": 6,
+    "missing_control_links": 27
+  },
+  "additive_dimensions": {
+    "EXT-F-4089-T01": [
+      "owned-login-fixture",
+      "schema-negative",
+      "no-matching-login",
+      "unsafe-destination-conditional",
+      "member",
+      "admin",
+      "warm",
+      "extension-reload",
+      "exact-item-cleanup"
+    ],
+    "EXT-F-4090-T01": [
+      "owned-company-domain",
+      "preview-before-write",
+      "schema-negative",
+      "capture-once",
+      "duplicate-preview",
+      "member",
+      "admin",
+      "warm",
+      "extension-reload",
+      "exact-id-cleanup"
+    ],
+    "EXT-F-4092-T01": [
+      "owned-sender-and-inbox",
+      "schema-negative",
+      "visible-review-card",
+      "no-send-decline",
+      "no-send-dismiss",
+      "edited-send-once",
+      "inbox-readback",
+      "member",
+      "admin",
+      "warm",
+      "extension-reload",
+      "immutable-send-receipt"
+    ]
+  },
+  "preserved": {
+    "EXT-F-4089-T01": {
+      "id": "EXT-F-4089-T01",
+      "title": "Controlled manual execution: credential_login",
+      "control_ids": [
+        "EXT-F-4089-C01",
+        "EXT-F-4089-C02",
+        "EXT-F-4089-C03",
+        "EXT-F-4089-C04",
+        "EXT-F-4089-C05",
+        "EXT-F-4089-C06",
+        "EXT-F-4089-C07",
+        "EXT-F-4089-C08",
+        "EXT-F-4089-C09"
+      ],
+      "modes": ["member", "admin"],
+      "design_status": "needed",
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+      "results": null,
+      "result_history": null,
+      "attempt_history": null,
+      "remote_delta_history": [
+        {
+          "source": "ab5d151",
+          "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
+          "acceptance": "Failed or missing top-frame reads no longer validate a navigation target; post-submit document changes are not reclassified using a check intended for pre-submit binding, and an expired wait is reported as form_changed."
+        }
+      ]
+    },
+    "EXT-F-4090-T01": {
+      "id": "EXT-F-4090-T01",
+      "title": "Controlled manual execution: capture_prospect",
+      "control_ids": ["EXT-F-4090-C01", "EXT-F-4090-C02", "EXT-F-4090-C03"],
+      "modes": ["member", "admin"],
+      "design_status": "needed",
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+      "results": null,
+      "result_history": null,
+      "attempt_history": null,
+      "remote_delta_history": null
+    },
+    "EXT-F-4092-T01": {
+      "id": "EXT-F-4092-T01",
+      "title": "Controlled manual execution: google_email_send",
+      "control_ids": ["EXT-F-4092-C01"],
+      "modes": ["member", "admin"],
+      "design_status": "needed",
+      "dimensions": ["valid-input", "invalid-input", "permissions", "reload"],
+      "results": null,
+      "result_history": null,
+      "attempt_history": null,
+      "remote_delta_history": null
+    }
+  },
+  "limits": [
+    "All three procedures remain NOT_EXECUTABLE until a valid resource permit/build receipt and owned disposable fixtures are available. No runtime result, role result, or applicability change was made.",
+    "credential_login no-match requires a proven safe top-frame form and exact status no_matching_login; probe errors and other refusals do not pass it.",
+    "google_email_send requires selectedConversationId:null and a visible email_review card before any decision; the card Send action remains the sole authorization for one send. An absent card is unverified.",
+    "Manual Tools execution does not verify dispatcher permission behavior or agent assigned-tab pinning. No credentials, CRM writes, Gmail sends, network writes, or browser actions were performed."
+  ]
+}
