@@ -80,12 +80,22 @@
       ".research/seo-metadata-native-20261008/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37774478094-1.jsonl",
       ".research/seo-metadata-native-20261008/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37774478094-1.jsonl"
     ],
-    "receipt_absent": true
+    "receipt_absent": true,
+    "remote_run_metadata": ".research/seo-metadata-native-20261008/raw/hosted-run-metadata.json",
+    "remote_artifact_listing": ".research/seo-metadata-native-20261008/raw/remote-artifact-listing.json",
+    "uploaded_artifact_file_manifest": ".research/seo-metadata-native-20261008/raw/uploaded-artifact-file-manifest.json",
+    "sanitized_import_observation": ".research/seo-metadata-native-20261008/raw/artifact-import-observation.json"
   },
   "limits": [
     "No T09 pass or failure is inferred from the resource-invalid run.",
     "No retry was dispatched; the hosted job is terminal and invalidated.",
     "No inventory status was changed and no overall health claim is made.",
     "No private admin credentials were accessed."
-  ]
+  ],
+  "provenance_supplement": {
+    "source": "remote GitHub Actions run metadata, artifact API listing, downloaded-artifact file manifest, and two filtered scalar workflow observations",
+    "full_workflow_logs_retained": false,
+    "fresh_independent_validation_of_supplement": false,
+    "receipt_absence_basis": "the downloaded remote artifact manifest enumerates all 11 uploaded files and contains no test-results/seo-guest-acceptance.json"
+  }
 }

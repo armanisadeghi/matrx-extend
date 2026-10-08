@@ -1,0 +1,8 @@
+{
+  "workflow_run_id": 37774478094,
+  "source": "filtered hosted workflow output; full log was not retained",
+  "observations": [
+    "PREPARED_DEVELOPMENT 5d845f42cb22c10e2486af8048d1ac9f3ac8e114 f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "BROWSER_PANEL_CONTEXT_READY {\"first\":{\"contextCount\":1,\"sidePanelCount\":1,\"expectedExtensionCount\":1,\"exactUrlCount\":1,\"globalTabCount\":1,\"exactContextCount\":1,\"missingDocumentUrlCount\":0,\"emptyDocumentUrlCount\":0,\"otherExtensionUrlCount\":0,\"nonExtensionUrlCount\":0},\"last\":{\"contextCount\":1,\"sidePanelCount\":1,\"expectedExtensionCount\":1,\"exactUrlCount\":1,\"globalTabCount\":1,\"exactContextCount\":1,\"missingDocumentUrlCount\":0,\"emptyDocumentUrlCount\":0,\"otherExtensionUrlCount\":0,\"nonExtensionUrlCount\":0},\"attempts\":1,\"elapsed_ms\":12,\"exact_expected_appeared\":true}"
+  ]
+}
