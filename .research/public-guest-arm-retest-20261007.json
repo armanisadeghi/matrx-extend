@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "public_guest_arm_retest",
+  "verdict": {
+    "status": "pass",
+    "scope": "One native hosted public guest Chat run using the published Store CRX on the ARM runner; opening reply, same-conversation follow-up, and new conversation after panel reload.",
+    "limitations": [
+      "The CDP context observer attached after panel load, so this run does not establish requests or context reads before attachment.",
+      "This was native browser use of the published CRX artifact, not Chrome Web Store UI installation evidence."
+    ]
+  },
+  "run": {
+    "id": 37712132094,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37712132094",
+    "workflow": "hosted-guest-acceptance.yml",
+    "workflow_name": "Hosted guest side-panel acceptance",
+    "event": "workflow_dispatch",
+    "head_sha": "4107b34c01765aa30b1dd0ff4c8ac9bd0e51d9ef",
+    "acceptance_lane": "B",
+    "acceptance_case": "guest-chat",
+    "published_store_crx": true,
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "machine_architecture": "arm64",
+    "browser": "Chromium 141.0.7390.37 (Playwright build 1194)",
+    "started_at_utc": "2026-10-08T01:17:02Z",
+    "completed_at_utc": "2026-10-08T01:23:55Z",
+    "conclusion": "success",
+    "attempt": 1,
+    "retry": "none"
+  },
+  "published_package_and_runtime": {
+    "kind": "published_store_crx_unpacked",
+    "version": "0.2.205",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "runtime_extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "runtime_identity_source": "Native harness run.extensionId after exact extension panel and service-worker discovery",
+    "artifact_unchanged_after_acceptance": true,
+    "artifact_id": 11522198551,
+    "artifact_name": "hosted-guest-37712132094-1",
+    "artifact_zip_sha256": "01b05534d4d6d6553d0b1fa5671b2dd7fd65028a21c6e17e7d47d4e19350cd8b"
+  },
+  "live_server": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "before": {
+      "reachable": true,
+      "http_status": 200,
+      "git_sha": "1d535d990e3d85eaa24e526a531e49951cfacd07"
+    },
+    "after": {
+      "reachable": true,
+      "http_status": 200,
+      "git_sha": "1d535d990e3d85eaa24e526a531e49951cfacd07"
+    },
+    "stable_during_run": true
+  },
+  "guest_chat": {
+    "profile_fresh_and_signed_out": true,
+    "chat_visible": true,
+    "chat_remained_visible_after_reload": true,
+    "no_login_paywall_or_error": true,
+    "opening_reply": {
+      "verdict": "terminal_answer",
+      "assistant_reply_count": 1,
+      "contains_unpredictable_page_code": true,
+      "names_public_page_stages_in_order": true,
+      "guest_ai_http_status": 200,
+      "is_new_conversation": true
+    },
+    "same_conversation_followup": {
+      "verdict": "terminal_answer",
+      "completed": true,
+      "guest_ai_http_status": 200,
+      "is_new_conversation": false,
+      "conversation_fingerprint": "264f3216a8f89d75",
+      "same_identity_as_opening": true,
+      "assistant_reply_count": 3,
+      "contains_unpredictable_page_code": true
+    },
+    "post_reload_new_conversation": {
+      "verdict": "terminal_answer",
+      "completed": true,
+      "guest_ai_http_status": 200,
+      "is_new_conversation": true,
+      "conversation_fingerprint": "f6ae44cfe617a7cb",
+      "different_identity_from_prior_conversation": true,
+      "assistant_reply_count": 2,
+      "contains_unpredictable_page_code": true
+    },
+    "guest_ai_transport_proven": true,
+    "failure_stage": null,
+    "failure_code": null
+  },
+  "resource_admission": {
+    "overall": "valid",
+    "resource_invalid": false,
+    "current_run_journals": [
+      {
+        "path": ".research/public-guest-arm-retest-20261007-evidence/run37712132094-selected/resource-journals/hosted-package-37712132094-1.jsonl",
+        "final_decision": "valid",
+        "child_exit_code": 0,
+        "sha256": "d47d0db2695a38268ee73bf85beec8d29f578cf2b0a87928b478dd791d62dd8e"
+      },
+      {
+        "path": ".research/public-guest-arm-retest-20261007-evidence/run37712132094-selected/resource-journals/hosted-browser-37712132094-1.jsonl",
+        "final_decision": "valid",
+        "child_exit_code": 0,
+        "sha256": "a409c87b6398e25d56f485c57795e728a44098f2fadc7e8fb3a695909af508cc"
+      },
+      {
+        "path": ".research/public-guest-arm-retest-20261007-evidence/run37712132094-selected/resource-journals/hosted-guest-37712132094-1.jsonl",
+        "final_decision": "valid",
+        "child_exit_code": 0,
+        "sha256": "8036fa54cb43e7d2cc8251c5743d9630006cdb19fee526820d23dff1c76f6034"
+      }
+    ]
+  },
+  "evidence": {
+    "original_guest_chat_report": {
+      "path": ".research/public-guest-arm-retest-20261007-evidence/run37712132094-selected/original/guest-chat-store.json",
+      "sha256": "21956e059fd829825a4443bec42978e91c873926a4ebbe5f6e9029c1b7f9bbaf",
+      "preservation": "Unmodified copy of the workflow's uploaded native result; generated fixture content is limited to fingerprints and placeholder-redacted answer text."
+    },
+    "screenshots": [
+      {
+        "path": ".research/public-guest-arm-retest-20261007-evidence/run37712132094-selected/screenshots/guest-chat-real-answer.png",
+        "sha256": "00b50763844c3149a831ce5435a1edd65f982891507b62ad66afb0f9f758fc0a"
+      },
+      {
+        "path": ".research/public-guest-arm-retest-20261007-evidence/run37712132094-selected/screenshots/guest-chat-same-conversation-followup.png",
+        "sha256": "94ceab0c4643f91cdc3af46613a1594c95a7113d9fb817e07d6fc951534c5e23"
+      },
+      {
+        "path": ".research/public-guest-arm-retest-20261007-evidence/run37712132094-selected/screenshots/guest-chat-real-followup-answer.png",
+        "sha256": "a7de8df4f6130bb87ebb2a3519cd0b59c73bd649e86c04b63e37a66b419fdb1f"
+      }
+    ],
+    "prior_original_and_independent_review_preserved": [
+      ".research/public-guest-current-server-20261007.json",
+      ".research/public-guest-current-peer-20261007.json"
+    ],
+    "sanitization": "Kept the original report, exact current-run journals, and three acceptance screenshots. Excluded two stale resource journals from the downloaded artifact because they belonged to run37105304739. The selected files contain no credentials or personal content."
+  }
+}
