@@ -31,18 +31,19 @@
       "tests/browser/records-positive-fixture.mjs",
       "tests/browser/records-positive-fixture.test.mjs"
     ],
-    "behavior": "call() now records the attempted method before awaiting the browser request. A thrown Runtime.evaluate error receives one of two fixed, non-secret categories while preserving the first phase and null HTTP status. The callback still rethrows; no retry, fallback, write, or acceptance credit was added.",
-    "privacy": "Only fixed category labels, GET, and null status enter the receipt. Arbitrary exception text, bearer, raw API body, organization ID, and record IDs do not."
+    "behavior": "call() now records the attempted method before awaiting the browser request. A thrown Runtime.evaluate error receives one of two fixed categories. The real browser expression catches token-read and token-digest exceptions separately and returns only a fixed phase; the helper attaches that phase to the failure callback before any HTTP request. The callback still rethrows; no retry, fallback, write, or acceptance credit was added.",
+    "privacy": "Only fixed category and preflight-phase labels, GET, and null status enter the receipt. Arbitrary exception text, bearer, raw API body, organization ID, and record IDs do not."
   },
   "verification": {
     "red_before_fix": "Focused guard failed for the observed defect: unexpected_error/request_method null versus panel_runtime_exception/GET.",
-    "green_after_fix": "36 targeted fixture/native driver/proof tests passed in 0.35 seconds with external TMPDIR.",
+    "green_after_fix": "37 targeted fixture/native driver/proof tests passed in 0.34 seconds with external TMPDIR. The preflight guard runs the actual generated browser expression with storage and digest exceptions, then checks the helper-to-receipt callback.",
+    "scratch_mutation": "Changing only the digest-stage label to token_read in an external scratch copy made the focused phase guard fail; the scratch copy was removed.",
     "format": "Biome formatted both touched source files; git diff --check passed.",
     "hosted_focused_gate": "Pending owner dispatch against the pushed source.",
     "native": "No native rerun, local browser, build, release, or temporary secret staging."
   },
   "remaining": [
-    "A future admitted hosted run is needed to classify the actual browser exception and verify positive C04/C05 plus fixture cleanup.",
+    "A future admitted hosted run is needed to classify the actual browser exception and verify positive C04/C05 plus fixture cleanup. If the result is still panel_runtime_exception, the remaining boundary is CDP/evaluate machinery or another uncaught browser expression error, not a proven API failure.",
     "This patch repairs diagnostic loss, not the unidentified browser/CDP cause."
   ]
 }
