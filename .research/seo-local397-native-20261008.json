@@ -1,0 +1,156 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0170 local ARM frozen397 native retest",
+  "status": "terminal_setup_unverified_corrected_attempt_not_admitted",
+  "frozen_product": {
+    "version": "0.2.397",
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "ci_run_id": 37724859892,
+    "artifact_id": 11527132614,
+    "kind": "ci_development_test",
+    "store_eligible": false,
+    "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "imported_receipt_tree_and_manifest_matched_before_attempt": true,
+    "post_attempt_manual_tree_recheck_matched": true,
+    "native_build_after": null
+  },
+  "first_attempt": {
+    "run_id": "seo-local397-native-20261008",
+    "host": "local macOS ARM",
+    "driver": "tests/browser/seo-guest-acceptance.mjs",
+    "guard": "scripts/stabilization-resource.mjs run",
+    "preflight": {
+      "schema": 1,
+      "at": "2026-10-08T07:11:01.667Z",
+      "runId": "seo-local397-preflight-20261008",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "resource_admitted": true,
+    "child_exit": {
+      "schema": 1,
+      "at": "2026-10-08T07:12:18.765Z",
+      "runId": "seo-local397-native-20261008",
+      "childExitCode": 1,
+      "childSignal": null,
+      "code": "RESOURCE_JOB_EXIT"
+    },
+    "resource_final": {
+      "schema": 1,
+      "at": "2026-10-08T07:12:18.807Z",
+      "runId": "seo-local397-native-20261008",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1,
+      "decision": "child_failed",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "native_receipt_status": "unverified",
+    "last_safe_stage": "build_identity_verified",
+    "failure_stage": "build_identity_verified",
+    "target_count": 0,
+    "controlled_T02_T14_reached": false,
+    "browser_profile_created": false,
+    "native_images_created": false,
+    "inferred_setup_cause": "MATRX_PLAYWRIGHT_MODULE and MATRX_CHROME_PATH were unset; repository require.resolve(playwright) returned MODULE_NOT_FOUND. The harness resolves Playwright immediately after artifact verification. Its sanitized receipt did not record the thrown error; this is source/environment diagnosis, not a directly observed exception.",
+    "read_only_correction_check": "Existing bundled playwright/index.mjs plus installed Chrome-for-Testing path resolved successfully; no browser launched in this diagnostic."
+  },
+  "corrected_attempt": {
+    "requested_run_id": "seo-local397-runtime-native-20261008",
+    "launched": false,
+    "profile_volume_preflight": {
+      "schema": 1,
+      "at": "2026-10-08T07:15:12.641Z",
+      "runId": "seo-local397-runtime-preflight-20261008",
+      "admitted": false,
+      "resourceInvalid": false,
+      "exitCode": 2,
+      "decision": "refused",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "process_scoped_external_tmpdir_preflight": {
+      "schema": 1,
+      "at": "2026-10-08T07:16:31.985Z",
+      "runId": "seo-local397-runtime-external-preflight-20261008",
+      "admitted": false,
+      "resourceInvalid": false,
+      "exitCode": 2,
+      "decision": "refused",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "refusal_reason": "RESOURCE_DISK_LOW: system/safety volume 14.72 GiB free, below 20 GiB floor even when profile/repo volume had about 1676 GiB free.",
+    "guard_threshold_changed": false,
+    "retry_performed": false
+  },
+  "acceptance": {
+    "T02": "unverified",
+    "T14": "unverified",
+    "new_case_credit": 0,
+    "D170_native_closure": false,
+    "dynamic_wikipedia": "not reached; prior unstable failure remains independently documented",
+    "member_admin": "unverified"
+  },
+  "cleanup": {
+    "guard_journals_terminal": true,
+    "owned_browser_or_driver_process_remaining": false,
+    "temporary_profile_directory_remaining": false,
+    "manual_user_profile_touched": false,
+    "new_downloads_or_builds": false
+  },
+  "originals": {
+    "seo-guest-acceptance.original.json.txt": {
+      "path": ".research/seo-local397-native-20261008-originals/seo-guest-acceptance.original.json.txt",
+      "bytes": 2499,
+      "sha256": "1c1024e81697a63815e523fd9eff0c52b6c3c9b473f9b3a028e17f8b2a1c2078"
+    },
+    "resource-preflight.jsonl": {
+      "path": ".research/seo-local397-native-20261008-originals/resource-preflight.jsonl",
+      "bytes": 859,
+      "sha256": "a7de937e09d15cd544d89ff6f518e842a8868c60a30194bf3e44b6dc2259c842"
+    },
+    "resource-native.jsonl": {
+      "path": ".research/seo-local397-native-20261008-originals/resource-native.jsonl",
+      "bytes": 1003,
+      "sha256": "e23d2ea88893b57f720f7bed60826e3f7af62c21f385cb98bf63f14581c67a95"
+    },
+    "resource-runtime-preflight.jsonl": {
+      "path": ".research/seo-local397-native-20261008-originals/resource-runtime-preflight.jsonl",
+      "bytes": 886,
+      "sha256": "b5372bb732368e17161b9a019536834b0bdb434b3bfe8f45e51eda795dc0b41c"
+    },
+    "resource-runtime-external-preflight.jsonl": {
+      "path": ".research/seo-local397-native-20261008-originals/resource-runtime-external-preflight.jsonl",
+      "bytes": 909,
+      "sha256": "f627658c10ec58c5859a0d2c272d98519ed8ba8fe805446d9b5ad4a72db3eca6"
+    },
+    "ci-receipt.json": {
+      "path": ".research/seo-local397-native-20261008-originals/ci-receipt.json",
+      "bytes": 330,
+      "sha256": "f6537a25117ab97838d722f0a1fba94a0798b8d8b06345fd72af04b88a29069d"
+    },
+    "local-dev-receipt.json": {
+      "path": ".research/seo-local397-native-20261008-originals/local-dev-receipt.json",
+      "bytes": 397,
+      "sha256": "31445c8870b1289e6434e95815acb080fbeeabff561a5545462b3fe472a0d225"
+    },
+    "import-status.json": {
+      "path": ".research/seo-local397-native-20261008-originals/import-status.json",
+      "bytes": 789,
+      "sha256": "c36020631481aa993b0224e730c1154b2ae90bb9adcd24127b3f4b9c948cd261"
+    },
+    "provenance.json": {
+      "path": ".research/seo-local397-native-20261008-originals/provenance.json",
+      "bytes": 527,
+      "sha256": "b9576e3ddcf74d5ae6031064ab044774572527c094f653593f3118d2fd42ebd1"
+    }
+  },
+  "limits": [
+    "No SEO case executed: first admitted child stopped after build identity and before owned Chrome profile.",
+    "Resource-valid child_failed is a setup failure, not a product failure or acceptance pass.",
+    "The corrected attempt was withheld after both later preflights refused the host disk floor.",
+    "No current-main, published Store, or overall feature-health claim."
+  ]
+}

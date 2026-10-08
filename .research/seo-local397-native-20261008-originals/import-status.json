@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "eligibleStore": false,
+  "sourceSha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+  "runId": 37724859892,
+  "runAttempt": 1,
+  "artifactId": 11527132614,
+  "githubArtifactDigest": "sha256:5a9092de49bc5fa47a0ca907e86104519397d9977c3344a482173fc61f2e004f",
+  "treeSha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+  "ciReceiptSha256": "f6537a25117ab97838d722f0a1fba94a0798b8d8b06345fd72af04b88a29069d",
+  "provenanceSha256": "b9576e3ddcf74d5ae6031064ab044774572527c094f653593f3118d2fd42ebd1",
+  "source": {
+    "originMain": "9295e037c9d8e2bb23a04ec451a54f2bca123d6d",
+    "localHead": "9295e037c9d8e2bb23a04ec451a54f2bca123d6d",
+    "trackedDirty": false,
+    "untrackedRunnerInputs": [],
+    "claim": "exact_pushed_commit_only"
+  }
+}
