@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-final-procedure-review",
+  "reviewed_commit": "0dda003e",
+  "reviewed_path": ".research/user-tool-procedures-20261008.json",
+  "prior_findings_path": ".research/user-tool-procedures-peer-20261008.json",
+  "scope": "Fresh static review of EXT-F-4121-T01 through EXT-F-4124-T01. No browser, login, backend, or runtime execution; no canonical inventory or status edit.",
+  "prior_findings": {
+    "EXT-F-4121-T01": {
+      "status": "ADDRESSED",
+      "evidence": "The revised steps switch from Tools to Chat for card appearance, selection, cancellation, and closure, and explicitly exclude the unobservable Tools result envelope. App.tsx force-mounts Chat but unmounts Tools; ToolsView result is local state; respondToAsk removes the card."
+    },
+    "EXT-F-4122-T01": {
+      "status": "ADDRESSED",
+      "evidence": "The revised steps observe the takeover card and closure in Chat and omit post-reply inspection of the unmounted Tools runner. The text response envelope remains explicitly unverified."
+    },
+    "EXT-F-4123-T01": {
+      "status": "ADDRESSED",
+      "evidence": "The revised steps capture the selected conversation's plan title/status and task count/titles before the run, compare that same panel after rejection and reload, and restrict the card check to appearance and closure. update_plan guards savePlan, setPlanStatus, and addTasks on a non-null conversation ID, while Tools supplies null."
+    },
+    "EXT-F-4124-T01": {
+      "status": "ADDRESSED_AS_LIMITATION",
+      "evidence": "The proposal retains NOT_EXECUTABLE. Tools supplies conversationId=null and user_todos returns No active conversation before any action. Future steps require a real agent-dispatched conversation fixture, which is not supplied here. None of its seven controls is claimed as executed."
+    }
+  },
+  "verdicts": {
+    "A_reproducible_bounded_procedure": "PASS_FOR_PROPOSED_MANUAL_SCOPE",
+    "B_honest_source_quality": "PASS"
+  },
+  "overall": "The three manual card procedures have source-supported visible observations and negative validation checks. The fourth is an honest non-executable case pending a real agent fixture. These verdicts approve procedure quality only, not runtime behavior or inventory closure.",
+  "remaining_limits": [
+    "No member/admin role run or Chrome observation was performed in this review.",
+    "Card removal is observable after reply or cancellation, but the manual handler response envelope is not durable across Tools-to-Chat navigation.",
+    "No live agent fixture was supplied for user_todos or update_plan persistence, dispatcher gating, streamed tool_event, or persisted role=tool message.",
+    "Reload and cold worker behavior remain proposed checks, not observed results."
+  ],
+  "source_evidence": [
+    "src/entrypoints/sidepanel/App.tsx:545-560,684-688",
+    "src/features/tools/ToolsView.tsx:385-387,416-420,453-490",
+    "src/hooks/use-tool-inbox.ts:207-213,272-280",
+    "src/features/chat/ChatView.tsx:193-205,658-666",
+    "src/features/chat/AgentAskUserCard.tsx:61-63,82-141",
+    "src/lib/tools/handlers/user.ts:375-402,407-500,522-551",
+    "src/lib/tools/handlers/lists.ts:87-95",
+    "src/features/lists/TaskPanel.tsx:65-127",
+    "docs/stabilization/PLAN.md:24-63"
+  ]
+}
