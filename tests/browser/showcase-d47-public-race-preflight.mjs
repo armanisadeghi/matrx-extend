@@ -239,6 +239,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       target_outside_main_frame: 0,
       target_unexpected_status_or_extra: 0,
       target_duplicate_prior_document: 0,
+      target_not_active_main_document: 0,
       target_current_identity_mismatch: 0,
       target_body_unavailable: 0,
     },
@@ -343,6 +344,12 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     }
     if (slots.length > 0 && item.loader_id === slots[0].loader_id) {
       facts.pause_rejections.target_duplicate_prior_document++;
+      continueUnmatched(event.requestId, target);
+      return;
+    }
+    if (item.loader_id !== activeLoader) {
+      facts.pause_rejections.target_not_active_main_document++;
+      facts.unmatched_target_count++;
       continueUnmatched(event.requestId, target);
       return;
     }
@@ -519,6 +526,11 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     async currentPaused() {
       await wait(() => facts.paused.length >= 2, 'public_race_current_response_missing');
       assert.equal(facts.paused.length, 2, 'public_race_current_ambiguous');
+      assert.equal(
+        facts.paused[1].loader_id,
+        activeLoader,
+        'public_race_current_not_active_main_document',
+      );
       await wait(
         () => facts.contexts.some((context) => context.loader_id === facts.paused[1].loader_id),
         'public_race_current_context_missing',
@@ -526,6 +538,11 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
     },
     async releaseInOrder() {
       const old = await release(0, 'old');
+      assert.equal(
+        facts.paused[1]?.loader_id,
+        activeLoader,
+        'public_race_current_not_active_at_release',
+      );
       const current = await release(1, 'current');
       if (!current) throw new Error('public_race_current_release_failed');
       await wait(
