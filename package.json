@@ -20,6 +20,7 @@
     "zip:firefox": "wxt zip -b firefox --mv3",
     "compile": "tsc --noEmit",
     "lint": "biome check . --max-diagnostics=10000",
+    "check:native-callback-bindings": "biome lint --only=correctness/noUndeclaredVariables --error-on-warnings tests/browser/*native-acceptance.mjs tests/browser/settings-local-controls-acceptance.mjs",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "test": "vitest run --maxWorkers=2",

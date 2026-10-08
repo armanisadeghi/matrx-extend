@@ -21,8 +21,8 @@ import {
   GUEST_PREFERENCES,
   observeGuestNewChatDefault,
   observeGuestPreference,
-  preferenceMatches,
   preferenceBaseline,
+  preferenceMatches,
   runGuestPreferenceCase,
 } from './settings-guest-preference-batch.mjs';
 import {
@@ -569,7 +569,13 @@ try {
       expectedRelease: { version: receipt.version, treeSha256: receipt.treeSha256 },
       localDevReceiptPath: DEV_BUILD_RECEIPT,
     }),
-    exercisePanel: async ({ panel, attachWorker, reloadExtension, transportFailureClass }) => {
+    exercisePanel: async ({
+      panel,
+      attachWorker,
+      reloadExtension,
+      acquireLivePanel,
+      transportFailureClass,
+    }) => {
       await settings(panel);
       for (const preference of GUEST_PREFERENCES) {
         await runCase(byId(preference.caseId), async () => {

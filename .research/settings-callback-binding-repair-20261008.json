@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0186",
+  "trigger": "Hosted Settings native run 37854142497 reached reload_observation and stopped before the per-choice extension-reload checks.",
+  "cause": "The real Settings exercisePanel callback passed acquireLivePanel to the per-choice orchestrator without binding the callback supplied by runNativeSidepanelQa.",
+  "repair": "Bind acquireLivePanel in the actual exercisePanel callback; retain the existing reload and preference semantics.",
+  "class_guard": "Focused acceptance CI now runs the package check:native-callback-bindings script. Biome correctness/noUndeclaredVariables checks all 14 native acceptance entrypoints, including settings-local-controls-acceptance.mjs, and treats warnings as failures.",
+  "census_limit": "A whole tests/browser census produced unrelated browser-global chrome warnings, so the blocking gate targets the native acceptance entrypoints with a clean baseline.",
+  "red_verification": "Before the repair, pnpm exec biome lint --only=correctness/noUndeclaredVariables --error-on-warnings tests/browser/settings-local-controls-acceptance.mjs exited 1 at the unbound acquireLivePanel reference.",
+  "green_verification": {
+    "binding_guard": "pnpm check:native-callback-bindings passed, 14 files checked.",
+    "focused_tests": "21 related Settings reload and replacement tests passed under external TMPDIR.",
+    "format": "Biome check on changed package and callback passed; git diff --check passed."
+  },
+  "claim_boundary": "Source repair only. Run 37854142497 remains a failed retest; no per-choice native acceptance is claimed until an independently reviewed new hosted run passes. No native launch, credentials, build, or release in this unit."
+}
