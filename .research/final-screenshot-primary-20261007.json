@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1009-T03",
+  "status": "unverified",
+  "scope": "root and nested scrolling capture, persisted image, local viewer, reload, quick public-link clipboard, and canonical share manager",
+  "cases": {
+    "rootPersistence": "pass",
+    "nestedPersistence": "pass",
+    "localViewer": "pass",
+    "reloadPersistence": "pass",
+    "canonicalShare": "unverified",
+    "quickPublicLink": "unverified",
+    "unsupportedPage": "unverified",
+    "persistenceFailure": "unverified",
+    "tileCap": "unverified"
+  },
+  "build": {
+    "version": "0.2.397",
+    "treeSha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+    "runId": 37727998755,
+    "runAttempt": 1,
+    "artifactId": 11528732938,
+    "githubArtifactDigest": "sha256:e996032fdecac4e515632f242962856351703cc22bcaad9e945d6a7c9b90ddff",
+    "source": {
+      "originMain": "b42a242553a77e884204e8d2aa265b28b066c6b7",
+      "localHead": "b42a242553a77e884204e8d2aa265b28b066c6b7",
+      "trackedDirty": true,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "evidence": {
+    "nested": {
+      "realZeroRowBaseline": true,
+      "persistedOwnedRow": true,
+      "imageLoadedFromGallery": true,
+      "topMiddleBottomPixelsMatched": true,
+      "tallImage": true,
+      "originalScrollRestored": true
+    },
+    "root": {
+      "realZeroRowBaseline": true,
+      "persistedOwnedRow": true,
+      "imageLoadedFromGallery": true,
+      "topMiddleBottomPixelsMatched": true,
+      "tallImage": true,
+      "originalScrollRestored": true
+    },
+    "quickClipboard": {
+      "clipboardObservationStage": "read",
+      "clipboardObservationPermissionRestored": true,
+      "clipboardReadPermissionForObservation": true,
+      "originalClipboardRestored": true
+    },
+    "quickPublicLink": {
+      "actualClipboardOwnedGrantUrl": true,
+      "realCopyFeedback": true,
+      "canonicalBody": true,
+      "realOwnerGrant": true,
+      "anonymousImageLoaded": true,
+      "anonymousBytesMatchOwnedImage": true
+    }
+  },
+  "cleanup": {
+    "exactOwnedRowAbsentAfterRealRead": true
+  },
+  "shareCleanup": "unverified",
+  "shareCleanupByFlow": {
+    "quick": "unverified"
+  },
+  "failure": {
+    "stage": "canonical_quick_public_link",
+    "code": "full_page_stage_failed",
+    "diagnostic": {
+      "runtimeCode": null,
+      "timeout": false,
+      "assertion": false,
+      "viewerStep": "after_reload:verify_closed",
+      "pointerTarget": {
+        "kind": "button-text",
+        "target": "Close",
+        "phase": "release_returned"
+      },
+      "pointerDiagnostic": {
+        "code": "pointer_target_not_unique",
+        "sampleStage": null,
+        "matchedTargetCount": 2,
+        "visibleMatchCount": 2,
+        "uniqueVisibleTarget": false,
+        "hitTarget": false,
+        "animating": false,
+        "stableSamples": 0,
+        "positionStable": false,
+        "targetHasArea": null,
+        "clippedTargetHasArea": null,
+        "selectedPointAvailable": null,
+        "centerHitCategory": null,
+        "targetDisabled": null,
+        "pointerEventsNone": null,
+        "clippingAncestorCount": null,
+        "testedPointCount": null,
+        "interiorHitKinds": null,
+        "targetRectangle": null,
+        "centerOccluder": null,
+        "firstInteriorOccluder": null
+      },
+      "pointerCode": "pointer_target_not_unique"
+    },
+    "createdRowMayNeedUiCleanup": false
+  },
+  "pointerBoundaries": [
+    {
+      "boundary": "primary",
+      "stage": "canonical_quick_public_link",
+      "viewerStep": "after_reload:verify_closed",
+      "diagnostic": {
+        "runtimeCode": null,
+        "timeout": false,
+        "assertion": false,
+        "viewerStep": "after_reload:verify_closed",
+        "pointerTarget": {
+          "kind": "button-text",
+          "target": "Close",
+          "phase": "release_returned"
+        },
+        "pointerDiagnostic": {
+          "code": "pointer_target_not_unique",
+          "sampleStage": null,
+          "matchedTargetCount": 2,
+          "visibleMatchCount": 2,
+          "uniqueVisibleTarget": false,
+          "hitTarget": false,
+          "animating": false,
+          "stableSamples": 0,
+          "positionStable": false,
+          "targetHasArea": null,
+          "clippedTargetHasArea": null,
+          "selectedPointAvailable": null,
+          "centerHitCategory": null,
+          "targetDisabled": null,
+          "pointerEventsNone": null,
+          "clippingAncestorCount": null,
+          "testedPointCount": null,
+          "interiorHitKinds": null,
+          "targetRectangle": null,
+          "centerOccluder": null,
+          "firstInteriorOccluder": null
+        },
+        "pointerCode": "pointer_target_not_unique"
+      },
+      "observation": {
+        "activeScreenshotPane": true,
+        "dialogCount": 1,
+        "controls": [
+          {
+            "inActivePane": false,
+            "nativeTitle": false,
+            "preservedTitle": false,
+            "ariaLabel": true,
+            "visible": true,
+            "rect": {
+              "x": 300,
+              "y": 59.109375,
+              "width": 44,
+              "height": 44
+            },
+            "centerHit": true,
+            "centerHitTag": "other",
+            "decodedImage": false
+          }
+        ]
+      },
+      "privateScreenshot": {
+        "sha256": "bb891da79aafa858a02a26a6d138b6b9956e55805785db43c285dbca491d3ca5",
+        "byteCount": 30303
+      }
+    }
+  ],
+  "independent_review": {
+    "lane": "final_native_remaining_acceptance",
+    "source_quality": "pass",
+    "behavior": "partial",
+    "cleanup_failure_cause": "Enabled dialog-scoped wait was followed by a global text click including disabled inactive-grant Revoke buttons.",
+    "actual_owned_file_grants": {
+      "active": 1,
+      "inactive": 1
+    },
+    "owned_share_link_still_active": true,
+    "resource_journal": "docs/stabilization/resource-journals/final-native-screenshot-primary-20261007.jsonl",
+    "terminal_processes": true,
+    "store_acceptance": "unverified"
+  }
+}
