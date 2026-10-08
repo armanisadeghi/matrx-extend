@@ -10,6 +10,7 @@ import { open, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-identity.mjs';
+import { classifySeoResourceDiagnosticReport } from '../../scripts/hosted-seo-route.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -1875,5 +1876,9 @@ if (
     process.exitCode = 1;
   }
 }
-await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
-process.stdout.write(`${report.status.toUpperCase()} seo_guest_native_batch\n`);
+const finalReport = classifySeoResourceDiagnosticReport(
+  report,
+  process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC === '1',
+);
+await writeFile(OUTPUT, `${JSON.stringify(finalReport, null, 2)}\n`, { mode: 0o600 });
+process.stdout.write(`${finalReport.status.toUpperCase()} seo_guest_native_batch\n`);

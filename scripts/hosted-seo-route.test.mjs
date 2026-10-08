@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
-import { hostedGuestSeoRoute, hostedSeoMetadataFixture } from './hosted-seo-route.mjs';
+import {
+  classifySeoResourceDiagnosticReport,
+  hostedGuestSeoRoute,
+  hostedSeoMetadataFixture,
+  hostedSeoResourceDiagnostic,
+} from './hosted-seo-route.mjs';
 
 const selected = {
   kind: 'ci_development_test',
@@ -46,8 +51,29 @@ test('metadata fixture is explicit, SEO-only, and full-scope', () => {
   );
 });
 
-test('hosted preflight rejects invalid metadata selection before browser setup', () => {
-  const preflight = (acceptanceCase, scope, fixture) =>
+test('resource bracket requires explicit full Airbnb SEO diagnostic and cannot produce acceptance targets', () => {
+  assert.equal(hostedSeoResourceDiagnostic('guest-seo', 'full', 'airbnb', '0'), false);
+  assert.equal(hostedSeoResourceDiagnostic('guest-seo', 'full', 'airbnb', '1'), true);
+  for (const [acceptanceCase, scope, fixture, enabled] of [
+    ['guest-chat', 'full', 'airbnb', '1'],
+    ['guest-seo', 'controlled', 'airbnb', '1'],
+    ['guest-seo', 'full', 'none', '1'],
+    ['guest-seo', 'full', 'airbnb', 'true'],
+  ])
+    assert.throws(() => hostedSeoResourceDiagnostic(acceptanceCase, scope, fixture, enabled));
+  const ordinary = { status: 'partial', targets: [{ case: 'T09', status: 'passed' }] };
+  assert.equal(classifySeoResourceDiagnosticReport(ordinary, false), ordinary);
+  assert.deepEqual(classifySeoResourceDiagnosticReport(ordinary, true), {
+    status: 'diagnostic_only',
+    targets: [],
+    diagnostic_targets: [{ case: 'T09', status: 'passed' }],
+    evidence_classification: 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT',
+  });
+  assert.deepEqual(ordinary.targets, [{ case: 'T09', status: 'passed' }]);
+});
+
+test('hosted preflight rejects invalid metadata and diagnostic selection before browser setup', () => {
+  const preflight = (acceptanceCase, scope, fixture, diagnostic = '0') =>
     spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
       encoding: 'utf8',
       env: {
@@ -57,16 +83,20 @@ test('hosted preflight rejects invalid metadata selection before browser setup',
         MATRX_HOSTED_ACCEPTANCE_CASE: acceptanceCase,
         MATRX_HOSTED_SEO_CASE_SCOPE: scope,
         MATRX_HOSTED_SEO_METADATA_FIXTURE: fixture,
+        MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: diagnostic,
       },
     });
   assert.equal(preflight('guest-seo', 'full', undefined).status, 0);
   assert.equal(preflight('guest-seo', 'full', 'airbnb').status, 0);
+  assert.equal(preflight('guest-seo', 'full', 'airbnb', '1').status, 0);
   for (const [acceptanceCase, scope, fixture] of [
     ['guest-seo', 'full', 'invalid'],
     ['guest-seo', 'controlled', 'airbnb'],
     ['guest-chat', 'full', 'airbnb'],
   ])
     assert.notEqual(preflight(acceptanceCase, scope, fixture).status, 0);
+  assert.notEqual(preflight('guest-seo', 'full', 'none', '1').status, 0);
+  assert.notEqual(preflight('guest-seo', 'controlled', 'airbnb', '1').status, 0);
 });
 
 test('guest SEO controlled scope reaches the native driver and unknown scope fails', () => {
@@ -105,6 +135,11 @@ test('hosted workflow admits guest SEO on lane B with one exact development arti
     /"\$ACCEPTANCE_CASE" == guest-seo[^\n]*\n\s*\[\[ -z "\$RELEASE_RUN_ID" && -n "\$DEVELOPMENT_RUN_ID" && -n "\$DEVELOPMENT_ARTIFACT_ID" && "\$PUBLISHED_STORE_CRX" != true \]\]/,
   );
   assert.match(workflow, /test-results\/seo-guest-acceptance\.json/);
+  assert.match(workflow, /seo_resource_diagnostic:\n[\s\S]*?default: false\n\s*type: boolean/);
+  assert.match(
+    workflow,
+    /MATRX_STARTUP_INTERVAL_DIAGNOSTIC: \$\{\{ inputs\.seo_resource_diagnostic == true && '1' \|\| '0' \}\}/,
+  );
   assert.match(workflow, /MATRX_HOSTED_SEO_CASE_SCOPE: \$\{\{ inputs\.seo_case_scope \}\}/);
   assert.equal(
     (

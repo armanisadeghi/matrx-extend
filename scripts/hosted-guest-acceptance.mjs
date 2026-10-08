@@ -27,7 +27,11 @@ import {
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
 import { hostedScrapeReloadDiagnostic } from './hosted-scrape-reload-diagnostic.mjs';
 import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
-import { hostedGuestSeoRoute, hostedSeoMetadataFixture } from './hosted-seo-route.mjs';
+import {
+  hostedGuestSeoRoute,
+  hostedSeoMetadataFixture,
+  hostedSeoResourceDiagnostic,
+} from './hosted-seo-route.mjs';
 import { hostedShowcaseRoute } from './hosted-showcase-route.mjs';
 import { runHostedStartupIntervalDiagnostic } from './hosted-startup-interval-diagnostic.mjs';
 import {
@@ -596,6 +600,12 @@ if (phase === 'preflight') {
     process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
     process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
   );
+  hostedSeoResourceDiagnostic(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
+    process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
+    process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC ?? '0',
+  );
   hostedDesktopSettingsCase(
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
     process.env.MATRX_HOSTED_DESKTOP_SETTINGS_CASE,
@@ -610,6 +620,13 @@ if (phase === 'acceptance')
   requireHostedAcceptanceCredential(
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat',
     process.env,
+  );
+if (phase === 'acceptance')
+  hostedSeoResourceDiagnostic(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    process.env.MATRX_HOSTED_SEO_CASE_SCOPE ?? 'full',
+    process.env.MATRX_HOSTED_SEO_METADATA_FIXTURE ?? 'none',
+    process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC ?? '0',
   );
 assert.ok(process.env.MATRX_RESOURCE_OWNER, 'hosted phase requires owned resource permit');
 const runtimeDir = resolve(process.env.MATRX_HOSTED_BROWSER_RUNTIME_DIR ?? '');

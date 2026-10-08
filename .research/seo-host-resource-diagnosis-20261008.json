@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "run_id": 37774478094,
+  "status": "CAUSE_UNRESOLVED_OPT_IN_MEASUREMENT_READY_SOURCE_ONLY",
+  "source_sha": "e9d861c3c67dd4771b4d484aad78507829b7dbe4",
+  "frozen_extension_version": "0.2.407",
+  "finding": "The selected guarded SEO browser step encountered real high host CPU and load after opening one exact side-panel context. Its one process snapshot cannot assign the later unsafe sample to Chromium, the driver, host provisioning, or measurement overhead. No Airbnb navigation or SEO metadata comparison was observed.",
+  "timeline_utc": [
+    { "at": "12:13:14.529", "event": "admitted", "cpu_busy_fraction": 0.07, "one_minute_load": 1.37 },
+    { "at": "12:13:47.008", "event": "healthy", "cpu_busy_fraction": 0.61, "one_minute_load": 1.4 },
+    { "at": "12:13:53.786", "event": "exact_side_panel_context_ready" },
+    { "at": "12:14:03.405", "event": "cpu_pending", "cpu_busy_fraction": 0.66, "one_minute_load": 10.96 },
+    { "at": "12:14:03.629", "event": "single_process_snapshot" },
+    { "at": "12:14:19.768", "event": "watch_unsafe", "cpu_busy_fraction": 0.89, "one_minute_load": 11.15 },
+    { "at": "12:14:20.387", "event": "owned_group_sigterm" }
+  ],
+  "snapshot_attribution": {
+    "owned_browser_tree_pid_chain": "10221 -> node 10802 -> Chromium 10993 -> helpers 11059/11011/11076/11012",
+    "owned_browser_and_driver_reported_cpu_percent_sum": 72.7,
+    "host_provisioner_pid_1005_reported_cpu_percent": 22.6,
+    "ps_pid_11299_reported_cpu_percent": 29.6,
+    "ps_parent_pid": 8874,
+    "ps_ownership": "outside selected owned group; parent node 8874 was reported at 2.6%",
+    "interpretation": "These are point-in-time ps %CPU values, not same-interval CPU-time deltas. The ps process in its own snapshot cannot explain the already completed 12:14:03.405 iostat sample, and the 12:14:19.768 unsafe sample has no process attribution. The one-minute load also predates the instantaneous snapshot."
+  },
+  "runner_boundaries": {
+    "watchdog": "scripts/stabilization-resource.mjs takes 1-second iostat CPU-busy samples every 15 seconds and emits processCpuAttribution only after the first bad watch; it then stops the owned group after CPU confirmation.",
+    "driver": "tests/browser/seo-guest-acceptance.mjs runs initial public-page checks before its optional Airbnb metadata fixture; intermediate stages are retained only in the final acceptance receipt, which was absent after SIGTERM.",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml has independent package, browser and acceptance permits; the first two were valid and finished before the selected browser step."
+  },
+  "single_next_measurement": {
+    "action": "After source review, dispatch one opt-in guest-seo hosted run with seo_resource_diagnostic=true, full scope, Airbnb fixture, and the same frozen 0.2.407 artifact. The selected Chrome step reuses the existing process CPU-time bracket. Ordinary guest-seo acceptance remains uninstrumented.",
+    "why_existing_startup_run_does_not_answer": "startup-resource-diagnostic measures a headed Chromium startup without the guest SEO public-page sequence or Airbnb fixture; its reusable bracket implementation is enabled on the exact selected SEO step instead of adding a second collector.",
+    "source_change": "The workflow has a default-off seo_resource_diagnostic input; preflight restricts it to full guest-seo plus Airbnb; the selected Chrome step enables the existing bracket only when opted in; the SEO receipt changes status to diagnostic_only on success, moves all observed targets to diagnostic_targets, and leaves acceptance targets empty.",
+    "readout": "At the first pending and unsafe watch, inspect RESOURCE_STARTUP_INTERVAL_BRACKET categoryTotalsSeconds and named observed deltas for ownedChromium, ownedOther, hostProvisioner, and otherHost, together with the same watch's iostat busy fraction and timestamps.",
+    "decision_rule": "A sustained majority of interval CPU time in the owned browser tree selects browser/driver profiling at that stage; hostProvisioner or otherHost dominance selects host contention; a dominant ps process overlapping the measurement interval selects census overhead. An unavailable or unmatched bracket remains inconclusive and must not authorize a threshold change.",
+    "limits": "The bracket adds two bounded ps snapshots around iostat and has known gaps for exited, newly spawned, reparented, or PID-reused processes. Prior startup evidence shows about 25 and 30 ms wall time for those snapshots around a 1.1-second iostat read; this is timing overhead, not a measured CPU-bias estimate. All guard thresholds remain unchanged, and the opt-in receipt is diagnostic-only."
+  },
+  "verification": "Hosted SEO and startup diagnostic source tests passed (11/11); the preflight rejects wrong-case/fixture diagnostic inputs and the diagnostic receipt has no acceptance targets. No native run, build, release, or deployment occurred.",
+  "native_acceptance": "not rerun; no receipt or inventory credit",
+  "sources": [
+    ".research/seo-metadata-native-20261008.json",
+    ".research/seo-metadata-native-20261008/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37774478094-1.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37774478094",
+    "scripts/stabilization-resource.mjs",
+    "scripts/stabilization-resource-safety.mjs",
+    "scripts/startup-interval-attribution.mjs",
+    "tests/browser/seo-guest-acceptance.mjs"
+  ]
+}

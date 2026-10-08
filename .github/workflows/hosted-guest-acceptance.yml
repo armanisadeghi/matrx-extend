@@ -82,6 +82,11 @@ on:
         options:
           - none
           - airbnb
+      seo_resource_diagnostic:
+        description: Measure process CPU time on full guest SEO Airbnb; diagnostic only, no acceptance credit
+        required: false
+        default: false
+        type: boolean
       desktop_settings_case:
         description: Desktop Settings guest path; remaining covers pair-code forget and reset cancel
         required: false
@@ -284,6 +289,7 @@ jobs:
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           MATRX_HOSTED_SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
+          MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
           MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
@@ -355,6 +361,8 @@ jobs:
           MATRX_D47_RESPONSE_ORDER: ${{ inputs.d47_response_order }}
           MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           MATRX_HOSTED_SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
+          MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
+          MATRX_STARTUP_INTERVAL_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
           MATRX_D47_PUBLIC_RACE_PREFLIGHT: ${{ inputs.d47_public_race_preflight == true && '1' || '0' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: ${{ inputs.scrape_reload_open_diagnostic == true && '1' || '0' }}

@@ -10,6 +10,27 @@ export function hostedSeoMetadataFixture(acceptanceCase, scope, fixture = 'none'
   return fixture === 'airbnb' ? fixture : undefined;
 }
 
+export function hostedSeoResourceDiagnostic(acceptanceCase, scope, fixture, enabled = '0') {
+  assert.ok(enabled === '0' || enabled === '1', 'unknown_seo_resource_diagnostic');
+  if (enabled === '1') {
+    assert.equal(acceptanceCase, 'guest-seo', 'seo_resource_diagnostic_requires_guest_seo');
+    assert.equal(scope, 'full', 'seo_resource_diagnostic_requires_full_scope');
+    assert.equal(fixture, 'airbnb', 'seo_resource_diagnostic_requires_airbnb');
+  }
+  return enabled === '1';
+}
+
+export function classifySeoResourceDiagnosticReport(report, enabled) {
+  if (!enabled) return report;
+  return {
+    ...report,
+    evidence_classification: 'DIAGNOSTIC_ONLY_NO_ACCEPTANCE_CREDIT',
+    diagnostic_targets: report.targets,
+    targets: [],
+    status: report.status === 'partial' ? 'diagnostic_only' : report.status,
+  };
+}
+
 export function hostedGuestSeoRoute(
   acceptanceCase,
   artifactMode,
