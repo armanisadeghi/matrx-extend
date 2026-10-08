@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task": "Bounded T67 full-extension failure diagnosis and safe stage capture",
+  "status": "source-repair-ready; hosted-gate-independent-review-and-native-retest-pending",
+  "prior_native_evidence": {
+    "run_id": 37847922569,
+    "conclusion": "failure",
+    "t67_full_extension_criteria_before_failure": 4,
+    "failure_classification": "full_extension_recheck_exception",
+    "precise_operation": "not retained"
+  },
+  "diagnosis": "The receipt has four passing T67 full-extension setting and panel-reload assertions. In runGuestAutoScrapeModeCase, the only remaining work after the fourth assertion is baseline cleanup in the finally path; the receipt therefore localizes the failure to cleanup but cannot identify its exact operation.",
+  "change": "T67 now tags each fixed stage through initial observation, both choices, panel reload checks, and baseline restoration. Failures carry only an allowlisted stage, category, and failure kind; raw exception messages are not serialized. The full-extension receipt preserves these safe fields.",
+  "forcing_test": "Injected an untrusted error on the third reload, which is the baseline restoration reload after both setting choices. The actual T67 runner plus full-extension wrapper records restore_reload, retains four prior passing criteria, confirms baseline UI/storage state, and excludes the injected error text.",
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/settings-guest-scrape-controls.test.mjs tests/browser/settings-full-extension-rechecks.test.mjs tests/browser/settings-guest-preference-batch.test.mjs",
+    "result": "13 passed",
+    "format": "Biome formatted the three owned source/test files.",
+    "diff_check": "passed"
+  },
+  "limitations": [
+    "The exact T67 cleanup operation in the earlier native failure remains unknown; the added stage field requires a later native run to distinguish it.",
+    "No native rerun or acceptance claim in this repair turn."
+  ]
+}

@@ -3,6 +3,28 @@ import { click, evaluate, openSection, waitFor } from './settings-panel-driver.m
 
 const STORAGE_KEY = 'matrx.settings.v1';
 const nativeDriver = { click, evaluate, openSection, waitFor };
+export const AUTO_SCRAPE_MODE_FAILURE_STAGES = Object.freeze([
+  'initial_open',
+  'initial_observe',
+  'initial_validate',
+  'choice_select',
+  'choice_wait',
+  'choice_record',
+  'panel_reload',
+  'panel_reopen',
+  'panel_observe',
+  'panel_record',
+  'restore_open',
+  'restore_observe',
+  'restore_alternate_choice',
+  'restore_baseline_choice',
+  'restore_wait',
+  'restore_reload',
+  'restore_reopen',
+  'restore_observe_after_reload',
+  'restore_verify',
+  'restore_record',
+]);
 const SECTIONS = [
   'Account',
   'Organization',
@@ -144,22 +166,35 @@ export async function runGuestAutoScrapeModeCase(
   record,
   driver = nativeDriver,
 ) {
-  await driver.openSection(panel, 'Scrape');
-  const initial = await observeScrape(panel, driver);
   const labels = { capture: 'Capture', 'scroll-capture': 'Scroll & capture' };
-  const baseline = initial.mode.stored;
-  assert.ok(Object.hasOwn(labels, baseline), 'auto_scrape_mode_requires_saved_baseline');
-  assert.equal(
-    initial.mode.visible,
-    labels[baseline],
-    'auto_scrape_mode_initial_ui_storage_disagree',
-  );
+  let stage = 'initial_open';
+  let baseline;
+  try {
+    await driver.openSection(panel, 'Scrape');
+    stage = 'initial_observe';
+    const initial = await observeScrape(panel, driver);
+    baseline = initial.mode.stored;
+    stage = 'initial_validate';
+    assert.ok(Object.hasOwn(labels, baseline), 'auto_scrape_mode_requires_saved_baseline');
+    assert.equal(
+      initial.mode.visible,
+      labels[baseline],
+      'auto_scrape_mode_initial_ui_storage_disagree',
+    );
+  } catch {
+    throw autoScrapeModeFailure(stage, 'case');
+  }
+
+  let caseFailureStage = null;
+  let restoreFailureStage = null;
   try {
     for (const value of Object.keys(labels)
       .filter((choice) => choice !== baseline)
       .concat(baseline)) {
+      stage = 'choice_select';
       await driver.click(panel, 'settings-select', 'Auto-scrape mode');
       await driver.click(panel, 'option', labels[value]);
+      stage = 'choice_wait';
       const warm = await driver.waitFor(
         `auto_scrape_mode_${value}_warm`,
         () => observeScrape(panel, driver),
@@ -170,10 +205,15 @@ export async function runGuestAutoScrapeModeCase(
             labels[value],
           ),
       );
+      stage = 'choice_record';
       record('warm', `${labels[value]} appears and persists`, warm, true);
+      stage = 'panel_reload';
       await reloadSettings(panel);
+      stage = 'panel_reopen';
       await driver.openSection(panel, 'Scrape');
+      stage = 'panel_observe';
       const reloaded = await observeScrape(panel, driver);
+      stage = 'panel_record';
       record(
         'reload',
         `${labels[value]} survives reload`,
@@ -185,18 +225,28 @@ export async function runGuestAutoScrapeModeCase(
         ),
       );
     }
-  } finally {
+  } catch {
+    caseFailureStage = stage;
+  }
+
+  try {
+    stage = 'restore_open';
     await driver.openSection(panel, 'Scrape');
+    stage = 'restore_observe';
     const current = await observeScrape(panel, driver);
     if (current.mode.visible === labels[baseline] && current.mode.stored !== baseline) {
       const alternate = Object.keys(labels).find((value) => value !== baseline);
+      stage = 'restore_alternate_choice';
       await driver.click(panel, 'settings-select', 'Auto-scrape mode');
       await driver.click(panel, 'option', labels[alternate]);
     }
+    stage = 'restore_observe';
     if ((await observeScrape(panel, driver)).mode.visible !== labels[baseline]) {
+      stage = 'restore_baseline_choice';
       await driver.click(panel, 'settings-select', 'Auto-scrape mode');
       await driver.click(panel, 'option', labels[baseline]);
     }
+    stage = 'restore_wait';
     const restored = await driver.waitFor(
       'auto_scrape_mode_baseline_restored',
       () => observeScrape(panel, driver),
@@ -207,9 +257,13 @@ export async function runGuestAutoScrapeModeCase(
           labels[baseline],
         ),
     );
+    stage = 'restore_reload';
     await reloadSettings(panel);
+    stage = 'restore_reopen';
     await driver.openSection(panel, 'Scrape');
+    stage = 'restore_observe_after_reload';
     const persisted = await observeScrape(panel, driver);
+    stage = 'restore_verify';
     assert.equal(
       scrapeModeMatches(
         { ...persisted.mode, active: persisted.active, sectionOpen: persisted.sectionOpen },
@@ -219,8 +273,32 @@ export async function runGuestAutoScrapeModeCase(
       true,
       'auto_scrape_mode_baseline_not_restored_after_reload',
     );
+    stage = 'restore_record';
     record('cleanup', 'Original Auto-scrape mode restored in UI and storage', restored, true);
+  } catch {
+    restoreFailureStage = stage;
   }
+
+  if (caseFailureStage || restoreFailureStage) {
+    const error = autoScrapeModeFailure(
+      restoreFailureStage ?? caseFailureStage,
+      caseFailureStage && restoreFailureStage
+        ? 'case_and_restore'
+        : restoreFailureStage
+          ? 'restore'
+          : 'case',
+    );
+    if (caseFailureStage && restoreFailureStage) error.safeOriginalStage = caseFailureStage;
+    throw error;
+  }
+}
+
+function autoScrapeModeFailure(stage, kind) {
+  const error = new Error('auto_scrape_mode_recheck_failed');
+  error.safeCategory = 'auto_scrape_mode_recheck_failed';
+  error.safeStage = stage;
+  error.safeFailureKind = kind;
+  return error;
 }
 
 export function settingsSectionObservationExpression(label) {

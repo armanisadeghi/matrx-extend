@@ -1,3 +1,5 @@
+import { AUTO_SCRAPE_MODE_FAILURE_STAGES } from './settings-guest-scrape-controls.mjs';
+
 export const FULL_EXTENSION_RECHECK_IDS = ['T04', 'T10', 'T28', 'T40', 'T67'];
 
 const statusFrom = (criteria) =>
@@ -37,11 +39,30 @@ export async function runFullExtensionRecheck(item, execute) {
     if (result.status !== 'pass') result.error = 'full_extension_recheck_not_all_passed';
   } catch (error) {
     result.status = 'fail';
-    result.error =
-      error?.safeCategory === 'full_extension_preference_or_restore_failed'
-        ? error.safeCategory
-        : 'full_extension_recheck_exception';
-    record('full extension reload recheck completed', 'fail', result.error);
+    const t67Failure =
+      item.id.endsWith('T67') &&
+      error?.safeCategory === 'auto_scrape_mode_recheck_failed' &&
+      AUTO_SCRAPE_MODE_FAILURE_STAGES.includes(error.safeStage) &&
+      ['case', 'restore', 'case_and_restore'].includes(error.safeFailureKind);
+    if (t67Failure) {
+      result.error = error.safeCategory;
+      result.failureStage = error.safeStage;
+      result.failureKind = error.safeFailureKind;
+      if (AUTO_SCRAPE_MODE_FAILURE_STAGES.includes(error.safeOriginalStage))
+        result.originalFailureStage = error.safeOriginalStage;
+      record('full extension reload recheck completed', 'fail', {
+        category: result.error,
+        stage: result.failureStage,
+        kind: result.failureKind,
+        ...(result.originalFailureStage && { originalStage: result.originalFailureStage }),
+      });
+    } else {
+      result.error =
+        error?.safeCategory === 'full_extension_preference_or_restore_failed'
+          ? error.safeCategory
+          : 'full_extension_recheck_exception';
+      record('full extension reload recheck completed', 'fail', result.error);
+    }
   }
 
   return result;

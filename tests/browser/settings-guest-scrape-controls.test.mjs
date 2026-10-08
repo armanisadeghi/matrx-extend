@@ -4,7 +4,9 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
+import { runFullExtensionRecheck } from './settings-full-extension-rechecks.mjs';
 import {
+  AUTO_SCRAPE_MODE_FAILURE_STAGES,
   runGuestAutoScrapeCase,
   runGuestAutoScrapeModeCase,
   runGuestSectionsCase,
@@ -254,8 +256,9 @@ test('T40 case runner repairs UI-baseline/storage-drift through clicks and verif
 
 test('T67 case runner repairs same-selection storage drift through alternate choice and reload', async () => {
   const { state, driver, reload } = simulatedPanel();
-  await assert.rejects(
-    runGuestAutoScrapeModeCase(
+  let failure;
+  try {
+    await runGuestAutoScrapeModeCase(
       null,
       reload,
       (phase) => {
@@ -266,9 +269,15 @@ test('T67 case runner repairs same-selection storage drift through alternate cho
         }
       },
       driver,
-    ),
-    /injected_after_write_failure/,
-  );
+    );
+  } catch (error) {
+    failure = error;
+  }
+  assert.equal(failure?.safeCategory, 'auto_scrape_mode_recheck_failed');
+  assert.equal(failure?.safeStage, 'choice_record');
+  assert.equal(failure?.safeFailureKind, 'case');
+  assert.equal(AUTO_SCRAPE_MODE_FAILURE_STAGES.includes(failure?.safeStage), true);
+  assert.equal(JSON.stringify(failure).includes('injected_after_write_failure'), false);
   assert.deepEqual(
     state.clicks.filter(([kind]) => kind === 'option').map(([, label]) => label),
     ['Scroll & capture', 'Scroll & capture', 'Capture'],
@@ -276,4 +285,40 @@ test('T67 case runner repairs same-selection storage drift through alternate cho
   assert.equal(state.modeVisible, 'Capture');
   assert.equal(state.modeStored, 'capture');
   assert.equal(state.reloads, 1);
+});
+
+test('T67 full-extension cleanup failure reports its actual safe phase after baseline restore', async () => {
+  const { state, driver } = simulatedPanel();
+  const item = { id: 'EXT-F-1003-T67', status: 'pass', steps: [], criteria: [] };
+  const reload = async () => {
+    state.reloads += 1;
+    state.modeVisible = state.modeStored === 'capture' ? 'Capture' : 'Scroll & capture';
+    if (state.reloads === 3) throw new Error('private_untrusted_reload_failure');
+  };
+
+  await runFullExtensionRecheck(item, async (record) => {
+    await runGuestAutoScrapeModeCase(
+      null,
+      reload,
+      (phase, action, observation, passed) =>
+        record(`${phase}: ${action}`, passed ? 'pass' : 'fail', observation),
+      driver,
+    );
+  });
+
+  assert.equal(item.fullExtensionReload.status, 'fail');
+  assert.equal(item.fullExtensionReload.error, 'auto_scrape_mode_recheck_failed');
+  assert.equal(item.fullExtensionReload.failureStage, 'restore_reload');
+  assert.equal(item.fullExtensionReload.failureKind, 'restore');
+  assert.equal(
+    item.fullExtensionReload.criteria.filter(({ status }) => status === 'pass').length,
+    4,
+  );
+  assert.equal(state.modeVisible, 'Capture');
+  assert.equal(state.modeStored, 'capture');
+  assert.equal(state.reloads, 3);
+  assert.equal(
+    JSON.stringify(item.fullExtensionReload).includes('private_untrusted_reload_failure'),
+    false,
+  );
 });
