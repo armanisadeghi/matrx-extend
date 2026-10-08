@@ -1,0 +1,32 @@
+{
+  "observed_at": "2026-10-08T23:04:33.457617+00:00",
+  "reviewer": "root, zero helper code authorship; fresh seats unavailable due ENOSPC",
+  "records": {
+    "commit": "205beb7f",
+    "source_review": "pass for orchestration scope; independently checked canonical approval read and person decision source",
+    "checks": {
+      "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/records-approval-lifecycle.test.mjs",
+      "pass": 12,
+      "fail": 0
+    },
+    "review_repair": "Lost decision responses now resolve through authoritative terminal reads, including archival withdrawal, without another write or decision.",
+    "limits": "Browser adapters unwired; no native or actual mutation acceptance."
+  },
+  "settings": {
+    "initial_commit": "5967a7ca",
+    "verdict": "rejected invented observation contract; helper/tests removed in027d1b23, corrected reportf36e0832",
+    "findings": [
+      "Missing measurement could pass as no capture",
+      "A point sample could miss transient capture",
+      "Required runtime fields were not exposed to native adapter"
+    ],
+    "next": "Read complete rendered v2 preview after real UI setting changes and unique fresh-page navigation; bound negative observation scope."
+  },
+  "source_drift": {
+    "artifact_source": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "comparison_head": "56787ea2",
+    "src_changes": "none",
+    "dependency_changes": "package and lock changed; frozen artifact does not prove current dependency build"
+  },
+  "api_gate": "Original37855322634 remains unverified; no API poll before documented reset2026-10-08T23:16:21Z"
+}

@@ -1,20 +1,18 @@
 {
-    "task": "EXT-F-1003-T40 automatic page-load scrape behavior preparation",
-    "status": "source_backed_observability_gap_no_executable_behavior_helper",
-    "source_findings": {
-        "setting_and_trigger": "src/hooks/use-auto-scrape.ts reads scrapeAutoOnLoad and invokes captureWithFallback for the active HTTP(S) page after a 600ms settle delay.",
-        "readback": "ContextRulesComposerChip builds a no-send preview through the same buildChatContextValues path as a turn. With manual capture absent, a unique marker on a fresh controlled page after enabling can establish the causal automatic capture effect. The v2 preview also represents page_full_content as a structured value when present; its complete rendered values can distinguish an absent content entry from a failed/incomplete preview.",
-        "default_context_shape": "src/lib/chat/context/shape-config.ts defaults to v2-bundled. That builder emits page_full_content for a trustworthy scrape; it does not emit scrape provenance. The legacy scrape_source key in v1-flat is unnecessary for the causal enabled check and should not be added to the retiring shape.",
-        "missing_trigger": "The existing Settings native runner has no adapter that opens the no-send context preview and reads the complete v2 values for a unique fresh-page ON check and an explicit absent-page_full_content OFF check over a bounded sample window. This is a harness coverage gap, not evidence of a product defect. Direct inFlight/current-store instrumentation is unnecessary for that route."
-    },
-    "gaps": [
-        "Add a native adapter that reads the complete ContextRules v2 preview, confirms fresh active document identity, checks the ON unique marker with manual capture absent, and checks page_full_content remains absent while OFF across a bounded observation window.",
-        "A bounded OFF window only supports absence during the observed interval; it does not prove no later capture ever occurs.",
-        "No helper tests or native acceptance are claimed in this preparation."
-    ],
-    "owned_files": [
-        ".research/settings-auto-scrape-behavior-preparation-20261008.json"
-    ],
-    "superseded_preparation_commit": "5967a7ca",
-    "scope_note": "The adapter-model helper and tests from 5967a7ca were removed because their required runtime fields are not exposed by the current app."
+  "task": "EXT-F-1003-T40 automatic page-load scrape behavior preparation",
+  "status": "source_backed_observability_gap_no_executable_behavior_helper",
+  "source_findings": {
+    "setting_and_trigger": "src/hooks/use-auto-scrape.ts reads scrapeAutoOnLoad and invokes captureWithFallback for the active HTTP(S) page after a 600ms settle delay.",
+    "readback": "ContextRulesComposerChip builds a no-send preview through the same buildChatContextValues path as a turn. With manual capture absent, a unique marker on a fresh controlled page after enabling can establish the causal automatic capture effect. The v2 preview also represents page_full_content as a structured value when present; its complete rendered values can distinguish an absent content entry from a failed/incomplete preview.",
+    "default_context_shape": "src/lib/chat/context/shape-config.ts defaults to v2-bundled. That builder emits page_full_content for a trustworthy scrape; it does not emit scrape provenance. The legacy scrape_source key in v1-flat is unnecessary for the causal enabled check and should not be added to the retiring shape.",
+    "missing_trigger": "The existing Settings native runner has no adapter that opens the no-send context preview and reads the complete v2 values for a unique fresh-page ON check and an explicit absent-page_full_content OFF check over a bounded sample window. This is a harness coverage gap, not evidence of a product defect. Direct inFlight/current-store instrumentation is unnecessary for that route."
+  },
+  "gaps": [
+    "Add a native adapter that reads the complete ContextRules v2 preview, confirms fresh active document identity, checks the ON unique marker with manual capture absent, and checks page_full_content remains absent while OFF across a bounded observation window.",
+    "A bounded OFF window only supports absence during the observed interval; it does not prove no later capture ever occurs.",
+    "No helper tests or native acceptance are claimed in this preparation."
+  ],
+  "owned_files": [".research/settings-auto-scrape-behavior-preparation-20261008.json"],
+  "superseded_preparation_commit": "5967a7ca",
+  "scope_note": "The adapter-model helper and tests from 5967a7ca were removed because their required runtime fields are not exposed by the current app."
 }
