@@ -26,8 +26,8 @@
     "T63 requires a signed-out active Settings panel; missing guest proof cannot count as access denial."
   ],
   "verification": {
-    "focused_source_check": "Pending exact-head automatic CI after push.",
-    "native": "Not launched by this lane. Existing frozen A run predates this source and cannot prove these cases."
+    "focused_source_check": "Automatic focused CI 37713475211 succeeded at exact source 831cd1d572d41e576dd92395bfb5732398f424cf. This is a source guard, not native acceptance.",
+    "native": "Not launched by this lane. Frozen A workflow 37712686956 predates this source and cannot prove these cases; its later shared full extension reload failed at reload_settings, so T63's reused reload boundary needs diagnosis before native credit or another launch."
   },
   "verdict_limit": "No inventory cells or defects changed. A source check cannot promote native case acceptance."
 }
