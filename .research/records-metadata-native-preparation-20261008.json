@@ -1,15 +1,21 @@
 {
   "scope": "EXT-F-4130-C03 metadata_search through the existing native admin Records Tools card",
   "status": "source_prepared_native_pending",
-  "control": "The native driver first executes real table_list, validates its finished authenticated request and visible completion, then reloads the panel and repeats the read. It selects a returned Table with an id, name, and the approved organization, enters metadata_search in the same visible textarea, and clicks Run.",
+  "control": "The native driver checks the server action contract rendered in the real Records card before the first execute. It requires canonical TableListWire include_platform_tables and refuses the older include_app_tables field. It then executes real table_list, validates its finished authenticated request and visible completion, reloads the panel and repeats the read. It selects a returned Table with an id, name, and the approved organization, enters metadata_search in the same visible textarea, and clicks Run.",
   "independent_oracle": "The second table_list result supplies a Table id and name. A separate metadata_search request must finish with matching bearer and organization, echo the exact query, show its completed response in the card, and include a kind=table match with the same id, name, and organization_id. The test rejects generic success, an unrelated match, a wrong query echo, and a failed tool result.",
   "source_contract": [
     "aidream/packages/matrx-records/matrx_records/agent/args.py: MetadataSearchWire has action, query, limit, and optional organization_id",
     "aidream/packages/matrx-records/matrx_records/store/client.py: table_list rows carry id, name, and organization_id; metadata_search matches structure names and returns id, kind, and name",
     "aidream/packages/matrx-records/matrx_records/agent/tool.py: metadata_search returns action, query, matches, count, and organizations_covered"
   ],
+  "source_contract_correction": {
+    "finding": "Current aidream TableListWire declares include_platform_tables. RecordsArgs validation forbids extra fields, while the prior driver sent include_app_tables. The frozen records-full-action-contract snapshot and historical records_tool_definition.sql migration still have the old field; neither establishes the current registered runtime contract.",
+    "decision": "The driver sends include_platform_tables=true and checks the $variants.table_list schema rendered from the registered /tools/test/list catalog before execution. Omitting the optional flag would be valid wire input but could remove platform tables from the independent Table oracle and weaken the prior full-list C02 condition. The explicit current field retains that condition and fails closed if the server still advertises the older contract.",
+    "runtime_limit": "Previous native C02 receipts succeeded against an older deployed backend. That does not establish the current source contract is deployed, and no product defect is claimed without a matching runtime reproduction."
+  },
   "verification": {
-    "focused_driver_test": "node --test tests/browser/records-readonly-native-driver.test.mjs: 7 passed",
+    "focused_driver_test": "node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-readonly-native-proof.test.mjs: 11 passed",
+    "schema_guard": "Red/green driver test executes the actual schema-reading expression against canonical, legacy, and absent $variants fixtures; legacy and absent variants are rejected before any execute, while the canonical schema allows the complete four-request sequence.",
     "syntax": "node --check tests/browser/records-readonly-native-acceptance.mjs: passed",
     "native": "pending; no hosted run, browser run, or live Records execution was performed for this preparation"
   },

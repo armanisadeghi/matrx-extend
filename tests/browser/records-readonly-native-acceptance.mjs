@@ -155,9 +155,34 @@ try {
           ),
         Boolean,
       );
+      const tableListContract = await evaluate(
+        panel,
+        `(() => {
+          const row = [...document.querySelectorAll('button')].find(el => el.querySelector('span.font-mono')?.textContent.trim() === 'records');
+          const card = row?.parentElement;
+          const label = [...(card?.querySelectorAll('div') ?? [])].find(el => el.textContent.trim() === 'server action contract' && el.children.length === 0);
+          const pre = label?.parentElement?.parentElement?.querySelector('pre');
+          if (!pre?.getClientRects().length) return null;
+          try {
+            const schema = JSON.parse(pre.textContent);
+            const properties = schema.$variants?.table_list;
+            return properties ? {
+              canonical: properties.include_platform_tables?.type === 'boolean',
+              legacy: Object.hasOwn(properties, 'include_app_tables'),
+              action: schema.action?.enum?.includes('table_list') === true,
+              limit: properties.limit?.type,
+            } : null;
+          } catch { return null; }
+        })()`,
+      );
+      assert.deepEqual(
+        tableListContract,
+        { canonical: true, legacy: false, action: true, limit: 'integer' },
+        'records_table_list_server_contract_drift',
+      );
       const input = {
         action: 'table_list',
-        args: { organization_id: approved.id, include_app_tables: true, limit: 50 },
+        args: { organization_id: approved.id, include_platform_tables: true, limit: 50 },
       };
       await enterRecordsInput(panel, evaluate, stage, input, process.platform);
       stage('records_bearer_read');
@@ -235,7 +260,7 @@ try {
         organization_matches: true,
         authenticated_principal_matches: true,
         completion_observed: true,
-        include_app_tables: true,
+        include_platform_tables: true,
         status: 200,
         finished: true,
       };
@@ -249,7 +274,11 @@ try {
 
       const invalidInput = {
         action: 'table_list',
-        args: { organization_id: approved.id, include_app_tables: true, limit: 'not-a-number' },
+        args: {
+          organization_id: approved.id,
+          include_platform_tables: true,
+          limit: 'not-a-number',
+        },
       };
       await enterRecordsInput(panel, evaluate, stage, invalidInput, process.platform);
       const invalidResult = await execute(invalidInput, bearerHash, 'records_invalid_limit');

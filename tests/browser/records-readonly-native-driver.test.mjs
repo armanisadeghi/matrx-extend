@@ -53,11 +53,11 @@ const refusal = {
 };
 const input = {
   action: 'table_list',
-  args: { organization_id: organizationId, include_app_tables: true, limit: 50 },
+  args: { organization_id: organizationId, include_platform_tables: true, limit: 50 },
 };
 const invalid = {
   action: 'table_list',
-  args: { organization_id: organizationId, include_app_tables: true, limit: 'not-a-number' },
+  args: { organization_id: organizationId, include_platform_tables: true, limit: 'not-a-number' },
 };
 const metadataInput = {
   action: 'metadata_search',
@@ -82,6 +82,16 @@ const metadataResult = (
     organizations_covered: [organizationId],
   },
 });
+const tableListSchema = (visibilityField = 'include_platform_tables') => ({
+  action: { enum: ['table_list', 'metadata_search'] },
+  $variants: {
+    table_list: {
+      [visibilityField]: { type: 'boolean', default: false },
+      limit: { type: 'integer', default: 50 },
+      organization_id: { type: 'string' },
+    },
+  },
+});
 
 function runDriver({
   platform = 'darwin',
@@ -91,6 +101,7 @@ function runDriver({
   reloadedProfile = 'admin-id',
   driverSource = callback,
   inputHelper = enterRecordsInput,
+  serverSchema = tableListSchema(),
 } = {}) {
   const events = new EventEmitter();
   const active = new Set();
@@ -161,6 +172,23 @@ function runDriver({
   };
   const outputState = async () => ({ visible: true, raw: JSON.stringify(completions[runs - 1]) });
   const evaluate = async (_panel, script) => {
+    if (script.includes('server action contract')) {
+      const pre = {
+        textContent: JSON.stringify(serverSchema),
+        getClientRects: () => [1],
+      };
+      const label = {
+        textContent: 'server action contract',
+        children: [],
+        parentElement: { parentElement: { querySelector: () => pre } },
+      };
+      const row = {
+        querySelector: () => ({ textContent: 'records' }),
+        parentElement: { querySelectorAll: () => [label] },
+      };
+      const document = { querySelectorAll: () => [row] };
+      return new Function('document', `return ${script};`)(document);
+    }
     if (script.includes('t.focus()')) {
       editor.focused = true;
       return true;
@@ -313,6 +341,15 @@ test('missing selection refuses before execution', async () => {
   const scenario = runDriver({ inputHelper: helper });
   await assert.rejects(scenario.run(), /records_input_selection_missing/);
   assert.equal(scenario.runs, 0);
+});
+
+test('server schema drift refuses before the first Records execute', async () => {
+  for (const serverSchema of [tableListSchema('include_app_tables'), null]) {
+    const scenario = runDriver({ serverSchema });
+    await assert.rejects(scenario.run(), /records_table_list_server_contract_drift/);
+    assert.equal(scenario.runs, 0);
+    assert.equal(scenario.report.result, null);
+  }
 });
 
 test('wrong principal, stale completion and wrong post-reload identity each fail', async () => {
