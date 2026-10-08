@@ -1,6 +1,5 @@
 {
   "schema_version": 1,
-  "reviewed_at_utc": "2026-10-08T15:40:00Z",
   "proposal": ".research/remaining-control-links-20261008.json",
   "reviewed_commit": "532c43544957d7ff720c89764344dd0ae80c6a31",
   "review_scope": "source-only; inventory and runtime statuses not changed",
@@ -11,25 +10,40 @@
       {
         "case_id": "EXT-F-0003-T07",
         "verdict": "accept C12 and link C12 plus existing C03",
-        "evidence": ["release.sh:428-439 defines matrx-packages as the first mandatory candidate gate", "scripts/test-release-ship-path.sh:199-218 asserts stale packages stop before unit tests and publication"],
+        "evidence": [
+          "release.sh:428-439 defines matrx-packages as the first mandatory candidate gate",
+          "scripts/test-release-ship-path.sh:199-218 asserts stale packages stop before unit tests and publication"
+        ],
         "note": "Distinct, source-backed release control; C03 alone describes refusal but not stale-graph freshness/order."
       },
       {
         "case_id": "EXT-F-0003-T10",
         "verdict": "leave unmapped",
-        "evidence": ["docs/stabilization/inventory.json:1652 describes popup-test teardown and unhandled imports", "docs/stabilization/INVENTORY-CONTRACT.md:7 defines controls as controls/actions"],
+        "evidence": [
+          "docs/stabilization/inventory.json:1652 describes popup-test teardown and unhandled imports",
+          "docs/stabilization/INVENTORY-CONTRACT.md:7 defines controls as controls/actions"
+        ],
         "note": "Test harness lifecycle case has no product control. Do not invent one to reduce the unmapped count."
       },
       {
         "case_id": "EXT-F-1015-T39",
         "verdict": "accept C21 and link it",
-        "evidence": ["src/hooks/use-auth.ts:30-55 serializes generation-checked admin-gate storage writes", "src/hooks/use-auth.ts:148-191 clears the gate before verification and reports storage/read failures", "src/hooks/use-auth.ts:229-255 revalidates after cross-context auth changes", "src/lib/tools/dispatch.ts:763-768 checks the stored gate at execution time"],
+        "evidence": [
+          "src/hooks/use-auth.ts:30-55 serializes generation-checked admin-gate storage writes",
+          "src/hooks/use-auth.ts:148-191 clears the gate before verification and reports storage/read failures",
+          "src/hooks/use-auth.ts:229-255 revalidates after cross-context auth changes",
+          "src/lib/tools/dispatch.ts:763-768 checks the stored gate at execution time"
+        ],
         "note": "A distinct stateful auth gate despite having no dedicated visible button. Source supports the behavior; runtime remains unverified."
       },
       {
         "case_id": "EXT-F-2012-T02",
         "verdict": "accept existing C11, C13, C14 links; reject new C38-C40",
-        "evidence": ["src/features/tools/ToolsView.tsx:87-101 exposes Smart tests and Recorder tabs", "EXT-F-2015 has granular scenario controls and mapped scenario cases", "EXT-F-2016 has granular recording, permission recovery, and saved-row controls mapped to cases"],
+        "evidence": [
+          "src/features/tools/ToolsView.tsx:87-101 exposes Smart tests and Recorder tabs",
+          "EXT-F-2015 has granular scenario controls and mapped scenario cases",
+          "EXT-F-2016 has granular recording, permission recovery, and saved-row controls mapped to cases"
+        ],
         "note": "C38-C40 repeat child-feature behavior in a broader parent feature and bundle multiple distinct actions. The umbrella case may link the existing tab/dialog controls it exercises, while behavior remains tracked in EXT-F-2015/2016."
       }
     ]
@@ -47,5 +61,6 @@
     "No browser, build, or runtime execution was performed.",
     "No inventory or proposal mutation was performed by this review.",
     "The proposal is a source map and does not establish pass status."
-  ]
+  ],
+  "review_time_evidence": "Use git commit b755ebce timestamp; prior report timestamp was not clock-verified and is removed."
 }
