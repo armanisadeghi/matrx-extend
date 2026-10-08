@@ -8030,12 +8030,22 @@
   ],
   "get": []
  },
+ "/v1/meet/consent": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/v1/meet/end": {
   "post": [
    "application/json"
   ]
  },
  "/v1/meet/intelligence/ask": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/meet/leave": {
   "post": [
    "application/json"
   ]
@@ -8089,6 +8099,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/v1/meet/state": {
+  "get": []
  },
  "/v1/meet/token": {
   "post": [
