@@ -1,8 +1,26 @@
 import assert from 'node:assert/strict';
-import { randomUUID } from 'node:crypto';
+import { createHash, randomUUID } from 'node:crypto';
 import { open, readFile, rename } from 'node:fs/promises';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const OWNED_NAME =
+  /^EXT-F-4130-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+export const RECORDS_FIXTURE_MARKER = 'matrx-extend-native-records-C04-C05-v1';
+export function recordsFixtureMarker(principalId, orgId) {
+  assert.match(principalId ?? '', UUID, 'records_fixture_principal_id_invalid');
+  assert.match(orgId ?? '', UUID, 'records_fixture_org_id_invalid');
+  return `${RECORDS_FIXTURE_MARKER}:${createHash('sha256').update(`${principalId}:${orgId}`).digest('hex')}`;
+}
+
+export function requireRecordsHostedFixture(environment) {
+  assert.equal(environment.GITHUB_ACTIONS, 'true', 'records_fixture_hosted_required');
+  assert.equal(environment.RUNNER_ENVIRONMENT, 'github-hosted', 'records_fixture_runner_required');
+  assert.equal(
+    environment.MATRX_HOSTED_ACCEPTANCE_CASE,
+    'records-readonly-admin',
+    'records_fixture_case_required',
+  );
+}
 const PHASES = new Set([
   'planned',
   'create_sent',
@@ -12,6 +30,7 @@ const PHASES = new Set([
   'archived_verified',
   'no_fixture_created',
   'ownership_unverified',
+  'no_owned_fixture_found',
 ]);
 
 // The token and raw REST response remain in the extension context. Only a
@@ -19,7 +38,7 @@ const PHASES = new Set([
 export async function recordsFixtureRequest(
   panel,
   evaluate,
-  { method, path, body, orgId, bearerHash, name },
+  { method, path, body, orgId, bearerHash, name, marker },
 ) {
   return evaluate(
     panel,
@@ -37,7 +56,11 @@ export async function recordsFixtureRequest(
         ...(${JSON.stringify(body !== undefined)} ? { body: JSON.stringify(${JSON.stringify(body ?? null)}) } : {}),
       });
       const data = await response.json().catch(() => null);
-      const tables = Array.isArray(data?.tables) ? data.tables.filter(t => t.name === ${JSON.stringify(name)} && t.organization_id === ${JSON.stringify(orgId)} && t.kind === 'custom') : [];
+      const owned = Array.isArray(data?.tables) ? data.tables.filter(t =>
+        /^EXT-F-4130-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(t.name ?? '') &&
+        t.description === ${JSON.stringify(marker)} &&
+        t.organization_id === ${JSON.stringify(orgId)} && t.kind === 'custom') : [];
+      const tables = owned.filter(t => t.name === ${JSON.stringify(name)});
       return {
         token_matches: true, status: response.status,
         done: data?.done === true, created: data?.created === true,
@@ -48,6 +71,7 @@ export async function recordsFixtureRequest(
         row_version: Number.isInteger(data?.row?.version) ? data.row.version : null,
         row_value_matches: data?.row?.values?.Name === ${JSON.stringify(body?.values?.Name ?? null)},
         tables: tables.map(t => ({ id: t.id, org_matches: true })),
+        owned_tables: owned.map(t => ({ id: t.id, name: t.name })),
         list_complete: Array.isArray(data?.not_listed) && data.not_listed.length === 0,
       };
     } catch { return { token_matches: true, transport_failed: true }; }
@@ -71,6 +95,7 @@ export async function withRecordsPositiveFixture({
   panel,
   evaluate,
   orgId,
+  principalId,
   bearerHash,
   journalPath,
   exercise,
@@ -78,12 +103,15 @@ export async function withRecordsPositiveFixture({
   request = recordsFixtureRequest,
   id = randomUUID,
   maxArchiveAttempts = 3,
+  environment = process.env,
 }) {
+  requireRecordsHostedFixture(environment);
+  const marker = recordsFixtureMarker(principalId, orgId);
   let state;
   try {
     state = JSON.parse(await readFile(journalPath, 'utf8'));
     assert.equal(state.schema_version, 1, 'records_fixture_journal_invalid');
-    assert.match(state.name, /^EXT-F-4130-[0-9a-f-]{36}$/i);
+    assert.match(state.name, OWNED_NAME);
     assert.equal(PHASES.has(state.phase), true, 'records_fixture_journal_phase_invalid');
     if (state.table_id !== null) assert.match(state.table_id ?? '', UUID);
     if (state.row_id !== null) assert.match(state.row_id ?? '', UUID);
@@ -112,6 +140,7 @@ export async function withRecordsPositiveFixture({
       orgId,
       bearerHash,
       name: state.name,
+      marker,
     });
     assert.equal(answer?.token_matches, true, 'records_fixture_principal_mismatch');
     assert.equal(answer.transport_failed, undefined, 'records_fixture_transport_failed');
@@ -122,9 +151,45 @@ export async function withRecordsPositiveFixture({
       'GET',
       `?organization=${encodeURIComponent(orgId)}&search=${encodeURIComponent(state.name)}`,
     );
+  const listOwned = () =>
+    call('GET', `?organization=${encodeURIComponent(orgId)}&search=EXT-F-4130-`);
+  const archiveOwned = async (tableId) => {
+    assert.match(tableId ?? '', UUID, 'records_fixture_archive_id_invalid');
+    let archived;
+    for (let attempt = 0; attempt < maxArchiveAttempts; attempt++) {
+      archived = await call('DELETE', `/${tableId}`);
+      if (archived.status !== 503) break;
+    }
+    assert.equal(archived.status, 200, 'records_fixture_archive_failed');
+    assert.equal(archived.done, true, 'records_fixture_archive_not_done');
+    assert.equal(archived.archived, true, 'records_fixture_archive_not_confirmed');
+    assert.equal(archived.org_matches, true, 'records_fixture_archive_wrong_org');
+    assert.equal(archived.id, tableId, 'records_fixture_archive_wrong_table');
+  };
   let bodyError;
   let cleanupError;
   try {
+    const prior = await listOwned();
+    assert.equal(prior.status, 200, 'records_fixture_recovery_list_failed');
+    assert.equal(prior.list_complete, true, 'records_fixture_recovery_list_incomplete');
+    assert.ok(Array.isArray(prior.owned_tables), 'records_fixture_recovery_shape_invalid');
+    for (const table of prior.owned_tables) {
+      assert.match(table.name, OWNED_NAME, 'records_fixture_recovery_name_invalid');
+      assert.match(table.id, UUID, 'records_fixture_recovery_id_invalid');
+      if (table.name === state.name) continue;
+      onStage('records_fixture_prior_cleanup');
+      await archiveOwned(table.id);
+    }
+    if (prior.owned_tables.some((table) => table.name !== state.name)) {
+      const remaining = await listOwned();
+      assert.equal(remaining.status, 200, 'records_fixture_recovery_verify_failed');
+      assert.equal(remaining.list_complete, true, 'records_fixture_recovery_verify_incomplete');
+      assert.equal(
+        remaining.owned_tables.length,
+        prior.owned_tables.filter((table) => table.name === state.name).length,
+        'records_fixture_prior_still_visible',
+      );
+    }
     const before = await list();
     assert.equal(before.status, 200, 'records_fixture_preflight_failed');
     assert.equal(before.list_complete, true, 'records_fixture_preflight_incomplete');
@@ -140,6 +205,7 @@ export async function withRecordsPositiveFixture({
       const made = await call('POST', '', {
         name: state.name,
         slug: state.name.toLowerCase(),
+        description: marker,
         columns: [
           { name: 'Name', type: 'text' },
           { name: 'Amount', type: 'number' },
@@ -183,17 +249,29 @@ export async function withRecordsPositiveFixture({
       onStage('records_fixture_cleanup');
       // A timed-out create can have committed. Resolve only the run-unique
       // preflighted name; never archive a table whose ownership is ambiguous.
-      if (state.phase !== 'planned' && state.phase !== 'ownership_unverified') {
+      if (state.phase !== 'planned') {
         const found = await list();
         assert.equal(found.status, 200, 'records_fixture_cleanup_list_failed');
         assert.equal(found.list_complete, true, 'records_fixture_cleanup_list_incomplete');
-        if (found.tables.length === 0 && state.phase === 'create_sent') {
+        if (
+          found.tables.length === 0 &&
+          ['create_sent', 'no_fixture_created'].includes(state.phase)
+        ) {
           state.phase = 'no_fixture_created';
           await journal(journalPath, state);
-        } else if (found.tables.length === 0 && state.phase === 'archive_sent') {
+        } else if (
+          found.tables.length === 0 &&
+          ['archive_sent', 'archived_verified'].includes(state.phase)
+        ) {
           // The previous process may have stopped after the archive committed.
           // This confirms absence, but the recovered run still earns no read credit.
           state.phase = 'archived_verified';
+          await journal(journalPath, state);
+        } else if (
+          found.tables.length === 0 &&
+          ['ownership_unverified', 'no_owned_fixture_found'].includes(state.phase)
+        ) {
+          state.phase = 'no_owned_fixture_found';
           await journal(journalPath, state);
         } else {
           assert.equal(found.tables.length, 1, 'records_fixture_cleanup_ownership_ambiguous');
@@ -204,16 +282,7 @@ export async function withRecordsPositiveFixture({
           state.table_id = tableId;
           state.phase = 'archive_sent';
           await journal(journalPath, state);
-          let archived;
-          for (let attempt = 0; attempt < maxArchiveAttempts; attempt++) {
-            archived = await call('DELETE', `/${tableId}`);
-            if (archived.status !== 503) break;
-          }
-          assert.equal(archived.status, 200, 'records_fixture_archive_failed');
-          assert.equal(archived.done, true, 'records_fixture_archive_not_done');
-          assert.equal(archived.archived, true, 'records_fixture_archive_not_confirmed');
-          assert.equal(archived.org_matches, true, 'records_fixture_archive_wrong_org');
-          assert.equal(archived.id, tableId, 'records_fixture_archive_wrong_table');
+          await archiveOwned(tableId);
           const after = await list();
           assert.equal(after.status, 200, 'records_fixture_verify_list_failed');
           assert.equal(after.list_complete, true, 'records_fixture_verify_list_incomplete');

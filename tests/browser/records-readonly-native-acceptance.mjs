@@ -606,6 +606,7 @@ try {
         panel,
         evaluate,
         orgId: approved.id,
+        principalId: auth.profileId,
         bearerHash: reloadBearerHash,
         journalPath: `${output}.fixture-journal.json`,
         onStage: stage,
