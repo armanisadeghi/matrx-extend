@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T22:38:56.544495+00:00",
+  "updated_at": "2026-10-08T22:48:06.593299+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5080,6 +5080,18 @@
               "independent_review": ".research/settings-local397-peer-20261008.json",
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PASS: Dark, Light, and System each changed UI, stored value, applied appearance, and survived panel reload; no full-extension reload for this preference."
+            },
+            {
+              "at": "2026-10-08T22:48:06.593299+00:00",
+              "mode": "guest",
+              "run_id": "37854142497",
+              "status": "unverified",
+              "resource_invalid": false,
+              "evidence": [
+                ".research/settings-per-choice-extension-native-20261008.json",
+                ".research/settings-callback-binding-root-review-20261008.json"
+              ],
+              "detail": "Initial extension replacement/guest observations pass; native callback unbound acquireLivePanel stops before per-choice rechecks. Binding repaired4b14e0a6; next native awaiting hosted gate/API reset. No new product acceptance or failure inferred."
             }
           ],
           "revalidation_history": [
@@ -5429,6 +5441,18 @@
               "independent_review": ".research/settings-local397-peer-20261008.json",
               "scope": "One valid local ARM native run on frozen unpublished development artifact, guest only. Panel-document reload for T04/T10/T13/T16/T19/T22/T31/T34/T37/T46/T64/T70; full extension reload for T63/T73/T76/T92. Receipt result is bounded to observed criteria; member/admin, Store/current-main and whole-feature state are not inferred.",
               "detail": "PARTIAL: Ask/Act UI and storage survived panel reload; new-chat inheritance unexercised."
+            },
+            {
+              "at": "2026-10-08T22:48:06.593299+00:00",
+              "mode": "guest",
+              "run_id": "37854142497",
+              "status": "unverified",
+              "resource_invalid": false,
+              "evidence": [
+                ".research/settings-per-choice-extension-native-20261008.json",
+                ".research/settings-callback-binding-root-review-20261008.json"
+              ],
+              "detail": "Initial extension replacement/guest observations pass; native callback unbound acquireLivePanel stops before per-choice rechecks. Binding repaired4b14e0a6; next native awaiting hosted gate/API reset. No new product acceptance or failure inferred."
             }
           ],
           "revalidation_history": [
@@ -6471,6 +6495,20 @@
               },
               "reason": "Preserve preceding attempted native scope."
             }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T22:48:06.593299+00:00",
+              "mode": "guest",
+              "run_id": "37854142497",
+              "status": "unverified",
+              "resource_invalid": false,
+              "evidence": [
+                ".research/settings-per-choice-extension-native-20261008.json",
+                ".research/settings-callback-binding-root-review-20261008.json"
+              ],
+              "detail": "Initial extension replacement/guest observations pass; native callback unbound acquireLivePanel stops before per-choice rechecks. Binding repaired4b14e0a6; next native awaiting hosted gate/API reset. No new product acceptance or failure inferred."
+            }
           ]
         },
         {
@@ -7222,6 +7260,20 @@
                 "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
               },
               "reason": "Preserve preceding attempted native scope."
+            }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T22:48:06.593299+00:00",
+              "mode": "guest",
+              "run_id": "37854142497",
+              "status": "unverified",
+              "resource_invalid": false,
+              "evidence": [
+                ".research/settings-per-choice-extension-native-20261008.json",
+                ".research/settings-callback-binding-root-review-20261008.json"
+              ],
+              "detail": "Initial extension replacement/guest observations pass; native callback unbound acquireLivePanel stops before per-choice rechecks. Binding repaired4b14e0a6; next native awaiting hosted gate/API reset. No new product acceptance or failure inferred."
             }
           ]
         },
@@ -9014,6 +9066,20 @@
                 "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
               },
               "reason": "Preserve preceding attempted native scope."
+            }
+          ],
+          "attempt_history": [
+            {
+              "at": "2026-10-08T22:48:06.593299+00:00",
+              "mode": "guest",
+              "run_id": "37854142497",
+              "status": "unverified",
+              "resource_invalid": false,
+              "evidence": [
+                ".research/settings-per-choice-extension-native-20261008.json",
+                ".research/settings-callback-binding-root-review-20261008.json"
+              ],
+              "detail": "Initial extension replacement/guest observations pass; native callback unbound acquireLivePanel stops before per-choice rechecks. Binding repaired4b14e0a6; next native awaiting hosted gate/API reset. No new product acceptance or failure inferred."
             }
           ]
         },
