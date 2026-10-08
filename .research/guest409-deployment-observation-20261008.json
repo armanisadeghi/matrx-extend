@@ -125,5 +125,70 @@
     "git_sha": "8de41d9c36c1251240ea68fd5d41afcaa80b4ee1",
     "built_at": "2026-10-08T08:39:50Z",
     "candidate_included": false
+  },
+  "refresh_since_0946_utc": {
+    "observed_at_utc": "2026-10-08T10:00:50Z",
+    "production": {
+      "endpoint": "https://server.app.matrxserver.com/health/version",
+      "method": "GET with User-Agent matrx-deployed-schema-guard/1.0 and Accept application/json",
+      "read_at_utc": "2026-10-08T09:59:47Z",
+      "http_status": 200,
+      "git_sha": "8de41d9c36c1251240ea68fd5d41afcaa80b4ee1",
+      "built_at": "2026-10-08T08:39:50Z",
+      "result": "Unchanged from the prior observation."
+    },
+    "source_vs_deployed": {
+      "repository": "https://github.com/AI-Matrix-Engine/aidream.git",
+      "source_candidate": "54a1e1b978a8efde6b9232aa56aad9f12a1bf214",
+      "source_checkout": "main at origin/main when checked; worktree clean",
+      "candidate_is_ancestor_of_production": false,
+      "ancestry_evidence": "git merge-base --is-ancestor 54a1e1b978a8efde6b9232aa56aad9f12a1bf214 8de41d9c36c1251240ea68fd5d41afcaa80b4ee exited 1. The original ffba candidate also exited 1.",
+      "native_evidence": "No native guest acceptance is claimed by this observation."
+    },
+    "automatic_run_status_since_0946_utc": {
+      "observed_at_utc": "2026-10-08T10:00:26Z",
+      "repository": "AI-Matrix-Engine/aidream",
+      "api_access": "Correct-owner GitHub Actions API queries succeeded.",
+      "workflow_states": {
+        ".github/workflows/deploy-cadence-watch.yml": "active",
+        ".github/workflows/test.yml": "active"
+      },
+      "queued_scheduled_runs": {
+        "deploy-cadence-watch.yml": [],
+        "test.yml": []
+      },
+      "latest_cadence_watch_schedule": {
+        "run_id": 37742567826,
+        "created_at": "2026-10-08T07:17:56Z",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/AI-Matrix-Engine/aidream/actions/runs/37742567826"
+      },
+      "latest_test_schedule": {
+        "run_id": 37734721584,
+        "created_at": "2026-10-08T05:54:07Z",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/AI-Matrix-Engine/aidream/actions/runs/37734721584"
+      },
+      "latest_deployment": {
+        "run_id": 37751070054,
+        "created_at": "2026-10-08T08:37:30Z",
+        "event": "workflow_dispatch",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "8de41d9c36c1251240ea68fd5d41afcaa80b4ee1",
+        "updated_at": "2026-10-08T08:55:10Z",
+        "url": "https://github.com/AI-Matrix-Engine/aidream/actions/runs/37751070054",
+        "interpretation": "This successful deploy predates 09:46 UTC and was a workflow_dispatch; it is not evidence of a new automatic watcher release."
+      },
+      "after_0946_result": "No cadence-watch schedule, test schedule, queued schedule, or deployment run was observed after 2026-10-08T09:46:00Z. Recent push/publish runs were package workflows and do not indicate aidream deployment.",
+      "next_nominal_ticks_only": {
+        "test_yml": "2026-10-08T10:07:00Z",
+        "deploy_cadence_watch_yml": "2026-10-08T10:10:00Z",
+        "caveat": "These are schedule-derived nominal times, not evidence those runs will execute."
+      }
+    },
+    "limits": "Read-only production identity and Actions metadata only. The configured automatic watcher is active, but the last observed scheduled watcher run predates this interval; no execution or automatic pickup of candidate 54a is established. No release/deploy dispatch, build, or native run was performed."
   }
 }
