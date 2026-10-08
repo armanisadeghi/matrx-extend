@@ -14,7 +14,7 @@
  * say it outright: "identical pipeline to `/api/ai/agents/{agent_id}`" etc.
  * This is a PATH move, not a payload/stream/event change.
  *
- * The v2 surface does NOT include: warm, cancel, tool_results, inbox, or
+ * The v2 surface does NOT include: cancel, tool_results, inbox, or
  * resume/pending_calls. Those endpoints only exist under `/ai/*` — calling
  * them is correct and NOT a bug.
  *
@@ -25,8 +25,8 @@
  * own `API_VERSION` constant and hand-maintained list of which endpoints have
  * a v2 sibling — a twin of the policy the package now ships, and one that
  * would drift the moment the backend's v2 surface grows. The allowlist is
- * anchored per whole path segment, so `/ai/conversations/{id}/inbox`,
- * `/ai/agents/{id}/warm` and `/ai/cancel/{id}` are correctly left on v1 —
+ * anchored per whole path segment, so `/ai/conversations/{id}/inbox` and
+ * `/ai/cancel/{id}` are correctly left on v1 —
  * pinned by `__tests__/ai-protocol.test.ts`, which asserts every helper in
  * this file still produces the exact path it produced before the collapse.
  */
@@ -193,22 +193,11 @@ export interface AgentStartRequest {
 export const CHAT_PATH = aiPath('/ai/chat');
 
 /**
- * POST /ai/agents/{agent_id}/warm — warm an agent before sending.
- * No `/v2/ai/agents/{agent_id}/warm` exists on the backend — stays on v1.
- */
-export const agentWarmPath = (agentId: string): string =>
-  `/ai/agents/${encodeURIComponent(agentId)}/warm`;
-
-/**
  * POST /ai/cancel/{request_id} — cancel an in-flight stream.
  * No `/v2/ai/cancel/{request_id}` exists on the backend — stays on v1.
  */
 export const cancelPath = (requestId: string): string =>
   `/ai/cancel/${encodeURIComponent(requestId)}`;
-
-export function warmAgent(agentId: string) {
-  return apiPost<{ status: string }>(agentWarmPath(agentId), {});
-}
 
 export function cancelRequest(requestId: string) {
   return apiPost<{ status: string }>(cancelPath(requestId), {});
