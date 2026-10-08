@@ -290,6 +290,10 @@ async function copyTargetContext(panel, sample) {
   );
 }
 
+export function retainCopyTargetContext(report, error) {
+  if (error?.copyTargetContext) report.copy_target_context = error.copyTargetContext;
+}
+
 export async function runGuestCopyMenus({
   panel,
   browserSession,

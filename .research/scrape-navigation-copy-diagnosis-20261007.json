@@ -26,13 +26,13 @@
       "prediction": "At pointer failure, the active Scrape tab or panel count is zero."
     }
   ],
-  "change": "At the exact Copy capture pointer failure boundary, attach a bounded boolean/count DOM observation to the original thrown error and native receipt. The original failure, copy menu assertions, sentinel check, and clipboard oracle remain strict.",
+  "change": "At the Copy capture pointer failure boundary, attach a bounded boolean/count DOM observation to the original thrown error and native receipt. The original failure, copy menu assertions, sentinel check, and clipboard oracle remain strict. The observation follows the failed pointer sample, so a fast transition between samples may remain ambiguous.",
   "verification": {
     "focused_command": "node --test tests/browser/scrape-guest-behavior-batch.test.mjs",
-    "focused_result": "6 passed, 0 failed; injected zero-target pointer failure propagated unchanged with bounded context",
+    "focused_result": "6 passed, 0 failed; the actual DOM discriminator expression ran against inactive, missing-capture, aria-only, and title-present panel states. The original pointer error propagated, and serialized receipt fields remained counts and booleans without page content.",
     "typecheck_command": "pnpm compile",
     "typecheck_result": "passed",
-    "native_result": "pending fresh guarded hosted guest-scrape-development run on artifact with source change"
+    "native_result": "pending fresh guarded hosted guest-scrape-development run using original 0.2.391 product artifact with changed acceptance driver"
   },
   "next_action": "In the next guarded hosted guest-scrape-development run, read copy_target_context beside driver_failure. If the copy control has disappeared, trace the pageKey transition; if aria-label remains but title selectors fail, repair the shared target selector; if Scrape is inactive, trace panel switching. Retest all 22 intake options, referrals options, and reload with the unchanged oracle."
 }

@@ -13,7 +13,11 @@ import {
 } from './panel-transition-recorder.mjs';
 import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
-import { runGuestCopyMenus, runGuestScrollSync } from './scrape-guest-behavior-batch.mjs';
+import {
+  retainCopyTargetContext,
+  runGuestCopyMenus,
+  runGuestScrollSync,
+} from './scrape-guest-behavior-batch.mjs';
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
 import { assertImageGroups, assertLinkPane } from './scrape-media-assertions.mjs';
 import { intakeImage } from './scrape-media-fixture.mjs';
@@ -1893,7 +1897,7 @@ try {
   report.failure = { stage: report.stage, code: String(error?.message ?? error).slice(0, 300) };
   retainScrapeMediaFailure(report, error);
   if (error?.driverFailure) report.driver_failure = error.driverFailure;
-  if (error?.copyTargetContext) report.copy_target_context = error.copyTargetContext;
+  retainCopyTargetContext(report, error);
   if (error?.lifecycleEvidence)
     report.reload_lifecycle_failure = captureLifecycleEvidence(error.lifecycleEvidence);
   if (error?.contextBoundary) report.reload_context_failure = error.contextBoundary;
