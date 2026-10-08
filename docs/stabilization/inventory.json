@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T00:17:48.222435+00:00",
+  "updated_at": "2026-10-08T00:39:36.381982+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -19877,7 +19877,7 @@
           "expected": [
             "Done transfers candidates into editor; Restart clears current picker selection and begins again."
           ],
-          "defect_ids": ["EXT-D-0045", "EXT-D-0143", "EXT-D-0158"],
+          "defect_ids": ["EXT-D-0045", "EXT-D-0143", "EXT-D-0158", "EXT-D-0160"],
           "dimensions": ["warm", "reload", "auth-transition", "service-error"],
           "results": {
             "admin": {
@@ -20516,7 +20516,7 @@
             "Fresh manual picking offers an understandable scope choice where nested repeated groups exist; selected scope determines actual extracted rows."
           ],
           "dimensions": ["warm", "reload", "navigation", "cancel"],
-          "defect_ids": ["EXT-D-0043", "EXT-D-0045", "EXT-D-0143", "EXT-D-0158"],
+          "defect_ids": ["EXT-D-0043", "EXT-D-0045", "EXT-D-0143", "EXT-D-0158", "EXT-D-0160"],
           "results": {
             "admin": {
               "status": "partial",
@@ -20969,7 +20969,8 @@
             "EXT-D-0141",
             "EXT-D-0142",
             "EXT-D-0143",
-            "EXT-D-0158"
+            "EXT-D-0158",
+            "EXT-D-0160"
           ],
           "run_ids": [
             "showcase-live-discovery-001",
