@@ -21,7 +21,7 @@
   "verdict": {
     "diagnostic": "completed",
     "product_acceptance": "not_established",
-    "reason": "The native diagnostic reached CDP before the unchanged five-second deadline. It did not reproduce the earlier startup timeout and gives no product acceptance credit.",
+    "reason": "The native diagnostic reported a successful CDP connection and did not take the timeout branch. It did not reproduce the earlier startup timeout and gives no product acceptance credit.",
     "retry": "not attempted; one-run assignment"
   },
   "tested_artifact": {
