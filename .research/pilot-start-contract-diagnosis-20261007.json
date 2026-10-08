@@ -1,0 +1,53 @@
+{
+  "task_id": "pilot-start-contract-diagnosis-20261007",
+  "lane": "Pilot start routing",
+  "status": "fixed_source_native_pending",
+  "feature_ids": ["EXT-F-2014"],
+  "defect_ids": ["EXT-D-0156"],
+  "cause": {
+    "observed": "Real Pilot start HTTP 422 before any approval or effect; original body was not retained.",
+    "confirmed_source": "Pilot starts a mandate UI reference through the concrete-agent endpoint; backend _run_agent require_uuid rejects that reference. Canonical wire contract and Chat use agentTargetExecutePath.",
+    "scope": "Repair proven routing class; independent native start on the next CI artifact must confirm this was the remaining HTTP 422 cause."
+  },
+  "fix_commit": "6bfe63d5",
+  "changed_files": [
+    "src/hooks/use-pilot-chat-stream.ts",
+    "tests/unit/pilot-start-target.test.ts",
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "docs/feature-tests.md"
+  ],
+  "verification": [
+    {
+      "run_id": "pilot-target-baseline-red-20261007",
+      "verdict": "meaningful_red",
+      "tests": 4,
+      "failed": 2,
+      "reason": "Actual hook emitted concrete-agent door for each of two different mandates; both saved-agent tests passed."
+    },
+    {
+      "run_id": "pilot-target-green-20261007",
+      "verdict": "pass",
+      "tests": 10,
+      "files": 3
+    },
+    {
+      "run_id": "pilot-target-constant-gut-20261007",
+      "verdict": "meaningful_red",
+      "tests": 4,
+      "failed": 3,
+      "reason": "Constant first mandate endpoint failed second mandate and both saved agents. Source restored byte-identically.",
+      "restored_sha256": "51835ff8e74bc489a2b48295895cb2186d0b370aeb7c286de8f178ae9236557d"
+    },
+    {
+      "run_id": "pilot-target-current-types-20261007",
+      "verdict": "pass",
+      "command": "pnpm compile"
+    }
+  ],
+  "sibling_census": "Chat already uses canonical target resolver. Extraction has an explicit mandateKey branch, and interactive data patterns route a separate mandate key; no other unguarded mandate-reference hook found.",
+  "limitations": [
+    "No native retry by this author. Corrected artifact acceptance pending. Store publication unverified."
+  ],
+  "next_action": "Independent reviewer checks pushed source and drives real Pilot Ask opposed to Chat Act, then return-to-Chat Act, on the automatically built corrected CI artifact.",
+  "owned_jobs": "All four guarded runs terminal; no browser launched."
+}
