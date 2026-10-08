@@ -19,7 +19,7 @@
     "zip:store": "pnpm prezip && MATRX_CWS_BUILD=1 wxt zip && node scripts/check-store-package.mjs && node scripts/check-cws-release-risk.mjs",
     "zip:firefox": "wxt zip -b firefox --mv3",
     "compile": "tsc --noEmit",
-    "lint": "biome check .",
+    "lint": "biome check . --max-diagnostics=10000",
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "test": "vitest run --maxWorkers=2",
