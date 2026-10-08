@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "issue": "EXT-D-0107",
+  "reviewed_commit": "37ca7d888269e9a780fc671c73d5eafb4bc3f7a2",
+  "lane_a_verdict": "SOURCE_READY_NATIVE_PENDING",
+  "lane_a_evidence": {
+    "hosted_run": 37785284577,
+    "raw_hashes": "six of six files match SHA256SUMS",
+    "resource": "package and browser valid; guest admitted and child_failed with resourceInvalid=false",
+    "timing": "Owned Chrome spawned and remained alive; endpoint absent at 5024 ms and present by 1145 ms into bounded follow-up, approximately 6169 ms after start; receipt unverified with no targets",
+    "repair": "The shared first native CDP connect reads the policy's 8000 ms startup allowance, including ordinary guest acceptance. Missing or invalid policy refuses before connecting. Connector socket open, command, detach, and process inspection remain at 5000 ms; endpoint shape, profile, and process owner checks remain mandatory.",
+    "tests": "Focused RED/GREEN real-file delayed endpoint test and four diagnostic tests pass (5/5); connector, harness, and resource-safety tests pass. The original 5000 ms path times out and the policy-backed path connects at 6100 ms with ownerVerified=true and timeoutMs=5000.",
+    "native_status": "No repaired native run observed; the diagnostic hosted run earned no acceptance credit. The original admin 331 ms owned_cdp_endpoint_refused is distinct and remains open."
+  },
+  "lane_b_quality": {
+    "verdict": "SOURCE_APPROVED_WITH_NONBLOCKING_GAPS",
+    "policy_and_diagnostics": "The commit changes no resource admission or watchdog threshold, and no workflow diagnostic default. Guest SEO resource diagnostic remains optional and false by default; no default diagnostic is required for acceptance.",
+    "test_precision": "The timing test asserts policy >=6200 ms rather than exactly 8000 ms and uses 6100 ms versus the observed approximate 6169 ms. It proves the failure class and wiring, but the exact margin is established by source inspection rather than that assertion.",
+    "typecheck": "pnpm compile fails only in unchanged SpeakerButton.tsx, package-chat/host.ts, and speech-host.ts on current @ai-matrx package exports; those imports are present at the reviewed commit's parent. No install or dependency change attempted."
+  }
+}
