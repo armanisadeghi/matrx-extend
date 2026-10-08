@@ -1,0 +1,10 @@
+{
+  "scope": "Independent source and focused-guard review of e42c95b2, e82b79eb, 537f1de4; no native run, build, install, deployment, secrets, or code fix.",
+  "verdict_A": "NOT_READY: frozen 0.2.407 run 37767763301 remains native-unknown; the hosted diagnostic route exists but its decisive milestones do not reach the durable Scrape receipt.",
+  "verdict_B": "IMPORTANT defect: the opt-in and nonzero diagnostic classification are sound, but the end-to-end receipt guard misses the serializer seam.",
+  "finding": "tests/browser/profile-reload-capture.mjs:70-175 drops open_panel_diagnostic, open_panel_request.fixture, and replacement_panel_created_event; tests/browser/scrape-guest-native-acceptance.mjs:1676,2049 uses this serializer on success and failure. Thus ingress/open/click/send/callback/target fields cannot answer the missing-boundary question from the written receipt.",
+  "positive": "Workflow false-default input -> preflight/acceptance validation -> hosted child env -> Scrape driver is wired; wrong-case and malformed flag are refused; default fixture preserves direct send and no worker attachment; opted-in run ends status unverified and exit 1, even if cases pass.",
+  "observer": "Opt-in observer uses fixed request ID and boolean/enum fields, returns original sidePanel.open promise, restores listener/wrapper and detaches on success/failure; no raw secrets/page contents in its evidence. sendResponse remains explicitly unobservable; CDP attachment/wrapper may perturb worker lifetime/gesture and cannot prove native acceptance.",
+  "proof": "A direct assertion requiring the three new fields after captureLifecycleEvidence failed twice (undefined); printed serialized replay confirmed all absent. Focused node --test run: 22 pass, 0 fail, including hosted preflight, default fixture, probe cleanup, lifetime, and existing serializer tests.",
+  "limit": "No hosted/native execution in this peer lane; no claim about actual replacement-worker delivery, sidePanel.open behavior, panel creation, or frozen-build product health."
+}
