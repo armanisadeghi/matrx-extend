@@ -24627,13 +24627,14 @@
               "mode": "admin",
               "status": "unverified",
               "new_acceptance_credit": false,
-              "resource_valid": true,
               "build_version": "0.2.414",
               "evidence": [
                 ".research/t57-arm-414-native-20261008-1552.json",
                 ".research/t57-binding-diagnosis-20261008-1608.json"
               ],
-              "detail": "Actual response pauses reached; driver selectedtwo oldloaderresponses. Guest terminalchild_failed while resourceInvalid=false; no resourceexhaustionclaim. Currentbinding/savedoutput absent. Ownedfixturezero rows and temporarysecretsabsent verified."
+              "detail": "Actual response pauses reached; driver selectedtwo oldloaderresponses. Guest terminalchild_failed while resourceInvalid=false; no resourceexhaustionclaim. Currentbinding/savedoutput absent. Ownedfixturezero rows and temporarysecretsabsent verified.",
+              "resource_invalid": false,
+              "guest_terminal_decision": "child_failed"
             }
           ]
         },
