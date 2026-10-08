@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "reviewer_lane": "settings-native-newcases-peer",
+  "scope": "Independent read-only review of ca913f5d native evidence and 831cd1d5/4aaa290d source candidate against original EXT-F-1003 inventory. No native run, test, build, release, or secret access.",
+  "native_batch": {
+    "source": "ca913f5d; .research/settings-batch-native-20261007.json and retained raw receipt",
+    "verdict_a_target_scope": "PARTIAL: T04 shows Dark, Light and System selected, stored, and root dark class after Settings Page.reload, but rendered color and preference after a full Chrome extension Reload/reopen are absent. T10 shows Ask/Act selected and stored after panel reload, but no new Chat inheritance; keep the whole case unverified. T13 meets its bounded guest preference/display expectation on this artifact after panel reload. None are three newly unrecorded cases: inventory already had T04 partial and T10/T13 historical pass. Do not change inventory cells from this run alone. T73/T76/T92 warm guest checks passed but their full-extension-reload checks stayed unverified.",
+    "verdict_b_evidence_quality": "PASS for the bounded observations, with explicit scope limits. Raw case criteria match the summary, the report is unverified overall, and all three retained journals end in RESOURCE_FINAL_DECISION valid with exitCode 0. The raw report and journal SHA256 values match the committed report. The CI receipt and provenance identify development artifact 11516342905 from run 37698216289, source 52487361b1b6a8663b958dbb2196cbcc9b1af31c, version 0.2.391, tree 04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793. Workflow checkout 271e9d479e4d4cbe97b3787ab8d01027728f80d3 is a distinct harness head, not product source. The setup screenshots do not prove post-selection appearance.",
+    "failure_boundary": "The raw report records managementReloadClicked, oldTargetsRetired, workerReplaced and panelReplaced all true, then guestStageFailed=reload_settings. At tests/browser/settings-local-controls-acceptance.mjs:964 the next operation is settings(replacement.panel); its click or guest-state wait could have failed. The catch at line 969 discards the exception, so the first missing diagnostic is the actual thrown error and replacement-panel state. No product cause is established. Diagnose this boundary before treating the shared full-reload leg as runnable or giving T63/T73/T76/T92 reload credit.",
+    "case_credit": {
+      "EXT-F-1003-T04": "new bounded panel-reload preference/class evidence; whole case remains partial",
+      "EXT-F-1003-T10": "new bounded panel-reload preference evidence; new-chat default unverified",
+      "EXT-F-1003-T13": "new bounded panel-reload preference/display evidence; historical pass retained",
+      "EXT-F-1003-T73_T76_T92": "warm guest observations only in this run; no new full-reload credit"
+    }
+  },
+  "unrecorded_source_candidate": {
+    "source": "831cd1d5 and 4aaa290d; .research/settings-unrecorded-cases-20261007.json",
+    "verdict_a_target_scope": "PARTIAL, source only. T63 adds signed-out guest warm/full-extension-reload denial checks; ordinary-member mode remains absent and therefore the full inventory case cannot pass. T64 adds the original selected-origin removal, unrelated-origin retention, empty-list disappearance and panel-reload checks using two owned loopback entries. The direct storage fixture limits this to Settings list behavior. No native result exists for either case; the earlier frozen workflow predates this source. Exact focused CI 37713475211 is reported successful for source 831cd1d5 but is a source guard, not native acceptance.",
+    "verdict_b_evidence_quality": "PASS as a bounded source candidate, blocked for native/full-case credit. T64 refuses a nonempty baseline, uses the shared trusted CDP click path, compares both UI and storage after each removal, rejects no-op/deleting both/visible empty heading in focused negative controls, and removes only its disposable origins in finally. T63 requires active Settings and independent signed-out state, checks the section and admin text/control absence, and records member denial as unverified. The reused full-extension-reload leg has an undiagnosed reload_settings failure from the prior native run; this source does not repair or diagnose it.",
+    "limits": [
+      "T63 member denial is not exercised by the guest runner.",
+      "T64 has no evidence for a preceding Never-for-this-site capture decision or native execution.",
+      "The report's exact focused CI conclusion was not independently fetched by this reviewer; root owns that verification."
+    ]
+  },
+  "evidence_read": [
+    "docs/stabilization/inventory.json T04/T10/T13/T63/T64/T73/T76/T92",
+    ".research/settings-batch-native-20261007/evidence/raw/settings-local-controls-acceptance.json",
+    ".research/settings-batch-native-20261007/evidence/raw/ci-build-receipt.json",
+    ".research/settings-batch-native-20261007/evidence/raw/ci-build-provenance.json",
+    ".research/settings-batch-native-20261007/evidence/resource-journals/*.jsonl",
+    "git show 831cd1d5 and 4aaa290d",
+    "tests/browser/settings-guest-unrecorded-cases.mjs",
+    "tests/browser/settings-guest-unrecorded-cases.test.mjs",
+    "tests/browser/settings-local-controls-acceptance.mjs"
+  ]
+}
