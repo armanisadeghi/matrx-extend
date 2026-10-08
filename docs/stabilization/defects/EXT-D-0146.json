@@ -32,7 +32,8 @@
     ".research/screenshots-source-handoff.json",
     "docs/stabilization/resource-journals/screenshots-lint-20261005.jsonl",
     ".research/resumed-completion-20261007.json",
-    ".research/final-screenshot-native-20261008.json"
+    ".research/final-screenshot-native-20261008.json",
+    ".research/final-screenshot400-native-20261008.json"
   ],
   "transition_history": [
     {
@@ -72,11 +73,12 @@
   "review_queue_id": "e7a27ff2-b763-4a5c-a19f-1b808bb94c37",
   "verification": {
     "source": "15 focused tests pass; typecheck passes; valid resource journals. Initial typecheck caught scroll mock overload mismatch; final typecheck passed after correction.",
-    "native": "PASS fresh independent full requested targets on CI source11564fe7/run37731510284/artifact11530615740/treee27ae7d1/version0.2.397: root+nested top/middle/bottom pixels and scroll restoration, loaded local viewer with zero second image GET, warm reload, actual quick public-link clipboard and anonymous identical image bytes, canonical manager anonymous identical bytes, both exact native grant revocations and owned screenshot row deletions.",
+    "native": "PASS fresh independent all requested targets on same final CI source787bd6cd/run37733771636/artifact11531101830/tree69035dd3/version0.2.400: root+nested top/middle/bottom pixels and scroll restoration, loaded local viewer with zero second image GET, warm reload, actual quick public-link clipboard and anonymous identical image bytes, canonical manager anonymous identical bytes, both exact native grant revocations and owned screenshot row deletions.",
     "release": "pending permitted machine; no local build/version/release attempted",
     "original_reported_page": "not supplied or observed in native browser",
     "owned_jobs": "All terminal; no owned browser tabs/processes remain.",
-    "lint": "Full pnpm lint PASS with existing advisory warnings; finalized valid journal."
+    "lint": "Full pnpm lint PASS with existing advisory warnings; finalized valid journal.",
+    "latest_acceptance_at": "2026-10-08T06:03:30.107441+00:00"
   },
   "context": {
     "roles": ["member", "admin"],

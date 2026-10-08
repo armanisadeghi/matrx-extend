@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-08T06:02:06.963489+00:00",
+  "observed_at": "2026-10-08T06:03:30.107441+00:00",
   "all_tasks_complete": false,
   "scope": [
     "full-page screenshots",
@@ -8,9 +8,9 @@
     "development disk cleanup"
   ],
   "screenshots": {
-    "requested_native_targets": "PASS exact 0.2.397; final same0.2.400 run active",
-    "evidence": ".research/final-screenshot-native-20261008.json",
-    "test_grant_cleanup": "All previous owned test grants verified inactive; final run owns cleanup of any new grants",
+    "requested_native_targets": "PASS all six requested targets on same final0.2.400 build as eight approval cases",
+    "evidence": ".research/final-screenshot400-native-20261008.json",
+    "test_grant_cleanup": "All prior and final owned test grants verified inactive; both final owned screenshot rows deleted and reread absent",
     "untested": ["unsupported page", "persistence failure", "tile cap"]
   },
   "approval": {
@@ -62,13 +62,13 @@
     ]
   },
   "remaining_truth": [
-    "Final same400 screenshots active",
-    "Broader native parallel/concurrent and optional screenshot failure paths unverified",
+    "Broader native parallel/concurrent and optional screenshot failure paths unverified; existing native driver serial only",
     "Store publication/install acceptance pending permitted host"
   ],
   "review_queue": {
     "screenshots": "e7a27ff2-b763-4a5c-a19f-1b808bb94c37",
     "approval": "bf959dba-5441-45a1-b06e-ec013cb21fb5"
   },
-  "workspace_ledger": "/Volumes/Samsung2TB/code/.stabilization-scratch/resumed-completion-workspace-ledger-20261007.json"
+  "workspace_ledger": "/Volumes/Samsung2TB/code/.stabilization-scratch/resumed-completion-workspace-ledger-20261007.json",
+  "owned_jobs": "All native jobs terminal; profiles closed"
 }
