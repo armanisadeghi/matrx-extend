@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "review_scope": "independent native-evidence peer; retained originals and journals",
+  "evidence_sources": {
+    "summary": ".research/t57-native-20261008.json",
+    "manifest": ".research/t57-native-20261008-originals/manifest.json",
+    "raw_receipt": ".research/t57-native-20261008-originals/receipt.raw.json.txt",
+    "failed_step_log": ".research/t57-native-20261008-originals/private/failed-step.log",
+    "resource_journals": ".research/t57-native-20261008-originals/current-run-journals/",
+    "retained_original_count": 13,
+    "manifest_receipt_sha256_matches": true
+  },
+  "source_and_artifact_boundary": {
+    "installed_artifact_id": 11537245045,
+    "installed_artifact_digest": "sha256:dc62051338c6d710b489de5051d0d63879eb8e3816e605f55b37dce710f38b28",
+    "installed_version": "0.2.405",
+    "installed_receipt_source_sha": "befaf2142f77cbf91af697a0e902584161442e66",
+    "ci_run_id": 37747090976,
+    "native_run_id": 37748442466,
+    "diagnostic_originals_artifact_id": 11537082932,
+    "diagnostic_originals_artifact_digest": "sha256:c3ae218bb320a0b29d87c47a999d1a27bbb7a9305274854866a50bb9a03aab45",
+    "finding": "Receipt provenance and CI artifact identifiers agree. Recursive-originals artifact 11537082932 is the separate diagnostic upload, not the installed build artifact. Installed frozen artifact tests its own source/dependencies; package.json and pnpm-lock.yaml changed between frozen and dispatch source. This attempt says nothing about current-main health."
+  },
+  "behavior_verdict": {
+    "verdict": "inconclusive; T57 not reached",
+    "native_stage": "exercise_panel",
+    "receipt_stage": "signin",
+    "auth_stage": "admin_extension_auth_completion",
+    "failure_code": "d87_rendered_identity_not_observed",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "panel_context_ready": true,
+    "panel_context_ready_at": "2026-10-08T08:20:03.787597Z",
+    "receipt_capture": null,
+    "owned_recipe_created": false,
+    "prior_response_observed": false,
+    "current_response_observed": false,
+    "terminal_saved_result_or_refusal_observed": false,
+    "t57_network_race_reached": false,
+    "interpretation": "The native attempt failed during the D87 rendered-identity assertion in sign-in. The receipt has no granular identity observations; the captured panel image's guest controls do not locate the transition failure. No T57 Network-race behavior was exercised. This is not evidence for or against the repaired prior-document sequence and does not establish a product defect."
+  },
+  "resource_verdict": {
+    "package": "valid; admitted, child exit 0, final valid",
+    "browser": "valid; admitted, child exit 0, final valid",
+    "guest": "invalid; admitted, child exit 1, guard exit 3, final invalid",
+    "guest_event_order": [
+      "08:19:37.684Z RESOURCE_ADMITTED; no reasons",
+      "08:20:03.787Z BROWSER_PANEL_CONTEXT_READY; exact expected extension context observed",
+      "08:20:10.036Z one RESOURCE_CPU_BUSY plus RESOURCE_CPU_HIGH_LOAD_BUSY sample; RESOURCE_CPU_PENDING",
+      "08:20:26.137Z no unsafe reasons; RESOURCE_CPU_PENDING",
+      "08:20:42.292Z no unsafe reasons; RESOURCE_CPU_PENDING",
+      "08:20:55.897Z guest child exit 1 after native acceptance assertion failure",
+      "08:20:56.007Z RESOURCE_FINAL_DECISION resourceInvalid=true, exitCode=3, decision=invalid"
+    ],
+    "runtime_credit": false,
+    "interpretation": "The single CPU-busy/high-load sample invalidated the guest resource run despite two later samples with no unsafe reasons. The guest failure earns no product verdict; do not count it as runtime evidence."
+  },
+  "cleanup_verdict": {
+    "temporary_admin_credentials_secret_absent": true,
+    "temporary_approved_organization_secret_absent": true,
+    "verification": "Read-only GitHub Actions secret-name listing; neither temporary MATRX_HOSTED_ADMIN_CREDENTIALS_JSON nor MATRX_HOSTED_PROFILE_ORGANIZATION_JSON was present. No secret values were read.",
+    "owned_recipe": "none created",
+    "retry_dispatched": false
+  },
+  "evidence_quality_verdict": {
+    "verdict": "adequate for a bounded non-verdict; insufficient to diagnose the signin transition",
+    "strengths": [
+      "Tracked receipt hash matches the recursive-originals manifest.",
+      "Run ID, CI source SHA, installed version, artifact ID, digest, and tree receipt are internally consistent.",
+      "Current-run package, browser, and guest journals preserve admission and final decisions in timestamp order.",
+      "The failed-step log records exact extension panel context before the D87 failure and the resource-invalid final decision after child exit.",
+      "Temporary credential and organization secret names are absent after terminal cleanup."
+    ],
+    "limitations": [
+      "Receipt has no granular rendered-identity observations or capture, so the precise signin transition cause remains unresolved.",
+      "One run, invalid guest resources, and no T57 Network observations cannot establish either repair acceptance or a product regression."
+    ],
+    "discrepancies": []
+  }
+}
