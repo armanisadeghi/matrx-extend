@@ -1,0 +1,20 @@
+{
+  "observed_at": "2026-10-08T00:04:11.865486+00:00",
+  "run_id": 37705126917,
+  "source_sha": "4443f8d9b88ba3a204fadefe30fb87d9d0aebe4f",
+  "focused_step": {
+    "completedAt": "2026-10-08T00:03:38Z",
+    "conclusion": "success",
+    "name": "Guest transport observer regression",
+    "number": 20,
+    "startedAt": "2026-10-08T00:01:03Z",
+    "status": "completed"
+  },
+  "command": "node --test tests/browser/audit-key-native-faults.test.mjs",
+  "source_fix": "29b22795",
+  "peer": ".research/guest-audit-source-peer-20261007.json",
+  "scope": "Automatic CI focused step success verifies audit retry causal negative and repaired checks. Native original reproduction pending. Initial guest Settings tests also executed here; corrected guest oracle38bbe556 and picker diagnostics67e7986a are later and not covered.",
+  "overall_run_status": "completed",
+  "overall_run_conclusion": "success",
+  "not_a_native_or_store_verdict": true
+}

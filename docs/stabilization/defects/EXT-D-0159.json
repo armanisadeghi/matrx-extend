@@ -1,0 +1,59 @@
+{
+  "id": "EXT-D-0159",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T86", "EXT-F-1003-T27", "EXT-F-1003-T61", "EXT-F-1003-T62"],
+  "surface": "Testing infrastructure / audit-key native retry instrumentation",
+  "auth_mode": "admin native scenario",
+  "title": "Audit retry runner reads fault counters after deleting their owner",
+  "severity": "S2: runner aborts before new case verdicts; product failure not established",
+  "priority": "P1",
+  "state": "fixed",
+  "owner": "root/audit_breadth_failure_diagnosis",
+  "preconditions": [
+    "Import frozen CI artifact 11516342905 from source 52487361 (v0.2.391).",
+    "Run audit-key native acceptance under the later c93eca2 checkout."
+  ],
+  "reproduction": [
+    "Compare passing checkout 94d1eeae with failing checkout c93eca2 at the T86 details retry.",
+    "The later runner calls restore(panel), which deletes window.__auditNativeFault, then reads (await fault(panel)).activeWrites after the recovered card and storage comparison.",
+    "The native receipt stops at details_failure/compare_storage_after_retry, with a recovered card, zero receipts, and fault=null. No T27/T61/T62 case result was reached."
+  ],
+  "expected": "Keep write instrumentation active throughout the retry, prove storage/key history unchanged and zero active-key writes, then restore browser APIs.",
+  "actual": "The post-restore fault-counter dereference throws at the runner boundary. The receipt cannot distinguish this harness failure from a storage comparison failure by its bounded code alone.",
+  "root_cause": "An activeWrites assertion was added after restore(panel) had already deleted the fault object; the prior successful checkout did not contain that assertion.",
+  "evidence": [
+    ".research/audit-breadth-native-20261007.json",
+    ".research/audit-selected-native-20261007.json",
+    ".research/audit-breadth-failure-diagnosis-20261007.json",
+    ".research/audit-source-ci-20261007.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-07T23:55:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Run 37703766572 stopped in details_failure before inventory-case recording."
+    },
+    {
+      "at": "2026-10-07T23:55:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Passing/failing checkout diff and null fault diagnostic isolate a runner object-lifetime error, not a product verdict."
+    },
+    {
+      "at": "2026-10-07T23:55:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow source repair drafted; resource guard refused local tests with RESOURCE_DISK_LOW."
+    },
+    {
+      "at": "2026-10-08T00:04:11.865486+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source review plus exact automatic CI37705126917 focused step passed; native retest pending."
+    }
+  ],
+  "closure_requirement": "Resource-admitted focused RED/GREEN and mutation tests, independent source review, then one resource-valid native original-boundary retest; T86 direct rotate invocation and T27/T61/T62 require separate case judgments.",
+  "next_action": "Run guarded audit-key-admin on the unchanged eligible frozen artifact; verify original retry and T27/T61/T62, then independent native review. T86 direct no-rotation invocation remains separately unverified.",
+  "fix_commits": []
+}

@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "independent source peer; no source authorship or native execution",
+  "reviewed_commits": {
+    "guest_settings": "a136d6d2e5d5e5ebefded4dd09ab98f0877034fd",
+    "audit_retry": "29b22795e6ff4a09b3f522e684b181fd7e8fe777",
+    "ci_routing": "4443f8d9b88ba3a204fadefe30fb87d9d0aebe4f"
+  },
+  "verdict_A": {
+    "guest_settings": "SOURCE_NOT_READY; native unverified. T73 and T76 have bounded warm/full-extension-reload checks, but T92 can pass while an archived organization name is exposed without the expected marker or restoration action. T92 member/admin destination, no-write, and restoration behavior are outside this guest-only package and remain unverified.",
+    "audit_retry": "SOURCE_READY_NATIVE_PENDING. The repair retains audit storage wrappers and active-key write counters until after the retry verdict. Run 37703766572 cannot give T27/T61/T62 or a new T86 product verdict; it recorded zero cases."
+  },
+  "verdict_B": {
+    "guest_settings": "Important acceptance-oracle gap in T92. Other scoped checks use the native panel, signed-out storage markers, trusted section input, request counts, two observations, and verified extension replacement; unit tests exercise several wrong outcomes. Source tests were not run locally because RESOURCE_DISK_LOW refused admission.",
+    "audit_retry": "The source order fixes the diagnosed null-counter failure and checks both storage equality and zero active-key writes before restoring wrappers. Its focused test includes the prior null-counter TypeError, clean retry, and active-key write rejection. No product code changed. Focused test execution and helper-order mutation are not locally verified because the resource guard refused the child command."
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "kind": "Missing",
+      "target": "guest_settings_T92",
+      "location": "tests/browser/settings-panel-driver.mjs:107",
+      "detail": "The archivedManagement predicate rejects the exact 'Archived · view only' marker and restoration link but never counts archived membership name nodes or unexpected organization content. A guest Organization section containing an archived name alone still satisfies every T92 check, contrary to the inventory's no archived membership details criterion. Add a structural guest content count/absence assertion and a mutation that exposes a name without the marker."
+    }
+  ],
+  "extra": [],
+  "misunderstood": [],
+  "original_audit_evidence": {
+    "failed_run": 37703766572,
+    "checkout_sha": "c93eca2aedddfbbd18c9fdd4ffb8a8fdbbc78694",
+    "artifact_id": 11516342905,
+    "receipt": ".research/audit-breadth-native-evidence/curated/audit-key-native-receipt.json",
+    "receipt_observation": "details_failure / audit_compare_storage_after_retry_failed; recovered card shows a key ID, zero receipts, detailsUnavailable=false, fault=null; cases=[]; neither pre nor post retry storage snapshot is in receipt",
+    "resource_journal": ".research/audit-breadth-native-evidence/run37703766572/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37703766572-1.jsonl",
+    "resource_verdict": "RESOURCE_ADMITTED; RESOURCE_WATCH_HEALTHY; childExitCode=1; resourceInvalid=false; decision=child_failed",
+    "same_artifact_comparator": "Run 37699585477 receipt records T86 pass on artifact 11516342905 before the later runner dereferenced a deleted fault state. This supports a runner regression, while the failed receipt alone cannot prove its storage comparison succeeded."
+  },
+  "execution_limits": {
+    "local_focused_tests": "not run; resource preflight refused DISK_LOW before child launch",
+    "local_native": "not run; out of review scope",
+    "automatic_ci": {
+      "run_id": 37705126917,
+      "head_sha": "4443f8d9b88ba3a204fadefe30fb87d9d0aebe4f",
+      "routing": ".github/workflows/ci.yml Guest transport observer regression runs audit-key-native-faults.test.mjs and settings-panel-driver.guest.test.mjs after pnpm test",
+      "focused_step_result": "pending at initial inspection"
+    }
+  },
+  "open_items": [
+    "Repair T92 guest-name oracle and prove it rejects name-only exposure, then rerun guarded focused checks.",
+    "Observe automatic CI focused step at its exact checkout SHA; source checks do not substitute for native cases.",
+    "Run receipt-bound native guest Settings and original-boundary audit retries when resource admission and coordinator ownership permit; keep inventory statuses unverified until then."
+  ]
+}

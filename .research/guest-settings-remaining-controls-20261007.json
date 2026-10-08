@@ -1,0 +1,32 @@
+{
+  "task_id": "guest-settings-remaining-controls-20261007",
+  "lane": "guest-settings-native-source",
+  "status": "source_pending_guarded_self_verification",
+  "case_ids": [
+    "EXT-F-1003-T73",
+    "EXT-F-1003-T76",
+    "EXT-F-1003-T92"
+  ],
+  "mode": "guest",
+  "scope": "Native signed-out Settings panel; T92 covers only guest negative access, not member/admin destination or restoration behavior.",
+  "driver": "tests/browser/settings-local-controls-acceptance.mjs",
+  "source_guard": "tests/browser/settings-panel-driver.guest.test.mjs",
+  "native_verdict": "unverified",
+  "source_verification": {
+    "initial_node_test": "2 passed before resource guard notice; supporting only, not acceptance credit",
+    "post_edit_guarded_test": "pending resource admission",
+    "browser_execution": "not run in this lane"
+  },
+  "criteria": {
+    "T73": "Account email unavailable, Name and role absent, Sign in footer, signed-out storage proof, warm and full extension reload",
+    "T76": "Archive filter and active organization choice absent; no organization membership/read request during observed section interaction; warm and full extension reload",
+    "T92": "Organization section contains only the signed-out prompt row, with no extra membership text, archived marker or restoration action; warm and full extension reload; member/admin portions remain unverified"
+  },
+  "peer_repair": "A source peer found that a bare archived organization name without an archive marker could pass. The observation now rejects all extra Organization-section text and a causal DOM test inserts an unlabelled membership name. Fresh independent re-review remains pending.",
+  "diagnostics": "Only fixed stage names, bounded booleans/counts and request category counts leave the panel; no account, organization, URL or token values are recorded.",
+  "open_items": [
+    "Guard-admitted source test after disk recovery",
+    "Fresh independent source review before native dispatch",
+    "Receipt-bound native guest execution and inventory verdict by coordinator"
+  ]
+}

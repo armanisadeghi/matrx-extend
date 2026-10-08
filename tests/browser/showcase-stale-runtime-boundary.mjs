@@ -5,6 +5,19 @@ const DETECTED = 'data:list-picker-item-detected';
 const RESULT = 'data:list-picker-result';
 export const STALE_PICKER_KINDS = { exit: EXIT, detected: DETECTED, result: RESULT };
 
+export function summarizeShowcaseDetectionWindow(relays, producer, start, sessionId) {
+  const detected = relays.slice(start).filter((event) => event.kind === DETECTED);
+  return {
+    detected_count: detected.length,
+    current_session_detected_count: detected.filter((event) => event.session_id === sessionId)
+      .length,
+    other_session_detected_count: detected.filter((event) => event.session_id !== sessionId).length,
+    producer_current_detected_count: producer.observed.filter(
+      (event) => event.kind === DETECTED && event.session_id === sessionId,
+    ).length,
+  };
+}
+
 export function assertFreshShowcasePickerContext(observation) {
   assert.deepEqual(
     observation,

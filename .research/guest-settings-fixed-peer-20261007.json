@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "fresh independent source re-review; no source authorship or native execution",
+  "reviewed_commits": {
+    "guest_settings": "a136d6d2e5d5e5ebefded4dd09ab98f0877034fd",
+    "oracle_repair": "38bbe55683a8925991c76dc173054b4d4b835266"
+  },
+  "finding_reverify": {
+    "original_finding": "Bare archived organization name could satisfy T92 guest no-membership-details predicate",
+    "verdict": "ADDRESSED",
+    "evidence": "settings-panel-driver.mjs now compares normalized text of the full Organization content against its sole Organization row, requires exactly one recognized row with two children, and gates both T76 and T92 on that condition. settings-panel-driver.guest.test.mjs inserts an unlabelled organization name without archive marker or restoration action; the observation returns organizationOnlyGuestRow=false and both checks fail."
+  },
+  "verdict_A": {
+    "T73": "SOURCE_READY_NATIVE_UNVERIFIED: signed-out storage and active-panel checks, absent Name/Role, unavailable Email, Sign in footer, and warm/full extension reload are covered by source assertions.",
+    "T76": "SOURCE_READY_NATIVE_UNVERIFIED: signed-out Organization row only, absent archive filter and acting-as control, zero observed organization reads, and warm/full extension reload are covered. Extra section text fails the predicate.",
+    "T92": "SOURCE_READY_NATIVE_UNVERIFIED for guest negative access: section-wide extra text, archived marker, and restoration action are rejected in warm/full extension reload. Member/admin destination, no-write, and restoration behavior remain outside this guest package and unverified."
+  },
+  "verdict_B": {
+    "result": "SOURCE_READY_EXECUTION_PENDING",
+    "evidence": "Repair is confined to observation, causal DOM regression, and scope inventory. The predicate matches SettingsView.tsx's settled guest Organization branch (one Row, Sign in to choose). No new source break found in this scoped diff. Source tests were not run locally because DISK_LOW refused admission."
+  },
+  "findings": [],
+  "execution_limits": {
+    "local_tests": "not run; DISK_LOW resource refusal",
+    "browser_auth_build_deploy": "not run; outside review lane",
+    "automatic_ci": {
+      "run_id": 37705309749,
+      "head_sha": "38bbe55683a8925991c76dc173054b4d4b835266",
+      "status_at_review": "pending; no jobs reported",
+      "focused_source_step": "pending"
+    }
+  },
+  "open_items": [
+    "Observe CI focused source step at the exact repair SHA before counting execution credit.",
+    "Run receipt-bound native guest Settings checks after resource admission; source readiness is not product acceptance.",
+    "Complete T92 member/admin destination, no-write, and restoration behavior in its separate acceptance lane."
+  ]
+}

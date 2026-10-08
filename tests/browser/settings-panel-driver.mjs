@@ -57,6 +57,107 @@ export async function openSection(panel, label) {
   );
 }
 
+// Only fixed booleans/counts leave the native page; account names, email,
+// organization names, links and storage values never enter a test receipt.
+export async function guestSettingsState(panel) {
+  return evaluate(
+    panel,
+    `(async () => {
+    const stored = await chrome.storage.local.get([
+      'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.org.active',
+    ]);
+    const tabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
+      .filter((tab) => tab.title === 'Settings');
+    const id = tabs.length === 1 ? tabs[0].getAttribute('aria-controls') : null;
+    const root = id ? document.getElementById(id) : null;
+    const active = root?.matches('[role="tabpanel"][data-state="active"]') === true;
+    const section = (label) => {
+      const buttons = [...(root?.querySelectorAll('button[aria-expanded]') ?? [])]
+        .filter((button) => button.textContent.trim() === label);
+      const content = buttons.length === 1
+        ? document.getElementById(buttons[0].getAttribute('aria-controls') ?? '') : null;
+      return { count: buttons.length, open: buttons[0]?.getAttribute('aria-expanded') === 'true', content };
+    };
+    const account = section('Account'), organization = section('Organization');
+    const rows = (content) => [...(content?.querySelectorAll('div.flex.items-center.justify-between') ?? [])];
+    const row = (content, label) => rows(content).filter((item) =>
+      item.firstElementChild?.textContent?.trim() === label);
+    const email = row(account.content, 'Email');
+    const org = row(organization.content, 'Organization');
+    const allOrgText = organization.content?.textContent ?? '';
+    const compactText = (value) => value.replace(/\\s+/g, ' ').trim();
+    const organizationOnlyGuestRow = org.length === 1 && org[0].children.length === 2 &&
+      rows(organization.content).length === 1 &&
+      compactText(allOrgText) === compactText(org[0].textContent ?? '');
+    return {
+      active,
+      accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
+      profilePresent: Boolean(stored['matrx.user.profile']?.id),
+      organizationChoicePresent: Boolean(stored['matrx.org.active']?.id),
+      accountSectionCount: account.count, accountOpen: account.open,
+      emailRowCount: email.length, emailUnavailable: email.length === 1 &&
+        email[0].lastElementChild?.textContent?.trim() === '—',
+      nameRowCount: row(account.content, 'Name').length,
+      roleRowCount: row(account.content, 'Role').length,
+      footerSignInCount: [...(root?.querySelectorAll('button') ?? [])]
+        .filter((button) => button.textContent.trim() === 'Sign in').length,
+      footerSignOutCount: [...(root?.querySelectorAll('button') ?? [])]
+        .filter((button) => button.textContent.trim() === 'Sign out').length,
+      organizationSectionCount: organization.count, organizationOpen: organization.open,
+      signInToChooseCount: org.filter((item) =>
+        item.lastElementChild?.textContent?.trim() === 'Sign in to choose').length,
+      organizationOnlyGuestRow,
+      archiveFilterCount: organization.content?.querySelectorAll('[aria-label="Filter organizations by archive status"]').length ?? 0,
+      actingAsRowCount: row(organization.content, 'Acting as').length,
+      archivedMarkerCount: [...(organization.content?.querySelectorAll('span') ?? [])]
+        .filter((span) => span.textContent.trim() === 'Archived · view only').length,
+      restorationActionCount: [...(organization.content?.querySelectorAll('a,button') ?? [])]
+        .filter((node) => node.textContent.includes('Open Organizations to restore an archived organization')).length,
+      archivedCopyPresent: allOrgText.includes('Archived · view only'),
+    };
+  })()`,
+  );
+}
+
+export function guestSettingsChecks(state, organizationRequests) {
+  const signedOut =
+    state?.active === true &&
+    state.accessTokenPresent === false &&
+    state.profilePresent === false &&
+    state.organizationChoicePresent === false &&
+    state.accountSectionCount === 1 &&
+    state.emailRowCount === 1 &&
+    state.emailUnavailable === true &&
+    state.footerSignInCount === 1 &&
+    state.footerSignOutCount === 0;
+  return {
+    signedOut,
+    account:
+      signedOut &&
+      state.accountOpen === true &&
+      state.nameRowCount === 0 &&
+      state.roleRowCount === 0,
+    organization:
+      signedOut &&
+      state.organizationSectionCount === 1 &&
+      state.organizationOpen === true &&
+      state.signInToChooseCount === 1 &&
+      state.organizationOnlyGuestRow === true &&
+      state.archiveFilterCount === 0 &&
+      state.actingAsRowCount === 0 &&
+      organizationRequests === 0,
+    archivedManagement:
+      signedOut &&
+      state.organizationSectionCount === 1 &&
+      state.organizationOpen === true &&
+      state.signInToChooseCount === 1 &&
+      state.organizationOnlyGuestRow === true &&
+      state.archivedMarkerCount === 0 &&
+      state.restorationActionCount === 0 &&
+      state.archivedCopyPresent === false,
+  };
+}
+
 // Transport only this allowlisted summary into sensitive acceptance receipts.
 // Never derive a category from raw browser/transport exception messages.
 function pointerFailure(code, location) {

@@ -7,6 +7,7 @@ import {
   awaitAuditNewDocument,
   classifyAuditNativeFailure,
   reloadAuditPrelude,
+  retryAuditDetailsReadOnly,
 } from './audit-key-native-faults.mjs';
 
 const ACTIVE = 'matrx.audit.deviceKey';
@@ -61,6 +62,51 @@ test('refused history write leaves active and history unchanged; unrelated write
   b.window.__auditNativeFault.restore();
   assert.equal(b.area.set, b.original.set);
   assert.equal(b.area.get, b.original.get);
+});
+
+test('details retry keeps write instrumentation until read-only verdict', async () => {
+  const oldOrder = browser('read-once');
+  await assert.rejects(oldOrder.area.get(ACTIVE), /controlled read refusal/);
+  oldOrder.window.__auditNativeFault.restore();
+  const removedFault = oldOrder.window.__auditNativeFault?.state() ?? null;
+  assert.equal(removedFault, null);
+  assert.throws(() => removedFault.activeWrites, TypeError);
+
+  for (const writesOnRetry of [false, true]) {
+    const b = browser('read-once');
+    await assert.rejects(b.area.get(ACTIVE), /controlled read refusal/);
+    const before = { activeId: b.saved.get(ACTIVE).publicKeyId, historyIds: ['old'] };
+    const operations = {
+      panel: b,
+      evaluate: async (_panel, source) => runInNewContext(source, { window: b.window }),
+      click: async (_panel, kind, label) => {
+        assert.equal(kind, 'button-text');
+        assert.equal(label, 'Retry audit details');
+        await b.area.get(ACTIVE);
+        if (writesOnRetry) await b.area.set({ [ACTIVE]: { publicKeyId: 'new' } });
+      },
+      expectCard: async (_panel, label, accepts) => {
+        assert.equal(label, 'audit_load_recovered');
+        const card = { keyId: before.activeId, detailsUnavailable: false };
+        assert.equal(accepts(card), true);
+        return card;
+      },
+      snapshot: async () => ({ activeId: before.activeId, historyIds: ['old'] }),
+      fault: async () => b.window.__auditNativeFault?.state() ?? null,
+      before,
+    };
+    if (writesOnRetry) {
+      await assert.rejects(
+        retryAuditDetailsReadOnly(operations),
+        /audit_T86_active_write_on_retry/,
+      );
+    } else {
+      assert.equal((await retryAuditDetailsReadOnly(operations)).keyId, 'old');
+    }
+    assert.equal(b.window.__auditNativeFault, undefined);
+    assert.equal(b.area.get, b.original.get);
+    assert.equal(b.area.set, b.original.set);
+  }
 });
 
 test('uncertain active write persists then rejects; readback rejects once', async () => {

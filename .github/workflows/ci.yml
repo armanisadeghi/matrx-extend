@@ -70,6 +70,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Focused Settings acceptance guards
+        run: |
+          node --test tests/browser/audit-key-native-faults.test.mjs
+          node --test tests/browser/settings-panel-driver.guest.test.mjs
+
       - name: Typecheck
         run: pnpm compile
 

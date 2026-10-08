@@ -12,6 +12,7 @@ import {
   awaitAuditNewDocument,
   classifyAuditNativeFailure,
   reloadAuditPrelude,
+  retryAuditDetailsReadOnly,
 } from './audit-key-native-faults.mjs';
 import {
   assertSignedReadResponse,
@@ -307,19 +308,19 @@ try {
         detailStep = 'read_storage_after_failure';
         beforeLoadRetry = await snapshot(panel);
         assert.equal((await fault(panel)).activeWrites, 0);
-        detailStep = 'restore_read_fault';
-        await restore(panel);
         detailStep = 'click_details_retry';
-        await click(panel, 'button-text', 'Retry audit details');
-        detailStep = 'card_recovered';
-        const recovered = await expectCard(
+        const recovered = await retryAuditDetailsReadOnly({
           panel,
-          'audit_load_recovered',
-          (value) => value?.keyId === beforeLoadRetry.activeId && !value.detailsUnavailable,
-        );
-        detailStep = 'compare_storage_after_retry';
-        assert.deepEqual(await snapshot(panel), beforeLoadRetry);
-        assert.equal((await fault(panel)).activeWrites, 0, 'audit_T86_active_write_on_retry');
+          evaluate,
+          click,
+          expectCard,
+          snapshot,
+          fault,
+          before: beforeLoadRetry,
+          onStep: (value) => {
+            detailStep = value;
+          },
+        });
         pass('T86 details read failure and read-only retry', failedLoad, recovered, {
           activeWrites: 0,
         });

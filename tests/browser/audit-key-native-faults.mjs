@@ -1,3 +1,5 @@
+import assert from 'node:assert/strict';
+
 // Faults at browser API boundaries in the disposable Chrome profile only.
 // The product module, WebCrypto, Web Locks, and persisted storage remain real.
 export function auditFaultSource(mode) {
@@ -106,6 +108,38 @@ export function auditFaultSource(mode) {
     };
     return true;
   })()`;
+}
+
+// Keep the wrapper in place after removing its refusal: the retry must still
+// count writes. Restore browser APIs only after the read-only check completes.
+export async function retryAuditDetailsReadOnly({
+  panel,
+  evaluate,
+  click,
+  expectCard,
+  snapshot,
+  fault,
+  before,
+  onStep = () => {},
+}) {
+  await evaluate(panel, '(() => { window.__auditNativeFault.disarm(); return true; })()');
+  try {
+    onStep('click_details_retry');
+    await click(panel, 'button-text', 'Retry audit details');
+    onStep('card_recovered');
+    const recovered = await expectCard(
+      panel,
+      'audit_load_recovered',
+      (value) => value?.keyId === before.activeId && !value.detailsUnavailable,
+    );
+    onStep('compare_storage_after_retry');
+    assert.deepEqual(await snapshot(panel), before, 'audit_T86_storage_changed_on_retry');
+    const afterFault = await fault(panel);
+    if (afterFault?.activeWrites !== 0) throw new Error('audit_T86_active_write_on_retry');
+    return recovered;
+  } finally {
+    await evaluate(panel, '(() => { window.__auditNativeFault?.restore(); return true; })()');
+  }
 }
 
 // Keep native acceptance receipts useful without forwarding CDP exception

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-07T23:46:08.856193+00:00",
+  "updated_at": "2026-10-07T23:57:35.408357+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5581,7 +5581,8 @@
               "detail": "Admin identity and key-read/error recovery exercised; no assertions for creation time, receipt count, recent rows, filters, or a normal warm/reload display comparison.",
               "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
-          }
+          },
+          "linked_defects": ["EXT-D-0159"]
         },
         {
           "id": "EXT-F-1003-T28",
@@ -7147,7 +7148,8 @@
               "detail": "Confirmed rotation paths exercised; cancel confirmation and unchanged-key assertion before confirmation were not exercised.",
               "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
-          }
+          },
+          "linked_defects": ["EXT-D-0159"]
         },
         {
           "id": "EXT-F-1003-T62",
@@ -7179,7 +7181,8 @@
               "detail": "No receipt-origin filter selection, per-filter row/count assertion, or empty-origin assertion.",
               "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
-          }
+          },
+          "linked_defects": ["EXT-D-0159"]
         },
         {
           "id": "EXT-F-1003-T63",
@@ -7840,7 +7843,7 @@
               "release_scope": "Exact frozen development artifact and listed native UI/crypto assertions only; no Store or whole Settings health."
             }
           },
-          "linked_defects": ["EXT-D-0093"],
+          "linked_defects": ["EXT-D-0093", "EXT-D-0159"],
           "result_history": [
             {
               "mode": "admin",
@@ -8242,7 +8245,8 @@
             "EXT-D-0084",
             "EXT-D-0086",
             "EXT-D-0087",
-            "EXT-D-0093"
+            "EXT-D-0093",
+            "EXT-D-0159"
           ],
           "run_ids": [
             "admin-org-001",

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "67e7986ae8161dda6c72ba3c0faee1dbb20a930c",
+  "reviewed_report": ".research/picker-fresh-start-diagnosis-20261007.json",
+  "native_receipt": ".research/picker-tracker-fixed-native-evidence/run37704706106/showcase-picker-native-37704706106-1.json",
+  "lane_A_source_readiness_native_pending": {
+    "verdict": "source_ready_native_unverified",
+    "evidence": [
+      "Run 37704706106 recorded context_start_world_matched, context_start_world_start_distinct, and context_start_world_teardown_distinct as true; its last_safe also recorded three rows before failure at lifecycle_B_detection.",
+      "The source performs Done, result wait, extraction, and three-row wait before the final detection-count read and exactly-one assertion. The prior receipt does not distinguish a failed read from a failed assertion and contains no detection count.",
+      "Done unmounts the picker, removes capture listeners, and deletes the owned teardown hook, explaining the post-Done zero listeners and teardown_distinct=false without contradicting the earlier fresh-start observation.",
+      "The new distinct lifecycle_B_detection_count stage and bounded counts are prepared for a native rerun on the frozen artifact. This review did not run native acceptance. D158 and D42 remain open."
+    ]
+  },
+  "lane_B_diagnostic_quality": {
+    "verdict": "accept_source_change_with_ci_pending",
+    "evidence": [
+      "The producer interception records kind and session_id; the relay window begins at the same before index used by the existing exactly-one check. The new helper counts current-session relay detections, other-session relay detections, and current-session producer detections without changing picker behavior or the assertion.",
+      "The diagnostic whitelist admits only fixed target labels and safe integer counts from 0 through 10000. No raw event, session ID, page content, selector, or error string is copied into last_safe by the new path.",
+      "The focused unit test exercises mixed prior/current relays, a result event, a nonzero window offset, and one producer event. It is meaningful for count partitioning, while native delivery and exact-count causality remain unverified.",
+      "GitHub CI run 37705690477 for the reviewed commit was in progress at review time; no focused-test pass is claimed. No local tests were run because of DISK_LOW."
+    ],
+    "limitations": [
+      "The counters are sampled when a diagnostic step starts or fails, so a complete sample is conditional on both observer reads succeeding; absent counters should be treated as unmeasured.",
+      "A current-session producer count above one would localize repeated sends but would not alone prove why they occurred."
+    ]
+  },
+  "overall_verdict": "diagnostic_ready_for_resource_admitted_native_rerun_no_product_cause_or_closure_claim"
+}

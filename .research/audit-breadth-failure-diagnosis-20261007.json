@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0159",
+  "status": "source_ready_unverified",
+  "scope": "Audit-key native acceptance runner and fault helper only; no product, inventory, native job, credential, build, or release changes.",
+  "original_failure": {
+    "run_id": 37703766572,
+    "checkout_sha": "c93eca2aedddfbbd18c9fdd4ffb8a8fdbbc78694",
+    "artifact_source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "artifact_id": 11516342905,
+    "failure_stage": "details_failure",
+    "failure_code": "audit_compare_storage_after_retry_failed",
+    "last_safe_observation": "The Audit card recovered with a visible key ID, zero receipts and no details error. The fault object was null. No inventory case result was recorded."
+  },
+  "passing_comparator": {
+    "run_id": 37699585477,
+    "checkout_sha": "94d1eeae44c6830acf7ae9f1911e572dd58ee413",
+    "same_artifact": true,
+    "T86_result": "pass_with_limit",
+    "runner_difference": "The passing checkout compared storage after retry and then recorded T86. The failing checkout also dereferenced (await fault(panel)).activeWrites after restore(panel)."
+  },
+  "causal_boundary": {
+    "confirmed_source_error": "restore(panel) invokes window.__auditNativeFault.restore(), which deletes window.__auditNativeFault; fault(panel) then evaluates window.__auditNativeFault?.state() ?? null. The new activeWrites dereference therefore throws after a successful storage comparison.",
+    "why_product_is_not_implicated": "The runner-only assertion added after the prior native pass against the same frozen product artifact is sufficient to force failure at this step whenever reached. The failed receipt's fault=null and recovered card are consistent with that bug. The receipt did not capture the two storage snapshots, so it cannot establish whether their equality assertion also failed first; no product verdict follows.",
+    "other_hypotheses": [
+      "Product key changed on retry: would make the recovered-card predicate or storage equality fail before the fault dereference; key ID remained visible and matching but receipt omits direct snapshot values.",
+      "Fault prelude missing after reload: would prevent controlled read failure or card recovery; both were observed before terminal.",
+      "Resource stop: resource journal shows admitted=true, resourceInvalid=false, child_failed rather than guard interruption."
+    ]
+  },
+  "source_repair": "Disarm the one-shot read refusal while keeping storage wrappers installed through retry, compare the storage snapshot and observed active-key writes, then restore wrappers in finally.",
+  "test_plan": "Focused browser fault-helper test first executes the old restore-before-retry order and observes the null-counter TypeError. It then drives a real injected read failure through two repaired retry outcomes: zero writes succeeds and an active-key write is rejected. A helper-order mutation must fail this test. Surrounding fault-helper tests must pass.",
+  "verification": {
+    "attempted_command": "node scripts/stabilization-resource.mjs run --run-id audit-failure-local-20261007 --profile-dir /Volumes/Samsung2TB/code/matrx-extend -- node --test tests/browser/audit-key-native-faults.test.mjs",
+    "resource_result": "RESOURCE_PREFLIGHT_REFUSED: RESOURCE_DISK_LOW; admitted=false; child test command did not run",
+    "sample": {
+      "safety_free_gib": 19.901668548583984,
+      "required_free_gib": 20,
+      "available_memory_gib": 11.04
+    },
+    "grooming": "Approved disk-groom daily dry-run and --apply found no eligible stale worktree/cache and freed 0 B. Session-owned audit evidence is on the external repository volume and would not free the system safety volume.",
+    "red_green_mutation": "not_run_resource_refused",
+    "native_retest": "not_run_out_of_scope"
+  },
+  "remaining": [
+    "Run focused and mutation tests after genuine resource admission; source repair is not verified yet.",
+    "Independent source review and native original-boundary retest are pending.",
+    "T27/T61/T62 remain unverified; T86 zero writes cannot prove rotateDeviceKey was never invoked."
+  ]
+}

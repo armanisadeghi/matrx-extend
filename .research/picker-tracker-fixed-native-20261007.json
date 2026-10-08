@@ -1,0 +1,221 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-tracker-fixed-native-20261007",
+  "defect_id": "EXT-D-0158",
+  "related_defect_id": "EXT-D-0042",
+  "status": "native_retest_failed",
+  "scope": "One guarded hosted showcase-stale-admin native retest after source tracker repair eb9ee865. No source/product edits, build, release, retry, nonadmin test, or D42 closure.",
+  "source_repair": {
+    "commit": "eb9ee865",
+    "changed_files": [
+      "tests/browser/showcase-stale-runtime-boundary.mjs",
+      "tests/browser/showcase-stale-runtime-boundary.test.mjs"
+    ],
+    "product_code_changed": false
+  },
+  "execution": {
+    "workflow": "hosted-guest-acceptance.yml",
+    "workflow_run_id": 37704706106,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37704706106",
+    "run_attempt": 1,
+    "workflow_checkout_sha": "15afd852706b2a0d12fde1716baf0046975738ad",
+    "acceptance_case": "showcase-stale-admin",
+    "lane": "A",
+    "runner": "macos-15",
+    "runner_architecture": "ARM64",
+    "started_at": "2026-10-07T23:52:34Z",
+    "terminal_at": "2026-10-07T23:59:19Z",
+    "conclusion": "failure",
+    "native_step_conclusion": "failure"
+  },
+  "frozen_product": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "artifact_name": "matrx-extend-development-test-52487361b1b6a8663b958dbb2196cbcc9b1af31c-37698216289-1",
+    "artifact_digest": "sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee",
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "artifact_not_expired_at_dispatch": true,
+    "artifact_mode": "CI development test; not a Store artifact"
+  },
+  "resource_verdict": {
+    "package": {
+      "journal": ".research/picker-tracker-fixed-native-evidence/run37704706106/hosted-package-37704706106-1.jsonl",
+      "sha256": "23ab117b16a8d43857246c4fc65b2346edb3a76620ec308b00864dc7d003f80f",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "journal": ".research/picker-tracker-fixed-native-evidence/run37704706106/hosted-browser-37704706106-1.jsonl",
+      "sha256": "8fbad1be101d28e0d1d5cff19c52369a1301fe47af66f1b231977b83e12db8a7",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "native": {
+      "journal": ".research/picker-tracker-fixed-native-evidence/run37704706106/hosted-guest-37704706106-1.jsonl",
+      "sha256": "b752350756b8b0bfb88234378a1196f89d313f938acb54aa3d86981a926700fe",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "interpretation": "All three current-run journals are terminal and resource-valid. Native runner failed a product assertion; this is not resource invalidation."
+  },
+  "native_result": {
+    "receipt": ".research/picker-tracker-fixed-native-evidence/run37704706106/showcase-picker-native-37704706106-1.json",
+    "receipt_sha256": "27d1d4d1cc095ebf08d48e609f35a15bf4098e992f1266dd876aa4945a58cbac",
+    "status": "unverified",
+    "stage": "select_B_result",
+    "failure_code": "select_B_result_failed",
+    "failed_target": "lifecycle_B_detection",
+    "channel": "reinject",
+    "last_safe": {
+      "panel_start": false,
+      "panel_picking": false,
+      "panel_three_rows": true,
+      "overlay_count": 0,
+      "relay_count": 36,
+      "context_start_distinct": true,
+      "context_teardown_distinct": false,
+      "install_count": 2,
+      "listener_click_count": 0,
+      "listener_hover_count": 0,
+      "context_start_world_matched": true,
+      "context_start_world_start_distinct": true,
+      "context_start_world_teardown_distinct": true
+    },
+    "passed_cases": [
+      {
+        "id": "guest_nonchat_control_and_showcase_gate",
+        "evidence": {
+          "scrape_visible": true,
+          "showcase_absent": true
+        }
+      },
+      {
+        "id": "real_admin_signin_and_device_organization",
+        "evidence": {
+          "rendered": true
+        }
+      },
+      {
+        "id": "genuine_A_exit_relay_rejected_while_B_active",
+        "evidence": {
+          "old_session_id": "7857c2e8-13f1-4d6f-b09c-d02fb096537c",
+          "relay_tab_id": 1123651016,
+          "relay_document_id": "2C0412451A2C25383600BCEA8EA7F359",
+          "B_picking": true
+        }
+      },
+      {
+        "id": "same_page_cancel_A_start_B",
+        "evidence": {
+          "page_unchanged": true,
+          "one_overlay": true
+        }
+      },
+      {
+        "id": "current_B_detection_relayed",
+        "evidence": {
+          "B_session_id": "8f58d74f-1f80-44be-ac79-bfab4dc9a5fa",
+          "different_from_A": true,
+          "same_tab_and_document_as_A": true
+        }
+      },
+      {
+        "id": "B_card_field_done_extract",
+        "evidence": {
+          "fixture_rows": 3,
+          "titles_observed": true
+        }
+      },
+      {
+        "id": "ordinary_page_click_after_cancel",
+        "evidence": {
+          "click_count": 1
+        }
+      },
+      {
+        "id": "genuine_A_detected_rejected_B_extracted",
+        "evidence": {
+          "A_session_id": "dee675c0-d305-4a6b-85b3-c2c73e39ae1e",
+          "B_session_id": "e17d4343-9de1-49af-a9ec-5f5480d730a5",
+          "same_tab_and_document": true,
+          "stale_relay_stamped": true,
+          "B_rows": 3
+        }
+      },
+      {
+        "id": "genuine_A_result_rejected_B_extracted",
+        "evidence": {
+          "A_session_id": "918b68aa-d011-43d1-bf56-095fdda354e5",
+          "B_session_id": "05240777-57d2-48e3-9418-3843ab2e5606",
+          "same_tab_and_document": true,
+          "stale_relay_stamped": true,
+          "B_rows": 3
+        }
+      },
+      {
+        "id": "genuine_delayed_A_cancel_B_extracted",
+        "evidence": {
+          "A_session_id": "d1aaaf43-fae1-45d3-9208-7b871a742226",
+          "B_session_id": "75340235-a02b-4d57-a924-9f7da27c5b03",
+          "B_rows": 3,
+          "page_unchanged": true
+        }
+      },
+      {
+        "id": "genuine_delayed_A_install_B_extracted",
+        "evidence": {
+          "B_session_id": "2d28eeec-9162-4419-9825-819feef8cdec",
+          "B_rows": 3,
+          "page_unchanged": true,
+          "obsolete_A_start_count": 0,
+          "install_count": 2
+        }
+      }
+    ],
+    "reinjection_interpretation": "The direct start-world observation saw both hook identities change and matched the observer world. The subsequent context comparison saw the start hook change but teardown_distinct=false, so the freshness assertion did not pass. At the failure snapshot the panel had no overlay and the click/hover listener counts were both zero. The required post-reinjection positive B detection/extraction and teardown/listener proof were not completed.",
+    "unverified": [
+      "post-reinjection B detection and three-row extraction",
+      "post-reinjection one-listener-per-type and teardown-to-zero proof",
+      "post-reinjection ordinary page click",
+      "signed-in nonadmin role gating"
+    ]
+  },
+  "credential_handling": {
+    "canonical_preflight": "passed",
+    "secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "temporary_secrets_staged": true,
+    "deleted_immediately_at_terminal": true,
+    "both_secret_names_absent_after_terminal": true,
+    "secret_values_recorded": false
+  },
+  "evidence_curation": {
+    "artifact_id": 11519411781,
+    "artifact_name": "hosted-guest-37704706106-1",
+    "preserved_exact_uploaded_files": [
+      ".research/picker-tracker-fixed-native-evidence/run37704706106/showcase-picker-native-37704706106-1.json",
+      ".research/picker-tracker-fixed-native-evidence/run37704706106/hosted-package-37704706106-1.jsonl",
+      ".research/picker-tracker-fixed-native-evidence/run37704706106/hosted-browser-37704706106-1.jsonl",
+      ".research/picker-tracker-fixed-native-evidence/run37704706106/hosted-guest-37704706106-1.jsonl"
+    ],
+    "preserved_byte_for_byte": true,
+    "excluded": [
+      "three stale uploaded journals for run 37105304739",
+      "generic harness screenshots"
+    ],
+    "no_product_edit": true,
+    "no_retry": true
+  },
+  "disposition": "EXT-D-0158 source repair is not independently closed by this run. EXT-D-0042 remains in-fix; no D42 closure or pass promotion.",
+  "next_action": "Report the exact inconsistent reinjection hook observation to the owner. Do not retry or alter source in this lane."
+}

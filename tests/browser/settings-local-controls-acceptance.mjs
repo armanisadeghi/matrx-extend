@@ -8,7 +8,14 @@ import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-iden
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import {
+  click,
+  evaluate,
+  guestSettingsChecks,
+  guestSettingsState,
+  openSection,
+  waitFor,
+} from './settings-panel-driver.mjs';
 
 // Runs against a receipt-verified, disposable Chrome profile and its real native panel.
 // UI actions use trusted CDP pointer/keyboard input; DOM and Chrome API reads are evidence only.
@@ -20,7 +27,7 @@ const DEV_EXTENSION_DIR = process.env.SETTINGS_DEV_EXTENSION_DIR
 const DEV_BUILD_RECEIPT = process.env.SETTINGS_DEV_BUILD_RECEIPT;
 const EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const CASE_PORT = 65001;
-const IDS = ['T22', 'T37', 'T46', 'T70'].map((id) => `EXT-F-1003-${id}`);
+const IDS = ['T22', 'T37', 'T46', 'T70', 'T73', 'T76', 'T92'].map((id) => `EXT-F-1003-${id}`);
 const report = {
   schema_version: 1,
   scope: 'real isolated Chrome-for-Testing native side panel; signed-out guest',
@@ -30,7 +37,14 @@ const report = {
     'Extension receipt and tree hash verified',
     'Guest panel settled before interaction',
   ],
-  cases: IDS.map((id) => ({ id, role: 'guest', status: 'unverified', steps: [], criteria: [] })),
+  cases: IDS.map((id) => ({
+    id,
+    role: 'guest',
+    ...(id.endsWith('T92') && { scope: 'guest-negative-access-only' }),
+    status: 'unverified',
+    steps: [],
+    criteria: [],
+  })),
 };
 const byId = (suffix) => report.cases.find((c) => c.id.endsWith(suffix));
 const criterion = (c, name, status, evidence) => c.criteria.push({ name, status, evidence });
@@ -349,6 +363,56 @@ async function about(panel) {
   );
 }
 
+async function observeGuestIdentityAndOrganization(panel) {
+  let organizationRequests = 0;
+  const off = panel.on('Network.requestWillBeSent', ({ request }) => {
+    try {
+      const path = new URL(request?.url).pathname;
+      if (
+        path === '/rest/v1/rpc/mbr_for_user' ||
+        path === '/rest/v1/organizations' ||
+        path === '/rest/v1/user_preferences'
+      )
+        organizationRequests++;
+    } catch {
+      // Unknown traffic is not copied into a receipt.
+    }
+  });
+  try {
+    await panel.send('Network.enable');
+    await openSection(panel, 'Account');
+    await openSection(panel, 'Organization');
+    await new Promise((resolveWait) => setTimeout(resolveWait, 300));
+    const state = await guestSettingsState(panel);
+    return { state, organizationRequests };
+  } finally {
+    off();
+    await panel.send('Network.disable').catch(() => {});
+  }
+}
+
+function recordGuestPhase(phase, observation) {
+  const checks = guestSettingsChecks(observation.state, observation.organizationRequests);
+  const cases = [
+    ['T73', 'account', 'Account unavailable, no Name/role, Sign in footer'],
+    ['T76', 'organization', 'archive filter absent and no organization read or choice'],
+    ['T92', 'archivedManagement', 'no archived membership or restoration action'],
+  ];
+  for (const [suffix, check, name] of cases) {
+    const c = byId(suffix);
+    c.steps.push({
+      phase,
+      action: 'Inspect native guest Settings Account and Organization',
+      observation: { ...observation.state, organizationRequests: observation.organizationRequests },
+    });
+    criterion(c, `${phase}: ${name}`, checks[check] ? 'pass' : 'fail', {
+      signedOut: checks.signedOut,
+      checkPassed: checks[check],
+      organizationRequests: observation.organizationRequests,
+    });
+  }
+}
+
 async function runCase(c, fn) {
   try {
     await fn();
@@ -405,7 +469,7 @@ try {
       expectedRelease: { version: receipt.version, treeSha256: receipt.treeSha256 },
       localDevReceiptPath: DEV_BUILD_RECEIPT,
     }),
-    exercisePanel: async ({ panel, attachWorker }) => {
+    exercisePanel: async ({ panel, attachWorker, reloadExtension }) => {
       await settings(panel);
       await runCase(byId('T22'), async () => {
         const c = byId('T22');
@@ -796,6 +860,43 @@ try {
           reloaded,
         );
       });
+      let guestStage = 'warm_observation';
+      try {
+        recordGuestPhase('warm', await observeGuestIdentityAndOrganization(panel));
+        guestStage = 'extension_reload';
+        const replacement = await reloadExtension();
+        report.guestExtensionReload = {
+          managementReloadClicked: replacement.management_reload_clicked === true,
+          oldTargetsRetired: replacement.old_targets_retired === true,
+          workerReplaced: replacement.worker_replaced === true,
+          panelReplaced: replacement.panel_replaced === true,
+        };
+        assert.ok(
+          Object.values(report.guestExtensionReload).every(Boolean),
+          'owned extension reload lifecycle incomplete',
+        );
+        guestStage = 'reload_settings';
+        await settings(replacement.panel);
+        guestStage = 'reload_observation';
+        recordGuestPhase('reload', await observeGuestIdentityAndOrganization(replacement.panel));
+      } catch {
+        report.guestStageFailed = guestStage;
+        for (const suffix of ['T73', 'T76', 'T92']) {
+          const c = byId(suffix);
+          criterion(c, `${guestStage}: native observation complete`, 'unverified', {
+            stage: guestStage,
+            lastSafeObservation: c.steps.at(-1)?.observation ?? null,
+          });
+        }
+      }
+      for (const suffix of ['T73', 'T76', 'T92']) {
+        const c = byId(suffix);
+        c.status = c.criteria.some((item) => item.status === 'fail')
+          ? 'fail'
+          : c.criteria.length === 2 && c.criteria.every((item) => item.status === 'pass')
+            ? 'pass'
+            : 'unverified';
+      }
     },
   });
   assert.equal(result.verified, true);
