@@ -4,7 +4,7 @@
 
 ## Next execution batch
 
-The immediate test bottleneck is resource-invalid browser runs with missing SEO stage evidence. One controlled headless idle-panel experiment is running to separate cold browser/panel work from the later SEO workload; it keeps frozen407/Intel/headless and removes product exercise. Diagnostic overhead differs and is disclosed. It earns zero product acceptance. Preserve the one-run limit; use the completed current-run journals and exact receipt before choosing the next step.
+The immediate test bottleneck is resource-invalid browser runs with missing SEO stage evidence. The single headless idle-panel control37793909272 completed valid after transient CPU_PENDING recovery; fresh849c90a8 verifies allcurrent journals and cleanup, with zero product acceptance. Both it and earlierSEO37791330758 were headless; corrected worker wording must not introduce a false display-mode difference. Different hosts/diagnostic overhead prevent causal equivalence. Two product attempts now follow: bounded controlled guestSEO and real authenticated Records read.
 
 After the control, choose a product case or repair from the evidence. The ordinary Records read-only driver now passes independent source review at its actual callback, but needs its first real authenticated table_list execution. A new CI development artifact414 exists (11556064167/run37790643945/sourcee7b7dc1e); it is not a Store package and does not inherit407 results. SEO source035caed8 preserves phase/target checkpoints under interruption and passes fresh721cfa3a; its native interruption proof remains pending.
 
@@ -12,11 +12,11 @@ Before launch, recheck exact relevant focused source gate, artifact, host-local 
 
 ## Current ownership
 
-Only manual native job37793909272 is active: owner idle_headless_native_control, laneA, startup-resource-diagnostic/headless, workflowd714f254, frozen407 artifact11539827040. No credentials staged. Source workers and reviewers have returned. Root owns inventory, defects, release truth and integration.
+Manual native jobs active: laneA37795653439 (records_first_native_acceptance, records-readonly-admin, artifact414/11556064167) and laneB37795616638 (seo_controlled_native_acceptance, guest-seo/controlled, artifact407/11539827040, diagnostics off). Both workflow checkoutd729dde0 on isolated Intel hosts. A owns temporary auth/approved-org secrets and must remove/verify them only after its terminal job; B uses no secrets. All source workers/reviewers returned. Root owns inventory/defects and integration.
 
 Previous diagnostic37791330758 is terminal resource-invalid. Independent raw review5b551f2a verifies eight hashes: startup bracket~5.95s, stablehost/provisioner12.72CPU-s, appeared owned4.61lifetimeCPU-s; laterunsafe interval is predominantly ownedChromium. No SEO phase survived, so no causal repair is proved. D107 stays in-fix; idlecontrol source5b551f2a passes freshd714f254 and exactfocusedCI37793634857/e6d83e7d.
 
-D183 SEO receipt source035caed8 is fixed and independently source/interrupted-seam verified721cfa3a, native-pending. D182 aggregate CI timeout source8f908184/e6d83e7d is fixed and independently reviewed721cfa3a, actual repaired integration run pending. Recorded successful precursor CI37791552019 shows allseven scenarios finished/cleaned in28.882s; each now retains its30s limit independently, with assertions/order/guard thresholds unchanged. Safe per-scenario logging repair54607f44 passed3cd07423. D181 targeted guard repair is closed; that never meant all CI or product health.
+D183 SEO receipt source035caed8 is fixed and independently source/interrupted-seam verified721cfa3a, native-pending. D182 aggregate CI timeout is closed: source8f908184/e6d83e7d plus fresh721cfa3a and actual hosted37793728272 independently adjudicated62070acf prove allseven scenarios and twoneighbor groups pass, no skips, finaldecision/childclosed/cleanupdone. Full CI on exactd714f254 also completed success; this does not establish latermain or product health. Recorded successful precursor CI37791552019 shows allseven scenarios finished/cleaned in28.882s; each now retains its30s limit independently, with assertions/order/guard thresholds unchanged. Safe per-scenario logging repair54607f44 passed3cd07423. D181 targeted guard repair is closed; that never meant all CI or product health.
 
 ## Current decision boundaries
 
@@ -29,6 +29,6 @@ D183 SEO receipt source035caed8 is fixed and independently source/interrupted-se
 
 ## Handoff discipline
 
-Verified remote checkpoint: `875f8ebb`, October8 at14:15UTC. Next synchronization deadline while active:15:15UTC. The latest ten-repository snapshot is [the workspace ledger](reports/workspace-sync-guest-incident-20261003.json); refresh remotes at every task boundary and before each push.
+Verified remote checkpoint: `301fc200`, October08 at14:56UTC. Next synchronization deadline while active:15:56UTC. The latest ten-repository snapshot is [the workspace ledger](reports/workspace-sync-guest-incident-20261003.json); refresh remotes at every task boundary and before each push.
 
 At each task boundary fetch and reconcile `origin/main`, inspect active worker/job/secret ownership, and read the linked receipt before repeating work. Commit and push only owned exact paths; preserve the concurrent workspace-sync ledger and other dirty paths. Independently verify source and live behavior at the same artifact/commit boundary. Record a deployed SHA and observed endpoint before calling a server repair live; record an installed Store build separately from an unpacked Store package. Do not infer product health from an automation schedule, source pass, procedure count, or a closed defect. Keep every unresolved cell in the canonical inventory and the next concrete action in this checkpoint.
