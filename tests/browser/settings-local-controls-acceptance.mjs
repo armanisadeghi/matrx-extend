@@ -18,12 +18,12 @@ import {
   GUEST_PRIVACY_SWITCHES,
   runGuestPrivacySwitchCase,
 } from './settings-guest-privacy-batch.mjs';
-import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
   runGuestAutoScrapeCase,
   runGuestAutoScrapeModeCase,
   runGuestSectionsCase,
 } from './settings-guest-scrape-controls.mjs';
+import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
   activeTabPanelExpression,
   click,
