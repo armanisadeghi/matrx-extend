@@ -750,6 +750,7 @@ async function reloadOwnedExtension({
       throw error;
     }
     lifetime.correlateOld(oldWorkerId);
+    lifetime.markReloadStarted();
     record('click_started');
     await reload.click(); // Chrome's own extension-management UI, using trusted input.
     record('click_resolved');
@@ -811,6 +812,7 @@ async function reloadOwnedExtension({
     if (!replacementWorker) {
       await lifetime.probe(oldWorkerId, replacementWorkerId);
       await lifetime.observeFreshReplacement(replacementWorkerId);
+      lifetime.captureReplacementErrors(replacementWorkerId);
       const error = new Error('native_extension_worker_retirement_unverified');
       error.lifecycleEvidence = {
         ...retirementEvidence,

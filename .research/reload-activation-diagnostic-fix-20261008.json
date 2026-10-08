@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only native reload failure diagnostics for the replacement worker activation boundary; no browser, build, native run, release, Records, or Settings driver change.",
+  "source": {
+    "diagnostic": "tests/browser/reload-lifetime-diagnostic.mjs",
+    "receipt_capture": "tests/browser/profile-reload-capture.mjs",
+    "failure_callsite": "tests/browser/native-sidepanel-qa-harness.mjs",
+    "focused_tests": "tests/browser/reload-lifetime-diagnostic.test.mjs"
+  },
+  "behavior": [
+    "A pre-reload ServiceWorker.workerErrorReported listener records only safe version and registration IDs internally after the reload click boundary. At worker-retirement refusal, only events matching the replacement's correlated version and registration become allowlisted worker_error_reported categories in the receipt. Raw message, URL, source text, line and stack are never copied.",
+    "The fresh independent ServiceWorker observer retains a later identity-matched update within its existing diagnostic budget after the first snapshot. A foreign version, registration or target cannot satisfy the later observation. If no later update arrives, later_observation remains null; silence is not treated as proof of continued startup state.",
+    "The original 150-attempt retirement gate, Target polling interval, worker identity requirement, failure code, and panel-open ordering are unchanged. Diagnostics run only after refusal, and their listeners and CDP sessions are removed or reported unconfirmed under the preexisting cleanup deadline."
+  ],
+  "red_proof": "The two new focused tests were run against HEAD versions of the helper and receipt capture in a temporary directory. Both failed: the old helper lacked the error-boundary method, and it could not retain a later activated observation. The temporary copy was removed by Python TemporaryDirectory.",
+  "verification": "The new focused tests passed 2/2 after the final test edit; the helper suite had passed 7/7 before that edit. A broader combined run passed 41 checks, including the reload-fresh-observer guard, then was canceled while native-sidepanel-qa-harness.test.mjs remained pending after 103 seconds during a local system-disk exhaustion incident. Syntax and JSON parse checks passed. No claim is made for the canceled file. Native verification remains pending; this is diagnostic instrumentation, not a causal product fix or Scrape acceptance.",
+  "open": "The original failure's worker startup cause remains unconfirmed. A resource-admitted native reload must supply the new categories and later-observation field before attributing the intermittent activation stall; D166's activated-but-missing-panel and D107's pre-CDP startup boundary remain separate."
+}
