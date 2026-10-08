@@ -47,7 +47,8 @@ export async function saveCapture(
     uri_match_mode: req.uri_match_mode,
     field_values: values,
   });
-  if (!result.ok) return { ok: false, message: 'Could not save the credential. Please try again or cancel.' };
+  if (!result.ok)
+    return { ok: false, message: 'Could not save the credential. Please try again or cancel.' };
   const receipt = result.data;
   if (receipt.status !== 'captured') {
     return { ok: false, message: receipt.detail ?? 'The credential could not be saved.' };
@@ -62,7 +63,10 @@ export async function saveCapture(
   return { ok: true };
 }
 
-export function dismissCapture(req: CaptureCredentialRequest, reason: CredentialCaptureDismissReason): void {
+export function dismissCapture(
+  req: CaptureCredentialRequest,
+  reason: CredentialCaptureDismissReason,
+): void {
   respondToCapture(req.callId, {
     cancelled: true,
     reason: reason === 'expired' ? 'expired' : 'user_cancelled',

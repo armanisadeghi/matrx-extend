@@ -20,33 +20,35 @@
  *   truncated, filtered or crashed scan never prints it, so its absent keys are never taken as fixed.
  * - Items are printed ONLY when the runner asks (MATRX_ITEMS=1), so a hand run stays readable.
  */
-import { createHash } from "node:crypto";
+import { createHash } from 'node:crypto';
 
-export const ITEM_PREFIX = "MATRX-ITEM ";
-export const ITEMS_ENV = "MATRX_ITEMS";
-export const ITEMS_END_PREFIX = "MATRX-ITEMS-END ";
-export const ITEM_STATUSES = new Set(["new", "known"]);
-export const ITEM_BASES = new Set(["accepted", "debt"]);
+export const ITEM_PREFIX = 'MATRX-ITEM ';
+export const ITEMS_ENV = 'MATRX_ITEMS';
+export const ITEMS_END_PREFIX = 'MATRX-ITEMS-END ';
+export const ITEM_STATUSES = new Set(['new', 'known']);
+export const ITEM_BASES = new Set(['accepted', 'debt']);
 const KEY_LIMIT = 300;
 const TITLE_LIMIT = 200;
 
 export function itemsRequested(env = process.env) {
-  return env[ITEMS_ENV] === "1";
+  return env[ITEMS_ENV] === '1';
 }
 
 /** Validate one item; returns an error sentence, or null when it is well-formed. */
 export function itemError(item) {
-  if (!item || typeof item !== "object" || Array.isArray(item)) return "not a JSON object";
-  if (typeof item.key !== "string" || !item.key.trim()) return "no key";
+  if (!item || typeof item !== 'object' || Array.isArray(item)) return 'not a JSON object';
+  if (typeof item.key !== 'string' || !item.key.trim()) return 'no key';
   if (item.key.length > KEY_LIMIT) return `key longer than ${KEY_LIMIT} characters`;
-  if (item.status !== undefined && !ITEM_STATUSES.has(item.status)) return `status "${item.status}" is not new|known`;
-  if (item.line !== undefined && item.line !== null && !Number.isInteger(item.line)) return "line is not an integer";
+  if (item.status !== undefined && !ITEM_STATUSES.has(item.status))
+    return `status "${item.status}" is not new|known`;
+  if (item.line !== undefined && item.line !== null && !Number.isInteger(item.line))
+    return 'line is not an integer';
   if (item.basis !== undefined && item.basis !== null) {
     if (!ITEM_BASES.has(item.basis)) return `basis "${item.basis}" is not accepted|debt`;
-    if (item.status !== "known") return "basis is only for a known item";
+    if (item.status !== 'known') return 'basis is only for a known item';
   }
   if (item.unit !== undefined && item.unit !== null) {
-    if (typeof item.unit !== "string" || !item.unit.trim()) return "unit is not a non-empty string";
+    if (typeof item.unit !== 'string' || !item.unit.trim()) return 'unit is not a non-empty string';
     if (item.unit.length > KEY_LIMIT) return `unit longer than ${KEY_LIMIT} characters`;
   }
   return null;
@@ -81,7 +83,11 @@ export function emitItem(item, { env = process.env, write = (s) => process.stdou
  * from a run narrowed by paths, a limit, or a changed-files filter, and never from a catch block.
  * Without it the run's items are still findings, but nothing may treat an absent key as fixed.
  */
-export function endItems({ env = process.env, write = (s) => process.stdout.write(s), count = printed } = {}) {
+export function endItems({
+  env = process.env,
+  write = (s) => process.stdout.write(s),
+  count = printed,
+} = {}) {
   if (!itemsRequested(env)) return;
   write(`${ITEMS_END_PREFIX}${JSON.stringify({ count })}\n`);
 }
@@ -101,7 +107,9 @@ export function parseItems(output) {
   const errors = [];
   const ends = [];
   let seenLines = 0;
-  for (const raw of String(output ?? "").replace(ANSI, "").split("\n")) {
+  for (const raw of String(output ?? '')
+    .replace(ANSI, '')
+    .split('\n')) {
     const line = raw.trimStart();
     if (line.startsWith(ITEMS_END_PREFIX)) {
       let end;
@@ -110,7 +118,8 @@ export function parseItems(output) {
       } catch {
         end = null;
       }
-      if (end && typeof end === "object" && Number.isInteger(end.count) && end.count >= 0) ends.push(end.count);
+      if (end && typeof end === 'object' && Number.isInteger(end.count) && end.count >= 0)
+        ends.push(end.count);
       else errors.push(`malformed end marker: ${line.slice(0, 160)}`);
       continue;
     }
@@ -128,13 +137,14 @@ export function parseItems(output) {
       errors.push(`${error}: ${line.slice(0, 160)}`);
       continue;
     }
-    const status = item.status ?? "new";
+    const status = item.status ?? 'new';
     const seen = byKey.get(item.key);
-    const basis = status === "known" ? item.basis ?? null : null;
+    const basis = status === 'known' ? (item.basis ?? null) : null;
     if (seen) {
       seen.count += 1;
-      if (status === "new") seen.status = "new";
-      if (seen.basis !== basis) seen.basis = seen.basis === null || basis === null ? (seen.basis ?? basis) : "debt";
+      if (status === 'new') seen.status = 'new';
+      if (seen.basis !== basis)
+        seen.basis = seen.basis === null || basis === null ? (seen.basis ?? basis) : 'debt';
       if (!seen.unit && item.unit) seen.unit = item.unit;
       continue;
     }
@@ -142,17 +152,17 @@ export function parseItems(output) {
       key: item.key,
       status,
       basis,
-      unit: item.unit ?? "",
-      title: item.title ?? "",
-      file: item.file ?? "",
+      unit: item.unit ?? '',
+      title: item.title ?? '',
+      file: item.file ?? '',
       line: Number.isInteger(item.line) ? item.line : null,
-      rule: item.rule ?? "",
+      rule: item.rule ?? '',
       count: 1,
     });
   }
   const items = [...byKey.values()];
   // A basis describes a KNOWN key; once any occurrence is new, the key is not covered.
-  for (const item of items) if (item.status !== "known") item.basis = null;
+  for (const item of items) if (item.status !== 'known') item.basis = null;
   return { items, errors, complete: ends.length === 1 && ends[0] === seenLines };
 }
 
@@ -163,5 +173,5 @@ export function itemUnit(check, item) {
 
 /** An item's identity across runs: independent of counts, ordering, titles and line drift. */
 export function itemFingerprint(check, key) {
-  return createHash("sha1").update(`${check}\nitem:${key}`).digest("hex");
+  return createHash('sha1').update(`${check}\nitem:${key}`).digest('hex');
 }

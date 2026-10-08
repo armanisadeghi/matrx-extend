@@ -4,8 +4,6 @@ import { RenderBlockView } from '@/components/kinds/RenderBlockView';
 import { Markdown } from '@/components/markdown';
 import { AgentApprovalCard } from '@/features/chat/AgentApprovalCard';
 import { AgentAskUserCard } from '@/features/chat/AgentAskUserCard';
-import { CredentialCaptureCard } from '@ai-matrx/chat/agents/ui-first-tools/ui/CredentialCaptureCard';
-import { captureSpec, dismissCapture, saveCapture } from '@/lib/credentials/capture-card-host';
 import { AgentVariablesPanel } from '@/features/chat/AgentVariablesPanel';
 import { ContextRulesComposerChip } from '@/features/chat/ContextRulesComposerChip';
 import { CopyConversationButton } from '@/features/chat/CopyConversationButton';
@@ -34,6 +32,7 @@ import { chatTargetForViewer, shouldDiscardChatOnIdentityChange } from '@/lib/ch
 import { isOptimisticNewConversation } from '@/lib/chat/history';
 import { wrapForAgent } from '@/lib/clipboard/copy';
 import { warmContentIr } from '@/lib/content-ir/route-env';
+import { captureSpec, dismissCapture, saveCapture } from '@/lib/credentials/capture-card-host';
 import { log } from '@/lib/debug/log';
 import { newId } from '@/lib/id';
 import { DEFAULT_CHAT_MANDATE_KEY, mandateKeyFromAgentRef } from '@/lib/mandates';
@@ -56,6 +55,7 @@ import { useTurnInboxStore } from '@/state/turn-inbox';
 import { useVoicePrefsStore } from '@/state/voice-prefs';
 import { AgentListDropdown } from '@ai-matrx/agents/catalog/react';
 import { useAgentCatalog } from '@ai-matrx/agents/catalog/react';
+import { CredentialCaptureCard } from '@ai-matrx/chat/agents/ui-first-tools/ui/CredentialCaptureCard';
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
