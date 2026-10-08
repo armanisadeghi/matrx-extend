@@ -1,0 +1,52 @@
+{
+  "task_id": "share-recovery-profile-native-acceptance",
+  "status": "DONE",
+  "zero_authorship": true,
+  "scope": "Exact previously retained test grant canonical owner-authenticated service cleanup",
+  "source_repair_reviewed": "4b65b2c9f162dd122db6d881b4b95f8fa47eede5",
+  "verdict_a": {
+    "exact_owned_grant_cleanup": "pass",
+    "native_manager_ui_acceptance": "unverified",
+    "proof": {
+      "realActorVerified": true,
+      "exactOwnerGatedFileGrantVerified": true,
+      "canonicalExactRevoke": true,
+      "lookup": {
+        "httpStatus": 200,
+        "errorCode": null,
+        "bodyShape": "array",
+        "returnedRowCount": 2,
+        "exactGrantCount": 1
+      },
+      "inactiveAfterRealRead": true
+    }
+  },
+  "verdict_b": {
+    "source_quality": "pass",
+    "reason": "Explicit public schema profile matches canonical SDK RPC routing. Real sign-in, exact actor/file/grant/created-at ownership checks, exact revoke and live inactive reread remain required."
+  },
+  "artifact": {
+    "sourceSha": "11564fe786ca47bade2c33718710504ed145eb66",
+    "runId": 37731510284,
+    "artifactId": 11530615740,
+    "version": "0.2.397",
+    "treeSha256": "e27ae7d17f776970c61f6de1ae2596c5181d4df5024ca96210d94f1f07ab3ae3",
+    "githubArtifactDigest": "sha256:0df8088aca6bafc5b38644659538b4694cbc96eaf4b72b1211e0b145816ca5a3",
+    "kind": "ci_development_test",
+    "publish_state": "not_published",
+    "eligibleStore": false
+  },
+  "verification": {
+    "run_id": "share-recovery-profile-native-20261007",
+    "resource_verdict": "valid",
+    "exit_code": 0,
+    "native_report": "test-results/screenshot-full-page-74bb507f-3c3f-4f4f-b625-1c90711c8c36.json",
+    "private_receipt_inactive_proof": true
+  },
+  "owned_jobs": [],
+  "limitations": [
+    "This is API cleanup through a real authenticated native extension, not a screenshot-manager UI verdict.",
+    "Development artifact is not published or Store eligible."
+  ],
+  "next_action": "Root continues requested screenshot UI acceptance and remaining approval/Pilot gates."
+}
