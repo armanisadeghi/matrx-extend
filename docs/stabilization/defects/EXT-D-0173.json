@@ -23,7 +23,9 @@
   "actual": "Both D47 callers pass only the name, so the strict shared checkpoint aborts before product verification. Native37767661089 records AssertionError at organization stage.",
   "evidence": [
     ".research/t57-preflight-repaired-native-20261008.json",
-    ".research/parallel-native-failure-peer-20261008.json"
+    ".research/parallel-native-failure-peer-20261008.json",
+    ".research/d47-org-handoff-fix-20261008.json",
+    ".research/d47-org-handoff-peer-20261008.json"
   ],
   "evidence_limits": [
     "Native37767661089 final guest resource envelope is invalid; native observations alone do not establish product behavior. Caller omission is independently source-confirmed.",
@@ -50,5 +52,11 @@
     }
   ],
   "next_action": "Repair and independently review all caller handoffs, then one resource-valid original native test with actual matching product request/header lineage.",
-  "closure_requirement": "Original D47 path passes verified organization checkpoint in resource-valid native run and surrounding caller guard remains green; original product T57 result tracked separately."
+  "closure_requirement": "Original D47 path passes verified organization checkpoint in resource-valid native run and surrounding caller guard remains green; original product T57 result tracked separately.",
+  "source_candidate": {
+    "sha": "0eebbca39c95d62f401f3866123177ce92c4d51a",
+    "source_review": "PASS: both actual imports/callers correct",
+    "guard_review": "PARTIAL: injected reader does not prove production import binding; follow-up repair active",
+    "native_retest": "pending; no product request/header evidence yet"
+  }
 }
