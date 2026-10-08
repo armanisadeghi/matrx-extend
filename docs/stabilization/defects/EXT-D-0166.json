@@ -1,11 +1,7 @@
 {
   "id": "EXT-D-0166",
   "feature_id": "EXT-F-0001",
-  "case_ids": [
-    "EXT-F-0001-T02",
-    "EXT-F-1007-T07",
-    "EXT-F-1007-T09"
-  ],
+  "case_ids": ["EXT-F-0001-T02", "EXT-F-1007-T07", "EXT-F-1007-T09"],
   "surface": "Extension reload / Scrape native acceptance",
   "auth_mode": "guest",
   "title": "Replacement panel absent after reload with Open-panel reply missing from diagnostic receipt",
@@ -82,11 +78,7 @@
       "duration_ms": 15282.355827
     }
   },
-  "diagnostic_repair_commits": [
-    "011ce6f2",
-    "b42a2425",
-    "197f405303eed3f529ff6fcee475b3f8e8483525"
-  ],
+  "diagnostic_repair_commits": ["011ce6f2", "b42a2425", "197f405303eed3f529ff6fcee475b3f8e8483525"],
   "latest_native_retest": {
     "at": "2026-10-08T05:12:45.089846+00:00",
     "run_id": "37729682008",
