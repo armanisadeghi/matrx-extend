@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_only",
+  "scope_commits": [
+    "a862176b4348b498a16d5688b26b1188429d0dd7",
+    "7c392415"
+  ],
+  "scope_cases": [
+    "EXT-F-1003-T16",
+    "EXT-F-1003-T19",
+    "EXT-F-1003-T31",
+    "EXT-F-1003-T34"
+  ],
+  "verdict_a_behavior": {
+    "status": "PARTIAL",
+    "per_target": {
+      "EXT-F-1003-T16": "PARTIAL: trusted switch/persistence route exists; agent identity/email context sharing is unverified",
+      "EXT-F-1003-T19": "PARTIAL: trusted switch/persistence route exists; post-login save offer is unverified",
+      "EXT-F-1003-T31": "PARTIAL: trusted switch/persistence route exists; supported-form saved-login offer is unverified",
+      "EXT-F-1003-T34": "PARTIAL: trusted switch/persistence route exists; on-page presentation is unverified"
+    },
+    "evidence": [
+      "The case runner selects the four source-defined Privacy switch labels and persistence keys, invokes the shared CDP trusted-pointer click, and observes checked state plus chrome.storage.local for both on and off after Page.reload.",
+      "The case runner records the downstream criterion as unverified, so each case remains unverified even if its controls pass. The canonical inventory requires the downstream behavior for each case.",
+      "No native run or artifact receipt was inspected or produced in this review; source readiness is not runtime evidence. A frozen391 result cannot verify a later artifact."
+    ],
+    "finding": "The runner reads baseline checked state but does not establish that persisted state matches it. Its cleanup checks only the visible switch, not the baseline stored value. A failed reload or closed Privacy section can make cleanup fail before restoration. Consequently isolation and restoration are not assured on error."
+  },
+  "verdict_b_source_test_quality": {
+    "status": "FAIL",
+    "positive": [
+      "CI focused-test list correction in 7c392415 includes the new unit file.",
+      "The runner scopes observation to the active Settings tab and reports the downstream limit explicitly."
+    ],
+    "findings": [
+      {
+        "severity": "important",
+        "location": "tests/browser/settings-guest-privacy-batch.mjs:73-76,106-116",
+        "issue": "Baseline and cleanup do not guarantee UI/storage agreement or original persisted state after failure. A reload exception can leave Privacy unopened and prevent the finally block from restoring the setting."
+      },
+      {
+        "severity": "important",
+        "location": "tests/browser/settings-guest-privacy-batch.test.mjs:5-35",
+        "issue": "The unit test calls only privacySwitchMatches with fabricated observations. It never executes the runner's click/reload/cleanup path, so it cannot go red for wrong switch targeting, skipped reload, or failed restoration. No executed mutation proof is present."
+      },
+      {
+        "severity": "limit",
+        "location": "tests/browser/settings-local-controls-acceptance.mjs:561-585",
+        "issue": "An all-controls-successful run still has unverified case status and process exit 0. CI success must not be interpreted as four product passes."
+      }
+    ]
+  },
+  "review_limits": "No browser, native run, build, release, or secret handling in this lane. The exact committed diff, inventory, shared pointer driver, Settings component and focused CI list were source-read."
+}
