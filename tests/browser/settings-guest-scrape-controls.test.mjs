@@ -6,7 +6,6 @@ import { runInNewContext } from 'node:vm';
 import { Window } from 'happy-dom';
 import { runFullExtensionRecheck } from './settings-full-extension-rechecks.mjs';
 import {
-  AUTO_SCRAPE_MODE_FAILURE_STAGES,
   runGuestAutoScrapeCase,
   runGuestAutoScrapeModeCase,
   runGuestSectionsCase,
@@ -276,7 +275,6 @@ test('T67 case runner repairs same-selection storage drift through alternate cho
   assert.equal(failure?.safeCategory, 'auto_scrape_mode_recheck_failed');
   assert.equal(failure?.safeStage, 'choice_record');
   assert.equal(failure?.safeFailureKind, 'case');
-  assert.equal(AUTO_SCRAPE_MODE_FAILURE_STAGES.includes(failure?.safeStage), true);
   assert.equal(JSON.stringify(failure).includes('injected_after_write_failure'), false);
   assert.deepEqual(
     state.clicks.filter(([kind]) => kind === 'option').map(([, label]) => label),

@@ -1,7 +1,8 @@
 {
   "schema_version": 1,
   "task": "Bounded T67 full-extension failure diagnosis and safe stage capture",
-  "status": "source-committed; focused-gate-independent-review-and-native-retest-pending",
+  "status": "focused-gate-passed; independent-review-complete; native-retest-pending",
+  "independent_review": ".research/settings-t67-stage-root-review-20261008.json",
   "source_commit": "53685685b5101628ad9f24d30c16804a73a2b407",
   "integration_commit": "744f0bbdf52a48c6b5fa3d93abe8cff20fe8f1d9",
   "prior_native_evidence": {
@@ -19,6 +20,17 @@
     "result": "13 passed",
     "format": "Biome formatted the three owned source/test files.",
     "diff_check": "passed"
+  },
+  "red_green_evidence": {
+    "pre_repair_source_sha": "e6041b3f2025286dc4205197f884a95f7dde6cea",
+    "red_test": "T67 full-extension cleanup failure reports its actual safe phase after baseline restore",
+    "red_result": "Failed at the classification assertion: pre-repair wrapper returned full_extension_recheck_exception instead of the safe auto_scrape_mode_recheck_failed classification.",
+    "green_result": "Same focused test passes with restore_reload and no untrusted error text in the receipt. All 13 focused Settings tests pass.",
+    "focused_gate": {
+      "run_id": 37850435319,
+      "head_sha": "744f0bbdf52a48c6b5fa3d93abe8cff20fe8f1d9",
+      "conclusion": "success"
+    }
   },
   "limitations": [
     "The exact T67 cleanup operation in the earlier native failure remains unknown; the added stage field requires a later native run to distinguish it.",
