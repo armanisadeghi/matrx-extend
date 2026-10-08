@@ -1,24 +1,71 @@
 // Controlled CDP boundary for the diagnostic probe; the organization helper remains real.
 const PROFILE_ID = 'e5ad951e-521d-45ea-b37e-63d4fa0be164';
-const ORGANIZATION_ID = '72336a38-f816-442f-ad48-18610128fb67';
+export const ORGANIZATION_ID = '72336a38-f816-442f-ad48-18610128fb67';
 
 export const probeAuth = { email: 'admin@admin.com', profileId: PROFILE_ID, admin_role: true };
 
 export function organizationProbePanel(scenario) {
-  let selected = scenario === 'selected';
+  let selected = [
+    'selected',
+    'ladder',
+    'wrong_header',
+    'missing_header',
+    'wrong_bearer',
+    'failed_response',
+    'wrong_storage',
+  ].includes(scenario);
   let pressed = false;
   let pointerClicks = 0;
+  let lastKind = null;
+  const listeners = new Map();
+  const emit = (event, payload) => {
+    for (const listener of listeners.get(event) ?? []) listener(payload);
+  };
   return {
     get selectionClicks() {
       return selected && scenario === 'admin_approved' ? 1 : 0;
     },
+    on(event, listener) {
+      if (!listeners.has(event)) listeners.set(event, new Set());
+      listeners.get(event).add(listener);
+      return () => listeners.get(event).delete(listener);
+    },
     async send(method, parameters) {
+      if (method === 'Network.enable') return {};
       if (method === 'Input.dispatchMouseEvent') {
-        if (scenario !== 'admin_approved') throw new Error('unexpected_probe_pointer');
         if (parameters.type === 'mousePressed') pressed = true;
         if (parameters.type === 'mouseReleased' && pressed) {
           pointerClicks += 1;
-          if (pointerClicks === 2) selected = true;
+          if (scenario === 'admin_approved' && pointerClicks === 2) selected = true;
+          if (lastKind === 'tool-row') {
+            const headers = {
+              Authorization:
+                scenario === 'wrong_bearer' ? 'Bearer wrong-token' : 'Bearer opaque-test-token',
+              ...(scenario === 'missing_header'
+                ? {}
+                : {
+                    'X-Organization-Id':
+                      scenario === 'wrong_header'
+                        ? '33333333-3333-4333-8333-333333333333'
+                        : ORGANIZATION_ID,
+                  }),
+            };
+            emit('Network.requestWillBeSent', {
+              requestId: 'tools-1',
+              request: {
+                url: 'https://server.app.matrxserver.com/tools/test/list',
+                method: 'GET',
+                headers,
+              },
+            });
+            emit('Network.responseReceived', {
+              requestId: 'tools-1',
+              response: {
+                status: scenario === 'failed_response' ? 500 : 200,
+              },
+            });
+            emit('Network.loadingFinished', { requestId: 'tools-1' });
+          }
           pressed = false;
         }
         return {};
@@ -26,10 +73,15 @@ export function organizationProbePanel(scenario) {
       if (method !== 'Runtime.evaluate') throw new Error('unexpected_probe_method');
       const { expression } = parameters;
       let value;
-      if (
+      if (expression.includes('crypto.subtle.digest')) {
+        value = 'b315e9825a0975c1785d769396ac4a6e0d701eb63d15ae035aa15ea540f9ae54';
+      } else if (
         expression.includes('const kind = "organization"') ||
-        expression.includes('const kind = "organization-option"')
+        expression.includes('const kind = "organization-option"') ||
+        expression.includes('const kind = "title"') ||
+        expression.includes('const kind = "tool-row"')
       ) {
+        lastKind = /const kind = "([^"]+)"/.exec(expression)?.[1] ?? null;
         value = {
           count: 1,
           matchedCount: 1,
@@ -91,7 +143,20 @@ export function organizationProbePanel(scenario) {
           profileId: PROFILE_ID,
           accessTokenPresent: true,
           isAdmin: true,
-          organizationId: scenario === 'storage' || !selected ? null : ORGANIZATION_ID,
+          organizationId:
+            scenario === 'storage' ||
+            !selected ||
+            [
+              'ladder',
+              'wrong_header',
+              'missing_header',
+              'wrong_bearer',
+              'failed_response',
+            ].includes(scenario)
+              ? null
+              : scenario === 'wrong_storage'
+                ? '33333333-3333-4333-8333-333333333333'
+                : ORGANIZATION_ID,
           organizationName: !selected
             ? null
             : scenario === 'admin_approved'
