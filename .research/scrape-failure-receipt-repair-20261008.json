@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0178 failed post-reload capture receipt",
+  "cause": "The waitFor timeout diagnostic held the last Article predicates, but the receipt boundary was only populated after a successful wait.",
+  "repair": "Each successful UI read writes only bounded scalar predicates to the attached boundary; unobserved fields start and remain null, while observed false stays false.",
+  "branches": "Both first capture wait and post-confirmation wait retain their last observed predicates on timeout; branch and trusted confirmation retain their existing meanings.",
+  "red": "The real helper with real bounded waitFor failed both new serialized-failure assertions on the old source: expected true Article predicates remained false.",
+  "green": "node --test tests/browser/scrape-post-reload-capture-boundary.test.mjs tests/browser/scrape-native-recapture.test.mjs: 14 passed; targeted Biome check passed.",
+  "privacy": "Persisted receipt contains only fixed booleans/nulls and branch metadata; tests reject private page text, media URLs, and raw state.",
+  "limits": "No native UI, build, or release run in this assigned repair lane."
+}

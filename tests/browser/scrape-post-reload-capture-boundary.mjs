@@ -58,11 +58,11 @@ export function createPostReloadCaptureBoundary(ownedEditedBadgeVisible) {
     branch: null,
     discard_dialog_visible: null,
     trusted_confirmation_returned: false,
-    ready: false,
-    article_selected: false,
-    visible: false,
-    fixture_title_matches: false,
-    fixture_text_present: false,
+    ready: null,
+    article_selected: null,
+    visible: null,
+    fixture_title_matches: null,
+    fixture_text_present: null,
   };
 }
 
@@ -81,12 +81,15 @@ const ownedRecaptureDialog = (state) =>
 // Only these fixed fields can reach the native failure receipt.
 export function captureTimeoutDiagnostic(state) {
   return {
-    ready: state?.ready === true,
-    article_selected: state?.selected === 'Article',
-    visible: state?.visible === true,
-    fixture_title_matches: state?.title === 'Harbor Dental referral hours',
+    ready: state?.ready === undefined ? null : state.ready === true,
+    article_selected: state?.selected === undefined ? null : state.selected === 'Article',
+    visible: state?.visible === undefined ? null : state.visible === true,
+    fixture_title_matches:
+      state?.title === undefined ? null : state.title === 'Harbor Dental referral hours',
     fixture_text_present:
-      state?.resultText?.includes('Referral coordinators answer weekday calls.') === true,
+      state?.resultText === undefined
+        ? null
+        : state.resultText?.includes('Referral coordinators answer weekday calls.') === true,
   };
 }
 
@@ -115,10 +118,14 @@ export async function runPostReloadCaptureBoundary({
     );
     const outcome = await waitFor(
       'scrape_post_reload_referrals_captured',
-      async () => ({
-        ...(await scrapeState(panel)),
-        recaptureDialog: await evaluate(panel, recaptureDialogExpression),
-      }),
+      async () => {
+        const state = {
+          ...(await scrapeState(panel)),
+          recaptureDialog: await evaluate(panel, recaptureDialogExpression),
+        };
+        Object.assign(boundary, captureTimeoutDiagnostic(state));
+        return state;
+      },
       (state) => capturedReferrals(state) || ownedRecaptureDialog(state),
       30000,
       captureTimeoutDiagnostic,
@@ -130,7 +137,11 @@ export async function runPostReloadCaptureBoundary({
       boundary.trusted_confirmation_returned = true;
       const confirmed = await waitFor(
         'scrape_post_reload_referrals_captured',
-        () => scrapeState(panel),
+        async () => {
+          const state = await scrapeState(panel);
+          Object.assign(boundary, captureTimeoutDiagnostic(state));
+          return state;
+        },
         capturedReferrals,
         30000,
         captureTimeoutDiagnostic,

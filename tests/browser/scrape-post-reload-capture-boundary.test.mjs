@@ -112,6 +112,13 @@ for (const [name, dispatchClick, showBusy, expectedClicks, expectedBusy] of [
         fixture_title_matches: true,
         fixture_text_present: true,
       }),
+      ...(!showBusy && {
+        ready: true,
+        article_selected: false,
+        visible: false,
+        fixture_title_matches: false,
+        fixture_text_present: false,
+      }),
     });
     assert.equal(f.clickListenerCount(), 0, 'capture click listener must be removed');
     // A second run in the same document must count only its own click.
@@ -181,9 +188,119 @@ test('failed capture retains scalar boundary and excludes rendered content', asy
     pointer_phase: 'pointer_dispatched',
     click_events: 1,
     busy_observed: false,
+    ready: true,
+    article_selected: true,
+    visible: true,
+    fixture_title_matches: true,
+    fixture_text_present: false,
   });
   assert.equal(f.clickListenerCount(), 0, 'capture click listener must be removed');
 });
+
+test('unobserved Article fields stay distinct from observed false', () => {
+  const boundary = createPostReloadCaptureBoundary(false);
+  assert.deepEqual(
+    [
+      boundary.ready,
+      boundary.article_selected,
+      boundary.visible,
+      boundary.fixture_title_matches,
+      boundary.fixture_text_present,
+    ],
+    [null, null, null, null, null],
+  );
+  assert.deepEqual(captureTimeoutDiagnostic({ transient: 'panel_reloaded' }), {
+    ready: null,
+    article_selected: null,
+    visible: null,
+    fixture_title_matches: null,
+    fixture_text_present: null,
+  });
+  assert.deepEqual(
+    captureTimeoutDiagnostic({
+      ready: false,
+      selected: null,
+      visible: false,
+      title: null,
+      resultText: '',
+    }),
+    {
+      ready: false,
+      article_selected: false,
+      visible: false,
+      fixture_title_matches: false,
+      fixture_text_present: false,
+    },
+  );
+});
+
+for (const branch of ['first_wait', 'confirmation_wait']) {
+  test(`timed out ${branch} persists its last observed Article predicates`, async () => {
+    const f = fixture();
+    const boundary = createPostReloadCaptureBoundary(true);
+    const dialog = f.window.document.createElement('div');
+    dialog.setAttribute('role', 'alertdialog');
+    dialog.innerHTML =
+      '<h2 data-slot="alert-dialog-title">Discard unsaved edits?</h2>' +
+      '<button data-slot="alert-dialog-action">Re-capture</button>';
+    let confirmed = false;
+    const report = { post_reload_capture_boundary: boundary };
+    const run = () =>
+      runPostReloadCaptureBoundary({
+        panel: {},
+        evaluate: f.evaluate,
+        click: async (_panel, kind, _label, phase) => {
+          phase?.('release_returned');
+          if (kind === 'title' && branch === 'confirmation_wait') {
+            f.window.document.body.append(dialog);
+          } else if (kind === 'scrape-recapture-dialog') {
+            confirmed = true;
+            dialog.remove();
+          }
+        },
+        resourceAction: (action) => action(),
+        waitFor: (label, read, accept, timeout, diagnostic) => {
+          assert.equal(timeout, 30000);
+          return waitFor(label, read, accept, 0, diagnostic);
+        },
+        scrapeState: async () => ({
+          ready: true,
+          empty: !confirmed,
+          selected: 'Article',
+          visible: true,
+          title: 'Harbor Dental referral hours',
+          resultText: 'Private patient referral secret',
+          media: { url: 'https://private.invalid/image?token=secret' },
+        }),
+        boundary,
+      });
+    await assert.rejects(run, /scrape_post_reload_referrals_captured_not_observed/);
+    const directory = await mkdtemp(join(tmpdir(), 'scrape-failed-receipt-'));
+    try {
+      const path = join(directory, 'native.json');
+      await writeFile(path, JSON.stringify(report));
+      const persisted = JSON.parse(await readFile(path, 'utf8')).post_reload_capture_boundary;
+      assert.deepEqual(
+        [
+          persisted.ready,
+          persisted.article_selected,
+          persisted.visible,
+          persisted.fixture_title_matches,
+          persisted.fixture_text_present,
+        ],
+        [true, true, true, true, false],
+      );
+      assert.equal(
+        persisted.branch,
+        branch === 'confirmation_wait' ? 'discard_confirmation' : null,
+      );
+      assert.equal(persisted.trusted_confirmation_returned, branch === 'confirmation_wait');
+      assert.doesNotMatch(JSON.stringify(persisted), /Private|secret|https:|resultText|media/);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  });
+}
 
 test('click listener is disposed when arming busy observation throws', async () => {
   const f = fixture();
