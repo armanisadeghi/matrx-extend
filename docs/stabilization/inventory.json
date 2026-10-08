@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T02:27:10.888219+00:00",
+  "updated_at": "2026-10-08T03:03:29.534526+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -7260,18 +7260,37 @@
           "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37714389856",
+              "status": "pass",
+              "run_id": "37719749636",
               "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
               "build_version": "0.2.391",
               "evidence": [
-                ".research/settings-unrecorded-native-20261007.json",
-                ".research/settings-unrecorded-native-peer-20261007.json"
+                ".research/settings-intel-controlled-retest-20261007.json",
+                ".research/settings-intel-native-peer-20261007.json"
               ],
-              "detail": "Warm signed-out guest Settings shows admin controls absent. Real extension reload replaced targets but Settings-open failed before click; post-reload guest denial and ordinary-member behavior remain unverified.",
-              "release_scope": "Frozen development artifact only; all three current resource journals valid. No Store/current-main or whole-surface acceptance."
+              "detail": "Signed-out guest admin/Advanced actions and optional-permission controls absent before and after full extension replacement. Guest slot passes; ordinary-member slot remains unverified.",
+              "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37714389856",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/settings-unrecorded-native-20261007.json",
+                  ".research/settings-unrecorded-native-peer-20261007.json"
+                ],
+                "detail": "Warm signed-out guest Settings shows admin controls absent. Real extension reload replaced targets but Settings-open failed before click; post-reload guest denial and ordinary-member behavior remain unverified.",
+                "release_scope": "Frozen development artifact only; all three current resource journals valid. No Store/current-main or whole-surface acceptance."
+              },
+              "superseded_at": "2026-10-08T03:03:29.534526+00:00",
+              "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T64",
@@ -7290,17 +7309,36 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37714389856",
+              "run_id": "37719749636",
               "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
               "build_version": "0.2.391",
               "evidence": [
-                ".research/settings-unrecorded-native-20261007.json",
-                ".research/settings-unrecorded-native-peer-20261007.json"
+                ".research/settings-intel-controlled-retest-20261007.json",
+                ".research/settings-intel-native-peer-20261007.json"
               ],
-              "detail": "Trusted Ask again removes only selected of two disposable loopback origins; the other persists through panel reload. Removing the last hides the empty list in UI and storage, persisting after reload. Direct preference seeding covers Settings list behavior, not earlier capture-denial flow; final cleanup has no separate readback.",
-              "release_scope": "Frozen development artifact only; all three current resource journals valid. No Store/current-main or whole-surface acceptance."
+              "detail": "Each Ask again removes only selected origin; unrelated origin persists through panel reload, then final empty list remains hidden after reload. Local owned preference fixtures only, not preceding capture-choice flow.",
+              "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37714389856",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/settings-unrecorded-native-20261007.json",
+                  ".research/settings-unrecorded-native-peer-20261007.json"
+                ],
+                "detail": "Trusted Ask again removes only selected of two disposable loopback origins; the other persists through panel reload. Removing the last hides the empty list in UI and storage, persisting after reload. Direct preference seeding covers Settings list behavior, not earlier capture-denial flow; final cleanup has no separate readback.",
+                "release_scope": "Frozen development artifact only; all three current resource journals valid. No Store/current-main or whole-surface acceptance."
+              },
+              "superseded_at": "2026-10-08T03:03:29.534526+00:00",
+              "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T65",
@@ -7606,19 +7644,38 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37705986945",
+              "run_id": "37719749636",
               "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
               "build_version": "0.2.391",
-              "build_tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
               "evidence": [
-                ".research/guest-settings-breadth-native-20261007.json",
-                ".research/native-breadth-batch-peer-20261007.json"
+                ".research/settings-intel-controlled-retest-20261007.json",
+                ".research/settings-intel-native-peer-20261007.json"
               ],
-              "detail": "Guest Account section: email unavailable, Name and role absent, Sign in footer; verified warm and after full extension reload.",
-              "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
+              "detail": "Guest Account shows signed-out presentation before and after full extension replacement; no authenticated identity inferred.",
+              "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
             }
           },
-          "linked_defects": ["EXT-D-0161", "EXT-D-0162"]
+          "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37705986945",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "build_tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+                "evidence": [
+                  ".research/guest-settings-breadth-native-20261007.json",
+                  ".research/native-breadth-batch-peer-20261007.json"
+                ],
+                "detail": "Guest Account section: email unavailable, Name and role absent, Sign in footer; verified warm and after full extension reload.",
+                "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
+              },
+              "superseded_at": "2026-10-08T03:03:29.534526+00:00",
+              "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T74",
@@ -7679,19 +7736,38 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37705986945",
+              "run_id": "37719749636",
               "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
               "build_version": "0.2.391",
-              "build_tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
               "evidence": [
-                ".research/guest-settings-breadth-native-20261007.json",
-                ".research/native-breadth-batch-peer-20261007.json"
+                ".research/settings-intel-controlled-retest-20261007.json",
+                ".research/settings-intel-native-peer-20261007.json"
               ],
-              "detail": "Guest Organization section: archive filter and Acting as row absent; zero organization requests observed; verified warm and after full extension reload.",
-              "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
+              "detail": "Guest Organization guidance observed before and after full extension replacement; no signed-in organization behavior inferred.",
+              "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
             }
           },
-          "linked_defects": ["EXT-D-0161", "EXT-D-0162"]
+          "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37705986945",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "build_tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+                "evidence": [
+                  ".research/guest-settings-breadth-native-20261007.json",
+                  ".research/native-breadth-batch-peer-20261007.json"
+                ],
+                "detail": "Guest Organization section: archive filter and Acting as row absent; zero organization requests observed; verified warm and after full extension reload.",
+                "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
+              },
+              "superseded_at": "2026-10-08T03:03:29.534526+00:00",
+              "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T77",
@@ -8286,16 +8362,15 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37705986945",
+              "run_id": "37719749636",
               "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
               "build_version": "0.2.391",
-              "build_tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
               "evidence": [
-                ".research/guest-settings-breadth-native-20261007.json",
-                ".research/native-breadth-batch-peer-20261007.json"
+                ".research/settings-intel-controlled-retest-20261007.json",
+                ".research/settings-intel-native-peer-20261007.json"
               ],
-              "detail": "Guest negative access only: sole signed-out prompt row; no extra membership text, archived marker, restoration action, or organization request; verified warm and after full extension reload.",
-              "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
+              "detail": "Guest member-only organization control denial observed warm and after full extension replacement; member/admin slots separate and unverified.",
+              "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
             },
             "member": {
               "status": "unverified",
@@ -8315,6 +8390,24 @@
               "mode": "guest",
               "status": "unverified",
               "detail": "Source census only; current-build native acceptance and owned fixture setup pending."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37705986945",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "build_tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+                "evidence": [
+                  ".research/guest-settings-breadth-native-20261007.json",
+                  ".research/native-breadth-batch-peer-20261007.json"
+                ],
+                "detail": "Guest negative access only: sole signed-out prompt row; no extra membership text, archived marker, restoration action, or organization request; verified warm and after full extension reload.",
+                "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
+              },
+              "superseded_at": "2026-10-08T03:03:29.534526+00:00",
+              "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
             }
           ],
           "linked_defects": ["EXT-D-0161", "EXT-D-0162"]

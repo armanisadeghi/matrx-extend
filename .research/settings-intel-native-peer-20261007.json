@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "review_date": "2026-10-08",
+  "reviewer_lane": "independent-native-peer",
+  "subject": "Intel controlled Settings retest 37719749636",
+  "source_report": ".research/settings-intel-controlled-retest-20261007.json",
+  "verdict_a": {
+    "scope": "Frozen development artifact 11516342905 from source 52487361b1b6a8663b958dbb2196cbcc9b1af31c, version 0.2.391, on hosted macOS 15 Intel X64 only.",
+    "d162_native_closure_requirement": "PASS: resource-valid original frozen-artifact full extension reload retired the old targets, replaced worker and panel, then opened Settings on the replacement panel with matching runtime ID, ready visible document, one Settings tab and one active Settings tab. Surrounding T04/T13/T22/T37/T46 passed; T10 and T70 remain explicitly unverified for their out-of-batch branches. Earlier source review and negative control are separately recorded in D162; this verdict covers the outstanding native retest, not a current-main or Store release.",
+    "cases": {
+      "EXT-F-1003-T63": {
+        "guest": "PASS: signed-out guest admin section, optional permission controls and audit-key actions absent in warm and full-extension-reload observations.",
+        "member": "UNVERIFIED: no ordinary-member principal was present. The combined case is partial despite the native receipt's unverified overall status."
+      },
+      "EXT-F-1003-T64": "PASS guest: two disposable origins seeded; Ask again removed only selected origin, other persisted through panel reload, final removal hid list in UI and storage through another panel reload. This checks the Settings list action, not the earlier capture-denial flow.",
+      "EXT-F-1003-T73": "PASS guest: Account email unavailable, Name and role rows absent, Sign in footer, in warm and full-extension-reload observations.",
+      "EXT-F-1003-T76": "PASS guest: Organization archive filter and Acting as row absent; no organization requests or choice, warm and full-extension-reload.",
+      "EXT-F-1003-T92": "PASS guest negative access: no archived membership marker/copy or restoration action and no organization request, warm and full-extension-reload. Member and admin paths remain unverified."
+    },
+    "limitations": [
+      "The native receipt is overall unverified because T63 ordinary-member denial, T10 new-chat inheritance, and T70 alternate API/update paths were not exercised; this does not negate the passed guest observations.",
+      "This controlled host-family result does not prove Intel causation for prior ARM resource invalidation or resolve a separate earlier Intel CDP timeout."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS for evidence quality and privacy within review scope",
+    "artifact_integrity": "GitHub artifact 11525491283 digest sha256:318e4ae7ab8e6c7343a76c484daf4213f241178e527e16fa0d6451155255f37c matched a fresh ZIP download; all nine checked-in original files matched that ZIP byte for byte. Original receipt SHA-256 97f4f6f69be17d4eb71365df15d4c77f68ebda87ec98bfbdaf9d087e1e2345f2.",
+    "provenance": "GitHub run 37719749636/job 113124447019 succeeded on macos-15-intel; workflow log verified RUNNER_ARCH=X64 and uname=x86_64, imported development run 37698216289/artifact 11516342905 from source 52487361b1b6a8663b958dbb2196cbcc9b1af31c, and prepared tree SHA-256 04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793. Receipt runtime ID cihdmkcdjjckfhjpgoedmgfpoljebaml and version 0.2.391 matched the selected artifact. Browser readiness revision 1194 was logged; exact browser version was not recorded.",
+    "resources": "Only the three journals bearing run ID 37719749636 count: package SHA-256 161602dae05ed4f59cea050bb63ba9a37aabfc3aacbd58455453127f30bc0029, browser ef8494e6ca3f7bf2d1351d8def20c99fe81f00359c53892328f99cd4e870a672, guest 448718573a106f66fbdd49142c2f554ecf0c8732bb94eade4c9ba2d180e70175. Each admitted and ended RESOURCE_FINAL_DECISION valid, resourceInvalid=false, exitCode=0. Guest watch samples 0.34 and 0.18 had no reasons. Three older 37105304739 journals were retained verbatim in the uploaded ZIP and were excluded from this verdict.",
+    "privacy": "Receipt has no token, cookie, secret or credential values; password API fields are booleans. Screenshots show a signed-out side panel and disposable article, without an account profile or private data. All imported files are exact artifact originals; no unrelated local profile or log bundle is present.",
+    "quality_limit": "This review is of native evidence and packaging, not a new source diff, browser execution, test run, build or release."
+  }
+}
