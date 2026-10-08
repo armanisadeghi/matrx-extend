@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Real admin Tools-card Records table_list, with a read-only, exact-request oracle. */
+/** Real admin Tools-card Records reads, with independent table and search oracles. */
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
@@ -47,6 +47,7 @@ const report = {
   organization_diagnostic: null,
   request: null,
   result: null,
+  metadata_search: null,
   invalid_input: null,
   reload: null,
   failure_code: null,
@@ -337,6 +338,58 @@ try {
         visible: true,
         success: true,
         count: reloadResult.output.tables.length,
+      };
+
+      // A separate, completed table_list call supplies the identity oracle. The
+      // search must find that same Table; success or a nonempty match list alone
+      // would accept an unrelated response.
+      const searchTable = reloadResult.output.tables.find(
+        (table) =>
+          table.organization_id === approved.id &&
+          typeof table.id === 'string' &&
+          typeof table.name === 'string' &&
+          table.name.trim().length > 0,
+      );
+      assert.ok(searchTable, 'records_metadata_oracle_table_missing');
+      const searchInput = {
+        action: 'metadata_search',
+        args: { organization_id: approved.id, query: searchTable.name, limit: 50 },
+      };
+      await enterRecordsInput(panel, evaluate, stage, searchInput, process.platform);
+      const searchResult = await execute(searchInput, reloadBearerHash, 'records_metadata_search');
+      assert.equal(searchResult.success, true, 'records_metadata_search_tool_refused');
+      assert.equal(searchResult.output?.action, 'metadata_search', 'records_metadata_wrong_action');
+      assert.equal(searchResult.output?.query, searchTable.name, 'records_metadata_wrong_query');
+      assert.ok(Array.isArray(searchResult.output?.matches), 'records_metadata_matches_missing');
+      assert.equal(
+        searchResult.output.count,
+        searchResult.output.matches.length,
+        'records_metadata_count_mismatch',
+      );
+      assert.ok(
+        searchResult.output.organizations_covered?.includes(approved.id),
+        'records_metadata_org_not_covered',
+      );
+      assert.ok(
+        searchResult.output.matches.some(
+          (match) =>
+            match.kind === 'table' &&
+            match.id === searchTable.id &&
+            match.name === searchTable.name &&
+            match.organization_id === approved.id,
+        ),
+        'records_metadata_oracle_match_missing',
+      );
+      report.metadata_search = {
+        inventory_case: 'EXT-F-4130-C03',
+        finished: true,
+        status: 200,
+        completion_observed: true,
+        visible: true,
+        success: true,
+        action: 'metadata_search',
+        independent_table_identity_matched: true,
+        count: searchResult.output.count,
       };
     },
   });

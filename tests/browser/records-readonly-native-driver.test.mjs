@@ -40,7 +40,7 @@ const positive = (name) => ({
   success: true,
   output: {
     action: 'table_list',
-    tables: [{ name, organization_id: organizationId }],
+    tables: [{ id: 'f2c1d147-bb97-4dcb-9486-b1b4a7dab7dc', name, organization_id: organizationId }],
     organizations_covered: [organizationId],
   },
 });
@@ -59,11 +59,34 @@ const invalid = {
   action: 'table_list',
   args: { organization_id: organizationId, include_app_tables: true, limit: 'not-a-number' },
 };
+const metadataInput = {
+  action: 'metadata_search',
+  args: { organization_id: organizationId, query: 'invoices', limit: 50 },
+};
+const metadataResult = (
+  matches = [
+    {
+      id: 'f2c1d147-bb97-4dcb-9486-b1b4a7dab7dc',
+      kind: 'table',
+      name: 'invoices',
+      organization_id: organizationId,
+    },
+  ],
+) => ({
+  success: true,
+  output: {
+    action: 'metadata_search',
+    query: 'invoices',
+    matches,
+    count: matches.length,
+    organizations_covered: [organizationId],
+  },
+});
 
 function runDriver({
   platform = 'darwin',
   token = 'admin-session',
-  completions = [positive('appointments'), refusal, positive('invoices')],
+  completions = [positive('appointments'), refusal, positive('invoices'), metadataResult()],
   changedVisible = false,
   reloadedProfile = 'admin-id',
   driverSource = callback,
@@ -75,6 +98,7 @@ function runDriver({
     native_stage: null,
     request: null,
     result: null,
+    metadata_search: null,
     invalid_input: null,
     reload: null,
   };
@@ -144,12 +168,14 @@ function runDriver({
     if (script.includes('selectionStart'))
       return editor.focused && editor.start === 0 && editor.end === editor.value.length;
     if (script.includes("querySelector('textarea')?.value"))
-      return editor.value === JSON.stringify(runs === 1 ? invalid : input);
+      return (
+        editor.value === JSON.stringify(runs === 1 ? invalid : runs === 3 ? metadataInput : input)
+      );
     return true;
   };
   const click = async (_panel, kind, label) => {
     if (label === 'Run') {
-      const expected = runs === 1 ? invalid : input;
+      const expected = runs === 1 ? invalid : runs === 3 ? metadataInput : input;
       assert.equal(editor.value, JSON.stringify(expected), 'Run requires actual input');
       const requestId = `records-execute-${runs++}`;
       events.emit('Network.requestWillBeSent', {
@@ -224,7 +250,7 @@ function runDriver({
 test('actual callback requires finished matching success, refusal, and post-reload success', async () => {
   const scenario = runDriver();
   await scenario.run();
-  assert.equal(scenario.runs, 3);
+  assert.equal(scenario.runs, 4);
   assert.equal(scenario.reloads, 1);
   assert.equal(scenario.report.native_stage, 'admin_authenticated');
   assert.equal(scenario.report.result?.success, true);
@@ -248,6 +274,17 @@ test('actual callback requires finished matching success, refusal, and post-relo
     success: true,
     count: 1,
   });
+  assert.deepEqual(scenario.report.metadata_search, {
+    inventory_case: 'EXT-F-4130-C03',
+    finished: true,
+    status: 200,
+    completion_observed: true,
+    visible: true,
+    success: true,
+    action: 'metadata_search',
+    independent_table_identity_matched: true,
+    count: 1,
+  });
   assert.equal(scenario.active.size, 0);
   assert.doesNotMatch(
     JSON.stringify(scenario.report),
@@ -258,7 +295,7 @@ test('actual callback requires finished matching success, refusal, and post-relo
 test('trusted input helper replaces an existing draft on Linux', async () => {
   const scenario = runDriver({ platform: 'linux' });
   await scenario.run();
-  assert.equal(scenario.runs, 3);
+  assert.equal(scenario.runs, 4);
 });
 
 test('missing selection refuses before execution', async () => {
@@ -319,6 +356,33 @@ test('negative and reload assertions catch false success and omitted reload', as
     runDriver({ driverSource: noReloadSource }).run(),
     /Settings must follow full panel reload/,
   );
+});
+
+test('metadata search rejects unrelated matches, wrong echo, and false success', async () => {
+  for (const [completion, failure] of [
+    [
+      metadataResult([
+        { id: 'another-id', kind: 'table', name: 'invoices', organization_id: organizationId },
+      ]),
+      /records_metadata_oracle_match_missing/,
+    ],
+    [
+      { ...metadataResult(), output: { ...metadataResult().output, query: 'appointments' } },
+      /records_metadata_wrong_query/,
+    ],
+    [
+      { success: false, error: { error_type: 'execution' } },
+      /records_metadata_search_tool_refused/,
+    ],
+  ]) {
+    const scenario = runDriver({
+      completions: [positive('appointments'), refusal, positive('invoices'), completion],
+    });
+    await assert.rejects(scenario.run(), failure);
+    assert.equal(scenario.runs, 4);
+    assert.equal(scenario.report.metadata_search, null);
+    assert.equal(scenario.active.size, 0);
+  }
 });
 
 test('constant completion cannot pass callback identity and request checks', async () => {
