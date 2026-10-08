@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "lane": "screenshot native reload boundary",
+  "status": "source_repaired_native_retest_pending",
+  "source": {
+    "diagnostic_commit": "201447e0",
+    "repair_commit": "d2553a17",
+    "independent_review": "root reviewer accepted diagnostic and recovery source; repair review pending",
+    "checks": "node syntax, Biome format, diff whitespace passed; safe diagnostic 0/2 distinction and private-field exclusion passed"
+  },
+  "native": {
+    "resource_run": "completion-screenshot-recovery-admitted-20261007",
+    "resource_admitted": true,
+    "resource_invalid": false,
+    "verdict": "reload control boundary failed; exact original row cleanup passed",
+    "report": "test-results/screenshot-full-page-cc5821d4-864e-4249-acbc-fe10eff35917.json",
+    "artifact": {
+      "version": "0.2.391",
+      "sourceSha": "61a9b1cae81c1a748233600156162f5ec3774caf",
+      "runId": 37694579646,
+      "artifactId": 11515715192,
+      "treeSha256": "872178b117305b9d60ac9f27f871a5f401e0a57f70c525c16cf359e046a6d110"
+    },
+    "initial_viewer": {
+      "passed": true,
+      "same_downloaded_blob": true,
+      "top_middle_bottom_pixels": true,
+      "second_files_assets_get_count": 0,
+      "closed_dialog_count": 0
+    },
+    "failure": {
+      "reported_stage": "local_image_viewer",
+      "reported_viewer_step": "recovery_initial:verify_closed",
+      "actual_step": "immediate Screenshots click after Page.reload",
+      "target": "Screenshots",
+      "matched_target_count": 0,
+      "visible_match_count": 0,
+      "active_screenshot_pane": false,
+      "dialog_count": 0,
+      "observed_controls_count": 0,
+      "private_screenshot": {
+        "sha256": "88cd57ade31452043566237b1f68cb7a7f465fa52d4d34865b6131679f241fd5",
+        "byteCount": 4782
+      },
+      "visual_observation": "Signed-in header and loading spinner; feature tabs not rendered"
+    },
+    "cleanup": {
+      "exact_owned_row_count_before": 1,
+      "exact_owned_row_absent_after_real_read": true,
+      "private_recovery_removed": true,
+      "public_grant_created": false
+    }
+  },
+  "cause": "Page.reload resolves before React restores authenticated feature tabs. The runner immediately resolved a nonexistent Screenshots tab, and a stale local viewer stage mislabeled the failure.",
+  "ruled_out": [
+    "duplicate title targets: actual matched and visible counts were zero",
+    "local image viewer failure: initial same-blob/pixel/no-GET viewer completed",
+    "hovered title restoration: there were no matching title/data-title/aria controls at the boundary"
+  ],
+  "repair": "Both new capture and owned-row recovery use a reload helper that resets the stage and viewer step, waits for one actual visible Screenshots tab, then uses the unchanged unique stable hit-tested trusted pointer driver.",
+  "limitations": [
+    "No post-repair native retest yet; no current canonical share proof",
+    "No product changes or manual build/release",
+    "Original failed report and private diagnostic screenshot preserved; only private recovery record removed after verified cleanup"
+  ]
+}
