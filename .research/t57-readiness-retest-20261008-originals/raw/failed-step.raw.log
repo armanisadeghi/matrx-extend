@@ -1,0 +1,36 @@
+guest	Require selected authentication before browser setup	﻿2026-10-08T10:55:37.1465800Z ##[group]Run node scripts/hosted-guest-acceptance.mjs
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1466180Z [36;1mnode scripts/hosted-guest-acceptance.mjs[0m
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1505500Z shell: /bin/bash -e {0}
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1505740Z env:
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1508590Z   GH_TOKEN: ***
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1508820Z   MATRX_HOSTED_PHASE: preflight
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1509100Z   MATRX_HOSTED_ACCEPTANCE_CASE: showcase-d47-public-admin
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1509410Z   MATRX_HOSTED_SEO_CASE_SCOPE: full
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1509700Z   MATRX_HOSTED_DESKTOP_SETTINGS_CASE: full
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1510060Z   MATRX_HOSTED_PUBLISHED_STORE_CRX: 
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1510300Z   MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: 
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1510550Z   MATRX_SCRAPE_AUTH_MODE: guest
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1510780Z   MATRX_SCRAPE_WIDTH_MODE: narrow
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1511360Z   MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: 
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1511650Z   MATRX_HOSTED_MEMBER_LINK_JSON: 
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1512040Z   MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ***
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1512720Z   MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: ***
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.1513050Z ##[endgroup]
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2661390Z node:internal/modules/package_json_reader:314
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2663690Z   throw new ERR_MODULE_NOT_FOUND(packageName, fileURLToPath(base), null);
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2664670Z         ^
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2664950Z 
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2666710Z Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@ai-matrx/kit' imported from /Users/runner/work/matrx-extend/matrx-extend/scripts/hosted-profile-route.mjs
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2668710Z     at Object.getPackageJSONURL (node:internal/modules/package_json_reader:314:9)
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2670190Z     at packageResolve (node:internal/modules/esm/resolve:768:81)
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2671330Z     at moduleResolve (node:internal/modules/esm/resolve:855:18)
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2696760Z     at defaultResolve (node:internal/modules/esm/resolve:985:11)
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2697280Z     at #cachedDefaultResolve (node:internal/modules/esm/loader:747:20)
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2697750Z     at ModuleLoader.resolve (node:internal/modules/esm/loader:724:38)
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2698300Z     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:320:38)
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2698850Z     at ModuleJob._link (node:internal/modules/esm/module_job:182:49) {
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2699210Z   code: 'ERR_MODULE_NOT_FOUND'
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2699490Z }
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2699620Z 
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2699700Z Node.js v22.23.2
+guest	Require selected authentication before browser setup	2026-10-08T10:55:37.2720250Z ##[error]Process completed with exit code 1.

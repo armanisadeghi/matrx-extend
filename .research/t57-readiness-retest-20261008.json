@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "lane": "A",
+  "scope": "One hosted native readiness retest using reviewed shared admin readiness source and the frozen 0.2.407 development artifact; no product, test, harness, build, release or deployment change.",
+  "run": {
+    "id": 37766646825,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37766646825",
+    "status": "completed",
+    "conclusion": "failure",
+    "checkout_sha": "16a32d73d7f232d5d95edc66953afff11a212641",
+    "checkout_includes_admin_readiness_sha": "46ec5e17cda452591ad7b196ac0a07811b761c09",
+    "checkout_includes_org_checkpoint_sha": "ad771d37c6add55dedaf31730e4b5c859570bf67",
+    "acceptance_case": "showcase-d47-public-admin",
+    "d47_public_race_preflight": true,
+    "runner_label": "macos-15",
+    "attempt_count": 1
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "artifact_digest": "sha256:1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893",
+    "import_reached": false
+  },
+  "failure": {
+    "step": "Require selected authentication before browser setup",
+    "error_code": "ERR_MODULE_NOT_FOUND",
+    "missing_package": "@ai-matrx/kit",
+    "importer": "scripts/hosted-profile-route.mjs",
+    "boundary": "The workflow calls node scripts/hosted-guest-acceptance.mjs before package installation on a fresh runner. The importer loads @ai-matrx/kit/uuid at module evaluation and exits before credential validation, artifact import, resource admission, browser, sign-in, approved organization/header checkpoint, or T57 Network race. Local canonical preflight succeeded only with installed local dependencies."
+  },
+  "current_run_journals": {
+    "hosted_package": "absent; phase not reached",
+    "hosted_browser": "absent; phase not reached",
+    "hosted_guest": "absent; phase not reached",
+    "receipt": "absent; native phase not reached",
+    "resource_verdict": "unverified; no admission or final journal for this run"
+  },
+  "credential_lifecycle": {
+    "canonical_private_preflight": "passed before staging on local installed checkout",
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "both_deleted_immediately_after_terminal": true,
+    "independent_name_listing_absent": true,
+    "approved_fixture_mode": "0600",
+    "credential_values_retained": false
+  },
+  "originals": {
+    "hosted_artifact_id": 11543629955,
+    "hosted_artifact_digest": "sha256:b8c11acae798889361c7a768eddf4d6972442196cedba2e53e080d243e65cad1",
+    "private_recursive_download": "/Volumes/Samsung2TB/.stabilization-scratch/t57-readiness-retest-37766646825",
+    "tracked_raw_directory": ".research/t57-readiness-retest-20261008-originals/raw",
+    "raw_sha256": {
+      "run.raw.json": "3375fecbd1d464ffc01bf7cab8e58a59ab97b157f86ddaddefadc82414cedfef",
+      "artifacts.raw.json": "2dadab61525486a9df602006c573736bdd688b86b74bdda9d7ce512a3c2a6f0d",
+      "failed-step.raw.log": "59f6913bb011804b306bf8bc2ebc56b0e60b08fa4b8caf076fa560b86d07e645"
+    },
+    "download_contains_current_run_receipt_or_journals": false
+  },
+  "claim_limit": "No product behavior or repaired readiness check was exercised. T57 original race and organization/header checkpoint remain unverified. No retry was launched.",
+  "next_action": "Fix the hosted preflight dependency ordering or make its import graph independent of packages unavailable before installation, add a guard that runs the preflight in a fresh dependency-free checkout, obtain independent review, then decide on a separately authorized native attempt."
+}
