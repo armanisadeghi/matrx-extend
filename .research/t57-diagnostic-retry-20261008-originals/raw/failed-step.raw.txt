@@ -1,0 +1,63 @@
+guest	Exercise the selected Chrome side-panel case	﻿2026-10-08T09:29:02.8941540Z ##[group]Run mkdir -p "$RUNNER_TEMP/guest-resource-profile"
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8949250Z [36;1mmkdir -p "$RUNNER_TEMP/guest-resource-profile"[0m
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8949970Z [36;1mnode scripts/stabilization-resource.mjs run --run-id "hosted-guest-37756410153-1" --profile-dir "$RUNNER_TEMP/guest-resource-profile" -- node scripts/hosted-guest-acceptance.mjs[0m
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8979380Z shell: /bin/bash --noprofile --norc -e -o pipefail {0}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8979630Z env:
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8981620Z   GH_TOKEN: ***
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8981980Z   MATRX_PLAYWRIGHT_MODULE: /Users/runner/work/_temp/browser-runtime/node_modules/playwright-core/index.mjs
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8982590Z   MATRX_HOSTED_BROWSER_RUNTIME_DIR: /Users/runner/work/_temp/browser-runtime
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8983010Z   PLAYWRIGHT_BROWSERS_PATH: /Users/runner/work/_temp/playwright-browsers
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8983330Z   MATRX_HOSTED_RELEASE_ARTIFACT_DIR: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8983630Z   MATRX_HOSTED_GUEST_OUTPUT_DIR: /Users/runner/work/_temp/guest-acceptance
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8983970Z   MATRX_HOSTED_RELEASE_SHA: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8984170Z   MATRX_HOSTED_DEV_RUN_ID: 37754055905
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8984400Z   MATRX_HOSTED_DEV_ARTIFACT_ID: 11539827040
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8984620Z   MATRX_HOSTED_PUBLISHED_STORE_CRX: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8985300Z   MATRX_HOSTED_ACCEPTANCE_CASE: showcase-d47-public-admin
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8985580Z   MATRX_HOSTED_DESKTOP_SETTINGS_CASE: full
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8985810Z   MATRX_D47_RESPONSE_ORDER: current-first
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8986040Z   MATRX_HOSTED_SEO_CASE_SCOPE: full
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8986250Z   MATRX_D47_PUBLIC_RACE_PREFLIGHT: 1
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8986460Z   MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8986670Z   MATRX_SCRAPE_AUTH_MODE: guest
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8986870Z   MATRX_SCRAPE_WIDTH_MODE: narrow
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8987080Z   MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8987290Z   MATRX_HOSTED_MEMBER_LINK_JSON: 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8987660Z   MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: ***
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8988040Z   MATRX_HOSTED_PROFILE_ORGANIZATION_JSON: ***
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8988310Z   WXT_SUPABASE_URL: ***
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8988600Z   WXT_SUPABASE_PUBLISHABLE_KEY: ***
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:02.8988800Z ##[endgroup]
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:29:03.0295490Z {"schema":1,"at":"2026-10-08T09:29:03.016Z","runId":"hosted-guest-37756410153-1","path":"/Users/runner/work/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37756410153-1.pending.jsonl","code":"RESOURCE_JOURNAL_OPENED"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:30:10.7653460Z {"schema":1,"at":"2026-10-08T09:30:10.761Z","runId":"hosted-guest-37756410153-1","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":5.95,"requiredMemoryGiB":4,"oneMinuteLoad":1.81,"logicalCpus":3,"cpuBusyFraction":0.09000000000000001,"swapUsedMiB":0,"repoFreeGiB":42.96180725097656,"profileFreeGiB":42.96180725097656,"safetyFreeGiB":42.96180725097656,"systemFreeGiB":42.96180725097656},"cpuBusySamples":[0.37,0.01,0.08,0.13,0.01,0.02,0.01],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:30:10.9490780Z HOSTED_BROWSER_READY 1194 acceptance
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:30:21.3726870Z DEVELOPMENT_TEST_IMPORTED /Users/runner/work/matrx-extend/matrx-extend/test-results/ci-artifacts/5d845f42cb22c10e2486af8048d1ac9f3ac8e114/37754055905-1 exact_pushed_commit_only
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:30:22.2576280Z PREPARED_DEVELOPMENT 5d845f42cb22c10e2486af8048d1ac9f3ac8e114 f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:30:26.8359800Z {"schema":1,"at":"2026-10-08T09:30:26.832Z","runId":"hosted-guest-37756410153-1","reasons":[],"sample":{"pressureLevel":1,"availableMemoryGiB":5.74,"requiredMemoryGiB":4,"oneMinuteLoad":2.04,"logicalCpus":3,"cpuBusyFraction":0.43,"swapUsedMiB":0,"repoFreeGiB":42.75621032714844,"profileFreeGiB":42.75621032714844,"safetyFreeGiB":42.75621032714844,"systemFreeGiB":42.75621032714844},"code":"RESOURCE_WATCH_HEALTHY"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:30:28.5870950Z BROWSER_PANEL_CONTEXT_READY {"first":{"contextCount":1,"sidePanelCount":1,"expectedExtensionCount":1,"exactUrlCount":1,"globalTabCount":1,"exactContextCount":1,"missingDocumentUrlCount":0,"emptyDocumentUrlCount":0,"otherExtensionUrlCount":0,"nonExtensionUrlCount":0},"last":{"contextCount":1,"sidePanelCount":1,"expectedExtensionCount":1,"exactUrlCount":1,"globalTabCount":1,"exactContextCount":1,"missingDocumentUrlCount":0,"emptyDocumentUrlCount":0,"otherExtensionUrlCount":0,"nonExtensionUrlCount":0},"attempts":1,"elapsed_ms":3,"exact_expected_appeared":true}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:30:43.0211410Z {"schema":1,"at":"2026-10-08T09:30:43.016Z","runId":"hosted-guest-37756410153-1","reasons":[],"sample":{"pressureLevel":1,"availableMemoryGiB":5.74,"requiredMemoryGiB":4,"oneMinuteLoad":2.25,"logicalCpus":3,"cpuBusyFraction":0.1,"swapUsedMiB":0,"repoFreeGiB":42.715087890625,"profileFreeGiB":42.715087890625,"safetyFreeGiB":42.715087890625,"systemFreeGiB":42.715087890625},"code":"RESOURCE_WATCH_HEALTHY"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:30:59.0929930Z {"schema":1,"at":"2026-10-08T09:30:59.091Z","runId":"hosted-guest-37756410153-1","reasons":[],"sample":{"pressureLevel":1,"availableMemoryGiB":5.74,"requiredMemoryGiB":4,"oneMinuteLoad":2.78,"logicalCpus":3,"cpuBusyFraction":0.35,"swapUsedMiB":0,"repoFreeGiB":42.70283508300781,"profileFreeGiB":42.70283508300781,"safetyFreeGiB":42.70283508300781,"systemFreeGiB":42.70283508300781},"code":"RESOURCE_WATCH_HEALTHY"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:15.1566090Z {"schema":1,"at":"2026-10-08T09:31:15.154Z","runId":"hosted-guest-37756410153-1","reasons":[],"sample":{"pressureLevel":1,"availableMemoryGiB":5.74,"requiredMemoryGiB":4,"oneMinuteLoad":2.51,"logicalCpus":3,"cpuBusyFraction":0.06,"swapUsedMiB":0,"repoFreeGiB":42.70912170410156,"profileFreeGiB":42.70912170410156,"safetyFreeGiB":42.70912170410156,"systemFreeGiB":42.70912170410156},"code":"RESOURCE_WATCH_HEALTHY"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3736100Z node:internal/modules/run_main:123
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3736500Z     triggerUncaughtException(
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3736900Z     ^
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3737000Z 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3737260Z AssertionError [ERR_ASSERTION]: native side-panel acceptance exited 1
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3737560Z 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3737640Z 1 !== 0
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3737750Z 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3738110Z     at run (file:///Users/runner/work/matrx-extend/matrx-extend/scripts/hosted-guest-acceptance.mjs:546:12)
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3738750Z     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3739420Z     at async file:///Users/runner/work/matrx-extend/matrx-extend/scripts/hosted-guest-acceptance.mjs:729:1 {
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3739860Z   generatedMessage: false,
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3740080Z   code: 'ERR_ASSERTION',
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3740280Z   actual: 1,
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3740460Z   expected: 0,
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3740640Z   operator: 'strictEqual',
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3740840Z   diff: 'simple'
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3741010Z }
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3741110Z 
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3741180Z Node.js v22.23.2
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.3804660Z {"schema":1,"at":"2026-10-08T09:31:20.376Z","runId":"hosted-guest-37756410153-1","childExitCode":1,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:20.4318230Z {"schema":1,"at":"2026-10-08T09:31:20.430Z","runId":"hosted-guest-37756410153-1","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed","code":"RESOURCE_FINAL_DECISION"}
+guest	Exercise the selected Chrome side-panel case	2026-10-08T09:31:30.1672130Z ##[error]Process completed with exit code 1.

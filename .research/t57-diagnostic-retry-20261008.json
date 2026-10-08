@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "scope": "One hosted lane A diagnostic retry after independently accepted workflow setup repair; no further retry",
+  "run": {
+    "id": 37756410153,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37756410153",
+    "workflow": "Hosted guest side-panel acceptance",
+    "conclusion": "failure",
+    "checkout_sha": "21f43ae3849df7d13b582756bae6fe1291d6219f",
+    "runner": "macos-15 ARM",
+    "lane": "A",
+    "acceptance_case": "showcase-d47-public-admin",
+    "d47_public_race_preflight": true,
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "indexing_repair_step": "passed",
+    "package_browser_acceptance_readiness": "passed"
+  },
+  "installed_artifact": {
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "version": "0.2.407",
+    "import": "exact_pushed_commit_only",
+    "scope_limit": "This installed frozen artifact and its dependencies were tested; current main application code was not installed."
+  },
+  "resource_decisions": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "native_receipt": {
+    "status": "unverified",
+    "stage": "organization",
+    "auth_stage": "admin_rendered_identity",
+    "auth_diagnostic": null,
+    "failure_name": "Error",
+    "failure_code": "d87_required_organization_storage_not_observed",
+    "organization_substage": "organization_storage",
+    "organization_observations": {
+      "admin_role_verified": true,
+      "picker_available": true,
+      "picker_has_selection": true,
+      "selection_required": false,
+      "storage_has_uuid": false,
+      "storage_name_matches": false
+    },
+    "hn_capture_reached": false,
+    "owned_recipe_created": false,
+    "prior_response_observed": false,
+    "current_response_observed": false,
+    "terminal_saved_result_or_refusal_observed": false
+  },
+  "bounded_source_interpretation": "The native driver passed admin sign-in and the rendered identity check, then saw the approved organization already selected in the picker, skipped an explicit switch, and timed out requiring the device-choice storage key. The frozen app includes the active-organization ladder, which deliberately does not persist an account/startup/first-membership fallback as a device choice. This is a plausible acceptance-driver contract mismatch, not proof of a product failure; reconcile the exact stored-selection contract and fixture before another native run.",
+  "credential_cleanup": {
+    "private_hosted_credential_preflight": "passed before staging",
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "both_deleted_at_terminal": true,
+    "independent_name_listing_absent": true,
+    "secret_values_logged_or_committed": false
+  },
+  "originals": {
+    "hosted_artifact_id": 11540193444,
+    "hosted_artifact_digest": "sha256:6e899f79dfa6d45f074379b3d58da0741f151e231c213c0c0a9a7eefe99e76a8",
+    "private_recursive_download": ".research/t57-diagnostic-retry-20261008-originals/private/artifact",
+    "tracked_raw_directory": ".research/t57-diagnostic-retry-20261008-originals/raw",
+    "raw_sha256": {
+      "receipt.raw.json.txt": "460e27172e3118b95e1f574ab08803429fc591f8aceb982be8cefb6ac8ec71f5",
+      "failed-step.raw.txt": "4e7025fb07f98c7e7db0dedf60f15fcbba9a2ef65fe94f05ba18f773901a31cd",
+      "hosted-package-37756410153-1.jsonl": "2dd1a4e147adea36d091e94fce1d126fb1341b95da9996c5b611d73007498051",
+      "hosted-browser-37756410153-1.jsonl": "dff79adb262612db2fd1bbd06852bab45605bf4338343c0e061896517a7e75b8",
+      "hosted-guest-37756410153-1.jsonl": "09ab73e7ca9d2b7878825f922cfb1e87391f48ee6c82e6fbed8d213ef6bb6a79",
+      "run.raw.json": "80a2b2a9c10d9a7845f4f42853938b4fea94ec571da2a1b1edbc81ee918ed391",
+      "artifacts.raw.json": "013a40e5c0e45de87566bd0c90d3238bca4130a9b965094387bfd662e95938ed"
+    }
+  },
+  "claim_limit": "Resource-valid native execution stopped at organization storage. It establishes neither T57 Network race acceptance nor a product organization defect. No additional native attempt was dispatched."
+}
