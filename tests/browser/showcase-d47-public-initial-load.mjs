@@ -357,6 +357,7 @@ async function run() {
     capture_observations: {},
     saved_result: null,
     owned_recipe: null,
+    auth_diagnostic: null,
     click_observations: [],
     failure: null,
   };
@@ -432,6 +433,9 @@ async function run() {
               adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
               onStage: (stage) => {
                 report.auth_stage = stage;
+              },
+              onAuthDiagnostic: (value) => {
+                report.auth_diagnostic = value;
               },
             }),
           );

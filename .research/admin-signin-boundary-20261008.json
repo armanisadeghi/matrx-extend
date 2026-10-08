@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "scope": "Source and narrow credential diagnosis only; no browser, native, release, deployment, migration, or Records mutation run",
+  "t57_boundary": {
+    "run_id": 37748442466,
+    "installed_version": "0.2.405",
+    "receipt_failure": "d87_rendered_identity_not_observed",
+    "last_recorded_auth_stage": "admin_extension_auth_completion",
+    "source_trace": "signInSettings(admin) returns from signInAdminSettings only after the web dashboard, extension completion, Account email and role, and first-party /api/whoami identity; it then asserts matching extension storage profile ID and admin flag before verifyCurrentSettingsIdentity polls rendered Account and organization state",
+    "inference": "The observed failure is downstream of the initial web and extension sign-in checks in this driver. The exact rendered field that failed is not present in the original receipt, so neither a product auth defect nor a specific UI mismatch is established.",
+    "resource_admission": "The guest guard final decision was invalid after one high-CPU sample; this run gives no T57 product verdict.",
+    "source_change": "The T57 receipt now connects onAuthDiagnostic and the shared driver emits a fixed, credential-free set of booleans for a late rendered-identity failure, with a separate admin_rendered_identity stage. It preserves the original assertion and rethrows its failure.",
+    "next_native_ready_step": "On a separately authorized, resource-admitted native attempt, inspect auth_diagnostic and auth_stage. If email, role, sign-out, storage lineage, and organization all match, investigate the identity predicate/DOM sampling; otherwise trace only the false field. Do not treat this source check as a native pass."
+  },
+  "records_boundary": {
+    "earlier_observation": "The Records procedure recorded HTTP 401 during designated admin authentication before GET /api/tools/test/list, without the original endpoint, request fields, project, or response error code.",
+    "narrow_current_check": "Privately loaded existing admin fixture and extension Supabase project variables, then called Supabase password token endpoint. HTTP 200, access token present, returned email matched admin@admin.com. No credential or token value was logged, stored, or committed.",
+    "inference": "The current local fixture authenticates to the extension Supabase project. This does not identify the earlier 401 cause, verify hosted fixture parity, or prove backend /api/tools/test/list authorization.",
+    "next_step": "For the next owned Records fixture attempt, retain only safe auth metadata: destination route class and project identifier fingerprint, HTTP status, machine-readable response code, and whether the organization header was attached. Then check authenticated GET /api/tools/test/list. Keep passwords, bearer tokens, response bodies, and user IDs out of the report."
+  },
+  "verification": {
+    "focused_test": "node --test tests/browser/settings-panel-driver.guest.test.mjs: 5 passed",
+    "format_and_lint": "pnpm exec biome check on the three changed browser JS files: passed",
+    "native_product_result": "unverified"
+  }
+}

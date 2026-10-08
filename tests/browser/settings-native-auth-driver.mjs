@@ -476,13 +476,42 @@ export async function signInSettings({
     const stored = await panelIdentity(panel);
     assert.equal(stored.profileId, identity.userId, 'd87_admin_profile_mismatch');
     assert.equal(stored.isAdmin, true, 'd87_admin_role_unverified');
-    const rendered = await verifyCurrentSettingsIdentity({
-      panel,
-      mode,
-      email: identity.email,
-      profileId: identity.userId,
-      organizationId: stored.organizationId,
-    });
+    onStage?.('admin_rendered_identity');
+    let rendered;
+    try {
+      rendered = await verifyCurrentSettingsIdentity({
+        panel,
+        mode,
+        email: identity.email,
+        profileId: identity.userId,
+        organizationId: stored.organizationId,
+      });
+    } catch (error) {
+      const account = await accountIdentity(panel, identity.email).catch(() => null);
+      const latest = await panelIdentity(panel).catch(() => null);
+      const booleanOrNull = (value) => (typeof value === 'boolean' ? value : null);
+      onAuthDiagnostic?.({
+        phase: 'admin_rendered_identity',
+        outcome: error?.message?.startsWith('d87_rendered_identity_not_observed:')
+          ? 'rendered_identity_unobserved'
+          : 'rendered_identity_check_failed',
+        web_identity_verified: true,
+        storage_profile_matches_web: latest ? latest.profileId === identity.userId : null,
+        storage_admin_flag: booleanOrNull(latest?.isAdmin),
+        storage_access_token_present: booleanOrNull(latest?.accessTokenPresent),
+        rendered_admin_email: booleanOrNull(account?.emailMatches),
+        rendered_admin_role: booleanOrNull(account?.adminRole),
+        rendered_sign_out: booleanOrNull(account?.signOutVisible),
+        rendered_organization_selected: booleanOrNull(account?.organizationSelected),
+        rendered_organization_matches_storage:
+          account && latest
+            ? account.organizationSelected &&
+              account.organizationLabel === latest.organizationName &&
+              latest.organizationId === stored.organizationId
+            : null,
+      });
+      throw error;
+    }
     return {
       mode,
       profileId: identity.userId,

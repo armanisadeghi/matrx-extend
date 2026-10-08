@@ -163,6 +163,74 @@ test('admin completion failure reaches the acceptance receipt as safe categories
   }
 });
 
+test('late rendered-identity failure records safe account and storage categories', async () => {
+  const source = await readFile(
+    new URL('./settings-native-auth-driver.mjs', import.meta.url),
+    'utf8',
+  );
+  const implementation = source
+    .slice(source.indexOf('export async function signInSettings('))
+    .replace('export async function', 'async function');
+  const signInSettings = new Function(
+    'assert',
+    'signInAdminSettings',
+    'panelIdentity',
+    'accountIdentity',
+    'verifyCurrentSettingsIdentity',
+    `${implementation}; return signInSettings;`,
+  )(
+    assert,
+    async () => ({ email: 'admin@admin.com', userId: 'private-id' }),
+    async () => ({
+      profileId: 'private-id',
+      isAdmin: true,
+      accessTokenPresent: true,
+      organizationId: 'private-organization-id',
+      organizationName: 'private-org',
+    }),
+    async () => ({
+      emailMatches: true,
+      adminRole: true,
+      signOutVisible: true,
+      organizationSelected: false,
+      organizationLabel: 'private-org',
+    }),
+    async () => {
+      throw new Error('d87_rendered_identity_not_observed:{"organizationName":"private-org"}');
+    },
+  );
+  const receipt = { auth_diagnostic: null };
+  const stages = [];
+  await assert.rejects(
+    () =>
+      signInSettings({
+        mode: 'admin',
+        panel: {},
+        page: {},
+        onStage: (value) => stages.push(value),
+        onAuthDiagnostic: (value) => {
+          receipt.auth_diagnostic = value;
+        },
+      }),
+    /d87_rendered_identity_not_observed/,
+  );
+  assert.deepEqual(stages, ['admin_rendered_identity']);
+  assert.deepEqual(receipt.auth_diagnostic, {
+    phase: 'admin_rendered_identity',
+    outcome: 'rendered_identity_unobserved',
+    web_identity_verified: true,
+    storage_profile_matches_web: true,
+    storage_admin_flag: true,
+    storage_access_token_present: true,
+    rendered_admin_email: true,
+    rendered_admin_role: true,
+    rendered_sign_out: true,
+    rendered_organization_selected: false,
+    rendered_organization_matches_storage: false,
+  });
+  assert.equal(JSON.stringify(receipt).includes('private-'), false);
+});
+
 // A signed-out operator opens Settings to inspect the device account and
 // organization controls. These counts match the source-rendered guest view.
 const guest = {
