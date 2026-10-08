@@ -1,0 +1,35 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commit": "5a836098e56a92b876f85256a4fce22ce94f0613",
+  "scope": "Fresh source-only review of EXT-F-1007-T07/T09 guest warm and reload coverage, candidate driver and tests, exact pushed focused CI, and artifact import boundary. No browser, build, release, credential, or heavy test run.",
+  "verdict_A_scope_readiness": {
+    "status": "PARTIAL",
+    "T07": "Source-ready for a bounded native guest run: a trusted page wheel input follows a native toggle, the Article scroller must move while on and hold while off, and the sequence repeats after extension reload. The runner still has no observed native result. A live page scroll-position readback would make the causal chain clearer; panel movement and off-state hold are currently the decisive outputs.",
+    "T09": "Incomplete acceptance oracle: all seven guest menus and their expected labels are exercised warm and after reload, but most clipboard checks only require one shared page substring, not the selected representation. After navigation, only capture Page URL and article Markdown reject old-page content; the other section formats do not get a second-page freshness check. A guest T09 pass is therefore not supported even if this driver runs green.",
+    "native_prerequisite": "Run the corrected driver on a guarded hosted guest Scrape route with a verified CI development artifact and review its receipt/resource journals. The frozen 0.2.391 artifact is technically selectable by the current checkout's driver: the importer verifies its own source SHA, not equality with the workflow checkout, and ScrapeView, copy-options and scroll-sync hook have no diff from frozen source 52487361 to this commit. This supports a bounded 0.2.391 product claim if provenance explicitly names that product and newer driver; it does not establish whole-runtime equivalence. A new CI artifact gives exact current-source provenance but is not a demonstrated functional prerequisite for this driver change."
+  },
+  "verdict_B_quality": {
+    "status": "FAIL",
+    "blocking_finding": "The unit tests exercise only helper predicates and menu constants, not the real copy path. In the native loop, a no-op CopyMenu write can leave a previous clipboard value containing 'Harbor Dental' (or the section URL) and still pass; a wrong Markdown/plain/URL/AI choice can likewise pass. Seed a distinct clipboard sentinel before every trusted action and assert option-specific structure/content from an independent expected oracle, including multiple second-page formats. The current tests do not meet the forcing-function gut check for T09.",
+    "preserved_boundaries": "The new shared settings-panel-driver branch is additive and retains hit-tested Input.dispatchMouseEvent pointer actions. Clipboard read permission is temporary and restored. The owned fixture extends the intake article before existing deep capture, preserving the lazy-scroll event and deep-capture sequence. Guest-only guards keep member/admin cells unclaimed; resource health gates and stage-specific errors are retained.",
+    "secondary_limit": "The scroll check asserts Article scrollability and panel movement/hold, but does not record the source page's scrollY before and after each wheel. This weakens attribution if page wheel targeting changes, though the native panel movement remains a useful forcing observation."
+  },
+  "ci": {
+    "focused": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37718641853: success, push head exactly 5a836098e56a92b876f85256a4fce22ce94f0613",
+    "full": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37718642042: pending at review time; no CI development artifact claimed",
+    "builder_local_claim": "40 focused tests passed locally; this is separate from the exact pushed focused CI result."
+  },
+  "evidence": [
+    "docs/stabilization/inventory.json EXT-F-1007-T07/T09",
+    "tests/browser/scrape-guest-behavior-batch.mjs",
+    "tests/browser/scrape-guest-behavior-batch.test.mjs",
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/clipboard-observation.mjs",
+    "src/lib/scrape/copy-options.ts",
+    "src/hooks/use-page-scroll-sync.ts",
+    "scripts/hosted-guest-acceptance.mjs",
+    "scripts/current-test-artifact.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml"
+  ]
+}

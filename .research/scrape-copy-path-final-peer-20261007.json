@@ -1,0 +1,39 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "reviewed_commits": [
+    "5a836098",
+    "6b6fb20f",
+    "16a5c39d0ae560f99fb1a0954e6e5ba2e8273452"
+  ],
+  "scope": "Fresh zero-authorship source review of guest Scrape T07/T09 readiness and focused tests. No native run, build, release, secrets, or product mock acceptance.",
+  "prior_findings": [
+    {
+      "finding": "Schema For AI oracle rejected the producer's JSON fence",
+      "status": "ADDRESSED",
+      "evidence": "schemaCopyOptions uses wrapJsonForAgent, which emits a json fence; copyOracle now requires that fence for Schema For AI, and the focused test accepts a JSON-fenced sample while rejecting the same sample with a markdown fence."
+    },
+    {
+      "finding": "Focused tests did not exercise the copy verification loop",
+      "status": "ADDRESSED",
+      "evidence": "The new test calls runGuestCopyMenus with narrow adapters, including clipboard seeding and readback. Correct Schema Markdown, JSON, and For AI samples pass; no-op sentinel, wrong selected format, wrong AI fence, and stale content reject through the loop. These adapters do not substitute for a native product run."
+    }
+  ],
+  "verdict_A_native_readiness": {
+    "status": "PASS_READY_NATIVE_PENDING",
+    "T07": "Warm and reload routes use native page wheel actions and record source-page scrollY plus the panel Article scroller before following, while following, and after stopping. The oracle requires real page motion, panel follow, page reversal, and panel hold.",
+    "T09": "The seven actual guest menus contain 22 options, including Schema JSON. The route traverses all options on the intake fixture, the referrals fixture after navigation, and intake after full extension reload, for 66 selected copy actions. Each action seeds a distinct sentinel before the trusted pointer click, observes the clipboard with temporary permission restored, and checks format and fixture-specific freshness inside the panel.",
+    "outcome_limit": "No new native T07/T09 result exists. Frozen development 0.2.391 compatibility and source identity were established in the previous peer report; that artifact represents its own source, not exact current-source provenance."
+  },
+  "verdict_B_quality": {
+    "status": "PASS_WITH_NATIVE_LIMIT",
+    "evidence": "The oracle has its own fixture-specific expected values and does not import product converters. The focused test reaches the runGuestCopyMenus control flow; the negative cases fail for the named mismatch and the positive cases pass. Shared driver trusted hit-tested pointer behavior, temporary clipboard permission restoration, deep capture order, and existing guarded startup/reload route remain in place.",
+    "limit": "The focused loop test substitutes browser actions and copy production with adapters. It proves the verifier's control flow and rejection behavior, while only a native run can prove actual UI, copy producer, and clipboard integration."
+  },
+  "verification": [
+    "node --test tests/browser/scrape-guest-behavior-batch.test.mjs: 4 passed in this review",
+    "Root separately verified exact focused CI 37719671634 SUCCESS for 16a5c39d0ae560f99fb1a0954e6e5ba2e8273452",
+    "Source inspected: tests/browser/scrape-guest-behavior-batch.mjs, its test, scrape-guest-native-acceptance.mjs, settings-panel-driver.mjs, src/lib/scrape/copy-options.ts, src/lib/scrape/to-markdown.ts, src/lib/clipboard/copy.ts, src/components/CopyMenu.tsx, and clipboard-observation.mjs"
+  ],
+  "open_important_native_blockers": [],
+  "next": "Run the guarded guest native acceptance with an explicitly identified development artifact and record T07/T09 actual outcomes; do not mark those product cases passed from source or focused-test evidence alone."
+}

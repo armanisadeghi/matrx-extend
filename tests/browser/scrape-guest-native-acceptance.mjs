@@ -13,11 +13,7 @@ import {
 } from './panel-transition-recorder.mjs';
 import { captureLifecycleEvidence } from './profile-reload-capture.mjs';
 import { armBusyExpression, readBusyExpression } from './scrape-busy-observer.mjs';
-import {
-  runGuestCopyAfterNavigation,
-  runGuestCopyMenus,
-  runGuestScrollSync,
-} from './scrape-guest-behavior-batch.mjs';
+import { runGuestCopyMenus, runGuestScrollSync } from './scrape-guest-behavior-batch.mjs';
 import { scrapeLayoutFailure } from './scrape-layout-guard.mjs';
 import { assertImageGroups, assertLinkPane } from './scrape-media-assertions.mjs';
 import { intakeImage } from './scrape-media-fixture.mjs';
@@ -1453,6 +1449,7 @@ try {
           browserSession,
           panelUrl: panelTarget.url,
           origin,
+          fixtureKey: 'intake',
           resourceAction,
         });
         const copyCase = report.cases.find((c) => c.id === 'EXT-F-1007-T09');
@@ -1490,11 +1487,12 @@ try {
         report.stage = 'guest_copy_after_navigation';
         await requireResourceHealth();
         report.cases.find((c) => c.id === 'EXT-F-1007-T09').evidence.after_navigation =
-          await runGuestCopyAfterNavigation({
+          await runGuestCopyMenus({
             panel,
             browserSession,
             panelUrl: panelTarget.url,
             origin,
+            fixtureKey: 'referrals',
             resourceAction,
           });
       }
@@ -1720,6 +1718,7 @@ try {
             browserSession,
             panelUrl: replacement.panelTarget?.url ?? panelTarget.url,
             origin,
+            fixtureKey: 'intake',
             resourceAction,
           });
           const copyCase = report.cases.find((c) => c.id === 'EXT-F-1007-T09');

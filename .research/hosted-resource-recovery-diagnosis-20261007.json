@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "status": "settings_activation_reverted_pending_guard_preserving_sampler",
+  "scope": "Hosted resource admission/watchdog interference in two original frozen-artifact Settings native attempts. No product acceptance credit is inferred.",
+  "evidence": {
+    "first_original": {
+      "workflow_run_id": 37716001386,
+      "journal": ".research/settings-reload-native-retest-20261007/evidence/resource-journals/hosted-guest-37716001386-1.jsonl",
+      "admitted": true,
+      "unsafe_watch": "2026-10-08T02:09:53.986Z: CPU busy 0.65, one-minute load 2.76 on three logical CPUs; RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "next_watch": "2026-10-08T02:10:10.177Z: CPU busy 0.27 and no unsafe reason, first of three required healthy recovery samples",
+      "child_exit": "2026-10-08T02:10:20.277Z: child exit 0 while CPU episode remained pending",
+      "final": "resourceInvalid=true, wrapper exit 3, decision=invalid"
+    },
+    "second_original": {
+      "workflow_run_id": 37718106224,
+      "journal": ".research/settings-valid-reload-round-20261007-originals/hosted-guest-37718106224-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37718106224-1.jsonl",
+      "admitted": true,
+      "unsafe_watch": "2026-10-08T02:35:27.043Z: CPU busy 0.85; RESOURCE_CPU_BUSY",
+      "next_watch": "2026-10-08T02:35:43.227Z: CPU busy 0.36 and no unsafe reason, first of three required healthy recovery samples",
+      "final": "child exit before recovery; resourceInvalid=true, wrapper exit 3, decision=invalid"
+    },
+    "process_snapshot_limit": "Post-sample ps percentages show MTLCompilerServi, Chromium, and provjobd, but cannot attribute CPU seconds to the iostat interval; MTLCompilerServi is reparented to PID 1."
+  },
+  "confirmed_mechanism": "The resource policy requires two unsafe watch samples to stop or three healthy samples to clear a CPU-only pending episode. The wrapper marks an admitted run invalid if its child exits while pending. Both originals followed that exact path. The prior package/browser preparations only installed and verified Chromium; they did not launch the native panel or prove the guest phase would avoid first-use CPU work.",
+  "hypotheses": [
+    {
+      "if": "Chromium-triggered Metal compilation dominates the unsafe interval",
+      "prediction": "The exact Settings unsafe iostat bracket records material MTLCompilerServi CPU-time deltas concurrent with owned Chromium work; a post-sample percentage alone is insufficient."
+    },
+    {
+      "if": "Independent runner/provisioner activity dominates",
+      "prediction": "The exact unsafe bracket records material provjobd or other named host-process CPU-time deltas while owned Chromium/Metal deltas are small."
+    },
+    {
+      "if": "The guard's CPU classification is wrong",
+      "prediction": "Replaying the recorded busy/load/CPU counts through the unchanged policy would not produce the journal's CPU reasons; source inspection instead predicts those reasons exactly."
+    }
+  ],
+  "correction": {
+    "peer_report": ".research/resource-interval-activation-peer-20261007.json",
+    "finding": "The earlier claim that the bracket left sampling cadence unchanged was false. In diagnostic mode sample() awaits a process snapshot before and after iostat. Each snapshot uses the guard command runner's five-second timeout, and the watch loop sleeps for another 15 seconds only after sample() and journal emission finish. The optional bracket could therefore delay unsafe confirmation by as much as two snapshot timeouts per watch, plus other sampling and writing time.",
+    "resolution": "Removed the settings-controls activation from the hosted acceptance workflow. Ordinary Settings acceptance uses the existing guard sampling path and cadence; no native rerun should use the previous activation commit as a readiness claim."
+  },
+  "next_discriminant": "A future exact-run Settings CPU-time bracket is useful only after a source change proves diagnostic snapshots cannot delay the guard's safety sample, unsafe decision, stop action, or next watch. Preserve named MTLCompilerServi, ownedChromium, hostProvisioner, and otherHost CPU-seconds deltas and unmatched/new/exited PID limitations. Verify the unchanged watchdog cadence with a fault that makes each diagnostic process snapshot consume its full timeout, then obtain independent source review before one authorized native run. An invalid run stays diagnostic only even if its native child exits 0.",
+  "limitations": [
+    "No causal source remedy or reliable host capacity change is established yet; prior Intel diagnostic also had a pending CPU sample before recovery, so merely selecting Intel is not a proven fix.",
+    "The current optional bracket blocks the watchdog while gathering process snapshots; it is not permitted in Settings acceptance until its sampling lifecycle is repaired and tested.",
+    "A bracket encloses rather than exactly equals the one-second iostat interval. Reparented, newly created, exited, or PID-reused processes limit attribution.",
+    "Waiting after already performed native actions would launder contaminated work and is not proposed."
+  ],
+  "verification": "Rechecked hosted acceptance env scope, the guard's sequential watch loop, sample()/bracket awaits, five-second command timeout, unchanged policy, and both original current-run journals. The activation was removed before any further hosted/native run; no manual build or release was run."
+}
