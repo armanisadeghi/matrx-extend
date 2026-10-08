@@ -39,9 +39,21 @@
     {
       "fact": "When no Home is supplied, table_propose calls ensure_home before its held-versus-applied branch; a held request can therefore leave an additional Home artifact in a blank organization.",
       "sources": ["../aidream/packages/matrx-records/matrx_records/store/client.py:3810"]
+    },
+    {
+      "fact": "An independent person-facing fixture path exists: authenticated POST /api/v1/tables with TableCreate{name,columns,slug} returns TableMade{done,id,created,organization_id}; POST /api/v1/tables/{table}/rows with RowCreate{values} returns WriteResult{done,row}. The REST surface acts as the person, so these writes bypass agent approval. A unique case slug, created=true, returned table id and same organization are required before using or archiving the table; a replay that found an existing table cannot be treated as owned.",
+      "sources": [
+        "../aidream/aidream/api/routers/table_api.py:114",
+        "../aidream/aidream/api/routers/table_api.py:300",
+        "../aidream/aidream/services/table_api/contract.py:210",
+        "../aidream/aidream/services/table_api/contract.py:468",
+        "../aidream/aidream/services/table_api/caller.py:54",
+        "../aidream/aidream/services/table_api/schema.py:253",
+        "../aidream/aidream/services/table_api/service.py:499"
+      ]
     }
   ],
-  "blocking_gap": "The current native driver has no verified same-principal approval preflight or rejection path and no authenticated, exact-table archival path with durable recovery after partial failure. Table archive is the supported cleanup but is not deletion, and its live availability and ownership have not been proven in this harness. Encoding C11/C06 writes now could leave an owned table, Home or pending approval beyond the test run.",
-  "safe_next_step": "First prove, without a fixture write, the current authenticated organization and approval policy through the canonical agent_change_approval door; identify an existing Home so C11 need not create one. Prove that the same person can call DELETE /api/v1/tables/{owned-id} and can reject a held request through the canonical work_approval_decide door, using an already-owned disposable target and safe receipts. Only then encode C11/C06 in a try/finally lifecycle that records the returned owned IDs in a local cleanup journal before subsequent assertions, rejects any held approvals, repeats archive through done=true, and verifies table invisibility. A failed cleanup must fail the run and retain only nonsecret receipt metadata for recovery.",
-  "positive_native_status": "NOT_RUN; C11/C06/C04/C05/C07 positive credit remains pending. No new native procedure or executable assertion was added because the pre-write cleanup and held-approval contract has not been established."
+  "blocking_gap": "C11/C06 agent-action writes remain blocked: the current native driver has no verified same-principal approval preflight or rejection path. A held table_add or record_add approval can apply after table archival. The person-facing API can prepare C04/C05's owned table and row independently, but this harness has not yet proven its live create/archive ownership or durable recovery after partial failure. Archive is the supported, restorable cleanup; no hard deletion contract was found.",
+  "safe_next_step": "For C04/C05 alone, use the same authenticated person and X-Organization-Id to POST a table with a run-unique slug and text/number columns, require done=true, created=true and the expected organization, then POST one row with an Idempotency-Key and require done=true plus its actual id. Journal the slug and returned IDs outside the final receipt so a failed or interrupted run can find only its own fixture, perform C04/C05 reads, and in finally repeat DELETE /api/v1/tables/{owned-id} until done=true and verify it no longer appears in normal table reads. Fail closed on missing ownership or cleanup evidence. This API setup does not credit C11/C06. For C11/C06 specifically, first prove the current approval policy, use an existing Home, and prove the same-person work_approval_decide rejection path; only then encode their agent writes and held-request cleanup.",
+  "positive_native_status": "NOT_RUN; C11/C06/C04/C05/C07 positive credit remains pending. C04/C05 have a source-supported separate setup route, not a live-verified or executable native procedure in this unit. No new driver assertion was added because the owned REST create/archive lifecycle has not been verified in this harness."
 }
