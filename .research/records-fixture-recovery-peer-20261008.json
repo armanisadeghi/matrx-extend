@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "candidate_sha": "66914d3adcfd928871b288f7e87a96dd5c67299c",
+  "review_type": "independent source and hosted-gate review",
+  "verdict_A_behavior_source": "PASS source review; hosted native behavior remains unverified.",
+  "verdict_B_quality_safety": "PASS source review; exact marker, synthetic-name, custom-kind, organization and complete-list checks bound cleanup, and Records attempts share a concurrency group across A/B.",
+  "findings": [],
+  "original_findings": [
+    {
+      "finding": "ownership_unverified had no durable resolution",
+      "status": "addressed",
+      "evidence": "A deterministic marker derived from principal and approved organization is stored in table description. Later attempts discover matching fixtures through the person API; cleanup accepts only exact marker, synthetic UUID name, custom kind and organization matches. A created=false collision without that marker transitions to no_owned_fixture_found and remains untouched. See tests/browser/records-positive-fixture.mjs:8-12, 59-75, 154-181, 270-275."
+    },
+    {
+      "finding": "absent no_fixture_created and archived_verified states failed every retry",
+      "status": "addressed",
+      "evidence": "Both phases now confirm absence as terminal states without another write; absent ownership_unverified also resolves to no_owned_fixture_found. Source coverage is in tests/browser/records-positive-fixture.mjs:256-275 and tests/browser/records-positive-fixture.test.mjs:250-269."
+    },
+    {
+      "finding": "per-attempt journal path prevented recovery across hosted retries",
+      "status": "addressed",
+      "evidence": "Recovery scans organization-filtered person-API table results for the exact marker before creating a fixture, so it does not depend on the old attempt journal. The workflow groups the Records case across lanes with cancel-in-progress false. Coverage is in tests/browser/records-positive-fixture.test.mjs:297-312, 432-456 and .github/workflows/hosted-guest-acceptance.yml:171-174."
+    }
+  ],
+  "positive_assertions": {
+    "C04_C05": "Preserved: C04 checks returned row/table/org/value and provenance; C05 checks returned table, count measure and one matching bucket with row_count=1 and count=1. tests/browser/records-readonly-native-acceptance.mjs:613-690.",
+    "C11_C06": "No credit claimed; native exercise remains limited to C04/C05."
+  },
+  "hosted_gate": {
+    "candidate_sha": "66914d3adcfd928871b288f7e87a96dd5c67299c",
+    "focused_acceptance_run": "37831899672",
+    "result": "cancelled",
+    "ci_run": "37831899635",
+    "ci_result": "cancelled",
+    "note": "The preceding focused run 37830788881 succeeded on the earlier SHA f7e5ab09c6f390a3bbd9326741a56d38724c795b and does not verify this repair."
+  },
+  "limitations": [
+    "No local tests, browser, or build were run, as directed. Source tests cover the repair paths but were not executed in this review.",
+    "The person API exposes descriptions in organization-filtered table lists, and the fixture request includes X-Organization-Id. Real hosted recovery and cleanup still require a successful hosted run.",
+    "Recovery archives only restorable tables; it does not hard-delete them."
+  ]
+}
