@@ -36,7 +36,8 @@
       "src/lib/tools/handlers/prospects.ts:47-156 and src/lib/api/routes/prospects.ts:1-112 (preview vs capture and single import route)",
       "src/lib/tools/handlers/google-email-send.ts:1-148 and src/features/chat/GmailReviewCard.tsx:1-190 (card owns one-send authorization and result receipt)",
       "src/lib/api/routes/google-workspace.ts:1-80 (reviewed endpoint only from card Send)",
-      "src/hooks/use-tool-inbox.ts:1-210 and src/features/chat/ChatView.tsx:192-210,664-666 (conversation-scoped card rendering)"
+      "src/hooks/use-tool-inbox.ts:1-210 and src/features/chat/ChatView.tsx:192-210,664-666 (conversation-scoped card rendering)",
+      "src/hooks/use-tool-inbox.ts:206-212 and src/features/chat/ChatView.tsx:192-205 (null manual ask is assigned current Chat selection; Chat filters pending asks to that selection)"
     ],
     "limits": [
       "All three cases are NOT_EXECUTABLE until a valid stabilization resource permit, exact build/runtime receipt, and owned disposable fixtures exist. This file reports no real browser, Vault, CRM, Google, network, or UI observations.",
@@ -69,18 +70,19 @@
       "design_status": "NOT_EXECUTABLE",
       "preconditions": [
         "Complete shared receipt and private owned login fixture setup. Signed-in extension identity, owned assigned/focused tab, Vault browser-fill match, and a clean logged-out fixture state must be proven before a positive run. No fixture, matching item, or private staging receipt exists in this source-only task.",
-        "Manual Tools Run uses the focused tab because assignedTabId is null. Verify that exact tab is the owned fixture immediately before each call and do not switch tabs. Use only action:auto and omit URLs, selectors, usernames, passwords, OTPs, scripts, and secret values."
+        "Manual Tools Run uses the focused tab because assignedTabId is null. Verify that exact tab is the owned fixture immediately before each call and do not switch tabs. Use only action:auto and omit URLs, selectors, usernames, passwords, OTPs, scripts, and secret values.",
+        "For the no-match branch, use a separate owned fixture origin or exact disposable-item removal so there is provably no Vault match while the page still presents a scriptable top-frame safe POST login form. Do not infer no-match from an absent form or probe error."
       ],
       "steps": [
         "Record the fixture logged-out baseline and exact tab identity. In Tools Catalog run {\"action\":\"auto\"} against the owned top-frame HTTPS fixture. Observe the inline fixed-status result and independently inspect only the fixture signed-in marker or authenticated session state. Require status authenticated AND the owned fixture authenticated; status unknown is never success.",
-        "Run a separate negative on an owned HTTPS fixture login page that has no matching Vault item: {\"action\":\"auto\"} must return no_matching_login or a specific safe refusal and leave the page logged out. A non-HTTPS non-localhost test, if safely provisioned, must return unsafe_destination before materialization; do not navigate to or submit a real third-party login.",
+        "Run a separate negative on an owned HTTPS fixture page with a proven top-frame, safe POST login form and no matching Vault item. Verify the form probe preconditions independently (visible username/password fields and safe submit on the exact focused tab), then run {\"action\":\"auto\"}. Require exactly status no_matching_login and the page still logged out. A probe failure, missing form, unsafe form, or other safe refusal is a separate observation and does not pass the no-match negative. A non-HTTPS non-localhost test, if safely provisioned, must return unsafe_destination before materialization; do not navigate to or submit a real third-party login.",
         "Run valid JSON {\"action\":\"auto\",\"credential_item_id\":7} as a schema negative; require inline Schema mismatch before handler execution and no change to the fixture session. Keep the negative separate from the missing-match handler branch.",
         "After an actual extension Reload, reset/logout the disposable fixture account and repeat the positive and negative on a fresh owned tab with its identity rechecked. Stop if tab identity, Vault match, or private fixture staging cannot be re-established.",
         "For cleanup, log out only the disposable account, close only the owned fixture tab, and have the fixture owner remove the run-specific Vault item through the supported UI. Verify the fixture returns to logged-out state and the exact item no longer matches, without listing or opening unrelated Vault records."
       ],
       "expected": [
         "Success is a fixed status authenticated plus an independently visible signed-in state on the owned fixture. No credential value, code, field content, or raw page data appears in the result/evidence. A mismatch between result and page is failure.",
-        "No-match and unsafe-destination negatives do not fill or submit. Schema mismatch is a pre-handler rejection, not a Vault negative. A challenge, rejection, unknown, or other non-authenticated status is not a pass.",
+        "With a proven safe top-frame login form and no matching Vault item, the no-match negative returns exactly no_matching_login without filling or submitting. A different refusal does not establish lookup behavior. The separate unsafe-destination negative refuses before materialization. Schema mismatch is a pre-handler rejection, not a Vault negative.",
         "Manual execution does not establish dispatcher action approval, privileged authenticator approval, agent assigned-tab pinning, or other action branches C02-C10."
       ],
       "dimensions": [
@@ -168,20 +170,20 @@
       "design_status": "NOT_EXECUTABLE",
       "preconditions": [
         "Complete shared receipt and use an owned disposable connected Google sender plus an owned recipient inbox. A real user reviewer must be present to read sender, recipient, CC, subject, and body and choose Send for exactly one test message; no proxy click, preapproval, or tool argument substitutes for that act.",
-        "The manual runner calls the ask-user handler with conversationId:null. Confirm an email_review card can be reached and rendered for the current signed-in profile before claiming this manual T01 path executable. If it is not visibly reachable, stop; do not invoke sendReviewedGmail or its endpoint directly."
+        "The manual runner calls the ask-user handler with conversationId:null. Before each valid Run, open a fresh unsent Chat state with selectedConversationId:null and verify that null selection; keep it null while the request is emitted and the email_review card renders. A selected existing conversation cannot display this manual card. If a fresh null-selected Chat state cannot be established, do not invoke the positive draft; leave manual T01 unverified. Never call sendReviewedGmail or its endpoint directly."
       ],
       "steps": [
         "First run a valid-JSON schema negative, for example {\"to\":\"<owned inbox>\",\"subject\":\"<unique harmless marker>\"} with body absent. Require inline Schema mismatch and no review card, request, or inbox delta.",
-        "Submit one harmless draft through Tools Catalog with {\"to\":\"<owned inbox>\",\"subject\":\"<unique harmless marker>\",\"body\":\"<harmless owned test text>\"}. Switch to the corresponding chat surface only if its email_review card is visibly present. Before any click, check the exact sender and every editable field against the owned fixture; verify no inbox delivery yet. If the card is absent or bound to another conversation, dismiss/let it expire and mark the manual path unverified.",
-        "Exercise Don't send on a first draft: require sent:false/declined:true, no message ID, and no delivered message in the owned inbox. Exercise Dismiss on a separate fresh draft: require sent:false/cancelled:true and no delivery. These are distinct no-send branches, not send approvals.",
-        "For one new draft with a fresh unique marker, have the real reviewer edit at least one visible field, recheck all fields, then press Send exactly once. Require sent:true with non-empty message_id and edited:true; independently observe exactly one matching message in the owned inbox with the reviewed fields. If the endpoint fails, the card must stay open saying nothing was sent; verify no inbox delivery and do not call that a pass.",
+        "With the fresh null-selected Chat state already established, submit one harmless draft through Tools Catalog with {\"to\":\"<owned inbox>\",\"subject\":\"<unique harmless marker>\",\"body\":\"<harmless owned test text>\"}. Open Chat while preserving selectedConversationId:null and require the email_review card to be visibly present before any send decision. Check the exact sender and every editable field against the owned fixture; verify no inbox delivery yet. If the card is absent, let the request time out and mark the manual path unverified. Do not switch to an existing conversation, send through another route, or treat timeout as a send.",
+        "With a new fresh null-selected Chat state and distinct harmless marker for each draft, exercise Don't send: require sent:false/declined:true, no message ID, and no delivered message in the owned inbox. In a separate fresh null-selected state, exercise Dismiss: require sent:false/cancelled:true and no delivery. These are distinct no-send branches, not send approvals; if either card is absent, let it time out and leave that branch unverified.",
+        "With another fresh null-selected Chat state and a new unique marker, have the real reviewer edit at least one visible field, recheck all fields, then press Send exactly once. Require sent:true with non-empty message_id and edited:true; independently observe exactly one matching message in the owned inbox with the reviewed fields. If the card is absent, let it time out and leave the send unverified. If the endpoint fails, the card must stay open saying nothing was sent; verify no inbox delivery and do not call that a pass.",
         "After actual extension Reload, use a fresh harmless marker and repeat the no-send branch. A second real Send requires a newly admitted owned message and another explicit human review/click; do not replay the first approval.",
         "Cleanup closes only owned draft/cards. The delivered test mail cannot be unsent: retain its exact receipt, and remove it only from the owned receiver inbox if that inbox owner has a supported delete path. Verify the sender Sent count and recipient inbox count against the baseline; if state cannot be verified, keep the artifact and report cleanup incomplete."
       ],
       "expected": [
         "Neither valid draft invocation nor card appearance sends mail. Only the real reviewer pressing the card Send button may yield a reviewed-send request and sent:true with a receipt for the exact reviewed fields.",
         "Decline, dismiss, timeout, missing connection, and failed send must not be reported as sent. A failed send leaves the card open with an error; schema rejection never invokes the handler.",
-        "The review card is the authorization for one message. There is no extra consent argument or server executor. Manual Tools execution cannot prove dispatcher routing, and the conversationId:null card-rendering question remains runtime-unverified."
+        "The review card is the authorization for one message. There is no extra consent argument or server executor. The manual card can render only with the current null-selected Chat state because the request conversationId is null; its actual rendering remains runtime-unverified. Manual Tools execution cannot prove dispatcher routing."
       ],
       "dimensions": [
         "owned-sender-and-inbox",
@@ -206,7 +208,7 @@
       ],
       "access_context_permission_limits": [
         "No email or Google connection was accessed in this source-only task. Never use an unowned address or live personal mailbox as a fixture.",
-        "A manual runner draft may not route to a visible conversation card because conversationId is null; no direct endpoint or alternate sender call is an acceptable workaround.",
+        "Manual runner drafts have conversationId:null, so establish a fresh null-selected Chat state before Run and keep it null until the card is visible. If the card does not render, let it time out and mark the path unverified; never use a direct endpoint or alternate sender workaround.",
         "Do not interpret card display, a Send click without receipt, or a tool-only success as proof of exactly one delivered email; require the owned inbox readback."
       ],
       "limits": [
