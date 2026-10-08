@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0170 controlled native acceptance partition",
+  "review_role": "fresh independent peer; no native relaunch or product authorship",
+  "verdict_a_product_spec": {
+    "result": "bounded_pass; guest T02 and T14 remain partial",
+    "T02": {
+      "status": "partial",
+      "observed": "The owned public page title and description changed, an old audit was still visible before a trusted Re-audit click, and the native SEO title then matched the changed public DOM without an error. The later T14 clipboard held six exact tags, including the changed description, versus five before Re-audit.",
+      "unverified": "The T02 target directly checks the refreshed title, not the displayed description. Button disabled while running, stale advice removal, failure reporting, and reload behavior were not established."
+    },
+    "T14": {
+      "status": "partial",
+      "observed": "Trusted social-copy clicks on the owned guest page yielded clipboard readback exactly matching independently read public metadata before and after Re-audit (five and six tags). The first feedback check appeared in a tooltip-lifted data-matrx-title state; no failure icon appeared. Clipboard read permission was restored.",
+      "unverified": "Button absence when no snippet applies, other social page states, reload, member, and admin were not exercised."
+    },
+    "T09": {
+      "status": "no_new_detail_credit",
+      "observed": "Five earlier bounded T09 targets recur in the receipt: title/headings on two pages, sparse/rich groups, and canonical outbound activation.",
+      "excluded": "The volatile public-detail batch and optional metadata fixture were deliberately omitted in controlled scope. Their previous partial/unverified inventory state stays intact."
+    },
+    "D169": "The prior feedback-timeout symptom did not recur: the new run reached feedback, exact clipboard readback, and both T02/T14 phases. This supports bounded guest native closure of the verification blocker on frozen 0.2.397, but does not identify the original native cause or prove every product social-copy state. Do not describe D169 as a confirmed product defect repair.",
+    "D170": "Its stated closure requirement is met within the controlled partition: prior independent source review, a resource-valid native run reaching T02/T14, and explicit exclusion of volatile T09. Recommend closing the blocked-sequencing defect as bounded harness closure while keeping T09 separately open and T02/T14 partial. The source guard's documented nested early-return blind spot remains a quality limitation, not a current-run failure."
+  },
+  "verdict_b_quality_doctrine": {
+    "result": "pass_for_bounded_evidence_with_limits",
+    "basis": "The hosted workflow used the actual native Chromium side panel and imported exact frozen development artifact; the controlled driver did not stub capture or clipboard. The social oracle derived expected tags from the owned public tab and compared exact clipboard text in two distinct page states. The driver required all three controlled target entries before exit, restored the edited public DOM in finally, and rechecked build identity. Resource journals distinguish transient CPU pressure from invalidation and end with valid decisions.",
+    "limitations": [
+      "The structural sequence guard is not a complete JavaScript reachability proof; the prior independent source peer demonstrated nested early-return mutants that evade it. Actual native target execution in this run compensates for this run only.",
+      "The receipt serializes boolean predicates and counts rather than raw public metadata, clipboard bytes, or a screenshot at each SEO phase. Independent review can confirm the driver oracle and run path, but cannot reconstruct those exact values from retained artifacts.",
+      "The native-side-panel screenshot shows a guest Chat panel, not the SEO result; screenshots establish context only."
+    ]
+  },
+  "evidence": {
+    "workflow": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37746166364/job/113208058763",
+    "workflow_status": "completed success; guest job and selected Chrome side-panel step success; checkout 8320bd56fbb73f149a7eaac0ee76f8641e16f3e1; ARM macos-15 lane A guest-seo controlled",
+    "product_artifact": "CI run 37724859892 successful at cedcec02a3fb4e52a3f63ebfda8728809eff418a; GitHub artifact 11527132614 digest sha256:5a9092de49bc5fa47a0ca907e86104519397d9977c3344a482173fc61f2e004f; unpacked development version 0.2.397, unpublished",
+    "build_identity": "Original receipt records before and after local_dev_unpacked version 0.2.397 and identical tree SHA-256 1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed. Workflow log independently records the imported source and prepared tree hash. Imported ZIP bytes were not independently rehashed by this peer.",
+    "receipt": ".research/seo-controlled-native-20261008-originals/seo-guest-acceptance.original.json.txt; status partial; 18 target entries, all pass; selected T01/T02/T03/T07/T09/T14; last safe stage controlled_public_source_restored; current operation build_recheck",
+    "resources": "All current-run package, browser, and guest journals under .research/seo-controlled-native-20261008-originals have RESOURCE_ADMITTED, child exit 0, and final admitted=true/resourceInvalid=false/decision=valid. Guest CPU pending at 07:59:09Z recovered by 08:00:00Z before final decision.",
+    "originals": "Six recursively discovered current-run files (receipt, three journals, two screenshots) have SHA-256 values matching the owner report; GitHub artifact 11535749411 belongs to this workflow and has uploaded ZIP digest sha256:61840a51acff61461f83c9c8d0c70b45bca1d5b397bb3f82d6e49375e07b03a8. Workflow upload listed 12 files, including six historical journals; those historical journals are not attributed to this run.",
+    "inventory": "docs/stabilization/inventory.json EXT-F-1008-T02/T09/T14 guest criteria and prior attempts; docs/stabilization/defects/EXT-D-0169.json and EXT-D-0170.json closure language"
+  },
+  "discrepancies": [
+    "The owner report says public description changed, but its T02 target does not assert that the SEO details view displayed the new description. The subsequent T14 exact clipboard check gives indirect evidence of refreshed social snippet content; avoid claiming direct T02 description-display verification.",
+    "The owner's 'target_failures: 0' is accurate within the selected controlled scope; the receipt's 'partial' status and omitted T09 phases must remain visible in inventory wording."
+  ],
+  "scope_limits": "No new native run, local build, Store installation, current-main product test, member/admin session, volatile T09 detail test, or canonical inventory/defect edit was performed by this peer."
+}
