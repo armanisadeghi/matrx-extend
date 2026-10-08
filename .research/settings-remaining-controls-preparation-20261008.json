@@ -21,10 +21,10 @@
   },
   "verification": {
     "source": "T28 focused failure test starts with Account closed, opens it through the case runner, injects a rendered-visibility failure, and asserts cleanup clicked it closed and restored the complete section baseline. Driver behavior is unchanged. Node syntax check and Biome formatting are source checks only.",
-    "focused_test": "Prior automatic hosted run 37835391727 passed for the previous harness revision. The revised T28 failure-path test awaits its exact pushed-commit automatic hosted focused result.",
+    "focused_test": "Exact automatic hosted focused run 37836070600 at 2d8ff3fff859c979fb105166c838e5c71df0bea4: Settings T28 changed-state cleanup and other Settings case-runner subtests 158-161 PASS. Overall suite FAIL 196/198 because concurrent Records fixture subtests 59-60 failed; no full focused-gate pass is claimed for this commit.",
     "native": "Unverified until a hosted native run executes this driver. The harness-only test change does not require a new product binary when frozen artifact identity and tree hash match. Rendered-height evidence does not establish opacity or absence of occlusion.",
     "resource_limit": "No local tests, browser, or build, as instructed for low system disk.",
-    "focused_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37835391727"
+    "focused_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37836070600"
   },
   "source_files": [
     "package.json",
