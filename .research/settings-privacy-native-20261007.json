@@ -2,7 +2,7 @@
   "schema_version": 1,
   "date": "2026-10-07",
   "lane": "settings-privacy-native",
-  "status": "partial_native_resource_valid_independent_review_pending",
+  "status": "partial_native_resource_valid_independently_reviewed",
   "workflow": {
     "name": "Hosted guest side-panel acceptance",
     "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37722572578",
@@ -59,7 +59,7 @@
           "off": "UI false, storage false; pass",
           "on": "UI true, storage true; pass"
         },
-        "restoration": "Runner finally block restored the UI/storage baseline and reloaded to verify it; no assertion failure occurred.",
+        "restoration": "Source driver asserts restored baseline and persisted value after panel reload; no assertion failure. Receipt omits explicit final restoration samples, so final values are not independently exposed.",
         "downstream": "Agent identity and email context sharing remains unverified."
       },
       "EXT-F-1003-T19": {
@@ -69,7 +69,7 @@
           "off": "UI false, storage false; pass",
           "on": "UI true, storage true; pass"
         },
-        "restoration": "Runner finally block restored the UI/storage baseline and reloaded to verify it; no assertion failure occurred.",
+        "restoration": "Source driver asserts restored baseline and persisted value after panel reload; no assertion failure. Receipt omits explicit final restoration samples, so final values are not independently exposed.",
         "downstream": "Post-login save offer remains unverified."
       },
       "EXT-F-1003-T31": {
@@ -79,7 +79,7 @@
           "off": "UI false, storage false; pass",
           "on": "UI true, storage true; pass"
         },
-        "restoration": "Runner finally block restored the UI/storage baseline and reloaded to verify it; no assertion failure occurred.",
+        "restoration": "Source driver asserts restored baseline and persisted value after panel reload; no assertion failure. Receipt omits explicit final restoration samples, so final values are not independently exposed.",
         "downstream": "Saved-login offer on a supported sign-in form remains unverified."
       },
       "EXT-F-1003-T34": {
@@ -89,17 +89,40 @@
           "off": "UI false, storage quiet; pass",
           "on": "UI true, storage on_page; pass"
         },
-        "restoration": "Runner finally block restored the UI/storage baseline and reloaded to verify it; no assertion failure occurred.",
+        "restoration": "Source driver asserts restored baseline and persisted value after panel reload; no assertion failure. Receipt omits explicit final restoration samples, so final values are not independently exposed.",
         "downstream": "On-page suggestion presentation on a supported site remains unverified."
       }
     },
     "baseline": "Each case requires the visible switch and stored preference to agree before mutation; the run completed without a baseline assertion failure.",
-    "broader_receipt": "The raw driver report contains 16 cases: 9 pass, 7 unverified, overall unverified. These surrounding observations are retained without promoting them in this focused report."
+    "broader_receipt": "The raw driver report contains 16 cases: 9 pass, 7 unverified, overall unverified. These surrounding observations are retained without promoting them in this focused report.",
+    "reload_scope": "For these four Privacy cases: side-panel document Page.reload, not extension-management reload. Later account cases separately exercise extension reload."
   },
   "resource_gate": {
     "decision": "valid",
     "journal_count": 3,
     "journals": [
+      {
+        "file": ".research/settings-privacy-native-peer-20261007-originals/resource-journals/hosted-package-37722572578-1.jsonl",
+        "sha256": "bf12f328922eadae730fefe13ce926edad1f8ada4b2f7e76d4035b6cf0b4f5bb",
+        "events": 4,
+        "final_decision": "valid"
+      },
+      {
+        "file": ".research/settings-privacy-native-peer-20261007-originals/resource-journals/hosted-browser-37722572578-1.jsonl",
+        "sha256": "51d4f9feb087beb768db1da0dec1b1d4841e3e492fda517ebef129b2784c3a61",
+        "events": 4,
+        "final_decision": "valid"
+      },
+      {
+        "file": ".research/settings-privacy-native-peer-20261007-originals/resource-journals/hosted-guest-37722572578-1.jsonl",
+        "sha256": "53a2ebe2cb792608c913b131dd65a81c1ec2a327997622c25142b0d356bad503",
+        "events": 7,
+        "final_decision": "valid",
+        "healthy_watch_samples": 3
+      }
+    ],
+    "provenance": "Independent artifact download found all three original current-run journals. They are retained byte-for-byte in the peer-originals directory with hashes. Earlier curator streams were extracted from logs and have an extra runner path in the opening event; retained as secondary evidence only.",
+    "log_extracted_journals": [
       {
         "file": ".research/settings-privacy-native-20261007-originals/resource-journals/hosted-package-37722572578-1.jsonl",
         "sha256": "3155db6d7e9c141b410237909e293618d2c3447a61a4f7311780fa42123268eb",
@@ -119,8 +142,7 @@
         "exit_code": 0,
         "healthy_watch_samples": 3
       }
-    ],
-    "provenance": "The workflow artifact omitted the journal files despite the upload glob. Each JSONL preserves the exact RESOURCE_* event JSON emitted by stabilization-resource.mjs and recovered from the complete GitHub job log. Originals are labeled as log-extracted streams, not downloaded journal files."
+    ]
   },
   "evidence": {
     "directory": ".research/settings-privacy-native-20261007-originals/",
@@ -150,7 +172,12 @@
     "Focused CI success is source evidence, not whole native acceptance.",
     "This is frozen 0.2.391 product evidence; it does not prove current-main, Store, member, or admin behavior.",
     "No inventory cells are changed by this report; root owns integration and independent native review.",
-    "No retry, local browser/build, release/deploy, secret access, or code edit occurred in this lane."
+    "No retry, local browser/build, release/deploy, secret access, or code edit occurred in this lane.",
+    "Privacy screenshots are setup-only; raw switch samples provide native evidence. Full extension-management reload and downstream behaviors remain unverified for these four cases."
   ],
-  "sensitive_output": "No credentials or tokens were collected or retained."
+  "sensitive_output": "No credentials or tokens were collected or retained.",
+  "independent_review": {
+    "report": ".research/settings-privacy-native-peer-20261007.json",
+    "commit": "3db847dc"
+  }
 }

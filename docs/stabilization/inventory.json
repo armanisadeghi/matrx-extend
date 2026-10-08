@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T03:27:23.881881+00:00",
+  "updated_at": "2026-10-08T03:40:14.154920+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5312,18 +5312,39 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "status": "partial",
+              "run_id": "37722572578",
+              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+              "evidence": ".research/settings-privacy-native-20261007.json",
+              "independent_review": ".research/settings-privacy-native-peer-20261007.json",
+              "verified_at": "2026-10-08T03:40:14.154920+00:00",
               "verified_substeps": [
-                "Privacy switch was toggled off/on and observed across Settings navigation; original value restored."
+                "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
               ],
               "remaining_criteria": [
-                "Verify whether identity/email context sharing follows the preference; no sharing action or network behavior was exercised."
-              ]
+                "Agent identity and email context sharing remains unverified.",
+                "Full extension-management reload of these preference states remains unverified."
+              ],
+              "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
             }
           },
-          "linked_defects": ["EXT-D-0087"]
+          "linked_defects": ["EXT-D-0087"],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "guest-settings-002",
+                "evidence": "docs/stabilization/runs/guest-settings-002.json",
+                "verified_substeps": [
+                  "Privacy switch was toggled off/on and observed across Settings navigation; original value restored."
+                ],
+                "remaining_criteria": [
+                  "Verify whether identity/email context sharing follows the preference; no sharing action or network behavior was exercised."
+                ]
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T17",
@@ -5371,7 +5392,25 @@
           "steps": ["Open Settings tab.", "Toggle login capture offer."],
           "expected": ["Toggle state persists and controls the post-login offer."],
           "dimensions": ["warm", "reload"],
-          "linked_defects": ["EXT-D-0087"]
+          "linked_defects": ["EXT-D-0087"],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "run_id": "37722572578",
+              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+              "evidence": ".research/settings-privacy-native-20261007.json",
+              "independent_review": ".research/settings-privacy-native-peer-20261007.json",
+              "verified_at": "2026-10-08T03:40:14.154920+00:00",
+              "verified_substeps": [
+                "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
+              ],
+              "remaining_criteria": [
+                "Post-login save offer remains unverified.",
+                "Full extension-management reload of these preference states remains unverified."
+              ],
+              "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T20",
@@ -5734,18 +5773,39 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "status": "partial",
+              "run_id": "37722572578",
+              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+              "evidence": ".research/settings-privacy-native-20261007.json",
+              "independent_review": ".research/settings-privacy-native-peer-20261007.json",
+              "verified_at": "2026-10-08T03:40:14.154920+00:00",
               "verified_substeps": [
-                "Saved-login offer preference toggled and persisted through Settings navigation; original value restored."
+                "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
               ],
               "remaining_criteria": [
-                "Open supported sign-in form and verify the saved-login offer follows preference; no form was exercised."
-              ]
+                "Saved-login offer on a supported sign-in form remains unverified.",
+                "Full extension-management reload of these preference states remains unverified."
+              ],
+              "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
             }
           },
-          "linked_defects": ["EXT-D-0087"]
+          "linked_defects": ["EXT-D-0087"],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "guest-settings-002",
+                "evidence": "docs/stabilization/runs/guest-settings-002.json",
+                "verified_substeps": [
+                  "Saved-login offer preference toggled and persisted through Settings navigation; original value restored."
+                ],
+                "remaining_criteria": [
+                  "Open supported sign-in form and verify the saved-login offer follows preference; no form was exercised."
+                ]
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T32",
@@ -5797,18 +5857,39 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "guest-settings-002",
-              "evidence": "docs/stabilization/runs/guest-settings-002.json",
+              "status": "partial",
+              "run_id": "37722572578",
+              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+              "evidence": ".research/settings-privacy-native-20261007.json",
+              "independent_review": ".research/settings-privacy-native-peer-20261007.json",
+              "verified_at": "2026-10-08T03:40:14.154920+00:00",
               "verified_substeps": [
-                "Password suggestion preference toggled and persisted through Settings navigation; original value restored."
+                "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
               ],
               "remaining_criteria": [
-                "Verify on-page suggestion presentation changes between enabled and quiet; no credential form was exercised."
-              ]
+                "On-page suggestion presentation on a supported site remains unverified.",
+                "Full extension-management reload of these preference states remains unverified."
+              ],
+              "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
             }
           },
-          "linked_defects": ["EXT-D-0087"]
+          "linked_defects": ["EXT-D-0087"],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "guest-settings-002",
+                "evidence": "docs/stabilization/runs/guest-settings-002.json",
+                "verified_substeps": [
+                  "Password suggestion preference toggled and persisted through Settings navigation; original value restored."
+                ],
+                "remaining_criteria": [
+                  "Verify on-page suggestion presentation changes between enabled and quiet; no credential form was exercised."
+                ]
+              }
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T35",
@@ -8449,9 +8530,10 @@
             "guest-settings-dev089-001",
             "hosted-settings-37115406435",
             "desktop-settings-guest-20261003-independent01",
-            "37693743871"
+            "37693743871",
+            "37722572578"
           ],
-          "retest_status": "Partial surface coverage. Latest independently reviewed 0.2.387 guest run37693743871 verifies only the named case criteria; other cases/modes remain explicitly incomplete."
+          "retest_status": "Partial surface. Frozen391 guest PrivacyT16/T19/T31/T34 UI/storage/panel-reload verified37722572578/fresh3db847dc; downstream consumers/full-extension reload unverified. Earlier bounded account/reset passes retain their own receipts."
         },
         "member": {
           "test_status": "unverified",
