@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "3a6cfef07036994c09764237f3a6ded8ca7307ac",
+  "scope": "Read-only claims and quality review of the October 8 stabilization checkpoint against linked local evidence and approved PLAN.md",
+  "claims_consistency": {
+    "verdict": "PASS_WITH_LIMITS",
+    "concrete_inconsistencies": [],
+    "claims_checked": [
+      {
+        "claim": "D168 is closed only at its documented infrastructure completion scope; it does not claim real-host pending-CPU recovery.",
+        "evidence": [
+          "docs/stabilization/COORDINATOR.md",
+          "docs/stabilization/defects/EXT-D-0168.json",
+          ".research/settings-local397-native-20261008.json",
+          ".research/settings-local397-peer-20261008.json"
+        ],
+        "result": "consistent"
+      },
+      {
+        "claim": "D167 remains in-fix; its cause, direct restoration proof, and downstream consumer behavior remain unresolved.",
+        "evidence": [
+          "docs/stabilization/COORDINATOR.md",
+          "docs/stabilization/defects/EXT-D-0167.json",
+          ".research/settings-local397-native-20261008.json",
+          ".research/settings-local397-peer-20261008.json"
+        ],
+        "result": "consistent"
+      },
+      {
+        "claim": "D170 is source-fixed after source review and focused CI, while native closure remains pending.",
+        "evidence": [
+          "docs/stabilization/COORDINATOR.md",
+          "docs/stabilization/defects/EXT-D-0170.json",
+          ".research/seo-stability-isolation-20261008.json",
+          ".research/seo-sequence-guard-fix-20261008.json",
+          ".research/seo-sequence-final-peer-20261008.json",
+          ".research/seo-sequence-guard-escalation-20261008.json",
+          ".research/seo170-escalation-peer-20261008.json"
+        ],
+        "result": "consistent; no native-pass claim found"
+      },
+      {
+        "claim": "The new default Chat source surface is unverified on current main; historical Store 0.2.205/frozen 0.2.397 evidence is retained only at its original scope.",
+        "evidence": [
+          "docs/stabilization/COORDINATOR.md",
+          "docs/stabilization/inventory.json: EXT-F-2013 source_change_observations",
+          "docs/stabilization/STATUS.md: EXT-F-2013 recorded cases",
+          "docs/stabilization/PLAN.md: Mandate and scope"
+        ],
+        "result": "consistent"
+      },
+      {
+        "claim": "The app goal is active but retains its old objective; the approved PLAN and active automation govern execution.",
+        "evidence": [
+          "docs/stabilization/COORDINATOR.md",
+          ".research/parallel-goal-automation-20261007.json",
+          "docs/stabilization/PLAN.md: Mandate and scope"
+        ],
+        "result": "consistent"
+      }
+    ]
+  },
+  "quality_review": {
+    "verdict": "BOUNDED_SOURCE_EVIDENCE; NATIVE ACCEPTANCE OPEN",
+    "evidence": "D170 source sequencing is covered by the actual native driver guard and focused CI run 37739262023. The independent source peer returned IMPORTANT because the guard has a reachability limitation; the coordinator adjudicated that bounded guard acceptable for launching the native retest, not as a source-review pass.",
+    "known_limit": "The guard is not a general JavaScript reachability proof: nested try/finally and truthy-condition early exits can evade it. Current driver mutations for the observed direct-return, callback-return, swap, omission, and recapture-return cases are rejected; no such bypass was found in current source. The review explicitly requires native execution to reach controlled T02/T14 before closure.",
+    "native_state_at_review": "The checkpoint records one guarded hosted retest owned by root/seo170_native. Its result was not available in the reviewed local evidence at review time; no native pass is inferred.",
+    "support": [
+      ".research/seo170-escalation-peer-20261008.json",
+      ".research/seo-sequence-guard-escalation-20261008.json",
+      "docs/stabilization/defects/EXT-D-0170.json"
+    ]
+  },
+  "limits": [
+    "Review was read-only; no product tests, native jobs, or external status checks were run.",
+    "The pre-existing dirty workspace-sync incident report was left untouched.",
+    "Judgment is limited to checkpoint claims and the linked receipts present in this checkout."
+  ]
+}

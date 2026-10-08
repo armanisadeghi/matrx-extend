@@ -7,8 +7,8 @@
   "title": "Dynamic public audit fixture blocks independent controlled copy and recapture cases",
   "severity": "S3: lost independent test coverage, product fault unconfirmed",
   "priority": "P1",
-  "state": "in-fix",
-  "owner": "root/seo_stability_isolation",
+  "state": "fixed",
+  "owner": "root/seo170_native",
   "preconditions": [
     "Frozen development397/sourcecedcec02/CI37724859892/artifact11527132614; native driver9295e037 includes reviewed3dcf2903; hosted ARM laneA."
   ],
@@ -22,7 +22,13 @@
   "cause": "Sequential driver orders dynamicWikipedia block before controlledExample.org block, with fatalstabilityassertion at earlierboundary. Assertion itself correctly avoids unstabledata acceptance.",
   "evidence": [
     ".research/seo169-native-retest-20261008.json",
-    ".research/seo169-native-peer-20261008.json"
+    ".research/seo169-native-peer-20261008.json",
+    ".research/seo-stability-isolation-20261008.json",
+    ".research/seo-sequence-peer-20261008.json",
+    ".research/seo-sequence-guard-fix-20261008.json",
+    ".research/seo-sequence-final-peer-20261008.json",
+    ".research/seo-sequence-guard-escalation-20261008.json",
+    ".research/seo170-escalation-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -42,8 +48,40 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Minimal existingphase ordering/isolation repair, no suppression of unstableoracle orresourcefailures."
+    },
+    {
+      "at": "2026-10-08T06:46:40.493937+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Actual driver reordered and original direct-return/swap/omission guard findings addressed; fresh source review confirms current structural order. Exact focused CI success. Native retest outstanding."
     }
   ],
-  "next_action": "Meaningfulactualphase-sequence RED/GREEN; preserve allbaselinechecks and fixturecleanup; freshsourcepeer before native.",
-  "closure_requirement": "Independent source review plus resource-valid native execution reaching controlledT02/T14; unstablepublicfixture still accurately reported. No producthealthpromotion from sourceordering alone."
+  "next_action": "root/seo170_native owns one guarded hosted retest; independent native peer must confirm controlled T02/T14 are reached before closure.",
+  "closure_requirement": "Independent source review plus resource-valid native execution reaching controlledT02/T14; unstablepublicfixture still accurately reported. No producthealthpromotion from sourceordering alone.",
+  "source_candidate": "510538cc",
+  "review_rounds": [
+    {
+      "source": "510538cc",
+      "peer": "f543856f",
+      "finding": "Helper-onlytest missed actualdriverwiring."
+    },
+    {
+      "source": "76ac7be5",
+      "peer": "5589c3ae",
+      "finding": "Guard catches swapped/omittedcall but permits earlyreturn beforesequence or incontrolledcallback; CIregistration fixed9e7a9856."
+    }
+  ],
+  "guard_candidate": "eaa4fbe6",
+  "focused_ci": {
+    "run_id": 37739262023,
+    "source_sha": "759b5f2de5c092e01c3c723f005168159a3ea9bd",
+    "conclusion": "success",
+    "scope": "Focused acceptance including actual-driver guard; relevant driver/test/package command unchanged from eaa4fbe6."
+  },
+  "review_ruling": {
+    "finding": "CONFIRMED: nested try/finally and constant-condition returns evade source guard.",
+    "disposition": "Accept bounded guard with explicit limitation; no such bypass found in current driver. This guard protects observed direct-return/swap/omission regressions, not arbitrary JavaScript reachability. Native execution remains mandatory for closure. Stop source-review loop at published breaker.",
+    "cost_if_wrong": "Future nested control-flow regression could evade this guard; native missing-target receipt must prevent closure.",
+    "review_commit": "0101dcec"
+  }
 }

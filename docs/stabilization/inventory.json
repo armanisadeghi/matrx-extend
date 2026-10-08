@@ -31711,6 +31711,21 @@
           "source": "docs/stabilization/reports/remote-1100-reconcile.json",
           "reason": "User explicitly sequences Chat/Pilot last; retain this nonblocking convergence work for wave D. Reconsider immediately if integration gates expose a regression."
         }
+      ],
+      "source_change_observations": [
+          {
+            "observed_main_sha": "b6d1e1f4",
+            "change": "Sidepanel Chat loader now imports PackageChatView instead of ChatView; background adds DEVICE_TOOL_INVOKE bridge.",
+            "source_refs": [
+              "src/entrypoints/sidepanel/App.tsx",
+              "src/features/package-chat/PackageChatView.tsx",
+              "src/features/package-chat/host.ts",
+              "src/features/package-chat/memory-navigation.tsx",
+              "src/lib/background/bootstrap.ts"
+            ],
+            "status": "unverified_current_main",
+            "required_followup": "Reconcile current Chat controls and guest/member/admin behavior on an exact current artifact. Preserve historical Store205/frozen397 evidence at original scopes; it does not verify this new default Chat surface. Systematic Chat remains deferred except public regressions."
+          }
       ]
     },
     {
