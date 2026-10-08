@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0170 controlled native acceptance partition",
+  "attempt_id": "lane-b-run-37795616638",
+  "status": "TERMINAL_RESOURCE_INVALID_NO_ACCEPTANCE_CREDIT",
+  "scope": "One uninstrumented hosted guest SEO controlled-scope attempt on lane B",
+  "workflow": {
+    "run_id": 37795616638,
+    "job_id": 113374182105,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37795616638/job/113374182105",
+    "head_sha": "d729dde0940985b4097fd1be94d33653252e49c3",
+    "runner_label": "macos-15-intel",
+    "conclusion": "failure",
+    "dispatch_inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "controlled",
+      "seo_metadata_fixture": "none",
+      "seo_resource_diagnostic": false,
+      "development_run_id": 37754055905,
+      "development_artifact_id": 11539827040
+    }
+  },
+  "source_admission": {
+    "focused_ci_run_id": 37793634857,
+    "focused_ci_head_sha": "e6d83e7d0476ab91347a660bdea844d751d1aa72",
+    "focused_ci_conclusion": "success",
+    "focused_ci_in_current_main_ancestry": true,
+    "current_main_sha": "d729dde0940985b4097fd1be94d33653252e49c3",
+    "controlled_scope_contract": "tests/browser/seo-new-coverage-oracle.mjs selects the common T01/T02/T03/T07/T09/T14 cases and excludes T09 volatile public detail and T09 optional metadata fixture in controlled mode. The driver requires controlled T14 before, changed-metadata T02 recapture, and T14 after targets before its existing post-case identity recheck.",
+    "plan_record": "docs/stabilization/defects/EXT-D-0170.json"
+  },
+  "frozen_product": {
+    "ci_run_id": 37754055905,
+    "ci_conclusion": "success",
+    "artifact_id": 11539827040,
+    "artifact_digest": "sha256:1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893",
+    "artifact_expired": false,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "version": "0.2.407",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "identity_verified_by_importer": true
+  },
+  "receipt": {
+    "path": ".research/seo-controlled-native-lane-b-20261008/raw/seo-guest-acceptance.json",
+    "status": "unverified",
+    "acceptance_credit": "none",
+    "last_safe_stage": "build_identity_verified",
+    "failure_stage": "build_identity_verified",
+    "current_operation": null,
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "excluded_cases": ["T09 volatile public detail", "T09 optional metadata fixture"],
+    "targets": [],
+    "executed_cases": [],
+    "product_actions_started": false,
+    "incremental_receipt_uploaded": true
+  },
+  "resource_admission": {
+    "package": { "decision": "valid", "resource_invalid": false, "exit_code": 0 },
+    "browser": { "decision": "valid", "resource_invalid": false, "exit_code": 0 },
+    "guest": {
+      "decision": "invalid",
+      "resource_invalid": true,
+      "exit_code": 3,
+      "child_exit_code": 1,
+      "invalidating_code": "RESOURCE_CPU_BUSY",
+      "invalidating_at": "2026-10-08T14:57:24.055Z",
+      "cpu_busy_fraction": 0.96,
+      "one_minute_load": 1.67,
+      "logical_cpus": 4,
+      "swap_used_mib": 0
+    }
+  },
+  "native_observation": {
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "failure_at": "2026-10-08T14:57:29.675Z",
+    "elapsed_ms": 8017,
+    "endpoint_poll_count": 194,
+    "endpoint_wait_elapsed_ms": 8002,
+    "spawn_observed": true,
+    "devtools_listening_observed": false,
+    "acceptance_result": "unverified",
+    "interpretation": "Guest resource monitoring invalidated the phase after a CPU-busy sample. The CDP endpoint timeout occurred after that sample; its exact cause is not established. No product action or acceptance target executed."
+  },
+  "retained_evidence": {
+    "artifact_id": 11559081001,
+    "artifact_name": "hosted-guest-37795616638-1",
+    "artifact_digest": "sha256:9b41505db944c17325f31196c0b8fbe22cc5abeeaa2c819285d16ec473469686",
+    "raw_directory": ".research/seo-controlled-native-lane-b-20261008/raw/",
+    "files": [
+      "seo-guest-acceptance.json",
+      "hosted-package-37795616638-1.jsonl",
+      "hosted-browser-37795616638-1.jsonl",
+      "hosted-guest-37795616638-1.jsonl",
+      "run-metadata.json",
+      "evidence-sha256.txt"
+    ],
+    "historical_journals_excluded": true
+  },
+  "scope_limits": {
+    "attempts": 1,
+    "retry_dispatched": false,
+    "acceptance_targets_passed": 0,
+    "acceptance_targets_failed": 0,
+    "acceptance_targets_unverified": 6,
+    "controlled_targets_unverified": [
+      "T14 before re-audit",
+      "T02 changed-metadata recapture",
+      "T14 after re-audit"
+    ],
+    "controlled_scope_exclusions": ["T09 volatile public detail", "T09 optional metadata fixture"],
+    "whole_seo_claim": false,
+    "inventory_promotion": false
+  }
+}
