@@ -7,8 +7,8 @@
   "title": "Scrape copy acceptance incorrectly requires copy controls for empty fixture sections",
   "severity": "S2: faulty acceptance expectation interrupts navigation and reload coverage; product defect not established",
   "priority": "P1",
-  "state": "fixed",
-  "owner": "root/scrape397_final_native",
+  "state": "closed",
+  "owner": "root",
   "preconditions": [
     "Frozen development0.2.391 CI37698216289/artifact11516342905/source52487361; repaired driver fa05a939; isolated guest narrow360px ARM Chrome141.0.7390.37 with all current resource journals valid."
   ],
@@ -28,7 +28,9 @@
     ".research/scrape-d164-escalated-diagnosis-20261007.json",
     ".research/scrape-receipt-pipeline-peer-20261007.json",
     ".research/scrape-empty-copy-fixture-repair-20261007.json",
-    ".research/scrape-empty-batch-peer-20261007.json"
+    ".research/scrape-empty-batch-peer-20261007.json",
+    ".research/scrape397-reply-native-20261007.json",
+    ".research/scrape397-reload-pass-peer-20261007.json"
   ],
   "resource_verdict": "All3 current-run journals admitted/resourceInvalidfalse; guest child1 is assertion failure.",
   "transition_history": [
@@ -55,11 +57,32 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Freshsourcepeer1f15987e accepts correction and causalguards; exactfocusedCI37725833684 passes53. Native397 selected for fullwarm/navigation/reload retest; no currentproductpass yet."
+    },
+    {
+      "at": "2026-10-08T05:08:05.445470+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Resource-valid native37729682008 on frozen397 completed original warm/navigation/full-reload requirements. Fresh independent peer de1acac8 accepts scoped original-defect closure."
+    },
+    {
+      "at": "2026-10-08T05:08:05.445470+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original driver defect no longer reproduces and surrounding Scrape copy/scroll acceptance passes. D166 earlier intermittent panel absence remains separate and unresolved; no whole-product or Store claim."
     }
   ],
   "closure_requirement": "Confirm cause; smallest repair with meaningful causal guard and fresh source review; resource-valid current-capture navigation and reload native proof with surrounding copy options; independent retest review.",
-  "next_action": "One resource-valid guestnative397 run for22intake copies,13referrals offeredoptions+3emptysections,22reloadcopies andT07warm/reload; independentretetst beforeclosure. Original391 retained; 397Scrape source identical butTabs dependency changed.",
+  "next_action": "Closed at original test-driver defect scope; preserve D166 unresolved intermittent reload investigation and all untested modes/surfaces.",
   "evidence_correction": "Frozen driver assigns after_navigation only after all menu options finish. On rejection, completed progress is lost; an empty/missing array does not prove zero actions or identify the first Copy capture control. The exact failed menu/action is unknown. Original receipts remain unchanged.",
   "cause": "Referrals fixture has empty images/video/links. Test iterated every populated-fixture CopyMenu without asserting the intentional emptysection alternative. Product hides these toolbars as implemented; no productbug established.",
-  "fix_commits": ["503eec1f", "2125df6a"]
+  "fix_commits": ["503eec1f", "2125df6a"],
+  "retest": {
+    "run_id": "37729682008",
+    "product": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+    "driver": "reviewed197f4053 descendant workflowae437676",
+    "original_reproduction": "pass",
+    "surrounding_cases": ["EXT-F-1007-T07", "EXT-F-1007-T09"],
+    "resource_verdict": "all three current journals admitted/valid exit0",
+    "independent_review": ".research/scrape397-reload-pass-peer-20261007.json"
+  }
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T05:08:04.308991+00:00",
+  "updated_at": "2026-10-08T05:08:05.445470+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -15338,13 +15338,13 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37726590928",
+              "status": "pass",
+              "run_id": "37729682008",
               "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-              "evidence": ".research/scrape397-final-native-20261007.json",
-              "independent_review": ".research/scrape397-native-peer-20261007.json",
-              "verified_at": "2026-10-08T04:28:35.530547+00:00",
-              "detail": "Warm intake22 offered copy options and referrals13 offered options plus3 explicit empty-section checks pass recorded fixture predicates; full extension reload replacement panel unverified. No clipboard values retained. Peer checked original receipt/journals; no separate browser replay or Store/current-main claim. Original CI artifact provenance independently checked in d165-full-ci-closure-peer-20261007.json."
+              "evidence": ".research/scrape397-reply-native-20261007.json",
+              "independent_review": ".research/scrape397-reload-pass-peer-20261007.json",
+              "verified_at": "2026-10-08T05:08:05.445470+00:00",
+              "detail": "Native intake22 offered copy options, referrals13 offered options plus3 explicit empty-section checks, and22 options after full extension reload pass current-fixture/format predicates; clipboard values not retained. Fresh peer verified original receipt, driver predicates and current resource journals. This bounded guest pass does not establish member/admin, Store, current-main or complete Scrape health; D166 historical panel absence cause remains open."
             }
           },
           "linked_defects": ["EXT-D-0164"],
@@ -15361,6 +15361,19 @@
                 "detail": "Guest intake warm22 CopyMenu options pass current-fixture sentinel/format predicates. Referrals batch fails a zero-target pointer assertion; exact action and completed referrals count unknown because failure omits partial progress. Reload not reached. Clipboard values intentionally not retained."
               },
               "superseded_at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37726590928",
+                "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+                "evidence": ".research/scrape397-final-native-20261007.json",
+                "independent_review": ".research/scrape397-native-peer-20261007.json",
+                "verified_at": "2026-10-08T04:28:35.530547+00:00",
+                "detail": "Warm intake22 offered copy options and referrals13 offered options plus3 explicit empty-section checks pass recorded fixture predicates; full extension reload replacement panel unverified. No clipboard values retained. Peer checked original receipt/journals; no separate browser replay or Store/current-main claim. Original CI artifact provenance independently checked in d165-full-ci-closure-peer-20261007.json."
+              },
+              "superseded_at": "2026-10-08T05:08:05.445470+00:00"
             }
           ],
           "defect_ids": ["EXT-D-0166"]
