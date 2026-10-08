@@ -533,7 +533,50 @@ async function runScenarioGroup(kinds, options) {
   for (const kind of kinds) await runScenario(kind, groupStartedAt, options);
 }
 
+const watchScenarioKinds = [
+  'recovered',
+  'confirmed',
+  'pending-exit',
+  'completion-recovered',
+  'completion-unsafe',
+  'completion-expired',
+  'completion-memory-unsafe',
+];
+
+function registerWatchScenarioTests(register = test, run = runScenario) {
+  for (const kind of watchScenarioKinds) {
+    register(
+      `actual guard watch journal: ${kind}`,
+      { timeout: 30_000, concurrency: false },
+      async () => run(kind, process.hrtime.bigint()),
+    );
+  }
+}
+
 if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
+  test('watch scenarios are separate selectable cases and surface their own failure', async () => {
+    const cases = new Map();
+    const runs = [];
+    registerWatchScenarioTests(
+      (name, options, body) => cases.set(name, { options, body }),
+      async (kind) => {
+        runs.push(kind);
+        if (kind === 'completion-expired') throw new Error('scenario failure reaches test runner');
+      },
+    );
+    assert.deepEqual(
+      [...cases.keys()],
+      watchScenarioKinds.map((kind) => `actual guard watch journal: ${kind}`),
+    );
+    assert(cases.values().every(({ options }) => options.timeout === 30_000));
+    await cases.get('actual guard watch journal: recovered').body();
+    assert.deepEqual(runs, ['recovered']);
+    await assert.rejects(
+      cases.get('actual guard watch journal: completion-expired').body(),
+      /scenario failure reaches test runner/,
+    );
+    assert.deepEqual(runs, ['recovered', 'completion-expired']);
+  });
   test('scenario diagnostic reports each distinct lifecycle without running a guard', () => {
     const lines = [];
     const originalError = console.error;
@@ -612,21 +655,7 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
   });
 }
 
-test(
-  'actual guard watch journal controls recovery, confirmation, and pending child exit',
-  { timeout: 30_000 },
-  async () => {
-    await runScenarioGroup([
-      'recovered',
-      'confirmed',
-      'pending-exit',
-      'completion-recovered',
-      'completion-unsafe',
-      'completion-expired',
-      'completion-memory-unsafe',
-    ]);
-  },
-);
+registerWatchScenarioTests();
 
 test(
   'pending child failure, child error, and operator stop remain invalid',

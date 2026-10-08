@@ -1,0 +1,25 @@
+{
+  "scope": "D182 bounded repair of the resource CPU integration test's first seven-scenario Node test after automatic CI timing evidence; no production guard or resource policy change.",
+  "ci_evidence": {
+    "successful_run": "37791552019 at e87d1d29; checks and resource-guard-integration jobs succeeded",
+    "first_group_tap_duration_ms": 28882.973084,
+    "scenario_ends": [
+      { "kind": "recovered", "elapsed_ms": 4228, "group_elapsed_ms": 4228 },
+      { "kind": "confirmed", "elapsed_ms": 2785, "group_elapsed_ms": 7014 },
+      { "kind": "pending-exit", "elapsed_ms": 2803, "group_elapsed_ms": 9818 },
+      { "kind": "completion-recovered", "elapsed_ms": 3840, "group_elapsed_ms": 13659 },
+      { "kind": "completion-unsafe", "elapsed_ms": 4432, "group_elapsed_ms": 18091 },
+      { "kind": "completion-expired", "elapsed_ms": 6956, "group_elapsed_ms": 25048 },
+      { "kind": "completion-memory-unsafe", "elapsed_ms": 3833, "group_elapsed_ms": 28882 }
+    ],
+    "common_completion": "Each of the seven ended with RESOURCE_FINAL_DECISION, child closed true, and scratch cleanup done.",
+    "comparison": "Identical pre-instrumentation sources passed the first group in 29031.809167 ms on run 37789394542, then expired at 30003.821875 ms on run 37789659379. The successful instrumented run finished the group just 1117 ms under the same 30000 ms aggregate limit. The failed run did not identify its active scenario, so an individual delay in that run cannot be ruled out."
+  },
+  "repair": "Register the seven independent real-wrapper scenarios as separate serial Node tests, retaining their order, assertions, cleanup, and existing 30000 ms per-test timeout. This removes their shared aggregate deadline while preserving a timeout that identifies any slow or stuck case. The other two groups remain unchanged.",
+  "verification": [
+    "node --check scripts/test-stabilization-resource-cpu-integration.mjs passed.",
+    "MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST=1 node --test --test-name-pattern='watch scenarios are separate|scenario diagnostic reports' scripts/test-stabilization-resource-cpu-integration.mjs passed: two focused tests, no guard or browser launched.",
+    "The new light self-test checks all seven registrations and their 30000 ms options, selects one callback without invoking siblings, and confirms a selected scenario rejection reaches the test callback."
+  ],
+  "remaining_verification": "The parent's independent review and next automatic CI run must verify the real split under the hosted runner. No local heavy integration, browser, build, or manual dispatch was run."
+}
