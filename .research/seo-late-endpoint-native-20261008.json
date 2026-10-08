@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-late-endpoint-native-20261008",
+  "defect": "EXT-D-0107",
+  "status": "LATE_ENDPOINT_OBSERVED_DIAGNOSTIC_ONLY",
+  "run_id": 37785284577,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37785284577",
+  "focused_source_gate": {
+    "run_id": 37784817641,
+    "source_sha": "3a566fa63b4680d4f3badc9d97d8e732c0c44aee",
+    "results": {
+      "focused_acceptance_guards": "success",
+      "typecheck": "success",
+      "schema_routing": "success",
+      "lint": "success"
+    },
+    "dispatch_head": "130872ec0368f3df53b3c26ebcd7a59f81f64c70",
+    "relevant_seo_source_diff_from_gated_sha": "none"
+  },
+  "selection": {
+    "lane": "A",
+    "runner": "macos-15-intel",
+    "case": "guest-seo",
+    "scope": "full",
+    "fixture": "airbnb",
+    "diagnostic": true,
+    "frozen_development_run": 37754055905,
+    "frozen_artifact_id": 11539827040,
+    "frozen_version": "0.2.407",
+    "frozen_source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "frozen_tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0"
+  },
+  "observation": {
+    "classification": "late_endpoint",
+    "cdp_timeout": {
+      "endpoint_present": false,
+      "inspection_failed": false,
+      "exit_observed": false,
+      "elapsed_ms": 5024,
+      "polls": 151,
+      "longest_read_ms": 71,
+      "spawn_observed": true,
+      "stderr_observed": false
+    },
+    "post_timeout": {
+      "endpoint_present": true,
+      "inspection_failed": false,
+      "exit_observed": false,
+      "elapsed_ms": 1145,
+      "polls": 12
+    },
+    "interpretation": "The owned DevTools endpoint appeared during the bounded post-timeout observation, 1.145 seconds after the existing 5-second timeout. This supports the late-startup timing hypothesis for this run. One snapshot does not establish why startup was late or prove a general cause."
+  },
+  "resource_outcome": {
+    "package": "valid, exit 0, resourceInvalid false",
+    "browser": "valid, exit 0, resourceInvalid false",
+    "guest": "child_failed, exit 1, resourceInvalid false",
+    "acceptance": "none; receipt status unverified, targets empty"
+  },
+  "evidence": {
+    "receipt": "raw/seo-guest-acceptance.raw.json",
+    "package_journal": "raw/hosted-package-37785284577-1.jsonl",
+    "browser_journal": "raw/hosted-browser-37785284577-1.jsonl",
+    "guest_journal": "raw/hosted-guest-37785284577-1.jsonl",
+    "provenance": "raw/provenance.json",
+    "boundary_log": "raw/native-boundary.log",
+    "hashes": "raw/SHA256SUMS"
+  },
+  "native_acceptance_credit": "NONE"
+}
