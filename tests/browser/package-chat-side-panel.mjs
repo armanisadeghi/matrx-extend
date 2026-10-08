@@ -138,7 +138,8 @@ try {
   await page.getByRole('button', { name: 'Conversations' }).click();
   const row = page
     .locator(
-      '[data-package-chat] [data-conversation-id], [data-package-chat] [role="option"], [data-package-chat] li button',
+      // A history row is design-system's ItemRow (`.item-row`); its first child is the open control.
+      '[data-package-chat] .item-row > :first-child, [data-package-chat] [data-conversation-id], [data-package-chat] [role="option"]',
     )
     .first();
   await row.waitFor({ timeout: 45_000 }).catch(() => undefined);
@@ -151,12 +152,15 @@ try {
   await page.screenshot({ path: join(SHOTS, '2-history.png') });
   if (rows > 0) {
     await row.click();
-    await page.waitForTimeout(6000);
-    const messages = await page
-      .locator(
-        '[data-package-chat] [data-message-id], [data-package-chat] [data-role="user"], [data-package-chat] [data-role="assistant"]',
-      )
-      .count();
+    // A cold panel loads the conversation bundle lazily; wait for the first message, not a fixed sleep.
+    const messageNodes = page.locator(
+      '[data-package-chat] [data-message-id], [data-package-chat] [data-role="user"], [data-package-chat] [data-role="assistant"]',
+    );
+    await messageNodes
+      .first()
+      .waitFor({ timeout: 45_000 })
+      .catch(() => undefined);
+    const messages = await messageNodes.count();
     check('a past conversation opens', messages > 0, `${messages} message nodes`);
     await page.screenshot({ path: join(SHOTS, '3-conversation.png') });
   }
