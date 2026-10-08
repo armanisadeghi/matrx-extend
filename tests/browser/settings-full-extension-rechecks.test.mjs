@@ -5,9 +5,15 @@ import {
   enforceFullExtensionRechecks,
   FULL_EXTENSION_RECHECK_IDS,
   initializeFullExtensionRechecks,
+  rerunGuestSettingsAfterExtensionReload,
   runFullExtensionRecheck,
   snapshotPanelDocumentReload,
 } from './settings-full-extension-rechecks.mjs';
+import {
+  GUEST_PREFERENCES,
+  preferenceBaseline,
+  restoreGuestPreferenceBaseline,
+} from './settings-guest-preference-batch.mjs';
 
 function cases() {
   return FULL_EXTENSION_RECHECK_IDS.map((id) => ({
@@ -83,20 +89,159 @@ test('missing or failed full-extension rechecks force the individual case to fai
   assert.match(failed.fullExtensionReload.error, /injected_full_extension_failure/);
 });
 
-test('native harness invokes the five rechecks after opening the replacement Settings panel', async () => {
+test('actual full-extension orchestration uses the replacement panel and restores T04/T10 baselines after failure', async () => {
+  const reportCases = cases();
+  initializeFullExtensionRechecks(reportCases);
+  const replacementPanel = { role: 'replacement-panel' };
+  const themes = {
+    selected: 'System',
+    stored: 'system',
+    activeSettings: true,
+    count: 1,
+    darkClass: false,
+    systemDark: false,
+    renderedBackgroundMatches: true,
+  };
+  const modes = {
+    selected: 'Act without asking',
+    stored: 'act',
+    activeSettings: true,
+    count: 1,
+    darkClass: false,
+    systemDark: false,
+    renderedBackgroundMatches: true,
+  };
+  const calls = [];
+  let activePreference;
+  let pendingChoice = null;
+  const preferenceFor = (expression) =>
+    expression.includes('"theme"') ? GUEST_PREFERENCES[0] : GUEST_PREFERENCES[1];
+  const driver = {
+    async evaluate(panel, expression) {
+      assert.equal(panel, replacementPanel);
+      activePreference = preferenceFor(expression);
+      return activePreference.caseId === 'T04' ? themes : modes;
+    },
+    async openSection(panel, label) {
+      assert.equal(panel, replacementPanel);
+      calls.push([activePreference?.caseId, 'section', label]);
+    },
+    async click(panel, kind, label) {
+      assert.equal(panel, replacementPanel);
+      calls.push([activePreference?.caseId, kind, label]);
+      if (kind === 'settings-select') pendingChoice = activePreference;
+      if (kind === 'option' && pendingChoice) {
+        const [value] = pendingChoice.choices.find(([, choiceLabel]) => choiceLabel === label);
+        const state = pendingChoice.caseId === 'T04' ? themes : modes;
+        state.selected = label;
+        state.stored = value;
+        if (pendingChoice.caseId === 'T04') state.darkClass = value === 'dark';
+        pendingChoice = null;
+      }
+    },
+    async waitFor(_label, read, accept) {
+      const state = await read();
+      assert.equal(accept(state), true);
+      return state;
+    },
+  };
+  const observe = async (panel, preference) => {
+    activePreference = preference;
+    return driver.evaluate(panel, JSON.stringify(preference.key));
+  };
+  const recordBaselineRestore = (panel, preference, baseline, record) =>
+    restoreGuestPreferenceBaseline(panel, preference, baseline, record, driver);
+  for (const item of reportCases) snapshotPanelDocumentReload(item);
+
+  await rerunGuestSettingsAfterExtensionReload({
+    panel: replacementPanel,
+    cases: reportCases,
+    preferences: GUEST_PREFERENCES,
+    reloadSettings: async (panel) => assert.equal(panel, replacementPanel),
+    settings: async (panel) => assert.equal(panel, replacementPanel),
+    openSection: driver.openSection,
+    observeNewChatDefault: async (panel, mode, label) => {
+      assert.equal(panel, replacementPanel);
+      return { modeLabel: label, modeIcon: mode };
+    },
+    runPreferenceCase: async (panel, _reload, preference, record, afterReload) => {
+      assert.equal(panel, replacementPanel);
+      calls.push([preference.caseId, 'run']);
+      if (preference.caseId === 'T04') {
+        themes.selected = 'Light';
+        themes.stored = 'light';
+        themes.darkClass = false;
+        throw new Error('injected_theme_case_failure');
+      }
+      for (const [value, label] of preference.choices) {
+        await driver.click(panel, 'settings-select', preference.label);
+        await driver.click(panel, 'option', label);
+        record(`${label} changes UI/storage`, await observe(panel, preference), true);
+        await afterReload({ value, label });
+      }
+    },
+    observePreference: observe,
+    preferenceBaseline,
+    restorePreferenceBaseline: recordBaselineRestore,
+    runSectionsCase: async (panel, _reload, record) => {
+      assert.equal(panel, replacementPanel);
+      calls.push(['T28', 'run']);
+      record('full extension section census/open/close', 'warm', { count: 44 }, true);
+    },
+    runAutoScrapeCase: async (panel, _reload, record) => {
+      assert.equal(panel, replacementPanel);
+      calls.push(['T40', 'run']);
+      record('full extension Auto-scrape; baseline restored', 'reload', { restored: true }, true);
+    },
+    runAutoScrapeModeCase: async (panel, _reload, record) => {
+      assert.equal(panel, replacementPanel);
+      calls.push(['T67', 'run']);
+      record('full extension capture mode; baseline restored', 'reload', { restored: true }, true);
+    },
+  });
+
+  enforceFullExtensionRechecks(reportCases);
+  assert.deepEqual(
+    calls.filter(([, kind]) => kind === 'run').map(([id]) => id),
+    ['T04', 'T10', 'T28', 'T40', 'T67'],
+  );
+  assert.equal(themes.selected, 'System');
+  assert.equal(themes.stored, 'system');
+  assert.equal(modes.selected, 'Act without asking');
+  assert.equal(modes.stored, 'act');
+  assert.deepEqual(
+    calls.filter(([id, kind]) => id === 'T10' && kind === 'option').map(([, , label]) => label),
+    ['Act without asking', 'Ask before acting', 'Act without asking'],
+  );
+  assert.equal(reportCases[0].fullExtensionReload.status, 'fail');
+  assert.match(reportCases[0].fullExtensionReload.error, /injected_theme_case_failure/);
+  assert.equal(reportCases[1].fullExtensionReload.status, 'pass');
+  assert.equal(reportCases[1].panelDocumentReload.status, 'pass');
+  assert.equal(reportCases[0].panelDocumentReload.status, 'pass');
+  assert.equal(reportCases[0].status, 'fail');
+  assert.equal(reportCases[3].fullExtensionReload.downstreamCapture.status, 'unverified');
+  assert.equal(reportCases[4].fullExtensionReload.downstreamCapture.status, 'unverified');
+});
+
+test('native callback invokes tested orchestration after replacement Settings opens and enforces its result', async () => {
   const source = await readFile(
     new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
     'utf8',
   );
+  const packageJson = JSON.parse(
+    await readFile(new URL('../../package.json', import.meta.url), 'utf8'),
+  );
   const boundary = source.indexOf("status: 'settings_opened'");
-  const recheck = source.indexOf('await rerunGuestSettingsAfterExtensionReload(replacement.panel)');
+  const recheck = source.indexOf('await rerunGuestSettingsAfterExtensionReload({');
   const reloadCatch = source.indexOf('report.guestStageFailed = guestStage', boundary);
   assert.ok(boundary >= 0 && recheck > boundary && reloadCatch > recheck);
-  assert.ok(source.includes('GUEST_PREFERENCES.filter('));
-  assert.ok(source.includes("['T04', 'T10']"));
   assert.match(
-    source,
-    /\['T28', runGuestSectionsCase\][\s\S]*\['T40', runGuestAutoScrapeCase\][\s\S]*\['T67', runGuestAutoScrapeModeCase\]/,
+    source.slice(recheck, reloadCatch),
+    /panel: replacement\.panel,[\s\S]*cases: report\.cases,[\s\S]*restorePreferenceBaseline: restoreGuestPreferenceBaseline/,
   );
   assert.match(source, /enforceFullExtensionRechecks\(report\.cases\)/);
+  assert.match(
+    packageJson.scripts['test:focused-acceptance'],
+    /settings-full-extension-rechecks\.test\.mjs/,
+  );
 });

@@ -1,15 +1,15 @@
 {
-  "status": "source-pushed; hosted-gate-and-independent-review-pending",
-  "commit": "9fc2c925449dd89a7d94281b87981c18de068bc5",
+  "status": "source-repair-ready-for-hosted-gate-and-independent-review",
+  "commit": "pending",
   "scope": ["T04", "T10", "T28", "T40", "T67"],
-  "change": "Snapshots panel-document results separately; reruns existing case runners on the replacement panel after the full-extension reload and Settings-open boundary.",
+  "change": "Reruns existing case runners on the replacement panel after full-extension reload and Settings-open; T04/T10 capture the surviving baseline and restore it through actual Settings controls in finally, even after a case failure.",
   "guard": "Missing, failed, or non-passing full-extension rechecks add a failing criterion to each required case and fail the report.",
   "coverage": "T04 rechecks theme selection/storage/rendering; T10 rechecks Ask/Act selection/storage and new-chat inheritance; T28 reruns all 44 section open/close checks; T40/T67 retain switch/mode storage checks and their cleanup.",
   "downstream": "T40 background capture and T67 downstream capture remain explicitly unverified.",
-  "proof": "node --test tests/browser/settings-full-extension-rechecks.test.mjs tests/browser/settings-guest-scrape-controls.test.mjs: 8 passed; biome formatted owned source/tests/package; git diff --check passed.",
+  "proof": "node --test tests/browser/settings-full-extension-rechecks.test.mjs tests/browser/settings-guest-preference-batch.test.mjs tests/browser/settings-guest-scrape-controls.test.mjs: 11 passed; actual orchestration test injects a T04 failure and drives T10 dropdown options, verifying baseline restoration and preserved failure; biome formatted owned source/tests; git diff --check passed.",
   "test_inclusion": "Added the guard test to test:focused-acceptance.",
   "gaps": [
-    "No hosted native rerun yet.",
-    "Full-extension behavior remains unverified until the independent gate/review and next native run."
+    "No hosted gate, independent review, or native rerun yet.",
+    "T04/T10 full-extension behavior remains unverified; T40/T67 downstream capture remains unverified."
   ]
 }

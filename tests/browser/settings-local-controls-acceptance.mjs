@@ -12,7 +12,10 @@ import { captureFailure } from './profile-reload-capture.mjs';
 import {
   GUEST_PREFERENCES,
   observeGuestNewChatDefault,
+  observeGuestPreference,
+  preferenceBaseline,
   runGuestPreferenceCase,
+  restoreGuestPreferenceBaseline,
 } from './settings-guest-preference-batch.mjs';
 import {
   GUEST_PRIVACY_SWITCHES,
@@ -27,7 +30,7 @@ import {
   enforceFullExtensionRechecks,
   FULL_EXTENSION_RECHECK_IDS,
   initializeFullExtensionRechecks,
-  runFullExtensionRecheck,
+  rerunGuestSettingsAfterExtensionReload,
   snapshotPanelDocumentReload,
 } from './settings-full-extension-rechecks.mjs';
 import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
@@ -521,56 +524,6 @@ async function runCase(c, fn) {
     : c.criteria.length && c.criteria.every((x) => x.status === 'pass')
       ? 'pass'
       : 'unverified';
-}
-
-async function rerunGuestSettingsAfterExtensionReload(panel) {
-  for (const preference of GUEST_PREFERENCES.filter((item) =>
-    ['T04', 'T10'].includes(item.caseId),
-  )) {
-    const c = byId(preference.caseId);
-    await runFullExtensionRecheck(c, async (record) => {
-      await runGuestPreferenceCase(
-        panel,
-        reloadSettings,
-        preference,
-        (name, observation, passed) => record(name, passed ? 'pass' : 'fail', observation),
-        async ({ value, label }) => {
-          if (preference.caseId !== 'T10') return;
-          const chat = await observeGuestNewChatDefault(panel, value, label);
-          record(
-            `new chat inherits ${label}`,
-            chat.modeLabel === label && chat.modeIcon === value ? 'pass' : 'fail',
-            chat,
-          );
-          await settings(panel);
-          await openSection(panel, preference.section);
-        },
-      );
-    });
-  }
-
-  for (const [suffix, run] of [
-    ['T28', runGuestSectionsCase],
-    ['T40', runGuestAutoScrapeCase],
-    ['T67', runGuestAutoScrapeModeCase],
-  ]) {
-    const c = byId(suffix);
-    await runFullExtensionRecheck(c, async (record, result) => {
-      await run(panel, reloadSettings, (phase, action, observation, passed) =>
-        record(`${phase}: ${action}`, passed ? 'pass' : 'fail', observation),
-      );
-      if (suffix === 'T40')
-        result.downstreamCapture = {
-          status: 'unverified',
-          evidence: 'A page-load/background capture was not exercised.',
-        };
-      if (suffix === 'T67')
-        result.downstreamCapture = {
-          status: 'unverified',
-          evidence: 'The selected capture mode was checked; downstream capture was not exercised.',
-        };
-    });
-  }
 }
 
 let observedPort;
@@ -1132,7 +1085,22 @@ try {
         const reloadedGuest = await observeGuestIdentityAndOrganization(replacement.panel);
         recordGuestPhase('reload', reloadedGuest);
         await recordGuestAdvancedDenial('reload', replacement.panel, reloadedGuest);
-        await rerunGuestSettingsAfterExtensionReload(replacement.panel);
+        await rerunGuestSettingsAfterExtensionReload({
+          panel: replacement.panel,
+          cases: report.cases,
+          preferences: GUEST_PREFERENCES,
+          reloadSettings,
+          settings,
+          openSection,
+          observeNewChatDefault: observeGuestNewChatDefault,
+          runPreferenceCase: runGuestPreferenceCase,
+          observePreference: observeGuestPreference,
+          preferenceBaseline,
+          restorePreferenceBaseline: restoreGuestPreferenceBaseline,
+          runSectionsCase: runGuestSectionsCase,
+          runAutoScrapeCase: runGuestAutoScrapeCase,
+          runAutoScrapeModeCase: runGuestAutoScrapeModeCase,
+        });
       } catch (error) {
         report.guestStageFailed = guestStage;
         if (guestStage === 'extension_reload' || error?.lifecycleEvidence || error?.contextBoundary)
