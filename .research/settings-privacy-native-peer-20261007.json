@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh_independent_native_evidence_review",
+  "reviewed_record": ".research/settings-privacy-native-20261007.json",
+  "reviewed_curator_commit": "89eb52b5",
+  "verdict_a_native_behavior": {
+    "status": "PARTIAL",
+    "native_scope": "Run 37722572578 exercised the receipt-verified v0.2.391 unpacked extension in an isolated Chrome-for-Testing signed-out guest profile. The harness used trusted CDP pointer input and read the active panel DOM plus chrome.storage.local.",
+    "cases": {
+      "EXT-F-1003-T16": {
+        "status": "unverified",
+        "native_observed": "One visible switch; off => UI false/storage false and on => UI true/storage true; saveError false; both states persisted after panel reload.",
+        "downstream": "Agent identity and email context sharing was not exercised."
+      },
+      "EXT-F-1003-T19": {
+        "status": "unverified",
+        "native_observed": "One visible switch; off => UI false/storage false and on => UI true/storage true; saveError false; both states persisted after panel reload.",
+        "downstream": "The post-login save offer was not exercised."
+      },
+      "EXT-F-1003-T31": {
+        "status": "unverified",
+        "native_observed": "One visible switch; off => UI false/storage false and on => UI true/storage true; saveError false; both states persisted after panel reload.",
+        "downstream": "A saved-login offer on a supported sign-in form was not exercised."
+      },
+      "EXT-F-1003-T34": {
+        "status": "unverified",
+        "native_observed": "One visible switch; on => UI true/storage on_page and off => UI false/storage quiet; saveError false; both states persisted after panel reload.",
+        "downstream": "On-page suggestion presentation on a supported site was not exercised."
+      }
+    },
+    "reload_and_restoration": "For these four cases, reloadSettings calls CDP Page.reload({ignoreCache:true}) on the side-panel document, then reopens Settings and samples UI/storage. This is a panel-document reload, not an extension-management reload. The separate guestExtensionReload receipt belongs to later guest account cases. The driver finally block clicks back to the captured UI/storage baseline, asserts it, reloads the panel, and asserts persistence again. The receipt does not serialize the baseline or final restoration sample; case completion with no fail criterion is consistent with those assertions passing, but the artifact does not independently expose the final values.",
+    "driver_oracle_comparison": "Raw artifact observations satisfy the driver's unique-switch, expected checked value, expected stored value, active Settings/Privacy, and no-save-error predicate for every warm and reload sample. Each case remains unverified because its downstream behavior criterion is explicitly unverified. CI success was not used to promote these cases.",
+    "visual_limit": "The two artifact screenshots show setup context and a normal target page; neither shows the Privacy switch or its off/on states."
+  },
+  "verdict_b_artifact_and_resource_provenance": {
+    "status": "PASS_WITH_PROVENANCE_CORRECTION",
+    "native_run": {
+      "run_id": 37722572578,
+      "head_sha": "6d8fb6945877592b35b5ed74d00472b03841ebbe",
+      "conclusion": "success",
+      "artifact_id": 11526223459,
+      "artifact_name": "hosted-guest-37722572578-1",
+      "artifact_zip_sha256": "2f175aadb7074f707fd4884232baf2f17ff154849ebbbefecb734a1451cba02e"
+    },
+    "frozen_extension_provenance": {
+      "ci_run_id": 37698216289,
+      "artifact_id": 11516342905,
+      "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+      "version": "0.2.391",
+      "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+      "evidence": "Downloaded CI artifact receipt and provenance agree. Native run logs specify these run/artifact IDs and report DEVELOPMENT_TEST_IMPORTED with exact_pushed_commit_only; downloaded native acceptance JSON repeats the same extension ID, version, and tree hash."
+    },
+    "resource_journals": [
+      {
+        "file": ".research/settings-privacy-native-peer-20261007-originals/resource-journals/hosted-package-37722572578-1.jsonl",
+        "sha256": "bf12f328922eadae730fefe13ce926edad1f8ada4b2f7e76d4035b6cf0b4f5bb",
+        "events": 4,
+        "final_decision": "valid"
+      },
+      {
+        "file": ".research/settings-privacy-native-peer-20261007-originals/resource-journals/hosted-browser-37722572578-1.jsonl",
+        "sha256": "51d4f9feb087beb768db1da0dec1b1d4841e3e492fda517ebef129b2784c3a61",
+        "events": 4,
+        "final_decision": "valid"
+      },
+      {
+        "file": ".research/settings-privacy-native-peer-20261007-originals/resource-journals/hosted-guest-37722572578-1.jsonl",
+        "sha256": "53a2ebe2cb792608c913b131dd65a81c1ec2a327997622c25142b0d356bad503",
+        "events": 7,
+        "final_decision": "valid",
+        "healthy_watch_samples": 3
+      }
+    ],
+    "provenance_correction": "Direct download of artifact 11526223459 contains all three 37722572578 JSONL journals under docs/stabilization/resource-journals. The curator's claim that the artifact omitted them is incorrect. The earlier .research copies are log-derived: their first RESOURCE_JOURNAL_OPENED event adds a runner path field that is absent from the downloaded artifact. The remaining events match; these report copies preserve the unmodified downloaded journals and their hashes."
+  },
+  "limits": [
+    "No browser, build, release, source change, or secret access was performed in this review.",
+    "Evidence applies to frozen v0.2.391 in this signed-out guest run; it does not establish downstream behavior or current-main, Store, member, or admin behavior.",
+    "The screenshots are setup-only and the raw per-case receipt omits explicit final restoration values."
+  ]
+}
