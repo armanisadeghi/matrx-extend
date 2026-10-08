@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import {
   runGuestAutoScrapeCase,
@@ -126,7 +127,7 @@ test('T28 case runner rejects an open section without rendered content and verif
   assert.equal(state.reloads, 0);
 });
 
-test('T28 failed initial census records only active state and safe heading labels', async () => {
+test('T28 onFailure receipt retains only safe initial census diagnostics', async () => {
   const { state, driver, reload } = simulatedPanel();
   const originalEvaluate = driver.evaluate;
   driver.evaluate = async (...args) => {
@@ -138,16 +139,27 @@ test('T28 failed initial census records only active state and safe heading label
     return observed;
   };
 
-  await assert.rejects(
-    runGuestSectionsCase(null, reload, () => {}, driver),
-    (error) => {
-      assert.match(
-        error.message,
-        /guest_settings_sections_missing:\{"active":false,"count":0,"headings":\[\],"unrecognizedHeadingCount":0\}/,
-      );
-      return true;
-    },
+  const acceptanceSource = await readFile(
+    new URL('./settings-local-controls-acceptance.mjs', import.meta.url),
+    'utf8',
   );
+  const runCaseStart = acceptanceSource.indexOf('async function runCase(c, fn) {');
+  const runCaseEnd = acceptanceSource.indexOf('\nlet observedPort;', runCaseStart);
+  assert.ok(runCaseStart >= 0 && runCaseEnd > runCaseStart);
+  const runCase = new Function(
+    'criterion',
+    `${acceptanceSource.slice(runCaseStart, runCaseEnd)}\nreturn runCase;`,
+  )((c, name, status, evidence) => c.criteria.push({ name, status, evidence }));
+  const receipt = { criteria: [] };
+  await runCase(receipt, () => runGuestSectionsCase(null, reload, () => {}, driver));
+
+  assert.equal(receipt.status, 'fail');
+  assert.match(
+    receipt.error,
+    /guest_settings_sections_missing:\{"active":false,"count":0,"headings":\[\],"unrecognizedHeadingCount":0\}/,
+  );
+  assert.match(receipt.criteria[0].evidence, /"unrecognizedHeadingCount":0/);
+  assert.equal(JSON.stringify(receipt).includes('guest_settings_sections_missing'), true);
   assert.deepEqual(state.clicks, []);
   assert.equal(state.reloads, 0);
 });

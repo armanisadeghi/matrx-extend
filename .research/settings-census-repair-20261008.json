@@ -4,7 +4,7 @@
   "reported_run": "37837587382",
   "finding": "The assertion reported only guest_settings_sections_missing and discarded the observed active flag and section roster. The report cannot establish whether the Settings pane was inactive or the roster differed; no product cause is proven.",
   "repair": "Preserve a bounded census diagnostic on initial failure: active boolean, total heading count, labels only from the source-owned expected Settings section list, and count of unrecognized labels. The original active-and-exact-roster gate and all later section behavior assertions are unchanged.",
-  "guard": "Added a focused test forcing an inactive empty census; it requires the safe diagnostic and asserts no section actions or reload occur.",
+  "guard": "Added a focused integrated onFailure test forcing an inactive empty census through the acceptance runner; the receipt must retain only the safe diagnostic and no section actions or reload may occur.",
   "verification": {
     "format": "pnpm exec biome format --write tests/browser/settings-guest-scrape-controls.mjs tests/browser/settings-guest-scrape-controls.test.mjs completed with no formatting changes.",
     "focused_test": "Not run locally under the bounded source-only assignment; pushed test changes are expected to trigger the hosted focused gate.",
