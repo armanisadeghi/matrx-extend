@@ -3,14 +3,14 @@
     "status": "source_backed_observability_gap_no_executable_behavior_helper",
     "source_findings": {
         "setting_and_trigger": "src/hooks/use-auto-scrape.ts reads scrapeAutoOnLoad and invokes captureWithFallback for the active HTTP(S) page after a 600ms settle delay.",
-        "readback": "ContextRulesComposerChip calls useAutoScrapeStore.getState().current internally when building the no-send preview. The store also has inFlight/current state, but neither is exposed through the rendered preview DOM or a native harness observation channel.",
-        "default_context_shape": "src/lib/chat/context/shape-config.ts defaults to v2-bundled. That builder can expose page_full_content when a trustworthy scrape exists, but does not expose scrape provenance. scrape_source is emitted only by legacy v1-flat, whose source explicitly says new keys belong in v2-bundled.",
-        "missing_trigger": "A native runner can observe rendered Page content when present, but current UI does not distinguish auto-background capture from manual capture, does not expose preview measurement/readiness when the Page content row is absent, and does not expose whether an auto capture is in flight or cached for the active document. Therefore no honest ON/OFF forcing helper can assert the required distinctions against the existing rendered UI."
+        "readback": "ContextRulesComposerChip builds a no-send preview through the same buildChatContextValues path as a turn. With manual capture absent, a unique marker on a fresh controlled page after enabling can establish the causal automatic capture effect. The v2 preview also represents page_full_content as a structured value when present; its complete rendered values can distinguish an absent content entry from a failed/incomplete preview.",
+        "default_context_shape": "src/lib/chat/context/shape-config.ts defaults to v2-bundled. That builder emits page_full_content for a trustworthy scrape; it does not emit scrape provenance. The legacy scrape_source key in v1-flat is unnecessary for the causal enabled check and should not be added to the retiring shape.",
+        "missing_trigger": "The existing Settings native runner has no adapter that opens the no-send context preview and reads the complete v2 values for a unique fresh-page ON check and an explicit absent-page_full_content OFF check over a bounded sample window. This is a harness coverage gap, not evidence of a product defect. Direct inFlight/current-store instrumentation is unnecessary for that route."
     },
     "gaps": [
-        "Expose safe, read-only T40 evidence through an existing UI or harness-accessible runtime surface: preview readiness/document identity, capture provenance, and active-document inFlight/current-cache state.",
-        "Then write forcing tests against a real controlled page-load and the actual ContextRules preview; no helper tests or native acceptance are claimed in this preparation.",
-        "No downstream capture acceptance, full-extension reload acceptance, or live product behavior is claimed here."
+        "Add a native adapter that reads the complete ContextRules v2 preview, confirms fresh active document identity, checks the ON unique marker with manual capture absent, and checks page_full_content remains absent while OFF across a bounded observation window.",
+        "A bounded OFF window only supports absence during the observed interval; it does not prove no later capture ever occurs.",
+        "No helper tests or native acceptance are claimed in this preparation."
     ],
     "owned_files": [
         ".research/settings-auto-scrape-behavior-preparation-20261008.json"
