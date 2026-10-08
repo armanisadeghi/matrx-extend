@@ -6,9 +6,28 @@
       "docs/stabilization/reports/package-catchup-008-peer.json": 1,
       "docs/stabilization/reports/package-catchup-008.json": 1
     },
+    "include-app-tables": {
+      ".research/records-aggregate-final-peer.json": 1,
+      ".research/records-control-procedures-20261008.json": 1,
+      ".research/records-first-tranche-peer.json": 1,
+      ".research/records-full-action-contract.json": 1,
+      ".research/records-native-retest-20261008.json": 2,
+      ".research/records-native-retest-20261008/raw/hosted-guest-37799435980-1/records-readonly-native-37799435980-1.json": 1,
+      ".research/records-readonly-case-peer-20261008.json": 1,
+      ".research/records-readonly-native-case-20261008.json": 1,
+      ".research/records-validation-reload-native-20261008-1614.json": 1,
+      ".research/records-validation-reload-native-20261008-1614/raw/native-receipt.json": 1,
+      "docs/stabilization/defects/EXT-D-0091.json": 2,
+      "docs/stabilization/inventory.json": 3,
+      "tests/browser/records-readonly-native-acceptance.mjs": 3,
+      "tests/browser/records-readonly-native-driver.test.mjs": 2
+    },
     "is-personal": {
       "docs/stabilization/reports/package-catchup-005-peer.json": 1,
       "scripts/check-org-default-ban.ts": 9
+    },
+    "typed-table-api": {
+      ".research/records-npm-recovery.json": 1
     }
   }
 }
