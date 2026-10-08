@@ -32,7 +32,11 @@
     ".research/records-native-review-repair-20261008.json",
     ".research/records-repair-final-peer-20261008.json",
     ".research/records-driver-guard-20261008.json",
-    ".research/records-ci-diagnostics-peer-20261008.json"
+    ".research/records-ci-diagnostics-peer-20261008.json",
+    ".research/records-first-native-acceptance-20261008.json",
+    ".research/parallel-product-attempt-peer-20261008.json",
+    ".research/records-input-failure-repair-20261008.json",
+    ".research/records-input-final-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -72,5 +76,6 @@
     "entity_write"
   ],
   "current_work": "Release 0.2.176 (source 3fe608d949a06aa10bfea57b43c9b05638386bc1) includes extension commit 41670d8d; aidream source c971bc6314 supplies the canonical server contract. The release artifact records strict release gates exiting 0, and source review confirms the executor retirement, retained discovery/manual UI, and complete contract gate. This supersedes the stale claim that source review and the strict gate are still pending. D91 remains in-fix: the retained independent live check predates server deployment, no post-deployment Records user result is recorded, and the focused native Manual Tools Records read-only case is still not executed. Do not infer all-action acceptance from the strict gate or unrelated guest/member Chat runs.",
-  "native_acceptance_preparation": "records-readonly-admin routed to authenticatedlaneA. Sourcee4ed23d3 fixes four independent findings; guardd65ac528 passes fresh667c2574 at actualcallback seam, including missingstage/wrongprincipal/stalevisiblebody and cleanup. No native Records action run yet. Next exactcandidate browser test must prove actual signed-in table_list include_app_tables, matching org/principal and finishedrequest correlated visible result; allother Records actions remain unverified."
+  "native_acceptance_preparation": "Input repair04ba1909 passes six focused tests and focused CI37797807542. Fresh02ec651e is PARTIAL: exact original substep and real React propagation require native proof. Next run must prove actual table_list include_app_tables request, organization/principal, terminal response and visible correlated result on414 or a newer eligible artifact. No further mock can substitute for that proof; all other Records actions remain unverified.",
+  "native_acceptance_attempt": "37795653439 on frozen development414/macOS15 ARM: real admin, approved organization and finished schema GET matched. records_input_failed before execute; zero action acceptance. CPU_PENDING preceded child exit1, not confirmed resource kill. Both temporary secrets independently absent; sampled backend3682f88fa375a10966bf1cafc4e3358141f29801 stable."
 }

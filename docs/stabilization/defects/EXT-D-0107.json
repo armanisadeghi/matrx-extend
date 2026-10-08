@@ -36,7 +36,10 @@
     ".research/native-host-pressure-escalation-20261008.json",
     ".research/startup-interval-independent-peer-20261008.json",
     ".research/startup-interval-final-peer-20261008.json",
-    ".research/startup-bracket-native-20261008.json"
+    ".research/startup-bracket-native-20261008.json",
+    ".research/parallel-product-attempt-peer-20261008.json",
+    ".research/idle-headless-native-control-20261008.json",
+    ".research/idle-native-evidence-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -59,7 +62,7 @@
     }
   ],
   "closure_requirement": "Prove and repair demonstrated startup class with actual helper red/green and independent review; native admin original scenario and surrounding ownership rejection must pass.",
-  "next_action": "Source-reviewed explicit headless idle-panel control, then one guarded hosted attempt on same Intel/frozen407 artifact: isolate public-page workload while preserving Chrome/display/extension. Current diagnostic37791330758 connects~5.95s; startup host CPU dominant but later ownedChrome CPU dominates, and missing SEO phase makes causal attribution unresolved. No warm-up, threshold reduction, or blind retry. D183 preserves future SEOprogress.",
+  "next_action": "Headless Intel idle control37793909272 passed with CPU_PENDING recovery and cleanup, zero product credit. Controlled Intel SEO37795616638 then timed out before exercise, child exit1 while CPU_PENDING, zero targets; public-page work is not the sole startup cause. Original331ms admin refusal remains distinct. Next bounded SEO product attempt uses development414 or newer eligible artifact, explicitly recording artifact/architecture; do not repeat407 unchanged or infer causal cure from the artifact change. Keep guard thresholds and ownership checks.",
   "confirmed_late_start_variant": {
     "run_id": "37785284577",
     "resource_valid": true,

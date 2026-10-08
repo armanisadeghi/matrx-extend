@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T14:31:54.044492+00:00",
+  "updated_at": "2026-10-08T15:04:58.405733+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -19469,6 +19469,18 @@
               "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
               "evidence": [".research/startup-bracket-native-20261008.json"],
               "detail": "Diagnostic-only startup bracket connects~5.95s; hostdominantstartup then laterownChromiumpressure. Guestjournalinvalid/exit3; noSEOreceipt. Zeroacceptance; workloadphaseunknown. Idlepanel sameheadlessmode control and durableprogressrepair are next."
+            },
+            {
+              "at": "2026-10-08T15:04:58.405733+00:00",
+              "run_id": "37795616638",
+              "mode": "guest",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [".research/seo-controlled-native-lane-b-20261008.json"],
+              "detail": "Controlled scope excludes T09 volatilepublicdetail/metadata; startup endpoint timeout8s with CPU_PENDING then childexit1, no confirmed guardkill and no productactions. Durable receipt exists atbuild_identity_verified withzero targets. Invalidstartup falsifies publicpagework as solecause; no T09 orwholeSEOcredit."
             }
           ]
         },
@@ -62930,7 +62942,21 @@
             ".research/records-control-procedures-20261008.json",
             ".research/records-control-procedures-final-peer-20261008.json"
           ],
-          "procedure_status": "source_reviewed_conditional_not_runtime_verified"
+          "procedure_status": "source_reviewed_conditional_not_runtime_verified",
+          "attempt_history": [
+            {
+              "at": "2026-10-08T15:04:58.405733+00:00",
+              "run_id": "37795653439",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": false,
+              "build_version": "0.2.414",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "evidence": [".research/records-first-native-acceptance-20261008.json"],
+              "detail": "Realadmin/approvedorg and matching finishedschemaGET observed; records_input_failed beforeactionPOST/output. Guestwrapperinvalid duechildexit1; environmentalCPUcause notinferred. Both temporarysecrets removed; stable sampledbackend3682f88f. No Recordstable_list acceptance."
+            }
+          ]
         },
         {
           "id": "EXT-F-4130-T02",

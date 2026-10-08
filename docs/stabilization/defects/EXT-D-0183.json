@@ -20,7 +20,9 @@
     ".research/startup-bracket-native-20261008.json",
     ".research/seo-startup-repair-acceptance-20261008.json",
     ".research/seo-progress-receipt-repair-20261008.json",
-    ".research/seo-receipt-oracle-peer-20261008.json"
+    ".research/seo-receipt-oracle-peer-20261008.json",
+    ".research/seo-controlled-native-lane-b-20261008.json",
+    ".research/parallel-product-attempt-peer-20261008.json"
   ],
   "closure_requirement": "Durable phase/observation write proven by actual interrupted driver seam and freshreview, then independently inspected native interruption/surrounding successfulreceipt; no invalidrun promotion.",
   "transition_history": [
@@ -49,5 +51,6 @@
       "reason": "Source035caed8 passes fresh721cfa3a; real hosted/native requirement remains pending."
     }
   ],
-  "fix_commits": ["035caed8"]
+  "fix_commits": ["035caed8"],
+  "native_partial": "37795616638 retained an early failure receipt at build_identity_verified with zero targets. Child exited1 after CDP timeout while CPU_PENDING; no confirmed guard kill. Receipt lacks an interim/checkpoint marker and may be final error output. Original post-panel/completed-target interruption durability remains unverified; no closure."
 }
