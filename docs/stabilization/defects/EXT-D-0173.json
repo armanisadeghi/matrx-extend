@@ -7,7 +7,7 @@
   "title": "D47 native drivers omit verified organization UUID required by shared checkpoint",
   "severity": "S2: acceptance infrastructure prevents testing; no product failure established",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/d47_org_handoff_fix",
   "preconditions": [
     "Frozen development0.2.407 CI37754055905 artifact11539827040; hosted workflow sourcefae3d07d",
@@ -25,7 +25,8 @@
     ".research/t57-preflight-repaired-native-20261008.json",
     ".research/parallel-native-failure-peer-20261008.json",
     ".research/d47-org-handoff-fix-20261008.json",
-    ".research/d47-org-handoff-peer-20261008.json"
+    ".research/d47-org-handoff-peer-20261008.json",
+    ".research/d47-org-handoff-final-peer-20261008.json"
   ],
   "evidence_limits": [
     "Native37767661089 final guest resource envelope is invalid; native observations alone do not establish product behavior. Caller omission is independently source-confirmed.",
@@ -49,6 +50,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Sol owns both caller repairs and causal wiring guard; independent review and native checkpoint remain required."
+    },
+    {
+      "at": "2026-10-08T11:24:00.974049+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source and actual-import guard independently accepted66b7b5c8; native checkpoint remains pending, source-onlyfixed."
     }
   ],
   "next_action": "Repair and independently review all caller handoffs, then one resource-valid original native test with actual matching product request/header lineage.",
@@ -56,7 +63,8 @@
   "source_candidate": {
     "sha": "0eebbca39c95d62f401f3866123177ce92c4d51a",
     "source_review": "PASS: both actual imports/callers correct",
-    "guard_review": "PARTIAL: injected reader does not prove production import binding; follow-up repair active",
-    "native_retest": "pending; no product request/header evidence yet"
+    "guard_review": "PASS: independent66b7b5c8 exercises actual import resolution; removed/wrong-binding mutations fail;11 focused tests pass",
+    "native_retest": "Pending next resource-admitted original native checkpoint; no product acceptance claimed",
+    "guard_sha": "3749335640ea68887e00e38560fab302cda03aca"
   }
 }
