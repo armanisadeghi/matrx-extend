@@ -2,12 +2,13 @@
   "date": "2026-10-07",
   "scope": "Independent source verification of EXT-D-0165 fixture repair 012955b8; no production or native-browser verification",
   "verdict_a": "PASS for the six original fixture failures: all three extracted setup fixtures now provide browserSession.send('Browser.getVersion'), and the VM fixture provides chrome.runtime.id. Whole Full CI remains pending in the parent lane.",
-  "verdict_b": "PASS: repair changes test inputs only. Existing panel visibility, exact-target activation, refused-open, permission, and mutation assertions remain in force; no CI workflow change.",
+  "verdict_b": "PASS: repair changes test inputs only. Existing panel visibility, exact-target activation, refused-open, and mutation assertions remain in force; no CI workflow change. The three touched fixtures contain no explicit permission assertion.",
   "source_evidence": [
     "fa05a939 adds Browser.getVersion and chrome.runtime.id reads before the extracted setup assertions; 012955b8 supplies those dependencies to the three affected fixtures.",
     "native-sidepanel-qa-harness.test.mjs retains the setup order assertion and the existing accepted/refused open checks.",
     "panel-visible-reopen-repair.test.mjs retains visible/hidden event assertions, exact-owned-panel target assertion, refused-open assertion, and mutations for omitted activation and constant visibility.",
-    "panel-visibility-diagnostic.test.mjs retains nine checkpoint and refusal assertions plus mutations for omitted checkpoints and manufactured measurements."
+    "panel-visibility-diagnostic.test.mjs retains nine checkpoint and refusal assertions plus mutations for omitted checkpoints and manufactured measurements.",
+    "The new browser session stubs assert that only Browser.getVersion is requested; native-sidepanel-qa-harness.mjs permissionDenied classification is untouched."
   ],
   "checks": [
     "node --test tests/browser/panel-visible-reopen-repair.test.mjs: 5 passed, 0 failed",
