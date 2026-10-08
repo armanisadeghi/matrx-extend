@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "task": "startup-bracket-native-20261008",
+  "status": "ONE_HOSTED_DIAGNOSTIC_TERMINAL_RESOURCE_INVALID",
+  "acceptance_credit": "zero; diagnostic-only regardless of browser progress",
+  "preflight": {
+    "checkout": "main",
+    "dispatched_head_sha": "3d4b73b5574256b484a00f8d9a60cdba6c93453c",
+    "reviewed_instrumentation_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "focused_ci_run": 37790643910,
+    "focused_ci_conclusion": "success",
+    "current_main_relevant_source_matches_reviewed_sha": true,
+    "frozen_development_run": 37754055905,
+    "frozen_development_artifact": 11539827040,
+    "frozen_version": "0.2.407",
+    "frozen_artifact_expired": false,
+    "active_or_queued_hosted_acceptance_runs_at_dispatch": 0
+  },
+  "run": {
+    "id": 37791330758,
+    "attempt": 1,
+    "job_id": 113359206749,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37791330758",
+    "workflow": "hosted-guest-acceptance.yml",
+    "runner_label": "macos-15-intel",
+    "inputs": {
+      "acceptance_case": "guest-seo",
+      "development_run_id": "37754055905",
+      "development_artifact_id": "11539827040",
+      "seo_resource_diagnostic": true,
+      "seo_case_scope": "full",
+      "seo_metadata_fixture": "airbnb",
+      "acceptance_lane": "A"
+    },
+    "started_at": "2026-10-08T14:18:14Z",
+    "finished_at": "2026-10-08T14:25:05Z",
+    "workflow_conclusion": "failure",
+    "readiness": {
+      "lane_admission": "success",
+      "artifact_provenance": "success",
+      "auth_preflight": "success",
+      "package_journal": "valid",
+      "browser_journal": "valid"
+    },
+    "native_step": {
+      "name": "Exercise the selected Chrome side-panel case",
+      "conclusion": "failure",
+      "resource_journal": "invalid",
+      "resource_exit_code": 3,
+      "first_pending_at": "2026-10-08T14:24:39.727Z",
+      "first_pending_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "first_pending_cpu_busy_fraction": 0.95,
+      "first_pending_one_minute_load": 3.39,
+      "unsafe_at": "2026-10-08T14:24:56.912Z",
+      "unsafe_cpu_busy_fraction": 1,
+      "unsafe_one_minute_load": 4.9,
+      "stopped_at_safe_boundary": true
+    },
+    "seo_result_report": "not present in uploaded artifact; no structured target outcome recorded",
+    "safe_target_evidence": {
+      "page_title_visible": "Research brief: product discovery",
+      "page_screenshot": "startup-bracket-native-20261008-37791330758/raw/normal-target-after-open.png",
+      "panel_screenshot": "startup-bracket-native-20261008-37791330758/raw/native-side-panel.png",
+      "interpretation": "screenshots show the controlled target page and guest panel open; they do not prove any SEO target action"
+    },
+    "uploaded_artifact": {
+      "id": 11556906814,
+      "name": "hosted-guest-37791330758-1",
+      "sha256": "12368a6bd26ed0fbbb6991d27502e4c6e965a0a920e814457270034543879589"
+    }
+  },
+  "startup_interval": {
+    "raw": "startup-bracket-native-20261008-37791330758/raw/BROWSER_STARTUP_CPU_INTERVAL.json",
+    "before_started_at": "2026-10-08T14:24:31.585Z",
+    "after_completed_at": "2026-10-08T14:24:37.531Z",
+    "outcome": "cdp_connected",
+    "host_provisioner_interval_delta_cpu_seconds": 1.01,
+    "other_host_interval_delta_cpu_seconds": 11.71,
+    "appeared_owned_processes_lifetime_cpu_seconds": 4.61,
+    "appeared_owned_lifetime_is_exact_interval_delta": false,
+    "process_observations": 147,
+    "limitation": "ps snapshots bracket but do not equal the iostat interval; process lifetime CPU for appeared processes is not an exact interval delta; exited, reparented, or PID-reused processes remain gaps",
+    "ps_resolution_seconds": 0.01,
+    "matched_owned_chromium_delta_cpu_seconds": 0,
+    "matched_owned_other_delta_cpu_seconds": 0.22
+  },
+  "current_run_resource_journals": [
+    {
+      "path": "startup-bracket-native-20261008-37791330758/raw/resource-journals/hosted-package-37791330758-1.jsonl",
+      "final_decision": "valid"
+    },
+    {
+      "path": "startup-bracket-native-20261008-37791330758/raw/resource-journals/hosted-browser-37791330758-1.jsonl",
+      "final_decision": "valid"
+    },
+    {
+      "path": "startup-bracket-native-20261008-37791330758/raw/resource-journals/hosted-guest-37791330758-1.jsonl",
+      "final_decision": "invalid"
+    }
+  ],
+  "interpretation": {
+    "hypotheses": [
+      "stable host/provisioner CPU during the startup bracket",
+      "newly appeared owned Chromium CPU during startup",
+      "later owned Chromium activity contributing to resource guard refusal"
+    ],
+    "finding": "The bracket connected CDP in about 5.95 seconds. Matched-process deltas were dominated by otherHost plus hostProvisioner CPU (12.72 seconds) while matched owned Chromium was zero. At the same time, newly appeared owned Chromium processes had 4.61 seconds of lifetime CPU, which is not an interval delta. After startup, the guest resource journal reached CPU_PENDING and later WATCH_UNSAFE; a later guard snapshot attributed 3.43 seconds to owned Chromium while busy fraction was 1. These observations cannot assign the cause of startup delay or the later host pressure to one process class.",
+    "causal_conclusion": "unconfirmed; no host repair claimed",
+    "retry": "none; one authorized diagnostic attempt completed"
+  },
+  "raw_sha256": {
+    "startup-bracket-native-20261008-37791330758/raw/BROWSER_STARTUP_CPU_INTERVAL.json": "863eac8fdd8568a1da6e27c7b952c8b09a0fe521e2ca2820eec62cf6750059d5",
+    "startup-bracket-native-20261008-37791330758/raw/attempt-receipt.json": "5f3df64c229c3fbbc12ed64aa7a7337cbc44ecf03785f965e4b7df869b65449b",
+    "startup-bracket-native-20261008-37791330758/raw/frozen-development-provenance.json": "fa963d5d02aa014bea1ed1f162d5273f444e3951f44f563f5b53cc3d741cf5ba",
+    "startup-bracket-native-20261008-37791330758/raw/native-side-panel.png": "1d63139057f53ee3ac982ae29568b45d67ea403a3e151bad798d84a8c3d27f1a",
+    "startup-bracket-native-20261008-37791330758/raw/normal-target-after-open.png": "60d95c01c8bf5fa8f0807e1aed08d2adb43b4a5532190ae0eadd54c5e3aef79c",
+    "startup-bracket-native-20261008-37791330758/raw/resource-journals/hosted-package-37791330758-1.jsonl": "2d2dbaf39de7fa17ebfdd111603d7009c1a063df23ba5bb5e7c6b104138fdfd1",
+    "startup-bracket-native-20261008-37791330758/raw/resource-journals/hosted-browser-37791330758-1.jsonl": "bcd185879bef73e869189409f7aade237d9f96a9b0e86bdf3bdf5b081705e628",
+    "startup-bracket-native-20261008-37791330758/raw/resource-journals/hosted-guest-37791330758-1.jsonl": "9301892ee29a1d7c09f0dd5d71ed3953a002c5b5a346b75682bd8623a6b08288"
+  }
+}

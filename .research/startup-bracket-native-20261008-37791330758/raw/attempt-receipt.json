@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "run_id": 37791330758,
+  "run_attempt": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "head_sha": "3d4b73b5574256b484a00f8d9a60cdba6c93453c",
+  "inputs": {
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-seo",
+    "development_run_id": "37754055905",
+    "development_artifact_id": "11539827040",
+    "seo_resource_diagnostic": true,
+    "seo_case_scope": "full",
+    "seo_metadata_fixture": "airbnb",
+    "acceptance_lane": "A"
+  },
+  "frozen_development_artifact": {
+    "run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "version": "0.2.407",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "artifact_expired": false
+  },
+  "result": {
+    "workflow_conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "resource_guard": "invalid",
+    "resource_exit_code": 3,
+    "acceptance_credit": "none; diagnostic-only attempt",
+    "seo_targets_report": "not emitted in uploaded artifact",
+    "visible_target_evidence": "normal-target-after-open.png"
+  },
+  "artifact": {
+    "id": 11556906814,
+    "name": "hosted-guest-37791330758-1",
+    "sha256": "12368a6bd26ed0fbbb6991d27502e4c6e965a0a920e814457270034543879589"
+  }
+}
