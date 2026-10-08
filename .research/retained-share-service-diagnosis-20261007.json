@@ -37,10 +37,7 @@
     "resource token mismatch",
     "different grant storage family"
   ],
-  "verification": [
-    "node --check pass",
-    "single-file Biome format pass"
-  ],
+  "verification": ["node --check pass", "single-file Biome format pass"],
   "native_run": "not run; host owned by cold trust fixer",
   "mutations": "none; no revoke attempted",
   "private_recovery": "retained mode 0600; no identifiers or URLs in report",
