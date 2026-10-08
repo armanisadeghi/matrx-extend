@@ -2,7 +2,7 @@
   "schema_version": 1,
   "task": "Bounded T67 full-extension failure diagnosis and safe stage capture",
   "status": "source-committed; focused-gate-independent-review-and-native-retest-pending",
-  "source_commit": "536856858e5cb3a2b726366c5e781c86789930c4",
+  "source_commit": "53685685b5101628ad9f24d30c16804a73a2b407",
   "integration_commit": "744f0bbdf52a48c6b5fa3d93abe8cff20fe8f1d9",
   "prior_native_evidence": {
     "run_id": 37847922569,
