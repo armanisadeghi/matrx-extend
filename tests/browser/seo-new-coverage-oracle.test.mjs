@@ -5,11 +5,62 @@ import {
   observeSocialCopyOutcome,
   pollSocialFeedback,
   runCopyCheckThenRecapture,
+  runSeoCaseSequence,
   socialCopyButtonObservation,
   verifyManualRecapture,
   verifySocialClipboard,
   verifySocialCopyOutcome,
 } from './seo-new-coverage-oracle.mjs';
+
+test('volatile detail assertion runs after controlled T14 and T02 observations and still fails', async () => {
+  const observed = [];
+  const unstableSource = new Error('manual_source_stability');
+  const controlledCases = async () => {
+    observed.push('T14 clipboard readback');
+    observed.push('T02 changed metadata recapture');
+  };
+  const dynamicDetailCases = async () => {
+    observed.push('T09 public DOM comparison');
+    throw unstableSource;
+  };
+  await assert.rejects(
+    async () => {
+      await dynamicDetailCases();
+      await controlledCases();
+    },
+    (error) => error === unstableSource,
+  );
+  assert.deepEqual(observed, ['T09 public DOM comparison']);
+  observed.length = 0;
+  await assert.rejects(
+    () => runSeoCaseSequence(controlledCases, dynamicDetailCases),
+    (error) => error === unstableSource,
+  );
+  assert.deepEqual(observed, [
+    'T14 clipboard readback',
+    'T02 changed metadata recapture',
+    'T09 public DOM comparison',
+  ]);
+});
+
+test('lost controlled target halts before a dynamic fixture can obscure it', async () => {
+  const observed = [];
+  const lostTarget = new Error('controlled_target_lost');
+  await assert.rejects(
+    () =>
+      runSeoCaseSequence(
+        async () => {
+          observed.push('controlled preflight');
+          throw lostTarget;
+        },
+        async () => {
+          observed.push('T09 public DOM comparison');
+        },
+      ),
+    (error) => error === lostTarget,
+  );
+  assert.deepEqual(observed, ['controlled preflight']);
+});
 
 const sparse = {
   url: 'https://example.org/',

@@ -18,6 +18,7 @@ import {
   observeSocialCopyOutcome,
   requireSocialCopyTarget,
   runCopyCheckThenRecapture,
+  runSeoCaseSequence,
   socialCopyButtonObservation,
   verifyManualRecapture,
 } from './seo-new-coverage-oracle.mjs';
@@ -1336,282 +1337,313 @@ try {
       });
       advance('canonical_outbound_verified', { destinationMatchesPublicDom: true });
 
-      // A second rich page supplies an independent live DOM and browser
-      // navigation entry. The collector's values are never used as the oracle.
-      enter('next_detail_page_navigation');
-      const nextResponse = await page.goto(NEXT_DETAIL_PAGE, { waitUntil: 'load' });
-      const nextExpected = await observe('next_public_details_inspected', () =>
-        publicNextDetailEvidence(page, nextResponse),
-      );
-      report.next_detail_public_counts = {
-        links: nextExpected.links,
-        images: nextExpected.images,
-        bodyHasText: nextExpected.bodyHasText,
-        alternateCount: nextExpected.alternates.length,
-        schemaTypeCount: nextExpected.schemaTypes.length,
-      };
-      assert.equal(page.url(), NEXT_DETAIL_PAGE, 'owned tab reached the selected public URL');
-      assert.ok(nextExpected.title, 'selected public page has a title');
-      await waitObserved(
-        'next_detail_audit_wait',
-        () => seoContent(panel),
-        (state) =>
-          state?.scopeValid && state.title === nextExpected.title && state.reAudit && !state.error,
-        30000,
-      );
-      const autoDetails = await observe('next_auto_seo_details_inspected', () =>
-        seoNextDetailState(panel),
-      );
-      // Auto-run is a point-in-time snapshot on URL change, which may precede
-      // load completion. Record it, but measure exact details after a trusted
-      // re-audit against stable public DOM and navigation timing samples.
-      report.next_detail_auto_observed = {
-        links: autoDetails.links,
-        images: autoDetails.images,
-        performance: autoDetails.performance,
-        exactDataStatus: 'unverified',
-      };
-      const manualBefore = await observe('next_manual_public_before_inspected', () =>
-        publicNextDetailEvidence(page, nextResponse),
-      );
-      assert.equal(page.url(), NEXT_DETAIL_PAGE, 'manual audit starts on the selected public URL');
-      enter('next_manual_reaudit_click');
-      await click(panel, 'button', 'Re-audit');
-      advance('next_manual_reaudit_click_dispatched', { trustedInput: true });
-      await waitObserved(
-        'next_manual_reaudit_running_wait',
-        () => seoContent(panel),
-        (state) => state?.scopeValid && !state.reAudit,
-      );
-      await waitObserved(
-        'next_manual_reaudit_settle_wait',
-        () => seoContent(panel),
-        (state) =>
-          state?.scopeValid && state.title === manualBefore.title && state.reAudit && !state.error,
-        30000,
-      );
-      const manualAfter = await observe('next_manual_public_after_inspected', () =>
-        publicNextDetailEvidence(page, nextResponse),
-      );
-      assert.equal(page.url(), NEXT_DETAIL_PAGE, 'manual audit ends on the selected public URL');
-      const publicScalars = (value) => ({
-        links: value.links,
-        images: value.images,
-        bodyHasText: value.bodyHasText,
-        alternateCount: value.alternates.length,
-        schemaTypeCount: value.schemaTypes.length,
-        navigation: value.navigation,
-        responseStatus: value.responseStatus,
-      });
-      report.next_detail_manual_public = {
-        before: publicScalars(manualBefore),
-        after: publicScalars(manualAfter),
-      };
-      assertNext('manual_source_stability', () =>
-        assert.deepEqual(
-          manualAfter,
-          manualBefore,
-          'public DOM and navigation timing remain stable around manual re-audit',
-        ),
-      );
-      const nextDetails = await observe('next_manual_seo_details_inspected', () =>
-        seoNextDetailState(panel),
-      );
-      assertNext('manual_links', () => assertNextLinks(nextDetails, manualAfter));
-      target('T09', 'guest_manual_link_counts_match_live_dom', {
-        url: NEXT_DETAIL_PAGE,
-        ...manualAfter.links,
-      });
-      assertNext('manual_images', () => assertNextImages(nextDetails, manualAfter));
-      target('T09', 'guest_manual_image_alt_counts_match_live_dom', {
-        url: NEXT_DETAIL_PAGE,
-        ...manualAfter.images,
-      });
-      assertNext('manual_readability', () => assertNextReadability(nextDetails, manualAfter));
-      if (manualAfter.bodyHasText)
-        target('T09', 'guest_manual_readability_display_is_populated_and_explained', {
-          publicBodyHasText: true,
-          displayed: nextDetails.readability,
-          metricValueCorrectness: 'unverified',
-        });
-      else
-        unverifiedTarget(
-          'T09',
-          'guest_manual_readability_display_is_populated_and_explained',
-          'The public body had no text, so populated readability fields could not be exercised.',
-        );
-      report.next_detail_public_navigation = manualAfter.navigation
-        ? {
-            type: manualAfter.navigation.type,
-            durationMs: manualAfter.navigation.durationMs,
-            transferSizeBytes: manualAfter.navigation.transferSizeBytes,
-            responseStatus: manualAfter.navigation.responseStatus,
-            pageResponseStatus: manualAfter.responseStatus,
-          }
-        : null;
-      assertNext('manual_performance', () => assertNextPerformance(nextDetails, manualAfter));
-      target('T09', 'guest_manual_performance_reflects_current_navigation', {
-        pageResponseStatus: manualAfter.responseStatus,
-        exposedNavigation: manualAfter.navigation,
-        displayed: nextDetails.performance,
-      });
-
-      // A missing public datum makes the door action unverified; no assumed
-      // Wikipedia hreflang or JSON-LD is allowed to turn it green.
-      const uniqueAlternate = manualAfter.alternates.find(
-        (item) => manualAfter.alternates.filter((other) => other.href === item.href).length === 1,
-      );
-      let schemaLinks;
-      assertNext('manual_doors', () => {
-        schemaLinks = assertNextDoors(nextDetails, manualAfter);
-      });
-      const uniqueSchema = schemaLinks.find(
-        (item) => schemaLinks.filter((other) => other.href === item.href).length === 1,
-      );
-      if (uniqueAlternate && uniqueSchema) {
-        enter('hreflang_outbound_activation');
-        await activateSeoLink(panel, page, 'International', uniqueAlternate.href);
-        await waitForSourceSeoDoor(
-          panel,
-          manualAfter.title,
-          uniqueSchema.href,
-          'schema_door_source_panel_restored',
-        );
-        enter('schema_outbound_activation');
-        await activateSeoLink(panel, page, 'Structured data', uniqueSchema.href);
-        target('T09', 'guest_manual_hreflang_and_schema_doors_match_page', {
-          hreflang: uniqueAlternate,
-          schemaType: uniqueSchema.type,
-          schemaUrl: uniqueSchema.href,
-          trustedInput: true,
-        });
-      } else {
-        unverifiedTarget(
-          'T09',
-          'guest_manual_hreflang_and_schema_doors_match_page',
-          'The public DOM did not expose unique hreflang and openable schema door candidates.',
-        );
-      }
-      advance('next_manual_detail_batch_observed', {
-        sourceUrl: NEXT_DETAIL_PAGE,
-        doorStatus: report.targets.at(-1).status,
-      });
-
-      // A controlled DOM edit in the owned public tab gives re-audit a
-      // different, independently observable answer without stubbing capture.
-      // Restore the page before leaving, including if a native assertion fails.
-      enter('controlled_public_page_navigation');
-      await page.goto(PAGES[0], { waitUntil: 'load' });
-      const originalSocial = await publicSocialSource(page);
-      advance('controlled_public_social_source', { sourceCaptured: true });
-      await waitObserved(
-        'controlled_public_audit_wait',
+      await runSeoCaseSequence(
         async () => {
-          const state = await seoContent(panel);
-          return {
-            scopeValid: state?.scopeValid,
-            titleMatches: state?.title === originalSocial.title,
-            reAudit: state?.reAudit,
-            error: state?.error,
-          };
-        },
-        (state) => state?.scopeValid && state.titleMatches && state.reAudit && !state.error,
-        30000,
-      );
-      let mutation = null;
-      try {
-        const { recaptureResult: changedSocial } = await runCopyCheckThenRecapture(
-          () =>
-            copySocialTags(
-              { panel, browserSession, panelTarget },
-              originalSocial,
-              'before_reaudit',
-            ),
-          async () => {
-            mutation = await page.evaluate(() => {
-              const title = document.title;
-              const existing = document.querySelector('meta[name="description"]');
-              const description = existing?.getAttribute('content') ?? null;
-              const created = !existing;
-              return { title, description, created };
-            });
-            await page.evaluate(({ title, created }) => {
-              const existing = document.querySelector('meta[name="description"]');
-              const node = existing ?? document.createElement('meta');
-              if (created) {
-                node.setAttribute('name', 'description');
-                document.head.append(node);
-              }
-              document.title = `${title} — updated`;
-              node.setAttribute('content', `${title} updated page description`);
-            }, mutation);
-            const changedSocial = await publicSocialSource(page);
-            advance('controlled_public_changed_source', {
-              titleChanged: changedSocial.title !== originalSocial.title,
-              descriptionChanged: changedSocial.description !== originalSocial.description,
-            });
-            const stale = await seoContent(panel);
-            advance('controlled_public_before_reaudit', {
-              titleMatchesOriginal: stale.title === originalSocial.title,
-            });
-            assert.equal(
-              stale.title,
-              originalSocial.title,
-              'old native audit remains before Re-audit',
-            );
-            enter('controlled_public_trusted_reaudit_click');
-            await click(panel, 'button', 'Re-audit');
-            let refreshed;
-            await waitObserved(
-              'controlled_public_reaudit_result',
+          // A controlled DOM edit in the owned public tab gives re-audit a
+          // different, independently observable answer without stubbing capture.
+          // Restore the page before leaving, including if a native assertion fails.
+          enter('controlled_public_page_navigation');
+          await page.goto(PAGES[0], { waitUntil: 'load' });
+          const originalSocial = await publicSocialSource(page);
+          advance('controlled_public_social_source', { sourceCaptured: true });
+          await waitObserved(
+            'controlled_public_audit_wait',
+            async () => {
+              const state = await seoContent(panel);
+              return {
+                scopeValid: state?.scopeValid,
+                titleMatches: state?.title === originalSocial.title,
+                reAudit: state?.reAudit,
+                error: state?.error,
+              };
+            },
+            (state) => state?.scopeValid && state.titleMatches && state.reAudit && !state.error,
+            30000,
+          );
+          let mutation = null;
+          try {
+            const { recaptureResult: changedSocial } = await runCopyCheckThenRecapture(
+              () =>
+                copySocialTags(
+                  { panel, browserSession, panelTarget },
+                  originalSocial,
+                  'before_reaudit',
+                ),
               async () => {
-                refreshed = await seoContent(panel);
-                return {
-                  scopeValid: refreshed?.scopeValid,
-                  titleMatchesChanged: refreshed?.title === changedSocial.title,
-                  reAudit: refreshed?.reAudit,
-                  error: refreshed?.error,
-                };
+                mutation = await page.evaluate(() => {
+                  const title = document.title;
+                  const existing = document.querySelector('meta[name="description"]');
+                  const description = existing?.getAttribute('content') ?? null;
+                  const created = !existing;
+                  return { title, description, created };
+                });
+                await page.evaluate(({ title, created }) => {
+                  const existing = document.querySelector('meta[name="description"]');
+                  const node = existing ?? document.createElement('meta');
+                  if (created) {
+                    node.setAttribute('name', 'description');
+                    document.head.append(node);
+                  }
+                  document.title = `${title} — updated`;
+                  node.setAttribute('content', `${title} updated page description`);
+                }, mutation);
+                const changedSocial = await publicSocialSource(page);
+                advance('controlled_public_changed_source', {
+                  titleChanged: changedSocial.title !== originalSocial.title,
+                  descriptionChanged: changedSocial.description !== originalSocial.description,
+                });
+                const stale = await seoContent(panel);
+                advance('controlled_public_before_reaudit', {
+                  titleMatchesOriginal: stale.title === originalSocial.title,
+                });
+                assert.equal(
+                  stale.title,
+                  originalSocial.title,
+                  'old native audit remains before Re-audit',
+                );
+                enter('controlled_public_trusted_reaudit_click');
+                await click(panel, 'button', 'Re-audit');
+                let refreshed;
+                await waitObserved(
+                  'controlled_public_reaudit_result',
+                  async () => {
+                    refreshed = await seoContent(panel);
+                    return {
+                      scopeValid: refreshed?.scopeValid,
+                      titleMatchesChanged: refreshed?.title === changedSocial.title,
+                      reAudit: refreshed?.reAudit,
+                      error: refreshed?.error,
+                    };
+                  },
+                  (state) =>
+                    state?.scopeValid && state.titleMatchesChanged && state.reAudit && !state.error,
+                  30000,
+                );
+                const recapture = verifyManualRecapture(
+                  originalSocial,
+                  changedSocial,
+                  stale,
+                  refreshed,
+                );
+                target('T02', 'guest_reaudit_captures_changed_page_metadata', {
+                  ...recapture,
+                  trustedReauditClick: true,
+                });
+                return changedSocial;
               },
-              (state) =>
-                state?.scopeValid && state.titleMatchesChanged && state.reAudit && !state.error,
-              30000,
             );
-            const recapture = verifyManualRecapture(
-              originalSocial,
+            await copySocialTags(
+              { panel, browserSession, panelTarget },
               changedSocial,
-              stale,
-              refreshed,
+              'after_reaudit',
             );
-            target('T02', 'guest_reaudit_captures_changed_page_metadata', {
-              ...recapture,
-              trustedReauditClick: true,
+          } finally {
+            if (mutation && page.url() === originalSocial.url) {
+              await page.evaluate(({ title, description, created }) => {
+                document.title = title;
+                const node = document.querySelector('meta[name="description"]');
+                if (created) node?.remove();
+                else if (description === null) node?.removeAttribute('content');
+                else node?.setAttribute('content', description);
+              }, mutation);
+            }
+          }
+          const restoredSocial = await publicSocialSource(page);
+          advance('controlled_public_source_restored', { sourceRestored: true });
+          assert.deepEqual(
+            restoredSocial,
+            originalSocial,
+            'owned public DOM restored after SEO acceptance',
+          );
+        },
+        async () => {
+          // A second rich page supplies an independent live DOM and browser
+          // navigation entry. The collector's values are never used as the oracle.
+          enter('next_detail_page_navigation');
+          const nextResponse = await page.goto(NEXT_DETAIL_PAGE, { waitUntil: 'load' });
+          const nextExpected = await observe('next_public_details_inspected', () =>
+            publicNextDetailEvidence(page, nextResponse),
+          );
+          report.next_detail_public_counts = {
+            links: nextExpected.links,
+            images: nextExpected.images,
+            bodyHasText: nextExpected.bodyHasText,
+            alternateCount: nextExpected.alternates.length,
+            schemaTypeCount: nextExpected.schemaTypes.length,
+          };
+          assert.equal(page.url(), NEXT_DETAIL_PAGE, 'owned tab reached the selected public URL');
+          assert.ok(nextExpected.title, 'selected public page has a title');
+          await waitObserved(
+            'next_detail_audit_wait',
+            () => seoContent(panel),
+            (state) =>
+              state?.scopeValid &&
+              state.title === nextExpected.title &&
+              state.reAudit &&
+              !state.error,
+            30000,
+          );
+          const autoDetails = await observe('next_auto_seo_details_inspected', () =>
+            seoNextDetailState(panel),
+          );
+          // Auto-run is a point-in-time snapshot on URL change, which may precede
+          // load completion. Record it, but measure exact details after a trusted
+          // re-audit against stable public DOM and navigation timing samples.
+          report.next_detail_auto_observed = {
+            links: autoDetails.links,
+            images: autoDetails.images,
+            performance: autoDetails.performance,
+            exactDataStatus: 'unverified',
+          };
+          const manualBefore = await observe('next_manual_public_before_inspected', () =>
+            publicNextDetailEvidence(page, nextResponse),
+          );
+          assert.equal(
+            page.url(),
+            NEXT_DETAIL_PAGE,
+            'manual audit starts on the selected public URL',
+          );
+          enter('next_manual_reaudit_click');
+          await click(panel, 'button', 'Re-audit');
+          advance('next_manual_reaudit_click_dispatched', { trustedInput: true });
+          await waitObserved(
+            'next_manual_reaudit_running_wait',
+            () => seoContent(panel),
+            (state) => state?.scopeValid && !state.reAudit,
+          );
+          await waitObserved(
+            'next_manual_reaudit_settle_wait',
+            () => seoContent(panel),
+            (state) =>
+              state?.scopeValid &&
+              state.title === manualBefore.title &&
+              state.reAudit &&
+              !state.error,
+            30000,
+          );
+          const manualAfter = await observe('next_manual_public_after_inspected', () =>
+            publicNextDetailEvidence(page, nextResponse),
+          );
+          assert.equal(
+            page.url(),
+            NEXT_DETAIL_PAGE,
+            'manual audit ends on the selected public URL',
+          );
+          const publicScalars = (value) => ({
+            links: value.links,
+            images: value.images,
+            bodyHasText: value.bodyHasText,
+            alternateCount: value.alternates.length,
+            schemaTypeCount: value.schemaTypes.length,
+            navigation: value.navigation,
+            responseStatus: value.responseStatus,
+          });
+          report.next_detail_manual_public = {
+            before: publicScalars(manualBefore),
+            after: publicScalars(manualAfter),
+          };
+          try {
+            assertNext('manual_source_stability', () =>
+              assert.deepEqual(
+                manualAfter,
+                manualBefore,
+                'public DOM and navigation timing remain stable around manual re-audit',
+              ),
+            );
+          } catch (error) {
+            if (error?.code === 'ERR_ASSERTION') {
+              unverifiedTarget(
+                'T09',
+                'guest_manual_public_source_stability',
+                'The public DOM changed during re-audit; exact detail results cannot be credited.',
+              );
+            }
+            throw error;
+          }
+          const nextDetails = await observe('next_manual_seo_details_inspected', () =>
+            seoNextDetailState(panel),
+          );
+          assertNext('manual_links', () => assertNextLinks(nextDetails, manualAfter));
+          target('T09', 'guest_manual_link_counts_match_live_dom', {
+            url: NEXT_DETAIL_PAGE,
+            ...manualAfter.links,
+          });
+          assertNext('manual_images', () => assertNextImages(nextDetails, manualAfter));
+          target('T09', 'guest_manual_image_alt_counts_match_live_dom', {
+            url: NEXT_DETAIL_PAGE,
+            ...manualAfter.images,
+          });
+          assertNext('manual_readability', () => assertNextReadability(nextDetails, manualAfter));
+          if (manualAfter.bodyHasText)
+            target('T09', 'guest_manual_readability_display_is_populated_and_explained', {
+              publicBodyHasText: true,
+              displayed: nextDetails.readability,
+              metricValueCorrectness: 'unverified',
             });
-            return changedSocial;
-          },
-        );
-        await copySocialTags(
-          { panel, browserSession, panelTarget },
-          changedSocial,
-          'after_reaudit',
-        );
-      } finally {
-        if (mutation && page.url() === originalSocial.url) {
-          await page.evaluate(({ title, description, created }) => {
-            document.title = title;
-            const node = document.querySelector('meta[name="description"]');
-            if (created) node?.remove();
-            else if (description === null) node?.removeAttribute('content');
-            else node?.setAttribute('content', description);
-          }, mutation);
-        }
-      }
-      const restoredSocial = await publicSocialSource(page);
-      advance('controlled_public_source_restored', { sourceRestored: true });
-      assert.deepEqual(
-        restoredSocial,
-        originalSocial,
-        'owned public DOM restored after SEO acceptance',
+          else
+            unverifiedTarget(
+              'T09',
+              'guest_manual_readability_display_is_populated_and_explained',
+              'The public body had no text, so populated readability fields could not be exercised.',
+            );
+          report.next_detail_public_navigation = manualAfter.navigation
+            ? {
+                type: manualAfter.navigation.type,
+                durationMs: manualAfter.navigation.durationMs,
+                transferSizeBytes: manualAfter.navigation.transferSizeBytes,
+                responseStatus: manualAfter.navigation.responseStatus,
+                pageResponseStatus: manualAfter.responseStatus,
+              }
+            : null;
+          assertNext('manual_performance', () => assertNextPerformance(nextDetails, manualAfter));
+          target('T09', 'guest_manual_performance_reflects_current_navigation', {
+            pageResponseStatus: manualAfter.responseStatus,
+            exposedNavigation: manualAfter.navigation,
+            displayed: nextDetails.performance,
+          });
+
+          // A missing public datum makes the door action unverified; no assumed
+          // Wikipedia hreflang or JSON-LD is allowed to turn it green.
+          const uniqueAlternate = manualAfter.alternates.find(
+            (item) =>
+              manualAfter.alternates.filter((other) => other.href === item.href).length === 1,
+          );
+          let schemaLinks;
+          assertNext('manual_doors', () => {
+            schemaLinks = assertNextDoors(nextDetails, manualAfter);
+          });
+          const uniqueSchema = schemaLinks.find(
+            (item) => schemaLinks.filter((other) => other.href === item.href).length === 1,
+          );
+          if (uniqueAlternate && uniqueSchema) {
+            enter('hreflang_outbound_activation');
+            await activateSeoLink(panel, page, 'International', uniqueAlternate.href);
+            await waitForSourceSeoDoor(
+              panel,
+              manualAfter.title,
+              uniqueSchema.href,
+              'schema_door_source_panel_restored',
+            );
+            enter('schema_outbound_activation');
+            await activateSeoLink(panel, page, 'Structured data', uniqueSchema.href);
+            target('T09', 'guest_manual_hreflang_and_schema_doors_match_page', {
+              hreflang: uniqueAlternate,
+              schemaType: uniqueSchema.type,
+              schemaUrl: uniqueSchema.href,
+              trustedInput: true,
+            });
+          } else {
+            unverifiedTarget(
+              'T09',
+              'guest_manual_hreflang_and_schema_doors_match_page',
+              'The public DOM did not expose unique hreflang and openable schema door candidates.',
+            );
+          }
+          advance('next_manual_detail_batch_observed', {
+            sourceUrl: NEXT_DETAIL_PAGE,
+            doorStatus: report.targets.at(-1).status,
+          });
+        },
       );
 
       // Optional bounded continuation for public sources whose HTTP markup

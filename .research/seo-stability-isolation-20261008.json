@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0170",
+  "status": "review_ready_runner_repair",
+  "scope": "SEO guest native acceptance driver sequencing only",
+  "cause": "The sequential driver executed the volatile Wikipedia detail source comparison before the independent controlled Example.org metadata and social clipboard checks. Run 37736744238 stopped at manual_source_stability when internal links changed from 1783 to 1784, so T02 changed-metadata recapture and T14 social copy could not execute.",
+  "change": {
+    "driver": "tests/browser/seo-guest-acceptance.mjs",
+    "boundary": "tests/browser/seo-new-coverage-oracle.mjs runSeoCaseSequence",
+    "sequence": [
+      "All original preceding T01/T02/T03/T07/T09 baseline checks",
+      "Controlled Example.org T14 clipboard before/after and T02 changed-metadata recapture, with DOM restoration",
+      "Unchanged Wikipedia T09 detail, public source stability, exact counts, readability, performance and doors",
+      "Optional metadata fixture continuation"
+    ],
+    "failure_policy": "The helper awaits each phase and propagates assertion, resource and lost-target errors. A Wikipedia source-stability assertion records an explicit unverified T09 target, retains bounded before/after public counts and the assertion predicate in the run receipt, exits with failure and earns no T09 exact-data credit. No broad catch or pass conversion was added."
+  },
+  "causal_guard": {
+    "test": "tests/browser/seo-new-coverage-oracle.test.mjs",
+    "old_order": "The captured native receipt stopped at Wikipedia manual_source_stability before any new T14/T02 target; source order at bf224c4e put that assertion first.",
+    "new_order": "The driver-used runSeoCaseSequence invokes controlled observations first, then propagates the same detail assertion; a lost controlled target also propagates before the dynamic phase.",
+    "limit": "Callback tests verify phase order and failure propagation; a new native receipt is required to verify browser behavior."
+  },
+  "checks": {
+    "focused": "node --test tests/browser/seo-new-coverage-oracle.test.mjs tests/browser/clipboard-observation.test.mjs: 29 passed, 0 failed",
+    "syntax": "node --check tests/browser/seo-guest-acceptance.mjs: passed",
+    "format": "pnpm exec biome check on three edited browser files: passed",
+    "diff": "git diff --check: passed"
+  },
+  "verification_limits": [
+    "No native/browser run, frozen build, release, or product change in this bounded assignment.",
+    "EXT-D-0169 product behavior and Store/current-main behavior remain unverified until a guarded native run.",
+    "The captured Wikipedia count change remains an unstable public oracle, not a product verdict."
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh_bounded_peer",
+  "task_id": "EXT-D-0169 native retest",
+  "feature_id": "EXT-F-1008",
+  "reviewed_report": ".research/seo169-native-retest-20261008.json",
+  "reviewed_commit": "bf224c4e",
+  "reviewed_run": 37736744238,
+  "verdict_A_behavior_scope": {
+    "result": "ACCEPT_RESOURCE_VALID_DRIVER_REFUSAL",
+    "current_receipt": "The original receipt records 15 previously passed subtargets, then stops at next_detail_manual_source_stability_assertion when the public Wikipedia internal-link count changes from 1783 to 1784.",
+    "new_acceptance_credit": 0,
+    "EXT-F-1008-T02": "unverified: the new fresh-recapture/manual re-audit criterion was not reached; the old manual-button subtarget pass is repeated prior coverage.",
+    "EXT-F-1008-T14": "unverified: social-copy action, success feedback, and clipboard before/after observation were not reached.",
+    "product_interpretation": "This is a resource-valid stop on an unstable live external DOM. It establishes neither an extension defect nor T02/T14 behavior. Do not credit the 15 repeated passes as new coverage."
+  },
+  "verdict_B_provenance": {
+    "workflow": "GitHub run 37736744238 attempt 1 used checkout 9295e037c9d8e2bb23a04ec451a54f2bca123d6d on macos-15 ARM64. Job log shows package and browser resource decisions valid; guest was admitted and healthy-watched, then child_failed with resourceInvalid=false. Uploaded artifact 11532531266 has digest sha256:df8491156c09184949c88af56d28f8d9dfaa756b9cd8c5bf66ddad5ef559758e.",
+    "build_identity": "Run log confirms imported CI development artifact run 37724859892 / artifact 11527132614, source cedcec02a3fb4e52a3f63ebfda8728809eff418a, tree SHA-256 1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed. The report correctly marks post-case identity recheck false; this was not a Store build.",
+    "driver_identity": "The reviewed source commit is 3dcf290381afd7a76eea45794af6a10a617117e9; focused CI run 37736350529 succeeded. Comparing that commit with run checkout 9295e037c9d8e2bb23a04ec451a54f2bca123d6d shows no changes in the scoped SEO driver, clipboard helpers, native harness, route, or hosted workflow paths.",
+    "screenshots": {
+      "freshness": "current_run_capture_supported",
+      "evidence": "The raw receipt reaches a failure inside the SEO exercise callback. The native harness writes both PNGs with captureTarget before invoking that callback, under a unique mkdtemp directory rooted at test-results; the hosted workflow uploads test-results/native-sidepanel-qa-*/*.png. Run 37736744238 used a fresh hosted runner workspace, and its upload log reports 12 files. Thus identical SHA-256 values to run 37731560399 do not establish inherited files; these are supported as fresh captures with identical pixels.",
+      "visual_scope": "The harness captures the initial native panel and normal target before SEO interactions. These images establish initial native context only and do not prove the later SEO predicates."
+    },
+    "raw_artifacts": "The three curated resource journals match run 37736744238 and show package/browser child exit 0 and valid decisions, plus guest admission/healthy watch followed by exit 1 and child_failed. The original receipt is consistent with the job log."
+  },
+  "limits": [
+    "No source, test, browser, build, inventory, release, or product behavior change was performed.",
+    "No new T02 or T14 result is established; run failure cause is the live public fixture stability assertion.",
+    "Screenshot hashes match the prior run, but the writer/ordering/upload path supports fresh captures; the images themselves have no SEO-action evidence."
+  ],
+  "sources": [
+    ".research/seo169-native-retest-20261008.json and its curated originals",
+    ".research/seo397-guest-native-20261007.json and prior screenshot originals",
+    ".research/seo-escalation-final-peer-20261008.json",
+    "GitHub run 37736744238 job log and metadata",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/seo-guest-acceptance.mjs"
+  ]
+}
