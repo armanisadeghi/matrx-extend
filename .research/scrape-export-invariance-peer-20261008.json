@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "candidate": "3f42efe7",
+  "verdict": "not_ready_for_bounded_guest_native_until_receipt_leak_fixed",
+  "source_gate": "Actual Copy capture UI is used before and after six-pane warm and reload revisits; clipboard sentinel detects no-op copy, temporary read permission is restored, and SHA-256 compares complete copied bytes plus capturedAt identity. Fresh focused run: 14 passed, 0 failed.",
+  "blocking_finding": "assertCaptureExportUnchanged uses assert.equal on digest values; Node AssertionError.message includes both hashes on mismatch, and the native driver's catch writes String(error.message).slice(0,300) into the receipt. Replace digest/identity equality assertions with fixed-code failures so receipt contents stay private; recheck the failure path.",
+  "scope": "Guest/member For AI agent compares the full available Markdown export and timestamp, not every SoupResult field. Admin Full capture (JSON) compares the entire exported object. Rendered panes and post-reload empty Images/Video are separately checked; no guest claim of hidden-field preservation is supported.",
+  "remaining": "Native exact-artifact UI run and independent receipt review remain undone; this source review does not accept T08 for any role."
+}
