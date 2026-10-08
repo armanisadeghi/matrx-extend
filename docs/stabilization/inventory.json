@@ -1568,7 +1568,14 @@
               ],
               "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
-          }
+          },
+          "control_ids": [],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "preserve_unmapped"
+          },
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Existing release controls cover fetch/reconciliation, red candidate refusal, validation, and remote races, but none specifically asserts stale shared dependency-graph refusal before expensive validation. Linking C02/C03 would broaden those controls beyond their stated behavior."
         },
         {
           "id": "EXT-F-0003-T08",
@@ -1652,7 +1659,14 @@
             "No pending lazy import accesses a disposed test environment.",
             "Assertions pass with zero unhandled errors."
           ],
-          "dimensions": ["focused", "full-suite", "remote-CI"]
+          "dimensions": ["focused", "full-suite", "remote-CI"],
+          "control_ids": [],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "preserve_unmapped"
+          },
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: This is a test-harness lifecycle/unhandled-import check. The owning release controls govern candidate validation/publication and CI concurrency, not popup-test teardown behavior."
         },
         {
           "id": "EXT-F-0003-T11",
@@ -25083,7 +25097,14 @@
               "detail": "Source review identified realm-local queue and simultaneous storage-operation failure limits; no native reproduction or pass claimed."
             }
           },
-          "defect_ids": ["EXT-D-0029"]
+          "defect_ids": ["EXT-D-0029"],
+          "control_ids": [],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "preserve_unmapped"
+          },
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: This cross-context persisted-admin execution gate and storage-outage race is not represented by the existing organization picker, sign-out, or retry-auth controls. It needs a dedicated auth-gate control."
         },
         {
           "id": "EXT-F-1015-T40",
@@ -30195,7 +30216,19 @@
             "search performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "mine/shared scopes performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2011-C01",
+            "EXT-F-2011-C03",
+            "EXT-F-2011-C04",
+            "EXT-F-2011-C05"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept_with_unmapped_aspects"
+          },
+          "mapping_notes": "Independent source review accepted 4 existing-control link(s); this mapping adds no runtime or native execution evidence. Unmapped aspects: Guest tab exclusion is not covered by the mapped sign-in, refresh, search, and scope controls; add a dedicated Vault guest-access control if that behavior needs inventory coverage."
         },
         {
           "id": "EXT-F-2011-T02",
@@ -30223,7 +30256,20 @@
               "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
               "acceptance": "When the page-fill panel is ready, Vault resolves against its page URL and displays only candidates shared by the page-fill panel and the current Vault lookup. The blocked panel reason no longer coexists with the ordinary no-outcome guidance."
             }
-          ]
+          ],
+          "control_ids": [
+            "EXT-F-2011-C07",
+            "EXT-F-2011-C08",
+            "EXT-F-2011-C31",
+            "EXT-F-2011-C32",
+            "EXT-F-2011-C33"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 5 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2011-T03",
@@ -30248,7 +30294,38 @@
             "field add/edit/reveal/copy/remove performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "item delete confirmation performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2011-C17",
+            "EXT-F-2011-C18",
+            "EXT-F-2011-C19",
+            "EXT-F-2011-C20",
+            "EXT-F-2011-C21",
+            "EXT-F-2011-C22",
+            "EXT-F-2011-C25",
+            "EXT-F-2011-C26",
+            "EXT-F-2011-C27",
+            "EXT-F-2011-C28",
+            "EXT-F-2011-C29",
+            "EXT-F-2011-C30",
+            "EXT-F-2011-C34",
+            "EXT-F-2011-C35",
+            "EXT-F-2011-C36",
+            "EXT-F-2011-C37",
+            "EXT-F-2011-C38",
+            "EXT-F-2011-C39",
+            "EXT-F-2011-C40",
+            "EXT-F-2011-C41",
+            "EXT-F-2011-C42",
+            "EXT-F-2011-C43",
+            "EXT-F-2011-C44"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 23 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2011-T04",
@@ -30271,7 +30348,21 @@
             "never for site performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "expired/unavailable status performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2011-C45",
+            "EXT-F-2011-C46",
+            "EXT-F-2011-C47",
+            "EXT-F-2011-C48",
+            "EXT-F-2011-C49",
+            "EXT-F-2011-C50"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept_with_unmapped_aspects"
+          },
+          "mapping_notes": "Independent source review accepted 6 existing-control link(s); this mapping adds no runtime or native execution evidence. Unmapped aspects: Expired/unavailable pending-capture state has no matching control among the mapped review/save/update/dismiss/never controls."
         },
         {
           "id": "EXT-F-2011-T05",
@@ -30282,7 +30373,14 @@
           "expected": [
             "The signed-in tab/content is absent or denied with an honest sign-in path."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "preserve_unmapped"
+          },
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Guest Vault exclusion is an access/audience gate; existing Vault controls cover individual Vault actions and do not specify the guest visibility boundary. It needs a dedicated access control."
         },
         {
           "id": "EXT-F-2011-T06",
@@ -30824,7 +30922,41 @@
             "invalid JSON/schema errors performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "run and copy result performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2012-C01",
+            "EXT-F-2012-C02",
+            "EXT-F-2012-C03",
+            "EXT-F-2012-C04",
+            "EXT-F-2012-C05",
+            "EXT-F-2012-C07",
+            "EXT-F-2012-C08",
+            "EXT-F-2012-C09",
+            "EXT-F-2012-C12",
+            "EXT-F-2012-C13",
+            "EXT-F-2012-C14",
+            "EXT-F-2012-C15",
+            "EXT-F-2012-C16",
+            "EXT-F-2012-C17",
+            "EXT-F-2012-C18",
+            "EXT-F-2012-C19",
+            "EXT-F-2012-C20",
+            "EXT-F-2012-C21",
+            "EXT-F-2012-C22",
+            "EXT-F-2012-C23",
+            "EXT-F-2012-C26",
+            "EXT-F-2012-C27",
+            "EXT-F-2012-C28",
+            "EXT-F-2012-C29",
+            "EXT-F-2012-C30",
+            "EXT-F-2012-C35"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "partial"
+          },
+          "mapping_notes": "Independent source review accepted 26 existing-control link(s); this mapping adds no runtime or native execution evidence. Rejected proposed links, omitted: EXT-F-2012-C06, EXT-F-2012-C24, EXT-F-2012-C25, EXT-F-2012-C31, EXT-F-2012-C32, EXT-F-2012-C33, EXT-F-2012-C34. Insufficient proposed links, omitted: EXT-F-2012-C36."
         },
         {
           "id": "EXT-F-2012-T02",
@@ -30845,7 +30977,14 @@
             "optional tabCapture recovery performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "saved recording row actions performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "preserve_unmapped"
+          },
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: This umbrella case combines Smart tests and Recorder behavior. The owning Tools controls are fine-grained filters/manual-runner controls; detailed Smart test and recording behaviors belong to EXT-F-2015/2016. No existing EXT-F-2012 control represents the umbrella case."
         },
         {
           "id": "EXT-F-2012-T03",
@@ -30856,7 +30995,14 @@
           "expected": [
             "The signed-in tab/content is absent or denied with an honest sign-in path."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "preserve_unmapped"
+          },
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Guest Tools exclusion is an access/audience gate with no corresponding control in the owning Tools feature; tab selection controls do not establish guest denial."
         }
       ],
       "cells": {
@@ -32047,7 +32193,35 @@
               "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
               "acceptance": "General chat now resolves the person's platform account default when the extension model menu has no explicit selection; the existing chip describes that choice as Your default. Agent-specific models remain untouched by the helper."
             }
-          ]
+          ],
+          "control_ids": [
+            "EXT-F-2013-C02",
+            "EXT-F-2013-C03",
+            "EXT-F-2013-C04",
+            "EXT-F-2013-C06",
+            "EXT-F-2013-C07",
+            "EXT-F-2013-C18",
+            "EXT-F-2013-C19",
+            "EXT-F-2013-C20",
+            "EXT-F-2013-C21",
+            "EXT-F-2013-C22",
+            "EXT-F-2013-C23",
+            "EXT-F-2013-C24",
+            "EXT-F-2013-C25",
+            "EXT-F-2013-C26",
+            "EXT-F-2013-C27",
+            "EXT-F-2013-C28",
+            "EXT-F-2013-C106",
+            "EXT-F-2013-C107",
+            "EXT-F-2013-C108",
+            "EXT-F-2013-C109"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept_with_unmapped_aspects"
+          },
+          "mapping_notes": "Independent source review accepted 20 existing-control link(s); this mapping adds no runtime or native execution evidence. Unmapped aspects: Guest absence of the agent picker and absence of Sneak Peek are not represented by the mapped navigation/mode/picker controls; each needs explicit access/absence controls."
         },
         {
           "id": "EXT-F-2013-T02",
@@ -32092,7 +32266,24 @@
               "evidence": ".research/hosted-member205-final.json",
               "detail": "Hosted local-development-ZIP 0.2.205 nonadmin sign-in, saved organization presence and one real composer answer pass. Queue, interrupt, Stop, voice, keyboard variations and reload dimensions remain unverified; this does not pass the full case."
             }
-          }
+          },
+          "control_ids": [
+            "EXT-F-2013-C08",
+            "EXT-F-2013-C10",
+            "EXT-F-2013-C29",
+            "EXT-F-2013-C30",
+            "EXT-F-2013-C31",
+            "EXT-F-2013-C32",
+            "EXT-F-2013-C33",
+            "EXT-F-2013-C35",
+            "EXT-F-2013-C36"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 9 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2013-T03",
@@ -32113,7 +32304,38 @@
             "copy reply/conversation options performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state.",
             "attachment removal performs its labeled action or gives a specific, recoverable refusal; reload confirms any persisted state."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2013-C17",
+            "EXT-F-2013-C37",
+            "EXT-F-2013-C38",
+            "EXT-F-2013-C39",
+            "EXT-F-2013-C40",
+            "EXT-F-2013-C41",
+            "EXT-F-2013-C42",
+            "EXT-F-2013-C43",
+            "EXT-F-2013-C44",
+            "EXT-F-2013-C45",
+            "EXT-F-2013-C46",
+            "EXT-F-2013-C47",
+            "EXT-F-2013-C48",
+            "EXT-F-2013-C49",
+            "EXT-F-2013-C50",
+            "EXT-F-2013-C51",
+            "EXT-F-2013-C52",
+            "EXT-F-2013-C53",
+            "EXT-F-2013-C54",
+            "EXT-F-2013-C55",
+            "EXT-F-2013-C56",
+            "EXT-F-2013-C57",
+            "EXT-F-2013-C58"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 23 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2013-T04",
@@ -32143,7 +32365,40 @@
               "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
               "acceptance": "Chat and Pilot stream listeners now turn decision_answers data events into readable render blocks; saved decision_answers parts are converted into text during message hydration."
             }
-          ]
+          ],
+          "control_ids": [
+            "EXT-F-2013-C59",
+            "EXT-F-2013-C60",
+            "EXT-F-2013-C61",
+            "EXT-F-2013-C62",
+            "EXT-F-2013-C63",
+            "EXT-F-2013-C64",
+            "EXT-F-2013-C65",
+            "EXT-F-2013-C66",
+            "EXT-F-2013-C67",
+            "EXT-F-2013-C68",
+            "EXT-F-2013-C69",
+            "EXT-F-2013-C70",
+            "EXT-F-2013-C71",
+            "EXT-F-2013-C72",
+            "EXT-F-2013-C73",
+            "EXT-F-2013-C74",
+            "EXT-F-2013-C75",
+            "EXT-F-2013-C76",
+            "EXT-F-2013-C82",
+            "EXT-F-2013-C83",
+            "EXT-F-2013-C90",
+            "EXT-F-2013-C91",
+            "EXT-F-2013-C92",
+            "EXT-F-2013-C93",
+            "EXT-F-2013-C94"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 25 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2013-T05",
@@ -33156,7 +33411,21 @@
             "Non-admin users cannot open Pilot.",
             "A submitted turn pins to a tab in the Pilot group and ending closes the group."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2014-C01",
+            "EXT-F-2014-C04",
+            "EXT-F-2014-C05",
+            "EXT-F-2014-C15",
+            "EXT-F-2014-C16",
+            "EXT-F-2014-C19"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept_with_unmapped_aspects"
+          },
+          "mapping_notes": "Independent source review accepted 6 existing-control link(s); this mapping adds no runtime or native execution evidence. Unmapped aspects: Guest/member Pilot tab exclusion has no matching control; mapped controls cover the admin session lifecycle only."
         },
         {
           "id": "EXT-F-2014-T02",
@@ -33189,7 +33458,39 @@
               "review": "docs/stabilization/reports/remote-delta-e17e070-reconcile.json",
               "acceptance": "Chat and Pilot stream listeners now turn decision_answers data events into readable render blocks; saved decision_answers parts are converted into text during message hydration."
             }
-          ]
+          ],
+          "control_ids": [
+            "EXT-F-2014-C05",
+            "EXT-F-2014-C07",
+            "EXT-F-2014-C09",
+            "EXT-F-2014-C10",
+            "EXT-F-2014-C11",
+            "EXT-F-2014-C12",
+            "EXT-F-2014-C13",
+            "EXT-F-2014-C14",
+            "EXT-F-2014-C19",
+            "EXT-F-2014-C20",
+            "EXT-F-2014-C22",
+            "EXT-F-2014-C23",
+            "EXT-F-2014-C24",
+            "EXT-F-2014-C25",
+            "EXT-F-2014-C26",
+            "EXT-F-2014-C27",
+            "EXT-F-2014-C28",
+            "EXT-F-2014-C29",
+            "EXT-F-2014-C30",
+            "EXT-F-2014-C31",
+            "EXT-F-2014-C34",
+            "EXT-F-2014-C35",
+            "EXT-F-2014-C36",
+            "EXT-F-2014-C37"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept_with_unmapped_aspects"
+          },
+          "mapping_notes": "Independent source review accepted 24 existing-control link(s); this mapping adds no runtime or native execution evidence. Unmapped aspects: The required absence of Sneak Peek has no matching control; mapped controls cover the positive picker, conversation, card, and error-recovery interactions."
         },
         {
           "id": "EXT-F-2014-T03",
@@ -33593,7 +33894,24 @@
             "Classification success returns a label from the submitted set and a confidence value or null. One label produces the visible 'Need at least 2 comma-separated labels.' error and no model-input event for that invalid attempt.",
             "Neither scenario edits or navigates the fixture. Generative wording is not fixed; record the displayed result or exact refusal, not a subjective text-quality verdict."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2015-C01",
+            "EXT-F-2015-C02",
+            "EXT-F-2015-C03",
+            "EXT-F-2015-C04",
+            "EXT-F-2015-C05",
+            "EXT-F-2015-C06",
+            "EXT-F-2015-C07",
+            "EXT-F-2015-C08",
+            "EXT-F-2015-C24"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 9 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2015-T02",
@@ -33612,7 +33930,22 @@
             "Malformed JSON produces a visible 'Schema is not valid JSON' error without a successful result or model-input event for that attempt.",
             "Translation displays source/target and input/output or an explicit API refusal. Its request events show the source detector followed by translation, and the target is de."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2015-C09",
+            "EXT-F-2015-C10",
+            "EXT-F-2015-C11",
+            "EXT-F-2015-C12",
+            "EXT-F-2015-C13",
+            "EXT-F-2015-C14",
+            "EXT-F-2015-C24"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 7 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2015-T03",
@@ -33633,7 +33966,24 @@
             "Injection scan shows a visible response with suspicious boolean, severity, and reason (plus excerpts when returned); it does not claim a fixed model wording. The captured request contains only the harmless synthetic sample.",
             "Image scenario shows the question, fetched local image preview, and description or visible refusal; the input panel identifies a non-empty PNG Blob. On the no-image page, Run reports 'No images found on the active page.' and no description success."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2015-C15",
+            "EXT-F-2015-C16",
+            "EXT-F-2015-C17",
+            "EXT-F-2015-C18",
+            "EXT-F-2015-C19",
+            "EXT-F-2015-C20",
+            "EXT-F-2015-C21",
+            "EXT-F-2015-C22",
+            "EXT-F-2015-C23"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 9 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2015-T04",
@@ -33652,7 +34002,18 @@
             "Copy full payload copies the displayed serialized events. Copy result copies the visible result body exactly.",
             "No copied value contains data outside the fixture. Result copy is only applicable when a result block is rendered; if every scenario refuses, record this positive branch as unverified."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2015-C24",
+            "EXT-F-2015-C25",
+            "EXT-F-2015-C26"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 3 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2015-T05",
@@ -33667,7 +34028,14 @@
           "expected": [
             "Signed-in Tools and nested Smart tests content are unavailable to guest; the panel shows its honest sign-in path. No Smart Tests Run control is reachable."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "preserve_unmapped"
+          },
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Guest denial of the Tools/Smart tests surface is an audience gate, while the existing controls cover signed-in Smart Tests actions. It needs a dedicated guest-access control."
         }
       ],
       "cells": {
@@ -33881,7 +34249,19 @@
             "Successful captures return to Idle after upload and add a local recording row. Audio badge is absent for audio off and present for audio on; the saved metadata survives reload. The actual video bytes are stored as a file; the row is only local metadata.",
             "If capture or upload refuses, the error/recovery UI must be visible; do not mark positive upload or persistence as passed."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2016-C01",
+            "EXT-F-2016-C02",
+            "EXT-F-2016-C03",
+            "EXT-F-2016-C04"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept_with_unmapped_aspects"
+          },
+          "mapping_notes": "Independent source review accepted 4 existing-control link(s); this mapping adds no runtime or native execution evidence. Unmapped aspects: The saved-row metadata and post-reload persistence assertions have no exact control in the current set; mapped controls cover duration/audio/start/stop only."
         },
         {
           "id": "EXT-F-2016-T02",
@@ -33900,7 +34280,22 @@
             "Open extension permissions navigates to the extension's own permissions page. Granting permission permits a retry to proceed to Starting/Recording or shows a separate explicit runtime refusal.",
             "A real start/upload error is rendered with its message and a Dismiss control. Dismiss clears the error and returns to Idle; it does not hide an error without a user click."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2016-C03",
+            "EXT-F-2016-C05",
+            "EXT-F-2016-C06",
+            "EXT-F-2016-C07",
+            "EXT-F-2016-C08",
+            "EXT-F-2016-C09",
+            "EXT-F-2016-C10"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 7 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2016-T03",
@@ -33920,7 +34315,22 @@
             "Each cancellation preserves its row(s); confirmed row removal removes only that local row. Confirmed Clear list removes all local index rows, and after reload no rows return.",
             "The file assets remain in Files after local index removal/clear, consistent with the confirmation copy."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [
+            "EXT-F-2016-C11",
+            "EXT-F-2016-C12",
+            "EXT-F-2016-C13",
+            "EXT-F-2016-C14",
+            "EXT-F-2016-C15",
+            "EXT-F-2016-C16",
+            "EXT-F-2016-C17"
+          ],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "accept"
+          },
+          "mapping_notes": "Independent source review accepted 7 existing-control link(s); this mapping adds no runtime or native execution evidence."
         },
         {
           "id": "EXT-F-2016-T04",
@@ -33935,7 +34345,14 @@
           "expected": [
             "Signed-in Tools and nested Recorder content are unavailable to guest; a visible sign-in path remains. No Record or list-management control is reachable."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "control_ids": [],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "preserve_unmapped"
+          },
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Guest denial of Tools/Recorder is an audience gate; existing Recorder controls cover recording and local row actions, not visibility/authorization."
         },
         {
           "id": "EXT-F-2016-T05",
@@ -34314,7 +34731,14 @@
             ".research/password-generator-controls-test.json",
             ".research/password-generator-review-repair.json",
             ".research/password-generator-type-final-peer.json"
-          ]
+          ],
+          "control_ids": [],
+          "mapping_provenance": {
+            "proposal": ".research/remaining-control-links-20261008.json",
+            "independent_review": ".research/remaining-control-links-peer-20261008.json",
+            "review_verdict": "preserve_unmapped"
+          },
+          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: Guest denial of Vault and its password generator is an access/audience gate; the generator controls describe signed-in generator interactions and do not establish guest exclusion."
         }
       ],
       "cells": {

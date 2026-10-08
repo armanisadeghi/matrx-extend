@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "lane": "A",
+  "scope": "One hosted native attempt after independently reviewed clean-runner preflight repair, using the frozen 0.2.407 artifact; no product, harness, build, release or deployment edit.",
+  "run": {
+    "id": 37767661089,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37767661089",
+    "status": "completed",
+    "conclusion": "failure",
+    "checkout_sha": "fae3d07da68867d544f59f82d07770a68ec05a87",
+    "checkout_includes_preflight_sha": "4fcfe7857263b440e0146bef6b0d59af062e84bf",
+    "checkout_includes_admin_readiness_sha": "46ec5e17cda452591ad7b196ac0a07811b761c09",
+    "checkout_includes_org_checkpoint_sha": "ad771d37c6add55dedaf31730e4b5c859570bf67",
+    "acceptance_case": "showcase-d47-public-admin",
+    "d47_public_race_preflight": true,
+    "runner_label": "macos-15",
+    "attempt_count": 1
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "version": "0.2.407",
+    "exact_import_observed_in_hosted_log": true
+  },
+  "native_receipt": {
+    "stage": "organization",
+    "auth_stage": "admin_rendered_identity",
+    "organization_substage": "resource_gate",
+    "organization_observations": {},
+    "failure_name": "AssertionError",
+    "failure_message_code": "unclassified_error",
+    "capture": null,
+    "saved_result": null
+  },
+  "resource_journals": {
+    "package": {
+      "run_id": "hosted-package-37767661089-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "run_id": "hosted-browser-37767661089-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "run_id": "hosted-guest-37767661089-1",
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid"
+    }
+  },
+  "source_boundary": {
+    "checkpoint_requires": "runShowcaseOrganizationCheckpoint requires approved organization name and UUID, and asserts the UUID at entry before any resource action",
+    "public_driver": "tests/browser/showcase-d47-public-initial-load.mjs reads approvedAdminOrganizationName and passes requiredOrganizationName only",
+    "sibling_driver": "tests/browser/showcase-d47-document-lifecycle.mjs reads approvedAdminOrganizationName and passes requiredOrganizationName only",
+    "known_correct_caller": "tests/browser/showcase-picker-native-acceptance.mjs passes both approvedOrganization.name and approvedOrganization.id",
+    "classification": "harness wiring failure before real product request, consistent with raw resource_gate/empty observations; no product organization defect established"
+  },
+  "credential_lifecycle": {
+    "canonical_private_preflight": "passed before staging",
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "both_deleted_immediately_after_terminal": true,
+    "independent_name_listing_absent": true,
+    "approved_fixture_mode": "0600",
+    "credential_values_retained": false
+  },
+  "originals": {
+    "hosted_artifact_id": 11546187451,
+    "hosted_artifact_digest": "sha256:5834d20cc53aacddde21e906ef7cff31f71d983bd45b8f03f40eb939a94ff585",
+    "private_recursive_download": "/Volumes/Samsung2TB/.stabilization-scratch/t57-preflight-repaired-37767661089",
+    "tracked_raw_directory": ".research/t57-preflight-repaired-native-20261008-originals/raw",
+    "raw_sha256": {
+      "receipt.raw.json.txt": "2760adfc5c38cb415e0214b1e95aa704c9542d9c6aef54bf7a84cdf4c2f21c67",
+      "hosted-package-37767661089-1.jsonl": "771d4969271b7223b0002cb9f99f68ac4295b0c5d2b8a395c6c46e16a15da981",
+      "hosted-browser-37767661089-1.jsonl": "bce6ea7b983de2f7ae38ce61ab10c857df154d9e78e967e6bfcecdba656a641c",
+      "hosted-guest-37767661089-1.jsonl": "04da436cd47cfbef8ab8736ca72af1802b9747cdad4051996a64acbf6a3b24cf",
+      "run.raw.json": "0eb31da0e9b354a1c292c56405a4afbe473adcbd6c212f38b6484f7e846582ba",
+      "artifacts.raw.json": "e008941ae489435e5e1112773fb8a77bd4f05e884568ef7c13b77807fc9a1b6c"
+    },
+    "private_failed_step_log_sha256": "da6091d78964c851768afb588a820888ad8b9e0425d4914d934c8d05addfc082"
+  },
+  "claim_limit": "Native sign-in reached organization entry, but the required UUID was not passed by this driver. No real product X-Organization-Id response, Network race, capture, saved result or T57 acceptance was observed. Guest resource decision invalid; no retry.",
+  "next_action": "Wire the already verified private UUID into both D47 drivers and pass it to the shared checkpoint; add a focused guard that executes these callers and rejects omission, obtain independent review, then separately authorize another native attempt."
+}
