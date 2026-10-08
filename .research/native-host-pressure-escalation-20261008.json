@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "status": "STARTUP_CAUSAL_OBSERVATION_IMPLEMENTED_NATIVE_UNRUN",
+  "cause_certainty": "CPU pressure and startup timeout confirmed; causal process ownership during the timeout unmeasured. No host repair claimed.",
+  "observations": {
+    "scrape_run": 37787769611,
+    "admission_cpu_mean": 0.04857142857142858,
+    "browser_install": "Only playwright-core install chromium --no-shell; no real browser launch during browser preparation.",
+    "artifact_prepared_at": "2026-10-08T13:59:00.9548890Z",
+    "last_healthy_watch": {
+      "at": "2026-10-08T13:59:01.692Z",
+      "busy": 0.31
+    },
+    "inferred_spawn_at": "2026-10-08T13:59:03.721Z (log timeout time minus reported elapsed; approximate)",
+    "timeout": {
+      "at": "2026-10-08T13:59:11.7391550Z",
+      "elapsed_ms": 8018,
+      "polls": 227,
+      "longest_read_ms": 71,
+      "spawn_observed": true,
+      "stderr": false
+    },
+    "first_unsafe_watch": {
+      "at": "2026-10-08T13:59:17.972Z",
+      "busy": 1.0,
+      "phase": "after startup timeout, during cleanup"
+    },
+    "seo_run": 37787701142,
+    "seo_watch_busy": [0.84, 0.81],
+    "seo_admission_cpu_mean": 0.05714285714285715,
+    "causal_gap": "The entire failing eight-second startup interval falls between the guard samples. Late process percent-CPU snapshots cannot attribute this interval. Enabling only guard-tick brackets would still miss it."
+  },
+  "hypotheses": [
+    {
+      "cause": "Cold OS/provisioner initialization dominates actual startup",
+      "prediction": "Immediate startup bracket contains substantial stable host/provisioner CPU deltas while owned Chrome contribution is comparatively small. This supports host pressure, but does not prove that it caused endpoint delay."
+    },
+    {
+      "cause": "Owned Chromium startup dominates",
+      "prediction": "Newly appeared owned Chromium processes show substantial lifetime CPU while stable host delta is small. Follow up with an isolated no-extension control preserving display mode, not a timeout increase."
+    },
+    {
+      "cause": "Delay is non-CPU waiting or brief/exited work",
+      "prediction": "Both observed host and owned CPU are small or process disappearance leaves a large gap. Do not infer healthy startup; next discriminator must inspect the wait boundary."
+    }
+  ],
+  "change": {
+    "files": [
+      "scripts/startup-process-interval.mjs",
+      "scripts/test-startup-process-interval.mjs",
+      "tests/browser/native-sidepanel-qa-harness.mjs"
+    ],
+    "activation": "Existing MATRX_STARTUP_INTERVAL_DIAGNOSTIC=1 only; no new launcher, no admission change.",
+    "measurement": "Canonical parseProcessTimes/processTimeBracket, sampled immediately before spawn and after owned CDP success/failure. BROWSER_STARTUP_CPU_INTERVAL contains bounded timestamps, safe executable basenames, host/stable-process deltas, appeared owned/unowned process lifetime CPU separately.",
+    "limitations": [
+      "ps centisecond resolution; process snapshots surround startup but are not the guard CPU interval.",
+      "New process lifetime CPU is explicitly not an exact interval delta; reparenting/PID reuse and exited processes remain gaps.",
+      "Diagnostic snapshots add read-only measurement overhead; elapsed endpoint observation remains measured before post-capture.",
+      "Output is retained in workflow logs; existing guard journals remain the sole resource verdict.",
+      "No actual native run and no product acceptance credit."
+    ]
+  },
+  "verification": {
+    "red": "Executed mutation replacing appeared-process filter with false; newborn Chrome retention assertion failed. Restored source.",
+    "green": "Nine tests passed: startup-process-interval, hosted-startup-interval-diagnostic, startup-interval-attribution. Earlier six-test suite also included real delayed owned-CDP endpoint test (12.2 seconds).",
+    "real_local_probe": "Two read-only actual macOS ps snapshots parsed successfully: 662 stable other-host processes, one appeared process; unavailable=false. No browser launched.",
+    "format": "Scoped Biome check passed."
+  },
+  "next_discriminator": {
+    "owner": "root after independent peer review and explicit lane handoff",
+    "attempts": 1,
+    "workflow": "hosted-guest-acceptance.yml",
+    "ref": "main containing reviewed instrumentation",
+    "inputs": {
+      "runner_label": "macos-15-intel",
+      "acceptance_case": "guest-seo",
+      "development_run_id": "37754055905",
+      "development_artifact_id": "11539827040",
+      "seo_resource_diagnostic": "true",
+      "seo_case_scope": "full",
+      "seo_metadata_fixture": "airbnb",
+      "acceptance_lane": "A"
+    },
+    "purpose": "Repeat exact failed SEO display mode/artifact with immediate startup CPU bracket enabled; inspect BROWSER_STARTUP_CPU_INTERVAL aligned with startup success/failure and completed current-run guard journal. This is a changed diagnostic observation, not another acceptance retry.",
+    "verdict": "Diagnostic-only even if native case happens to proceed. Invalid-resource never becomes product evidence.",
+    "stop": "One run; do not retry absent a new causal discriminator."
+  },
+  "constraints": "No local browser/build/release/secrets, no native launch, no lowered thresholds, no increased timeout, no changes to Records/root inventory.",
+  "raw_sha256": {
+    ".research/native-scrape-startup-repair-acceptance-20261008-37787769611/raw/resource-guest.jsonl": "67aea1481a147c580d0379f9e49ec773c3125641559c5235886246f5d773986e",
+    ".research/raw-seo-startup-repair-acceptance-20261008-run37787701142/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37787701142-1.jsonl": "319e7f03cab7376294e750829e46516124908f0fdc82816beca82bd3fe5b6ba0"
+  }
+}

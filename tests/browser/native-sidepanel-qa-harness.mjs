@@ -23,6 +23,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { observeStartupGpu } from '../../scripts/startup-gpu-observation.mjs';
+import { beginStartupProcessInterval } from '../../scripts/startup-process-interval.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
@@ -1460,6 +1461,10 @@ export async function runNativeSidepanelQa({
   let gpuObservation;
   let gpuAbort;
   try {
+    const finishStartupInterval =
+      process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1'
+        ? await beginStartupProcessInterval()
+        : null;
     onStage('browser_spawn');
     startupStartedAt = performance.now();
     child = spawn(
@@ -1496,13 +1501,18 @@ export async function runNativeSidepanelQa({
       onStage('cdp_connect');
       cdp = await connectNativeStartupOwnedCdp({ preparedProfile, chromeExecutable });
       if (launchError) throw launchError;
+      const startupElapsedMs = Math.round(performance.now() - startupStartedAt);
+      if (finishStartupInterval)
+        process.stderr.write(
+          `BROWSER_STARTUP_CPU_INTERVAL ${JSON.stringify(await finishStartupInterval('cdp_connected'))}\n`,
+        );
       if (onStartupEndpointObservation)
         await onStartupEndpointObservation({
           phase: 'cdp_connected',
           endpointPresent: true,
           inspectionFailed: false,
           exitObserved: false,
-          elapsedMs: Math.round(performance.now() - startupStartedAt),
+          elapsedMs: startupElapsedMs,
           polls: 0,
         });
     } catch (error) {
@@ -1522,6 +1532,10 @@ export async function runNativeSidepanelQa({
       // Guest result summaries truncate errors; preserve bounded startup evidence
       // in the runner log before forwarding the unchanged failure.
       process.stderr.write(`BROWSER_STARTUP_FAILURE ${JSON.stringify(startupDiagnostic)}\n`);
+      if (finishStartupInterval)
+        process.stderr.write(
+          `BROWSER_STARTUP_CPU_INTERVAL ${JSON.stringify(await finishStartupInterval('cdp_failed'))}\n`,
+        );
       if (
         error?.message === 'owned_cdp_endpoint_timeout' &&
         onStartupEndpointObservation &&
