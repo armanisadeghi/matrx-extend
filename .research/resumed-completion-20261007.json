@@ -1,257 +1,74 @@
 {
-  "observed_at": "2026-10-08T05:28:12.801308+00:00",
+  "observed_at": "2026-10-08T06:02:06.963489+00:00",
   "all_tasks_complete": false,
-  "screenshots": {
-    "schema_version": 1,
-    "feature": "EXT-F-1009-T03",
-    "status": "partial",
-    "scope": "root and nested scrolling capture, persisted image, local viewer, reload, and canonical public sharing",
-    "cases": {
-      "rootPersistence": "pass",
-      "nestedPersistence": "pass",
-      "localViewer": "pass",
-      "reloadPersistence": "pass",
-      "canonicalShare": "pass",
-      "unsupportedPage": "unverified",
-      "persistenceFailure": "unverified",
-      "tileCap": "unverified"
-    },
-    "build": {
-      "version": "0.2.391",
-      "treeSha256": "872178b117305b9d60ac9f27f871a5f401e0a57f70c525c16cf359e046a6d110",
-      "schema_version": 1,
-      "kind": "ci_development_test",
-      "eligibleStore": false,
-      "publish_state": "not_published",
-      "repository": "armanisadeghi/matrx-extend",
-      "workflow": ".github/workflows/ci.yml",
-      "sourceSha": "61a9b1cae81c1a748233600156162f5ec3774caf",
-      "runId": 37694579646,
-      "runAttempt": 1,
-      "artifactId": 11515715192,
-      "githubArtifactDigest": "sha256:ba96a71c8fac14312717cef6a02dda3d65b3dd7e4703a285602d36d99caa8297",
-      "source": {
-        "originMain": "5fdd8ada23dff5f84f50266ea2e26ff7f0bff141",
-        "localHead": "a53fa894ac116136115627cf10c5a3f4ac0fd464",
-        "trackedDirty": true,
-        "untrackedRunnerInputs": [],
-        "claim": "exact_pushed_commit_only"
-      }
-    },
-    "evidence": {
-      "nested": {
-        "realZeroRowBaseline": true,
-        "persistedOwnedRow": true,
-        "imageLoadedFromGallery": true,
-        "topMiddleBottomPixelsMatched": true,
-        "tallImage": true,
-        "originalScrollRestored": true
-      },
-      "root": {
-        "realZeroRowBaseline": true,
-        "persistedOwnedRow": true,
-        "imageLoadedFromGallery": true,
-        "topMiddleBottomPixelsMatched": true,
-        "tallImage": true,
-        "originalScrollRestored": true
-      },
-      "publicShare": {
-        "canonicalBody": true,
-        "realOwnerGrant": true,
-        "anonymousImageLoaded": true,
-        "anonymousBytesMatchOwnedImage": true
-      }
-    },
-    "cleanup": {
-      "nested": {
-        "exactOwnedRowAbsentAfterRealRead": true
-      },
-      "root": {
-        "exactOwnedRowAbsentAfterRealRead": true
-      }
-    },
-    "shareCleanup": "pass",
-    "profileOwned": true,
-    "targetedVerdict": "pass"
-  },
-  "uninterrupted": {
-    "schema_version": 1,
-    "scope": "imported CI artifact; real admin sign-in; native Chat approval acceptance",
-    "status": "unverified",
-    "build": {
-      "version": "0.2.391",
-      "tree_sha256": "872178b117305b9d60ac9f27f871a5f401e0a57f70c525c16cf359e046a6d110",
-      "receipt_kind": "local_dev_unpacked"
-    },
-    "account": {
-      "reviewer_fingerprint": "5edfa2692bdacc5e",
-      "web_signed_in": true,
-      "extension_signed_in": true,
-      "observed_role_category": "admin",
-      "canonical_extension_admin_check": {
-        "matched_current_extension_user": true,
-        "http_status": 200,
-        "current_user_assigned": true
-      },
-      "sign_out_visible": true,
-      "default_organization_selected": true,
-      "organization_picker_available": true,
-      "storage_shape": {
-        "accessTokenPresent": true,
-        "profilePresent": true,
-        "activeOrganizationPresent": true
-      },
-      "approved_organization_selection": {
-        "option_count": 58,
-        "eligible_count": 58,
-        "matched_count": 1,
-        "pointer_target_verified": true,
-        "approved_name_fingerprint": "61e154af11cd32c0",
-        "pickerMatchesApproved": true,
-        "persistedIdMatchesApproved": true,
-        "name_fingerprint": "61e154af11cd32c0",
-        "id_fingerprint": "8c4b25f5099470bf"
-      }
-    },
-    "authentication_method": "password_login",
-    "chat": null,
-    "screenshots": null,
-    "approval": {
-      "cases": [],
-      "limitations": [],
-      "fixture": {
-        "scope": "owned localhost workspace; ephemeral port; unique per-action markers"
-      },
-      "settings_default_act_selected": true,
-      "last_transport_observation": {
-        "case_id": "act_first",
-        "start_count": 1,
-        "organization_header_fingerprint": "8c4b25f5099470bf",
-        "organization_header_matches_approved": true,
-        "actual_permission_mode": "act",
-        "mode_matches": true,
-        "conversation_fingerprint": "a08ed21439c275f6",
-        "response_matches_request_conversation": true,
-        "backend_request_fingerprint": "cbd11d359fa24913",
-        "start_http_status": 200,
-        "successful_open_new_tab_result_posted": false,
-        "result_http_status": null,
-        "call_fingerprint": null
-      }
-    },
-    "failure_stage": "act_first",
-    "failure_code": "unclassified_failure",
-    "imported_artifact": {
-      "schema_version": 1,
-      "kind": "ci_development_test",
-      "eligibleStore": false,
-      "publish_state": "not_published",
-      "repository": "armanisadeghi/matrx-extend",
-      "workflow": ".github/workflows/ci.yml",
-      "sourceSha": "61a9b1cae81c1a748233600156162f5ec3774caf",
-      "runId": 37694579646,
-      "runAttempt": 1,
-      "artifactId": 11515715192,
-      "githubArtifactDigest": "sha256:ba96a71c8fac14312717cef6a02dda3d65b3dd7e4703a285602d36d99caa8297",
-      "treeSha256": "872178b117305b9d60ac9f27f871a5f401e0a57f70c525c16cf359e046a6d110",
-      "source": {
-        "originMain": "71108a920e2727ff358d47e00b9ef412536b9848",
-        "localHead": "9f5b8fa150998efc3c571be1d08abce2d0e21068",
-        "trackedDirty": false,
-        "untrackedRunnerInputs": [],
-        "claim": "exact_pushed_commit_only"
-      }
-    },
-    "timeout_diagnosis": {
-      "cause": "Native test required obsolete internal leaf open_new_tab; actual server roster uses canonical tabs. Real failed-test conversation completed tabs.create successfully and final reply.",
-      "harness_fix_sha": "4a5c78a5",
-      "fresh_independent_rerun": "running completion-uninterrupted-canonical-20261007"
-    },
-    "native_core": "Four real cases PASS: Act first+repeat zero approvals; Ask remember genuine prompt before effect; Ask repeat zero approvals. Warmreload test incorrectly started freshchat; product intentionally requires historyreopen. Corrected native historydriver0f573742; fresh verification pending."
-  },
-  "disk_cleanup": {
-    "status": "complete",
-    "recovered_gib_approximately": 14,
-    "latest_guard_system_free_gib": 31.6631,
-    "evidence": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-cleanup-20261007.json"
-  },
-  "source_checks": {
-    "focused_tests": "30 passed across 8 files",
-    "run_metadata_race": "meaningful old-behavior RED then repaired GREEN",
-    "conversation_trust_race": "clean meaningful old-behavior RED then repaired GREEN",
-    "catalog_and_tool_docs": "regenerated and pushed",
-    "current_typecheck": "PASS guarded completion-current-types-20261007",
-    "current_lint": "PASS guarded completion-current-lint-retry-20261007, existing advisory warnings",
-    "constant_gut_proof": {
-      "run_id": "completion-constant-guts-20261007",
-      "semantic_assertion_failures": 7,
-      "mutations": [
-        "browser DOM always Ask",
-        "run metadata lookup always null",
-        "conversation trust always empty"
-      ],
-      "source_restored_identical": true,
-      "green_run_id": "completion-guts-restored-green-20261007",
-      "restored_green": "21 tests across6files PASS",
-      "source_restoration": [
-        {
-          "file": "src/lib/chat/build-browser-dom-state.ts",
-          "sha256": "f1504ce9bd8eae7c848c241de01e21a24e86c349a4c2c6ed9dcf984cd9d59068",
-          "restored_identical": true
-        },
-        {
-          "file": "src/lib/tools/dispatch-persist.ts",
-          "sha256": "cbae61dafe37b9a0da41a4e3c1126668fd439263a9257ab0a1478719cec09b92",
-          "restored_identical": true
-        }
-      ]
-    }
-  },
-  "release": {
-    "status": "pending",
-    "reason": "Workspace forbids manual build/release initiation from this machine; CI development artifact is not Store publication."
-  },
-  "next_action": "Diagnose missing real action completion before claiming uninterrupted native acceptance.",
-  "latest_automatic_ci": {
-    "run_id": 37727998755,
-    "source_sha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
-    "conclusion": "success",
-    "artifact_id": 11528732938,
-    "version": "0.2.397",
-    "tree_sha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
-    "native_acceptance": "running; development only, not published"
-  },
-  "remaining": [
-    "Native primary Copy public link shortcut",
-    "Native sameconversation warm/fullreload and Pilot",
-    "Native parallel initial action/concurrent approval scopes",
-    "Store publication and installation"
+  "scope": [
+    "full-page screenshots",
+    "instant local screenshot viewing and canonical public sharing",
+    "uninterrupted mode and remembered approval",
+    "development disk cleanup"
   ],
-  "current_remaining_truth": {
-    "all_tasks_complete": false,
-    "approval": {
-      "five_native_cases": "pass",
-      "same_chat_full_extension_reload": "source repair7601248b passes independent source review and8 meaningful guards; updated exact artifact native acceptance running",
-      "evidence": ".research/approval-current-contract-acceptance-20261007.json",
-      "source_evidence": ".research/cold-reload-conversation-trust-repair-20261007.json",
-      "updated_automatic_ci": {
-        "run_id": 37731510284,
-        "source_sha": "11564fe786ca47bade2c33718710504ed145eb66",
-        "conclusion": "success",
-        "artifact_id": 11530615740,
-        "tree_sha256": "e27ae7d17f776970c61f6de1ae2596c5181d4df5024ca96210d94f1f07ab3ae3",
-        "version": "0.2.397",
-        "publish_state": "not_published"
-      }
-    },
-    "screenshots": {
-      "capture_local_viewer_warm_reload": "pass",
-      "primary_copy_public_link_clipboard_anonymous_identical_bytes": "pass",
-      "retained_owned_test_grant_cleanup": "pending; corrected identity setup then native org picker zero matches before lookup; condition-based readiness diagnostic repair in progress",
-      "evidence": ".research/screenshot-supported-org-final-acceptance-20261007.json",
-      "latest_attempt_evidence": ".research/retained-share-diagnostic-native-corrected-20261007.json"
-    },
-    "disk_cleanup": "complete; approximately14GiB recovered",
-    "publication": "Store installation/release unverified"
-  }
+  "screenshots": {
+    "requested_native_targets": "PASS exact 0.2.397; final same0.2.400 run active",
+    "evidence": ".research/final-screenshot-native-20261008.json",
+    "test_grant_cleanup": "All previous owned test grants verified inactive; final run owns cleanup of any new grants",
+    "untested": ["unsupported page", "persistence failure", "tile cap"]
+  },
+  "approval": {
+    "requested_serial_native_cases": "PASS all eight on exact0.2.400",
+    "evidence": ".research/final-pilot-native-20261008.json",
+    "cases": [
+      "Act first",
+      "Act repeat",
+      "Ask remember before effect",
+      "Ask remembered repeat",
+      "same-chat warm reopen",
+      "same-chat full extension reload",
+      "Pilot Ask opposing Chat Act",
+      "Chat Act after Pilot"
+    ],
+    "broader_native_unverified": [
+      "simultaneous parallel child runs",
+      "concurrent remembered-choice writes"
+    ]
+  },
+  "build": {
+    "version": "0.2.400",
+    "source_sha": "787bd6cd30a7ce8090ae94c173634167fb83c044",
+    "ci_run_id": 37733771636,
+    "ci_conclusion": "success",
+    "artifact_id": 11531101830,
+    "artifact_digest": "sha256:431970a016d6879b4789dfac7a69e8c8d63e35588c89de78ce95f4f843656efd",
+    "tree_sha256": "69035dd3f2b6050509cc64d564a226d413651d75d3b1233287cb75152f534f04",
+    "kind": "ci_development_test",
+    "store_published": false,
+    "installed_store_acceptance": "unverified"
+  },
+  "disk": {
+    "status": "DONE",
+    "approx_recovered_gib": 14,
+    "internal_free_before_gib": 19,
+    "internal_free_after_gib": 33,
+    "cleanup_evidence": "/Volumes/Samsung2TB/code/.stabilization-scratch/disk-cleanup-20261007.json",
+    "preserved": ["active browsers", "user data", "VM data", "Docker data"]
+  },
+  "release_handoff": {
+    "owner": "root/extension-bugfix-release",
+    "state": "prepared; pending permitted host",
+    "policy": ".claude/skills/matrx-extend-bugfix/SKILL.md overrides local release instruction",
+    "required": [
+      "canonical package catch-up and strict release gates",
+      "publication",
+      "actual installed Store acceptance"
+    ]
+  },
+  "remaining_truth": [
+    "Final same400 screenshots active",
+    "Broader native parallel/concurrent and optional screenshot failure paths unverified",
+    "Store publication/install acceptance pending permitted host"
+  ],
+  "review_queue": {
+    "screenshots": "e7a27ff2-b763-4a5c-a19f-1b808bb94c37",
+    "approval": "bf959dba-5441-45a1-b06e-ec013cb21fb5"
+  },
+  "workspace_ledger": "/Volumes/Samsung2TB/code/.stabilization-scratch/resumed-completion-workspace-ledger-20261007.json"
 }
