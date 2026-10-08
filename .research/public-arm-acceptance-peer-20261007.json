@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "independent_public_arm_guest_acceptance_review",
+  "run_id": 37712132094,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37712132094",
+  "reviewed_report": ".research/public-guest-arm-retest-20261007.json",
+  "reviewed_original": ".research/public-guest-arm-retest-20261007-evidence/run37712132094-selected/original/guest-chat-store.json",
+  "verdict_a_original_target": {
+    "status": "pass",
+    "scope": "The bounded three-turn public guest Chat case on the native side panel.",
+    "opening": "terminal_answer with one assistant reply, the unpredictable page code, and the public page stages in order; guest AI request HTTP 200, is_new=true.",
+    "same_conversation_followup": "terminal_answer with an independent grounded assistant reply; HTTP 200, is_new=false, and the opening conversation fingerprint 264f3216a8f89d75 reused.",
+    "new_conversation_after_reload": "Panel document reloaded, guest remained signed out, and a new conversation reached terminal_answer with page-specific content; HTTP 200, is_new=true, and fingerprint f6ae44cfe617a7cb differs from the first two requests.",
+    "prior_intel_failure": "Run 37709629346 stopped at an owned CDP endpoint timeout before Chat; it did not produce a product verdict. The ARM retest reached and passed the bounded Chat case.",
+    "overall_product_health": "not_established"
+  },
+  "verdict_b_integrity_privacy": {
+    "status": "pass_with_explicit_limits",
+    "guest_identity": "Fresh owned guest profile and the observed panel state had no access token, profile, or organization, including after reload.",
+    "artifact": "Published Store CRX version 0.2.205 was unpacked and loaded as a native extension; runtime extension ID hnfolienncfklkgmdjjmhhegglimlamg was observed, and its release-tree SHA-256 08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8 stayed unchanged.",
+    "server": "The public server returned git SHA 1d535d990e3d85eaa24e526a531e49951cfacd07 before and after the case.",
+    "resource_guards": "The package, browser, and guest journals for run 37712132094 each ended valid with child exit code 0 and resourceInvalid=false; stale 37105304739 journals were excluded.",
+    "evidence_handling": "Original report, three current journals, and three screenshots exist in the selected evidence directory and match all recorded SHA-256 hashes. No credential values or personal content appeared in the reviewed selected files.",
+    "limits": [
+      "The context observer attached after panel load; empty context_rule_reads supports only the observed Chat, Values chip, send, and reload interval.",
+      "The test loaded an unpacked published CRX; it does not prove installation through the Chrome Web Store UI.",
+      "The run proves this bounded three-turn case, not the health of every guest Chat workflow or the product overall."
+    ]
+  },
+  "evidence": {
+    "github_conclusion": "success",
+    "github_head_sha": "4107b34c01765aa30b1dd0ff4c8ac9bd0e51d9ef",
+    "original_report_sha256": "21956e059fd829825a4443bec42978e91c873926a4ebbe5f6e9029c1b7f9bbaf",
+    "current_journal_final_decisions": ["package: valid/0", "browser: valid/0", "guest: valid/0"],
+    "assistant_content": "The original report records content checks and terminal timelines for all three turns; three native screenshots show visible assistant replies. Screenshots show a scroll position, while the report supplies the full content assertions.",
+    "original_report_status": "pass"
+  },
+  "product_failure": null,
+  "next_action": "Accept the bounded public guest Chat ARM retest; keep Store UI installation and overall product health as separate claims."
+}
