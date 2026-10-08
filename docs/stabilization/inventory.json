@@ -17159,16 +17159,27 @@
         {
           "id": "EXT-F-1008-T02",
           "title": "Manual audit/re-audit",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1008-C02"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1008-C02"
+          ],
           "preconditions": [
             "Open SEO on a controlled HTTP(S) page with known title, headings, metadata and links; record active organization for saves/recommendations."
           ],
-          "steps": ["Run Audit this page then Re-audit same URL."],
+          "steps": [
+            "Run Audit this page then Re-audit same URL."
+          ],
           "expected": [
             "Live audit updates with current capture; running disables button; re-audit drops stale advice and reports failures."
           ],
-          "dimensions": ["warm", "reload"],
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
           "results": {
             "guest": {
               "status": "partial",
@@ -17219,7 +17230,9 @@
               "run_id": "seo-guest-frozen-20261002T140308Z",
               "artifact_version": "0.2.173",
               "detail": "Trusted re-audit preserved current public title; stale advice/failure dimensions unverified.",
-              "evidence": ["docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"]
+              "evidence": [
+                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
+              ]
             },
             {
               "mode": "guest",
@@ -17265,6 +17278,22 @@
                 ],
                 "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
               }
+            }
+          ],
+          "defect_ids": [
+            "EXT-D-0169"
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37734224612",
+              "status": "unverified",
+              "resource_valid": true,
+              "detail": "New changed-metadata criterion not reached after prior social-copy failure; previous partial evidence remains intact.",
+              "evidence": [
+                ".research/seo-new-native-20261008.json"
+              ],
+              "new_acceptance_credit": false
             }
           ]
         },
@@ -17969,8 +17998,14 @@
         {
           "id": "EXT-F-1008-T14",
           "title": "Copy missing social meta tags",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1008-C14"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1008-C14"
+          ],
           "preconditions": [
             "A live SEO audit has findings in the relevant section; for Fix all, at least two findings exist."
           ],
@@ -17980,7 +18015,26 @@
           "expected": [
             "Clipboard contains the suggested missing tags for the current page; button is absent when no snippet applies."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": [
+            "warm",
+            "reload"
+          ],
+          "defect_ids": [
+            "EXT-D-0169"
+          ],
+          "attempt_history": [
+            {
+              "mode": "guest",
+              "run_id": "37734224612",
+              "status": "unverified",
+              "resource_valid": true,
+              "detail": "First social-copy feedback predicate failed; actual clipboard unobserved.",
+              "evidence": [
+                ".research/seo-new-native-20261008.json"
+              ],
+              "new_acceptance_credit": false
+            }
+          ]
         }
       ],
       "cells": {

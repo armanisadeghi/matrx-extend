@@ -1,0 +1,34 @@
+{
+  "id": "EXT-D-0169",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T14", "EXT-F-1008-T02"],
+  "surface": "SEO / social snippet copy acceptance",
+  "auth_mode": "guest",
+  "title": "Social snippet copy feedback not observed in native guest acceptance",
+  "severity": "S2: social-copy verification blocks following reaudit checks; product impact unconfirmed",
+  "priority": "P1",
+  "state": "open",
+  "owner": "root/seo_social_failure_peer",
+  "preconditions": [
+    "Frozen development0.2.397/sourcecedcec02a3fb4e52a3f63ebfda8728809eff418a, CI37724859892/artifact11527132614; guest ARM macos-15; driver a58478db includes3658c0bc."
+  ],
+  "reproduction": [
+    "Run hosted-guest-acceptance.yml guest-seo laneA macos-15 against stated frozen artifact (observed run37734224612).",
+    "Reach example.org SEO social metadata verdict and perform first trusted social-copy click in added T14 criteria.",
+    "Observe social_before_reaudit_copy_feedback timeout with final false sample; subsequent clipboard readback and controlled metadata mutation are never reached."
+  ],
+  "expected": "Native social snippet button provides observable copy success and actual clipboard equals independently read metadata; subsequent changed-page Re-audit can execute.",
+  "actual": "Feedback predicate stays false; actual clipboard outcome is unknown and following new criteria did not run.",
+  "evidence": [".research/seo-new-native-20261008.json"],
+  "reproducibility": "One resource-valid native attempt; no blind retry. Package/browser valid, guest admitted and healthy child_failed exit1, resourceInvalid=false.",
+  "cause": "Unconfirmed: product copy vs driver feedback predicate/fixture boundary requires independent diagnosis.",
+  "transition_history": [
+    {
+      "at": "2026-10-08T05:58:39.063159+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Self-contained resource-valid native failure; no assumed product cause."
+    }
+  ],
+  "next_action": "Fresh independent original receipt/source review; establish cause or safe missing boundary observation before repair/retry. No new case acceptance."
+}
