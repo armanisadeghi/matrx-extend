@@ -4,13 +4,13 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { buildEvidenceRecord } from './record-stabilization-evidence.mjs';
 import {
   classifySeoResourceDiagnosticReport,
   hostedGuestSeoRoute,
   hostedSeoMetadataFixture,
   hostedSeoResourceDiagnostic,
 } from './hosted-seo-route.mjs';
+import { buildEvidenceRecord } from './record-stabilization-evidence.mjs';
 
 const selected = {
   kind: 'ci_development_test',
