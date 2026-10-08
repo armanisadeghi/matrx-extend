@@ -30366,7 +30366,7 @@
           "id": "EXT-F-2013-C90",
           "label": "Enter credential fields on capture card",
           "action": "Supply secret only to Vault save path",
-          "source_anchor": "src/features/chat/AgentCaptureCredentialCard.tsx",
+          "source_anchor": "src/lib/credentials/capture-card-host.ts",
           "test_design_status": "unverified",
           "test_design_item": "Verify Enter credential fields on capture card (Supply secret only to Vault save path) on Chat (deferred wave D) in source-applicable roles; include refusal and reload where state persists."
         },
@@ -30374,7 +30374,7 @@
           "id": "EXT-F-2013-C91",
           "label": "Save credential and continue",
           "action": "Persist vault item and resume agent",
-          "source_anchor": "src/features/chat/AgentCaptureCredentialCard.tsx",
+          "source_anchor": "src/lib/credentials/capture-card-host.ts",
           "test_design_status": "unverified",
           "test_design_item": "Verify Save credential and continue (Persist vault item and resume agent) on Chat (deferred wave D) in source-applicable roles; include refusal and reload where state persists."
         },
@@ -30382,7 +30382,7 @@
           "id": "EXT-F-2013-C92",
           "label": "Cancel credential capture",
           "action": "Decline save and clear inputs",
-          "source_anchor": "src/features/chat/AgentCaptureCredentialCard.tsx",
+          "source_anchor": "src/lib/credentials/capture-card-host.ts",
           "test_design_status": "unverified",
           "test_design_item": "Verify Cancel credential capture (Decline save and clear inputs) on Chat (deferred wave D) in source-applicable roles; include refusal and reload where state persists."
         },
@@ -30390,7 +30390,7 @@
           "id": "EXT-F-2013-C93",
           "label": "Dismiss expired credential card",
           "action": "Close expired request",
-          "source_anchor": "src/features/chat/AgentCaptureCredentialCard.tsx",
+          "source_anchor": "src/lib/credentials/capture-card-host.ts",
           "test_design_status": "unverified",
           "test_design_item": "Verify Dismiss expired credential card (Close expired request) on Chat (deferred wave D) in source-applicable roles; include refusal and reload where state persists."
         },
@@ -30398,7 +30398,7 @@
           "id": "EXT-F-2013-C94",
           "label": "Retry failed credential save",
           "action": "Resubmit after recoverable error",
-          "source_anchor": "src/features/chat/AgentCaptureCredentialCard.tsx",
+          "source_anchor": "src/lib/credentials/capture-card-host.ts",
           "test_design_status": "unverified",
           "test_design_item": "Verify Retry failed credential save (Resubmit after recoverable error) on Chat (deferred wave D) in source-applicable roles; include refusal and reload where state persists."
         },
@@ -30752,7 +30752,7 @@
         "src/features/chat/SandboxPickerChip.tsx:1",
         "src/features/chat/CopyConversationButton.tsx:1",
         "src/features/chat/QueuedMessageCard.tsx:1",
-        "src/features/chat/AgentCaptureCredentialCard.tsx:1",
+        "src/lib/credentials/capture-card-host.ts:1",
         "src/features/chat/HighlightAttachmentChip.tsx:1",
         "src/features/chat/SpeakerButton.tsx:1",
         "/Users/armanisadeghi/code/aidream/apps/shared/matrx-agents/catalog/react/AgentListContent.tsx:1",
