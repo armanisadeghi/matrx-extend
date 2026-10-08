@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "aaa0cac3",
+  "seat": "Independent source review by the agent that previously reviewed adjacent Scrape evidence; not a newly spawned fresh seat. No authorship of this harness change.",
+  "verdicts": {
+    "A_spec_behavior": {
+      "verdict": "PASS_SOURCE",
+      "findings": [
+        "The ordinary testPage branch now always includes #open-trace and publishes click_received, send_invoked, send_returned, callback_entered, callback_has_reply, callback_last_error, and send_threw; the rootPage producer calls testPage(expectedExtensionId) regardless of the diagnostic opt-in.",
+        "The intrusive CDP worker attachment remains behind scrapeOpenDiagnostic, and the trusted FRONTEND_RPC message, click, replacement-target match, exact-context check, and management reload predicates are unchanged in this commit.",
+        "When the trace read/parse is unavailable, close() supplies only availability=unavailable and captureOpenPanelFixture drops all milestone fields. This no longer reports unknown as observed false. A ready trace is reduced to fixed booleans; callback error text is not copied into the trace."
+      ],
+      "limits": "This source review does not establish native behavior. A malformed partial object marked ready would still serialize missing fields as false; the owned fixture currently emits every field, but ready-shape completeness is not validated."
+    },
+    "B_quality_security": {
+      "verdict": "PASS_FOCUSED_SOURCE_TESTS_WITH_BOUNDED_SCOPE",
+      "verification": "Ran node --test tests/browser/native-panel-open-reply.test.mjs tests/browser/profile-reload-capture.test.mjs tests/browser/native-reload-reply-seam.test.mjs: 13 passed, 0 failed. The producer test evaluates the actual ordinary testPage script, invokes its click handler, checks send invocation/return trace, then invokes the callback and checks error presence is boolean-only. Serializer tests distinguish unavailable from ready false values and exclude private reply/error text.",
+      "guard_review": "Diff does not alter the trusted request payload or target/context acceptance checks. No raw callback error or reply is added to the sanitized receipt; captureFailure retains allowlisted failure codes and sanitized lifecycle evidence.",
+      "limits": "The producer test uses a controlled chrome.runtime.sendMessage stub and is not proof of Chrome delivery or native reload success. I did not independently rerun the reported in-memory mutation. No native run, browser launch, build, release, or defect closure was performed."
+    }
+  }
+}
