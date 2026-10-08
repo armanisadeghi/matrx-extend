@@ -1,10 +1,14 @@
 import assert from 'node:assert/strict';
+import { webcrypto } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
+import { runInNewContext } from 'node:vm';
 import test from 'node:test';
+import { Window } from 'happy-dom';
 import {
   runGuestAutoScrapeCase,
   runGuestAutoScrapeModeCase,
   runGuestSectionsCase,
+  settingsSectionObservationExpression,
 } from './settings-guest-scrape-controls.mjs';
 
 const headings = [
@@ -34,7 +38,7 @@ function simulatedPanel() {
   let selectOpen = false;
   const driver = {
     async evaluate(_panel, expression) {
-      if (expression.includes('const headings =')) {
+      if (expression.includes('const headings = sections.map')) {
         const label = headings.find((name) => expression.includes(JSON.stringify(name)));
         const expanded = state.sections[label];
         return {
@@ -42,6 +46,8 @@ function simulatedPanel() {
           headings,
           count: 1,
           expanded: String(expanded),
+          expandedControlCount: headings.length,
+          nonSectionExpandedControlCount: 0,
           contentAriaHidden: String(!expanded),
           contentInert: !expanded,
           contentNonempty: true,
@@ -98,6 +104,37 @@ test('T28 case runner observes rendered content and restores every section acros
   assert.equal(state.clicks.filter(([kind]) => kind === 'section').length, headings.length * 4);
 });
 
+test('T28 census recognizes actual section wrappers and excludes nested expanded controls', async () => {
+  const window = new Window();
+  const labels = [...headings, 'Extra section'];
+  const wrappers = labels
+    .map((label, index) => {
+      const id = `section-content-${index}`;
+      const nested =
+        index === 0
+          ? '<button role="combobox" aria-expanded="false" aria-controls="nested-1">Provider</button><button role="combobox" aria-expanded="false" aria-controls="nested-2">Model</button><button role="combobox" aria-expanded="false" aria-controls="nested-3">Region</button><button role="combobox" aria-expanded="false" aria-controls="nested-4">Format</button>'
+          : '';
+      return `<div class="collapsible"><div class="flex items-center"><button aria-expanded="true" aria-controls="${id}">${label}</button></div><div id="${id}" aria-hidden="false">${nested}</div></div>`;
+    })
+    .join('');
+  window.document.body.innerHTML = `<button role="tab" title="Settings" data-state="active" aria-controls="settings-pane"></button><div id="settings-pane" role="tabpanel" data-state="active"><div class="flex h-full flex-col"><header></header><div class="flex-1 overflow-y-auto"><div class="space-y-3 px-3 pb-3">${wrappers}</div></div></div></div>`;
+  for (const content of window.document.querySelectorAll('[aria-hidden]')) {
+    content.getBoundingClientRect = () => ({ height: 10 });
+  }
+  const result = await runInNewContext(settingsSectionObservationExpression('Account'), {
+    document: window.document,
+    chrome: { storage: { local: { get: async (key) => ({ [key]: '{}' }) } } },
+    crypto: webcrypto,
+    TextEncoder,
+    getComputedStyle: () => ({ visibility: 'visible', display: 'block' }),
+  });
+  assert.deepEqual(Array.from(result.headings), labels);
+  assert.equal(result.expandedControlCount, 16);
+  assert.equal(result.nonSectionExpandedControlCount, 4);
+  assert.equal(result.count, 1);
+  await window.happyDOM.abort();
+});
+
 test('T28 case runner rejects an open section without rendered content and verifies cleanup', async () => {
   const { state, driver, reload } = simulatedPanel();
   state.sections.Account = false;
@@ -147,7 +184,7 @@ test('T28 onFailure receipt bounds diagnostics for inactive and same-count roste
       active: false,
       observedHeadings: [],
       expected:
-        /guest_settings_sections_missing:\{"active":false,"count":0,"headings":\[\],"unrecognizedHeadingCount":0\}/,
+        /guest_settings_sections_missing:\{"active":false,"count":0,"headings":\[\],"unrecognizedHeadingCount":0,"expandedControlCount":0,"nonSectionExpandedControlCount":0\}/,
       privateLookingHeading: null,
     },
     {
@@ -155,7 +192,7 @@ test('T28 onFailure receipt bounds diagnostics for inactive and same-count roste
       active: true,
       observedHeadings: [...headings.slice(0, 4), privateLookingHeading, ...headings.slice(5)],
       expected:
-        /guest_settings_sections_missing:\{"active":true,"count":11,"headings":\["Account","Organization","Appearance","Chat","Scrape","Data","SEO","Desktop bridge","Data & reset","About"\],"unrecognizedHeadingCount":1\}/,
+        /guest_settings_sections_missing:\{"active":true,"count":11,"headings":\["Account","Organization","Appearance","Chat","Scrape","Data","SEO","Desktop bridge","Data & reset","About"\],"unrecognizedHeadingCount":1,"expandedControlCount":11,"nonSectionExpandedControlCount":0\}/,
       privateLookingHeading,
     },
   ];
@@ -168,6 +205,10 @@ test('T28 onFailure receipt bounds diagnostics for inactive and same-count roste
       if (observed.headings) {
         observed.active = scenario.active;
         observed.headings = scenario.observedHeadings;
+        if (!scenario.active) {
+          observed.expandedControlCount = 0;
+          observed.nonSectionExpandedControlCount = 0;
+        }
       }
       return observed;
     };

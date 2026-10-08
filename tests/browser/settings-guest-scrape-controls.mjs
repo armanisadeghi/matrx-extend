@@ -223,28 +223,45 @@ export async function runGuestAutoScrapeModeCase(
   }
 }
 
-async function observeSection(panel, label, driver = nativeDriver) {
-  return driver.evaluate(
-    panel,
-    `(async () => {
+export function settingsSectionObservationExpression(label) {
+  return `(async () => {
     const tab = [...document.querySelectorAll('button[role="tab"][title="Settings"][data-state="active"]')];
     const pane = tab.length === 1 ? document.getElementById(tab[0].getAttribute('aria-controls') ?? '') : null;
-    const headings = [...(pane?.querySelectorAll('button[aria-expanded]') ?? [])].map((node) => node.textContent.trim());
-    const matches = [...(pane?.querySelectorAll('button[aria-expanded]') ?? [])].filter((node) => node.textContent.trim() === ${JSON.stringify(label)});
+    const settingsRoot = pane?.firstElementChild;
+    const scrollContainers = [...(settingsRoot?.children ?? [])]
+      .filter((node) => node.classList.contains('overflow-y-auto'));
+    const sectionList = scrollContainers.length === 1 ? scrollContainers[0].firstElementChild : null;
+    const sections = [...(sectionList?.children ?? [])].map((wrapper) => {
+      const header = wrapper.firstElementChild;
+      const trigger = header?.firstElementChild;
+      const content = wrapper.children[1] ?? null;
+      return wrapper.children.length === 2 && header?.classList.contains('flex') &&
+        trigger?.matches('button[aria-expanded][aria-controls]') &&
+        content?.id === trigger.getAttribute('aria-controls') && content.hasAttribute('aria-hidden')
+        ? trigger : null;
+    }).filter((trigger) => trigger !== null);
+    const expandedControls = [...(pane?.querySelectorAll('button[aria-expanded]') ?? [])];
+    const headings = sections.map((node) => node.textContent.trim());
+    const matches = sections.filter((node) => node.textContent.trim() === ${JSON.stringify(label)});
     const content = matches.length === 1 ? document.getElementById(matches[0].getAttribute('aria-controls') ?? '') : null;
     const raw = (await chrome.storage.local.get(${JSON.stringify(STORAGE_KEY)}))[${JSON.stringify(STORAGE_KEY)}];
     const digest = async (value) => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',
       new TextEncoder().encode(String(value))))).map((byte) => byte.toString(16).padStart(2, '0')).join('');
     return { active: pane?.matches('[role="tabpanel"][data-state="active"]') === true,
       headings, count: matches.length, expanded: matches[0]?.getAttribute('aria-expanded') ?? null,
+      expandedControlCount: expandedControls.length,
+      nonSectionExpandedControlCount: expandedControls.length - sections.length,
       contentAriaHidden: content?.getAttribute('aria-hidden') ?? null, contentInert: content?.inert ?? null,
       contentNonempty: !!content?.textContent.trim(),
       contentRendered: !!content && content.getBoundingClientRect().height > 1 &&
         getComputedStyle(content).visibility !== 'hidden' && getComputedStyle(content).display !== 'none',
       emptyHint: ['Data', 'SEO'].includes(${JSON.stringify(label)}) ? content?.textContent.trim() === 'No options yet' : null,
       settingsDigest: await digest(raw) };
-  })()`,
-  );
+  })()`;
+}
+
+async function observeSection(panel, label, driver = nativeDriver) {
+  return driver.evaluate(panel, settingsSectionObservationExpression(label));
 }
 
 export function sectionMatches(state, label, expanded, baselineDigest) {
@@ -271,6 +288,12 @@ function sectionCensusDiagnostic(state) {
     count: headings.length,
     headings: knownHeadings,
     unrecognizedHeadingCount: headings.length - knownHeadings.length,
+    expandedControlCount: Number.isInteger(state?.expandedControlCount)
+      ? state.expandedControlCount
+      : null,
+    nonSectionExpandedControlCount: Number.isInteger(state?.nonSectionExpandedControlCount)
+      ? state.nonSectionExpandedControlCount
+      : null,
   });
 }
 
