@@ -482,7 +482,7 @@ function runDriver({
         assert.ok(index >= 0 && index < runs, 'response must belong to a sent request');
         if (responseMode === 'malformed') return { body: 'not-json\n' };
         return {
-          body: `${JSON.stringify({ event: 'completion', data: { operation: 'tool_execution', conversation_id: conversationId, result: { full_result: completions[index] } } })}\n`,
+          body: `${JSON.stringify({ event: 'completion', data: { operation: 'tool_execution', result: { conversation_id: conversationId, full_result: completions[index] } } })}\n`,
         };
       }
       throw new Error(`unexpected CDP command ${name}`);

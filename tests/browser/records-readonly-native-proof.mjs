@@ -183,8 +183,8 @@ export function observeRecordsExecution(panel, organizationId, expectedBearerHas
       }
       assert.equal(completions.length, 1, 'records_execute_completion_count');
       observedConversationId =
-        typeof completions[0].data?.conversation_id === 'string'
-          ? completions[0].data.conversation_id
+        typeof completions[0].data?.result?.conversation_id === 'string'
+          ? completions[0].data.result.conversation_id
           : null;
       const full = completions[0].data?.result?.full_result;
       assert.ok(
