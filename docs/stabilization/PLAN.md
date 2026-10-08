@@ -36,6 +36,8 @@ Independent closure retests also use a fresh unpacked non-HMR build. Record buil
 Sources: https://developer.chrome.com/docs/extensions/get-started/tutorial/debug ; https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/lifecycle ; https://wxt.dev/guide/essentials/config/browser-startup .
 
 ### Runner diagnostic acceptance
+Artifact identity is not execution identity: an imported CI run ID identifies the frozen app, while the native workflow ID identifies the current attempt. A receipt ending at `build_recheck` is not stale merely because its app artifact is older; establish freshness from the actual writer/upload path, current output and provenance. Resource-invalid attempts retain observations but receive no acceptance credit.
+
 Focused harness checks run through the shared `test:focused-acceptance` command in an independent, automatic, source-filtered CI lane and in full CI. Use its exact successful source SHA to unblock native testing; it does not replace full-main release gates or real browser acceptance. Documentation-only pushes do not restart the focused lane.
 
 Before the first launch of a new acceptance runner, its source reviewer must verify that every potentially failing boundary records a fixed stage/target and the last safe observable booleans or counts. An opaque catch that reports only “unverified” is insufficient. Never serialize raw auth URLs, errors, credentials, tokens, storage values, or unrestricted page text. After repeated native hit refusal, obtain a safe targeted screenshot/hit-element observation or hand the real click to the native operator before another speculative repair. This rule follows repeated fixture failures that consumed runs without identifying their failing boundary.

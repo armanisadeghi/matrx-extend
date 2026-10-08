@@ -1,0 +1,58 @@
+{
+  "observed_at": "2026-10-08T00:34:08.538633+00:00",
+  "recent_arm_audit": {
+    "journal": ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37706132089-1.jsonl",
+    "admission": {
+      "pressureLevel": 1,
+      "availableMemoryGiB": 5.88,
+      "requiredMemoryGiB": 4,
+      "oneMinuteLoad": 2.07,
+      "logicalCpus": 3,
+      "cpuBusyFraction": 0.048571428571428564,
+      "swapUsedMiB": 0,
+      "repoFreeGiB": 42.9924201965332,
+      "profileFreeGiB": 42.9924201965332,
+      "safetyFreeGiB": 42.9924201965332,
+      "systemFreeGiB": 42.9924201965332
+    },
+    "final": {
+      "schema": 1,
+      "at": "2026-10-08T00:15:02.031Z",
+      "runId": "hosted-guest-37706132089-1",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "historical_intel": {
+    "journal": ".research/d87-native-acceptance-run-37108672704/resource-journals/hosted-guest-37108672704-1.jsonl",
+    "admission": {
+      "pressureLevel": 1,
+      "availableMemoryGiB": 12.46,
+      "requiredMemoryGiB": 4,
+      "oneMinuteLoad": 1.01,
+      "logicalCpus": 4,
+      "cpuBusyFraction": 0.06142857142857144,
+      "swapUsedMiB": 0,
+      "repoFreeGiB": 108.29975509643555,
+      "profileFreeGiB": 108.29975509643555,
+      "safetyFreeGiB": 108.29975509643555,
+      "systemFreeGiB": 108.29975509643555
+    },
+    "final": {
+      "schema": 1,
+      "at": "2026-10-03T08:12:58.668Z",
+      "runId": "hosted-guest-37108672704-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1,
+      "decision": "child_failed",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "intel_label_verified_via": "GitHub API /repos/armanisadeghi/matrx-extend/actions/runs/37108672704/jobs: labels=[macos-15-intel], runner=GitHub Actions 1000087631",
+  "decision": "Next audit/SEO resource-validity retest may use existing macos-15-intel workflow option, measuring fresh capacity under unchanged guards. Historical Intel admission had 4 logical CPUs/12.46 GiB available versus recent ARM 3/5.88. No assumption that Intel guarantees success; historical child failed its own product test despite valid resources. Do not repeat an unchanged ARM attempt or relax guard thresholds.",
+  "scope": "Environment capacity evidence only; no product acceptance."
+}

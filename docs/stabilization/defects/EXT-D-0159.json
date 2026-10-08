@@ -30,7 +30,8 @@
     ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/test-results/audit-key-native-75b66f3f-f60a-4f6b-8bf6-322595690347.json",
     ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37706132089-1.jsonl",
     ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37706132089-1.jsonl",
-    ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37706132089-1.jsonl"
+    ".research/audit-retry-native-evidence/run37706132089/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37706132089-1.jsonl",
+    ".research/hosted-capacity-comparison-20261007.json"
   ],
   "transition_history": [
     {
@@ -59,7 +60,7 @@
     }
   ],
   "closure_requirement": "Resource-admitted focused RED/GREEN and mutation tests, independent source review, then one resource-valid native original-boundary retest; T86 direct rotate invocation and T27/T61/T62 require separate case judgments.",
-  "next_action": "Do not retry the invalid-resource run. After fresh guarded resource admission reaches the required healthy state, make one separately authorized native retest; preserve T86 direct rotate invocation as partial until invocation itself is observed.",
+  "next_action": "After fresh resource admission, record one retest using the existing Intel runner option with greater observed capacity; retain all guard thresholds. Routine retesting is already authorized. Preserve T86 direct rotate invocation as partial until invocation itself is observed.",
   "fix_commits": [],
   "native_attempts": [
     {

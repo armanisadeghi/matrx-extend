@@ -23,7 +23,9 @@
     ".research/picker-reinject-escalation-20261007.json",
     ".research/seo-picker-independent-peer-20261007.json",
     ".research/picker-tracker-fixed-native-20261007.json",
-    ".research/picker-native-checkpoint-peer-20261007.json"
+    ".research/picker-native-checkpoint-peer-20261007.json",
+    ".research/picker-count-native-20261007.json",
+    ".research/focused-ci-native-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -66,5 +68,5 @@
   "closure_requirement": "Causal frozen-bundle red/green proof, fresh source review, then resource-valid native reinjection and surrounding scenarios; no globalD42closure.",
   "root_cause": "Optional chaining does not suppress false; capture classifier returned boolean instead of null for untracked events/options.",
   "fix_commits": ["eb9ee865"],
-  "next_action": "Finish bounded detection-count diagnosis, fresh source review and exact-artifact native retest; preserve D42/nonadmin remaining criteria."
+  "next_action": "Diagnose admin_extension_auth_completion failure from37707441895 before another picker run; record safe categorical auth diagnostics if existing evidence cannot distinguish timeout/rejection. Then native detection-count retest on explicitly selected artifact. Last run used newer67e7986a and never reached picker; D42/nonadmin still open."
 }
