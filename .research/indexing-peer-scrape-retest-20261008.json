@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "task": "indexing-peer-scrape-retest-20261008",
+  "reviewed_at_utc": "2026-10-08T13:33:28.886190+00:00",
+  "cases": [
+    "EXT-D-0180",
+    "EXT-D-0178"
+  ],
+  "source_review": {
+    "candidate_commit": "4dc8c8885d3dcc13e07bf0cca492a71eafb54716",
+    "verdict": "PASS_SOURCE_AND_SHELL_GUARD",
+    "failed_run": 37783167613,
+    "failed_step": "Disable indexing on the disposable hosted VM",
+    "observed_historic_failure": "mdutil -a -i off returned 1 on irrelevant Preboot transition after root and Data said disabled; set -e stopped before status checks.",
+    "current_behavior": "Actual workflow shell block disables root and Data separately, queries status of each separately, and requires both to say Indexing disabled.",
+    "guard_command": "node --test scripts/test-hosted-indexing-step.mjs",
+    "green": "1 pass; actual current workflow block, temporary sudo/mdutil shims only",
+    "red": "1 fail at Preboot-transition assertion when HOSTED_INDEXING_WORKFLOW_FILE points to 4dc8c888^ workflow block",
+    "preserved_refusals": [
+      "root disable error",
+      "Data disable error",
+      "root status error",
+      "Data status error",
+      "root enabled",
+      "Data enabled",
+      "non-hosted runner",
+      "non-macOS runner"
+    ]
+  },
+  "admission": {
+    "lane": "B",
+    "lane_b_free_at_dispatch": true,
+    "focused_ci_run_id": 37783792869,
+    "focused_ci_conclusion": "success",
+    "focused_ci_head_sha": "4dc8c8885d3dcc13e07bf0cca492a71eafb54716",
+    "frozen_ci_run_id": 37754055905,
+    "frozen_ci_conclusion": "success",
+    "frozen_artifact_id": 11539827040,
+    "frozen_artifact_name": "matrx-extend-development-test-5d845f42cb22c10e2486af8048d1ac9f3ac8e114-37754055905-1",
+    "frozen_artifact_expired": false,
+    "other_lane": "A guest-seo run 37783095637 in_progress on a distinct hosted runner at dispatch",
+    "secret_mutations": "none"
+  },
+  "native_attempt": {
+    "run_id": 37783925411,
+    "job_id": 113333712714,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37783925411",
+    "event": "workflow_dispatch",
+    "workflow_head_sha": "cb6fdff507a3f0b3389b02fbf1c57767829f4930",
+    "created_at_utc": "2026-10-08T13:23:11Z",
+    "completed_at_utc": "2026-10-08T13:31:39Z",
+    "inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-scrape-development",
+      "development_run_id": 37754055905,
+      "development_artifact_id": 11539827040,
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "normal",
+      "scrape_normal_width_px": 600,
+      "scrape_reload_open_diagnostic": false,
+      "scrape_diagnostic_cpu_rate": null
+    },
+    "conclusion": "failure",
+    "passed_steps": [
+      "Require bounded lane and isolate shared credentials",
+      "Require exactly one artifact provenance mode",
+      "Require selected authentication before browser setup",
+      "Disable indexing on the disposable hosted VM",
+      "Wait for measured package readiness",
+      "Prepare pinned browser driver under an owned permit",
+      "Wait for measured browser readiness",
+      "Prepare full Chromium under a fresh owned permit",
+      "Wait for measured acceptance readiness"
+    ],
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "actual_setup_verdict": "PASS: root/Data indexing setup step and both guarded preparation/readiness stages completed on hosted runner",
+    "native_receipt": {
+      "status": "unverified",
+      "stage": "inputs",
+      "native_stage": "cdp_connect",
+      "failure_code": "owned_cdp_endpoint_timeout",
+      "guest_account_observed": false,
+      "cases": []
+    },
+    "first_failure": "BROWSER_STARTUP_FAILURE owned_cdp_endpoint_timeout; elapsedMs=5050, Chromium spawned, no DevTools endpoint observed",
+    "resource_verdicts": {
+      "package": "valid",
+      "browser": "valid",
+      "guest": "invalid"
+    },
+    "resource_invalid_detail": "Guest journal ended RESOURCE_FINAL_DECISION resourceInvalid=true exitCode=3 decision=invalid after RESOURCE_CPU_BUSY; no product-fail verdict.",
+    "d178_verdict": "UNVERIFIED: no owned edited state, visible discard confirmation, trusted Re-capture or subsequent Article oracle observed",
+    "retry_count": 0
+  },
+  "artifact_provenance": {
+    "ci_source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "ci_tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "native_import": "DEVELOPMENT_TEST_IMPORTED exact_pushed_commit_only",
+    "uploaded_artifact_id": 11553801706,
+    "uploaded_artifact_name": "hosted-guest-37783925411-1",
+    "uploaded_artifact_bytes": 10381,
+    "stale_prior_journals_excluded": true
+  },
+  "evidence": {
+    "failure_log": {
+      "path": ".research/indexing-peer-scrape-retest-20261008-evidence/run37783925411/hosted-failure-log.txt",
+      "sha256": "22ce84d423ab4e2d9cf770d3fcf4a303c1e1d69549d42c303ea41d41360a288b",
+      "bytes": 16230
+    },
+    "native_receipt": {
+      "path": ".research/indexing-peer-scrape-retest-20261008-evidence/run37783925411/native-receipt.json",
+      "sha256": "c4896f4933d527b98afcb2f780ce0aae49737a7885db08ec41d35921f727932c",
+      "bytes": 1124
+    },
+    "current_run_journals": {
+      "package": {
+        "path": ".research/indexing-peer-scrape-retest-20261008-evidence/run37783925411/journals/hosted-package-37783925411-1.jsonl",
+        "sha256": "5428bbe6990d55d4c409cee9c0337208fb606924539b872ef8d7245623e5eecc",
+        "bytes": 989
+      },
+      "browser": {
+        "path": ".research/indexing-peer-scrape-retest-20261008-evidence/run37783925411/journals/hosted-browser-37783925411-1.jsonl",
+        "sha256": "0da022b53f6aef7d681ca618a60dc51569efcce140d5eb5befb9cd8b4ab415c0",
+        "bytes": 3457
+      },
+      "guest": {
+        "path": ".research/indexing-peer-scrape-retest-20261008-evidence/run37783925411/journals/hosted-guest-37783925411-1.jsonl",
+        "sha256": "5f438737cad88baead2ade5c479f16700f4f02adf9b4092f79e1283e9cee5992",
+        "bytes": 7513
+      }
+    }
+  },
+  "limitations": [
+    "EXT-D-0180 source and actual hosted setup pass; product acceptance is separate.",
+    "EXT-D-0178 remains unverified; resource-invalid CDP startup did not reach side panel.",
+    "Exactly one guarded hosted B attempt; no retry, source or inventory edit, secret mutation, local build, heavy local command, or release."
+  ]
+}
