@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0178",
+  "status": "source_receipt_complete_native_pending",
+  "cause": "The post-reload helper accepted either the exact confirmation or already-captured Article result, but returned neither branch nor its observed Article predicates to the native JSON writer. The previous receipt retained only pointer, click, and busy probes, so run 37778965029 could not establish whether its conditional confirmation occurred.",
+  "repair": "The native driver observes the owned edited badge in the visible Article pane before navigation, then uses a shared bounded receipt object. The boundary records discard_confirmation or already_captured, exact visible discard dialog, trusted confirmation return, and subsequent visible Article selection, fixture title, and referral sentence as booleans. The existing trusted pointer and fresh capture predicates remain required. No page text, media URLs, account fields, or application storage enter this receipt.",
+  "causal_guard": {
+    "old_red": "A scratch copy of the HEAD helper with only the new receipt constructor and badge probe grafted in failed the focused persisted receipt test and dialog branch assertions; the old behavior never assigned the confirmation or Article evidence. The shared source tree was not weakened.",
+    "new_green": "node --test tests/browser/scrape-post-reload-capture-boundary.test.mjs tests/browser/scrape-native-recapture.test.mjs: 11 passed, 0 failed. The guard writes and reads JSON for confirmation and already-captured branches and rejects private content in the persisted boundary.",
+    "format": "pnpm exec biome check on the three owned source/test files passed."
+  },
+  "scope": "Test harness and evidence only; no extension product behavior changed.",
+  "native_limit": "No new native run, build, release, or inventory change in this task. The original exact reproduction remains unclosed until a fresh resource-valid uninstrumented run persists the edited=true, discard_confirmation, visible dialog, returned confirmation, and visible referral Article booleans together."
+}

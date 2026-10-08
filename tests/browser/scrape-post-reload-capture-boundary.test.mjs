@@ -1,8 +1,13 @@
 import assert from 'node:assert/strict';
+import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import test from 'node:test';
 import { Window } from 'happy-dom';
 import {
   captureTimeoutDiagnostic,
+  createPostReloadCaptureBoundary,
+  ownedEditedBadgeExpression,
   runPostReloadCaptureBoundary,
 } from './scrape-post-reload-capture-boundary.mjs';
 import { waitFor } from './settings-panel-driver.mjs';
@@ -98,6 +103,15 @@ for (const [name, dispatchClick, showBusy, expectedClicks, expectedBusy] of [
       pointer_phase: 'pointer_dispatched',
       click_events: expectedClicks,
       busy_observed: expectedBusy,
+      ...(showBusy && {
+        branch: 'already_captured',
+        discard_dialog_visible: false,
+        ready: true,
+        article_selected: true,
+        visible: true,
+        fixture_title_matches: true,
+        fixture_text_present: true,
+      }),
     });
     assert.equal(f.clickListenerCount(), 0, 'capture click listener must be removed');
     // A second run in the same document must count only its own click.
@@ -243,7 +257,100 @@ test('post reload capture confirms the visible unsaved-edits dialog before accep
   });
   assert.deepEqual(actions, [`title:${title}`, 'scrape-recapture-dialog:Re-capture']);
   assert.equal(f.boundary.click_events, 1);
+  assert.equal(f.boundary.branch, 'discard_confirmation');
+  assert.equal(f.boundary.discard_dialog_visible, true);
+  assert.equal(f.boundary.trusted_confirmation_returned, true);
+  assert.equal(f.boundary.article_selected, true);
+  assert.equal(f.boundary.fixture_title_matches, true);
+  assert.equal(f.boundary.fixture_text_present, true);
   assert.equal(f.clickListenerCount(), 0);
+});
+
+test('owned edited badge and confirmation branch persist only bounded evidence', async () => {
+  const f = fixture();
+  f.window.document
+    .querySelector('#scrape-pane')
+    .insertAdjacentHTML(
+      'beforeend',
+      '<div role="tablist"><button role="tab" aria-selected="true" aria-controls="owned-article">Article</button></div>' +
+        '<div id="owned-article" data-state="active"><span>edited</span><span>PRIVATE_PATIENT_VALUE</span></div>',
+    );
+  const edited = await f.evaluate({}, ownedEditedBadgeExpression);
+  assert.equal(edited, true);
+  const directory = await mkdtemp(join(tmpdir(), 'scrape-confirmation-receipt-'));
+  try {
+    const boundary = createPostReloadCaptureBoundary(edited);
+    const dialog = f.window.document.createElement('div');
+    dialog.setAttribute('role', 'alertdialog');
+    dialog.innerHTML =
+      '<h2 data-slot="alert-dialog-title">Discard unsaved edits?</h2>' +
+      '<button data-slot="alert-dialog-action">Re-capture</button>';
+    await runPostReloadCaptureBoundary({
+      panel: {},
+      evaluate: f.evaluate,
+      click: async (_panel, kind, _label, phase) => {
+        phase?.('release_returned');
+        if (kind === 'title') {
+          f.button.click();
+          f.window.document.body.append(dialog);
+        } else {
+          dialog.remove();
+          f.article.dataset.selected = 'Article';
+          f.article.dataset.visible = 'true';
+          f.article.dataset.title = 'Harbor Dental referral hours';
+          f.article.textContent =
+            'Referral coordinators answer weekday calls. PRIVATE_PATIENT_VALUE';
+        }
+      },
+      resourceAction: (action) => action(),
+      waitFor: (label, read, accept, _timeout, diagnostic) =>
+        waitFor(label, read, accept, 0, diagnostic),
+      scrapeState: async () => ({
+        ...(await f.scrapeState()),
+        empty: f.article.dataset.visible !== 'true',
+        title: 'Harbor Dental referral hours',
+      }),
+      boundary,
+    });
+    const path = join(directory, 'native.json');
+    await writeFile(path, `${JSON.stringify({ post_reload_capture_boundary: boundary })}\n`);
+    const persisted = JSON.parse(await readFile(path, 'utf8')).post_reload_capture_boundary;
+    assert.equal(persisted.owned_edited_badge_visible, true);
+    assert.equal(persisted.branch, 'discard_confirmation');
+    assert.equal(persisted.discard_dialog_visible, true);
+    assert.equal(persisted.trusted_confirmation_returned, true);
+    assert.equal(persisted.article_selected, true);
+    assert.equal(persisted.visible, true);
+    assert.equal(persisted.fixture_title_matches, true);
+    assert.equal(persisted.fixture_text_present, true);
+    assert.doesNotMatch(JSON.stringify(persisted), /PRIVATE_|resultText|media|account/);
+    f.window.document.querySelector('#owned-article span').remove();
+    assert.equal(await f.evaluate({}, ownedEditedBadgeExpression), false);
+    const alreadyCaptured = createPostReloadCaptureBoundary(false);
+    await runPostReloadCaptureBoundary({
+      panel: {},
+      evaluate: f.evaluate,
+      click: async (_panel, _kind, _label, phase) => {
+        phase?.('release_returned');
+        f.button.click();
+      },
+      resourceAction: (action) => action(),
+      waitFor: (label, read, accept, _timeout, diagnostic) =>
+        waitFor(label, read, accept, 0, diagnostic),
+      scrapeState: f.scrapeState,
+      boundary: alreadyCaptured,
+    });
+    const alreadyPath = join(directory, 'already-captured.json');
+    await writeFile(alreadyPath, JSON.stringify({ post_reload_capture_boundary: alreadyCaptured }));
+    const alternate = JSON.parse(await readFile(alreadyPath, 'utf8')).post_reload_capture_boundary;
+    assert.equal(alternate.branch, 'already_captured');
+    assert.equal(alternate.discard_dialog_visible, false);
+    assert.equal(alternate.trusted_confirmation_returned, false);
+    assert.equal(alternate.fixture_text_present, true);
+    assert.doesNotMatch(JSON.stringify(alternate), /PRIVATE_|resultText|media|account/);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test('post reload capture does not confirm a dialog for another page', async () => {

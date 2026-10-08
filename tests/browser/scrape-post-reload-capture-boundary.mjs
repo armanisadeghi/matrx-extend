@@ -30,10 +30,41 @@ const disposeBusyExpression = `(() => {
 })()`;
 
 const recaptureDialogExpression = `(() => [...document.querySelectorAll('[role="alertdialog"]')]
-  .some(dialog => dialog.querySelector('[data-slot="alert-dialog-title"]')?.textContent?.trim() ===
+  .some(dialog => dialog.getBoundingClientRect().height > 0 &&
+    dialog.querySelector('[data-slot="alert-dialog-title"]')?.textContent?.trim() ===
     'Discard unsaved edits?' &&
     dialog.querySelector('button[data-slot="alert-dialog-action"]')?.textContent?.trim() ===
     'Re-capture'))()`;
+
+// Observe the owned edited capture while its Article pane is still visible, before navigation hides it.
+export const ownedEditedBadgeExpression = `(() => {
+  const tab = document.querySelector('button[role="tab"][title="Scrape"][data-state="active"]');
+  const pane = tab && document.getElementById(tab.getAttribute('aria-controls'));
+  const article = [...(pane?.querySelectorAll('[role="tablist"] [role="tab"]') ?? [])]
+    .find(node => node.getAttribute('aria-selected') === 'true' &&
+      node.firstChild?.textContent?.trim() === 'Article');
+  const content = article && document.getElementById(article.getAttribute('aria-controls'));
+  return !!content && content.getAttribute('data-state') === 'active' &&
+    [...content.querySelectorAll('span')].some(node =>
+      node.textContent?.trim() === 'edited' && node.getBoundingClientRect().height > 0);
+})()`;
+
+export function createPostReloadCaptureBoundary(ownedEditedBadgeVisible) {
+  return {
+    pointer_phase: null,
+    click_events: null,
+    busy_observed: null,
+    owned_edited_badge_visible: ownedEditedBadgeVisible === true,
+    branch: null,
+    discard_dialog_visible: null,
+    trusted_confirmation_returned: false,
+    ready: false,
+    article_selected: false,
+    visible: false,
+    fixture_title_matches: false,
+    fixture_text_present: false,
+  };
+}
 
 const capturedReferrals = (state) =>
   state?.selected === 'Article' &&
@@ -93,14 +124,22 @@ export async function runPostReloadCaptureBoundary({
       captureTimeoutDiagnostic,
     );
     if (ownedRecaptureDialog(outcome) && !capturedReferrals(outcome)) {
+      boundary.branch = 'discard_confirmation';
+      boundary.discard_dialog_visible = true;
       await resourceAction(() => click(panel, 'scrape-recapture-dialog', 'Re-capture'));
-      await waitFor(
+      boundary.trusted_confirmation_returned = true;
+      const confirmed = await waitFor(
         'scrape_post_reload_referrals_captured',
         () => scrapeState(panel),
         capturedReferrals,
         30000,
         captureTimeoutDiagnostic,
       );
+      Object.assign(boundary, captureTimeoutDiagnostic(confirmed));
+    } else {
+      boundary.branch = 'already_captured';
+      boundary.discard_dialog_visible = false;
+      Object.assign(boundary, captureTimeoutDiagnostic(outcome));
     }
   } finally {
     if (clickArmAttempted) {

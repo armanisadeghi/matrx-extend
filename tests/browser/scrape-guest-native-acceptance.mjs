@@ -31,7 +31,11 @@ import {
 import { confirmScrapeRecapture } from './scrape-native-recapture.mjs';
 import { scrapeNativeSelection, selectScrapePanelViewport } from './scrape-native-selection.mjs';
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
-import { runPostReloadCaptureBoundary } from './scrape-post-reload-capture-boundary.mjs';
+import {
+  createPostReloadCaptureBoundary,
+  ownedEditedBadgeExpression,
+  runPostReloadCaptureBoundary,
+} from './scrape-post-reload-capture-boundary.mjs';
 import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
 import {
   refuseDiagnosticAcceptance,
@@ -1977,6 +1981,9 @@ try {
         t13.status = linkVerdict.status === 'passed' ? 'partial' : linkVerdict.status;
         t13.remaining = [otherRoleNote(), ...linkVerdict.remaining];
         if (linkVerdict.failures.length) t13.failure = linkVerdict.failures;
+        await resourceAction(() => click(replacement.panel, 'scrape-result-tab', 'Article'));
+        const ownedEditedBadgeVisible =
+          (await evaluate(replacement.panel, ownedEditedBadgeExpression)) === true;
         report.stage = 'post_reload_empty_media_capture';
         await requireResourceHealth();
         await resourceAction(() => page.goto(`${origin}/referrals`));
@@ -1986,7 +1993,7 @@ try {
           (state) => state?.ready && state.empty && state.title === 'Harbor Dental referral hours',
         );
         // Keep the next failed boundary attributable without exporting page or account data.
-        const captureBoundary = { pointer_phase: null, click_events: null, busy_observed: null };
+        const captureBoundary = createPostReloadCaptureBoundary(ownedEditedBadgeVisible);
         report.post_reload_capture_boundary = captureBoundary;
         await runPostReloadCaptureBoundary({
           panel: replacement.panel,
