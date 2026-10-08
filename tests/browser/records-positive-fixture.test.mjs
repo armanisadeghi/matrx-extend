@@ -293,6 +293,77 @@ test('recovery GET browser exception reaches the receipt with a bounded cause an
   }
 });
 
+test('recovery GET reports the bounded browser preflight phase without exception text', async () => {
+  for (const phase of ['token_read', 'token_digest']) {
+    const directory = await mkdtemp(join(tmpdir(), 'records-fixture-preflight-'));
+    const journalPath = join(directory, 'journal.json');
+    const diagnostics = [];
+    const evaluate = async (_panel, expression) =>
+      new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
+        {
+          storage: {
+            local: {
+              get: async () => {
+                if (phase === 'token_read') throw new Error('private token=must-not-leak');
+                return { 'matrx.auth.accessToken': 'unit-test-token' };
+              },
+            },
+          },
+        },
+        phase === 'token_digest'
+          ? {
+              subtle: {
+                digest: async () => {
+                  throw new Error('private token=must-not-leak');
+                },
+              },
+            }
+          : webcrypto,
+        async () => {
+          throw new Error('request must not start before preflight');
+        },
+      );
+    try {
+      await assert.rejects(
+        withRecordsPositiveFixture({
+          panel: {},
+          evaluate,
+          orgId,
+          principalId,
+          bearerHash: 'a'.repeat(64),
+          journalPath,
+          exercise: async () => {
+            throw new Error('unreachable positive read');
+          },
+          onFailure: (diagnostic) => diagnostics.push(diagnostic),
+          id: () => runId,
+          environment: {
+            GITHUB_ACTIONS: 'true',
+            RUNNER_ENVIRONMENT: 'github-hosted',
+            MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+            MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+          },
+        }),
+        /records_fixture_browser_preflight_failed/,
+      );
+      assert.deepEqual(diagnostics, [
+        {
+          boundary: 'body',
+          phase: 'records_fixture_recovery_list',
+          classification: 'records_fixture_browser_preflight_failed',
+          request_method: 'GET',
+          http_status: null,
+          browser_error_stage: phase,
+        },
+      ]);
+      assert.equal(JSON.stringify(diagnostics).includes('must-not-leak'), false);
+      assert.equal(JSON.parse(await readFile(journalPath, 'utf8')).phase, 'planned');
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
+  }
+});
+
 test('lost create response is recovered by owned name and archived without creating a row', async () => {
   const s = await scenario({ createTransportFailure: true });
   try {

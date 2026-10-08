@@ -6,6 +6,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 const OWNED_NAME =
   /^EXT-F-4130-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const RECORDS_FIXTURE_MARKER = 'matrx-extend-native-records-C04-C05-v1';
+const BROWSER_PREFLIGHT_STAGES = new Set(['token_read', 'token_digest']);
 export function recordsFixtureMarker(principalId, orgId) {
   assert.match(principalId ?? '', UUID, 'records_fixture_principal_id_invalid');
   assert.match(orgId ?? '', UUID, 'records_fixture_org_id_invalid');
@@ -81,9 +82,13 @@ export async function recordsFixtureRequest(
   return evaluate(
     panel,
     `(async () => {
-    const token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken'];
+    let token;
+    try { token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken']; }
+    catch { return { token_matches: false, preflight_error_stage: 'token_read' }; }
     if (typeof token !== 'string' || !token) return { token_matches: false };
-    const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
+    let digest;
+    try { digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token)); }
+    catch { return { token_matches: false, preflight_error_stage: 'token_digest' }; }
     const hash = [...new Uint8Array(digest)].map(x => x.toString(16).padStart(2, '0')).join('');
     if (hash !== ${JSON.stringify(bearerHash)}) return { token_matches: false };
     try {
@@ -163,17 +168,24 @@ export async function withRecordsPositiveFixture({
         ? 'records_fixture_panel_runtime_exception'
         : 'records_fixture_request_exception'
       : null;
+    const browserPreflight = lastRequest?.browserErrorStage
+      ? 'records_fixture_browser_preflight_failed'
+      : null;
     onFailure({
       boundary,
       phase,
       classification:
         fixedAssertion ??
+        browserPreflight ??
         requestException ??
         (error?.message === 'records_fixture_recovery_cleanup_only'
           ? 'records_fixture_recovery_cleanup_only'
           : 'records_fixture_unexpected_error'),
       request_method: lastRequest?.method ?? null,
       http_status: lastRequest?.status ?? null,
+      ...(lastRequest?.browserErrorStage && {
+        browser_error_stage: lastRequest.browserErrorStage,
+      }),
     });
   };
   let state;
@@ -222,6 +234,10 @@ export async function withRecordsPositiveFixture({
       Number.isInteger(answer?.status) && answer.status >= 100 && answer.status <= 599
         ? answer.status
         : null;
+    if (BROWSER_PREFLIGHT_STAGES.has(answer?.preflight_error_stage)) {
+      lastRequest.browserErrorStage = answer.preflight_error_stage;
+      throw new Error('records_fixture_browser_preflight_failed');
+    }
     assert.equal(answer?.token_matches, true, 'records_fixture_principal_mismatch');
     assert.equal(answer.transport_failed, undefined, 'records_fixture_transport_failed');
     return answer;
