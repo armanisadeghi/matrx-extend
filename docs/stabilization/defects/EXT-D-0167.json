@@ -26,7 +26,8 @@
     ".research/settings397-fresh-native-20261007.json",
     ".research/settings397-native-acceptance-peer-20261007.json",
     ".research/settings397-reacquire-diagnosis-20261007.json",
-    ".research/settings-reacquire-source-peer-20261007.json"
+    ".research/settings-reacquire-source-peer-20261007.json",
+    ".research/settings-reacquire-final-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -50,11 +51,20 @@
   ],
   "diagnostic_candidate": "da3645de",
   "closure_requirement": "Reviewed safe boundary diagnostics, resource-valid original native retest, confirmed underlying cause/repair if needed, verified baseline restoration and surrounding guest fixture behavior.",
-  "next_action": "Finish independent source review and CI, then one admitted native diagnostic; no timeout or oracle weakening.",
+  "next_action": "Native discriminator37731576716 active under sole owner settings397_boundary_native; preserve first-failure diagnostics and distinguish actual restoration/consumer behavior. No underlying cause or closure claim.",
   "source_review": {
     "candidate": "da3645de",
     "peer": "4f5ddb9b",
     "verdict": "repair_required_before_native",
-    "finding": "New pre-reload Target.getTargetInfo can timeout and poison shared transport before otherwise healthy Page.reload. Remove diagnostic-only success-path fault; meaningful guard required. Individual CDP commands are bounded, so indefinite stall hypothesis was refuted."
+    "finding": "New pre-reload Target.getTargetInfo can timeout and poison shared transport before otherwise healthy Page.reload. Remove diagnostic-only success-path fault; meaningful guard required. Individual CDP commands are bounded, so indefinite stall hypothesis was refuted.",
+    "corrected_commit": "d46aa722",
+    "final_peer": "c6b47787",
+    "final_verdict": "PASS_SOURCE_ONLY / PASS_WITH_EVIDENCE_LIMIT; important preflight fault removed, healthy Page.reload first and zero diagnostic calls guarded",
+    "focused_ci": {
+      "run_id": "37731217427",
+      "head_sha": "d46aa722",
+      "status": "success",
+      "tests": 66
+    }
   }
 }
