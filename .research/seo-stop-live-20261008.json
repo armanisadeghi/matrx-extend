@@ -73,5 +73,15 @@
     "no_product_behavior_claim": true,
     "no_inventory_change": true,
     "no_source_change": true
+  },
+  "root_followup": {
+    "observed_at": "2026-10-08T17:13:13.356111+00:00",
+    "direct_run_listing": "GET actions/runs?per_page=50 succeeded and found no active native jobs",
+    "dispatch": "POST hosted-guest-acceptance.yml/dispatches rejected403; no job launched",
+    "workflow_rate_headers": {
+      "remaining": 0,
+      "reset_utc": "2026-10-08T17:16:00Z"
+    },
+    "next_action": "One recheck after exact workflow endpoint reset; do not confuse successful run-list cache/route with dispatch availability."
   }
 }
