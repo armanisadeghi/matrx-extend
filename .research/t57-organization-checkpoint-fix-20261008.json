@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "status": "bounded_stop_before_partial_fix",
+  "case_id": "EXT-F-1012-T57",
+  "scope": "Read-only native-driver and approved-fixture repair investigation; no product, test, fixture, browser, build, deployment, or GitHub secret mutation",
+  "attribution_correction": "The prior report's phrase 'current user-provided extension instructions' incorrectly attributed the on-disk CLAUDE.md text to the conversation-supplied AGENTS snapshot. The prior report has been corrected to distinguish those sources. This diagnosis does not resolve an instruction-priority conflict by changing product authorization behavior.",
+  "observed_native_boundary": {
+    "run_id": 37756410153,
+    "frozen_source": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "status": "resource-valid child failure at organization_storage before T57 Network",
+    "code": "d87_required_organization_storage_not_observed",
+    "facts": "Admin sign-in/rendered identity passed; approved-name picker selection existed; driver skipped switch; device-choice storage UUID/name absent. No outgoing organization header was recorded."
+  },
+  "required_guard": "For a ladder-selected organization without device-choice storage, require visible approved organization, a verified approved UUID from current membership, and a real product-generated authenticated X-Organization-Id equal to that UUID. Preserve admin-role, explicit-switch, wrong-organization and missing-organization refusals. Never derive request organization from the first membership or manually insert the header into the tested request.",
+  "available_native_observation_seams": {
+    "request_observer": "panel.on('Network.requestWillBeSent') and panel.send('Network.enable') are used by tests/browser/reviewer-chat-store-acceptance.mjs. A read-only server-owned Tools detail triggers product getManualServerToolDefinition('records'), which calls apiGet('/tools/test/list') through src/lib/api/client.ts and its canonical header path.",
+    "fixture_staging": "scripts/hosted-profile-route.mjs parses and stages only approved_organization_name; tests/browser/settings-native-auth-driver.mjs reads that name. T57's existing private approved-organization fixture contains no UUID.",
+    "candidate_id": "A separate previously approved private Files fixture has the same organization name and a UUID, but it is not yet validated as a current membership for this T57 account and was not copied or staged."
+  },
+  "least_privilege_validation_attempt": {
+    "identity": "existing admin@admin.com test account",
+    "auth": "Supabase password token HTTP 200 using existing local credentials; token not logged or retained",
+    "membership_read": "The frozen and current resolver calls getSupabase().rpc('mbr_for_user', {p_container_type:'organization'}) on the plain client, then queries iam.organizations by returned IDs. Matching that exact RPC call against local .env.production WXT_SUPABASE_URL returned HTTP 404 PGRST202 under both default and iam profiles; no membership rows obtained.",
+    "origin_scope": "The local WXT_SUPABASE_URL is a custom/self-hosted host rather than the documented brsgrqvjdzwihsvnfqkf.supabase.co project origin. The hosted workflow's WXT_SUPABASE_URL secret value was neither read nor assumed equal; the 404 could reflect a local-origin/database mismatch.",
+    "effect": "Current membership and exact name-to-UUID lineage remain unverified through the intended client read on the available local origin. No privileged database substitution was used."
+  },
+  "stop_reason": "Allowing absent device storage from the visible label alone would weaken the checkpoint. A product-generated request header can be observed through existing CDP primitives, but there is no verified T57 approved UUID to compare it with. Implementing only the header observer would admit a wrong same-name organization or silently accept an unrelated UUID. The full fixture-to-request guard cannot be truthfully completed from current evidence.",
+  "exact_next_step": "Restore or identify the current least-privilege membership read used by the installed extension, verify that the candidate Files UUID is an active membership with the exact T57 approved name, and add that verified UUID to the private T57 hosted fixture/staging contract. Then attach a CDP observer to a real product GET /tools/test/list from the side panel, compare its X-Organization-Id with the verified UUID, retain the existing device-storage path for an actual explicit switch, and add focused old-RED/new-GREEN guards for valid ladder, wrong UUID/header, missing organization, and nonadmin before independent review and any native retest.",
+  "claim_limit": "No code-path repair or native acceptance result is claimed. The current evidence identifies a precise blocked verification dependency and preserves the strict organization assertion."
+}

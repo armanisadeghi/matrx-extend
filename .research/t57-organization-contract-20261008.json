@@ -18,7 +18,7 @@
         "Rule 14 says the saved last active and start-up columns only choose what the shell opens to; request execution carries the visible active organization."
       ]
     },
-    "extension_instruction": {
+    "on_disk_extension_instruction": {
       "path": "CLAUDE.md:99",
       "quote": "this device's last choice → the account's last active organization → its start-up organization → the first organization, each only if a current membership",
       "additional_rule": "The resolver alone reads account columns; a deliberate switch writes device choice and users.set_last_active_organization. There is no hold or mandatory startup picker; zero memberships refuses."
@@ -31,7 +31,7 @@
       "path": "../common-docs/systems/architecture/database/projects/no-db-assigned-org/PLAN.md:43",
       "distinction": "The plan forbids database, server, or write-time substitution of a missing organization. It does not ban the approved client-shell load ladder that sets the active context before requests."
     },
-    "priority_resolution": "The current user-provided extension instructions and 2026-10-07 canonical owner-attributed decision both affirm the load ladder. A device-choice-only interpretation is inconsistent with those sources; no newer trusted owner decision reversing them was found in the read paths."
+    "priority_resolution": "The on-disk CLAUDE.md and 2026-10-07 canonical owner-attributed decision affirm the load ladder. This report must not attribute the on-disk text to the conversation-supplied AGENTS snapshot. Any conflict with that snapshot requires explicit reconciliation before changing product authorization behavior; no such behavior is changed here."
   },
   "frozen_implementation": {
     "active_org_path": "src/lib/org/active-org.ts",
