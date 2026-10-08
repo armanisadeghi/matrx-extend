@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "artifact_type": "source-only-final-peer-review",
+  "proposal_commit": "8445d47a",
+  "prior_peer_commit": "ece6ed51",
+  "proposal_path": ".research/sensitive-tool-procedures-20261008.json",
+  "scope": "EXT-F-4089-T01, EXT-F-4090-T01, EXT-F-4092-T01; source review only",
+  "verdicts": {
+    "A_requested_procedure": "PASS_WITH_LIMITS",
+    "B_source_contract_quality": "PASS_WITH_LIMITS"
+  },
+  "prior_findings": [
+    {
+      "case_id": "EXT-F-4089-T01",
+      "status": "ADDRESSED",
+      "evidence": "The revised negative requires a proven safe top-frame login form, no Vault match, and exactly status no_matching_login; probe errors and other refusals are distinct observations. credential-login.ts:1885-1926 probes before match lookup."
+    },
+    {
+      "case_id": "EXT-F-4092-T01",
+      "status": "ADDRESSED",
+      "evidence": "The revised procedure establishes selectedConversationId:null before manual Run, requires a visible email_review card, and leaves an absent-card branch unverified. ToolsView.tsx:453-462 sends conversationId:null; use-tool-inbox.ts:206-212 assigns the current Chat selection; ChatView.tsx:192-205 filters by that selection."
+    }
+  ],
+  "new_findings": [],
+  "case_checks": {
+    "EXT-F-4089-T01": "The no-match result is distinct from form/probe refusals; schema-negative and manual-run limits remain correctly separated.",
+    "EXT-F-4090-T01": "Unchanged prospect preview, single capture route, exact-site readback, and exact-ID cleanup limits remain source-consistent.",
+    "EXT-F-4092-T01": "The card Send button alone invokes sendReviewedGmail; the internal user_confirmed constant is not a tool argument. No card rendering or delivery is asserted without runtime evidence."
+  },
+  "limits": [
+    "No browser, credentials, Google, CRM, network, or runtime execution was performed; this review cannot certify card rendering, delivery, persistence, permission behavior, or cleanup.",
+    "The three procedures remain NOT_EXECUTABLE until their resource/build receipts and owned disposable fixtures exist. Inventory status and applicability were not changed."
+  ]
+}
