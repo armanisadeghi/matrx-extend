@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T01:37:08.426904+00:00",
+  "updated_at": "2026-10-08T01:57:38.334103+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -7257,7 +7257,21 @@
             "The admin-only section, optional permission controls and audit-key actions are absent for guest and ordinary member before and after reload."
           ],
           "dimensions": ["warm", "reload"],
-          "linked_defects": ["EXT-D-0161"]
+          "linked_defects": ["EXT-D-0161"],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "run_id": "37714389856",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/settings-unrecorded-native-20261007.json",
+                ".research/settings-unrecorded-native-peer-20261007.json"
+              ],
+              "detail": "Warm signed-out guest Settings shows admin controls absent. Real extension reload replaced targets but Settings-open failed before click; post-reload guest denial and ordinary-member behavior remain unverified.",
+              "release_scope": "Frozen development artifact only; all three current resource journals valid. No Store/current-main or whole-surface acceptance."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T64",
@@ -7272,7 +7286,21 @@
           ],
           "steps": ["Click Ask again for one origin.", "Reload Settings."],
           "expected": ["Only that origin leaves the Never ask list; empty list disappears."],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "37714389856",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/settings-unrecorded-native-20261007.json",
+                ".research/settings-unrecorded-native-peer-20261007.json"
+              ],
+              "detail": "Trusted Ask again removes only selected of two disposable loopback origins; the other persists through panel reload. Removing the last hides the empty list in UI and storage, persisting after reload. Direct preference seeding covers Settings list behavior, not earlier capture-denial flow; final cleanup has no separate readback.",
+              "release_scope": "Frozen development artifact only; all three current resource journals valid. No Store/current-main or whole-surface acceptance."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T65",

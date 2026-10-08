@@ -7,7 +7,7 @@
   "title": "Settings reload driver discards the first failing substep and safe replacement-panel observations",
   "severity": "S2: obstructs diagnosis and acceptance of Settings reload; product cause unknown",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "root/nonchat_batch_execution",
   "preconditions": [
     "Use frozen CI37698216289/artifact11516342905/source52487361/version0.2.391 on an isolated guest profile via guarded settings-controls workflow."
@@ -21,7 +21,11 @@
   "actual": "The run is unverified at reload_settings; the first substep and product cause cannot be reconstructed from its receipt.",
   "evidence": [
     ".research/settings-batch-native-20261007.json",
-    ".research/settings-native-newcases-peer-20261007.json"
+    ".research/settings-native-newcases-peer-20261007.json",
+    ".research/settings-reload-failure-diagnosis-20261007.json",
+    ".research/settings-reload-final-peer-20261007.json",
+    ".research/settings-unrecorded-native-20261007.json",
+    ".research/settings-unrecorded-native-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -41,8 +45,26 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Assigned categorical boundary and panel-state diagnostic repair with negative controls."
+    },
+    {
+      "at": "2026-10-08T01:57:38.334103+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source ed97df72 preserves safe boundary and probe; exact focused CI37714158197 and independent source peer2bb7dec3 passed."
+    },
+    {
+      "at": "2026-10-08T01:57:38.334103+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original full-reload path37714389856 preserves before_click/pointer_target_not_unique and allowlisted panel facts; independent peer de3a5a5c accepts diagnostic scope with all resources valid."
+    },
+    {
+      "at": "2026-10-08T01:57:38.334103+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Diagnostic-loss reproduction no longer occurs. Closure covers test diagnostics only; Settings reload opening and T63 post-reload/member remain unresolved."
     }
   ],
   "closure_requirement": "Independent source/privacy review and exact CI, then native full-reload observation showing the failure boundary is retained or original reproduction and surroundings pass. No source-only closure.",
-  "next_action": "Review safe diagnostic repair, then run original full-reload path and new guest T63/T64 candidates once under guard."
+  "next_action": "Diagnostic scope closed. Separate settings_reload_target_diagnosis lane owns repeated Settings-open failure; no product recovery inferred."
 }
