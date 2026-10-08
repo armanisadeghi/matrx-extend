@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "reviewed_commit": "4fcfe7857263b440e0146bef6b0d59af062e84bf",
+  "case_id": "EXT-F-1012-T57",
+  "verdict_a_execution": {
+    "status": "PARTIAL",
+    "finding": "The preinstallation credential preflight now loads from a clean copy with no node_modules, and both guest-chat and showcase-d47-public-admin reach HOSTED_CREDENTIAL_PREFLIGHT_READY. This establishes source readiness at the boundary that failed in hosted run 37766646825. A fresh hosted native job, artifact import, browser setup, and the T57 acceptance outcome remain unobserved.",
+    "severity": "Important until the native retry establishes the user outcome",
+    "source": "scripts/hosted-profile-route.test.mjs:193; .github/workflows/hosted-guest-acceptance.yml:262"
+  },
+  "verdict_b_guard_doctrine_privacy": {
+    "status": "PASS",
+    "finding": "The route reuses the dependency-free predicate already in the native auth driver. It has the same string, UUID version 1-8, and RFC variant behavior as the replaced kit predicate. Missing organization data, malformed JSON, invalid or missing required UUID, and invalid admin identity still refuse. The fresh-checkout guard fails when the UUID validator is mutated to always return true. Synthetic private values were absent from failed-preflight stdout and stderr. No in-scope doctrine or privacy regression was found.",
+    "source": "scripts/hosted-profile-route.mjs:105; tests/browser/settings-native-auth-driver.mjs:15; scripts/hosted-profile-route.test.mjs:193"
+  },
+  "checks": [
+    "Focused fresh-checkout guard: 1 passed",
+    "Hosted profile, scrape, showcase, and desktop settings route tests: 30 passed",
+    "Direct credential matrix: missing organization, malformed JSON, malformed name, missing required ID, malformed ID, and invalid admin refused; valid v4/v7 IDs and optional-ID route accepted",
+    "Constant-true UUID mutation on scratch copy: fresh-checkout guard failed at invalid-ID assertion; no workspace code edited",
+    "Synthetic secret sentinel absent from invalid-ID preflight stdout and stderr",
+    "Package twins strict gate: passed with five pre-existing census items"
+  ],
+  "limits": "No native launch, hosted retry, installation, artifact import, resource admission, browser setup, or T57 race check. Unrelated shared-checkout changes were left untouched."
+}
