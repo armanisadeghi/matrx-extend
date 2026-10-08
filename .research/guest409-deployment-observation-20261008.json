@@ -189,17 +189,22 @@
     "limits": "Read-only production identity and Actions metadata only. The configured automatic watcher is active, but the last observed scheduled watcher run predates this interval; no execution or automatic pickup of candidate 54a is established. No release/deploy dispatch, build, or native run was performed."
   },
   "latest_root_observation": {
-    "observed_at_utc": "2026-10-08T10:08:09.835207+00:00",
+    "observed_at_utc": "2026-10-08T10:26:24.255820+00:00",
     "production_sha": "8de41d9c36c1251240ea68fd5d41afcaa80b4ee1",
-    "built_at": "2026-10-08T08:39:50Z",
-    "repair_included": false,
-    "watcher_latest_run": 37742567826,
-    "watcher_created_at": "2026-10-08T07:17:56Z",
+    "repair_included_in_current_production": false,
+    "watcher_latest_run": 37762304097,
+    "watcher_created_at": "2026-10-08T10:15:44Z",
     "watcher_state": "completed/success",
-    "deploy_latest_run": 37751070054,
-    "deploy_created_at": "2026-10-08T08:37:30Z",
-    "deploy_state": "completed/success",
-    "active_deploy_observed": false,
-    "method": "LiveGET health/version with documentedUA; exactrepoActions watch/deploy latest2 queries. No manual deployment or watch dispatch."
+    "deploy_latest_run": 37762164523,
+    "deploy_created_at": "2026-10-08T10:14:30Z",
+    "deploy_head_sha": "5be7a37ba1e53ca311f3787bb041a402ec863052",
+    "deploy_state": "in_progress",
+    "active_job": "build-and-deploy",
+    "active_step": "Build & push admin dashboard",
+    "release_title": "AI Dream release v0.2.1286",
+    "candidate_includes_repair": true,
+    "ancestry_proof": "git merge-base --is-ancestor54a1e1b978a8efde6b9232aa56aad9f12a1bf2145be7a37ba1e53ca311f3787bb041a402ec863052 exit0 afterfetch",
+    "next_action": "Observe exact37762164523 handle and actual productionSHA; no guestrecoveryuntilstableliveoriginal-repro retest.",
+    "method": "LiveGET health/version with documentedUA; exactrepoActions watch/deploy latestqueries and runjobread. No manual deployment/watch dispatch by this task."
   }
 }
