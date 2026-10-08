@@ -117,17 +117,23 @@ test('Copy capture failure observes real DOM states and forwards only bounded re
     const receipt = {};
     retainCopyTargetContext(receipt, failure);
     const serialized = JSON.parse(JSON.stringify(receipt));
-    assert.deepEqual(serialized, {
-      copy_target_context: {
-        activeScrapeTabs: state === 'inactive' ? 0 : 1,
-        activeScrapePanel: state !== 'inactive',
-        copyTitleCount: state === 'title' ? 1 : 0,
-        copyDataTitleCount: 0,
-        copyAriaLabelCount: state === 'aria-only' || state === 'title' ? 1 : 0,
-        captureContentVisible: state !== 'inactive' && state !== 'missing',
-        previousPageBanner: state === 'missing',
-        emptyPrompt: state === 'missing',
-      },
+    assert.deepEqual(serialized.copy_batch_failure, {
+      fixtureKey: 'referrals',
+      action: { stage: 'open_menu', title: 'Copy capture', option: 'Markdown' },
+      completed: [],
+    });
+    assert.deepEqual(serialized.copy_target_context, {
+      activeScrapeTabs: state === 'inactive' ? 0 : 1,
+      activeScrapePanel: state !== 'inactive',
+      requestedTitleCount: state === 'title' ? 1 : 0,
+      requestedDataTitleCount: 0,
+      requestedAriaLabelCount: state === 'aria-only' || state === 'title' ? 1 : 0,
+      copyTitleCount: state === 'title' ? 1 : 0,
+      copyDataTitleCount: 0,
+      copyAriaLabelCount: state === 'aria-only' || state === 'title' ? 1 : 0,
+      captureContentVisible: state !== 'inactive' && state !== 'missing',
+      previousPageBanner: state === 'missing',
+      emptyPrompt: state === 'missing',
     });
     assert.equal(JSON.stringify(serialized).includes(secret), false);
     assert.equal(

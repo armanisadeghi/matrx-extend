@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape-d164-escalated-diagnosis-20261007",
+  "status": "diagnostic_pipeline_cause_confirmed_product_failure_unresolved",
+  "original_evidence": {
+    "run_id": 37723346094,
+    "receipt": ".research/scrape-copy-context-native-20261007-run37723346094-originals/matrx-extend/matrx-extend/test-results/scrape-guest-native-fe465d43-b3e2-43bc-ac73-44b1c48a125b.json",
+    "receipt_sha256": "b2426d72d8ba5c5b4f09e017db62bb498affe6569c35b90004e96ebc91bc1156",
+    "observed": "guest_copy_after_navigation; pointer_target_not_unique; zero matched and visible targets; copy_target_context absent; after_navigation absent"
+  },
+  "evidence_correction": "The prior claim that the FIRST Copy capture failed is not supported. The native driver assigns after_navigation only after the whole 22-option batch resolves. A rejection anywhere drops every completed referrals option. Absence of progress cannot identify the failed control or show zero options completed. Root owns correcting curated reports and EXT-D-0164; originals remain unchanged.",
+  "hypotheses": [
+    {
+      "cause": "Old driver source executed",
+      "prediction": "Run checkout lacks discriminator commit",
+      "result": "Rejected by original provenance: checkout 8b1768b4 contains unchanged b90ff6a5 driver."
+    },
+    {
+      "cause": "Resource wrapper replaces the annotated error",
+      "prediction": "Real runNativeResourceAction loses error properties",
+      "result": "Rejected: wrapper awaits health and returns action; actual receipt-path guard preserves pointer driverFailure and added properties."
+    },
+    {
+      "cause": "A later batch action fails outside capture-only catch",
+      "prediction": "Successful capture option then missing Copy images produces same pointer failure and absent capture-only diagnostic; whole assignment drops completed progress",
+      "result": "Reproduced through actual pointer error -> real batch -> native outer catch -> JSON file; capture-only mutation fails the receipt guard."
+    }
+  ],
+  "confirmed_cause": "Failure capture was scoped only to opening a title=Copy capture menu, while batch evidence was returned only on complete success. All other menu titles, result tabs, options, and later errors lacked actionable batch context. The pointer error deliberately carries no target label, so the final receipt could not locate the failure.",
+  "product_lead_not_conclusion": "Frozen 52487361 ScrapeView.tsx renders Copy images only when current.images.length > 0; referrals fixture has no images. The batch nevertheless requests all section menus. This makes a later Copy images failure plausible, but neither original receipt nor its screenshots records the failure-time DOM. Do not claim this is the actual native root cause until the new receipt identifies it.",
+  "repair": "Catch at the whole copy batch boundary; retain fixture, precise stage/title/option or tab, and completed successful option verdicts; observe bounded DOM counts on every pointer failure including counts for the requested title; forward through existing native receipt catch without replacing the error. No selector, resource rule, clipboard oracle, freshness assertion, retry or product behavior changed.",
+  "verification": {
+    "command": "node --test tests/browser/scrape-copy-receipt.test.mjs tests/browser/scrape-guest-behavior-batch.test.mjs tests/browser/scrape-media-timeout-evidence.test.mjs",
+    "result": "12 passed",
+    "typecheck": "pnpm compile passed",
+    "receipt_guard": "Runs actual native script in existing no-browser self-test mode. Happy DOM supplies CDP Runtime.evaluate responses; real evaluate, missing-target click, resource wrapper, batch, outer error handling and disk JSON writer execute. Browser successful copy/permission effects are controlled dependencies; menu checks and clipboard oracle remain real. Two inputs yield distinct control names, DOM counts and completed progress.",
+    "mutations": [
+      {
+        "name": "capture-only diagnostic",
+        "result": "RED; Copy images context missing"
+      },
+      {
+        "name": "drop completed progress",
+        "result": "RED; Page URL success missing"
+      },
+      {
+        "name": "drop native receipt forwarding",
+        "result": "RED; both batch fields missing"
+      },
+      {
+        "name": "constant empty batch return gut check",
+        "result": "RED; original pointer failure replaced by self-test did-not-fail error"
+      }
+    ],
+    "mutation_safety": "All four executed via forcing-function-tests/plant.py; restored IDENTICAL; no native browser launched.",
+    "ci": "Added receipt guard to test:focused-acceptance; existing focused-acceptance.yml and full ci.yml both run that command.",
+    "focused_acceptance": "pnpm test:focused-acceptance: 52 passed, 0 failed"
+  },
+  "limitations": [
+    "No native/browser/build/release launched. Original native failure remains unresolved.",
+    "DOM observation follows pointer sample and can race a UI transition.",
+    "Failure-time copy_batch_failure is additional receipt evidence; successful after_navigation still requires full batch completion."
+  ],
+  "next_discriminator": "After independent source review and exact automatic CI success, owner may run the authorized guarded native original391 acceptance once. Read copy_batch_failure.action and completed BEFORE classifying failure. If open_menu Copy images with current capture present and requested counts zero, compare frozen empty-section render contract; if Copy capture actually fails, use page identity/active panel discriminator. Do not retry without inspecting new evidence."
+}

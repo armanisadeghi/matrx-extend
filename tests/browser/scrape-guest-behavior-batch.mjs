@@ -265,7 +265,7 @@ export function menuMatches(actual, expected) {
   );
 }
 
-async function copyTargetContext(panel, sample) {
+async function copyTargetContext(panel, sample, title) {
   return sample(
     panel,
     `(() => {
@@ -278,6 +278,9 @@ async function copyTargetContext(panel, sample) {
     return {
       activeScrapeTabs: tabs.length,
       activeScrapePanel: active,
+      requestedTitleCount: buttons.filter((b) => b.getAttribute('title') === ${JSON.stringify(title)}).length,
+      requestedDataTitleCount: buttons.filter((b) => b.getAttribute('data-matrx-title') === ${JSON.stringify(title)}).length,
+      requestedAriaLabelCount: buttons.filter((b) => b.getAttribute('aria-label') === ${JSON.stringify(title)}).length,
       copyTitleCount: buttons.filter((b) => b.getAttribute('title') === 'Copy capture').length,
       copyDataTitleCount: buttons.filter((b) => b.getAttribute('data-matrx-title') === 'Copy capture').length,
       copyAriaLabelCount: buttons.filter((b) => b.getAttribute('aria-label') === 'Copy capture').length,
@@ -292,6 +295,7 @@ async function copyTargetContext(panel, sample) {
 
 export function retainCopyTargetContext(report, error) {
   if (error?.copyTargetContext) report.copy_target_context = error.copyTargetContext;
+  if (error?.copyBatchFailure) report.copy_batch_failure = error.copyBatchFailure;
 }
 
 export async function runGuestCopyMenus({
@@ -311,49 +315,43 @@ export async function runGuestCopyMenus({
   const fixture = COPY_FIXTURES[fixtureKey];
   if (!fixture) throw new Error('scrape_copy_fixture_unknown');
   const evidence = [];
-  for (const [title, tab, options] of menus) {
-    if (tab) await resourceAction(() => pointer(panel, 'scrape-result-tab', tab));
-    for (const option of options) {
-      const sentinel = `MATRX_QA_COPY_SENTINEL:${fixtureKey}:${title}:${option}`;
-      const seeded = await sample(
-        panel,
-        `(async () => {
+  let action;
+  try {
+    for (const [title, tab, options] of menus) {
+      action = { stage: 'select_tab', title, tab };
+      if (tab) await resourceAction(() => pointer(panel, 'scrape-result-tab', tab));
+      for (const option of options) {
+        action = { stage: 'seed_clipboard', title, option };
+        const sentinel = `MATRX_QA_COPY_SENTINEL:${fixtureKey}:${title}:${option}`;
+        const seeded = await sample(
+          panel,
+          `(async () => {
         await navigator.clipboard.writeText(${JSON.stringify(sentinel)});
         return true;
       })()`,
-      );
-      if (seeded !== true) throw new Error(`scrape_copy_sentinel_not_seeded:${title}:${option}`);
-      try {
+        );
+        if (seeded !== true) throw new Error(`scrape_copy_sentinel_not_seeded:${title}:${option}`);
+        action.stage = 'open_menu';
         await resourceAction(() => pointer(panel, 'title', title));
-      } catch (error) {
-        if (
-          title === 'Copy capture' &&
-          error?.driverFailure?.code === 'pointer_target_not_unique'
-        ) {
-          try {
-            error.copyTargetContext = await copyTargetContext(panel, sample);
-          } catch {
-            error.copyTargetContext = { observationUnavailable: true };
-          }
-        }
-        throw error;
-      }
-      const labels = await poll(
-        `copy_menu_${title}_${option}`,
-        () => menuLabels(panel, sample),
-        (actual) => menuMatches(actual, options),
-      );
-      await resourceAction(() => pointer(panel, 'scrape-copy-option', option));
-      const permissionEvidence = {};
-      const copied = await clipboardPermission({
-        browserSession,
-        panel,
-        panelUrl,
-        evidence: permissionEvidence,
-        read: () =>
-          sample(
-            panel,
-            `(async () => {
+        action.stage = 'observe_menu';
+        const labels = await poll(
+          `copy_menu_${title}_${option}`,
+          () => menuLabels(panel, sample),
+          (actual) => menuMatches(actual, options),
+        );
+        action.stage = 'select_option';
+        await resourceAction(() => pointer(panel, 'scrape-copy-option', option));
+        action.stage = 'read_clipboard';
+        const permissionEvidence = {};
+        const copied = await clipboardPermission({
+          browserSession,
+          panel,
+          panelUrl,
+          evidence: permissionEvidence,
+          read: () =>
+            sample(
+              panel,
+              `(async () => {
           const oracle = ${copyOracle.toString()};
           const value = await navigator.clipboard.readText();
           const sentinel = ${JSON.stringify(sentinel)};
@@ -361,19 +359,30 @@ export async function runGuestCopyMenus({
             formatCorrect: oracle(value, sentinel, ${JSON.stringify(title)},
               ${JSON.stringify(option)}, ${JSON.stringify(fixture)}, ${JSON.stringify(origin)}) };
         })()`,
-          ),
-      });
-      const entry = {
-        title,
-        option,
-        menuCorrect: menuMatches(labels, options),
-        copied,
-        permissionRestored: permissionEvidence.clipboardObservationPermissionRestored,
-      };
-      evidence.push(entry);
-      if (!entry.menuCorrect || !copyResultMatches(copied) || !entry.permissionRestored)
-        throw new Error(`scrape_copy_mismatch:${title}:${option}`);
+            ),
+        });
+        const entry = {
+          title,
+          option,
+          menuCorrect: menuMatches(labels, options),
+          copied,
+          permissionRestored: permissionEvidence.clipboardObservationPermissionRestored,
+        };
+        if (!entry.menuCorrect || !copyResultMatches(copied) || !entry.permissionRestored)
+          throw new Error(`scrape_copy_mismatch:${title}:${option}`);
+        evidence.push(entry);
+      }
     }
+    return evidence;
+  } catch (error) {
+    error.copyBatchFailure = { fixtureKey, action, completed: evidence };
+    if (error?.driverFailure) {
+      try {
+        error.copyTargetContext = await copyTargetContext(panel, sample, action.title);
+      } catch {
+        error.copyTargetContext = { observationUnavailable: true };
+      }
+    }
+    throw error;
   }
-  return evidence;
 }

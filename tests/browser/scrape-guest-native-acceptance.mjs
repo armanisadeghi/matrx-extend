@@ -876,6 +876,13 @@ async function exerciseMediaControls({
 try {
   if (RECEIPT_SELF_TEST) {
     assert.ok(OUTPUT, 'scrape_receipt_self_test_output_required');
+    if (process.env.MATRX_SCRAPE_COPY_RECEIPT_SELF_TEST) {
+      report.stage = 'guest_copy_after_navigation';
+      report.diagnostic_self_test = true;
+      const { exerciseCopyReceiptFailure } = await import('./scrape-copy-receipt-fixture.mjs');
+      await exerciseCopyReceiptFailure(process.env.MATRX_SCRAPE_COPY_RECEIPT_SELF_TEST);
+      throw new Error('scrape_copy_receipt_self_test_did_not_fail');
+    }
     report.stage = 'result_tabs';
     report.diagnostic_self_test = true;
     const fixture = [
