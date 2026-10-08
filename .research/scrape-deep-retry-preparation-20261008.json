@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only feasibility diagnosis for missing guest EXT-F-1007-T02 deep failure/retry dimension. No native driver, fixture, product code, browser, build, hosted run, or release changed.",
+  "verdict": "NO_EXECUTABLE_NATIVE_PROCEDURE_YET",
+  "current_credit": {
+    "source": ".research/scrape-reload-deep-native-20261008/report.json",
+    "observation": "Warm and post-full-extension-reload deep capture show Scrolling progress and exact lazy text in the browser and displayed Article.",
+    "case_status": "partial",
+    "unverified": "A genuine recoverable failure followed by Try again preserving deep mode."
+  },
+  "source_evidence": [
+    {
+      "path": "docs/stabilization/inventory.json",
+      "finding": "T02 explicitly expects a failure to preserve the deep retry mode; the latest guest result retains this missing dimension."
+    },
+    {
+      "path": "src/hooks/use-scrape.ts",
+      "finding": "Deep capture calls scrollToLoadLazy before captureWithFallback. An identity change after scrolling returns without a capture result; late results are also ignored when the page key or run sequence changed."
+    },
+    {
+      "path": "src/lib/scrape/page-ready.ts",
+      "finding": "scrollToLoadLazy catches and logs scripting failures, then resolves. A failed scroll alone does not produce a recoverable Scrape error card."
+    },
+    {
+      "path": "src/lib/scrape/capture-with-fallback.ts",
+      "finding": "A missing receiver triggers real content-script injection and one retry. A stale pre-extension-reload page is therefore not a deterministic error-card stimulus."
+    },
+    {
+      "path": "src/lib/scrape/capture-error.ts",
+      "finding": "Restricted URLs produce a nonrecoverable card with no retry action. A recoverable card requires a real capture result or thrown error on the same capturable page."
+    },
+    {
+      "path": "tests/browser/scrape-guest-native-acceptance.mjs",
+      "finding": "The owned intake fixture proves normal deep success and restricted-page Dismiss. It contains no controlled, observed failure transition that yields a recoverable deep card."
+    }
+  ],
+  "missing_observation": "A reproducible browser condition on an owned HTTP(S) page must keep the same active tab/document identity after Scroll & capture, cause the actual capture pipeline to return a recoverable failure, and display the real Reload page and/or Try again control. The native receipt must identify that real failure class and prove no fixture or harness fabricated the response. Only then can Try again be clicked and its deep Scrolling progress plus lazy-content result asserted.",
+  "candidates_not_promoted": [
+    "Changing page identity or closing the tab cancels or suppresses stale capture results, so it does not prove an error-card retry.",
+    "A restricted chrome:// page has only Dismiss and cannot prove recoverable deep retry.",
+    "Withholding site access or using a sandboxed page has not been observed on the frozen artifact to survive the fallback and produce a recoverable card; encoding either as expected behavior would be speculative."
+  ],
+  "test_policy": "No test was added because a mocked CaptureError, injected exception, or predetermined fixture response would let the T02 assertion pass without the product's real failure path. Existing UI unit coverage of last-mode selection remains separate from native acceptance.",
+  "next_step": "In a separately authorized native exploratory run, establish and retain the real browser failure trigger and receipt fields above. Then add a focused native fixture/procedure and fail-capable source tests before assigning T02 retry credit. Preserve current partial status meanwhile."
+}

@@ -162,6 +162,39 @@ export async function observeEmptyMediaPanes({
   return evidence;
 }
 
+export async function observeEmptyLinksPane({
+  panel,
+  phase,
+  click,
+  resourceAction,
+  requireResourceHealth,
+  scrapeState,
+  waitFor,
+  readExport,
+}) {
+  await requireResourceHealth();
+  const before = await readExport();
+  await resourceAction(() => click(panel, 'scrape-result-tab', 'Links'));
+  const state = await waitFor(
+    `scrape_${phase}_empty_Links_tab`,
+    () => scrapeState(panel),
+    (value) =>
+      value?.selected === 'Links' && value.visible && Array.isArray(value.media?.linkItems),
+  );
+  assert.deepEqual(state.media.linkItems, [], `scrape_${phase}_links_not_empty`);
+  assert.equal(state.media.tabCount, null, `scrape_${phase}_links_count_not_empty`);
+  assert.match(state.resultText, /Add link/, `scrape_${phase}_add_link_missing`);
+  await requireResourceHealth();
+  const after = await readExport();
+  return {
+    pane: 'Links',
+    state: 'empty',
+    count: 0,
+    add_control_visible: true,
+    export: assertCaptureExportUnchanged(before, after, `${phase}_empty_links`),
+  };
+}
+
 export function assertCompleteTabCoverage({ warm, reload }) {
   for (const [phase, evidence] of Object.entries({ warm, reload })) {
     assert.equal(
@@ -193,6 +226,24 @@ export function assertCompleteTabCoverage({ warm, reload }) {
       assert.equal(evidence.empty[label].state, 'empty', `scrape_${phase}_${label}_not_empty`);
       assert.equal(evidence.empty[label].count, 0, `scrape_${phase}_${label}_empty_count`);
     }
+    assert.equal(evidence?.empty?.links?.pane, 'Links', `scrape_${phase}_links_empty_pane_missing`);
+    assert.equal(evidence.empty.links.state, 'empty', `scrape_${phase}_links_not_empty`);
+    assert.equal(evidence.empty.links.count, 0, `scrape_${phase}_links_empty_count`);
+    assert.equal(
+      evidence.empty.links.add_control_visible,
+      true,
+      `scrape_${phase}_links_add_missing`,
+    );
+    assert.equal(
+      evidence.empty.links.export?.identity_unchanged,
+      true,
+      `scrape_${phase}_links_capture_identity_changed`,
+    );
+    assert.equal(
+      evidence.empty.links.export?.exported_payload_unchanged,
+      true,
+      `scrape_${phase}_links_capture_payload_changed`,
+    );
   }
   return true;
 }
