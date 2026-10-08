@@ -1,7 +1,25 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
-import { startScrapeReloadOpenDiagnostic } from './scrape-reload-open-diagnostic.mjs';
+import {
+  refuseDiagnosticAcceptance,
+  reloadOpenEvidenceClass,
+  startScrapeReloadOpenDiagnostic,
+} from './scrape-reload-open-diagnostic.mjs';
+
+test('worker probe is opt-in and its receipt cannot earn acceptance credit', () => {
+  const ordinary = { status: 'passed', failure: null };
+  assert.equal(reloadOpenEvidenceClass(false).evidence_class, 'acceptance_eligible');
+  assert.equal(refuseDiagnosticAcceptance(ordinary, false), false);
+  assert.equal(ordinary.status, 'passed');
+  const diagnostic = { status: 'passed', failure: null };
+  assert.equal(reloadOpenEvidenceClass(true).evidence_class, 'diagnostic_only');
+  assert.equal(refuseDiagnosticAcceptance(diagnostic, true), true);
+  assert.deepEqual(diagnostic, {
+    status: 'unverified',
+    failure: { stage: 'extension_reload', code: 'diagnostic_only_perturbed_worker' },
+  });
+});
 
 function cdptarget(open) {
   const listeners = [];

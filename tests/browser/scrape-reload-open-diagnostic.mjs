@@ -2,6 +2,21 @@
 // worker alive, and wrapping sidePanel.open may perturb Chrome's gesture path.
 // Its evidence can localize a later failure but can never certify acceptance.
 const REQUEST_ID = 'native-sidepanel-qa';
+export function reloadOpenEvidenceClass(enabled) {
+  return {
+    enabled,
+    evidence_class: enabled ? 'diagnostic_only' : 'acceptance_eligible',
+    perturbation: enabled ? 'cdp_worker_attach_and_synchronous_open_wrapper' : 'none',
+  };
+}
+
+export function refuseDiagnosticAcceptance(report, enabled) {
+  if (!enabled) return false;
+  report.status = 'unverified';
+  report.failure ??= { stage: 'extension_reload', code: 'diagnostic_only_perturbed_worker' };
+  return true;
+}
+
 const EMPTY = () => ({
   availability: 'unavailable',
   perturbation: 'cdp_worker_attach_and_synchronous_open_wrapper',

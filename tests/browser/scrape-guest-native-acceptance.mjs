@@ -33,6 +33,10 @@ import { scrapeNativeSelection, selectScrapePanelViewport } from './scrape-nativ
 import { diagnosticCpuRate, runSupplementalCpuDiagnostic } from './scrape-page-cpu-diagnostic.mjs';
 import { runPostReloadCaptureBoundary } from './scrape-post-reload-capture-boundary.mjs';
 import { recordReloadMilestone } from './scrape-reload-milestones.mjs';
+import {
+  refuseDiagnosticAcceptance,
+  reloadOpenEvidenceClass,
+} from './scrape-reload-open-diagnostic.mjs';
 import { waitForReplacementScrapeTab } from './scrape-replacement-tab.mjs';
 import { observeScrapeRows } from './scrape-row-observer.mjs';
 import {
@@ -58,6 +62,7 @@ const RECEIPT = process.env.MATRX_SCRAPE_RECEIPT;
 const ARTIFACT_CHANNEL = process.env.MATRX_SCRAPE_ARTIFACT_CHANNEL;
 const DIAGNOSTIC_RATE = diagnosticCpuRate(process.env.MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE);
 const RECEIPT_SELF_TEST = process.env.MATRX_SCRAPE_RECEIPT_SELF_TEST === '1';
+const RELOAD_OPEN_DIAGNOSTIC = process.env.MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC === '1';
 const OUTPUT = RECEIPT_SELF_TEST
   ? process.env.MATRX_SCRAPE_RECEIPT_SELF_TEST_OUTPUT
   : join(REPO, 'test-results', `scrape-guest-native-${randomUUID()}.json`);
@@ -110,6 +115,7 @@ const report = {
   horizontal_geometry: [],
   reload_milestones: [],
   reload_lifecycle: null,
+  reload_open_diagnostic: reloadOpenEvidenceClass(RELOAD_OPEN_DIAGNOSTIC),
   driver_failure: null,
   media_transitions: [],
   media_event_traces: [],
@@ -1658,7 +1664,7 @@ try {
       t20.evidence.previous_content_cleared_before_reload = true;
       const replacement = await resourceAction(() => {
         recordReloadMilestone(report, 'reload_extension');
-        return reloadExtension({ scrapeOpenDiagnostic: true });
+        return reloadExtension({ scrapeOpenDiagnostic: RELOAD_OPEN_DIAGNOSTIC });
       });
       report.reload_lifecycle = {
         observed_at: new Date().toISOString(),
@@ -2031,6 +2037,7 @@ try {
     report.failure = { stage: 'guest_scroll_sync', code: 'scrape_guest_scroll_sync_mismatch' };
   }
   if (report.status === 'failed') process.exitCode = 1;
+  if (refuseDiagnosticAcceptance(report, RELOAD_OPEN_DIAGNOSTIC)) process.exitCode = 1;
 } catch (error) {
   report.status = 'unverified';
   report.failure = { stage: report.stage, code: String(error?.message ?? error).slice(0, 300) };
