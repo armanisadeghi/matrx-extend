@@ -16371,6 +16371,16 @@
               "new_acceptance_credit": false,
               "evidence": [".research/scrape-confirmation-native-proof-20261008.json"],
               "detail": "Workflow stopped on irrelevant Preboot indexing before browser/resource admission. Six historical journals in uploaded artifact do not belong to this attempt and confer no credit; D178 native branch remains pending."
+            },
+            {
+              "at": "2026-10-08T13:34:51.136975+00:00",
+              "run_id": "37783925411",
+              "mode": "guest",
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "evidence": [".research/indexing-peer-scrape-retest-20261008.json"],
+              "detail": "Indexing repair independently source/native verified; guarded package/browser preparation valid. Guest Chromium endpoint timed out before panel/actions, guest journal resourceInvalid=true. No D178 branch observed and prior acceptance unchanged."
             }
           ],
           "defect_ids": ["EXT-D-0175", "EXT-D-0178", "EXT-D-0180"]
@@ -18065,7 +18075,8 @@
             "37693691959",
             "37721838779",
             "37778965029",
-            "37783167613"
+            "37783167613",
+            "37783925411"
           ],
           "retest_status": "Partial surface coverage. Frozen407 native37778965029 independently revalidates guest T07/T09/T10/T11/T12/T13/T20 and adds post-reload empty Images/Video evidence; exact conditional-confirmation branch D178 and remaining guest/member/admin cases unverified. Subsequent37783167613 failed runner setup D180 before browser, with zero acceptance credit."
         },

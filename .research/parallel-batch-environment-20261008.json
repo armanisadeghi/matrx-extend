@@ -9,5 +9,11 @@
     "reason": "SEO diagnostic test import order",
     "fix_commit": "f1fa51d0",
     "checks": "Biome targeted check and8 focused node tests pass; full CI status separate."
+  },
+  "canonical_store_record": {
+    "commit": "527cf5b85",
+    "change": "Reconciled D172 closed bounded native proof; no new Store observation.",
+    "peer": ".research/t57-old-response-diagnostic-peer-20261008.json",
+    "checks": "Touched document concept/conflict-marker checks zero violations. Whole common-docs OKF reports211 violations and148 warnings; whole-repository conformance not claimed."
   }
 }

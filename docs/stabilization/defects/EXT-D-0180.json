@@ -7,7 +7,7 @@
   "title": "Global Spotlight disable aborts on irrelevant Preboot volume",
   "severity": "S2: no product tests execute on affected hosted VM",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/hosted_indexing_repair",
   "preconditions": ["GitHub-hosted macOS runner; resource guarded native test workflow"],
   "reproduction": [
@@ -20,7 +20,8 @@
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37783167613",
     ".research/scrape-confirmation-native-proof-20261008.json",
-    ".research/hosted-indexing-disable-repair-20261008.json"
+    ".research/hosted-indexing-disable-repair-20261008.json",
+    ".research/indexing-peer-scrape-retest-20261008.json"
   ],
   "transition_history": [
     {
@@ -46,6 +47,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Separate required-volume disable commands and real shell seam red/green passed; fresh peer and hosted original retest pending."
+    },
+    {
+      "at": "2026-10-08T13:34:51.136975+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent56c62a1d verified actual shell RED/GREEN and hosted37783925411 passed original indexing setup plus package/browser guarded preparation. Later guest CDP timeout/resource invalidity earns no product credit and is a separate boundary."
+    },
+    {
+      "at": "2026-10-08T13:34:51.136975+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh independent56c62a1d verified actual shell RED/GREEN and hosted37783925411 passed original indexing setup plus package/browser guarded preparation. Later guest CDP timeout/resource invalidity earns no product credit and is a separate boundary."
     }
   ],
   "closure_requirement": "Independent source/shell-seam review plus resource-admitted original hosted workflow passes setup; product acceptance remains separately tracked.",
