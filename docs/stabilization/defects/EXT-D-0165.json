@@ -7,7 +7,7 @@
   "title": "Full CI panel-reopen regressions fail before development artifact build",
   "severity": "S2: full CI red prevents newer automatic development artifacts and current-build acceptance",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/full_ci_panel_reopen_repair",
   "preconditions": [
     "CI on main exacte5d76c11, Node22 hosted Linux, installed lockfile dependencies."
@@ -23,7 +23,8 @@
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/37722979005",
     ".research/full-ci-panel-reopen-repair-20261007.json",
     ".research/panel-reopen-ci-peer-20261007.json",
-    ".research/panel-fixture-census-final-peer-20261007.json"
+    ".research/panel-fixture-census-final-peer-20261007.json",
+    ".research/d165-full-ci-closure-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -49,11 +50,30 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fixtureclass repairs012955b8/10c8a243 accepted by independentcensus peer cedcec02; 15targetedpass, exactfocusedCI37724710922success. FullCI including completefix not yet observed; originalparentharness passed37724004067."
+    },
+    {
+      "at": "2026-10-08T04:02:19.791169+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "FullautomaticCI37724859892 atcedcec02 succeeds including originalGuesttransportobserver, allremaininggates and developmentartifact11527132614. Independentca9241b5 verifies originalZIPdigest/source/manifest397/tree1035cd28."
+    },
+    {
+      "at": "2026-10-08T04:02:19.791169+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Complete fixtureclass source repair independentlyreviewed; originalregression passes throughfullCI and artifactgeneration. No browser/product/Storeacceptance implied."
     }
   ],
   "closure_requirement": "Reproduce root cause, causal regression and surrounding guard tests red\u2192green, fresh independent source review, successful full automatic CI including development artifact/provenance generation.",
-  "next_action": "Select surviving automatic fullCI that includes10c8a243; require allgates and developmentartifact/provenance before retest-pass/closed. Pending-run coalescing is not active-run cancellation.",
+  "next_action": "Closed at CIfixture/artifactboundary; newerdevelopment397 available for separatecurrentcandidateacceptance, notStorepackage.",
   "cause": "Test fixture drift introduced with fa05a939 diagnostic provenance read; browserSession absent in extracted setup fixtures.",
   "candidate_fix": "012955b8",
-  "fix_commits": ["012955b8", "10c8a243"]
+  "fix_commits": ["012955b8", "10c8a243"],
+  "verified_ci": {
+    "run_id": "37724859892",
+    "sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "artifact_id": "11527132614",
+    "version": "0.2.397",
+    "store_eligible": false
+  }
 }
