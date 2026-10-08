@@ -1,0 +1,1306 @@
+{
+  "as_of": "2026-10-08T23:53:06.625895+00:00",
+  "window": "October5\u20138,2026; recorded transition timestamps",
+  "scope": "Exact recorded fix/retest/closure list, not52 shipped product fixes. Includes older repairs verified during window. Shared authorship not inferred from git identity.",
+  "entries": [
+    {
+      "id": "EXT-D-0033",
+      "title": "Native browser acceptance infrastructure: missing runtime diagnostic",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": null,
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Independent actual runner negative-path reports exact allowlisted unavailable-module code with zero product cases before Chrome launch; three focused resolver/mapping tests and compile passed, and prior valid-runtime native controls ran. No product feature coverage implied.",
+          "timestamp_basis": "Independent retest record confirms terminal result but does not preserve a terminal timestamp."
+        },
+        {
+          "at": null,
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Independent actual runner negative-path reports exact allowlisted unavailable-module code with zero product cases before Chrome launch; three focused resolver/mapping tests and compile passed, and prior valid-runtime native controls ran. No product feature coverage implied.",
+          "timestamp_basis": "Independent retest record confirms terminal result but does not preserve a terminal timestamp."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0033.json"
+    },
+    {
+      "id": "EXT-D-0035",
+      "title": "Native screenshot acceptance pointer helper for the Open in Files icon",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": null,
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Independent source peer accepted canonical stable/clipped pointer dispatch and exact owned-card guard; syntax/format passed. Fresh .95 native retest required.",
+          "timestamp_basis": "Recorded after source fix commit 84d63d0e; native retest not performed."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0035.json"
+    },
+    {
+      "id": "EXT-D-0042",
+      "title": "Showcase List Pattern picker start, cancel, restart, and result relay",
+      "state": "closed",
+      "category": "product",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T02:27:10.888219+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Recorded source repair and causal regression guards are present in frozen52487361/0.2.391; current native independent review confirms repaired behavior."
+        },
+        {
+          "at": "2026-10-08T02:27:10.888219+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Original native37716987249 passes twelve named scenarios with all three resource journals valid; fresh f2bbdc9e independently accepts recorded defect closure requirement."
+        },
+        {
+          "at": "2026-10-08T02:27:10.888219+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Closure limited to recorded defect on frozen0.2.391: stale-channel isolation, delayed cancellation/installation, reinjection stamped count1, extraction3rows, listeners1/1 during pick then0, ordinary click+1. Broader T24/T51 and signed-in nonadmin remain incomplete."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0042.json"
+    },
+    {
+      "id": "EXT-D-0047",
+      "title": "Showcase Network replay capture timing and document provenance",
+      "state": "closed",
+      "category": "product",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T09:55:00.758180+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Recorded reconciliation of the implemented document-bound replay repair; independently audited relevant runtime paths are unchanged across accepted frozen builds and 8cae3809. This is not an invented historical fix timestamp."
+        },
+        {
+          "at": "2026-10-07T09:55:00.758180+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Fresh independent closure audit39e564ba accepts original defect requirements: retained causal guards and peer-accepted native isolation, plus actual public HN initial capture and saved completed replay37571487114. Both behavior and evidence-quality verdicts pass for bounded defect scope."
+        },
+        {
+          "at": "2026-10-07T09:55:00.758180+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original D47 closure requirements satisfied under architectural-exclusion ruling. No old callback delivery/rejection claim. T57 remains unverified for its combined public-site ordered race; newer app/package acceptance, other cases and overall Showcase health are not established."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0047.json"
+    },
+    {
+      "id": "EXT-D-0117",
+      "title": "Exact Store acceptance cannot confirm side-panel runtime context after panel opening",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T00:30:46.344040+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Sourcef0ffbaa3 exactownedcontextreadiness withinexistingdiscoverybudget; freshpeer2a1c6c8f independently19focusedpass. Builderfull27testharness/compilegreen. ActualChromeawaitingchangedconditionrun."
+        },
+        {
+          "at": "2026-10-05T00:40:50.057390+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Independentpeer2a1c6c8f focused19pass, fullCI37247772797 SUCCESS, actualexactStore205 native37247813922 passessetup+first/reloadguestanswers. Rootmatched15hashes/readrawreceipt/3validjournals/READY+followupscreenshot. Delayed-match originalrepro coveredcontrolledguard; nativefirstsamplealreadyexact1, notclaimedphysicalempty\u2192exact."
+        },
+        {
+          "at": "2026-10-05T00:40:50.057390+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Bounded initialization race repaired with unchanged ownership/deadline refusals, causalpriornativeevidence and independentguard/nativeacceptance. Productcoverageoutsideguestscenario remainsunverified."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0117.json"
+    },
+    {
+      "id": "EXT-D-0133",
+      "title": "Authenticated panel foreground is not observed before Scrape acceptance",
+      "state": "fixed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T00:15:52.382794+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Native timeline isolates firsthide duringredundantopen; source0e8aa6c7 preserves measuredvisible ownedpanel andfailclosesfailedprobe. Freshpeer5caaffc4 accepts8focusedpass; realChrome600 acceptancepending."
+        },
+        {
+          "at": "2026-10-05T04:26:35.199719+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Explicitheadedrepair58734e03 freshpeer accepted and fullCI37262892692 passed. Runtimecause/cure unproven; oneheadedfrozen244 runauthorized."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0133.json"
+    },
+    {
+      "id": "EXT-D-0136",
+      "title": "CPU integration test reads incomplete owner metadata during startup rewrite",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T00:00:40.199305+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Independent peerd811d909 reran actualwrapper test2/2pass and checked siblingcensus. Builder deterministicred andconstantownermutation evidence retained; hosted CI pending."
+        },
+        {
+          "at": "2026-10-05T00:05:43.969601+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Freshpeer d811d909 reran actualwrapper2/2pass; hostedCI37245762934 atd811d909 fullSUCCESS. Root independently read job111563248268: originaltemporaltest and pausedstartupwriter bothpass2/2,zero failures."
+        },
+        {
+          "at": "2026-10-05T00:05:43.969601+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original owner-read failure has deterministic regression and independent local/hosted proof; bounded test-only fix, no productcoverage promoted."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0136.json"
+    },
+    {
+      "id": "EXT-D-0137",
+      "title": "Pointer tracing proxy violates immutable CDP session method contract",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T02:12:16.455794+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Separate facade repairs frozen send invariant. Independent6focusedpass; restoredbadwrapper4pass2failonimmutablemethod andrealScrapeseam. Native retestpending."
+        },
+        {
+          "at": "2026-10-05T02:35:20.271661+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Root inspected exact244 native37255333525: original Proxy invariant absent; member/nonadmin/org checks complete; recorder includes health, organization_skip, after_organization and stop. Original three journals finalized, no unsafe/resourceInvalid. Independent immutable-method regression and fullCI17 focused tests passed."
+        },
+        {
+          "at": "2026-10-05T02:35:20.271661+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original introduced driver defect no longer reproduces and surrounding recorder/org verification works. Closure is instrumentation-only; D133 and all unreached Scrape cases remain unresolved."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0137.json"
+    },
+    {
+      "id": "EXT-D-0138",
+      "title": "Images timeout discards decisive image and pane state",
+      "state": "fixed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T03:41:50.548824+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Safe structured Images/Video timeout evidence added. First peer rejected helper-only guard; corrected actualdriver catch/writer regression passes and real retention-removal mutation fails under fresh review. Native retest remains required."
+        },
+        {
+          "at": "2026-10-05T03:59:08.587139+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Portabletestfreshpeer541910e8 passes; correctedfullCI37261069816 success. RootreadLinuxjob111608348156 actualreceiptguard4pass0fail0skip. Onecontrollednativeauthorized, no closurebeforeactualreceipt."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0138.json"
+    },
+    {
+      "id": "EXT-D-0139",
+      "title": "Empty-media verification calls undefined assertMediaPane",
+      "state": "fixed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T04:41:28.408323+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Canonical media observer repair618861f3 with actualemptybranch RED/GREEN; freshpeer6517a08d accepts sourceB and nativeunverifiedA,14focusedpass. FullCIandheadedretestremain."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0139.json"
+    },
+    {
+      "id": "EXT-D-0140",
+      "title": "Release authentication-order guard rejects valid candidate-loop syntax",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T05:54:47.603113+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "02f2b67b replaces brittle literalanchor with actualcandidate-loop execution; builderRED/GREEN and negativeauthmutations verified, independentretest pending"
+        },
+        {
+          "at": "2026-10-05T05:57:40.729735+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Freshpeer a0e98cd1 reran3positive tests and both absent/reorderedactualsource negative mutations. FullCI37269797985 unitstep passed; remainingCIsteps pending beforeclosure."
+        },
+        {
+          "at": "2026-10-05T06:01:04.494140+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "FullCI37269797985 succeeded afterindependentpeer; rootverified actualtargeted3tests green inLinuxjob111634185103 and integrated2113pass6skip. No releasebehaviorchanged."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0140.json"
+    },
+    {
+      "id": "EXT-D-0141",
+      "title": "Showcase native acceptance loses the failing organization substep",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T06:30:07.197517+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "f89cc89e addresses confirmed review gaps; fresh peer and full CI/native evidence pending"
+        },
+        {
+          "at": "2026-10-05T06:53:57.849170+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Independent causal guards/fullCI plus actualnative37273880772 retains formerlylost failure detail; rootverifiedoriginalreceipt SHA5d9ef4c62719422a3652ba97bfe0c8c444a139da4d0c7a8c68fc8ac18c7a1578 and3validresourcejournals"
+        },
+        {
+          "at": "2026-10-05T06:53:57.849170+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original missingdiagnostics defect repaired; separate observedorganizationselectionfailure trackedD142, no productcoveragepromotion"
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0141.json"
+    },
+    {
+      "id": "EXT-D-0142",
+      "title": "Admin Showcase acceptance cannot select required organization option",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T07:25:40.461789+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Sourceafb775b3 plusguardintegrationbd328be0/f93ee0cd; independentpeers and40focusedchecks pass. Existingfixture resolvedcb534681. FullCI/nativepending; noclosure."
+        },
+        {
+          "at": "2026-10-05T08:49:28.401824+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "84685099 fixes offscreen readiness at shared reveal boundary; meaningful controlled RED/GREEN,36 focused checks and fresh peer7d125c74, fullCI37283516703 green."
+        },
+        {
+          "at": "2026-10-05T08:49:28.401824+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Native37284490515 original approved organization selection and stored/rendered identity checks pass. Root independently read raw receipt and matched original receipt plus three resource journal hashes; all resourceInvalid false, no unsafe history."
+        },
+        {
+          "at": "2026-10-05T08:49:28.401824+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Specific organization acceptance blocker resolved; surrounding identity/guest gate checks pass. D143 tracks later B card failure; no whole Showcase case promotion."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0142.json"
+    },
+    {
+      "id": "EXT-D-0143",
+      "title": "Native Showcase selection fails after session replacement without causal diagnostics",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-06T00:03:43.177736+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Retrospective source checkpoint: card driver52a3eb1f/d7b7991e/b75d519d accepted by peer7a65f51a and fullCI37390160862."
+        },
+        {
+          "at": "2026-10-06T00:30:40.191384+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Field repair2e3c8664/117455d5 independently reviewed97efc4af and fullCI37392653796 green."
+        },
+        {
+          "at": "2026-10-06T00:55:23.541401+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Reviewed driver repairs9ffd06d3/dcb9ac47, peersfa240b21/783ca42c, focused RED/GREEN and fullCI37395683035 green."
+        },
+        {
+          "at": "2026-10-06T00:55:23.541401+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Independent native37395727468 passes all7 checkpoints. Root verified receipt and3journal hashes; all resource decisions valid/exit0. Original detection/extraction and adjacent cancellation/ordinary click pass."
+        },
+        {
+          "at": "2026-10-06T00:55:23.541401+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "D143 driver-specific reproduction no longer fails. Closure is scoped to frozen0.2.307 with driver783ca42c; broader D42, remaining feature dimensions and newer0.2.309 acceptance remain open."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0143.json"
+    },
+    {
+      "id": "EXT-D-0144",
+      "title": "Same-conversation acceptance evaluates prior turn before follow-up evidence",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T18:25:18.314690+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source3c1633a5 checkpoints each send; causal RED then25GREEN; independent reviewer5df905a8 source PASS/native UNVERIFIED. FullCI and native retest pending."
+        },
+        {
+          "at": "2026-10-05T18:43:09.834503+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Native37356729984 reproduces prior-run/pending-new-run boundary as in_progress, then reaches distinct new-run terminal_answer; first/same/reload all actualHTTP200/grounded terminal, valid journals."
+        },
+        {
+          "at": "2026-10-05T18:43:09.834503+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original reproduction and surrounding first/reload cases pass; source3c1633a5, independent5df905a8, greenCI37355629310; rootread originalreceipt,threejournals and actualfollowupscreenshot."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0144.json"
+    },
+    {
+      "id": "EXT-D-0145",
+      "title": "Full-page capture misses overflow scrolling panes",
+      "state": "retest-pass",
+      "category": "product",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T21:00:54.026946+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source repair pushed with independent component/source review and final15 focused tests/typecheck pass; native acceptance and release unverified."
+        },
+        {
+          "at": "2026-10-08T05:51:31.320420+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Fresh independent source and complete requested native targets PASS on exact updated development artifact; all test grants revoked and owned screenshot rows absent. Store acceptance remains separate pending."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0145.json"
+    },
+    {
+      "id": "EXT-D-0146",
+      "title": "Screenshot previews leave the extension and sharing is absent",
+      "state": "retest-pass",
+      "category": "product",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-05T21:00:54.026946+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source repair pushed with independent component/source review and final15 focused tests/typecheck pass; native acceptance and release unverified."
+        },
+        {
+          "at": "2026-10-08T05:51:31.320420+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Fresh independent source and complete requested native targets PASS on exact updated development artifact; all test grants revoked and owned screenshot rows absent. Store acceptance remains separate pending."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0146.json"
+    },
+    {
+      "id": "EXT-D-0148",
+      "title": "Canonical tab-group create drops the supported collapsed setting",
+      "state": "fixed",
+      "category": "product",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T11:38:31.300965+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Guarded source reproduction repaired, surrounding73cases/typecheck/catalog/docs passed, independent source peer accepted. Await original native retest before retest-pass/closed."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0148.json"
+    },
+    {
+      "id": "EXT-D-0149",
+      "title": "Guest visibility census cannot establish Account readiness",
+      "state": "fixed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T12:53:22.524754+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source repair ac47cc66 independently reviewed in f4998a01; original native reproduction remains pending and no runtime result is promoted."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0149.json"
+    },
+    {
+      "id": "EXT-D-0150",
+      "title": "WebMCP discovery, invocation and registration use an obsolete native API contract",
+      "state": "fixed",
+      "category": "product",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T13:58:41.259399+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "API and tab-routing source corrections pushed, causal and surrounding source checks/typecheck passed, fresh peer accepted. Native original reproduction remains unverified; no retest-pass or closure."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0150.json"
+    },
+    {
+      "id": "EXT-D-0151",
+      "title": "Visibility census mistakes non-navigation controls for inaccessible regions and lacks safe mapping provenance",
+      "state": "fixed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T14:43:34.296865+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Independent source review and guarded25/25 accepted f2a53199; original native retest remains required."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0151.json"
+    },
+    {
+      "id": "EXT-D-0152",
+      "title": "Guest Account readiness screenshot is omitted from hosted artifact",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T15:11:01.307452+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source correction1e366f07 accepted; native delivery remains pending."
+        },
+        {
+          "at": "2026-10-07T15:32:05.525014+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Original missing-image reproduction no longer occurs in independently inspected hosted artifact; surrounding guest readiness and classification remain observed."
+        },
+        {
+          "at": "2026-10-07T15:32:05.525014+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Both native original-repro and quality/privacy verdicts accepted. T11 and27 unknown controls remain incomplete separately."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0152.json"
+    },
+    {
+      "id": "EXT-D-0153",
+      "title": "Empty visible tab buckets satisfy region presence without rendered-control readiness",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T16:25:35.977496+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Fresh independent source review accepts empty/unready and missing universal tab guards; native closure remains open."
+        },
+        {
+          "at": "2026-10-07T16:37:35.770626+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Same frozen artifact now yields all six previously missed controls; source forcing suite and independent native review accept collector readiness/completeness scope."
+        },
+        {
+          "at": "2026-10-07T16:37:35.770626+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original collector defect no longer reproduces. Remaining unknown mappings and feature behavior remain tracked in T11/D151; no global completeness promotion."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0153.json"
+    },
+    {
+      "id": "EXT-D-0154",
+      "title": "Media copy driver races restored result pane and rejects tooltip-migrated titles",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T21:08:24.009023+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Fresh independent review0acf64de accepts readiness and real native pointer resolution for both tooltip title forms;31focused tests pass. Native original/surrounding retest pending."
+        },
+        {
+          "at": "2026-10-07T22:03:29.523989+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Fresh independent source and quality review pass after corrective causal guards. Original frozen-artifact native retest assigned; no product cells promoted."
+        },
+        {
+          "at": "2026-10-07T22:18:59.711910+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Original guest Links and Video sibling native actions passed warm and full reload on frozen0.2.385, valid journals, independent native review. Testing-infrastructure closure only."
+        },
+        {
+          "at": "2026-10-07T22:18:59.711910+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Independent original-reproduction and surrounding-scope review supports closure; broader feature/mode health remains in inventory."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0154.json"
+    },
+    {
+      "id": "EXT-D-0155",
+      "title": "Native runners reject valid frozen artifacts when workflow checkout version advances",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T22:03:29.915565+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Fresh independent source and quality review pass after corrective causal guards. Original frozen-artifact native retest assigned; no product cells promoted."
+        },
+        {
+          "at": "2026-10-07T22:18:59.711910+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Original frozen0.2.387 artifact passes setup and reaches native Settings from newer workflow checkout; strict identity source checks and valid native journals independently accepted. Testing-infrastructure closure; SEO/navigation sibling UI coverage remains unverified."
+        },
+        {
+          "at": "2026-10-07T22:18:59.711910+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Independent original-reproduction and surrounding-scope review supports closure; broader feature/mode health remains in inventory."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0155.json"
+    },
+    {
+      "id": "EXT-D-0156",
+      "title": "Uninterrupted mode, remembered approvals and Pilot start routing gaps",
+      "state": "fixed",
+      "category": "product",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T04:44:07.584864+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source repair pushed, independent review plus current typecheck/lint/CI and meaningful mutation/gut RED-GREEN pass. Four real core approval cases pass; remaining native reload/Pilot/parallel gates pending."
+        },
+        {
+          "at": "2026-10-08T05:21:40.284202+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Durable actor/conversation cold trust source7601248b pushed; meaningful RED/GREEN and gut, typecheck/catalog, fresh source review PASS. Native updated artifact pending."
+        },
+        {
+          "at": "2026-10-08T05:51:31.320420+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Canonical Pilot route source6bfe63d5 pushed, actualhook RED/GREEN/gut/types and fresh source review PASS. New artifact native Pilot/return-to-Chat pending."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0156.json"
+    },
+    {
+      "id": "EXT-D-0157",
+      "title": "Desktop native driver rejects selected CI artifacts against obsolete fixed source/run/artifact IDs",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T22:39:45.151952+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Desktop and audit sibling share importer-selected identity verification; independent source reviews accepted. Native original-boundary retest pending."
+        },
+        {
+          "at": "2026-10-07T22:43:08.259405+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Fresh independent evidence peer confirms original desktop selected-artifact startup passed with valid resources."
+        },
+        {
+          "at": "2026-10-07T22:43:08.259405+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original infrastructure refusal no longer reproduces; wrong-identity source guards and partial native surrounding desktop cases retained. This does not close remaining product cases or assert audit-key native health."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0157.json"
+    },
+    {
+      "id": "EXT-D-0158",
+      "title": "Picker listener tracker may throw on untracked event registration before replacement picker initializes",
+      "state": "closed",
+      "category": "product",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-07T23:46:08.856193+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Exactbundle selfverifiedGREEN and independent source RED/GREEN plus9focusedtests pass; native retest pending."
+        },
+        {
+          "at": "2026-10-08T02:09:46.049672+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Fresh escalation confirmed driver combines raw producer and stamped broadcast observations;6d7b299e selects authoritative stamped delivery without deduplicating. Exact focusedCI37716254653 and fresh4e98e3dc source peer pass. Historical two-event split remains unknown; native retest pending."
+        },
+        {
+          "at": "2026-10-08T02:27:10.888219+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Original native37716987249 passes twelve named scenarios with all three resource journals valid; fresh f2bbdc9e independently accepts recorded defect closure requirement."
+        },
+        {
+          "at": "2026-10-08T02:27:10.888219+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Closure limited to recorded defect on frozen0.2.391: stale-channel isolation, delayed cancellation/installation, reinjection stamped count1, extraction3rows, listeners1/1 during pick then0, ordinary click+1. Broader T24/T51 and signed-in nonadmin remain incomplete."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0158.json"
+    },
+    {
+      "id": "EXT-D-0159",
+      "title": "Audit retry runner reads fault counters after deleting their owner",
+      "state": "fixed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T00:04:11.865486+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Independent source review plus exact automatic CI37705126917 focused step passed; native retest pending."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0159.json"
+    },
+    {
+      "id": "EXT-D-0160",
+      "title": "Shared admin sign-in driver drops safe completion observations before picker receipt",
+      "state": "fixed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T00:48:26.547746+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Exact-head focused CI37709098725 passed ce0d39c5; fresh independent source/privacy review b206b2f3 accepted. Native original auth-completion retest still required."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0160.json"
+    },
+    {
+      "id": "EXT-D-0161",
+      "title": "Settings reload driver discards the first failing substep and safe replacement-panel observations",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T01:57:38.334103+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source ed97df72 preserves safe boundary and probe; exact focused CI37714158197 and independent source peer2bb7dec3 passed."
+        },
+        {
+          "at": "2026-10-08T01:57:38.334103+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Original full-reload path37714389856 preserves before_click/pointer_target_not_unique and allowlisted panel facts; independent peer de3a5a5c accepts diagnostic scope with all resources valid."
+        },
+        {
+          "at": "2026-10-08T01:57:38.334103+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Diagnostic-loss reproduction no longer occurs. Closure covers test diagnostics only; Settings reload opening and T63 post-reload/member remain unresolved."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0161.json"
+    },
+    {
+      "id": "EXT-D-0162",
+      "title": "Settings acceptance clicks before replacement tab readiness is established",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T02:03:59.439550+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Readiness repair65637cd5 plus covering causal guard c8459a93; exact focusedCI37715732203 succeeded and fresh20048283 peer accepted source readiness. Native retest pending."
+        },
+        {
+          "at": "2026-10-08T03:03:29.534526+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Intel native37719749636 replaces worker/panel and opens Settings; original and surrounding criteria pass with all three current journals valid. Fresh independent35856d28 confirms closure requirement."
+        },
+        {
+          "at": "2026-10-08T03:03:29.534526+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original readiness defect no longer reproduces on frozen391, with surrounding guest Settings checks. No conclusion about cause of prior ARM CPU invalidation or current-main/Store behavior."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0162.json"
+    },
+    {
+      "id": "EXT-D-0163",
+      "title": "Scrape native acceptance compares against a pre-click scroll baseline and misses tooltip-managed controls",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T03:15:20.217397+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "fa05a939 exact focused CI37721518128 passed; independent source peer d8ff02ed accepts repaired baseline/control probes and T09 isolation. Native original warm/reload retest pending."
+        },
+        {
+          "at": "2026-10-08T05:08:04.308991+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Resource-valid native37729682008 on frozen397 completed original warm/navigation/full-reload requirements. Fresh independent peer de1acac8 accepts scoped original-defect closure."
+        },
+        {
+          "at": "2026-10-08T05:08:04.308991+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original driver defect no longer reproduces and surrounding Scrape copy/scroll acceptance passes. D166 earlier intermittent panel absence remains separate and unresolved; no whole-product or Store claim."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0163.json"
+    },
+    {
+      "id": "EXT-D-0164",
+      "title": "Scrape copy acceptance incorrectly requires copy controls for empty fixture sections",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T04:09:42.945917+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Freshsourcepeer1f15987e accepts correction and causalguards; exactfocusedCI37725833684 passes53. Native397 selected for fullwarm/navigation/reload retest; no currentproductpass yet."
+        },
+        {
+          "at": "2026-10-08T05:08:05.445470+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Resource-valid native37729682008 on frozen397 completed original warm/navigation/full-reload requirements. Fresh independent peer de1acac8 accepts scoped original-defect closure."
+        },
+        {
+          "at": "2026-10-08T05:08:05.445470+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original driver defect no longer reproduces and surrounding Scrape copy/scroll acceptance passes. D166 earlier intermittent panel absence remains separate and unresolved; no whole-product or Store claim."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0164.json"
+    },
+    {
+      "id": "EXT-D-0165",
+      "title": "Full CI panel-reopen regressions fail before development artifact build",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T03:55:37.454710+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Fixtureclass repairs012955b8/10c8a243 accepted by independentcensus peer cedcec02; 15targetedpass, exactfocusedCI37724710922success. FullCI including completefix not yet observed; originalparentharness passed37724004067."
+        },
+        {
+          "at": "2026-10-08T04:02:19.791169+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "FullautomaticCI37724859892 atcedcec02 succeeds including originalGuesttransportobserver, allremaininggates and developmentartifact11527132614. Independentca9241b5 verifies originalZIPdigest/source/manifest397/tree1035cd28."
+        },
+        {
+          "at": "2026-10-08T04:02:19.791169+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Complete fixtureclass source repair independentlyreviewed; originalregression passes throughfullCI and artifactgeneration. No browser/product/Storeacceptance implied."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0165.json"
+    },
+    {
+      "id": "EXT-D-0168",
+      "title": "Successful acceptance child exits before pending resource recovery can complete",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T06:00:50.221206+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Admitted causalRED/final3of3GREEN; fresh sourcepeer4144d854 acceptsfailurecontrols and code. Native Settings remains pending."
+        },
+        {
+          "at": "2026-10-08T06:29:07.869241+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Fresh nativepeerd7a6dfd8 accepts documented causalcontrolledRED/GREEN + independent sourcepeer + exactresource-validSettings originalworkload integration gate."
+        },
+        {
+          "at": "2026-10-08T06:29:07.869241+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Infrastructurecompletion repair closed at documentedgate scope; no actualhostCPUrecovery claim and oldinvalidruns remaininvalid."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0168.json"
+    },
+    {
+      "id": "EXT-D-0169",
+      "title": "Social snippet copy feedback not observed in native guest acceptance",
+      "state": "retest-pass",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T06:14:43.238233+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Astra escalation repaired coherent observed-copy boundary; freshpeerb49abdae accepts both priorfindings addressed,27checks and meaningfulmutations; focusedCI37736350529 success exact3dcf2903. Nativecause/behavior pending."
+        },
+        {
+          "at": "2026-10-08T08:05:47.429235+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Fresh independent native evidence review accepts controlled guest copy/reaudit execution on frozen397; original timeout/sequence blockage did not recur."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0169.json"
+    },
+    {
+      "id": "EXT-D-0170",
+      "title": "Dynamic public audit fixture blocks independent controlled copy and recapture cases",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T06:46:40.493937+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Actual driver reordered and original direct-return/swap/omission guard findings addressed; fresh source review confirms current structural order. Exact focused CI success. Native retest outstanding."
+        },
+        {
+          "at": "2026-10-08T08:05:47.429235+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Fresh independent native evidence review accepts controlled guest copy/reaudit execution on frozen397; original timeout/sequence blockage did not recur."
+        },
+        {
+          "at": "2026-10-08T08:05:47.429235+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Stated bounded harness closure gate met: source peer plus valid native independent controlled targets; volatile T09 remains explicitly excluded and incomplete."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0170.json"
+    },
+    {
+      "id": "EXT-D-0171",
+      "title": "Concurrent package adoption leaves two kit versions in dependency graph",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T07:07:24.286868+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Concurrent contributor committed byte-identical forward graph repair23d34875; no duplicate source patch."
+        },
+        {
+          "at": "2026-10-08T07:07:24.286868+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Resource-valid frozen install and duplicate guard pass; independent peer confirms 21 unique packages and focused CI success at fix SHA."
+        },
+        {
+          "at": "2026-10-08T07:07:24.286868+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original CI installation blocker repaired and independently verified. Full CI, native UI and release health remain outside this closure."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0171.json"
+    },
+    {
+      "id": "EXT-D-0172",
+      "title": "Post-reload guest conversation receives continuation HTTP 409 after page tool, without assistant reply",
+      "state": "closed",
+      "category": "product",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T09:06:09.985371+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source candidate54a1e1b978 and guard3b271b385a independently accepted in badb30a9/ca537ede. Fixed means source only: deployment and original public browser retest pending; guest case remains fail."
+        },
+        {
+          "at": "2026-10-08T11:00:31.174750+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Second source repair7ec6c76205 independently accepted16a32d73: rebuilt model history and physical database positions differ. Source/guard pass only; production remains5be and original guest acceptance remains fail."
+        },
+        {
+          "at": "2026-10-08T11:50:58.056313+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Resource-valid original public205 native37770686993 on stableproduction32f3 includes7ec6; freshindependent4a72d8b0 confirms allthree groundedterminalturns. Earlier165bf4ab objection refuted: finaldiagnostic describes a differentprompt, not openingstage-order criteria."
+        },
+        {
+          "at": "2026-10-08T11:50:58.056313+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original postreload tool-continuation reproduction and surroundingfirst/followup now pass. Closure scopedtoEXT-D-0172; Storeinstalledacceptance and broaderChatremain separatelyunverified."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0172.json"
+    },
+    {
+      "id": "EXT-D-0173",
+      "title": "D47 native drivers omit verified organization UUID required by shared checkpoint",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T11:24:00.974049+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source and actual-import guard independently accepted66b7b5c8; native checkpoint remains pending, source-onlyfixed."
+        },
+        {
+          "at": "2026-10-08T13:14:22.136864+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+        },
+        {
+          "at": "2026-10-08T13:14:22.136864+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0173.json"
+    },
+    {
+      "id": "EXT-D-0174",
+      "title": "Hosted workflow cannot select the existing real-page metadata acceptance fixture",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T12:15:49.115998+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Independent source contract and eight focused tests accepted; native fixture criterion remains pending."
+        },
+        {
+          "at": "2026-10-08T12:50:13.858412+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Resource-valid hosted37777965952 reached the actual Airbnb metadata branch; independent57ab64db verified fixture-route infrastructure. Instrumented product T09 remains unverified."
+        },
+        {
+          "at": "2026-10-08T12:50:13.858412+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original infrastructure reproduction and surrounding source contracts independently verified; all product coverage gaps preserved."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0174.json"
+    },
+    {
+      "id": "EXT-D-0175",
+      "title": "Scrape persisted receipt drops replacement-panel diagnostic milestones",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T12:18:36.296202+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Fresh peer verified actual success/failure caller serialization and fourteen focused guards; native diagnostic delivery remains pending."
+        },
+        {
+          "at": "2026-10-08T12:38:22.263682+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Actual resource-valid hosted diagnostic37776576395 persisted all three formerly lost milestone fields; fresh independent peer3a0a395f verified original serializer reproduction and surrounding default/privacy/classification guards14/14."
+        },
+        {
+          "at": "2026-10-08T12:38:22.263682+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Receipt-infrastructure defect independently resolved. Instrumented product Scrape remains unverified with no native acceptance credit; later capture failure remains open work."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0175.json"
+    },
+    {
+      "id": "EXT-D-0176",
+      "title": "Opt-in diagnostic can retain passing acceptance status",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T12:35:51.331330+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Fresh independent peer reproduced prior pass defect and verified actual classifier-to-summary guard22/22. Native diagnostic delivery pending."
+        },
+        {
+          "at": "2026-10-08T12:50:13.858412+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Actual hosted37777965952 receipt is diagnostic_only with zero acceptance targets; independent57ab64db verified classification and prior causal guard. No product acceptance inferred."
+        },
+        {
+          "at": "2026-10-08T12:50:13.858412+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original infrastructure reproduction and surrounding source contracts independently verified; all product coverage gaps preserved."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0176.json"
+    },
+    {
+      "id": "EXT-D-0177",
+      "title": "Records checkpoint clicks before lazy Catalog is ready",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T12:44:54.084798+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Causal source guard and fresh independent source review passed; actual native original-reproduction retest remains pending."
+        },
+        {
+          "at": "2026-10-08T13:14:22.136864+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+        },
+        {
+          "at": "2026-10-08T13:14:22.136864+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0177.json"
+    },
+    {
+      "id": "EXT-D-0178",
+      "title": "Native recapture procedure omits visible discard-edits confirmation",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T12:44:54.084798+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Causal source guard and fresh independent source review passed; actual native original-reproduction retest remains pending."
+        },
+        {
+          "at": "2026-10-08T15:48:53.830295+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Actual native37801787667 records owned edited badge, visible discard dialog, trusted confirmation and expected Article; three current resource journals valid; independent source/provenance/receipt peer accepts exact closure gate."
+        },
+        {
+          "at": "2026-10-08T15:48:53.830295+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original test-driver recapture confirmation obstacle independently verified resolved on development414. Warm deep Cancel/confirm plus post-reload fast confirmation also support guest T03; member/admin and whole-feature health remain unverified."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0178.json"
+    },
+    {
+      "id": "EXT-D-0179",
+      "title": "Secret staging uses literal hyphen instead of stdin JSON",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T13:14:22.136864+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+        },
+        {
+          "at": "2026-10-08T13:14:22.136864+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+        },
+        {
+          "at": "2026-10-08T13:14:22.136864+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Resource-valid native37780192222 and fresh independent75195918 verify the bounded original prerequisite; temporary secret names independently absent. Full T57 remains unverified."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0179.json"
+    },
+    {
+      "id": "EXT-D-0180",
+      "title": "Global Spotlight disable aborts on irrelevant Preboot volume",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T13:22:56.500270+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Separate required-volume disable commands and real shell seam red/green passed; fresh peer and hosted original retest pending."
+        },
+        {
+          "at": "2026-10-08T13:34:51.136975+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Fresh independent56c62a1d verified actual shell RED/GREEN and hosted37783925411 passed original indexing setup plus package/browser guarded preparation. Later guest CDP timeout/resource invalidity earns no product credit and is a separate boundary."
+        },
+        {
+          "at": "2026-10-08T13:34:51.136975+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Fresh independent56c62a1d verified actual shell RED/GREEN and hosted37783925411 passed original indexing setup plus package/browser guarded preparation. Later guest CDP timeout/resource invalidity earns no product credit and is a separate boundary."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0180.json"
+    },
+    {
+      "id": "EXT-D-0181",
+      "title": "Extracted headed-launch caller lacks reload diagnostic binding",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T13:59:34.078692+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Three focused tests pass; independent review pending."
+        },
+        {
+          "at": "2026-10-08T14:07:42.687971+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Fresh e1856b97 reproduces old ReferenceError, passes all3 current tests in both diagnostic modes and surrounding headed/owned-display refusals."
+        },
+        {
+          "at": "2026-10-08T14:07:42.687971+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Targeted source guard defect independently verified. No hosted product acceptance or full CI success inferred."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0181.json"
+    },
+    {
+      "id": "EXT-D-0182",
+      "title": "Serial resource scenarios exhaust aggregate CI test timeout without identifying active boundary",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T14:38:11.513100+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source8f908184 + e6d83e7d passes fresh721cfa3a; real hosted/native requirement remains pending."
+        },
+        {
+          "at": "2026-10-08T14:45:23.152549+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Fresh62070acf independently verifies actualhosted allrequiredscenarios and surroundinggroups on repairedsource, no skips and cleanupcomplete."
+        },
+        {
+          "at": "2026-10-08T14:45:23.152549+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Aggregate budget defect repaired with independent per-scenario limits; source and realCI evidence satisfy boundedclosure requirement."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0182.json"
+    },
+    {
+      "id": "EXT-D-0183",
+      "title": "Guard-terminated SEO run loses last stage and completed observations",
+      "state": "closed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T14:38:11.513100+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Source035caed8 passes fresh721cfa3a; real hosted/native requirement remains pending."
+        },
+        {
+          "at": "2026-10-08T17:43:59.594877+00:00",
+          "from": "fixed",
+          "to": "retest-pass",
+          "reason": "Independent real interrupted37815373369 retains completed target checkpoint; normal37816927539 passes18 controlled targets with identical SEO driver blob and frozen414. All current normal journals valid; root verified32 original raw hashes across normal SEO/Scrape artifacts."
+        },
+        {
+          "at": "2026-10-08T17:43:59.594877+00:00",
+          "from": "retest-pass",
+          "to": "closed",
+          "reason": "Original missing-progress failure and surrounding normal receipt behavior independently verified. Diagnostic remains unverified/no product acceptance credit; no whole SEO health inferred."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0183.json"
+    },
+    {
+      "id": "EXT-D-0184",
+      "title": "Race driver labels a second old-document response as current",
+      "state": "fixed",
+      "category": "testing_or_infrastructure",
+      "transitions_in_window": [
+        {
+          "at": "2026-10-08T16:18:04.871090+00:00",
+          "from": "in-fix",
+          "to": "fixed",
+          "reason": "Fresh peer29366e9d accepts repaired active-loader gate and15helpertests; prior stale-loader finding addressed. Focused CI37807243961 on290ee2fd includesd69c55e1 and succeeds. Native originalrepro still pending."
+        }
+      ],
+      "record": "docs/stabilization/defects/EXT-D-0184.json"
+    }
+  ]
+}

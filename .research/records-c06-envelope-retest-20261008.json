@@ -1,0 +1,11 @@
+{
+  "run_id": 37860757691,
+  "status": "terminal_failure_native_unverified",
+  "recovered_after_interruption": true,
+  "source_sha": "3e33093f4e8b9f9a3a5ce9dcdaf4a48aba9a5479",
+  "fixture": "archived_verified; pending_write_unknown=false",
+  "approval": "withdrawn; table_cleanup_verified=true; pending_write_unknown=false; approval_decision_unknown=false; unresolved=false",
+  "temporary_secrets": "Both designated names removed by root after authoritative terminal status; names-only absence verified",
+  "raw_download": "/Volumes/Samsung2TB/tmp/records37860757691",
+  "next": "Inspect actual approval-stage failure; no repeat until diagnosis. Do not infer C06 pass."
+}

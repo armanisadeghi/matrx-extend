@@ -18,5 +18,15 @@
   },
   "runtime_recovery": "Existing Playwright and Chrome paths resolve when process environment is configured, but corrected native launch remained refused on actual system disk floor. External TMPDIR does not bypass system-volume requirement.",
   "external_limit": "Actions API returned403 rate-limit; rate endpoint counter was inconsistent with actual refused Actions endpoint. Do not assume counter proves access recovered.",
-  "next_action": "Resume browser work only after actual local capacity or hosted API admission recovers. Continue independent source/procedure work; no human-only blocker claimed."
+  "next_action": "Resume browser work only after actual local capacity or hosted API admission recovers. Continue independent source/procedure work; no human-only blocker claimed.",
+  "current_observation": {
+    "at": "2026-10-08T23:41:28.468193+00:00",
+    "system_available": "100 MiB; df Data volume",
+    "fresh_worker_creation": "ENOSPC writer lock; existing workers reused",
+    "dry_run": "groom.py dev-caches: zero candidate bytes, exit1; active checkout retained",
+    "cache_sizes": "CloudKit39GiB; fileprovider temp14GiB; staged updater2.3GiB",
+    "preservation": "Updater and Autoupdate processes remain live; no staged update, CloudKit, fileprovider, Codex databases or browser profiles changed",
+    "hosted_progress": "API recovered; Records37860757691 admitted for hosted TEST dispatch, actor owns exacthandle/secrets through terminal",
+    "next": "Continue hosted work; localheavy guard remains refused; no safe large deletion established"
+  }
 }
