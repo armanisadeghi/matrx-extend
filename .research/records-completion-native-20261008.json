@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "task": "Hosted native lane A Records completion evidence",
+  "attempt": 1,
+  "run": {
+    "id": 37823085569,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37823085569",
+    "status": "completed",
+    "conclusion": "failure",
+    "head_sha": "d8903c3e4a95ed9c42b6b1d091fd891303a8ee1",
+    "runner": "macos-15",
+    "case": "records-readonly-admin",
+    "completed_at": "2026-10-08T18:24:01Z"
+  },
+  "frozen_development_artifact": {
+    "workflow_run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046"
+  },
+  "receipt": {
+    "status": "unverified",
+    "stage": "records_card",
+    "native_stage": "admin_rendered_identity",
+    "action": "table_list",
+    "failure_code": "records_card_failed",
+    "failure_phase": null,
+    "failure_classification": null,
+    "completion_diagnostics": [],
+    "request": null,
+    "result": null,
+    "invalid_input": null,
+    "reload": null,
+    "metadata_search": null,
+    "interpretation": "The records_card failure occurred within the card-ready/schemaReady/current-contract assertion interval. The available receipt and terminal workflow output do not identify which assertion failed or provide a finer error; record this as a missing observation. No table_list request/result, completion, invalid_input, reload, or metadata_search was recorded, so product completion behavior was not observed.",
+    "interval": {
+      "run_started_at": "2026-10-08T18:17:07Z",
+      "acceptance_step_started_at": "2026-10-08T18:21:52Z",
+      "acceptance_step_completed_at": "2026-10-08T18:23:47Z",
+      "run_completed_at": "2026-10-08T18:24:01Z"
+    }
+  },
+  "resource_journals": {
+    "package": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1,
+      "decision": "child_failed"
+    },
+    "interpretation": "Native guest child failure; resource was not invalidated."
+  },
+  "backend_sample": {
+    "before": {
+      "http_status": 200,
+      "git_sha": "40750ce285ece13e8c4b0bf1628cc7f6296df6c4",
+      "built_at": "2026-10-08T17:32:45Z"
+    },
+    "after": {
+      "http_status": 200,
+      "git_sha": "40750ce285ece13e8c4b0bf1628cc7f6296df6c4",
+      "built_at": "2026-10-08T17:32:45Z"
+    },
+    "raw_sha256_equal": true,
+    "latest_server_sha": "40750ce285ece13e8c4b0bf1628cc7f6296df6c4"
+  },
+  "credentials_and_fixture": {
+    "temporary_secret_names": [
+      "MATRIX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRIX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "staged_for_one_attempt": true,
+    "deleted_after_terminal": true,
+    "verified_names_absent": true,
+    "owned_local_credential_files_removed": true,
+    "fixture_writes": false,
+    "retries": 0
+  },
+  "evidence": {
+    "raw_directory": ".research/records-completion-native-20261008-originals/raw",
+    "sha256": {
+      "artifacts.raw.json": "288a0ddb917a7c46f77d0d23c95146b55e7111151c4c881922abb261163ebb0e",
+      "backend-after.raw.json": "ff555485850ea6d17fb220a89f1ebac33077dee70cc87335d4dc8573e2d7d1cf",
+      "backend-before.raw.json": "ff555485850ea6d17fb220a89f1ebac33077dee70cc87335d4dc8573e2d7d1cf",
+      "browser-journal.raw.jsonl": "863eec2cb0b97533a29a7ddc25853bb9ac624bcd6346a4aeda76338fdeb41a68",
+      "guest-journal.raw.jsonl": "eb2c6a6e857e98f62050cbc9ee9a55f09d2f8813af50b0b95ee70c3efbfe4da0",
+      "jobs.raw.json": "cb22e8314054b06e884f6de2dc818108ea7912a0af1c0594cddde7debfcbe5e3",
+      "package-journal.raw.jsonl": "ee813d0cb302f78c20d1936db197652b105214f426cd6ed45828c7fd52fa6052",
+      "receipt.raw.json": "86eff684465834ba0f0b14ded4c5fa15ad2aa3c8de57585ac57e64a4855149f3",
+      "run.raw.json": "a674aa717e14fea6130ebb33d6ff8260a8d815180db1e69b13e92293611e41ab"
+    }
+  }
+}

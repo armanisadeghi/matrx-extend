@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only native Records pre-action receipt diagnostics for EXT-D-0091. No product source, browser, build, hosted run, release, or deployment changed.",
+  "trigger": {
+    "hosted_run_id": 37823085569,
+    "evidence": ".research/records-completion-native-20261008.json",
+    "observation": "The latest native receipt stopped at records_card_failed before any action, without identifying card readiness, enabled Run/schema readiness, contract observation, or contract drift. No product completion behavior was observed."
+  },
+  "repair": {
+    "receipt_field": "card_diagnostic",
+    "phases": ["card_ready", "schema_ready", "contract_observation", "complete"],
+    "fixed_failure_classes": ["card_not_ready", "schema_not_ready", "contract_observation_failed", "contract_unavailable", "contract_drift"],
+    "safe_contract_shape": ["present", "canonical_boolean", "retired_field_present", "action_available", "limit_integer"],
+    "persistence": "The existing failure_phase and failure_classification fields now use a fixed allowlist for pre-action card failures. Only booleans, fixed labels, and null enter the report; no raw schema, error text, request value, or credential is retained.",
+    "guard": "The original exact table_list contract assertion remains. Card and schema waits now accept only boolean true, so a transient diagnostic object from waitFor cannot satisfy readiness."
+  },
+  "verification": {
+    "command": "node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-readonly-native-proof.test.mjs",
+    "result": "14 passed",
+    "code_path": "The test executes the actual native exercisePanel callback, serializes its report, then applies the same retained-failure classification helper used by the top-level catch. It covers absent card, disabled/unready schema, contract observation error, missing contract, retired field, wrong canonical field type, missing action, and wrong limit type; the original success path still completes four calls.",
+    "mutation": "Replacing schema_not_ready with card_not_ready in the actual driver made the targeted test fail; plant.py restored the source identically."
+  },
+  "limitations": ["No native rerun occurred. This instrumentation cannot assign a product cause to run 37823085569; it prepares the next receipt to identify its first failed pre-action boundary."]
+}

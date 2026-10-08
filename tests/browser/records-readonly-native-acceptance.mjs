@@ -13,6 +13,7 @@ import {
   observeRecordsExecution,
   recordsCompletionShape,
   recordsVisibleShape,
+  retainRecordsFailure,
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
 import {
@@ -55,6 +56,7 @@ const report = {
   failure_code: null,
   failure_phase: null,
   failure_classification: null,
+  card_diagnostic: null,
   completion_diagnostics: [],
 };
 const stage = (value) => {
@@ -140,29 +142,61 @@ try {
         requiredOrganizationId: approved.id,
       });
       stage('records_card');
+      const cardDiagnostic = {
+        phase: 'card_ready',
+        failure: null,
+        card_ready: null,
+        schema_ready: null,
+        contract: null,
+      };
+      report.card_diagnostic = cardDiagnostic;
       // The authenticated organization checkpoint opened this exact card to
       // fetch its schema. Its open state is a prerequisite, not a tool action.
-      await waitFor(
-        'records_card_ready',
-        () =>
-          evaluate(
-            panel,
-            `(() => [...document.querySelectorAll('button')].some(el => el.querySelector('span.font-mono')?.textContent.trim() === 'records'))()`,
-          ),
-        Boolean,
-      );
-      await waitFor(
-        'records_schema_ready',
-        () =>
-          evaluate(
-            panel,
-            `(() => { const b=[...document.querySelectorAll('button')].find(el=>el.querySelector('span.font-mono')?.textContent.trim()==='records'); return Boolean(b?.parentElement?.querySelector('textarea') && [...b.parentElement.querySelectorAll('button')].some(x=>x.textContent.trim()==='Run' && !x.disabled)); })()`,
-          ),
-        Boolean,
-      );
-      const tableListContract = await evaluate(
-        panel,
-        `(() => {
+      try {
+        await waitFor(
+          'records_card_ready',
+          async () => {
+            const ready = await evaluate(
+              panel,
+              `(() => [...document.querySelectorAll('button')].some(el => el.querySelector('span.font-mono')?.textContent.trim() === 'records'))()`,
+            );
+            cardDiagnostic.card_ready = ready === true;
+            return ready;
+          },
+          (value) => value === true,
+          10000,
+          () => ({ card_ready: cardDiagnostic.card_ready }),
+        );
+      } catch {
+        cardDiagnostic.failure = 'card_not_ready';
+        throw new Error('records_card_not_ready');
+      }
+      cardDiagnostic.phase = 'schema_ready';
+      try {
+        await waitFor(
+          'records_schema_ready',
+          async () => {
+            const ready = await evaluate(
+              panel,
+              `(() => { const b=[...document.querySelectorAll('button')].find(el=>el.querySelector('span.font-mono')?.textContent.trim()==='records'); return Boolean(b?.parentElement?.querySelector('textarea') && [...b.parentElement.querySelectorAll('button')].some(x=>x.textContent.trim()==='Run' && !x.disabled)); })()`,
+            );
+            cardDiagnostic.schema_ready = ready === true;
+            return ready;
+          },
+          (value) => value === true,
+          10000,
+          () => ({ schema_ready: cardDiagnostic.schema_ready }),
+        );
+      } catch {
+        cardDiagnostic.failure = 'schema_not_ready';
+        throw new Error('records_schema_not_ready');
+      }
+      cardDiagnostic.phase = 'contract_observation';
+      let tableListContract;
+      try {
+        tableListContract = await evaluate(
+          panel,
+          `(() => {
           const row = [...document.querySelectorAll('button')].find(el => el.querySelector('span.font-mono')?.textContent.trim() === 'records');
           const card = row?.parentElement;
           const label = [...(card?.querySelectorAll('div') ?? [])].find(el => el.textContent.trim() === 'server action contract' && el.children.length === 0);
@@ -179,12 +213,32 @@ try {
             } : null;
           } catch { return null; }
         })()`,
-      );
+        );
+      } catch {
+        cardDiagnostic.failure = 'contract_observation_failed';
+        throw new Error('records_contract_observation_failed');
+      }
+      cardDiagnostic.contract = {
+        present: tableListContract !== null && typeof tableListContract === 'object',
+        canonical_boolean: tableListContract?.canonical === true,
+        retired_field_present: tableListContract?.legacy === true,
+        action_available: tableListContract?.action === true,
+        limit_integer: tableListContract?.limit === 'integer',
+      };
+      if (!cardDiagnostic.contract.present) cardDiagnostic.failure = 'contract_unavailable';
+      else if (
+        !cardDiagnostic.contract.canonical_boolean ||
+        cardDiagnostic.contract.retired_field_present ||
+        !cardDiagnostic.contract.action_available ||
+        !cardDiagnostic.contract.limit_integer
+      )
+        cardDiagnostic.failure = 'contract_drift';
       assert.deepEqual(
         tableListContract,
         { canonical: true, legacy: false, action: true, limit: 'integer' },
         'records_table_list_server_contract_drift',
       );
+      cardDiagnostic.phase = 'complete';
       const input = {
         action: 'table_list',
         args: { organization_id: approved.id, include_platform_tables: true, limit: 50 },
@@ -474,11 +528,7 @@ try {
   report.status = 'passed';
 } catch {
   report.failure_code = `${report.stage}_failed`;
-  const lastCompletion = report.completion_diagnostics.at(-1);
-  if (lastCompletion?.failure) {
-    report.failure_phase = lastCompletion.phase;
-    report.failure_classification = lastCompletion.failure;
-  }
+  retainRecordsFailure(report);
   process.stderr.write(
     `UNVERIFIED records_readonly_native stage=${report.stage} native_stage=${report.native_stage}\n`,
   );

@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "observation": {
+    "run_id": 37822887930,
+    "attempt": 1,
+    "workflow": "Hosted guest side-panel acceptance",
+    "display_title": "Native B · settings-controls",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "head_sha": "77c0be45083afc1f1633db252255c96ad282b12f",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37822887930",
+    "hosted_artifact": {
+      "id": 11570332521,
+      "name": "hosted-guest-37822887930-1",
+      "digest": "sha256:061df9c51bf294f7335c19784651291e3f7db27bbd3716a7349e2488e3607772",
+      "expired": false
+    }
+  },
+  "provenance": {
+    "focused_gate_run_id": 37822602219,
+    "focused_gate_sha": "a629c9ca80b3343e904f2bacfbae27943c5a39c0",
+    "focused_gate_conclusion": "success",
+    "product_ci_run_id": 37818621428,
+    "product_ci_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "product_ci_conclusion": "success",
+    "development_artifact_id": 11568846736,
+    "development_artifact_name": "matrx-extend-development-test-5f7fe7c29d7dd78528161c8928d3da78b41aa55b-37818621428-1",
+    "development_artifact_digest": "sha256:22afa363bf065f0bfcf7a2ab2e1b3f994c2adde07bde0d9f21d0d5f4c3fa6958",
+    "development_artifact_expired": false,
+    "receipt_build": {
+      "kind": "local_dev_unpacked",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "version": "0.2.414",
+      "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+      "verified": true
+    }
+  },
+  "resource_journals": [
+    {
+      "path": "hosted-package-37822887930-1.jsonl",
+      "sha256": "32ed0693dc59124901d13dec42a264b4ba714cbf6600b965f35f8176060b89f3",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "path": "hosted-browser-37822887930-1.jsonl",
+      "sha256": "8448ee0f31826ee14b3e1812106715bc11fe2b8159efdd842a9b0d120c6bc49d",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "path": "hosted-guest-37822887930-1.jsonl",
+      "sha256": "82072f471498709aad56fd6f97e57cc6c9db9adf26f57fd3f20f08aff5d8edd4",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    }
+  ],
+  "receipt": {
+    "path": "settings-local-controls-acceptance.json",
+    "sha256": "cf67fd4c6b7824c36b8a83cc6cf8bac951cf10c97b5665f42c7b0e5166a25f8e",
+    "status": "unverified",
+    "case_count": 16,
+    "case_status_counts": {
+      "pass": 9,
+      "unverified": 7
+    },
+    "reload": {
+      "management_reload_clicked": true,
+      "old_targets_retired": true,
+      "worker_replaced": true,
+      "panel_replaced": true,
+      "settings_reopened": true,
+      "matching_runtime_id": true,
+      "visible_and_ready": true,
+      "failure_diagnostic": null
+    }
+  },
+  "retention_note": "Only the exact current-run Settings receipt and its three current-run resource journals are retained here. Screenshots and historical journals from the artifact are not copied."
+}

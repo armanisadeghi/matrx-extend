@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "review": "independent-source-review",
+  "commit_reviewed": "6dbc360d469dada57c7ab5096b2bf3ad94857e99",
+  "report_reviewed": ".research/scrape-empty-panels-preparation-20261008.json",
+  "inventory_case": "EXT-F-1007-T08",
+  "focused_ci": {
+    "run_id": 37823679586,
+    "source_sha": "6dbc360d",
+    "reported": "green"
+  },
+  "verdicts": {
+    "A_spec_behavior": {
+      "verdict": "pass_for_added_Links_dimension_source_only",
+      "reason": "The controlled /referrals page is generated from static HTML with no anchor elements, while it retains the capture article. The observer selects Links through the trusted UI path at warm and after full extension reload, waits for the selected visible pane, requires zero linkItems and null count, requires the real Add link control, and compares full capture export identity and payload before/after. Existing all-six-pane populated matching and warm/reload capture-invariance gate remains; existing Images/Video empty assertions remain mandatory. This covers Links-empty without dropping original checks."
+    },
+    "B_quality": {
+      "verdict": "pass_with_native_pending",
+      "reason": "Assertions are in the native acceptance path and shared completeness gate; mutation tests reject a populated link row, absent Add link, changed payload, missing Links evidence, and existing missing empty-media evidence. No source or acceptance weakening found. This source review gives no native execution credit."
+    },
+    "applicability": {
+      "Article": "Justified as not demonstrated on current controlled fixture: renderer passes articleToMarkdown(current), whose empty fallback is _No clean article extracted._; the current controlled referrals fixture contains article text. A separate blank-page capture could establish Article empty behavior.",
+      "SEO": "Justified for whole-pane emptiness: ScrapeView always renders SEO audit toolbar and SeoPanel; SeoDetails always renders Title & description rows with em-dash fallbacks. Optional groups omit absent values, but that is not a whole empty pane.",
+      "Schema": "Justified for whole-pane emptiness: renderer always shows toolbar and JSON.stringify({metadata,ld_json}); absent structured data still leaves the metadata/ld_json JSON view. An empty collection is possible but does not create an empty-pane branch."
+    }
+  },
+  "tests": {
+    "command": "node --test tests/browser/scrape-tab-coverage.test.mjs tests/browser/scrape-empty-media-branch.test.mjs",
+    "passed": 8,
+    "failed": 0
+  },
+  "limits": [
+    "Source-only review; no browser/native execution.",
+    "T08 remains partial until independent native execution records the new warm and post-reload Links observations.",
+    "No Article empty-state claim is made; applicability should be revisited only with a controlled blank-page capture."
+  ]
+}

@@ -1,0 +1,304 @@
+{
+  "schema_version": 1,
+  "scope": "One hosted native lane A Records read-only admin acceptance attempt against the frozen development artifact. This is artifact-scoped evidence, not a full feature or current-main health claim.",
+  "run": {
+    "id": 37825307247,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37825307247",
+    "status": "completed",
+    "conclusion": "success",
+    "attempt": 1,
+    "head_sha": "b0344e84ca1891ce70029aea95d83adeaaf6fc2e",
+    "acceptance_lane": "A",
+    "case": "records-readonly-admin",
+    "runner": "macos-15",
+    "created_at": "2026-10-08T18:34:14Z",
+    "job_started_at": "2026-10-08T18:34:23Z",
+    "completed_at": "2026-10-08T18:42:37Z"
+  },
+  "frozen_development_artifact": {
+    "workflow_run_id": 37790643945,
+    "workflow_conclusion": "success",
+    "artifact_id": 11556064167,
+    "artifact_name": "matrx-extend-development-test-e7b7dc1ecae946369cebb482915faf7ef792c692-37790643945-1",
+    "digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "expired": false
+  },
+  "native_receipt": {
+    "status": "passed",
+    "stage": "records_metadata_search_completion",
+    "native_stage": "admin_rendered_identity",
+    "inventory_case": "D91 / EXT-F-4130-C02",
+    "card_diagnostic": {
+      "phase": "complete",
+      "failure": null,
+      "card_ready": true,
+      "schema_ready": true,
+      "contract": {
+        "present": true,
+        "canonical_boolean": true,
+        "retired_field_present": false,
+        "action_available": true,
+        "limit_integer": true
+      }
+    },
+    "request": {
+      "path": "/tools/test/execute",
+      "method": "POST",
+      "organization_matches": true,
+      "authenticated_principal_matches": true,
+      "completion_observed": true,
+      "include_platform_tables": true,
+      "status": 200,
+      "finished": true
+    },
+    "result": {
+      "visible": true,
+      "success": true,
+      "action": "table_list",
+      "count": 50,
+      "approved_organization_covered": true
+    },
+    "invalid_input": {
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "success": false,
+      "error_type": "invalid_arguments",
+      "limit_named": true
+    },
+    "reload": {
+      "full_panel_reload": true,
+      "admin_identity_matches": true,
+      "organization_matches": true,
+      "authenticated_principal_matches": true,
+      "finished": true,
+      "completion_observed": true,
+      "visible": true,
+      "success": true,
+      "count": 50
+    },
+    "metadata_search": {
+      "inventory_case": "EXT-F-4130-C03",
+      "finished": true,
+      "status": 200,
+      "completion_observed": true,
+      "visible": true,
+      "success": true,
+      "action": "metadata_search",
+      "independent_table_identity_matched": true,
+      "count": 1
+    },
+    "completion_diagnostics": [
+      {
+        "action": "table_list",
+        "phase": "complete",
+        "failure": null,
+        "http_status": 200,
+        "completion": {
+          "object": true,
+          "success": true,
+          "action": "table_list",
+          "tables_count": 50,
+          "matches_count": null,
+          "covered_organizations_count": 1,
+          "error_type": null
+        },
+        "visible": {
+          "visible": true,
+          "json": true,
+          "equals_completion": true,
+          "shape": {
+            "object": true,
+            "success": true,
+            "action": "table_list",
+            "tables_count": 50,
+            "matches_count": null,
+            "covered_organizations_count": 1,
+            "error_type": null
+          }
+        }
+      },
+      {
+        "action": "table_list",
+        "phase": "complete",
+        "failure": null,
+        "http_status": 200,
+        "completion": {
+          "object": true,
+          "success": false,
+          "action": null,
+          "tables_count": null,
+          "matches_count": null,
+          "covered_organizations_count": null,
+          "error_type": "invalid_arguments"
+        },
+        "visible": {
+          "visible": true,
+          "json": true,
+          "equals_completion": true,
+          "shape": {
+            "object": true,
+            "success": false,
+            "action": null,
+            "tables_count": null,
+            "matches_count": null,
+            "covered_organizations_count": null,
+            "error_type": "invalid_arguments"
+          }
+        }
+      },
+      {
+        "action": "table_list",
+        "phase": "complete",
+        "failure": null,
+        "http_status": 200,
+        "completion": {
+          "object": true,
+          "success": true,
+          "action": "table_list",
+          "tables_count": 50,
+          "matches_count": null,
+          "covered_organizations_count": 1,
+          "error_type": null
+        },
+        "visible": {
+          "visible": true,
+          "json": true,
+          "equals_completion": true,
+          "shape": {
+            "object": true,
+            "success": true,
+            "action": "table_list",
+            "tables_count": 50,
+            "matches_count": null,
+            "covered_organizations_count": 1,
+            "error_type": null
+          }
+        }
+      },
+      {
+        "action": "metadata_search",
+        "phase": "complete",
+        "failure": null,
+        "http_status": 200,
+        "completion": {
+          "object": true,
+          "success": true,
+          "action": "metadata_search",
+          "tables_count": null,
+          "matches_count": 1,
+          "covered_organizations_count": 1,
+          "error_type": null
+        },
+        "visible": {
+          "visible": true,
+          "json": true,
+          "equals_completion": true,
+          "shape": {
+            "object": true,
+            "success": true,
+            "action": "metadata_search",
+            "tables_count": null,
+            "matches_count": 1,
+            "covered_organizations_count": 1,
+            "error_type": null
+          }
+        }
+      }
+    ],
+    "failure_code": null,
+    "failure_phase": null,
+    "failure_classification": null
+  },
+  "organization_checkpoint": {
+    "admin_role_verified": true,
+    "rendered_email_matches": true,
+    "rendered_role_matches": true,
+    "rendered_profile_matches": true,
+    "rendered_organization_matches": true,
+    "product_request_observed": true,
+    "product_response_finished": true,
+    "product_response_success": true,
+    "product_header_matches": true,
+    "product_principal_matches": true,
+    "observer_cleanup_success": true,
+    "selection_required": false
+  },
+  "resource_journals": {
+    "browser": {
+      "run_id": "hosted-browser-37825307247-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "final_at": "2026-10-08T18:38:18.189Z"
+    },
+    "guest": {
+      "run_id": "hosted-guest-37825307247-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "final_at": "2026-10-08T18:42:28.558Z"
+    },
+    "package": {
+      "run_id": "hosted-package-37825307247-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "final_at": "2026-10-08T18:36:16.438Z"
+    }
+  },
+  "backend_health": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "before_observed_at": "2026-10-08T18:33:50Z",
+    "after_observed_at": "2026-10-08T18:43:24Z",
+    "before": {
+      "git_sha": "40750ce285ece13e8c4b0bf1628cc7f6296df6c4",
+      "built_at": "2026-10-08T17:32:45Z",
+      "branch": null
+    },
+    "after": {
+      "git_sha": "40750ce285ece13e8c4b0bf1628cc7f6296df6c4",
+      "built_at": "2026-10-08T17:32:45Z",
+      "branch": null
+    },
+    "sampled_git_sha_unchanged": true
+  },
+  "credential_lifecycle": {
+    "secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "validated_payload_shape": "admin email/password plus existing approved organization fixture",
+    "staged_via_stdin": true,
+    "values_printed_or_committed": false,
+    "deleted_after_terminal": true,
+    "absence_verified": true,
+    "absence_evidence": "raw/secrets-after-cleanup.raw.json",
+    "owned_local_credential_files_removed": true,
+    "approved_organization_fixture_written": false,
+    "attempts": 1
+  },
+  "evidence": {
+    "raw_directory": ".research/records-card-native-retest-20261008-originals/raw",
+    "sha256": {
+      "artifacts.raw.json": "a8beaa11ccf1560acf9b941d7e53ad2658ba2bcf5816845991a4944b8348efbe",
+      "backend-after.raw.json": "ff555485850ea6d17fb220a89f1ebac33077dee70cc87335d4dc8573e2d7d1cf",
+      "backend-before.raw.json": "ff555485850ea6d17fb220a89f1ebac33077dee70cc87335d4dc8573e2d7d1cf",
+      "browser-journal.raw.jsonl": "667c05762b3aa679e487d6560ad1c1408308b7d6d6b618b6e603305780ca16b4",
+      "guest-journal.raw.jsonl": "4db56070da7cbf8ee2a6828977c1a06c5d18330167fad7fc71a0fee52a386463",
+      "jobs.raw.json": "514a5d5df859bc240f0be05e82a396349bbdaf0408c44c7686d34896ece64d76",
+      "package-journal.raw.jsonl": "56174992ce064b6322b91efef57318430e6514d8e77e3df70ef68e7a75cf5562",
+      "receipt.raw.json": "fca88ebf858752ed45001915761786ea80ba3c0b40102d09862e4922299be08e",
+      "run.raw.json": "8e0ad6daad105d24269b45552c2dd7d50e561d6666a255e5180595133770728d",
+      "secrets-after-cleanup.raw.json": "dd81d7e646b9bf9819cc3f921b029ae259bb06f5361f122545e65a3d5e29356b"
+    }
+  },
+  "claim_limit": "This successful bounded native run verifies the recorded read-only Records actions on the exact imported 0.2.414 development artifact and current tested driver. It does not establish Store behavior, other roles, or general feature health."
+}

@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "scope": "Observe and adjudicate the already-running hosted guest Settings-controls lane B run 37822887930; no launch or product-code change.",
+  "reviewer_seat": {
+    "authorship_of_product_or_test_code": "none",
+    "independence_note": "This is a reused verifier seat that reviewed commits 95d48d23 and a629c9ca earlier. It is not represented as a newly spawned fresh seat."
+  },
+  "verdicts": {
+    "A_inventory_behavior": {
+      "verdict": "PARTIAL",
+      "observed_behavior": "The exact run completed successfully. The previously incomplete extension reload now has all four lifecycle flags true; the replacement panel reopened Settings with a matching runtime ID, ready document, and visible active Settings tab. No guestExtensionReloadFailure was emitted because this run's reload succeeded.",
+      "case_adjudication": {
+        "guest_cases_fully_met": 9,
+        "guest_cases_partial": 7,
+        "partial_case_ids": [
+          "EXT-F-1003-T04",
+          "EXT-F-1003-T10",
+          "EXT-F-1003-T16",
+          "EXT-F-1003-T19",
+          "EXT-F-1003-T31",
+          "EXT-F-1003-T34",
+          "EXT-F-1003-T70"
+        ],
+        "fully_met_ids": [
+          "EXT-F-1003-T13",
+          "EXT-F-1003-T22",
+          "EXT-F-1003-T37",
+          "EXT-F-1003-T46",
+          "EXT-F-1003-T63 guest boundary",
+          "EXT-F-1003-T64",
+          "EXT-F-1003-T73",
+          "EXT-F-1003-T76",
+          "EXT-F-1003-T92"
+        ]
+      },
+      "t63_scope": "The receipt marks the separate ordinary-member criterion unverified. It is outside this guest lane; the two guest-boundary criteria both pass, so the member-only omission does not downgrade the guest result.",
+      "t04_scope": "The retained T04-specific observations show Dark, Light, and System selected/stored values plus the document dark-class marker in warm and panel-reload phases. They do not show the chosen appearance and preference after a full extension reload. The later general guest reload reopened Settings after the batch baseline was restored; it cannot satisfy the missing per-theme full-reload criterion. Preserve T04 as partial in accordance with the original inventory.",
+      "reload_relevant_cases": {
+        "T73": "warm and reload guest account-unavailable/sign-in-footer criteria pass",
+        "T76": "warm and reload archive-filter/no-organization-read criteria pass",
+        "T92": "warm and reload no-archived-membership/restoration-action criteria pass"
+      },
+      "limits": [
+        "The native receipt remains status unverified: six original guest cases still have named unverified dimensions.",
+        "The reload succeeded on this run, so it did not exercise the failure-capture branch. The prior intermittent failure's cause remains unknown; this run does not establish that the diagnostic repair fixed its cause.",
+        "This is a bounded guest run and does not establish overall Settings health or member/admin behavior."
+      ]
+    },
+    "B_evidence_quality": {
+      "verdict": "PASS_FOR_THIS_RUN_WITH_REUSED_SEAT_LIMIT",
+      "run": {
+        "id": 37822887930,
+        "attempt": 1,
+        "display_title": "Native B · settings-controls",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "77c0be45083afc1f1633db252255c96ad282b12f",
+        "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37822887930"
+      },
+      "provenance": "Focused gate 37822602219 at a629c9ca succeeded. Product CI 37818621428 at 5f7fe7c2 succeeded and its nonexpired development artifact ID 11568846736 has the expected GitHub digest. The native receipt verifies version 0.2.414 and tree 662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6. Both reviewed commits are ancestors of the hosted run SHA.",
+      "journals": "The exact package, browser, and guest journals for run 37822887930 each end with RESOURCE_FINAL_DECISION valid, admitted true, resourceInvalid false, and exitCode 0. Their hashes and the receipt hash are in raw/manifest.json.",
+      "receipt_verdict": "The workflow run is green, but the Settings receipt itself says unverified with 9 pass and 7 unverified entries. A successful workflow run is not treated as full feature acceptance."
+    }
+  },
+  "evidence": {
+    "native_receipt": "raw/settings-local-controls-acceptance.json",
+    "manifest": "raw/manifest.json",
+    "current_run_resource_journals": [
+      "raw/hosted-package-37822887930-1.jsonl",
+      "raw/hosted-browser-37822887930-1.jsonl",
+      "raw/hosted-guest-37822887930-1.jsonl"
+    ],
+    "artifact_retention": "Only the exact current-run receipt and three current-run journals were copied from the hosted artifact. Screenshots and historical journals were not retained."
+  }
+}

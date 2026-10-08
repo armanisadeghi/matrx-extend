@@ -210,3 +210,26 @@ export function recordsVisibleShape(value, completion) {
     shape: recordsCompletionShape(parsed),
   };
 }
+
+const CARD_PHASES = new Set(['card_ready', 'schema_ready', 'contract_observation']);
+const CARD_FAILURES = new Set([
+  'card_not_ready',
+  'schema_not_ready',
+  'contract_observation_failed',
+  'contract_unavailable',
+  'contract_drift',
+]);
+
+export function retainRecordsFailure(report) {
+  const card = report.stage === 'records_card' ? report.card_diagnostic : null;
+  if (CARD_PHASES.has(card?.phase) && CARD_FAILURES.has(card?.failure)) {
+    report.failure_phase = card.phase;
+    report.failure_classification = card.failure;
+    return;
+  }
+  const completion = report.completion_diagnostics?.at(-1);
+  if (completion?.failure) {
+    report.failure_phase = completion.phase;
+    report.failure_classification = completion.failure;
+  }
+}

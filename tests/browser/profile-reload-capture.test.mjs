@@ -89,6 +89,30 @@ test('reload receipt keeps the callback class and click worker state without raw
   );
 });
 
+test('unavailable page-local trace never turns unknown click/send milestones into observed false', () => {
+  const request = (fixture) =>
+    captureLifecycleEvidence({
+      open_panel_request: { category: 'reply_not_observed', fixture },
+    }).open_panel_request;
+  assert.deepEqual(
+    request({ availability: 'unavailable', click_received: false, send_invoked: false }).fixture,
+    { availability: 'unavailable' },
+  );
+  assert.deepEqual(
+    request({ availability: 'ready', click_received: false, send_invoked: true }).fixture,
+    {
+      availability: 'ready',
+      click_received: false,
+      send_invoked: true,
+      send_returned: false,
+      callback_entered: false,
+      callback_has_reply: false,
+      callback_last_error: false,
+      send_threw: false,
+    },
+  );
+});
+
 test('context boundary capture keeps only counts and elapsed time', () => {
   const captured = captureContextBoundary({
     first: {

@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "review": "independent-source-review",
+  "reviewed_commit": "e13afd51",
+  "source_report": ".research/records-card-diagnostics-fix-20261008.json",
+  "case": "Records pre-action diagnostics for EXT-D-0091",
+  "verdicts": {
+    "A_spec_behavior": {
+      "verdict": "pass_source_behavior",
+      "details": "The native path persists phase and fixed failure class for card readiness, schema readiness, contract observation failure/unavailable contract/drift. Contract evidence is reduced to booleans and the fixed limit label; catch reporting calls retainRecordsFailure, which copies only allowlisted phase/class. It does not persist exception text or schema values. The original exact deepEqual table_list contract guard remains before input and all execute calls."
+    },
+    "B_quality": {
+      "verdict": "pass_with_small_test_gap",
+      "details": "Card and schema wait predicates require value === true, so waitFor transient {transient: ...} objects cannot pass. The generic waitFor implementation explicitly wraps read exceptions as such objects. The new 14 focused tests pass; the actual driver tests failure classes and asserts zero executions, safe serialized receipt, plus success-path guards and four completion calls. No regression or weakened guard found. The tests do not directly inject a transient-object readiness result; strict predicate behavior is clear by inspection but could be added to the driver test."
+    }
+  },
+  "verification": {
+    "command": "node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-readonly-native-proof.test.mjs",
+    "passed": 14,
+    "failed": 0
+  },
+  "native_cause": {
+    "status": "unproven",
+    "detail": "This source instrumentation cannot retrospectively identify the first failed pre-action boundary in hosted run 37823085569. A future native receipt is required."
+  },
+  "limitations": [
+    "Source and focused unit-driver review only; no browser or hosted run.",
+    "No product cause assigned."
+  ]
+}

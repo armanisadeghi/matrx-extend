@@ -195,6 +195,55 @@ export async function observeEmptyLinksPane({
   };
 }
 
+export async function observeEmptyArticlePane({
+  panel,
+  phase,
+  title,
+  click,
+  resourceAction,
+  requireResourceHealth,
+  scrapeState,
+  waitFor,
+  readExport,
+}) {
+  const readArticle = () =>
+    waitFor(
+      `scrape_${phase}_empty_Article_tab`,
+      () => scrapeState(panel),
+      (value) => value?.selected === 'Article' && value.visible && value.title === title,
+    );
+  await requireResourceHealth();
+  const initial = await readArticle();
+  assert.match(
+    initial.resultText,
+    /No clean article extracted\./,
+    `scrape_${phase}_article_empty_missing`,
+  );
+  const before = await readExport();
+  await resourceAction(() => click(panel, 'scrape-result-tab', 'SEO'));
+  await waitFor(
+    `scrape_${phase}_empty_Article_away`,
+    () => scrapeState(panel),
+    (value) => value?.selected === 'SEO' && value.visible,
+  );
+  await resourceAction(() => click(panel, 'scrape-result-tab', 'Article'));
+  const revisited = await readArticle();
+  assert.deepEqual(
+    capturePaneSnapshot(revisited),
+    capturePaneSnapshot(initial),
+    `scrape_${phase}_empty_article_pane_changed`,
+  );
+  await requireResourceHealth();
+  const after = await readExport();
+  return {
+    pane: 'Article',
+    state: 'empty',
+    fallback_visible: true,
+    pane_unchanged: true,
+    export: assertCaptureExportUnchanged(before, after, `${phase}_empty_article`),
+  };
+}
+
 export function assertCompleteTabCoverage({ warm, reload }) {
   for (const [phase, evidence] of Object.entries({ warm, reload })) {
     assert.equal(
@@ -243,6 +292,32 @@ export function assertCompleteTabCoverage({ warm, reload }) {
       evidence.empty.links.export?.exported_payload_unchanged,
       true,
       `scrape_${phase}_links_capture_payload_changed`,
+    );
+    assert.equal(
+      evidence?.empty?.article?.pane,
+      'Article',
+      `scrape_${phase}_article_empty_pane_missing`,
+    );
+    assert.equal(evidence.empty.article.state, 'empty', `scrape_${phase}_article_not_empty`);
+    assert.equal(
+      evidence.empty.article.fallback_visible,
+      true,
+      `scrape_${phase}_article_fallback_missing`,
+    );
+    assert.equal(
+      evidence.empty.article.pane_unchanged,
+      true,
+      `scrape_${phase}_article_pane_changed`,
+    );
+    assert.equal(
+      evidence.empty.article.export?.identity_unchanged,
+      true,
+      `scrape_${phase}_article_capture_identity_changed`,
+    );
+    assert.equal(
+      evidence.empty.article.export?.exported_payload_unchanged,
+      true,
+      `scrape_${phase}_article_capture_payload_changed`,
     );
   }
   return true;

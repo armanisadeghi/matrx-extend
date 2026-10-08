@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "review": "independent-source-review",
+  "reviewed_commit": "1e2b9b24",
+  "preparation_report": ".research/scrape-empty-article-preparation-20261008.json",
+  "inventory_case": "EXT-F-1007-T08",
+  "verdicts": {
+    "A_spec_behavior": {
+      "verdict": "pass_source_coverage_native_pending",
+      "details": "The fixture is an owned title-only blank HTML page. The focused producer test invokes real runScrape and articleToMarkdown: content_markdown is falsy and the formatter emits the intended explicit fallback, while populated referrals content remains populated and has no fallback. Native warm and post-reload paths each require the blank-page URL state, empty body, trusted Fast capture, visible Article tab with the exact fallback, revisit from SEO with an identical pane snapshot, and unchanged full capture export identity/payload. The completeness gate requires Article evidence at both phases while retaining six-pane capture invariance and the existing Images/Video/Links empty checks."
+    },
+    "B_quality": {
+      "verdict": "pass",
+      "details": "Assertions are fail-capable: the helper requires the fallback and unchanged pane/export; tests reject unexpected article text, changed pane snapshot, changed export payload, and missing reload Article evidence. The native UI cannot show an Article tab without a current capture, and the test requires selected visible Article content with the formatter fallback after Fast capture, preventing the no-capture empty prompt from masquerading as the fallback. Ordering keeps existing warm cases before the new blank capture and runs post-reload empty checks before the existing deep-capture path."
+    }
+  },
+  "focused_verification": {
+    "node_command": "node --test tests/browser/scrape-tab-coverage.test.mjs",
+    "node_tests": 7,
+    "node_failures": 0,
+    "vitest_command": "pnpm exec vitest run tests/unit/scrape-empty-article.test.ts --maxWorkers=1 --no-file-parallelism",
+    "vitest_tests": 1,
+    "vitest_failures": 0,
+    "syntax_command": "node --check tests/browser/scrape-guest-native-acceptance.mjs",
+    "syntax_passed": true
+  },
+  "limitations": [
+    "No native/browser execution was performed; no T08 acceptance credit.",
+    "An initial Vitest invocation used unsupported --minWorkers and was rejected before tests; rerun with the repository Vitest-supported single-worker flags passed.",
+    "Existing Scrape B reload failure remains separate and is not attributed to the Article addition."
+  ]
+}

@@ -1216,23 +1216,7 @@ function stopOwnedChild(child) {
   });
 }
 
-function testPage(extensionId, reloadOpenDiagnostic = false) {
-  if (!reloadOpenDiagnostic)
-    return `<!doctype html><meta charset="utf-8"><title>Research brief: product discovery</title>
-    <main><article><h1>Research brief: product discovery</h1><p>A short demo article for a real guest Scrape capture.</p><p>Capture the page, review its structure, and identify SEO improvements before sharing the result.</p></article></main>
-    <button id="open-panel">Open panel</button><pre id="result"></pre>
-    <script>
-      document.querySelector('#open-panel').addEventListener('click', () => {
-        chrome.runtime.sendMessage(${JSON.stringify(extensionId)}, {
-          channel: 'FRONTEND_RPC', action: 'openPanel', payload: { panelId: 'chat' },
-          requestId: 'native-sidepanel-qa',
-        }, (reply) => {
-          document.querySelector('#result').textContent = JSON.stringify(
-            reply ?? { error: chrome.runtime.lastError?.message ?? 'no reply' },
-          );
-        });
-      });
-    </script>`;
+function testPage(extensionId) {
   return `<!doctype html><meta charset="utf-8"><title>Research brief: product discovery</title>
     <main><article><h1>Research brief: product discovery</h1><p>A short demo article for a real guest Scrape capture.</p><p>Capture the page, review its structure, and identify SEO improvements before sharing the result.</p></article></main>
     <button id="open-panel">Open panel</button><pre id="result"></pre><pre id="open-trace"></pre>
@@ -1611,7 +1595,7 @@ export async function runNativeSidepanelQa({
       serveOwnedFixture(request, response, {
         ownedPages,
         ownedAssets,
-        rootPage: testPage(expectedExtensionId, reloadOpenDiagnostic),
+        rootPage: testPage(expectedExtensionId),
       });
     });
     await new Promise((resolve, reject) =>
