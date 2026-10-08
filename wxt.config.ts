@@ -361,6 +361,7 @@ export default defineConfig({
       port: 3025,
     },
   },
-  outDir: '.output',
+  // A private build dir (WXT_OUT_DIR) lets parallel agents build without overwriting each other's .output.
+  outDir: process.env.WXT_OUT_DIR || '.output',
   imports: false,
 });
