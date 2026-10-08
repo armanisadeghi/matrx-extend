@@ -43,7 +43,46 @@ export function preferenceMatches(observed, preference, value, label) {
     observed?.selected === label &&
     observed?.stored === value &&
     (preference.key !== 'theme' ||
-      observed?.darkClass === (value === 'system' ? observed?.systemDark : value === 'dark'))
+      (observed?.darkClass === (value === 'system' ? observed?.systemDark : value === 'dark') &&
+        observed?.renderedBackgroundMatches === true))
+  );
+}
+
+export function guestChatDefaultMatches(observed, expectedMode, expectedLabel) {
+  return (
+    observed?.activeChat === true &&
+    observed?.newChatCount === 1 &&
+    observed?.modeControlCount === 1 &&
+    observed?.modeLabel === expectedLabel &&
+    observed?.modeIcon === expectedMode
+  );
+}
+
+export async function observeGuestNewChatDefault(panel, expectedMode, expectedLabel) {
+  await click(panel, 'title', 'Chat');
+  const read = () =>
+    evaluate(
+      panel,
+      `(() => {
+        const tabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
+          .filter((node) => node.title === 'Chat');
+        const pane = tabs.length === 1
+          ? document.getElementById(tabs[0].getAttribute('aria-controls') ?? '')
+          : null;
+        const mode = [...(pane?.querySelectorAll('button[title="Tool permission mode"]') ?? [])];
+        const newChat = [...(pane?.querySelectorAll('button[title="New chat"]') ?? [])];
+        const icon = mode.length === 1 ? mode[0].querySelector('svg') : null;
+        return { activeChat: pane?.matches('[role="tabpanel"][data-state="active"]') === true,
+          newChatCount: newChat.length, modeControlCount: mode.length,
+          modeLabel: mode.length === 1 ? mode[0].textContent.trim() : null,
+          modeIcon: icon?.classList.contains('lucide-zap') ? 'act'
+            : icon?.classList.contains('lucide-hand') ? 'ask' : null };
+      })()`,
+    );
+  await waitFor('guest_chat_default_mode_ready', read, (value) => value?.activeChat === true);
+  await click(panel, 'title', 'New chat');
+  return waitFor('guest_new_chat_default_mode', read, (value) =>
+    guestChatDefaultMatches(value, expectedMode, expectedLabel),
   );
 }
 
@@ -67,12 +106,30 @@ async function observe(panel, preference) {
         ? triggers[0].textContent.trim() : null,
       stored: allowed.includes(value) ? value : null,
       darkClass: document.documentElement.classList.contains('dark'),
-      systemDark: window.matchMedia('(prefers-color-scheme: dark)').matches };
+      systemDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
+      renderedBackgroundMatches: (() => {
+        const probe = document.createElement('div');
+        probe.style.position = 'fixed';
+        probe.style.visibility = 'hidden';
+        probe.style.pointerEvents = 'none';
+        probe.style.backgroundColor = 'var(--background)';
+        document.body.appendChild(probe);
+        const expected = getComputedStyle(probe).backgroundColor;
+        const rendered = getComputedStyle(document.body).backgroundColor;
+        probe.remove();
+        return Boolean(expected && expected !== 'rgba(0, 0, 0, 0)' && rendered === expected);
+      })() };
   })()`,
   );
 }
 
-export async function runGuestPreferenceCase(panel, reloadSettings, preference, record) {
+export async function runGuestPreferenceCase(
+  panel,
+  reloadSettings,
+  preference,
+  record,
+  afterReload = async () => {},
+) {
   await openSection(panel, preference.section);
   for (const [value, label] of preference.choices) {
     await click(panel, 'settings-select', preference.label);
@@ -95,5 +152,6 @@ export async function runGuestPreferenceCase(panel, reloadSettings, preference, 
       reloaded,
       preferenceMatches(reloaded, preference, value, label),
     );
+    await afterReload({ panel, preference, value, label, observation: reloaded });
   }
 }
