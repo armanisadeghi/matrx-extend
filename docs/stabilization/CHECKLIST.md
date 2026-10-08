@@ -19,7 +19,7 @@ Generated 2026-10-08 05:34 UTC from inventory.json, defect records, and the curr
 
 ## Inventory freshness review
 
-Since inventory source `636d00857f774a7b15fe70032dd9c35cef44c015`, **28 `src/` paths changed** through `52524cc5983c4d400c8fa4255c6525098f7cca54`. A direct path-anchor comparison matched 4 and left 24 without an exact inventory anchor.
+Since inventory source `636d00857f774a7b15fe70032dd9c35cef44c015`, **28 `src/` paths changed** through `2f0690cdd99b5b8c6324d11f71b1dffbaf958d3a`. A direct path-anchor comparison matched 4 and left 24 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities

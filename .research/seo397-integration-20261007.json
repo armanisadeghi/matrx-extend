@@ -52,7 +52,7 @@
         "member and admin role gates",
         "admin JSON content"
       ],
-      "prior_result_preserved": "37708611887"
+      "prior_result_preserved": "37708611887 remains current guest result; new 37731560399 attempt appended to result_history"
     },
     "EXT-F-1008-T09": {
       "passed": 9,
@@ -71,7 +71,7 @@
     "full_case_passes": 0,
     "full_feature_passes": 0
   },
-  "preserved": "Prior guest result objects copied to each case result_history; existing histories and runtime evidence retained. Guest feature cell stays partial; member/admin and all other case results unchanged.",
+  "preserved": "Prior guest results for T01/T02/T03/T09 are copied into result_history. Stronger 0.2.391 T07 guest result remains current; new narrower 0.2.397 T07 attempt is appended to result_history. Existing histories and runtime evidence retained. Guest feature cell stays partial; member/admin and all other case results unchanged.",
   "limits": "Exactly 19 bounded guest subtargets pass across T01/T02/T03/T07/T09, one T09 metadata door remains unverified. Automatic Wikipedia exact-data counts and readability metric correctness are not established. Other case criteria, T04-T06/T08/T10-T14, member/admin, full extension reload, Store, and current-main health remain unverified; no whole case or feature pass.",
   "verification": "Semantic comparison to HEAD confirms only five guest case results and appended prior-result histories, one guest cell run reference, one scoped runtime receipt, and updated timestamp; canonical tracker regenerated from inventory."
 }

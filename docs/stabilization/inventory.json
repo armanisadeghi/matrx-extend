@@ -17456,25 +17456,24 @@
             "guest": {
               "status": "partial",
               "passed_subtargets": [
-                "guest_actual_clipboard_text_and_ai_page_0",
-                "guest_actual_clipboard_text_and_ai_page_1",
                 "guest_menu_offers_text_and_ai_but_hides_json",
                 "guest_role_gate_after_reload",
-                "guest_actual_clipboard_text_and_ai_reload"
+                "actual_text_clipboard_readback_two_pages_and_reload",
+                "actual_ai_clipboard_readback_two_pages_and_reload",
+                "key_public_facts_present_and_exact_ai_wrapping",
+                "clipboard_permission_restored"
               ],
               "unverified_dimensions": [
-                "complete displayed audit field parity with clipboard payload",
-                "member and admin role gates",
-                "admin JSON content"
+                "complete displayed audit field parity with clipboard payload"
               ],
-              "run_id": "37731560399",
-              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
-              "build_version": "0.2.397",
+              "run_id": "37708611887",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/seo397-guest-native-20261007.json",
-                ".research/seo397-native-peer-20261007.json"
+                ".research/seo-intel-native-20261007.json",
+                ".research/auth-repair-intel-native-peer-20261007.json"
               ],
-              "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes. Guest Text/AI clipboard readback and menu gates only; admin JSON and other roles were not exercised."
+              "release_scope": "Resource-valid bounded guest evidence on exact frozen development artifact. Full field parity remains unverified; member/admin gates and JSON content belong to their separate mode slots. No current-main or Store claim."
             }
           },
           "result_history": [
@@ -17509,7 +17508,9 @@
               "run_id": "seo-guest-frozen-20261002T140308Z",
               "artifact_version": "0.2.173",
               "detail": "Guest menu offers text and AI and hides JSON before/after reload; actual clipboard payload and other modes unverified.",
-              "evidence": ["docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"]
+              "evidence": [
+                "docs/stabilization/reports/seo-guest-frozen-20261002-runtime.json"
+              ]
             },
             {
               "mode": "guest",
@@ -17575,24 +17576,25 @@
               "result": {
                 "status": "partial",
                 "passed_subtargets": [
+                  "guest_actual_clipboard_text_and_ai_page_0",
+                  "guest_actual_clipboard_text_and_ai_page_1",
                   "guest_menu_offers_text_and_ai_but_hides_json",
                   "guest_role_gate_after_reload",
-                  "actual_text_clipboard_readback_two_pages_and_reload",
-                  "actual_ai_clipboard_readback_two_pages_and_reload",
-                  "key_public_facts_present_and_exact_ai_wrapping",
-                  "clipboard_permission_restored"
+                  "guest_actual_clipboard_text_and_ai_reload"
                 ],
                 "unverified_dimensions": [
-                  "complete displayed audit field parity with clipboard payload"
+                  "complete displayed audit field parity with clipboard payload",
+                  "member and admin role gates",
+                  "admin JSON content"
                 ],
-                "run_id": "37708611887",
-                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-                "build_version": "0.2.391",
+                "run_id": "37731560399",
+                "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+                "build_version": "0.2.397",
                 "evidence": [
-                  ".research/seo-intel-native-20261007.json",
-                  ".research/auth-repair-intel-native-peer-20261007.json"
+                  ".research/seo397-guest-native-20261007.json",
+                  ".research/seo397-native-peer-20261007.json"
                 ],
-                "release_scope": "Resource-valid bounded guest evidence on exact frozen development artifact. Full field parity remains unverified; member/admin gates and JSON content belong to their separate mode slots. No current-main or Store claim."
+                "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes. Guest Text/AI clipboard readback and menu gates only; admin JSON and other roles were not exercised."
               }
             }
           ]

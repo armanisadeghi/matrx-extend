@@ -956,7 +956,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 - EXT-F-1008-T03 · guest: Partial.
   Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
 - EXT-F-1008-T07 · guest: Partial.
-  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
+  Evidence / build / date recorded: 37708611887, ['.research/seo-intel-native-20261007.json', '.research/auth-repair-intel-native-peer-20261007.json']
 - EXT-F-1008-T09 · guest: Partial.
   Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
 
