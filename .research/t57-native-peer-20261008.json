@@ -54,12 +54,18 @@
       "08:20:56.007Z RESOURCE_FINAL_DECISION resourceInvalid=true, exitCode=3, decision=invalid"
     ],
     "runtime_credit": false,
-    "interpretation": "The single CPU-busy/high-load sample invalidated the guest resource run despite two later samples with no unsafe reasons. The guest failure earns no product verdict; do not count it as runtime evidence."
+    "interpretation": "The journal records one CPU-busy/high-load sample followed by two samples with no unsafe reasons, both still marked RESOURCE_CPU_PENDING. The child then failed and the final guard decision was invalid. The evidence does not show whether the recovery window had elapsed before child exit, so do not attribute the final invalid decision solely to the first sample. The guest failure earns no product verdict; do not count it as runtime evidence."
   },
   "cleanup_verdict": {
+    "temporary_admin_credentials_secret": "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
     "temporary_admin_credentials_secret_absent": true,
+    "temporary_approved_organization_secret": "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON",
     "temporary_approved_organization_secret_absent": true,
-    "verification": "Read-only GitHub Actions secret-name listing; neither temporary MATRX_HOSTED_ADMIN_CREDENTIALS_JSON nor MATRX_HOSTED_PROFILE_ORGANIZATION_JSON was present. No secret values were read.",
+    "workflow_environment_names": [
+      "MATRX_HOSTED_ADMIN_CREDENTIALS_JSON",
+      "MATRX_HOSTED_PROFILE_ORGANIZATION_JSON"
+    ],
+    "verification": "Read-only GitHub Actions secret-name listing confirmed neither actual secret, MATRX_PREPARE_ADMIN_CREDENTIALS_JSON nor MATRX_PROFILE_APPROVED_ORGANIZATION_JSON, is present. The MATRX_HOSTED_* strings are workflow environment names mapped from those secrets, not GitHub secret names. No secret values were read.",
     "owned_recipe": "none created",
     "retry_dispatched": false
   },
