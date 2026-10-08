@@ -1,0 +1,209 @@
+{
+  "schema_version": 1,
+  "task": "scrape-reload-observer-native-20261008",
+  "status": "terminal_resource_valid_native_reload_pass_with_fresh_diagnostic_not_exercised",
+  "observed_at_utc": "2026-10-08T10:15:53.754845+00:00",
+  "scope": "One admitted hosted lane B guest-scrape-development regression retest of frozen development 0.2.407. No build, release, deployment, product edit, harness edit, or retry.",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 37761144784,
+    "attempt": 1,
+    "job_id": 113257577179,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37761144784",
+    "status": "completed",
+    "conclusion": "success",
+    "checkout_sha": "d7923108ee3281b954034a970a13ddd3c92c8de3",
+    "job_started_at_utc": "2026-10-08T10:05:30Z",
+    "job_completed_at_utc": "2026-10-08T10:13:44Z",
+    "result_artifact_id": 11542781853,
+    "result_artifact_name": "hosted-guest-37761144784-1"
+  },
+  "selection": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "acceptance_case": "guest-scrape-development",
+    "scrape_auth_mode": "guest",
+    "scrape_width_mode": "normal",
+    "scrape_normal_width_px": 600,
+    "frozen_ci_run_id": 37754055905,
+    "frozen_artifact_id": 11539827040,
+    "frozen_artifact_verified_available_before_dispatch": true,
+    "frozen_artifact": {
+      "kind": "ci_development_test",
+      "channel": "development",
+      "version": "0.2.407",
+      "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+      "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+      "run_id": 37754055905,
+      "artifact_id": 11539827040
+    }
+  },
+  "admission": {
+    "no_active_hosted_guest_job_before_dispatch": true,
+    "isolated_ephemeral_host": true,
+    "guest_no_shared_credentials_required": true,
+    "dispatch_count": 1,
+    "resource_journals_all_final_valid": true
+  },
+  "native_receipt": {
+    "path": ".research/scrape-reload-observer-native-20261008-evidence/selected/scrape-guest-native-ff470f44-ce7d-455f-93ab-c780b0fed14f.json",
+    "sha256": "11b225416a6db95b9fa43036f600653641d0905c3755b0c3565f466e162c0d78",
+    "bytes": 248947,
+    "status": "partial",
+    "stage": "post_reload_link_controls",
+    "native_stage": "exercise_panel",
+    "driver_failure": null,
+    "failure": null,
+    "guest_account_observed": true,
+    "guest_auth_storage": {
+      "hasAccessToken": false,
+      "hasUserProfile": false
+    },
+    "warm_and_reload_viewport_px": [600, 600]
+  },
+  "reload": {
+    "strict_predicate": "passed",
+    "old_worker_execution_retired": true,
+    "old_worker_destroyed_event": true,
+    "old_worker_absent": true,
+    "old_panel_absent": true,
+    "replacement_worker_present": true,
+    "replacement_worker_created_event": true,
+    "observed_worker_count": 1,
+    "old_version": {
+      "at": "2026-10-08T10:12:57.562Z",
+      "version_id": "0",
+      "registration_id": "0",
+      "target_id": "4D47C1F850D000B608D321C594B50BB3",
+      "running_status": "running",
+      "status": "activated"
+    },
+    "replacement_activated": {
+      "at": "2026-10-08T10:12:58.455Z",
+      "version_id": "1",
+      "registration_id": "1",
+      "target_id": "63EBF53D130877D760406B3FF2D7CD04",
+      "running_status": "running",
+      "status": "activated"
+    },
+    "replacement_activated_confirmed_by_original_watcher": true,
+    "version_events_dropped": 0,
+    "final_target_predicate": true,
+    "fresh_replacement": null,
+    "fresh_observer_explanation": "The independent fresh observer runs only after strict reload refusal. Strict reload passed here, so fresh_replacement is null and the new diagnostic was not exercised. This run does not adjudicate whether the prior failure was a missed event or genuinely still-new worker."
+  },
+  "case_verdicts": [
+    {
+      "id": "EXT-F-1007-T20",
+      "verdict": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "verdict": "partial",
+      "remaining": ["member/admin modes remain unverified by this receipt."]
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "verdict": "partial",
+      "remaining": ["member/admin modes remain unverified by this receipt."]
+    },
+    {
+      "id": "EXT-F-1007-T10",
+      "verdict": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T11",
+      "verdict": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T12",
+      "verdict": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T13",
+      "verdict": "partial",
+      "remaining": ["member/admin modes remain unverified by this receipt."]
+    },
+    {
+      "id": "EXT-F-1007-T02",
+      "verdict": "partial",
+      "remaining": ["Deep failure retry mode and post-reload deep capture remain unverified."]
+    },
+    {
+      "id": "EXT-F-1007-T07",
+      "verdict": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T09",
+      "verdict": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T14",
+      "verdict": "partial",
+      "remaining": [
+        "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+      ]
+    }
+  ],
+  "case_counts": {
+    "passed": 6,
+    "partial": 5,
+    "failed": 0
+  },
+  "resource_journals": {
+    "package": {
+      "path": ".research/scrape-reload-observer-native-20261008-evidence/selected/hosted-package-37761144784-1.jsonl",
+      "sha256": "c8f4305223c5fef06b62e0b9606660989e3b663692182484e4712c9376956ef2",
+      "bytes": 984,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-08T10:07:22.777Z",
+        "runId": "hosted-package-37761144784-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "browser": {
+      "path": ".research/scrape-reload-observer-native-20261008-evidence/selected/hosted-browser-37761144784-1.jsonl",
+      "sha256": "589e08e73d2c1e0be8442122afeec6b4c08b97b02c8458f0ee6c486ec5b207ba",
+      "bytes": 988,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-08T10:09:24.113Z",
+        "runId": "hosted-browser-37761144784-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    "guest": {
+      "path": ".research/scrape-reload-observer-native-20261008-evidence/selected/hosted-guest-37761144784-1.jsonl",
+      "sha256": "5621e5c51f755f71e0a591f435deef1f58310752c10b374dc7eed4831cd43832",
+      "bytes": 8660,
+      "final": {
+        "schema": 1,
+        "at": "2026-10-08T10:13:23.285Z",
+        "runId": "hosted-guest-37761144784-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  },
+  "artifact_curation": "Downloaded the uploaded artifact recursively; selected the current run receipt and exactly three current-run resource journals from nested paths. Each selected file was copied byte-for-byte and SHA-256 verified. Historical journals bundled by the workflow were excluded from this run\u2019s verdict.",
+  "interpretation": "Frozen 0.2.407 guest normal-width behavior advanced beyond the previous reload refusal and passed the current strict worker-retirement predicate, with original-watcher same-identity running/activated proof. Six bounded guest case rows passed and five remain partial for mode or deeper recovery breadth. This is not a fresh-observer diagnostic result, a signed-in acceptance, or a Store release result. No product defect is established by this run.",
+  "next_action": "Parent should obtain independent evidence review and reconcile eligible guest case cells; keep the prior intermittent reload-boundary hypothesis open until a failing run actually exercises the fresh observer."
+}
