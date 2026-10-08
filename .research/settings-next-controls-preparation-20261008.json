@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "kind": "settings-coverage-preparation",
+  "authorship": "Source changes authored by this worker; this is not an independent review.",
+  "nativeStatus": "pending; no native browser run was launched.",
+  "baseline": {
+    "nativeRunId": "37822887930",
+    "review": ".research/settings-controls-live-20261008.json",
+    "selection": "T04 appearance and T10 default mode were partial in the baseline. The chosen assertions add consumer-visible evidence without extending extension-reload coverage."
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1003-T04",
+      "behavior": "Theme selection must update persisted preference, selected control, dark-class behavior, and the rendered body background using the applied --background token, both warm and after panel-document reload, for System, Light, and Dark.",
+      "assertion": "preferenceMatches requires renderedBackgroundMatches for theme; observe resolves a hidden temporary probe using var(--background) and compares it with getComputedStyle(document.body).backgroundColor. The probe is removed immediately.",
+      "limits": "This does not verify a screenshot or extension-wide reload. Native execution is pending."
+    },
+    {
+      "id": "EXT-F-1003-T10",
+      "behavior": "After selecting and reloading each default mode, a newly created chat must expose the inherited mode label and corresponding Ask/Act icon.",
+      "assertion": "The native driver opens Chat, requires one active Chat panel, one New chat control, and one mode control; it clicks New chat and waits for the expected label and icon. It returns to Settings before continuing.",
+      "limits": "No message is sent and no server request or first-action payload is asserted. Native execution is pending."
+    }
+  ],
+  "verification": {
+    "focusedTest": "node --test tests/browser/settings-guest-preference-batch.test.mjs",
+    "focusedTestResult": "2 passed, 0 failed",
+    "syntax": "node --check passed for tests/browser/settings-guest-preference-batch.mjs and tests/browser/settings-local-controls-acceptance.mjs",
+    "formatAndLint": "pnpm exec biome check passed for all three changed source/test files",
+    "diffCheck": "git diff --check passed",
+    "mutationEvidence": [
+      "Forcing-function mutation removing the rendered-background predicate made the theme focused test fail; the mutation tool restored the file byte-identically.",
+      "Forcing-function mutation removing the mode-icon predicate made the mode focused test fail; the mutation tool restored the file byte-identically."
+    ]
+  },
+  "nativeAcceptanceCredit": false,
+  "nextStep": "Run the existing Settings guest native acceptance path once on the approved hosted lane and inspect its safe case receipts."
+}

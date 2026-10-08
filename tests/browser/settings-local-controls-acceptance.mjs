@@ -9,7 +9,11 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { captureFailure } from './profile-reload-capture.mjs';
-import { GUEST_PREFERENCES, runGuestPreferenceCase } from './settings-guest-preference-batch.mjs';
+import {
+  GUEST_PREFERENCES,
+  observeGuestNewChatDefault,
+  runGuestPreferenceCase,
+} from './settings-guest-preference-batch.mjs';
 import {
   GUEST_PRIVACY_SWITCHES,
   runGuestPrivacySwitchCase,
@@ -562,14 +566,24 @@ try {
               });
               criterion(c, name, passed ? 'pass' : 'fail', observation);
             },
+            async ({ value, label }) => {
+              if (preference.caseId !== 'T10') return;
+              const chat = await observeGuestNewChatDefault(panel, value, label);
+              c.steps.push({
+                phase: 'consumer',
+                action: 'Start a new chat and observe its inherited default mode',
+                observation: chat,
+              });
+              criterion(
+                c,
+                `new chat inherits ${label}`,
+                chat.modeLabel === label && chat.modeIcon === value ? 'pass' : 'fail',
+                chat,
+              );
+              await settings(panel);
+              await openSection(panel, preference.section);
+            },
           );
-          if (preference.caseId === 'T10')
-            criterion(
-              c,
-              'new chat inherits selected default mode',
-              'unverified',
-              'Chat creation is outside this non-Chat batch.',
-            );
         });
       }
       for (const preference of GUEST_PRIVACY_SWITCHES) {
