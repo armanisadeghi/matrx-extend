@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "review": "scrape-warm-native-peer-20261007",
+  "reviewer_scope": "Independent evidence review only; no browser, build, release, or product changes.",
+  "evidence": {
+    "report": ".research/scrape-scroll-native-retest-20261007.json",
+    "originals": ".research/scrape-scroll-native-retest-20261007-run37721838779-originals",
+    "source_commit": "c38895face310750f0498b3911171d17c95b5e52",
+    "workflow_run": 37721838779,
+    "workflow_checkout": "d8ff02edbac92cc7e5eae99455b2dd43924098fa",
+    "product_artifact": "0.2.391 / CI run 37698216289 / artifact 11516342905 / source 52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "driver_commit": "fa05a939149a9a381db45061c53c50d298365d86",
+    "driver_hashes_reproduced": {
+      "tests/browser/scrape-guest-native-acceptance.mjs": "4e4388ecf2cfbb283b36b6dbc21befd945ae4491e86e586ff865cc13eca47fbc",
+      "tests/browser/scrape-guest-behavior-batch.mjs": "1bcc2728cc5c64048dbf97508667320e9a3f39674d0a15fc950a3981f42fcf07"
+    }
+  },
+  "verdict_a": {
+    "EXT-F-1007-T07": {
+      "warm": "confirmed_pass",
+      "basis": "Receipt has passed=true and records one article scroller; top 0/pageY 0 with follow off; top 310/pageY 650 with follow on; trusted stop returns off; reverse page scroll yields off and pageY 0.",
+      "scope_limit": "This is warm-state behavior on the recorded development artifact and guest/narrow headed runtime only. Extension reload T07 was not reached and remains unverified."
+    },
+    "EXT-F-1007-T09": {
+      "intake_warm": "confirmed_22_of_22_predicates",
+      "basis": "Receipt lists all 22 menu-option pairs across seven menus; each records exact menu match, clipboard read, sentinel replacement, format predicate success, and clipboard permission restoration. Source oracle/hash matches the driver identity recorded in the report.",
+      "referrals_warm": "failed_before_any_option_result",
+      "basis_for_failure": "Source first navigates to /referrals, waits for the expected captured referral title, active Article tab, visibility, and fixture text; only then enters guest_copy_after_navigation. Receipt records pointer_target_not_unique with zero matched and visible targets while resolving Copy capture. No referral copy option was completed or recorded.",
+      "scope_limit": "No referral copy format was tested; T09 reload was not reached. Do not turn the driver target-resolution failure into a product copy verdict."
+    },
+    "EXT-D-0163": "Keep open. This run supports warm T07 and intake warm T09 only; closure still requires reload T07, referrals T09 warm, and T09 after reload (plus any remaining D-0163 criteria outside this report)."
+  },
+  "verdict_b": {
+    "provenance": "Report, original receipt, all three current-run resource journals, and screenshots are present in the committed originals. Driver and oracle source hashes reproduce the report. Product artifact, driver commit, workflow checkout, and run are separately identified; this review does not conflate product SHA d8ff02e, frozen product source 5248736, or driver SHA fa05a93.",
+    "resources": "All three current-run journals end admitted=true/resourceInvalid=false. Package and browser children exited 0; guest child exited 1 after the reported pointer assertion. Samples show pressure level 1, memory above the stated 4 GiB requirement, zero swap, and no admission reasons. Stale 371053 journals were excluded.",
+    "privacy": "The receipt stores clipboard booleans only, not clipboard values. Guest auth storage is reported empty and account observation is boolean. The retained screenshots show the synthetic Harbor Dental localhost fixture. The originals do include run/extension identifiers and host resource measurements, so treat them as test evidence rather than public artifacts without review.",
+    "false_positive_limits": "The fixture-specific oracle imports no product converter and checks representative fixture-specific content/format invariants, sentinel replacement, exact menu order, clipboard read, and permission restoration. Since raw clipboard text is deliberately omitted, this review cannot independently replay the oracle against copied values; boolean outcomes rely on the recorded run. Predicate success does not establish every possible page's semantic correctness or untested referrals/reload behavior.",
+    "causal_limit": "The zero-target pointer failure identifies the observed stopping condition only. This review makes no inference about its root cause or whether it belongs to driver or product behavior."
+  }
+}
