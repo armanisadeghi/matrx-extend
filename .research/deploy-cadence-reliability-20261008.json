@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T09:53:31Z",
+  "scope": "Persistent aidream deploy-cadence watch reliability repair; no manual release, build, deployment, workflow dispatch, native run, or product health claim",
+  "observed_problem": "At 09:50 UTC the last observed successful deploy.yml start remained 08:37:30 UTC, while the most recent scheduled cadence-watch run was 07:17:56 UTC. GitHub documents that scheduled workflow events can be delayed or dropped at high load; this does not prove why this particular event was absent.",
+  "change": {
+    "aidream_paths": [
+      ".github/workflows/deploy-cadence-watch.yml",
+      "tests/test_deploy_cadence_watch.py",
+      "scripts/FEATURE.md"
+    ],
+    "behavior": "Main runtime-bearing pushes now wake the existing cadence watch in addition to its unchanged 10-minute schedule. Documentation, workflow, research, and test-only pushes are excluded from push wakeups and from the last-runtime-commit classifier. Watch runs serialize without cancelling an active run. The existing >45-minute threshold, newer-runtime-commit requirement, no-active-deploy guard, dry-run behavior, and immutable release_ref dispatch remain intact.",
+    "self_trigger": "The repair unit changes only .github/workflows, tests, scripts/FEATURE.md, and this .research JSON, all excluded by push paths-ignore. Its own push is not intended to wake the watch or start a deploy.",
+    "limit": "A runtime push after an already eligible breach may cause the existing watch to dispatch automatically. This is the authorized standing recovery behavior, not a manual dispatch or a new periodic schedule. The schedule remains necessary when there is no subsequent runtime push."
+  },
+  "verification": {
+    "focused": ".venv/bin/pytest -q tests/test_deploy_cadence_watch.py: 4 passed",
+    "format_lint": ".venv/bin/ruff format and .venv/bin/ruff check passed for the focused test file",
+    "red_green": "The two new tests fail against the pre-change workflow: absent runtime-push trigger and test-only commit incorrectly selected as latest runtime candidate; both pass against the changed workflow. The classifier test executes the workflow's actual shell pathspec in a temporary Git repository across docs/workflow/research/test-only and runtime commits.",
+    "docs_checks": "python3 scripts/check_doc_links.py and scripts/check_docs_guards.py remain red on unrelated pre-existing pointers and one unrelated skill-title claim; this unit changes none of those locations.",
+    "live_limit": "No GitHub workflow run or production deployment was initiated or verified by this unit. Independent source review and subsequent automation observation are required before promotion."
+  },
+  "primary_sources": [
+    "https://docs.github.com/en/actions/how-tos/troubleshoot-workflows",
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax"
+  ],
+  "verdict": "SOURCE_CANDIDATE_READY_FOR_INDEPENDENT_REVIEW; LIVE_RELEASE_UNVERIFIED"
+}
