@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-fresh-start-diagnosis-20261007",
+  "defect_id": "EXT-D-0158",
+  "related_defect_id": "EXT-D-0042",
+  "status": "source_boundary_localized_cause_not_proven",
+  "scope": "Source-only diagnosis and bounded native-driver instrumentation. No product edit, native job, build, release, or auth action.",
+  "native_evidence": {
+    "run_id": 37704706106,
+    "receipt": ".research/picker-tracker-fixed-native-evidence/run37704706106/showcase-picker-native-37704706106-1.json",
+    "frozen_ci_run_id": 37698216289,
+    "frozen_artifact_id": 11516342905,
+    "frozen_source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "frozen_version": "0.2.391",
+    "failure_code": "select_B_result_failed",
+    "failed_target": "lifecycle_B_detection",
+    "last_safe": {
+      "panel_three_rows": true,
+      "overlay_count": 0,
+      "listener_click_count": 0,
+      "listener_hover_count": 0,
+      "context_start_distinct": true,
+      "context_teardown_distinct": false,
+      "start_world_matched": true,
+      "start_world_start_distinct": true,
+      "start_world_teardown_distinct": true
+    }
+  },
+  "source_ordering": [
+    "The reinjection driver captures the active picker hooks, executes the frozen content script again, and calls its fresh start hook in the same observed world. The direct post-start observation reports both hooks distinct.",
+    "runLifecyclePositive clicks the card, waits for a stamped detection, picks a field, clicks Done, waits for the stamped result, extracts, and waits for three rows before it reuses lifecycle_B_detection for the final exactly-one detection assertion.",
+    "Done invokes unmountListPicker; unmountListPicker removes capture listeners and deletes __matrxListPickerTeardown when it owns that hook. Therefore the post-failure zero overlay/listeners and teardown_distinct=false are expected after Done and do not contradict the earlier post-start hook observation.",
+    "The previous receipt has no detection count or producer-versus-relay breakdown. With three rows already present, the final exact-count assertion is the narrowest source-supported failure site, but a failure in its preceding count read cannot be excluded from that receipt alone."
+  ],
+  "hypotheses": [
+    {
+      "cause": "The current picker emitted detection more than once after reinjection",
+      "prediction": "producer_current_detected_count and current_session_detected_count both exceed one in the bounded receipt."
+    },
+    {
+      "cause": "One producer detection was duplicated between producer and sidepanel relay observer",
+      "prediction": "producer_current_detected_count equals one and current_session_detected_count exceeds one."
+    },
+    {
+      "cause": "An earlier session's detection arrived after the reinjected B counting window opened",
+      "prediction": "other_session_detected_count is positive while current_session_detected_count equals one."
+    },
+    {
+      "cause": "The final relay read failed instead of the exact-count assertion",
+      "prediction": "The distinct lifecycle_B_detection_count stage fails without a complete count sample."
+    }
+  ],
+  "driver_change": {
+    "files": [
+      "tests/browser/showcase-picker-native-acceptance.mjs",
+      "tests/browser/showcase-stale-runtime-boundary.mjs",
+      "tests/browser/showcase-stale-diagnostic.mjs",
+      "tests/browser/showcase-stale-runtime-boundary.test.mjs"
+    ],
+    "behavior": "Label the post-extraction exact-count seam separately and capture bounded current-session, other-session, and producer detection counts for that existing relay window. The exactly-one assertion and picker code remain unchanged.",
+    "diagnostic_contract": "Only counts enter lifecycle_diagnostic.last_safe; no raw event, session ID, page content, selector, or error string is serialized."
+  },
+  "verification": {
+    "node_syntax_check": "passed for all four changed .mjs files",
+    "biome_format": "passed for all four changed .mjs files",
+    "git_diff_check": "passed",
+    "focused_node_tests": "not run: system volume was below the resource guard's 20 GiB floor at assignment; automatic CI runs showcase-stale-runtime-boundary.test.mjs"
+  },
+  "next_diagnostic": "A resource-admitted native rerun on the exact frozen artifact should read lifecycle_B_detection_count and its four bounded counts. If producer count exceeds one, investigate picker invocation and scope-selection ordering; if only relay count duplicates, inspect runtime delivery/observer; if other-session count is positive, fix the counting window or late delivery at its origin. Do not change the exactly-one criterion from this receipt alone.",
+  "limits": [
+    "No native verification in this lane; D158 and D42 remain open.",
+    "Signed-in nonadmin gating remains a separate unverified criterion."
+  ]
+}

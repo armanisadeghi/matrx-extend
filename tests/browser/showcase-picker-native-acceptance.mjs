@@ -44,6 +44,7 @@ import {
   observeShowcaseRelay,
   readShowcaseRelays,
   reinjectShowcasePicker,
+  summarizeShowcaseDetectionWindow,
 } from './showcase-stale-runtime-boundary.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -134,11 +135,13 @@ async function runLifecyclePositive({
   step,
   expectedSession = null,
   exactDetection = false,
+  onDetectionWindow = null,
 }) {
   const before = await step(
     'lifecycle_B_detection',
     async () => (await readShowcaseRelays(panel)).length,
   );
+  onDetectionWindow?.(before);
   await step('lifecycle_B_start', async () => {
     assert.ok((await panelState(panel)).picking, 'showcase_lifecycle_B_not_picking');
     assert.equal(await configRoot(panel), null, 'showcase_lifecycle_A_root_staged');
@@ -214,17 +217,19 @@ async function runLifecyclePositive({
       (state) => state?.rowCount && state.hasFirst && state.hasSecond && state.hasThird,
     ),
   );
+  if (exactDetection) stage('lifecycle_B_detection_count');
   const detectionCount = await step(
-    'lifecycle_B_detection',
+    exactDetection ? 'lifecycle_B_detection_count' : 'lifecycle_B_detection',
     async () =>
       (await readShowcaseRelays(panel))
         .slice(before)
         .filter((event) => event.kind === STALE_PICKER_KINDS.detected).length,
   );
-  if (exactDetection)
-    await step('lifecycle_B_detection', () =>
+  if (exactDetection) {
+    await step('lifecycle_B_detection_count', () =>
       assert.equal(detectionCount, 1, 'showcase_reinjection_duplicate_detection'),
     );
+  }
   return {
     session_id: detected.session_id,
     tab_id: detected.tab_id,
@@ -385,15 +390,19 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
   report.lifecycle_diagnostic = diagnostic;
   let installBoundary = null;
   let startWorld = null;
+  let activeSessionId = null;
+  let relayWindowStart = null;
   const sample = async () => {
-    const [state, overlay, relays, install, listeners, context] = await Promise.allSettled([
-      panelState(panel),
-      page.locator('#matrx-list-picker-host').count(),
-      readShowcaseRelays(panel),
-      installBoundary?.snapshot(),
-      boundary.listenerSnapshot(),
-      boundary.comparePickerContext(),
-    ]);
+    const [state, overlay, relays, producer, install, listeners, context] =
+      await Promise.allSettled([
+        panelState(panel),
+        page.locator('#matrx-list-picker-host').count(),
+        readShowcaseRelays(panel),
+        boundary.snapshot(),
+        installBoundary?.snapshot(),
+        boundary.listenerSnapshot(),
+        boundary.comparePickerContext(),
+      ]);
     return {
       ...(state.status === 'fulfilled' && {
         panel_start: state.value?.start === true,
@@ -402,6 +411,16 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
       }),
       ...(overlay.status === 'fulfilled' && { overlay_count: overlay.value }),
       ...(relays.status === 'fulfilled' && { relay_count: relays.value.length }),
+      ...(relays.status === 'fulfilled' &&
+        producer.status === 'fulfilled' &&
+        relayWindowStart !== null &&
+        activeSessionId &&
+        summarizeShowcaseDetectionWindow(
+          relays.value,
+          producer.value,
+          relayWindowStart,
+          activeSessionId,
+        )),
       ...(install.status === 'fulfilled' &&
         install.value && {
           install_count: install.value.observed.length,
@@ -454,6 +473,7 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
   );
   await step('lifecycle_B_start', () => boundary.capturePickerContext());
   const session = before.starts[0];
+  activeSessionId = session.session_id;
   await step('lifecycle_B_start', () => assert.match(session.session_id, /^[0-9a-f-]{36}$/i));
   startWorld = await step('lifecycle_reinject', () =>
     reinjectShowcasePicker(panel, session.tab_id, session.document_id, session.session_id),
@@ -496,6 +516,9 @@ async function runLifecycleReinjection({ page, panel, boundary, resourceAction, 
     step,
     expectedSession: session.session_id,
     exactDetection: true,
+    onDetectionWindow: (before) => {
+      relayWindowStart = before;
+    },
   });
   await step('lifecycle_B_extract', async () =>
     assert.deepEqual(

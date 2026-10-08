@@ -25,6 +25,7 @@ const TARGETS = new Set([
   'lifecycle_reinject',
   'lifecycle_B_scope',
   'lifecycle_B_detection',
+  'lifecycle_B_detection_count',
   'lifecycle_B_field',
   'lifecycle_B_done',
   'lifecycle_B_result',
@@ -61,6 +62,9 @@ const COUNTS = new Set([
   'cancel_count',
   'install_count',
   'detected_count',
+  'current_session_detected_count',
+  'other_session_detected_count',
+  'producer_current_detected_count',
   'listener_click_count',
   'listener_hover_count',
 ]);

@@ -7,7 +7,29 @@ import {
   armShowcaseInstallBoundary,
   armShowcaseStaleBoundary,
   assertFreshShowcasePickerContext,
+  summarizeShowcaseDetectionWindow,
 } from './showcase-stale-runtime-boundary.mjs';
+
+test('reinjection detection window separates current producer, relay duplication, and late prior events', () => {
+  const detected = STALE_PICKER_KINDS.detected;
+  const prior = { kind: detected, session_id: 'prior' };
+  const current = { kind: detected, session_id: 'current' };
+  const result = { kind: STALE_PICKER_KINDS.result, session_id: 'current' };
+  assert.deepEqual(
+    summarizeShowcaseDetectionWindow(
+      [prior, current, current, prior, result],
+      { observed: [prior, current] },
+      1,
+      'current',
+    ),
+    {
+      detected_count: 3,
+      current_session_detected_count: 2,
+      other_session_detected_count: 1,
+      producer_current_detected_count: 1,
+    },
+  );
+});
 
 async function createRuntimeBoundaryFixture() {
   const delivered = [];
