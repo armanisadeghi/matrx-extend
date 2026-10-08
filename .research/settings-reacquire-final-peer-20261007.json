@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "role": "fresh independent source re-review; zero implementation authorship",
+  "scope": "D167 diagnostic-only repair in exact own commits da3645dea57d4f71f2688be22c6d61acb317735a and d46aa7227f605a5efa564fa2808091f75e9ff240; source and automatic focused CI only",
+  "prior_important_findings": [
+    {
+      "finding": "A pre-reload Target.getTargetInfo can time out, mark the shared CDP transport fatal, and prevent a healthy Page.reload.",
+      "status": "ADDRESSED",
+      "evidence": "d46aa722 removes the pre-reload target query. reloadSettings now starts with Page.reload, then the existing guest and Settings readiness waits. The new collector is reached only from catch. tests/browser/settings-local-controls-acceptance.mjs:130-153; tests/browser/vault-owned-cdp.cjs:265-276."
+    },
+    {
+      "finding": "The focused guard did not exercise a successful reload with an unavailable target lookup.",
+      "status": "ADDRESSED",
+      "evidence": "The added successful reload case executes the extracted reloadSettings and real readiness waiter with Target.getTargetInfo unavailable; it asserts Page.reload first, no other diagnostic CDP command, one click, and zero collector calls. tests/browser/settings-reload-boundary.test.mjs:125-198."
+    }
+  ],
+  "verdict_a_diagnostic_readiness": {
+    "result": "PASS_SOURCE_ONLY",
+    "evidence": [
+      "On a failed reload, the catch rethrows the original error after attaching allowlisted observations; runCase retains the original error string, failure criterion, and diagnostic in the serialized case receipt. tests/browser/settings-local-controls-acceptance.mjs:130-153,490-504.",
+      "Pre-reload target identity is explicitly unobserved: beforeTargetObserved is false and sameAsBefore is null. The failure-only collector records expected sidepanel URL booleans, target/frame state, renderer readiness and visibility, runtime match, app root and Settings tab counts, and exact side-panel context count. tests/browser/settings-reload-boundary.mjs:130-214.",
+      "The original 10000 ms Settings readiness behavior and case status rules remain in place. Tests drive both successful and failed reloadSettings paths, including failure receipt serialization. tests/browser/settings-panel-driver.mjs:14-55; tests/browser/settings-reload-boundary.test.mjs:125-325."
+    ],
+    "limit": "No native retest in this lane; the diagnostic's behavior in a resource-admitted hosted Chrome run and the underlying T34 cause remain unverified."
+  },
+  "verdict_b_quality": {
+    "result": "PASS_WITH_EVIDENCE_LIMIT",
+    "evidence": [
+      "The new receipt field contains typed booleans, counts, and a fixed readiness enum; raw target IDs, URLs, titles, page text, token values, context entries, and CDP errors are not serialized by the collector. The focused failure case checks that raw target ID, title, and panel URL do not appear in its receipt. tests/browser/settings-reload-boundary.mjs:130-214; tests/browser/settings-reload-boundary.test.mjs:278-325.",
+      "Collector commands occur sequentially only after failure and each owned CDP command has a real 5000 ms timeout; a timeout marks the transport fatal, while each collector probe catches rejection and the original reload error is rethrown. tests/browser/vault-owned-cdp.cjs:7,40-46,265-276.",
+      "The push-triggered Focused acceptance run 37731217427 passed on exact repair SHA d46aa7227f605a5efa564fa2808091f75e9ff240: 66 tests passed, zero failed, including both successful and failed reload tests. The test is in package.json test:focused-acceptance and .github/workflows/focused-acceptance.yml executes that script. The exact-sha general CI run 37731217431 was cancelled by concurrency; no manual workflow dispatch was used."
+    ],
+    "test_limit": "The source has negative-control hooks for dropping receipt propagation and reintroducing preflight, but this re-review did not execute those mutations or a return-expected gut check. Automatic focused CI is a guard observation, not native acceptance."
+  },
+  "unverified": [
+    "The cause of the T34 same-panel Settings-tab reacquisition failure",
+    "T34 baseline restoration and downstream password-suggestion consumer",
+    "T64 signed-out guest precondition or Ask again behavior",
+    "Native diagnostic capture in a resource-admitted hosted run"
+  ]
+}
