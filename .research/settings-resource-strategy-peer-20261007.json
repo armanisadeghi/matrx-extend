@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "task_id": "settings397-resource-strategy-peer",
+  "lane": "independent-resource-evidence",
+  "status": "DONE",
+  "question": "Whether a bounded next Settings acceptance run on isolated macos-15 ARM is an evidence-backed resource strategy without changing thresholds or claiming product behavior.",
+  "verdict_A_resource_acceptance": {
+    "finding": "Run 37731576716 package and browser jobs were admitted and resource-valid; the guest was admitted, then became resource-invalid before a Settings case receipt. The run has zero native Settings acceptance credit and all native product verdicts remain unknown.",
+    "basis": "The boundary record reports no settings-case receipt and unverified T34/T64/reload/restoration/downstream consumers. Its retained artifact tree has five files: the three run-matched journals and two screenshots. Its enumerated evidence paths and hashes agree with the retained files; there is no Settings acceptance receipt in the tree.",
+    "screenshot_limit": "A panel-context-ready log and an opening screenshot do not prove that a Settings case step ran."
+  },
+  "verdict_B_evidence_quality": {
+    "finding": "The resource comparison supports a host-strategy experiment only. It does not establish that CPU pressure caused a product failure.",
+    "observations": [
+      {
+        "run": 37726731642,
+        "host": "macos-15-intel / X64, from the run record",
+        "guest": "4 logical CPUs; admitted at 1.17 one-minute load and 0.013 CPU busy; later CPU busy 0.98 and load 11.58; resource-invalid, wrapper exit 3. No native panel reached."
+      },
+      {
+        "run": 37729701473,
+        "host": "macos-15-intel, from the run record",
+        "guest": "4 logical CPUs; admitted at 2.16 load and 0.279 CPU busy; watched through load 1.99–2.47 and CPU busy up to 0.71 without resource invalidation; child exit 1, resource decision child_failed. Native steps opened Settings and failed at a product-step boundary; this is a distinct result from a resource-invalid run."
+      },
+      {
+        "run": 37731576716,
+        "host": "macos-15-intel, from the boundary record",
+        "guest": "4 logical CPUs; admitted at 2.02 load and 0.033 CPU busy; later CPU busy 0.99 at load 1.55, then 0.75 at load 3.5; resource-invalid, watchdog terminated child, wrapper exit 3. No Settings case receipt; native verdict unknown."
+      },
+      {
+        "run": 37729682008,
+        "host": "recent ARM hosted run, per supplied run grouping; journals report 3 logical CPUs",
+        "guest": "Admitted at 1.62 load and 0.059 CPU busy; four watch samples remained resource-healthy (load 1.68–1.83; CPU busy 0.03–0.33); child exit 0 and valid. Available memory was 5.67–5.81 GiB against 4 GiB required."
+      },
+      {
+        "run": 37731560399,
+        "host": "recent ARM hosted run, per supplied run grouping; journals report 3 logical CPUs",
+        "guest": "Admitted at 1.38 load and 0.049 CPU busy; watch remained healthy at 1.34 load / 0.46 CPU busy; child exit 0 and valid. Available memory was 5.74–5.95 GiB against 4 GiB required."
+      }
+    ],
+    "limits": [
+      "Runner labels identify GitHub-hosted images, not shared machine identity; these jobs are isolated. Do not infer same-host contention from equal Intel labels.",
+      "The ARM journals show resource-valid jobs with lower observed logical CPU count and memory headroom still above the recorded requirement. They do not promise a future ARM pass or demonstrate the Settings product case.",
+      "The supplied ARM examples are other acceptance workflows; this comparison is resource evidence, not a controlled cross-architecture Settings experiment."
+    ]
+  },
+  "recommendation": {
+    "next_step": "Run exactly one next lane-B Settings acceptance attempt on the existing allowed macos-15 ARM workflow input, with the same reviewed driver, frozen product identity, fixture/provenance requirements, and unchanged resource thresholds. Preserve original journals and the complete artifact tree, including the case receipt if produced.",
+    "interpretation": "Treat resource admission/final decision and native case outcome as separate verdicts. If resource-valid, evaluate the recorded native step; if resource-invalid, retain zero native acceptance credit and leave every unexecuted case unknown.",
+    "policy_change": false
+  },
+  "inputs_reviewed": [
+    ".research/settings397-boundary-native-20261007.json and its five retained original evidence files",
+    ".research/settings397-native-20261007.json and three original journals for run 37726731642",
+    ".research/settings397-fresh-native-20261007.json and three original journals for run 37729701473",
+    "Three resource journals each for runs 37729682008 and 37731560399"
+  ],
+  "verification": "Parsed the retained JSONL event streams and compared admission, watch samples, final resource decisions, CPU count, load, CPU busy fraction, available memory, and child exit. No workflow was dispatched and no source, policy, inventory, build, test, or browser state was changed."
+}
