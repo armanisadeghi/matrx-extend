@@ -1,0 +1,14 @@
+{
+  "scope": "Read-only triage of automatic CI run 37789659379 at source 99cb09b6c2d949250713e6fa4c641b5259ecd54e; no guard or test rerun and no source change.",
+  "finding": "The available evidence favors a test timing/lifecycle budget defect over a demonstrated resource-guard regression. The first subtest groups seven serial real-wrapper scenarios under one 30000 ms Node test timeout. A preceding automatic run with identical guard, test, and policy sources passed that subtest in 29031.809167 ms, leaving less than one second of margin. The target run expired at 30003.821875 ms. Its TAP output contains testTimeoutFailure only, with no assertion, guard event timeout, or guard stderr identifying a failed scenario. Host scheduling variance or one slower scenario remains possible; the log does not identify which scenario was active at expiry.",
+  "evidence": [
+    "CI 37789659379 resource-guard-integration log: first subtest at scripts/test-stabilization-resource-cpu-integration.mjs:420 reports ERR_TEST_FAILURE/testTimeoutFailure after 30003.821875 ms; following subtests pass in 9465.273916 and 10053.990959 ms.",
+    "Preceding automatic CI 37789394542: same first subtest passed in 29031.809167 ms; the resource-guard-integration job succeeded. git diff e1856b97..99cb09b6 is empty for the integration test, guard, and resource policy.",
+    "Current checkout and target source are identical for the integration test and guard (git diff 99cb09b6 -- those paths is empty). The first subtest invokes recovered, confirmed, pending-exit, completion-recovered, completion-unsafe, completion-expired, and completion-memory-unsafe serially.",
+    "Fixture sets watchIntervalSeconds and cpuSampleIntervalSeconds to 0.5 and swapWindowSeconds to 1. The completion-expired scenario injects a 3000 ms CPU measurement. These are deliberate wall-clock costs inside the 30000 ms aggregate timeout."
+  ],
+  "classification": "Likely inadequate aggregate test time budget; no demonstrated production guard regression. The specific slow scenario and runner load are unresolved.",
+  "next_discriminator": "On one isolated exact-head CI run, capture monotonic start/end times and last guard event for each of the seven scenarios, plus whether the child and scratch cleanup finish. If all seven complete with expected journals but aggregate runtime crosses 30 seconds, restructure the test into independently timed scenarios or derive a budget from measured worst-case runtime. If one scenario stalls before its expected event, diagnose that boundary from its event/journal trace before changing any timeout. Do not treat a larger timeout alone as a fix.",
+  "other_failure": "The same run's checks job failed Biome import ordering in records-readonly-native-acceptance.mjs; root reports that separately repaired at e53e7808, outside this triage.",
+  "status": "Cause not proven to scenario resolution; no green claim."
+}
