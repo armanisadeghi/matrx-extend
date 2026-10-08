@@ -53,7 +53,7 @@
     }
   ],
   "closure_requirement": "Meaningful diagnostic guard and fresh source review; resource-valid original native reproduction with causal attribution/repair as needed; actual replacement panel and post-reload T07/T09 independently verified.",
-  "next_action": "One resource-valid Scrape397 native diagnostic run using source-reviewed driver197f4053 or a verified descendant; preserve originalfailure and any missing-panel cause. Full reload and independent native retest still required. No blanket health/release claim.",
+  "next_action": "Preserve native success and diagnostic proof; on next independently needed reload run, retain bounded failure diagnostics if missing panel recurs. No speculative timing fix or unbounded repeat merely to force a failure.",
   "source_review": {
     "candidate_commit": "011ce6f2",
     "peer_commit": "d337ee3d",
@@ -74,5 +74,13 @@
       "duration_ms": 15282.355827
     }
   },
-  "diagnostic_repair_commits": ["011ce6f2", "b42a2425", "197f405303eed3f529ff6fcee475b3f8e8483525"]
+  "diagnostic_repair_commits": ["011ce6f2", "b42a2425", "197f405303eed3f529ff6fcee475b3f8e8483525"],
+  "latest_native_retest": {
+    "at": "2026-10-08T05:12:45.089846+00:00",
+    "run_id": "37729682008",
+    "evidence": ".research/scrape397-reply-native-20261007.json",
+    "independent_review": ".research/scrape397-reload-pass-peer-20261007.json",
+    "observed": "Full extension reload, replacement worker/panel, Open panel received/ok/opened, worker activated/running at click, and T07/T09 acceptance all pass; all3currentjournals valid.",
+    "ruling": "Diagnostic capture is verified on native success. Earlier missing-panel failure did not recur but has no confirmed cause or causal repair; keep original intermittent investigation open. D163/D164 are independently closed at their separate originaldriverbug scopes."
+  }
 }
