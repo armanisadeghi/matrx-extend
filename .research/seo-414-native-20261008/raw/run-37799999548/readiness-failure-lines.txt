@@ -1,0 +1,9 @@
+guest	Wait for measured package readiness	2026-10-08T15:21:38.2820180Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.69,"loadPerCpu":7.58,"healthy":0}
+guest	Wait for measured package readiness	2026-10-08T15:21:54.3197830Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.59,"loadPerCpu":5.7675,"healthy":1}
+guest	Wait for measured package readiness	2026-10-08T15:22:10.3423500Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.6,"loadPerCpu":4.5275,"healthy":0}
+guest	Wait for measured package readiness	2026-10-08T15:22:26.4570690Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.91,"loadPerCpu":3.965,"healthy":0}
+guest	Wait for measured package readiness	2026-10-08T15:22:42.9887190Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.74,"loadPerCpu":3.25,"healthy":0}
+guest	Wait for measured package readiness	2026-10-08T15:22:59.0758250Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.43,"loadPerCpu":2.59,"healthy":1}
+guest	Wait for measured package readiness	2026-10-08T15:23:15.2988160Z {"code":"RESOURCE_READINESS_SAMPLE","busy":0.87,"loadPerCpu":2.1725,"healthy":0}
+guest	Wait for measured package readiness	2026-10-08T15:23:15.3553390Z throw new Error('RESOURCE_READINESS_EXPIRED');
+guest	Wait for measured package readiness	2026-10-08T15:23:15.3657720Z Error: RESOURCE_READINESS_EXPIRED

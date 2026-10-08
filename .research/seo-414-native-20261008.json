@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0170 controlled native acceptance partition on development414",
+  "status": "TERMINAL_NO_PRODUCT_ACCEPTANCE_RESOURCE_PRECONDITIONS_FAILED",
+  "scope": "One bounded lane B guest SEO attempt, plus one fresh-host admission retry after an explicit transient-capacity hypothesis; no source changes.",
+  "acceptance_credit": "none",
+  "product": {
+    "development_ci_run_id": 37790643945,
+    "development_ci_conclusion": "success",
+    "development_source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "development_artifact_id": 11556064167,
+    "development_artifact_name": "matrx-extend-development-test-e7b7dc1ecae946369cebb482915faf7ef792c692-37790643945-1",
+    "development_artifact_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "imported_tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "version": "0.2.414",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_expired_at_dispatch": false
+  },
+  "dispatch_inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": false,
+    "development_run_id": 37790643945,
+    "development_artifact_id": 11556064167,
+    "shared_auth_secrets_used": false
+  },
+  "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+  "excluded_cases": ["T09 volatile public detail", "T09 optional metadata fixture"],
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1008-T01",
+      "status": "unverified",
+      "reason": "Native browser exercise did not start."
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "status": "unverified",
+      "reason": "Native browser exercise did not start."
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "status": "unverified",
+      "reason": "Native browser exercise did not start."
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "status": "unverified",
+      "reason": "Native browser exercise did not start."
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "status": "unverified",
+      "reason": "Native browser exercise did not start; volatile detail and optional metadata were excluded by scope."
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "status": "unverified",
+      "reason": "Native browser exercise did not start."
+    }
+  ],
+  "required_controlled_targets": [
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtarget": "guest_social_missing_tags_clipboard_before_reaudit",
+      "status": "unverified",
+      "reason": "Native browser exercise was skipped before Chrome setup."
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "guest_reaudit_captures_changed_page_metadata",
+      "status": "unverified",
+      "reason": "Native browser exercise was skipped before Chrome setup."
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtarget": "guest_social_missing_tags_clipboard_after_reaudit",
+      "status": "unverified",
+      "reason": "Native browser exercise was skipped before Chrome setup."
+    }
+  ],
+  "runs": [
+    {
+      "run_id": 37799458419,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37799458419",
+      "workflow_head_sha": "c00a53429dbe1fea23805ad8d605cd84ab76c29a",
+      "runner_label": "macos-15-intel",
+      "runner_arch": "X64",
+      "machine": "x86_64",
+      "conclusion": "failure",
+      "started_at_utc": "2026-10-08T15:17:12Z",
+      "completed_at_utc": "2026-10-08T15:19:46Z",
+      "last_completed_step": "Wait for measured package readiness",
+      "failure_step": "Prepare pinned browser driver under an owned permit",
+      "resource": {
+        "package_permit": "refused",
+        "resource_invalid": false,
+        "exit_code": 2,
+        "reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+        "cpu_busy_fraction": 0.71,
+        "cpu_busy_samples": [0.46, 1, 0.57, 0.98, 0.81, 0.64, 0.51],
+        "one_minute_load": 12.11,
+        "logical_cpus": 4,
+        "available_memory_gib": 12.6,
+        "swap_used_mib": 0,
+        "resource_journal": "raw/run-37799458419/hosted-package-37799458419-1.jsonl",
+        "resource_journal_sha256": "5793b59c775cb700cfaedff40ec50ed1d64f302c9926d9cef44c74bd1b9d9864"
+      },
+      "failure_boundary": "Package preparation was refused at resource preflight. Browser readiness, Chromium setup, and the native SEO step were skipped; no target action started.",
+      "uploaded_artifact_id": 11559943573,
+      "uploaded_artifact_digest": "sha256:2657bd5d35548361502b5e8a5de7153f7ade91c89b375bcd3db26de0978fd012",
+      "target_receipt": "No SEO acceptance receipt was uploaded. The uploaded artifact contained historical resource journals; those are excluded from this report and raw evidence."
+    },
+    {
+      "run_id": 37799999548,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37799999548",
+      "workflow_head_sha": "ec3432f9c0211a257611eb44eee2e59c98c5c03d",
+      "runner_label": "macos-15-intel",
+      "runner_arch": "X64",
+      "machine": "x86_64",
+      "conclusion": "failure",
+      "attempt_kind": "one fresh-host admission retry; same artifact, scope, architecture, and guard",
+      "started_at_utc": "2026-10-08T15:21:02Z",
+      "completed_at_utc": "2026-10-08T15:23:26Z",
+      "last_completed_step": "Disable indexing on the disposable hosted VM",
+      "failure_step": "Wait for measured package readiness",
+      "resource": {
+        "admission": "not_reached",
+        "readiness": "expired",
+        "healthy_samples_required_consecutively": 3,
+        "samples": [
+          { "cpu_busy_fraction": 0.69, "load_per_cpu": 7.58, "consecutive_healthy": 0 },
+          { "cpu_busy_fraction": 0.59, "load_per_cpu": 5.7675, "consecutive_healthy": 1 },
+          { "cpu_busy_fraction": 0.6, "load_per_cpu": 4.5275, "consecutive_healthy": 0 },
+          { "cpu_busy_fraction": 0.91, "load_per_cpu": 3.965, "consecutive_healthy": 0 },
+          { "cpu_busy_fraction": 0.74, "load_per_cpu": 3.25, "consecutive_healthy": 0 },
+          { "cpu_busy_fraction": 0.43, "load_per_cpu": 2.59, "consecutive_healthy": 1 },
+          { "cpu_busy_fraction": 0.87, "load_per_cpu": 2.1725, "consecutive_healthy": 0 }
+        ],
+        "failure_code": "RESOURCE_READINESS_EXPIRED",
+        "readiness_evidence": "raw/run-37799999548/readiness-failure-lines.txt",
+        "readiness_evidence_sha256": "f3185f63d6578b2f4199decc83a3b3c501ee9ac5a52f15d9ef9bb8cc0f00a80d"
+      },
+      "failure_boundary": "The seven-sample package-readiness window never reached three consecutive healthy samples. The package permit and every browser/native step were skipped; no target action started.",
+      "uploaded_artifact_id": 11560232323,
+      "uploaded_artifact_digest": "sha256:521316226a82626a48e35aa3a9af81472f0bfbdbb4ce55928e2be850953e3ab8",
+      "target_receipt": "No SEO acceptance receipt was uploaded. The uploaded artifact contained historical resource journals; those are excluded from this report and raw evidence."
+    }
+  ],
+  "result": {
+    "target_actions_started": false,
+    "acceptance_targets_passed": 0,
+    "acceptance_targets_failed": 0,
+    "acceptance_targets_unverified": 3,
+    "product_defect_established": false,
+    "d183_interrupted_target_persistence_proven": false,
+    "inventory_promotion": false,
+    "causal_repair_claim": false,
+    "next_action": "Diagnose hosted Intel runner resource readiness with the two terminal receipts. Do not retry this environment or change guard thresholds."
+  },
+  "privacy": "Lane B used no shared authentication secrets. Only the run-specific resource journal and readiness sample/failure lines are retained; unrelated historical journals are excluded."
+}
