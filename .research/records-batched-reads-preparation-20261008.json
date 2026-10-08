@@ -1,0 +1,18 @@
+{
+  "scope": "source-only preparation for EXT-F-4130-C02, C03, and C08 in the existing owned Records fixture session",
+  "status": "focused_unit_green_native_pending_independent_review",
+  "source_contract": {
+    "live_server_git_sha": "980226cf48b0e8606ed41d8fb48be0bfbfbd759d",
+    "local_server_contract_diff": "No Records tool or store changes between live server SHA and inspected local aidream HEAD feb1c935.",
+    "oracle": "C02 requires returned owned table ID, name and organization; C03 requires the same structural table match and excludes row text; C08 requires the returned row ID, original version, author, time and synthetic change."
+  },
+  "behavior": "Each action goes through the manual Tools UI with request, completion and visible-result checks. The existing fixture finally block still owns archival and verified absence.",
+  "red_guard": "Before implementation, the callback reported only C04/C05, failing the expected C02/C03/C08 positive-read coverage.",
+  "green_verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-positive-fixture.test.mjs",
+    "result": "44 passed, 0 failed; wrong or missing C02/C03/C08 results fail and still enter fixture cleanup."
+  },
+  "format_check": "pnpm exec biome check on the two owned browser files passed; git diff --check passed.",
+  "limits": "Source-only evidence. C02 limit 500 and C08 limit 50 are wire-bounded; native product behavior and fixture cleanup for this expanded batch remain unverified. Fresh agent seats were unavailable because of ENOSPC, so the authorized existing seat was reused.",
+  "release": "No native run, credential access, build or release was performed. Root owns independent review, hosted source gate and any native authorization."
+}

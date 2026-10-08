@@ -164,6 +164,7 @@ const negativeInputs = [
   { action: 'metadata_search', args: { organization_id: organizationId, query: null } },
   { action: 'record_read', args: { record_id: 'not-a-uuid' } },
   { action: 'record_aggregate', args: { table_id: 'not-a-uuid', measure: 'count' } },
+  { action: 'record_history', args: { record_id: 'not-a-uuid' } },
 ];
 const negativeResult = (field) => ({
   success: false,
@@ -171,14 +172,33 @@ const negativeResult = (field) => ({
 });
 const fixtureTableId = '3b80fd38-4db8-4cc9-8629-f8b751d5b337';
 const fixtureRowId = '6cf44320-25a4-4fa9-9107-254cf18d6f88';
-const fixtureRowName = 'EXT-F-4130-owned-row';
+const fixtureTableName = 'EXT-F-4130-owned';
+const fixtureRowName = `${fixtureTableName}-row`;
 const positiveInputs = [
+  {
+    action: 'table_list',
+    args: { organization_id: organizationId, include_platform_tables: true, limit: 500 },
+  },
+  {
+    action: 'metadata_search',
+    args: { organization_id: organizationId, query: fixtureTableName, limit: 50 },
+  },
+  {
+    action: 'metadata_search',
+    args: { organization_id: organizationId, query: fixtureRowName, limit: 50 },
+  },
   { action: 'record_read', args: { record_id: fixtureRowId } },
   {
     action: 'record_aggregate',
     args: { table_id: fixtureTableId, measure: 'count', match: { name: fixtureRowName } },
   },
+  {
+    action: 'record_history',
+    args: { record_id: fixtureRowId, organization_id: organizationId, limit: 50 },
+  },
 ];
+const allInputs = [input, invalid, input, metadataInput, ...negativeInputs, ...positiveInputs];
+const firstPositiveIndex = 4 + negativeInputs.length;
 const positiveRead = (value = fixtureRowName) => ({
   success: true,
   output: {
@@ -203,8 +223,72 @@ const positiveAggregate = (count = 1) => ({
     buckets: [{ row_count: count, measure: { count } }],
   },
 });
+const positiveOwnedList = (id = fixtureTableId) => ({
+  success: true,
+  output: {
+    action: 'table_list',
+    tables: [{ id, name: fixtureTableName, organization_id: organizationId }],
+    count: 1,
+    organizations_covered: [organizationId],
+  },
+});
+const positiveOwnedSearch = (id = fixtureTableId) => ({
+  success: true,
+  output: {
+    action: 'metadata_search',
+    query: fixtureTableName,
+    matches: [{ id, kind: 'table', name: fixtureTableName, organization_id: organizationId }],
+    count: 1,
+    organizations_covered: [organizationId],
+  },
+});
+const rowTextNotStructure = () => ({
+  success: true,
+  output: {
+    action: 'metadata_search',
+    query: fixtureRowName,
+    matches: [],
+    count: 0,
+    organizations_covered: [organizationId],
+  },
+});
+const positiveHistory = (version = 1, after = fixtureRowName) => ({
+  success: true,
+  output: {
+    action: 'record_history',
+    record_id: fixtureRowId,
+    count: 1,
+    versions: [
+      {
+        version,
+        when: '2026-10-08T22:00:00Z',
+        operation: 'created',
+        who: { kind: 'user', name: 'Admin' },
+        changed: [{ field: 'Name', key: 'name', before: null, after }],
+      },
+    ],
+  },
+});
+const defaultCompletions = [
+  positive('appointments'),
+  refusal,
+  positive('invoices'),
+  metadataResult(),
+  negativeResult('query'),
+  negativeResult('record_id'),
+  negativeResult('table_id'),
+  negativeResult('record_id'),
+  positiveOwnedList(),
+  positiveOwnedSearch(),
+  rowTextNotStructure(),
+  positiveRead(),
+  positiveAggregate(),
+  positiveHistory(),
+];
 const tableListSchema = (visibilityField = 'include_platform_tables') => ({
-  action: { enum: ['table_list', 'metadata_search', 'record_read', 'record_aggregate'] },
+  action: {
+    enum: ['table_list', 'metadata_search', 'record_read', 'record_aggregate', 'record_history'],
+  },
   $variants: {
     table_list: {
       [visibilityField]: { type: 'boolean', default: false },
@@ -214,23 +298,14 @@ const tableListSchema = (visibilityField = 'include_platform_tables') => ({
     metadata_search: { query: { type: 'string' } },
     record_read: { record_id: { type: 'string' } },
     record_aggregate: { table_id: { type: 'string' } },
+    record_history: { record_id: { type: 'string' } },
   },
 });
 
 function runDriver({
   platform = 'darwin',
   token = 'admin-session',
-  completions = [
-    positive('appointments'),
-    refusal,
-    positive('invoices'),
-    metadataResult(),
-    negativeResult('query'),
-    negativeResult('record_id'),
-    negativeResult('table_id'),
-    positiveRead(),
-    positiveAggregate(),
-  ],
+  completions = defaultCompletions,
   changedVisible = false,
   visibleMode = 'normal',
   responseMode = 'normal',
@@ -246,7 +321,12 @@ function runDriver({
   fixtureHelper = async ({ exercise, onStage }) => {
     onStage('records_fixture_table_create');
     try {
-      await exercise({ tableId: fixtureTableId, rowId: fixtureRowId, rowName: fixtureRowName });
+      await exercise({
+        tableId: fixtureTableId,
+        rowId: fixtureRowId,
+        rowName: fixtureRowName,
+        rowVersion: 1,
+      });
     } finally {
       onStage('records_fixture_cleanup');
     }
@@ -363,34 +443,12 @@ function runDriver({
     if (script.includes('selectionStart'))
       return editor.focused && editor.start === 0 && editor.end === editor.value.length;
     if (script.includes("querySelector('textarea')?.value"))
-      return (
-        editor.value ===
-        JSON.stringify(
-          runs === 1
-            ? invalid
-            : runs === 3
-              ? metadataInput
-              : runs >= 7
-                ? positiveInputs[runs - 7]
-                : runs >= 4
-                  ? negativeInputs[runs - 4]
-                  : input,
-        )
-      );
+      return editor.value === JSON.stringify(allInputs[runs]);
     return true;
   };
   const click = async (_panel, kind, label) => {
     if (label === 'Run') {
-      const expected =
-        runs === 1
-          ? invalid
-          : runs === 3
-            ? metadataInput
-            : runs >= 7
-              ? positiveInputs[runs - 7]
-              : runs >= 4
-                ? negativeInputs[runs - 4]
-                : input;
+      const expected = allInputs[runs];
       assert.equal(editor.value, JSON.stringify(expected), 'Run requires actual input');
       const requestId = `records-execute-${runs++}`;
       events.emit('Network.requestWillBeSent', {
@@ -473,7 +531,7 @@ function runDriver({
 test('actual callback requires finished matching success, refusal, and post-reload success', async () => {
   const scenario = runDriver();
   await scenario.run();
-  assert.equal(scenario.runs, 9);
+  assert.equal(scenario.runs, allInputs.length);
   assert.equal(scenario.reloads, 1);
   assert.equal(scenario.report.native_stage, 'admin_authenticated');
   assert.equal(scenario.report.result?.success, true);
@@ -536,12 +594,18 @@ test('actual callback requires finished matching success, refusal, and post-relo
         error_class: 'invalid_arguments',
         positive_read_verified: false,
       },
+      {
+        inventory_case: 'EXT-F-4130-C08',
+        action: 'record_history',
+        error_class: 'invalid_arguments',
+        positive_read_verified: false,
+      },
     ],
   );
   assert.equal(scenario.active.size, 0);
   assert.deepEqual(
     scenario.report.positive_reads.map((row) => row.inventory_case),
-    ['EXT-F-4130-C04', 'EXT-F-4130-C05'],
+    ['EXT-F-4130-C02', 'EXT-F-4130-C03', 'EXT-F-4130-C04', 'EXT-F-4130-C05', 'EXT-F-4130-C08'],
   );
   assert.equal(scenario.report.fixture_cleanup.archived_verified, true);
   assert.doesNotMatch(
@@ -553,7 +617,7 @@ test('actual callback requires finished matching success, refusal, and post-relo
 test('trusted input helper replaces an existing draft on Linux', async () => {
   const scenario = runDriver({ platform: 'linux' });
   await scenario.run();
-  assert.equal(scenario.runs, 9);
+  assert.equal(scenario.runs, allInputs.length);
 });
 
 test('missing selection refuses before execution', async () => {
@@ -777,11 +841,13 @@ test('actual callback refuses malformed read inputs with their own field named',
     negativeResult('query'),
     negativeResult('record_id'),
     negativeResult('table_id'),
+    negativeResult('record_id'),
   ];
   for (const [index, field, action] of [
     [4, 'query', 'metadata_search'],
     [5, 'record_id', 'record_read'],
     [6, 'table_id', 'record_aggregate'],
+    [7, 'record_id', 'record_history'],
   ]) {
     for (const [bad, failure] of [
       [{ success: true, output: { action } }, /false_success/],
@@ -810,6 +876,7 @@ test('negative read action or field missing from live card contract refuses befo
       action: { enum: baseline.action.enum.filter((action) => action !== 'record_read') },
     },
     { ...baseline, $variants: { ...baseline.$variants, record_aggregate: {} } },
+    { ...baseline, $variants: { ...baseline.$variants, record_history: {} } },
   ]) {
     const scenario = runDriver({ serverSchema });
     await assert.rejects(scenario.run(), /records_negative_read_contract_drift/);
@@ -886,14 +953,29 @@ test('successful callback retains all exact completion guards and safe shapes', 
       limit_integer: true,
     },
   });
-  assert.equal(saved.completion_diagnostics.length, 9);
+  assert.equal(saved.completion_diagnostics.length, allInputs.length);
   assert.deepEqual(
     saved.completion_diagnostics.map(({ failure }) => failure),
-    [null, null, null, null, null, null, null, null, null],
+    Array.from({ length: allInputs.length }, () => null),
   );
   assert.deepEqual(
     saved.completion_diagnostics.map(({ completion }) => completion?.action),
-    ['table_list', null, 'table_list', 'metadata_search', null, null, null, null, null],
+    [
+      'table_list',
+      null,
+      'table_list',
+      'metadata_search',
+      null,
+      null,
+      null,
+      null,
+      'table_list',
+      'metadata_search',
+      'metadata_search',
+      null,
+      null,
+      null,
+    ],
   );
   assert.equal(saved.completion_diagnostics[0].completion.tables_count, 1);
   assert.equal(saved.completion_diagnostics[3].completion.matches_count, 1);
@@ -901,25 +983,109 @@ test('successful callback retains all exact completion guards and safe shapes', 
 
 test('positive Records reads reject a different owned value or aggregate count', async () => {
   for (const [index, replacement, error] of [
-    [7, positiveRead('different-row'), /records_positive_read_wrong_value/],
-    [8, positiveAggregate(2), /records_positive_aggregate_wrong_rows/],
+    [firstPositiveIndex + 3, positiveRead('different-row'), /records_positive_read_wrong_value/],
+    [firstPositiveIndex + 4, positiveAggregate(2), /records_positive_aggregate_wrong_rows/],
   ]) {
-    const completions = [
-      positive('appointments'),
-      refusal,
-      positive('invoices'),
-      metadataResult(),
-      negativeResult('query'),
-      negativeResult('record_id'),
-      negativeResult('table_id'),
-      positiveRead(),
-      positiveAggregate(),
-    ];
+    const completions = [...defaultCompletions];
     completions[index] = replacement;
     const scenario = runDriver({ completions });
     await assert.rejects(scenario.run(), error);
     assert.equal(scenario.stages.includes('records_fixture_cleanup'), true);
     assert.equal(scenario.report.fixture_cleanup, null);
     assert.equal(scenario.active.size, 0);
+  }
+});
+
+test('created-table and structure-search credit requires exact returned fixture identity', async () => {
+  for (const [index, replacement, failure, creditedBeforeFailure] of [
+    [firstPositiveIndex, positiveOwnedList(fixtureRowId), /records_owned_list_fixture_missing/, []],
+    [
+      firstPositiveIndex + 1,
+      positiveOwnedSearch(fixtureRowId),
+      /records_owned_search_fixture_mismatch/,
+      ['EXT-F-4130-C02'],
+    ],
+    [
+      firstPositiveIndex + 1,
+      { ...positiveOwnedSearch(), output: { ...positiveOwnedSearch().output, matches: [] } },
+      /records_owned_search_count_mismatch/,
+      ['EXT-F-4130-C02'],
+    ],
+    [
+      firstPositiveIndex + 2,
+      {
+        ...rowTextNotStructure(),
+        output: {
+          ...rowTextNotStructure().output,
+          matches: [
+            {
+              id: fixtureRowId,
+              kind: 'record',
+              name: fixtureRowName,
+              organization_id: organizationId,
+            },
+          ],
+          count: 1,
+        },
+      },
+      /records_row_text_search_leaked_row/,
+      ['EXT-F-4130-C02'],
+    ],
+  ]) {
+    const completions = [...defaultCompletions];
+    completions[index] = replacement;
+    const scenario = runDriver({ completions });
+    await assert.rejects(scenario.run(), failure);
+    assert.deepEqual(
+      scenario.report.positive_reads.map(({ inventory_case }) => inventory_case),
+      creditedBeforeFailure,
+    );
+    assert.equal(scenario.stages.includes('records_fixture_cleanup'), true);
+    assert.equal(scenario.report.fixture_cleanup, null);
+    assert.equal(scenario.active.size, 0);
+  }
+});
+
+test('history credit requires the returned row version, author, time, and synthetic change', async () => {
+  for (const [replacement, failure] of [
+    [positiveHistory(2), /records_positive_history_original_version_missing/],
+    [
+      { ...positiveHistory(), output: { ...positiveHistory().output, record_id: fixtureTableId } },
+      /records_positive_history_wrong_row/,
+    ],
+    [
+      {
+        ...positiveHistory(),
+        output: {
+          ...positiveHistory().output,
+          versions: [{ ...positiveHistory().output.versions[0], when: null }],
+        },
+      },
+      /records_positive_history_when_missing/,
+    ],
+    [
+      {
+        ...positiveHistory(),
+        output: {
+          ...positiveHistory().output,
+          versions: [
+            { ...positiveHistory().output.versions[0], who: { kind: 'user', name: null } },
+          ],
+        },
+      },
+      /records_positive_history_author_missing/,
+    ],
+    [positiveHistory(1, 'different-row'), /records_positive_history_row_change_missing/],
+  ]) {
+    const completions = [...defaultCompletions];
+    completions[firstPositiveIndex + 5] = replacement;
+    const scenario = runDriver({ completions });
+    await assert.rejects(scenario.run(), failure);
+    assert.deepEqual(
+      scenario.report.positive_reads.map(({ inventory_case }) => inventory_case),
+      ['EXT-F-4130-C02', 'EXT-F-4130-C03', 'EXT-F-4130-C04', 'EXT-F-4130-C05'],
+    );
+    assert.equal(scenario.stages.includes('records_fixture_cleanup'), true);
+    assert.equal(scenario.report.fixture_cleanup, null);
   }
 });

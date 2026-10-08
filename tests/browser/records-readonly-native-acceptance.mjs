@@ -546,6 +546,7 @@ try {
               ['metadata_search', 'query'],
               ['record_read', 'record_id'],
               ['record_aggregate', 'table_id'],
+              ['record_history', 'record_id'],
             ].map(([action, field]) => ({
               action_available: schema.action?.enum?.includes(action) === true,
               field_available: Object.hasOwn(schema.$variants?.[action] ?? {}, field),
@@ -555,7 +556,7 @@ try {
       );
       assert.deepEqual(
         negativeContract,
-        Array.from({ length: 3 }, () => ({ action_available: true, field_available: true })),
+        Array.from({ length: 4 }, () => ({ action_available: true, field_available: true })),
         'records_negative_read_contract_drift',
       );
       for (const { caseId, action, args, field } of [
@@ -576,6 +577,12 @@ try {
           action: 'record_aggregate',
           args: { table_id: 'not-a-uuid', measure: 'count' },
           field: 'table_id',
+        },
+        {
+          caseId: 'EXT-F-4130-C08',
+          action: 'record_history',
+          args: { record_id: 'not-a-uuid' },
+          field: 'record_id',
         },
       ]) {
         const invalidRead = { action, args };
@@ -613,7 +620,124 @@ try {
         onStage: stage,
         onFailure: (diagnostic) => report.fixture_diagnostics.push(diagnostic),
         transportFailureClass,
-        exercise: async ({ tableId, rowId, rowName }) => {
+        exercise: async ({ tableId, rowId, rowName, rowVersion }) => {
+          assert.ok(rowName.endsWith('-row'), 'records_fixture_row_name_invalid');
+          const tableName = rowName.slice(0, -'-row'.length);
+          const ownedListInput = {
+            action: 'table_list',
+            args: { organization_id: approved.id, include_platform_tables: true, limit: 500 },
+          };
+          await enterRecordsInput(panel, evaluate, stage, ownedListInput, process.platform);
+          const ownedList = await execute(
+            ownedListInput,
+            reloadBearerHash,
+            'records_owned_table_list',
+          );
+          assert.equal(ownedList.success, true, 'records_owned_list_refused');
+          assert.equal(ownedList.output?.action, 'table_list', 'records_owned_list_wrong_action');
+          assert.ok(Array.isArray(ownedList.output?.tables), 'records_owned_list_tables_missing');
+          assert.equal(
+            ownedList.output.count,
+            ownedList.output.tables.length,
+            'records_owned_list_count_mismatch',
+          );
+          assert.ok(
+            ownedList.output.organizations_covered?.includes(approved.id),
+            'records_owned_list_org_not_covered',
+          );
+          assert.equal(
+            ownedList.output.tables.filter(
+              (table) =>
+                table.id === tableId &&
+                table.name === tableName &&
+                table.organization_id === approved.id,
+            ).length,
+            1,
+            'records_owned_list_fixture_missing',
+          );
+          report.positive_reads.push({
+            inventory_case: 'EXT-F-4130-C02',
+            action: 'table_list',
+            finished: true,
+            status: 200,
+            completion_observed: true,
+            visible: true,
+            owned_fixture_matched: true,
+          });
+
+          const ownedSearchInput = {
+            action: 'metadata_search',
+            args: { organization_id: approved.id, query: tableName, limit: 50 },
+          };
+          await enterRecordsInput(panel, evaluate, stage, ownedSearchInput, process.platform);
+          const ownedSearch = await execute(
+            ownedSearchInput,
+            reloadBearerHash,
+            'records_owned_metadata_search',
+          );
+          assert.equal(ownedSearch.success, true, 'records_owned_search_refused');
+          assert.equal(
+            ownedSearch.output?.action,
+            'metadata_search',
+            'records_owned_search_wrong_action',
+          );
+          assert.equal(ownedSearch.output.query, tableName, 'records_owned_search_wrong_query');
+          assert.ok(
+            Array.isArray(ownedSearch.output.matches),
+            'records_owned_search_matches_missing',
+          );
+          assert.equal(
+            ownedSearch.output.count,
+            ownedSearch.output.matches.length,
+            'records_owned_search_count_mismatch',
+          );
+          assert.ok(
+            ownedSearch.output.organizations_covered?.includes(approved.id),
+            'records_owned_search_org_not_covered',
+          );
+          assert.deepEqual(
+            ownedSearch.output.matches.map(({ kind, id, name, organization_id }) => ({
+              kind,
+              id,
+              name,
+              organization_id,
+            })),
+            [{ kind: 'table', id: tableId, name: tableName, organization_id: approved.id }],
+            'records_owned_search_fixture_mismatch',
+          );
+          const rowTextSearchInput = {
+            action: 'metadata_search',
+            args: { organization_id: approved.id, query: rowName, limit: 50 },
+          };
+          await enterRecordsInput(panel, evaluate, stage, rowTextSearchInput, process.platform);
+          const rowTextSearch = await execute(
+            rowTextSearchInput,
+            reloadBearerHash,
+            'records_owned_row_text_not_structure',
+          );
+          assert.equal(rowTextSearch.success, true, 'records_row_text_search_refused');
+          assert.equal(
+            rowTextSearch.output?.action,
+            'metadata_search',
+            'records_row_text_search_wrong_action',
+          );
+          assert.equal(rowTextSearch.output.query, rowName, 'records_row_text_search_wrong_query');
+          assert.deepEqual(rowTextSearch.output.matches, [], 'records_row_text_search_leaked_row');
+          assert.equal(rowTextSearch.output.count, 0, 'records_row_text_search_wrong_count');
+          assert.ok(
+            rowTextSearch.output.organizations_covered?.includes(approved.id),
+            'records_row_text_search_org_not_covered',
+          );
+          report.positive_reads.push({
+            inventory_case: 'EXT-F-4130-C03',
+            action: 'metadata_search',
+            finished: true,
+            status: 200,
+            completion_observed: true,
+            visible: true,
+            owned_fixture_matched: true,
+            row_text_excluded: true,
+          });
           for (const [caseId, action, args] of [
             ['EXT-F-4130-C04', 'record_read', { record_id: rowId }],
             [
@@ -692,6 +816,64 @@ try {
               owned_fixture_matched: true,
             });
           }
+          assert.ok(
+            Number.isInteger(rowVersion) && rowVersion > 0,
+            'records_history_row_version_missing',
+          );
+          const historyInput = {
+            action: 'record_history',
+            args: { record_id: rowId, organization_id: approved.id, limit: 50 },
+          };
+          await enterRecordsInput(panel, evaluate, stage, historyInput, process.platform);
+          const history = await execute(historyInput, reloadBearerHash, 'records_positive_history');
+          assert.equal(history.success, true, 'records_positive_history_refused');
+          assert.equal(
+            history.output?.action,
+            'record_history',
+            'records_positive_history_wrong_action',
+          );
+          assert.equal(history.output.record_id, rowId, 'records_positive_history_wrong_row');
+          assert.ok(
+            Array.isArray(history.output.versions),
+            'records_positive_history_versions_missing',
+          );
+          assert.equal(
+            history.output.count,
+            history.output.versions.length,
+            'records_positive_history_count_mismatch',
+          );
+          const original = history.output.versions.find(
+            (version) => version.version === rowVersion,
+          );
+          assert.ok(original, 'records_positive_history_original_version_missing');
+          assert.ok(
+            typeof original.when === 'string' && Number.isFinite(Date.parse(original.when)),
+            'records_positive_history_when_missing',
+          );
+          assert.equal(original.who?.kind, 'user', 'records_positive_history_author_wrong_kind');
+          assert.ok(
+            typeof original.who?.name === 'string' && original.who.name.trim().length > 0,
+            'records_positive_history_author_missing',
+          );
+          assert.ok(
+            typeof original.operation === 'string' && original.operation.trim().length > 0,
+            'records_positive_history_operation_missing',
+          );
+          assert.ok(
+            original.changed?.some((change) => change.after === rowName),
+            'records_positive_history_row_change_missing',
+          );
+          report.positive_reads.push({
+            inventory_case: 'EXT-F-4130-C08',
+            action: 'record_history',
+            finished: true,
+            status: 200,
+            completion_observed: true,
+            visible: true,
+            owned_fixture_matched: true,
+            original_version_observed: true,
+            author_and_time_observed: true,
+          });
         },
       });
       assert.equal(fixture.archived_verified, true, 'records_fixture_cleanup_unverified');
