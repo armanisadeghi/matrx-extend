@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "review_id": "seo-full-live-peer-20261008-1610",
+  "reviewed_report": ".research/seo-full-arm-414-native-20261008-1552.json",
+  "review_scope": "Independent source and byte review of one retained native guest SEO attempt. No browser, workflow, build, or source mutation was performed.",
+  "verdicts": {
+    "A_native_outcome": {
+      "verdict": "bounded partial evidence is admissible; no whole-feature or whole-case acceptance",
+      "workflow_run": 37804374798,
+      "workflow_commit": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+      "workflow_conclusion": "success",
+      "product_artifact": {
+        "version": "0.2.414",
+        "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+        "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+        "kind": "local_dev_unpacked",
+        "publish_state": "not_published"
+      },
+      "receipt": {
+        "status": "partial",
+        "targets": 24,
+        "pass": 23,
+        "unverified": 1,
+        "fail": 0,
+        "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+        "excluded_cases": [],
+        "whole_seo_claim": false,
+        "member_admin_store_modes_exercised": false
+      },
+      "current_run_resources": {
+        "package": "valid",
+        "browser": "valid",
+        "guest": "valid",
+        "resource_invalid": false,
+        "guest_cpu_pending_recovered": true
+      },
+      "controlled_targets": "18 targets were exercised in the controlled portion of this full-scope run and passed; the retained current receipt contains their outcomes. Their prior controlled-run ancestry is not needed to admit the current receipt.",
+      "new_t09_targets": [
+        {
+          "subtarget": "guest_manual_link_counts_match_live_dom",
+          "status": "pass",
+          "public_source": "https://en.wikipedia.org/wiki/HTML",
+          "observed": {"internal": 1785, "external": 410},
+          "basis": "Independent public-tab anchor count compared with visible native SEO values and total hint; stable public DOM before and after Re-audit."
+        },
+        {
+          "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+          "status": "pass",
+          "public_source": "https://en.wikipedia.org/wiki/HTML",
+          "observed": {"total": 29, "missing_alt": 10},
+          "basis": "Independent public-tab img/alt count compared with visible native SEO values and total hint; stable public DOM before and after Re-audit."
+        },
+        {
+          "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+          "status": "pass_limited_to_display_contract",
+          "displayed": {"words": "10,467", "sentences": "784", "score": "44.51", "summary": "Difficult — college"},
+          "algorithmic_metric_correctness": "unverified",
+          "basis": "Public body text existed; the driver checked positive word/sentence counts, numeric score, and a recognized band/grade display. It did not independently calculate or verify these metrics. The receipt explicitly keeps metricValueCorrectness unverified."
+        },
+        {
+          "subtarget": "guest_manual_performance_reflects_current_navigation",
+          "status": "pass",
+          "observed": {"http_status": 200, "navigation": "navigate", "duration_ms": 1444, "transfer_bytes": 123928, "displayed_transfer": "121 KB"},
+          "basis": "The driver compared the native status/type/duration/transfer display against the owned tab's NavigationTiming entry and the page response status."
+        },
+        {
+          "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+          "status": "pass",
+          "public_source": "https://www.airbnb.com/",
+          "observed": {"alternate_lang": "es-US", "alternate_url": "https://es.airbnb.com/", "schema_type": "WebSite", "schema_url": "https://schema.org/WebSite"},
+          "basis": "Unique alternate and schema candidates were matched against public DOM; each door used the native pointer path and reached its expected new-tab destination."
+        }
+      ],
+      "remaining_t09": {
+        "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+        "status": "unverified",
+        "reason": "Wikipedia exposed no unique hreflang candidate and openable schema candidate. The driver records unverified instead of inventing a destination."
+      },
+      "excluded_or_unclaimed": [
+        "The optional fixture adds one bounded metadata-door observation; it does not make the run full SEO acceptance.",
+        "T09 metric-value correctness for readability is not established.",
+        "Member, admin, and Store modes were not exercised.",
+        "The driver's own deferred list leaves database/history/diff flows, broader T09 controls, other cases, and all-mode coverage outside this receipt."
+      ]
+    },
+    "B_evidence_and_driver_quality": {
+      "verdict": "source/receipt alignment is sound for the bounded claims; no false pass found",
+      "executed_source": {
+        "workflow_checkout_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+        "workflow_file_sha256": "1f3453f577d68c97f8109649b0a79162abd5bc950839fb52810a4e48f2aba327",
+        "seo_driver_sha256": "ecc7b9dc502e86e2faee6918756a54a8559b13bf15fe6e257af8f53a2c8439f2",
+        "seo_oracle_sha256": "186eeaeb5cf61857fdf0bc22f20362b8a521405747fd3214f938df1cf48b3a10",
+        "native_pointer_driver_sha256": "a6043ed8a088b5c36a2887186d0c9369d0b6492b3802ea07d9a82b1bb4b44444",
+        "driver_hash_basis": "Each SHA256 was computed from git-show at the executed workflow checkout SHA. seo-guest-acceptance.mjs is byte-identical at review HEAD 421b9991."
+      },
+      "native_oracles": {
+        "manual_reaudit": "The driver uses settings-panel-driver.click('button','Re-audit'), waits for the running and settled states, then re-reads public DOM and native SEO state; the source remains at the selected Wikipedia URL.",
+        "clipboard": "Controlled T07/T14 paths use trusted button clicks, real navigator.clipboard.readText(), exact expected-text checks, and verify read permission restoration.",
+        "outbound_navigation": "The door helper verifies a unique visible anchor, expected href, target=_blank, hit-tested stable coordinates, dispatches CDP mousePressed and mouseReleased, observes a new page at the exact URL, and checks the source page remains open and unchanged.",
+        "public_navigation": "Wikipedia and Airbnb fixture visits use page.goto in the owned browser tab; they are real top-level navigations but not simulated user clicks. Current page response plus NavigationTiming are read as the performance oracle."
+      },
+      "assertion_locations": [
+        "tests/browser/seo-guest-acceptance.mjs:500-561 independent public DOM oracle",
+        "tests/browser/seo-guest-acceptance.mjs:676-772 link/image/readability/performance assertions",
+        "tests/browser/seo-guest-acceptance.mjs:1478-1659 Wikipedia manual batch and honest missing-door branch",
+        "tests/browser/seo-guest-acceptance.mjs:1825-1857 Airbnb unique candidates and outbound target",
+        "tests/browser/seo-guest-acceptance.mjs:816-950 outbound native pointer verification",
+        "tests/browser/settings-panel-driver.mjs:274 onward native click target resolution and pointer dispatch"
+      ],
+      "receipt_and_journal_integrity": {
+        "formatted_receipt_sha256": "e0d19ffc48f8ce15fe214c9d6f23ec169ede4a158f7fe63c6c6089d4b174a21a",
+        "original_uploaded_receipt_sha256": "ed4c9f93e3b1ed039ec3d309aac495d305b85eb4cf3885d6f0d6757fddb8acff",
+        "original_uploaded_receipt_gzip_sha256": "5a6ddbfeda3b9781beb2a2bfda488bebf03a0cac6f59abb12649dbb8a4c31e26",
+        "original_uncompressed_hash_verified": true,
+        "formatted_and_original_byte_lengths": {"formatted": 33086, "original_uncompressed": 33194},
+        "formatting_difference": "Expected: committed JSON is lint-formatted; the gzip preserves the uploaded bytes. The manifest matches the formatted file and gzip, and decompression matches the recorded original payload SHA.",
+        "current_journals": {
+          "hosted-package-37804374798-1.jsonl": {"sha256": "cb3ca689912388c7ab3fdc279a9f16d1d313c5df485ebb16f9c725b0803c5751", "decision": "valid", "exit_code": 0},
+          "hosted-browser-37804374798-1.jsonl": {"sha256": "812f7c6066a607dc84732c6cabc87f6ee046327f8152f65617146853a6277e98", "decision": "valid", "exit_code": 0},
+          "hosted-guest-37804374798-1.jsonl": {"sha256": "ce613f345e19545304b056d52ab1f3229f1962bffa3467f39033a938abba33eb", "decision": "valid", "exit_code": 0}
+        }
+      },
+      "false_passes": [],
+      "limits": [
+        "This is a retained-evidence/source review, not a second native execution.",
+        "Readability algorithm accuracy remains expressly unverified.",
+        "A pass on the bounded Airbnb doors and Wikipedia link/image/performance displays does not promote full T09 or the SEO feature."
+      ]
+    }
+  },
+  "reviewer_conclusion": "Admit the five new T09 observations only within their named bounds. Keep the Wikipedia door target unverified, the receipt partial, and any whole-feature, all-mode, or readability-correctness claim excluded."
+}
