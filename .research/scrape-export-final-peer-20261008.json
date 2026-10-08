@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "candidate": "ad41c317",
+  "verdict_a_live": "PARTIAL: no native run in this review; source is ready for bounded guest/member/admin native verification of warm/reload six-pane export invariance and post-reload empty media",
+  "verdict_b_source": "PASS: fixed-code digest/identity mismatch errors prevent actual receipt error serialization from exposing copied bytes, hashes, or timestamp; each UI export read seeds and rejects a clipboard sentinel, and temporary clipboard-read permission is restored in finally",
+  "scope": "Guest/member For AI agent copies full Markdown plus capturedAt but omits some SoupResult fields; admin Full capture (JSON) covers the whole exported object. Neither source nor tests claim hidden-field invariance for guest/member.",
+  "verification": "node --test tests/browser/scrape-tab-coverage.test.mjs tests/browser/scrape-media-assertions.test.mjs tests/browser/scrape-empty-media-branch.test.mjs: 15 passed; pnpm exec biome check owned source/report inputs: passed; inspected product CopyMenu and fullCaptureCopyOptions lineage",
+  "remaining": "Execute fresh exact-artifact native UI run and independently review its receipt before accepting T08 for any role. Async UI copy completion is not explicitly awaited; a slow write can yield a sentinel and fail safely, so investigate only if native run reproduces it.",
+  "material_findings": []
+}
