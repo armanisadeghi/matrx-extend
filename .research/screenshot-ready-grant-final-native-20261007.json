@@ -1,0 +1,198 @@
+{
+  "task_id": "screenshot_ready_grant_final_native",
+  "lane": "fresh independent scoped verifier",
+  "status": "HANDOFF",
+  "reviewed_commits": [
+    "710997735cc220d09bd3cc2e54f951a77584265d",
+    "5d09cdbd1707877fdbce2c70a3cd49819868ddb8",
+    "11564fe786ca47bade2c33718710504ed145eb66"
+  ],
+  "verdict_a": {
+    "organization_readiness_and_native_selection": "PASS",
+    "retained_grant_cleanup": "FAIL_BEFORE_REVOKE",
+    "native_manager_acceptance": "UNVERIFIED",
+    "observed_boundary": {
+      "failure": "owner_gated_grant_lookup_http_error",
+      "lookup": {
+        "httpStatus": 404,
+        "errorCode": "PGRST202",
+        "bodyShape": "object",
+        "returnedRowCount": null,
+        "exactGrantCount": 0
+      }
+    }
+  },
+  "verdict_b": {
+    "scoped_readiness_and_safe_diagnostic_changes": "PASS",
+    "preexisting_raw_rpc_request": "IMPORTANT: raw POST omits public Content-Profile and Accept-Profile, unlike the canonical SDK. Actual 404 PGRST202 is consistent with wrong default RPC schema; header repair needs fresh native proof."
+  },
+  "read_only_database_metadata": {
+    "list_share_links": "public; p_resource_type text, p_resource_id uuid",
+    "revoke_share_link": "public; p_link_id uuid"
+  },
+  "installed_sdk_observation": {
+    "default_schema": "public",
+    "rpc_post_profile": "Content-Profile supplied by PostgrestBuilder"
+  },
+  "run_id": "screenshot-ready-grant-final-native-20261007",
+  "native_evidence": {
+    "schema_version": 1,
+    "feature": "EXT-F-1009-T03",
+    "status": "unverified",
+    "scope": "exact retained grant owner-authenticated canonical service cleanup",
+    "cases": {
+      "rootPersistence": "unverified",
+      "nestedPersistence": "unverified",
+      "localViewer": "unverified",
+      "reloadPersistence": "unverified",
+      "canonicalShare": "unverified",
+      "quickPublicLink": "unverified",
+      "unsupportedPage": "unverified",
+      "persistenceFailure": "unverified",
+      "tileCap": "unverified"
+    },
+    "build": {
+      "version": "0.2.397",
+      "treeSha256": "e27ae7d17f776970c61f6de1ae2596c5181d4df5024ca96210d94f1f07ab3ae3",
+      "schema_version": 1,
+      "kind": "ci_development_test",
+      "eligibleStore": false,
+      "publish_state": "not_published",
+      "repository": "armanisadeghi/matrx-extend",
+      "workflow": ".github/workflows/ci.yml",
+      "sourceSha": "11564fe786ca47bade2c33718710504ed145eb66",
+      "runId": 37731510284,
+      "runAttempt": 1,
+      "artifactId": 11530615740,
+      "githubArtifactDigest": "sha256:0df8088aca6bafc5b38644659538b4694cbc96eaf4b72b1211e0b145816ca5a3",
+      "source": {
+        "originMain": "52524cc5983c4d400c8fa4255c6525098f7cca54",
+        "localHead": "52524cc5983c4d400c8fa4255c6525098f7cca54",
+        "trackedDirty": true,
+        "untrackedRunnerInputs": [],
+        "claim": "exact_pushed_commit_only"
+      }
+    },
+    "organizationReadiness": {
+      "first": {
+        "globalActingAsLabelCount": 1,
+        "originalComboboxCount": 1,
+        "originalPickerMatchesApproved": true,
+        "originalPickerTextSha256": "61e154af11cd32c0501d6c5754026e618b50a7b726adfd0c915cd3882a7dd64a",
+        "organizationSectionPresent": true,
+        "organizationSectionExpanded": true,
+        "organizationLoadingVisible": false,
+        "organizationReadErrorVisible": false,
+        "organizationSignInRequired": false,
+        "organizationNoEligibleMemberships": false,
+        "organizationArchivedOnly": false,
+        "originalVisibleComboboxCount": 1,
+        "originalEnabledComboboxCount": 1,
+        "scopedActingAsLabelCount": 1,
+        "scopedComboboxCount": 1,
+        "scopedPickerMatchesApproved": true,
+        "persistedNameMatchesApproved": false,
+        "persistedEntryPresent": false,
+        "persistedNamePresent": false,
+        "persistedIdPresent": false,
+        "persistedIdMatchesApproved": false,
+        "persistedNameSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "persistedIdSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uiErrorCount": 0,
+        "uiErrorTextSha256": []
+      },
+      "last": {
+        "globalActingAsLabelCount": 1,
+        "originalComboboxCount": 1,
+        "originalPickerMatchesApproved": true,
+        "originalPickerTextSha256": "61e154af11cd32c0501d6c5754026e618b50a7b726adfd0c915cd3882a7dd64a",
+        "organizationSectionPresent": true,
+        "organizationSectionExpanded": true,
+        "organizationLoadingVisible": false,
+        "organizationReadErrorVisible": false,
+        "organizationSignInRequired": false,
+        "organizationNoEligibleMemberships": false,
+        "organizationArchivedOnly": false,
+        "originalVisibleComboboxCount": 1,
+        "originalEnabledComboboxCount": 1,
+        "scopedActingAsLabelCount": 1,
+        "scopedComboboxCount": 1,
+        "scopedPickerMatchesApproved": true,
+        "persistedNameMatchesApproved": false,
+        "persistedEntryPresent": false,
+        "persistedNamePresent": false,
+        "persistedIdPresent": false,
+        "persistedIdMatchesApproved": false,
+        "persistedNameSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "persistedIdSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "uiErrorCount": 0,
+        "uiErrorTextSha256": []
+      }
+    },
+    "organizationSelection": {
+      "globalActingAsLabelCount": 1,
+      "originalComboboxCount": 1,
+      "originalPickerMatchesApproved": true,
+      "originalPickerTextSha256": "61e154af11cd32c0501d6c5754026e618b50a7b726adfd0c915cd3882a7dd64a",
+      "organizationSectionPresent": true,
+      "organizationSectionExpanded": true,
+      "organizationLoadingVisible": false,
+      "organizationReadErrorVisible": false,
+      "organizationSignInRequired": false,
+      "organizationNoEligibleMemberships": false,
+      "organizationArchivedOnly": false,
+      "originalVisibleComboboxCount": 1,
+      "originalEnabledComboboxCount": 1,
+      "scopedActingAsLabelCount": 1,
+      "scopedComboboxCount": 1,
+      "scopedPickerMatchesApproved": true,
+      "persistedNameMatchesApproved": false,
+      "persistedEntryPresent": false,
+      "persistedNamePresent": false,
+      "persistedIdPresent": false,
+      "persistedIdMatchesApproved": false,
+      "persistedNameSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "persistedIdSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "uiErrorCount": 0,
+      "uiErrorTextSha256": []
+    },
+    "retainedGrantServiceCleanup": {
+      "failure": "owner_gated_grant_lookup_http_error",
+      "lookup": {
+        "httpStatus": 404,
+        "errorCode": "PGRST202",
+        "bodyShape": "object",
+        "returnedRowCount": null,
+        "exactGrantCount": 0
+      }
+    },
+    "nativeManagerAcceptance": "unverified",
+    "failure": {
+      "stage": "retained_owned_grant_service_recovery",
+      "code": "retained_owned_grant_cleanup_unverified",
+      "diagnostic": {
+        "runtimeCode": null,
+        "timeout": false,
+        "assertion": false,
+        "viewerStep": null,
+        "pointerTarget": {
+          "kind": "option",
+          "target": "private_label",
+          "targetSha256": "61e154af11cd32c0501d6c5754026e618b50a7b726adfd0c915cd3882a7dd64a",
+          "phase": "release_returned"
+        },
+        "pointerDiagnostic": null,
+        "pointerCode": null
+      }
+    }
+  },
+  "resource_terminal": {
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 1,
+    "decision": "child_failed"
+  },
+  "owned_jobs": [],
+  "private_recovery": "retained mode 0600; no inactive proof; no revoke attempted",
+  "next_action": "Repair raw RPC request profile headers, then fresh independent exact retained-grant canonical cleanup; do not rerun unchanged."
+}
