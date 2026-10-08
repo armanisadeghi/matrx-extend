@@ -1,0 +1,11 @@
+{
+  "reviewer": "independent artifact peer; no runtime rerun or backend diagnosis",
+  "artifact": "run 37764808590 / artifact 11543528787; downloaded outside repo; ZIP SHA-256 3a36dc76c49aea2e166af5f43b7b547af22bffd483390c58df288de2520e113e verified via GitHub API",
+  "receipt_and_screenshots": "Downloaded receipt SHA-256 af3d7f031b894e4a327a832443409ceebdad577ccea0685cf946c853897d1dde equals raw original; all 5 screenshot hashes equal artifact copies; failure screenshot visibly shows ConversationResume RuntimeError",
+  "resource_journals": "All 3 current-run journal hashes match raw evidence; final package/browser decisions valid (exit 0), guest child_failed (exit 1), each admitted=true and resourceInvalid=false; stale run journals excluded",
+  "public_tree": "Receipt tree 08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8 matches original daily run tree; receipt identifies published Store CRX build version 0.2.205",
+  "server": "Before/after/post-run spot checks all report 5be7a37ba1e53ca311f3787bb041a402ec863052; stable during observed run",
+  "observed_behavior": "Opening and same-conversation follow-up each reached grounded terminal_answer; after full panel reload, distinct new conversation got HTTP 200, get_page_text completed on fixture with both codes and heading, continuation opened, emitted 8 chunks, then ended error / ConversationResume failed unexpectedly (RuntimeError), zero visible assistant replies and no grounded terminal answer",
+  "authoritative_retest_basis": "Original immediate HTTP 409 did not recur; acceptance still FAILS because the required post-reload grounded terminal answer is absent. New RuntimeError is the observed failure; cause and recurrence remain unassigned. This is not an overall product-health judgment.",
+  "limitations": "Evidence supports this exact public artifact/server run only; adapted unpacked CRX is not Chrome Web Store UI installation proof; harness did not certify final extension tree after assertion failure"
+}
