@@ -62,6 +62,8 @@ const COUNTS = new Set([
   'cancel_count',
   'install_count',
   'detected_count',
+  'stamped_detected_count',
+  'unstamped_detected_count',
   'current_session_detected_count',
   'other_session_detected_count',
   'producer_current_detected_count',

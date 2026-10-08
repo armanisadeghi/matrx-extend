@@ -7,13 +7,16 @@ import {
   armShowcaseInstallBoundary,
   armShowcaseStaleBoundary,
   assertFreshShowcasePickerContext,
+  observeShowcaseRelay,
+  readShowcaseRelays,
+  showcaseStampedDetections,
   summarizeShowcaseDetectionWindow,
 } from './showcase-stale-runtime-boundary.mjs';
 
 test('reinjection detection window separates current producer, relay duplication, and late prior events', () => {
   const detected = STALE_PICKER_KINDS.detected;
-  const prior = { kind: detected, session_id: 'prior' };
-  const current = { kind: detected, session_id: 'current' };
+  const prior = { kind: detected, session_id: 'prior', tab_id: 77, document_id: 'document' };
+  const current = { kind: detected, session_id: 'current', tab_id: 77, document_id: 'document' };
   const result = { kind: STALE_PICKER_KINDS.result, session_id: 'current' };
   assert.deepEqual(
     summarizeShowcaseDetectionWindow(
@@ -24,6 +27,8 @@ test('reinjection detection window separates current producer, relay duplication
     ),
     {
       detected_count: 3,
+      stamped_detected_count: 3,
+      unstamped_detected_count: 0,
       current_session_detected_count: 2,
       other_session_detected_count: 1,
       producer_current_detected_count: 1,
@@ -301,4 +306,61 @@ test('listener observer forwards every option form and counts only capture liste
   assert.deepEqual(await boundary.listenerSnapshot(), { click_count: 0, hover_count: 0 });
   await boundary.closeListenerCount();
   await boundary.close();
+});
+
+test('native observer counts stamped deliveries without treating the raw producer copy as a duplicate', async () => {
+  const callbacks = [];
+  const world = vm.createContext({
+    chrome: { runtime: { onMessage: { addListener: (callback) => callbacks.push(callback) } } },
+  });
+  const panel = {
+    async send(method, params) {
+      assert.equal(method, 'Runtime.evaluate');
+      return {
+        result: { value: JSON.parse(JSON.stringify(vm.runInContext(params.expression, world))) },
+      };
+    },
+  };
+  await observeShowcaseRelay(panel);
+  const deliver = (payload, kind = STALE_PICKER_KINDS.detected) => {
+    for (const callback of callbacks) callback({ __matrx: true, kind, payload });
+  };
+  // Chrome delivers both the content send and the SW broadcast to the panel.
+  // These shapes match list-picker.ts and list-picker-relay.ts respectively.
+  const raw = { session_id: 'current' };
+  const stamped = { ...raw, tab_id: 77, document_id: 'current-document' };
+  deliver({ session_id: 'previous', tab_id: 77, document_id: 'current-document' });
+  const start = (await readShowcaseRelays(panel)).length;
+  deliver(raw);
+  assert.deepEqual(showcaseStampedDetections(await readShowcaseRelays(panel), start), []);
+  deliver(stamped);
+  const first = showcaseStampedDetections(await readShowcaseRelays(panel), start);
+  assert.deepEqual(first, [{ kind: STALE_PICKER_KINDS.detected, ...stamped }]);
+  assert.equal((await readShowcaseRelays(panel)).length, 3, 'raw evidence must be retained');
+  assert.deepEqual(
+    summarizeShowcaseDetectionWindow(
+      await readShowcaseRelays(panel),
+      { observed: [{ kind: STALE_PICKER_KINDS.detected, ...raw }] },
+      start,
+      'current',
+    ),
+    {
+      detected_count: 2,
+      stamped_detected_count: 1,
+      unstamped_detected_count: 1,
+      current_session_detected_count: 2,
+      other_session_detected_count: 0,
+      producer_current_detected_count: 1,
+    },
+  );
+  // A second stamped delivery is still a duplicate: never deduplicate identities.
+  deliver(stamped);
+  assert.equal(showcaseStampedDetections(await readShowcaseRelays(panel), start).length, 2);
+  deliver({ ...raw, tab_id: 77 });
+  deliver({ ...raw, document_id: 'current-document' });
+  deliver({ ...raw, tab_id: 77, document_id: '' });
+  deliver(stamped, STALE_PICKER_KINDS.result);
+  assert.equal(showcaseStampedDetections(await readShowcaseRelays(panel), start).length, 2);
+  deliver({ session_id: 'other', tab_id: 88, document_id: 'other-document' });
+  assert.equal(showcaseStampedDetections(await readShowcaseRelays(panel), start).length, 3);
 });

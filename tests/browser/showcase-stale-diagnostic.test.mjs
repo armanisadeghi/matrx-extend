@@ -69,6 +69,8 @@ test('lifecycle failure keeps only the failing operation and bounded counts', as
           install_held: true,
           cancel_count: 1,
           install_count: 2,
+          stamped_detected_count: 1,
+          unstamped_detected_count: 1,
           raw_selector: '#private-account',
         }),
         async () => {
@@ -81,7 +83,14 @@ test('lifecycle failure keeps only the failing operation and bounded counts', as
       channel,
       target: 'lifecycle_A_release',
       failed_target: 'lifecycle_A_release',
-      last_safe: { panel_picking: true, install_held: true, cancel_count: 1, install_count: 2 },
+      last_safe: {
+        panel_picking: true,
+        install_held: true,
+        cancel_count: 1,
+        install_count: 2,
+        stamped_detected_count: 1,
+        unstamped_detected_count: 1,
+      },
     });
     assert.equal(JSON.stringify(diagnostic).includes('private-account'), false);
     assert.equal(JSON.stringify(diagnostic).includes('secret-value'), false);

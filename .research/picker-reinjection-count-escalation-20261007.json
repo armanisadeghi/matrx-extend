@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "task_id": "picker-reinjection-count-escalation-20261007",
+  "status": "confirmed_driver_repair_native_discriminant_pending",
+  "defects": ["EXT-D-0158", "EXT-D-0042"],
+  "scope": "One instrumentation root repair; no product changes, browser jobs, secrets, builds, releases, deployments, or children.",
+  "original_native": {
+    "run_id": 37714880948,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "version": "0.2.391",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "receipt": ".research/picker-auth-recovery-native-evidence/run37714880948/native-receipt.json",
+    "observed": {
+      "producer_current_detected_count": 1,
+      "current_session_detected_count": 2,
+      "other_session_detected_count": 0,
+      "result_raw": true,
+      "result_stamped": true
+    }
+  },
+  "hypotheses": [
+    {
+      "cause": "Raw producer and stamped broadcast conflated by driver",
+      "prediction": "One raw plus one stamped delivery through the real observer produces false count2; selecting stamped delivery only yields1",
+      "result": "Confirmed source RED/GREEN. Observer retains both; lifecycle count previously filtered kind only."
+    },
+    {
+      "cause": "Two stamped product relays",
+      "prediction": "Window contains two tab/document-stamped detection messages",
+      "result": "Historical native receipt does not retain this split. New diagnostic measures it; guard confirms two stamped copies remain count2, never deduplicated."
+    },
+    {
+      "cause": "Late prior-session detection",
+      "prediction": "other_session_detected_count exceeds0",
+      "result": "Not observed: original value0. Window boundary preserved and guard catches dropping it."
+    },
+    {
+      "cause": "Duplicate producer/listener",
+      "prediction": "Producer count exceeds1 or reinjection listener check exceeds1",
+      "result": "Not observed: original producer1 and exact reinjection listener checks passed before count boundary. No product repair justified."
+    }
+  ],
+  "confirmed_cause": {
+    "boundary": "Acceptance observer/consumer classification",
+    "mechanism": "The content script sends an unstamped event. registerListPickerRelays broadcasts the same event with trusted sender tab_id/document_id. Extension-page runtime listeners see both. observeShowcaseRelay intentionally retains both. runLifecyclePositive waited for stamped detection but selected the first kind-matching event (possibly raw), then counted all kind-matching events as duplicate relays.",
+    "product_source_comparison": "git diff 52487361 -- src/lib/data-pattern/list-picker-relay.ts src/lib/messaging/native.ts produced no differences.",
+    "historical_limit": "The observed 1 producer / 2 combined messages is consistent with the confirmed defect but cannot alone prove the exact two historical detections were raw+stamped. No historical product-duplication exclusion or native acceptance claim."
+  },
+  "repair": {
+    "files": [
+      "tests/browser/showcase-stale-runtime-boundary.mjs",
+      "tests/browser/showcase-picker-native-acceptance.mjs",
+      "tests/browser/showcase-stale-diagnostic.mjs",
+      "tests/browser/showcase-stale-runtime-boundary.test.mjs",
+      "tests/browser/showcase-stale-diagnostic.test.mjs"
+    ],
+    "behavior": "Share stamped detection selection across lifecycle wait, identity selection and exact count. Preserve raw evidence and combined historical diagnostic fields. Add stamped_detected_count and unstamped_detected_count. Do not deduplicate stamps or filter away other sessions from exact count. Result wait now compares the actual stamped identity rather than possibly null raw identity."
+  },
+  "verification": {
+    "sut": "Real observeShowcaseRelay CDP expression, readShowcaseRelays, stamped selection and detection summarizer. VM adapts CDP and Chrome listener registration; Chrome delivery is controlled external input, not native proof.",
+    "red": "node --test --test-name-pattern=\"native observer counts\" tests/browser/showcase-stale-runtime-boundary.test.mjs: exit1, assertion received unstamped event where zero stamped deliveries expected. Helper initially extracted the original kind-only count predicate unchanged.",
+    "green": "node --test tests/browser/showcase-stale-runtime-boundary.test.mjs tests/browser/showcase-stale-diagnostic.test.mjs: 11 passed, 0 failed.",
+    "mutations": {
+      "method": "In-memory edits written to temporary scratch copies only; each isolated node test failed with AssertionError and all scratch directories removed. Shared source never weakened.",
+      "caught": [
+        "constant empty return (gut check)",
+        "combined raw and stamped predicate",
+        "drop window boundary",
+        "drop document stamp validation",
+        "deduplicate stamped deliveries"
+      ],
+      "each_exit_code": 1
+    },
+    "typecheck": "pnpm compile: exit0",
+    "format_and_lint": "Biome format applied; targeted check initially found import order only, corrected with biome check --write.",
+    "siblings": "Lifecycle wait/find/count shared the same mistaken channel boundary and now consume one selector. Raw observer and completion diagnostics intentionally retain raw+stamped copies. No production relay edit."
+  },
+  "next_discriminant": {
+    "owner": "root independent peer then authorized native runner",
+    "artifact": "Exact original v0.2.391 artifact above, current reviewed driver",
+    "interpretation": [
+      "stamped_detected_count=1 and unstamped_detected_count=1 with producer1 identifies raw+relay conflation in the current native run.",
+      "stamped_detected_count>1 remains an exact-count failure requiring product relay investigation.",
+      "stamped_detected_count=0 cannot pass the stamped wait/count."
+    ],
+    "remaining_acceptance": "Complete native reinjection, post-Done listener cleanup, ordinary page click, surrounding lifecycle cases and nonadmin role gate remain subject to actual run evidence."
+  },
+  "limitations": [
+    "No native execution in this lane; no claim of D42/D158 closure.",
+    "Original receipt unverified_criteria is initialized statically and only cleared after all lifecycle cases complete; use named passed cases, not this stale aggregate, for bounded historical results. This separate reporting issue was not widened into the one-root repair.",
+    "Root owns independent review and canonical defect/inventory/review queue updates."
+  ],
+  "owned_jobs": []
+}

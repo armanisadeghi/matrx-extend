@@ -5,10 +5,27 @@ const DETECTED = 'data:list-picker-item-detected';
 const RESULT = 'data:list-picker-result';
 export const STALE_PICKER_KINDS = { exit: EXIT, detected: DETECTED, result: RESULT };
 
+export function showcaseStampedDetections(relays, start = 0) {
+  // A content send and its SW broadcast both reach extension pages. Only the
+  // broadcast carries the trusted tab/document identity consumed by Showcase.
+  // Keep duplicates: two stamped deliveries must still fail exact-count checks.
+  return relays
+    .slice(start)
+    .filter(
+      (event) =>
+        event.kind === DETECTED &&
+        Number.isInteger(event.tab_id) &&
+        typeof event.document_id === 'string' &&
+        event.document_id.length > 0,
+    );
+}
+
 export function summarizeShowcaseDetectionWindow(relays, producer, start, sessionId) {
   const detected = relays.slice(start).filter((event) => event.kind === DETECTED);
   return {
     detected_count: detected.length,
+    stamped_detected_count: showcaseStampedDetections(relays, start).length,
+    unstamped_detected_count: detected.length - showcaseStampedDetections(relays, start).length,
     current_session_detected_count: detected.filter((event) => event.session_id === sessionId)
       .length,
     other_session_detected_count: detected.filter((event) => event.session_id !== sessionId).length,

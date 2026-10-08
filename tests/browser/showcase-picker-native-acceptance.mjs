@@ -44,6 +44,7 @@ import {
   observeShowcaseRelay,
   readShowcaseRelays,
   reinjectShowcasePicker,
+  showcaseStampedDetections,
   summarizeShowcaseDetectionWindow,
 } from './showcase-stale-runtime-boundary.mjs';
 
@@ -164,18 +165,14 @@ async function runLifecyclePositive({
       'showcase_lifecycle_detection_stamped',
       () => readShowcaseRelays(panel),
       (events) =>
-        events
-          ?.slice(before)
-          .some(
-            (event) =>
-              event.kind === STALE_PICKER_KINDS.detected &&
-              Number.isInteger(event.tab_id) &&
-              typeof event.document_id === 'string' &&
-              (!expectedSession || event.session_id === expectedSession),
-          ),
+        showcaseStampedDetections(events ?? [], before).some(
+          (event) => !expectedSession || event.session_id === expectedSession,
+        ),
     ),
   );
-  const detected = relays.slice(before).find((event) => event.kind === STALE_PICKER_KINDS.detected);
+  const detected = showcaseStampedDetections(relays, before).find(
+    (event) => !expectedSession || event.session_id === expectedSession,
+  );
   await step('lifecycle_B_detection', () => {
     assert.match(detected.session_id, /^[0-9a-f-]{36}$/i);
     if (expectedSession) assert.equal(detected.session_id, expectedSession);
@@ -221,10 +218,7 @@ async function runLifecyclePositive({
   if (exactDetection) stage('lifecycle_B_detection_count');
   const detectionCount = await step(
     exactDetection ? 'lifecycle_B_detection_count' : 'lifecycle_B_detection',
-    async () =>
-      (await readShowcaseRelays(panel))
-        .slice(before)
-        .filter((event) => event.kind === STALE_PICKER_KINDS.detected).length,
+    async () => showcaseStampedDetections(await readShowcaseRelays(panel), before).length,
   );
   if (exactDetection) {
     await step('lifecycle_B_detection_count', () =>
