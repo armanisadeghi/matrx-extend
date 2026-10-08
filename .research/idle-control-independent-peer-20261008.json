@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "5b551f2a83eb6d7c26ca14541061fc7e0c1ca26b",
+  "lane": "independent source and focused-test review of headless idle-panel control",
+  "verdict_A": {
+    "status": "SOURCE_PASS_NATIVE_UNVERIFIED",
+    "reason": "The requested diagnostic can select headless on the existing Intel startup-resource-diagnostic path, and the ordinary startup diagnostic remains headed by default. No hosted Chromium was launched in this review lane, so the actual headless browser receipt, resource journal, and causal comparison remain unverified. This is diagnostic only and grants no product acceptance."
+  },
+  "verdict_B": {
+    "status": "PASS_WITH_LIMITS",
+    "reason": "The change is scoped to the startup diagnostic input, environment forwarding, validated helper choice, native runner headed argument, and requested/observed receipt. The existing guard wrapper, cleanup, policy thresholds, startup deadline, and idle hold were not weakened in the reviewed diff. The focused tests pass; their native runner is substituted and therefore cannot verify the live CDP observation."
+  },
+  "trace": [
+    ".github/workflows/hosted-guest-acceptance.yml declares startup_display_mode as headed by default and headless as an explicit choice; only the startup-resource-diagnostic step forwards it as MATRX_STARTUP_DISPLAY_MODE.",
+    "scripts/hosted-guest-acceptance.mjs verifies the selected development artifact and routes startup-diagnostic to runHostedStartupIntervalDiagnostic with its receipt and exact source/run/artifact identity.",
+    "scripts/hosted-startup-interval-diagnostic.mjs refuses unknown modes before launch, defaults missing mode to headed, passes headed=(displayMode === headed), and saves requestedDisplayMode plus browserLaunch in the diagnostic receipt.",
+    "tests/browser/native-sidepanel-qa-harness.mjs adds --headless=new when headed is false; Browser.getBrowserCommandLine verifies the owned launch mode before invoking onBrowserLaunchObservation with requested_mode and observed_mode.",
+    "The helper stops after panel opening, settling, screenshots, two resource-health checks, and the existing idle hold; the harness finally stops its owned child before the helper writes completedAt."
+  ],
+  "comparison": {
+    "fixed_target": "Use macos-15-intel, frozen development run 37754055905 and artifact 11539827040, headless mode, and the existing resource permit and policy for one guarded run.",
+    "changed_workload": "The control ends at idle panel rather than running guest SEO against the public Airbnb fixture. This isolates subsequent SEO activity from cold browser/extension/panel startup.",
+    "instrumentation_limit": "The startup diagnostic also records GPU/backend and native stages, so it is not perfectly instrumentation-identical to the prior SEO run. A single valid or invalid run localizes pressure but cannot establish a stable cure or exact CPU causality.",
+    "required_native_evidence": "Confirm requestedDisplayMode=headless, browserLaunch.observed_mode=headless, timestamped nativeStages, current-run guard journal and final decision, and completedAt only after owned-child cleanup. A missing browserLaunch means mode was not observed and must not be treated as a headless confirmation."
+  },
+  "checks": [
+    "Reviewed the exact 5b551f2a diff and current workflow/helper/native-harness source; unrelated shared-tree modification in scripts/test-stabilization-resource-cpu-integration.mjs was left untouched.",
+    "node --test scripts/test-hosted-startup-interval-diagnostic.mjs tests/browser/native-startup-interval-callsite.test.mjs scripts/test-startup-process-interval.mjs: 11 passed, 0 failed.",
+    "git diff --check 5b551f2a^ 5b551f2a: passed.",
+    "pnpm exec biome check on changed JS and JSON: passed. Biome did not check workflow YAML.",
+    "The builder's report records two planted breaks failing and byte-identical restoration; this reviewer did not rerun a mutation on the shared checkout."
+  ],
+  "findings": [],
+  "native_status": "NOT_RUN_BY_PEER",
+  "next_step": "Root may dispatch one guarded Intel/headless startup diagnostic with the frozen artifact, then classify its current-run evidence without promoting SEO or product acceptance."
+}
