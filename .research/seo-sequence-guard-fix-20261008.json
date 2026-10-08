@@ -24,5 +24,11 @@
     "syntax": "node --check tests/browser/seo-driver-sequence.test.mjs: passed",
     "format": "pnpm exec biome check on the new guard: passed",
     "limits": "This is a source-boundary regression guard. No native/browser or product behavior is claimed. The existing EXT-D-0170 native and D169 product verification limits remain."
+  },
+  "ci_coverage": {
+    "command": "pnpm test:focused-acceptance",
+    "package_script": "package.json",
+    "change": "Added tests/browser/seo-driver-sequence.test.mjs to the existing explicit focused acceptance list so CI executes the driver-wiring guard automatically.",
+    "local_verification": "pnpm -s test:focused-acceptance: 95 passed, 0 failed."
   }
 }
