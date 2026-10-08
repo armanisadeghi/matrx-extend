@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "reviewed_at_utc": "2026-10-08T09:35:00Z",
+  "reviewed_at_utc": "2026-10-08T09:18:43Z",
   "review_role": "independent source review",
   "candidate_sha": "1f165644fa736a85971aebb06082ea2fbca445f6",
   "scope": "Only the candidate commit was reviewed; no product/auth code change is claimed beyond fixed diagnostic capture.",
@@ -40,5 +40,9 @@
   "limits": [
     "Source and focused-test review only; no native app, browser, live auth, network, build, or deployment run.",
     "No tokens, credentials, or live user data were accessed or included."
-  ]
+  ],
+  "timestamp_correction": {
+    "corrected_at_utc": "2026-10-08T09:18:43Z",
+    "note": "The prior reviewed_at_utc value 2026-10-08T09:35:00Z was invalid because it was in the future. Replaced with the observed system UTC time; no review findings changed."
+  }
 }
