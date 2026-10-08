@@ -38,7 +38,9 @@ export async function runHostedStartupIntervalDiagnostic({
   runId,
   artifactId,
   nativeRunner = runNativeSidepanelQa,
+  displayMode = process.env.MATRX_STARTUP_DISPLAY_MODE ?? 'headed',
 }) {
+  assert.ok(['headed', 'headless'].includes(displayMode), 'hosted_startup_display_mode_required');
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_startup_runner_required');
   assert.equal(process.env.RUNNER_ENVIRONMENT, 'github-hosted', 'hosted_startup_vm_required');
   assert.ok(['ARM64', 'X64'].includes(process.env.RUNNER_ARCH), 'hosted_startup_arch_required');
@@ -59,6 +61,8 @@ export async function runHostedStartupIntervalDiagnostic({
     lastNativeStage: null,
     nativeStages: [],
     runnerArch: process.env.RUNNER_ARCH,
+    requestedDisplayMode: displayMode,
+    browserLaunch: null,
     startupEndpointObservations: [],
     gpuObservation: { status: 'UNKNOWN' },
     panelReadyAt: null,
@@ -74,7 +78,11 @@ export async function runHostedStartupIntervalDiagnostic({
   await save();
   try {
     await nativeRunner({
-      headed: true,
+      headed: displayMode === 'headed',
+      onBrowserLaunchObservation: (observation) => {
+        report.browserLaunch = observation;
+        void save().catch(() => {});
+      },
       extensionDir,
       localDevReceiptPath: relocatedReceipt,
       expectedRelease: receipt,

@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "IDLE_PANEL_CONTROL_IMPLEMENTED_PENDING_INDEPENDENT_REVIEW",
+  "cause_certainty": "Unconfirmed; no host repair and zero product acceptance.",
+  "evidence_conformance": {
+    "verdict": "CONFORMS_WITH_LIMITS",
+    "source_report": ".research/startup-bracket-native-20261008.json",
+    "run_id": 37791330758,
+    "raw_sha256_verified": "All eight report hashes recomputed and matched.",
+    "independent_findings": [
+      "Startup bracket 14:24:31.585\u201314:24:37.531 UTC connected CDP; about 5.95 seconds is enclosing bracket duration, not exact endpoint wait.",
+      "Stable otherHost 11.71 CPU-s plus provisioner 1.01 CPU-s; 145 positive otherHost contributors; largest is duetexpertd 0.79 CPU-s. No single indexing process dominates.",
+      "Appeared owned processes total 4.61 lifetime CPU-s, including 0.01 CPU-s ps; not an exact Chrome interval delta.",
+      "Final unsafe bracket records ownedChromium 3.43 CPU-s, ownedOther 0.29 CPU-s, hostProvisioner 0.12 CPU-s and otherHost 0.21 CPU-s. Guard cpuBusyFraction=1, current-run final decision invalid.",
+      "Package/browser journals valid; guest journal invalid. Screenshots precede exercisePanel and cannot prove which later SEO action was active."
+    ],
+    "limits": [
+      "No raw before/after ps snapshots are retained, only derived bracket records; parser attribution is not independently reconstructed from raw ps.",
+      "Host process ancestry does not identify who triggered OS service work; browser-triggered OS work is possible.",
+      "Centisecond quantization, exited/new/reparented/reused processes and different iostat bounds prohibit exact additive causality.",
+      "No SEO target report survived guard termination; zero acceptance."
+    ]
+  },
+  "lifecycle": {
+    "preparation": "Workflow disables indexing, measures readiness and uses separate permits. Browser phase installs Chromium and checks INSTALLATION_COMPLETE; never launches it. Acceptance then verifies artifact, makes fresh profile and first-launches full extension browser.",
+    "finding": "No measured proof that an earlier OS-ready boundary is missing. Long idle admission cannot predict browser-triggered host work. Warm-up could only conceal the symptom and is not justified.",
+    "driver_gap": "SEO diagnostic runs full product exercise immediately after panel/screenshots. Its progress stays in memory until final report write, so watchdog SIGTERM loses stage evidence; final Chrome pressure may be public-page work. Record incremental existing-stage receipt before transitions in a separately owned follow-up, without a new framework."
+  },
+  "hypotheses": [
+    {
+      "cause": "Later SEO workload sustains pressure after cold startup",
+      "prediction": "Same cold headless browser and extension reaches idle-panel control with only transient pending sample, then completed valid journal. A single pass supports workload localization but does not prove a stable cure."
+    },
+    {
+      "cause": "Cold browser/extension/panel initialization alone sustains pressure",
+      "prediction": "Headless idle-panel control still reaches unsafe before product work; use its existing timestamped stages to distinguish spawn, panel settle and screenshot interval."
+    },
+    {
+      "cause": "Incidental hosted OS activity drives variability",
+      "prediction": "Idle control pressure remains host dominated despite no product activity. One sample cannot prove this; do not turn a nonreproduction into acceptance."
+    }
+  ],
+  "change": {
+    "files": [
+      ".github/workflows/hosted-guest-acceptance.yml",
+      "scripts/hosted-startup-interval-diagnostic.mjs",
+      "scripts/test-hosted-startup-interval-diagnostic.mjs"
+    ],
+    "behavior": "startup_display_mode is headed by default, with explicit headless choice forwarded as MATRX_STARTUP_DISPLAY_MODE. Existing startup diagnostic validates mode before launch, routes headed boolean to canonical native runner and records requested/observed display. Existing permit, cleanup, thresholds, deadline and idle hold unchanged. Ordinary acceptance is unchanged.",
+    "scope": "No warm-up, no no-extension launch, no product mutation, no acceptance reinterpretation."
+  },
+  "verification": {
+    "green": "11 focused tests passed: hosted-startup-interval-diagnostic, native-startup-interval-callsite, startup-process-interval.",
+    "mutation": "plant.py forcing headed:true caused selected-display assertion failure; return-undefined replacement failed missing actual diagnostic output. Both restored byte-identical.",
+    "limit": "External native runner is substituted at helper seam. Real Chrome/host control unrun. YAML input wiring reviewed directly; Biome formats JS/JSON, does not process workflow YAML."
+  },
+  "next_control": {
+    "requires": "Independent source review first; root owns single hosted dispatch.",
+    "workflow": "hosted-guest-acceptance.yml",
+    "inputs": {
+      "runner_label": "macos-15-intel",
+      "acceptance_case": "startup-resource-diagnostic",
+      "startup_display_mode": "headless",
+      "development_run_id": "37754055905",
+      "development_artifact_id": "11539827040",
+      "acceptance_lane": "A"
+    },
+    "comparison": "Keep frozen407, Intel and headless matching run37791330758. Remove subsequent SEO workload; stop after existing panel idle control. Existing startup diagnostic also observes GPU backend and saves stages, so this is not a perfectly instrumentation-identical A/B.",
+    "required_evidence": "requestedDisplayMode=headless; browserLaunch observed_mode=headless; timestamped nativeStages; current-run startup journal and final decision; completedAt only after owned-child termination.",
+    "stop": "One diagnostic, no product acceptance or repeated attempts without new evidence. If valid, do not add warm-up; localize subsequent SEO stage. If invalid, use retained idle stages to localize browser/panel initialization."
+  }
+}

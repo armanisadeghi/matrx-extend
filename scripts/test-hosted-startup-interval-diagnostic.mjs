@@ -99,7 +99,7 @@ test('endpoint observation strips private fields and rejects malformed state', (
   );
 });
 
-test('diagnostic writer selects headed startup on both hosted architectures', async () => {
+test('diagnostic writer preserves headed default and explicitly isolates headless workload', async () => {
   const outputDir = await mkdtemp(join(tmpdir(), 'startup-observation-'));
   const original = Object.fromEntries(
     [
@@ -110,6 +110,7 @@ test('diagnostic writer selects headed startup on both hosted architectures', as
       'MATRX_STARTUP_INTERVAL_DIAGNOSTIC',
       'MATRX_HOSTED_GUEST_OUTPUT_DIR',
       'MATRX_RESOURCE_RUN_ID',
+      'MATRX_STARTUP_DISPLAY_MODE',
     ].map((key) => [key, process.env[key]]),
   );
   try {
@@ -122,9 +123,10 @@ test('diagnostic writer selects headed startup on both hosted architectures', as
       MATRX_HOSTED_GUEST_OUTPUT_DIR: outputDir,
       MATRX_RESOURCE_RUN_ID: 'observation-lease',
     });
+    Reflect.deleteProperty(process.env, 'MATRX_STARTUP_DISPLAY_MODE');
     const receiptPath = join(outputDir, 'receipt.json');
     await writeFile(receiptPath, '{}');
-    const invoke = async (runnerArch) => {
+    const invoke = async (runnerArch, expectedHeaded = true) => {
       process.env.RUNNER_ARCH = runnerArch;
       await runHostedStartupIntervalDiagnostic({
         executable: '/owned/chromium',
@@ -138,9 +140,14 @@ test('diagnostic writer selects headed startup on both hosted architectures', as
           startupEndpointObservationMs,
           onStartupEndpointObservation,
           onStage,
+          onBrowserLaunchObservation,
           onStartupGpuObservation,
         }) => {
-          assert.equal(headed, true);
+          assert.equal(headed, expectedHeaded, 'selected display mode reaches native launch');
+          onBrowserLaunchObservation({
+            requested_mode: headed ? 'headed' : 'headless',
+            observed_mode: headed ? 'headed' : 'headless',
+          });
           assert.equal(startupEndpointObservationMs, 15_000);
           await onStartupEndpointObservation({
             phase: 'cdp_timeout',
@@ -188,6 +195,18 @@ test('diagnostic writer selects headed startup on both hosted architectures', as
       JSON.parse(await readFile(join(outputDir, 'startup-interval-diagnostic.json'))).runnerArch,
       'ARM64',
     );
+    assert.equal(report.requestedDisplayMode, 'headed');
+    process.env.MATRX_STARTUP_DISPLAY_MODE = 'headless';
+    await invoke('X64', false);
+    const headlessReport = JSON.parse(
+      await readFile(join(outputDir, 'startup-interval-diagnostic.json')),
+    );
+    assert.equal(headlessReport.requestedDisplayMode, 'headless');
+    assert.equal(headlessReport.browserLaunch.observed_mode, 'headless');
+    assert.equal(headlessReport.verdict, 'DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE');
+    process.env.MATRX_STARTUP_DISPLAY_MODE = 'invalid';
+    await assert.rejects(invoke('X64'), /hosted_startup_display_mode_required/);
+    Reflect.deleteProperty(process.env, 'MATRX_STARTUP_DISPLAY_MODE');
     process.env.RUNNER_ARCH = 'UNKNOWN';
     await assert.rejects(invoke('UNKNOWN'), /hosted_startup_arch_required/);
     process.env.RUNNER_ARCH = 'X64';

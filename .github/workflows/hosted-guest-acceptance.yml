@@ -84,6 +84,14 @@ on:
         options:
           - none
           - airbnb
+      startup_display_mode:
+        description: Display mode for startup-resource-diagnostic only
+        required: false
+        default: headed
+        type: choice
+        options:
+          - headed
+          - headless
       seo_resource_diagnostic:
         description: Measure process CPU time on full guest SEO Airbnb; diagnostic only, no acceptance credit
         required: false
@@ -385,6 +393,7 @@ jobs:
         if: inputs.acceptance_case == 'startup-resource-diagnostic'
         env:
           MATRX_HOSTED_PHASE: startup-diagnostic
+          MATRX_STARTUP_DISPLAY_MODE: ${{ inputs.startup_display_mode }}
           MATRX_STARTUP_INTERVAL_DIAGNOSTIC: '1'
           MATRX_PLAYWRIGHT_MODULE: ${{ runner.temp }}/browser-runtime/node_modules/playwright-core/index.mjs
           MATRX_HOSTED_ACCEPTANCE_CASE: startup-resource-diagnostic
