@@ -91,15 +91,26 @@ async function approvedOrganizationConfig() {
   return { name: value.approved_organization_name.trim(), id: value.approved_organization_id };
 }
 
+// Scope the observer to the same ControlRow used by the native organization driver.
+// Organization also contains the archive filter, so its first combobox is unrelated.
+function actingOrganizationPickersExpression(section = 'orgSection') {
+  return `[...(${section}?.querySelectorAll('span') ?? [])]
+    .filter((span) => span.textContent.trim() === 'Acting as')
+    .flatMap((span) => [...span.parentElement.parentElement.querySelectorAll('button[role="combobox"]')])`;
+}
+
 async function approvedOrganizationObservation(panel) {
   return evaluate(
     panel,
     `(() => chrome.storage.local.get('matrx.org.active').then((stored) => {
       const organization = [...document.querySelectorAll('button[aria-expanded]')]
         .find((button) => button.textContent.trim() === 'Organization');
-      const picker = organization?.parentElement?.nextElementSibling?.querySelector('button[role="combobox"]');
+      const orgSection = organization?.parentElement?.nextElementSibling;
+      const pickers = ${actingOrganizationPickersExpression()};
+      const picker = pickers.length === 1 ? pickers[0] : null;
       const active = stored['matrx.org.active'];
       return {
+        actingAsPickerCount: pickers.length,
         pickerMatchesApproved: picker?.textContent?.trim() === ${JSON.stringify(approvedOrganization.name)},
         persistedIdMatchesApproved: active?.id === ${JSON.stringify(approvedOrganization.id)},
       };
@@ -234,7 +245,8 @@ async function accountObservation(panel, expectedEmail) {
       const organization = [...document.querySelectorAll('button[aria-expanded]')]
         .find((button) => button.textContent.trim() === 'Organization');
       const orgSection = organization?.parentElement?.nextElementSibling;
-      const orgButton = orgSection?.querySelector('button[role="combobox"]');
+      const orgPickers = ${actingOrganizationPickersExpression()};
+      const orgButton = orgPickers.length === 1 ? orgPickers[0] : null;
       const orgText = orgButton?.textContent?.trim() ?? '';
       return {
         emailMatchesReviewer: email === ${JSON.stringify(`Email${expectedEmail}`)},
@@ -245,6 +257,7 @@ async function accountObservation(panel, expectedEmail) {
           .some((button) => button.textContent.trim() === 'Sign in'),
         organizationSelected: Boolean(orgButton && orgText && orgText !== 'Choose…'),
         organizationPickerAvailable: Boolean(orgButton),
+        actingAsPickerCount: orgPickers.length,
         organizationLoading: orgSection?.textContent?.includes('Loading…') === true,
         chatVisible: [...document.querySelectorAll('button[role="tab"]')]
           .some((button) => button.title === 'Chat' && button.getBoundingClientRect().width > 0),
@@ -1282,12 +1295,29 @@ try {
         let approvedSelection = null;
         if (UNINTERRUPTED) {
           stage = 'approved_organization_selected';
-          approvedSelection = await waitFor(
-            'reviewer_approved_organization_selected',
-            () => approvedOrganizationObservation(panel),
-            (value) => value?.pickerMatchesApproved && value?.persistedIdMatchesApproved,
-            30_000,
-          );
+          try {
+            approvedSelection = await waitFor(
+              'reviewer_approved_organization_selected',
+              () => approvedOrganizationObservation(panel),
+              (value) => value?.pickerMatchesApproved && value?.persistedIdMatchesApproved,
+              30_000,
+            );
+          } catch (error) {
+            // Preserve only fixed booleans/counts on a timeout, never option text or ids.
+            report.account = {
+              reviewer_fingerprint: hash(email),
+              extension_signed_in: account.emailMatchesReviewer,
+              observed_role_category: account.observedRoleCategory,
+              approved_organization_selection: {
+                ...selectionDiagnostics,
+                ...(await approvedOrganizationObservation(panel).catch(() => ({}))),
+                name_fingerprint: hash(approvedOrganization.name),
+                id_fingerprint: hash(approvedOrganization.id),
+              },
+              storage_shape: await storedSessionShape(panel),
+            };
+            throw error;
+          }
         }
         const storageShape = await storedSessionShape(panel);
         report.account = {
