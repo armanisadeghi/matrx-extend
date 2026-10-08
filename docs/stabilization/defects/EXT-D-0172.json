@@ -7,7 +7,7 @@
   "title": "Post-reload guest conversation receives continuation HTTP 409 after page tool, without assistant reply",
   "severity": "S1: public guest conversation cannot finish an otherwise accepted request",
   "priority": "P0",
-  "state": "open",
+  "state": "in-fix",
   "owner": "root/guest409_diagnose_fix",
   "preconditions": [
     "Public Store CRX0.2.205 loaded unpacked with matching public identity in isolated signed-out Chromium; tree08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8.",
@@ -25,7 +25,8 @@
   "cause": "Unassigned; independent evidence review and source-boundary diagnosis active.",
   "evidence": [
     ".research/daily-guest-20261008.json",
-    ".research/daily-guest-20261008-run37748038743/raw/guest-chat.receipt.original.json"
+    ".research/daily-guest-20261008-run37748038743/raw/guest-chat.receipt.original.json",
+    ".research/daily-guest-409-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -33,6 +34,18 @@
       "from": null,
       "to": "open",
       "reason": "Self-contained resource-valid published-payload/native failure recorded."
+    },
+    {
+      "at": "2026-10-08T08:25:35.145066+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Fresh independent peer ee70a357 confirms actual post-reload continuation409/noanswer and validresources; rootcause still unknown."
+    },
+    {
+      "at": "2026-10-08T08:25:35.145066+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol diagnosis owns exact continuation boundary and canonicalrepair, using newer prioraccepted server1d535d99 comparison."
     }
   ],
   "next_action": "Fresh independent evidence review then prove failing continuation boundary/cause. Fix canonical origin, verify gates and authorized automatic deployment, retest actual public guest first/followup/reload flow on exact stable server.",
