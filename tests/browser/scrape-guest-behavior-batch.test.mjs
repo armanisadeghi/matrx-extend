@@ -7,6 +7,7 @@ import {
   copyResultMatches,
   menuMatches,
   runGuestCopyMenus,
+  runGuestScrollSync,
   scrollSyncMatches,
 } from './scrape-guest-behavior-batch.mjs';
 
@@ -200,10 +201,74 @@ test('schema AI uses JSON fence; wrong fence, no-op, stale and wrong option fail
 test('scroll verdict requires real movement while on and no movement after off', () => {
   const start = { selected: true, scrollerCount: 1, max: 300, off: true, top: 0, pageY: 0 };
   const followed = { on: true, top: 150, pageY: 650 };
-  const stopped = { off: true, top: 150, pageY: 0 };
-  assert.equal(scrollSyncMatches(start, followed, stopped), true);
-  assert.equal(scrollSyncMatches(start, { ...followed, top: 0 }, stopped), false);
-  assert.equal(scrollSyncMatches(start, followed, { ...stopped, top: 80 }), false);
-  assert.equal(scrollSyncMatches(start, followed, { ...stopped, pageY: 650 }), false);
-  assert.equal(scrollSyncMatches({ ...start, max: 0 }, followed, stopped), false);
+  const armed = { off: true, on: false, top: 150, pageY: 650 };
+  const stopped = { off: true, on: false, top: 150, pageY: 0 };
+  assert.equal(scrollSyncMatches(start, followed, armed, stopped), true);
+  assert.equal(scrollSyncMatches(start, { ...followed, top: 0 }, armed, stopped), false);
+  assert.equal(scrollSyncMatches(start, followed, { ...armed, top: 0 }, stopped), false);
+  assert.equal(scrollSyncMatches(start, followed, armed, { ...stopped, top: 0 }), false);
+  assert.equal(scrollSyncMatches(start, followed, armed, { ...stopped, pageY: 650 }), false);
+  assert.equal(scrollSyncMatches({ ...start, max: 0 }, followed, armed, stopped), false);
+});
+
+test('scroll exercise holds an article position established after the trusted stop click', async () => {
+  const exercise = async (stopWorks) => {
+    let pageY = 0;
+    let articleTop = 0;
+    let following = false;
+    const state = () => ({
+      selected: true,
+      scrollerCount: 1,
+      max: 1505,
+      top: articleTop,
+      on: following,
+      off: !following,
+    });
+    return runGuestScrollSync({
+      panel: {},
+      page: {
+        evaluate: async (fn) => {
+          if (String(fn).includes('scrollTo')) pageY = 0;
+          return pageY;
+        },
+        mouse: {
+          wheel: async (_x, delta) => {
+            pageY = Math.max(0, pageY + delta);
+            if (following) articleTop = pageY === 0 ? 0 : 310;
+          },
+        },
+      },
+      resourceAction: (action) => action(),
+      adapters: {
+        click: async (_panel, _kind, label) => {
+          if (label === 'Sync scroll with the live page') following = true;
+          if (label === 'Stop following the page scroll') {
+            // The real pointer driver's scrollIntoView moves this control and
+            // its article scroller to the top before it dispatches the click.
+            articleTop = 0;
+            if (stopWorks) following = false;
+          }
+        },
+        evaluate: async () => state(),
+        waitFor: async (_name, sample, condition) => {
+          const result = await sample();
+          assert.equal(condition(result), true);
+          return result;
+        },
+        armArticleScroll: async (_panel, top) => {
+          articleTop = top;
+          return articleTop > 20;
+        },
+      },
+    });
+  };
+  const correct = await exercise(true);
+  assert.equal(correct.followed.top, 310);
+  assert.equal(correct.armed.top, 310);
+  assert.equal(correct.stopped.top, 310);
+  assert.equal(correct.passed, true);
+  const broken = await exercise(false);
+  assert.equal(broken.armed.top, 310);
+  assert.equal(broken.stopped.top, 0);
+  assert.equal(broken.passed, false);
 });

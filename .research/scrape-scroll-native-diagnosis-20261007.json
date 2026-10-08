@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape-scroll-native-diagnosis-20261007",
+  "lane": "source_diagnosis",
+  "status": "source_repair_verified_native_pending",
+  "case_ids": ["EXT-F-1007-T07", "EXT-F-1007-T09"],
+  "input_run_id": 37720057690,
+  "artifact_version": "0.2.391",
+  "observed_failure": {
+    "start": { "page_y": 0, "article_top": 0, "off": true },
+    "following": { "page_y": 650, "article_top": 310, "on": true },
+    "after_stop_and_reverse": { "page_y": 0, "article_top": 0, "on": false, "off": false },
+    "interpretation": "The original T07 oracle failed. Its pre-click article position was invalid as a post-click baseline, and title-only control probes could not recognize a tooltip-managed control. The receipt cannot establish a product scroll-sync defect."
+  },
+  "root_cause": {
+    "driver": "settings-panel-driver.mjs scrolls every trusted pointer target into view before clicking. The Stop control lives inside the article scroller, so reaching it resets the article scroll position. The following off-state probe used the earlier article position as its oracle. The pointer driver already resolves controls by title or data-matrx-title because the shared tooltip temporarily moves the title there; the Scrape snapshot only queried title.",
+    "evidence": [
+      "tests/browser/settings-panel-driver.mjs trusted click calls target.scrollIntoView",
+      "tests/browser/scrape-guest-behavior-batch.mjs original snapshot queried button[title] only and compared stopped.top to followed.top",
+      "native run 37720057690 retained the same scrollable Article pane but observed articleTop 310 to 0 and both title-only controls false"
+    ],
+    "scope": "Driver/measurement error is established from the captured transition and source path. Product behavior on a new native run remains pending."
+  },
+  "change": "The driver now recognizes tooltip-managed titles, re-arms the disabled article scroller at a measured nonzero position after the trusted Stop click, then checks that reverse page scroll leaves it there. A failed warm or reload T07 stays failed. T09 may continue only after the current intake URL, Article content, selected pane, page reset, and disabled control are proven. New receipts include an exact-stage mismatch screenshot, Chrome version, and extension runtime ID.",
+  "verification": [
+    "node --test tests/browser/scrape-guest-behavior-batch.test.mjs: 5 passed; modeled trusted Stop click resets scroller; disabled state holds after reverse, ignored Stop fails",
+    "pnpm test:focused-acceptance: 43 passed",
+    "pnpm compile: passed",
+    "pnpm exec biome check on three changed source files: passed",
+    "git diff --check: passed"
+  ],
+  "native_verdict": "pending_independent_run",
+  "release_verdict": "not_attempted_by_limited_lane",
+  "next_action": "Independent root peer reviews source and tests, then runs one authorized guarded native case on a provenance-verified development artifact. Confirm T07 warm and reload, and T09 intake/referrals/reload; record any remaining product mismatch without treating this source check as native pass."
+}
