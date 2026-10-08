@@ -1,0 +1,14 @@
+{
+  "total_count": 1,
+  "artifacts": [
+    {
+      "id": 11573195636,
+      "name": "hosted-guest-37828773944-1",
+      "size_in_bytes": 70616,
+      "expired": false,
+      "digest": "sha256:4605309bd35fda54a6cd41113684d15114bdb8f51a7bd18c679ac641c9549a54",
+      "created_at": "2026-10-08T19:08:36Z",
+      "updated_at": "2026-10-08T19:08:36Z"
+    }
+  ]
+}
