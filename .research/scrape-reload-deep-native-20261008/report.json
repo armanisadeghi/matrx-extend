@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "task": "guest Scrape deep T02 after full extension reload at normal 600px",
+  "run": {
+    "run_id": 37816940141,
+    "job_id": 113447872978,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37816940141",
+    "status": "completed",
+    "conclusion": "success",
+    "workflow_head_sha": "59f0345b674c34c3d38bb65531133984484dae0f",
+    "runner": "macos-15 ARM64",
+    "duration": "8m43s",
+    "inputs": {
+      "acceptance_lane": "A",
+      "acceptance_case": "guest-scrape-development",
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "normal",
+      "scrape_normal_width_px": 600,
+      "scrape_diagnostic_cpu_rate": "",
+      "scrape_reload_open_diagnostic": false,
+      "development_run_id": 37790643945,
+      "development_artifact_id": 11556064167
+    }
+  },
+  "product_artifact": {
+    "ci_run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "github_artifact_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "receipt_identity": {
+      "kind": "ci_development_test",
+      "channel": "development",
+      "version": "0.2.414",
+      "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+      "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+      "run_id": 37790643945,
+      "artifact_id": 11556064167
+    }
+  },
+  "native_verdict": {
+    "result": "native_run_completed; selected T02 deep-after-reload assertions observed",
+    "receipt_status": "partial",
+    "guest_account_observed": true,
+    "post_reload_authentication": {
+      "mode": "guest",
+      "guest_storage_empty": true
+    },
+    "post_reload_deep_t02": {
+      "lazy_started_absent": true,
+      "lazy_content_in_browser": true,
+      "lazy_content_in_capture": true,
+      "progress_text": "Scrolling\u2026",
+      "screenshot_local": "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-Tenf12/scrape-reload-deep-article.png"
+    },
+    "case_statuses": [
+      {
+        "id": "EXT-F-1007-T20",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T01",
+        "status": "partial",
+        "remaining": [
+          "member/admin modes remain unverified by this receipt."
+        ]
+      },
+      {
+        "id": "EXT-F-1007-T08",
+        "status": "partial",
+        "remaining": [
+          "member/admin modes remain unverified by this receipt."
+        ]
+      },
+      {
+        "id": "EXT-F-1007-T10",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T11",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T12",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T13",
+        "status": "partial",
+        "remaining": [
+          "member/admin modes remain unverified by this receipt."
+        ]
+      },
+      {
+        "id": "EXT-F-1007-T02",
+        "status": "partial",
+        "remaining": [
+          "Deep failure retry mode remains unverified."
+        ]
+      },
+      {
+        "id": "EXT-F-1007-T07",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T09",
+        "status": "passed",
+        "remaining": []
+      },
+      {
+        "id": "EXT-F-1007-T14",
+        "status": "partial",
+        "remaining": [
+          "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+        ]
+      }
+    ],
+    "t02_limitation": "EXT-F-1007-T02 remains partial because deep failure retry mode remains unverified.",
+    "scope_limit": "This receipt does not promote the overall Scrape feature or remaining guest/member/admin cases."
+  },
+  "source_verdict": {
+    "focused_gate": {
+      "run_id": 37813492611,
+      "commit": "30f5c00639e68cedc58c6c2f6dc9ee5d8d1ffbad",
+      "conclusion": "success",
+      "workflow_head_sha": "30f5c00639e68cedc58c6c2f6dc9ee5d8d1ffbad",
+      "focused_tests": 159,
+      "passed": 159
+    },
+    "assertion_file": "tests/browser/scrape-guest-native-acceptance.mjs",
+    "same_assertion_file_sha256_in_gate_and_native_workflow": "029a6b6fa680eceeb53107caa76cb89bde4eb282",
+    "interpretation": "The native workflow executed the exact focused-gate driver bytes containing the new deep T02 post-reload assertions; the tested product remains frozen development artifact 0.2.414."
+  },
+  "resource_verdict": {
+    "current_run_journals": {
+      "hosted-browser-37816940141-1.jsonl": {
+        "sha256": "1037d75f61c5d61a2c7a4709ee0b7a8964e7d08ac306d1f37cac185c170662e4",
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-08T17:33:16.158Z",
+          "runId": "hosted-browser-37816940141-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "events": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ]
+      },
+      "hosted-guest-37816940141-1.jsonl": {
+        "sha256": "4dc0ab84ef5013159dfedc2db86d9116e5c733d775f126123e60e71049a1e3ad",
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-08T17:37:53.172Z",
+          "runId": "hosted-guest-37816940141-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "events": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_CPU_PENDING",
+          "RESOURCE_PROCESS_ATTRIBUTION",
+          "RESOURCE_CPU_PENDING",
+          "RESOURCE_CPU_PENDING",
+          "RESOURCE_CPU_RECOVERED",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_WATCH_HEALTHY",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ]
+      },
+      "hosted-package-37816940141-1.jsonl": {
+        "sha256": "6c7774e584aef5f8008810999308cd5992956b564f9f882980fc319bdd01c452",
+        "final_event": {
+          "schema": 1,
+          "at": "2026-10-08T17:31:18.228Z",
+          "runId": "hosted-package-37816940141-1",
+          "admitted": true,
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        "events": [
+          "RESOURCE_JOURNAL_OPENED",
+          "RESOURCE_ADMITTED",
+          "RESOURCE_JOB_EXIT",
+          "RESOURCE_FINAL_DECISION"
+        ]
+      }
+    },
+    "all_current_run_journals_valid": true,
+    "interpretation": "Package, browser, and guest journals all finalized valid with resourceInvalid=false and exitCode=0; the guest journal\u2019s brief CPU busy sample recovered before finalization.",
+    "historical_journals_attribution": "Excluded from this run\u2019s verdict; only journals containing run ID 37816940141 are current-run evidence."
+  },
+  "artifact": {
+    "id": 11568710431,
+    "name": "hosted-guest-37816940141-1",
+    "digest": "sha256:6c55eca21859770e2cc05d4c90ae514160a85864babd38cd1e3cf52eae3d7a77",
+    "expired": false
+  },
+  "raw_original_sha256": {
+    "hosted-run-metadata.json": "73fe1c21c477436b94122a042cb300bd5d2d43945cc82f669c4688715112e1e5",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37105304739-1.jsonl": "6c45eac59dd17d7194ac61d92a8571331e9db92593361e9a622a461786b58dea",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37724762467-1.jsonl": "70dd9b6fb4de6e5f119e939acd296782dfb56cf5cdd091c056f09d73c18a0344",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37816940141-1.jsonl": "1037d75f61c5d61a2c7a4709ee0b7a8964e7d08ac306d1f37cac185c170662e4",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37105304739-1.jsonl": "1a2654d74ad70721a101c9710333ced8d23da567266d2f5653db2849e8ea51d2",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37724762467-1.jsonl": "c36252c0fe502603e65d7fb7a4435642035ebacadc52757c1930fffe04e33d3a",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37816940141-1.jsonl": "4dc0ab84ef5013159dfedc2db86d9116e5c733d775f126123e60e71049a1e3ad",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37105304739-1.jsonl": "15fbd74ef4739e033a278c80463ff29b182947b96eb802f93473d88c6e978692",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37724762467-1.jsonl": "3410f7e6f9442f56e34a9bd6f9c381de721bff440e31487f370e0d094733e3a0",
+    "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37816940141-1.jsonl": "6c7774e584aef5f8008810999308cd5992956b564f9f882980fc319bdd01c452",
+    "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-Tenf12/native-side-panel.png": "5b219cd9a9ea94ca5f59fab7d1369c6ba26c5f8e97dcd9d80640af37b2b7b239",
+    "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-Tenf12/normal-target-after-open.png": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+    "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-Tenf12/scrape-deep-article.png": "26095ea427a471d6f35842bdcd23cbc85684e8090d04a6049e5b82eeb7fb7a99",
+    "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-Tenf12/scrape-fast-article.png": "38f2713db4e5987917da5d3ef798558fe1520351934a79d758e4ae68b604a6c3",
+    "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-Tenf12/scrape-reload-deep-article.png": "c7b37f023cdcab18ab3e9ac66024d5dfb20051194c0a68fa22b220086307bc12",
+    "matrx-extend/matrx-extend/test-results/native-sidepanel-qa-Tenf12/scrape-restricted-error.png": "e9d96286e3c003135960d116e6daa7045b99c9a46b82134182ccbfd0d75f0b3f",
+    "matrx-extend/matrx-extend/test-results/scrape-guest-native-5c1cb4ac-d5ec-4116-a1f6-713b124bce4e.json": "ab6edaefabac3a56cb1247cfae985052af5fe4aa175903a6933ffd30abbd8ba2",
+    "remote-artifact-listing.json": "74e13bfeb5f38a9c2de30ec2cee99595e1cbc89ac1fc189c8d2c29581ec2964b"
+  },
+  "next_action": "Keep T02 partial for the unverified deep failure/retry path; root owns integration. Do not promote whole Scrape."
+}
