@@ -1293,6 +1293,8 @@ async function recoverOwnedGrant({ panel }, recoveryPath) {
     const before=await rpc('list_share_links',args);
     const exact=Array.isArray(before.body)?before.body.filter(link=>link.id===owned.shareLinkId):[];
     if(before.status!==200||exact.length!==1)return {failure:'owner_gated_exact_file_grant_not_unique'};
+    if(Date.parse(exact[0].created_at)!==Date.parse(owned.grantCreatedAt))
+      return {failure:'exact_grant_creation_receipt_mismatch'};
     const revoked=await rpc('revoke_share_link',{p_link_id:owned.shareLinkId});
     if(revoked.status!==200||revoked.body?.success!==true)return {failure:'exact_actor_grant_revoke_failed'};
     const after=await rpc('list_share_links',args);
