@@ -525,6 +525,60 @@ async function observeShareClipboard({ browserSession, panel, panelTarget }, evi
     evidence,
   });
 }
+// One grant row in one visible dialog; disabled historical grants cannot match.
+// Only viewport preparation uses DOM methods. The action is a trusted CDP pointer.
+async function clickOwnedGrantRevoke(panel, grant) {
+  let previous;
+  let stable = 0;
+  const target = await waitFor(
+    'exact_owned_grant_revoke_stable_hit',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+      const grant=${JSON.stringify(grant)};
+      const visible=el=>{const r=el.getBoundingClientRect(),s=getComputedStyle(el);
+        return r.width>0&&r.height>0&&s.visibility!=='hidden'&&s.display!=='none'&&!el.closest('[inert]');};
+      const dialogs=[...document.querySelectorAll('[role="dialog"]')].filter(visible);
+      if(dialogs.length!==1)return {count:0};
+      const inputs=[...dialogs[0].querySelectorAll('input[aria-label="Public share link"]')]
+        .filter(el=>{try {const path=new URL(el.value).pathname;
+          return path.endsWith('/'+encodeURIComponent(grant.token))||
+            !!grant.short_token&&path.endsWith('/'+encodeURIComponent(grant.short_token));
+        }catch{return false;}});
+      if(inputs.length!==1)return {count:0};
+      const buttons=[...inputs[0].parentElement.querySelectorAll('button')]
+        .filter(el=>el.textContent.trim()==='Revoke'&&!el.disabled&&visible(el));
+      if(buttons.length!==1)return {count:buttons.length};
+      const button=buttons[0]; button.scrollIntoView({block:'center',inline:'center',behavior:'instant'});
+      const r=button.getBoundingClientRect(),x=r.x+r.width/2,y=r.y+r.height/2;
+      const hit=document.elementFromPoint(x,y);
+      return {count:1,x,y,hit:hit===button||!!hit&&button.contains(hit)};
+    })()`,
+      ),
+    (value) => {
+      stable =
+        value?.count === 1 &&
+        value.hit &&
+        previous &&
+        Math.abs(previous.x - value.x) < 0.25 &&
+        Math.abs(previous.y - value.y) < 0.25
+          ? stable + 1
+          : 0;
+      previous = value;
+      return stable >= 2;
+    },
+    30_000,
+  );
+  for (const type of ['mousePressed', 'mouseReleased'])
+    await panel.send('Input.dispatchMouseEvent', {
+      type,
+      x: target.x,
+      y: target.y,
+      button: 'left',
+      clickCount: 1,
+    });
+}
 async function openShareManager(panel) {
   const manageLabel = await waitFor(
     'canonical_share_manager_ready',
@@ -561,6 +615,17 @@ async function verifyCanonicalShare(context, row, recovery, flow) {
   })()`,
   );
   if (!/^[a-f0-9]{64}$/.test(originalImageSha ?? '')) fail('original_image_digest_unverified');
+  const actor = await evaluate(
+    panel,
+    `(async()=> (await chrome.storage.local.get('matrx.user.profile'))['matrx.user.profile']?.id)()`,
+  );
+  if (typeof actor !== 'string') fail('share_actor_unverified');
+  const privatePrior = JSON.parse(await readFile(recovery, 'utf8'));
+  await writeFile(
+    recovery,
+    JSON.stringify({ ...privatePrior, actorId: actor, organizationId: expectedOrganization }),
+    { mode: 0o600 },
+  );
   const journal = watchShareRpcs(panel);
   let created;
   let anonymous;
@@ -785,7 +850,7 @@ async function verifyCanonicalShare(context, row, recovery, flow) {
                   entry.request.p_resource_id === row.file_id &&
                   entry.status === 200 &&
                   Array.isArray(entry.response) &&
-                  entry.response.some((link) => link.is_active === true),
+                  entry.response.filter((link) => link.is_active === true).length === 1,
               )
               ?.response.find((link) => link.is_active === true),
           (value) => !!value,
@@ -796,17 +861,7 @@ async function verifyCanonicalShare(context, row, recovery, flow) {
           mode: 0o600,
         });
         try {
-          await waitFor(
-            'revoke_owned_share_ready',
-            () =>
-              evaluate(
-                panel,
-                `[...document.querySelectorAll('[role="dialog"] button')].filter(el=>el.textContent.trim()==='Revoke'&&!el.disabled).length`,
-              ),
-            (count) => count === 1,
-            30_000,
-          );
-          await click(panel, 'button-text', 'Revoke');
+          await clickOwnedGrantRevoke(panel, grant);
           const write = await waitFor(
             'real_owned_share_revoked',
             () =>
@@ -815,6 +870,7 @@ async function verifyCanonicalShare(context, row, recovery, flow) {
                 .find(
                   (entry) =>
                     entry.operation === 'revoke_share_link' &&
+                    entry.request.p_link_id === grant.id &&
                     entry.status === 200 &&
                     entry.response?.success === true,
                 ),
@@ -1179,6 +1235,84 @@ async function exerciseCase(context, mode) {
     if (server) await new Promise((resolveClose) => server.close(resolveClose));
   }
 }
+// Separate service cleanup verdict, never evidence that the native manager passed.
+// The screenshot card may already be deleted. Recover only its retained exact grant.
+async function recoverOwnedGrant({ panel }, recoveryPath) {
+  stage = 'retained_owned_grant_service_recovery';
+  const stat = await lstat(recoveryPath);
+  if (!stat.isFile() || (stat.mode & 0o777) !== 0o600) fail('grant_recovery_config_not_private');
+  const owned = JSON.parse(await readFile(recoveryPath, 'utf8'));
+  const uuid = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i;
+  if (
+    !['fileId', 'shareLinkId', 'actorId', 'organizationId'].every((key) =>
+      uuid.test(owned[key] ?? ''),
+    ) ||
+    owned.grantCreatedBy !== owned.actorId ||
+    owned.ownershipVerifiedBy !== 'read_only_exact_grant_database_query' ||
+    !Number.isFinite(Date.parse(owned.grantCreatedAt))
+  )
+    fail('grant_recovery_exact_ownership_missing');
+  const fixture = new URL(owned.fixtureUrl);
+  if (
+    fixture.hostname !== '127.0.0.1' ||
+    fixture.protocol !== 'http:' ||
+    !/^\/harbor-dental\/appointment-guide\/(nested|root)\/[a-f0-9-]+$/.test(fixture.pathname) ||
+    canonical(fixture.href) !== owned.fixtureCanonical
+  )
+    fail('grant_recovery_fixture_mismatch');
+  const config = {};
+  for (const line of (await readFile(join(REPO, '.env.production'), 'utf8')).split(/\r?\n/)) {
+    const match = /^\s*(WXT_SUPABASE_URL|WXT_SUPABASE_PUBLISHABLE_KEY)\s*=\s*(.*?)\s*$/.exec(line);
+    if (match) config[match[1]] = match[2].replace(/^(['"])(.*)\1$/, '$2');
+  }
+  if (
+    !config.WXT_SUPABASE_PUBLISHABLE_KEY ||
+    new URL(config.WXT_SUPABASE_URL).protocol !== 'https:'
+  )
+    fail('grant_recovery_service_config_missing');
+  report.scope = 'exact retained grant owner-authenticated canonical service cleanup';
+  const result = await evaluate(
+    panel,
+    `(async()=>{
+    const owned=${JSON.stringify(owned)}, config=${JSON.stringify(config)};
+    const stored=await chrome.storage.local.get(['matrx.auth.accessToken','matrx.user.profile','matrx.org.active']);
+    if(stored['matrx.user.profile']?.id!==owned.actorId||stored['matrx.org.active']?.id!==owned.organizationId)
+      return {failure:'actor_or_organization_mismatch'};
+    const token=stored['matrx.auth.accessToken'];
+    if(typeof token!=='string'||!token)return {failure:'authenticated_session_missing'};
+    const headers={apikey:config.WXT_SUPABASE_PUBLISHABLE_KEY,Authorization:'Bearer '+token,
+      'X-Organization-Id':owned.organizationId,'Content-Type':'application/json'};
+    const identity=await fetch(new URL('/auth/v1/user',config.WXT_SUPABASE_URL),{headers});
+    if(!identity.ok||(await identity.json()).id!==owned.actorId)return {failure:'real_actor_mismatch'};
+    const rpc=async(name,args)=>{
+      const response=await fetch(new URL('/rest/v1/rpc/'+name,config.WXT_SUPABASE_URL),
+        {method:'POST',headers,body:JSON.stringify(args)});
+      return {status:response.status,body:response.ok?await response.json():null};
+    };
+    const args={p_resource_type:'file',p_resource_id:owned.fileId};
+    const before=await rpc('list_share_links',args);
+    const exact=Array.isArray(before.body)?before.body.filter(link=>link.id===owned.shareLinkId):[];
+    if(before.status!==200||exact.length!==1)return {failure:'owner_gated_exact_file_grant_not_unique'};
+    const revoked=await rpc('revoke_share_link',{p_link_id:owned.shareLinkId});
+    if(revoked.status!==200||revoked.body?.success!==true)return {failure:'exact_actor_grant_revoke_failed'};
+    const after=await rpc('list_share_links',args);
+    return {realActorVerified:true,exactOwnerGatedFileGrantVerified:true,canonicalExactRevoke:true,
+      inactiveAfterRealRead:after.status===200&&Array.isArray(after.body)&&
+        after.body.filter(link=>link.id===owned.shareLinkId&&link.is_active===false).length===1};
+  })()`,
+  );
+  report.retainedGrantServiceCleanup = result;
+  report.nativeManagerAcceptance = 'unverified';
+  if (result?.failure || result?.inactiveAfterRealRead !== true)
+    fail('retained_owned_grant_cleanup_unverified');
+  report.status = 'partial';
+  report.shareCleanup = 'pass';
+  // Keep any screenshot-row recovery obligation until its separate absence check.
+  await writeFile(recoveryPath, JSON.stringify({ ...owned, shareGrantInactiveVerified: true }), {
+    mode: 0o600,
+  });
+  report.privateRecoveryRetained = true;
+}
 async function recoverOwnedFixture({ page, panel }, recoveryPath) {
   const stat = await lstat(recoveryPath);
   if (!stat.isFile() || (stat.mode & 0o777) !== 0o600) fail('recovery_config_not_private');
@@ -1284,6 +1418,10 @@ async function exercise(context) {
   const approved = await approvedOrganization();
   await signIn(context.page, context.panel);
   await selectOrganization(context.panel, approved);
+  if (process.env.SCREENSHOT_GRANT_RECOVERY) {
+    await recoverOwnedGrant(context, resolve(REPO, process.env.SCREENSHOT_GRANT_RECOVERY));
+    return;
+  }
   if (process.env.SCREENSHOT_CAPTURE_RECOVERY) {
     await recoverOwnedFixture(context, resolve(REPO, process.env.SCREENSHOT_CAPTURE_RECOVERY));
     return;
