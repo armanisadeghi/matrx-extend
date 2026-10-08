@@ -1,4 +1,7 @@
+import assert from 'node:assert/strict';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+
+const nativeDriver = { click, evaluate, openSection, waitFor };
 
 // The three controls share one UI path, but each comparison uses its own
 // fixed, external expectation. Only allowlisted preference values leave Chrome.
@@ -86,8 +89,8 @@ export async function observeGuestNewChatDefault(panel, expectedMode, expectedLa
   );
 }
 
-async function observe(panel, preference) {
-  return evaluate(
+export async function observeGuestPreference(panel, preference, driver = nativeDriver) {
+  return driver.evaluate(
     panel,
     `(async () => {
     const active = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
@@ -136,7 +139,7 @@ export async function runGuestPreferenceCase(
     await click(panel, 'option', label);
     const warm = await waitFor(
       `${preference.caseId}_${value}_warm`,
-      () => observe(panel, preference),
+      () => observeGuestPreference(panel, preference),
       (state) => preferenceMatches(state, preference, value, label),
     );
     record(
@@ -146,7 +149,7 @@ export async function runGuestPreferenceCase(
     );
     await reloadSettings(panel);
     await openSection(panel, preference.section);
-    const reloaded = await observe(panel, preference);
+    const reloaded = await observeGuestPreference(panel, preference);
     record(
       `${label} survives panel reload`,
       reloaded,
@@ -154,4 +157,48 @@ export async function runGuestPreferenceCase(
     );
     await afterReload({ panel, preference, value, label, observation: reloaded });
   }
+}
+
+export function preferenceBaseline(observation, preference) {
+  const byStored = preference.choices.find(([value]) => value === observation?.stored);
+  const bySelected = preference.choices.find(([, label]) => label === observation?.selected);
+  const value = byStored?.[0] ?? bySelected?.[0] ?? null;
+  const choice = preference.choices.find(([candidate]) => candidate === value);
+  return {
+    value,
+    label: choice?.[1] ?? null,
+    observation,
+    matched: !!choice && preferenceMatches(observation, preference, value, choice[1]),
+  };
+}
+
+export async function restoreGuestPreferenceBaseline(
+  panel,
+  preference,
+  baseline,
+  record,
+  driver = nativeDriver,
+) {
+  const choice = preference.choices.find(([value]) => value === baseline?.value);
+  assertPreferenceBaseline(choice, preference);
+  const [value, label] = choice;
+  await driver.openSection(panel, preference.section);
+  let current = await observeGuestPreference(panel, preference, driver);
+  if (!preferenceMatches(current, preference, value, label)) {
+    await driver.click(panel, 'settings-select', preference.label);
+    await driver.click(panel, 'option', label);
+  }
+  const restored = await driver.waitFor(
+    `${preference.caseId}_full_extension_baseline_restored`,
+    () => observeGuestPreference(panel, preference, driver),
+    (state) => preferenceMatches(state, preference, value, label),
+  );
+  const passed = preferenceMatches(restored, preference, value, label);
+  record(`original ${preference.label} preference restored`, restored, passed);
+  if (!passed) throw new Error(`${preference.caseId}_full_extension_baseline_restore_failed`);
+  return restored;
+}
+
+function assertPreferenceBaseline(choice, preference) {
+  if (!choice) throw new Error(`${preference.caseId}_full_extension_baseline_unavailable`);
 }

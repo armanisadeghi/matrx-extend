@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "207979ed",
+  "prior_source_commit": "9fc2c925",
+  "prior_peer_report_commit": "db2f88b0",
+  "authorship": "Independent read-only review; zero Settings source or test edits. Reused seat because fresh sessions failed with ENOSPC.",
+  "verdict_a_source_behavior": {
+    "status": "PARTIAL; native pending",
+    "verified": "After replacement Settings opens, the actual orchestration invokes T04, T10, T28, T40 and T67. T04/T10 capture a post-reload selected/stored baseline and attempt restoration in finally; missing, failed and non-passing rechecks fail their case without erasing an earlier warm failure. T40/T67 downstream capture remains unverified.",
+    "finding": "The T04/T10 baseline is inferred from the post-extension-reload observation itself, so the recheck does not compare it with the preference observed before extension reload. A valid but reset UI/storage pair can pass the pre-run baseline check and be restored as the new baseline. Full-extension persistence of the original choice remains unproven."
+  },
+  "verdict_b_test_and_receipt_quality": {
+    "status": "CHANGES REQUESTED",
+    "finding_restore": "observeGuestNewChatDefault switches T10 to Chat and can throw before afterReload calls settings(panel). The finally block calls restoreGuestPreferenceBaseline, which starts with openSection on Settings without reselecting Settings. An exception in Chat can therefore leave the preference unrestored. The actual orchestration test injects T04 failure while Settings remains active, not this T10 failure boundary.",
+    "finding_receipt": "runFullExtensionRecheck and the restoration catch copy arbitrary error.message into the receipt. The shared waitFor error can contain JSON of a DOM observation or transient exception; a bounded safe phase/category is needed before persistence."
+  },
+  "verification": "Source and test review only; no test, native, browser, build or release executed by this peer.",
+  "next_action": "Reopen Settings inside T10 finally before restoration, test failure after navigation with a distinct replacement panel, compare post-reload baseline to saved pre-reload value, and bound exception receipt text; then rerun focused gate and independent review."
+}

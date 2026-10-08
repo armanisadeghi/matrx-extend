@@ -12,7 +12,10 @@ import { captureFailure } from './profile-reload-capture.mjs';
 import {
   GUEST_PREFERENCES,
   observeGuestNewChatDefault,
+  observeGuestPreference,
+  preferenceBaseline,
   runGuestPreferenceCase,
+  restoreGuestPreferenceBaseline,
 } from './settings-guest-preference-batch.mjs';
 import {
   GUEST_PRIVACY_SWITCHES,
@@ -23,6 +26,14 @@ import {
   runGuestAutoScrapeModeCase,
   runGuestSectionsCase,
 } from './settings-guest-scrape-controls.mjs';
+import {
+  captureGuestPreferenceBaselines,
+  enforceFullExtensionRechecks,
+  FULL_EXTENSION_RECHECK_IDS,
+  initializeFullExtensionRechecks,
+  rerunGuestSettingsAfterExtensionReload,
+  snapshotPanelDocumentReload,
+} from './settings-full-extension-rechecks.mjs';
 import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
   activeTabPanelExpression,
@@ -91,6 +102,7 @@ const report = {
 };
 const byId = (suffix) => report.cases.find((c) => c.id.endsWith(suffix));
 const criterion = (c, name, status, evidence) => c.criteria.push({ name, status, evidence });
+initializeFullExtensionRechecks(report.cases);
 
 async function startObservedDeadPort() {
   const requests = [];
@@ -667,6 +679,7 @@ try {
             );
         });
       }
+      for (const suffix of FULL_EXTENSION_RECHECK_IDS) snapshotPanelDocumentReload(byId(suffix));
       await runCase(byId('T37'), async () => {
         const c = byId('T37');
         await openSection(panel, 'Scrape');
@@ -1039,6 +1052,14 @@ try {
         const warmGuest = await observeGuestIdentityAndOrganization(panel);
         recordGuestPhase('warm', warmGuest);
         await recordGuestAdvancedDenial('warm', panel, warmGuest);
+        const preExtensionBaselines = await captureGuestPreferenceBaselines({
+          panel,
+          preferences: GUEST_PREFERENCES,
+          settings,
+          openSection,
+          observePreference: observeGuestPreference,
+          preferenceBaseline,
+        });
         guestStage = 'extension_reload';
         const replacement = await reloadExtension();
         report.guestExtensionReload = {
@@ -1073,6 +1094,23 @@ try {
         const reloadedGuest = await observeGuestIdentityAndOrganization(replacement.panel);
         recordGuestPhase('reload', reloadedGuest);
         await recordGuestAdvancedDenial('reload', replacement.panel, reloadedGuest);
+        await rerunGuestSettingsAfterExtensionReload({
+          panel: replacement.panel,
+          cases: report.cases,
+          preferences: GUEST_PREFERENCES,
+          reloadSettings,
+          settings,
+          openSection,
+          observeNewChatDefault: observeGuestNewChatDefault,
+          runPreferenceCase: runGuestPreferenceCase,
+          observePreference: observeGuestPreference,
+          preferenceBaseline,
+          preExtensionBaselines,
+          restorePreferenceBaseline: restoreGuestPreferenceBaseline,
+          runSectionsCase: runGuestSectionsCase,
+          runAutoScrapeCase: runGuestAutoScrapeCase,
+          runAutoScrapeModeCase: runGuestAutoScrapeModeCase,
+        });
       } catch (error) {
         report.guestStageFailed = guestStage;
         if (guestStage === 'extension_reload' || error?.lifecycleEvidence || error?.contextBoundary)
@@ -1122,6 +1160,7 @@ try {
     if (c.criteria.length === 0) criterion(c, 'setup completed', 'unverified', report.setup_error);
 } finally {
   await observedPort?.close();
+  enforceFullExtensionRechecks(report.cases);
   for (const c of report.cases) {
     c.build = report.build;
     c.preconditions = report.preconditions;

@@ -1,0 +1,20 @@
+{
+  "review_of": "9fc2c925449dd89a7d94281b87981c18de068bc5",
+  "reviewed_against": "368f98b3",
+  "verdict_a_coverage_source": {
+    "status": "PARTIAL",
+    "evidence": "The harness calls all five reruns on replacement.panel after the extension reload and Settings-open boundary (settings-local-controls-acceptance.mjs:526-560; call site follows settings_opened at 1118-1128). Missing or failed full-extension results fail the target case (settings-full-extension-rechecks.mjs:47-65). Lightweight tests pass 8/8.",
+    "native": "UNVERIFIED; no hosted/native rerun was performed.",
+    "findings": [
+      "T04/T10 use runGuestPreferenceCase (settings-guest-preference-batch.mjs:126-156), which loops through choices and exits without restoring the original preference. The new replacement-panel rerun calls it directly (settings-local-controls-acceptance.mjs:527-549). Capture the pre-rerun selected+stored value and restore/verify it in cleanup on this panel; fail the case if restoration fails.",
+      "T40 background capture and T67 downstream capture remain explicitly unverified, correctly disclosed by the harness (settings-local-controls-acceptance.mjs:562-570)."
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "CONCERN",
+    "evidence": "The native-harness test checks source substrings/order only (settings-full-extension-rechecks.test.mjs:86-102); it separately simulates the helper callbacks (lines 20-84).",
+    "finding": "A no-op rerunGuestSettingsAfterExtensionReload body still passes if the call expression remains in source. Acceptance requirement: exercise the actual orchestration callback through an injectable runner/driver seam, pass a distinct replacement-panel sentinel, assert post-Settings-open order and invocation/results for T04/T10/T28/T40/T67, and prove an omitted or failing runner produces a failing fullExtensionReload criterion for that target. This tests wiring and failure propagation rather than string presence."
+  },
+  "verification": "node --test tests/browser/settings-full-extension-rechecks.test.mjs tests/browser/settings-guest-scrape-controls.test.mjs — 8 passed; native run not performed.",
+  "authorship": "Zero authorship; review only."
+}

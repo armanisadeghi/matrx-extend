@@ -50,6 +50,8 @@ async function scenario(options = {}) {
       };
     }
     if (input.method === 'POST' && input.path === '') {
+      if (options.onCreateDispatch)
+        await options.onCreateDispatch(await readFile(journalPath, 'utf8'));
       if (options.createRejectedNoWrite)
         return { token_matches: true, status: 422, done: false, created: false };
       tableExists = true;
@@ -376,6 +378,82 @@ test('lost create response is recovered by owned name and archived without creat
   }
 });
 
+test('crash at create dispatch keeps the durable unknown write through empty and late recovery', async () => {
+  let dispatchJournal;
+  const s = await scenario({
+    onCreateDispatch: async (serialized) => {
+      dispatchJournal = serialized;
+    },
+  });
+  const directory = await mkdtemp(join(tmpdir(), 'records-crash-recovery-'));
+  const journalPath = join(directory, 'journal.json');
+  const environment = {
+    GITHUB_ACTIONS: 'true',
+    RUNNER_ENVIRONMENT: 'github-hosted',
+    MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+    MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+  };
+  let visible = false;
+  let archived = false;
+  const methods = [];
+  try {
+    await s.run();
+    const atDispatch = JSON.parse(dispatchJournal);
+    assert.equal(atDispatch.phase, 'create_sent');
+    assert.equal(atDispatch.table_id, null);
+    assert.equal(atDispatch.pending_write_unknown, true);
+    await writeFile(journalPath, dispatchJournal, { mode: 0o600 });
+    const request = async (_panel, _evaluate, input) => {
+      methods.push(input.method);
+      const found = visible && !archived ? [{ id: tableId, name: atDispatch.name }] : [];
+      if (input.method === 'GET')
+        return {
+          token_matches: true,
+          status: 200,
+          list_complete: true,
+          tables: found.filter((item) => item.name === input.name),
+          owned_tables: input.path.includes('search=EXT-F-4130-') ? found : [],
+        };
+      assert.equal(input.method, 'DELETE');
+      assert.equal(input.path, `/${tableId}`);
+      archived = true;
+      return {
+        token_matches: true,
+        status: 200,
+        done: true,
+        archived: true,
+        org_matches: true,
+        id: tableId,
+      };
+    };
+    const recover = () =>
+      withRecordsPositiveFixture({
+        panel: {},
+        evaluate: async () => assert.fail('no page evaluation'),
+        orgId,
+        principalId,
+        bearerHash: 'a'.repeat(64),
+        journalPath,
+        exercise: async () => assert.fail('recovery must not create or read'),
+        request,
+        environment,
+      });
+    await assert.rejects(recover(), /records_fixture_cleanup_unverified/);
+    assert.deepEqual(methods, ['GET', 'GET', 'GET']);
+    assert.equal(JSON.parse(await readFile(journalPath, 'utf8')).pending_write_unknown, true);
+    visible = true;
+    await assert.rejects(recover(), /records_fixture_recovery_cleanup_only/);
+    assert.equal(archived, true);
+    assert.equal(methods.includes('POST'), false);
+    const recovered = JSON.parse(await readFile(journalPath, 'utf8'));
+    assert.equal(recovered.phase, 'archived_verified');
+    assert.equal(recovered.pending_write_unknown, false);
+  } finally {
+    await s.cleanup();
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
 test('existing table or wrong principal refuses before fixture writes', async () => {
   for (const options of [{ notCreated: true }, { principalMismatch: true }]) {
     const s = await scenario(options);
@@ -433,12 +511,19 @@ test('created=false only archives an exact marked fixture and leaves an unmarked
   for (const marked of [true, false]) {
     const s = await scenario({ notCreated: true, notCreatedMarked: marked });
     try {
-      await assert.rejects(s.run(), /records_fixture_table_not_created/);
+      await assert.rejects(
+        s.run(),
+        marked ? /records_fixture_table_not_created/ : /records_fixture_cleanup_unverified/,
+      );
       assert.equal(s.archived, marked);
       const state = JSON.parse(await readFile(s.journalPath, 'utf8'));
-      assert.equal(state.phase, marked ? 'archived_verified' : 'no_owned_fixture_found');
+      assert.equal(state.phase, marked ? 'archived_verified' : 'ownership_unverified');
+      assert.equal(state.pending_write_unknown, !marked);
       const writes = s.calls.filter(({ method }) => method === 'POST').length;
-      await assert.rejects(s.run(), /records_fixture_recovery_cleanup_only/);
+      await assert.rejects(
+        s.run(),
+        marked ? /records_fixture_recovery_cleanup_only/ : /records_fixture_cleanup_unverified/,
+      );
       assert.equal(s.calls.filter(({ method }) => method === 'POST').length, writes);
     } finally {
       await s.cleanup();
@@ -579,6 +664,159 @@ test('real page request uses the signed-in principal and returns only safe recei
   assert.equal(result.id, tableId);
   assert.equal(result.org_matches, true);
   assert.doesNotMatch(JSON.stringify(result), /unit-test-token|must never leave page|f9d83857/);
+});
+
+test('slow page fetch completes through short CDP commands without resending the request', async () => {
+  const token = 'unit-test-token';
+  let fetches = 0;
+  let evaluations = 0;
+  const evaluate = async (_panel, expression) => {
+    evaluations++;
+    return Promise.race([
+      new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
+        { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+        webcrypto,
+        async () => {
+          fetches++;
+          await new Promise((resolve) => setTimeout(resolve, 65));
+          return {
+            status: 200,
+            json: async () => ({ done: true, created: true, id: tableId, organization_id: orgId }),
+          };
+        },
+      ),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('owned_cdp_transport_failed')), 20),
+      ),
+    ]);
+  };
+  const result = await recordsFixtureRequest({}, evaluate, {
+    method: 'POST',
+    path: '',
+    body: { name: 'owned' },
+    orgId,
+    bearerHash: createHash('sha256').update(token).digest('hex'),
+    name: 'owned',
+    marker: recordsFixtureMarker(principalId, orgId),
+    requestTimeoutMs: 500,
+    pollIntervalMs: 5,
+  });
+  assert.equal(result.status, 200);
+  assert.equal(result.id, tableId);
+  assert.equal(fetches, 1);
+  assert.ok(evaluations > 1);
+});
+
+test('timed-out create aborts once and leaves a durable ambiguous-write journal', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'records-fixture-timeout-'));
+  const journalPath = join(directory, 'journal.json');
+  const token = 'unit-test-token';
+  const requests = [];
+  const diagnostics = [];
+  const evaluate = async (_panel, expression) =>
+    new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
+      { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+      webcrypto,
+      async (_url, options) => {
+        requests.push(options.method);
+        if (options.method === 'GET')
+          return { status: 200, json: async () => ({ tables: [], not_listed: [] }) };
+        assert.equal(options.method, 'POST');
+        return new Promise((_, reject) =>
+          options.signal.addEventListener('abort', () => reject(new Error('aborted')), {
+            once: true,
+          }),
+        );
+      },
+    );
+  try {
+    await assert.rejects(
+      withRecordsPositiveFixture({
+        panel: {},
+        evaluate,
+        orgId,
+        principalId,
+        bearerHash: createHash('sha256').update(token).digest('hex'),
+        journalPath,
+        exercise: async () => assert.fail('positive reads must not run'),
+        onFailure: (diagnostic) => diagnostics.push(diagnostic),
+        request: (panel, evaluator, input) =>
+          recordsFixtureRequest(panel, evaluator, {
+            ...input,
+            requestTimeoutMs: 45,
+            pollIntervalMs: 5,
+          }),
+        id: () => runId,
+        environment: {
+          GITHUB_ACTIONS: 'true',
+          RUNNER_ENVIRONMENT: 'github-hosted',
+          MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+          MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+        },
+      }),
+      /records_fixture_cleanup_unverified/,
+    );
+    assert.deepEqual(requests, ['GET', 'GET', 'POST', 'GET']);
+    assert.deepEqual(
+      diagnostics.map(({ boundary, phase, classification, request_method }) => ({
+        boundary,
+        phase,
+        classification,
+        request_method,
+      })),
+      [
+        {
+          boundary: 'body',
+          phase: 'records_fixture_table_create',
+          classification: 'records_fixture_request_timeout',
+          request_method: 'POST',
+        },
+        {
+          boundary: 'cleanup',
+          phase: 'records_fixture_cleanup',
+          classification: 'records_fixture_cleanup_unverified',
+          request_method: 'GET',
+        },
+      ],
+    );
+    const saved = JSON.parse(await readFile(journalPath, 'utf8'));
+    assert.equal(saved.phase, 'ownership_unverified');
+    assert.equal(saved.pending_write_unknown, true);
+    assert.equal(saved.table_id, null);
+    const recoveryMethods = [];
+    await assert.rejects(
+      withRecordsPositiveFixture({
+        panel: {},
+        evaluate,
+        orgId,
+        principalId,
+        bearerHash: createHash('sha256').update(token).digest('hex'),
+        journalPath,
+        exercise: async () => assert.fail('recovered run must not earn read credit'),
+        request: async (_panel, _evaluate, input) => {
+          recoveryMethods.push(input.method);
+          return {
+            token_matches: true,
+            status: 200,
+            list_complete: true,
+            tables: [],
+            owned_tables: [],
+          };
+        },
+        environment: {
+          GITHUB_ACTIONS: 'true',
+          RUNNER_ENVIRONMENT: 'github-hosted',
+          MATRX_HOSTED_ACCEPTANCE_CASE: 'records-readonly-admin',
+          MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+        },
+      }),
+      /records_fixture_cleanup_unverified/,
+    );
+    assert.deepEqual(recoveryMethods, ['GET', 'GET', 'GET']);
+    assert.equal(JSON.parse(await readFile(journalPath, 'utf8')).pending_write_unknown, true);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test('page-local recovery scan selects only exact marked synthetic tables in the same organization', async () => {

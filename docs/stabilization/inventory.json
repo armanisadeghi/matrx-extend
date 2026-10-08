@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T20:53:55.163104+00:00",
+  "updated_at": "2026-10-08T21:19:48.501595+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6286,15 +6286,12 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "37840985992",
-              "evidence": [
-                ".research/settings-census-native-20261008.json",
-                ".research/parallel-replay-peer-20261008.json"
-              ],
+              "status": "partial",
+              "run_id": "37843040511",
+              "evidence": [".research/settings-sections-fixed-native-20261008.json"],
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "build_version": "0.2.414",
-              "detail": "Resource-valid census fails before actions: active true,11 expected headings plus4 nested expanded controls. Source selector overbreadth repaired0c8ae904; hosted37842734890 passed. Native section behavior and full-extension repeat remain unverified.",
+              "detail": "Independent review verifies44/44 checks across11sections warm/panel reload, preferences unchanged and original section state restored. Exact frozen414artifact11568846736; all3current resource journals valid. Full-extension reload repeat remains unverified.",
               "resource_valid": true,
               "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
             }
@@ -6350,6 +6347,19 @@
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "build_version": "0.2.414",
               "detail": "Initial active/headings-length census failed before section actions; receipt omitted observed headings/active state. This is an undiagnosed acceptance boundary, not proven product failure. No section or post-extension-reload acceptance.",
+              "resource_valid": true,
+              "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
+            },
+            {
+              "status": "unverified",
+              "run_id": "37840985992",
+              "evidence": [
+                ".research/settings-census-native-20261008.json",
+                ".research/parallel-replay-peer-20261008.json"
+              ],
+              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+              "build_version": "0.2.414",
+              "detail": "Resource-valid census fails before actions: active true,11 expected headings plus4 nested expanded controls. Source selector overbreadth repaired0c8ae904; hosted37842734890 passed. Native section behavior and full-extension repeat remain unverified.",
               "resource_valid": true,
               "scope": "Frozen artifact11568846736; overall run failed T28; other per-case observations retained. No current-main/Store/member/admin claim."
             }
@@ -65097,6 +65107,15 @@
               "resource_valid": true,
               "evidence": [".research/records-recovery-native-20261008.json"],
               "detail": "C02/C03 and malformed refusals repeated; positive fixture recovery GET throws before HTTP/preflight result. Actual CDP failure class not retained. No create reached; planned journal plus separate complete live list zero owned fixtures. Secrets removed/root names-only absence. Independent Settings peer confirms bounded failure; no C04/C05 credit. Escalation fresh seat failed ENOSPC; preserve evidence, no blind replay."
+            },
+            {
+              "run_id": "37844046722",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "evidence": [".research/records-cdp-native-peer-20261008.json"],
+              "detail": "Independent raw review confirms recovery-list GET fails at owned CDP command_timeout; null HTTP status, planned journal with no create. C04/C05 remain unverified. Both temporarysecret names independently absent. Existing driver awaits full network operation inside5s CDP command; next repair must separate request lifetime and transport commands, preserving credentials inbrowser and fixture ownership. No server-cause claim."
             }
           ],
           "results": {

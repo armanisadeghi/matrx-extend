@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-08",
+  "run_id": "37844046722",
+  "reviewer": "settings_behavior_review",
+  "recorded_by": "root from independent return",
+  "A": "First fixture diagnostic is recovery_list GET, null HTTP status, transport_failure_class command_timeout. Journal planned with null table/row IDs, before create. No C04/C05 credit. Confirms CDP deadline boundary, not HTTP/server cause.",
+  "B": "Package/browser admitted valid exit0; guest admitted/resourceInvalid false/child_failed exit1. Receipt frozen CI37790643945 artifact11556064167 version0.2.414 tree550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046. Independent raw review, no secret text required.",
+  "root_cleanup_check": "Both temporary GitHub secret names independently absent at21:17UTC.",
+  "remaining": "Repair browser-request lifecycle separately from5s CDP command; original positive reads and surrounding cleanup require real retest after reviewed change."
+}

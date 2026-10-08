@@ -1,0 +1,136 @@
+{
+  "at": "2026-10-08T21:23:23.187719+00:00",
+  "scope": "Inactive generated Chrome Cache/Code Cache only; byte-hash verified external copies before exact source deletion; no cache contents logged.",
+  "backup_parent_mode": "0700",
+  "before_free_bytes": 105332736,
+  "after_free_bytes": 2411671552,
+  "caches": [
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 1/Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 1/Cache",
+      "entries": 6920,
+      "file_bytes": 202011880,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 1/Code Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 1/Code Cache",
+      "entries": 4983,
+      "file_bytes": 188945982,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 2/Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 2/Cache",
+      "entries": 19151,
+      "file_bytes": 408335853,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 2/Code Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 2/Code Cache",
+      "entries": 5514,
+      "file_bytes": 238994343,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 3/Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 3/Cache",
+      "entries": 3272,
+      "file_bytes": 107060018,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 3/Code Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 3/Code Cache",
+      "entries": 2112,
+      "file_bytes": 68329786,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 4/Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 4/Cache",
+      "entries": 3169,
+      "file_bytes": 158352452,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 4/Code Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 4/Code Cache",
+      "entries": 2805,
+      "file_bytes": 52487123,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 5/Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 5/Cache",
+      "entries": 1197,
+      "file_bytes": 36086138,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 5/Code Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 5/Code Cache",
+      "entries": 801,
+      "file_bytes": 38346482,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 6/Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 6/Cache",
+      "entries": 1210,
+      "file_bytes": 41862646,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 6/Code Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 6/Code Cache",
+      "entries": 776,
+      "file_bytes": 33842589,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 7/Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 7/Cache",
+      "entries": 1150,
+      "file_bytes": 26767603,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 7/Code Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 7/Code Cache",
+      "entries": 912,
+      "file_bytes": 24240089,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 8/Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 8/Cache",
+      "entries": 9294,
+      "file_bytes": 311960544,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 8/Code Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 8/Code Cache",
+      "entries": 4081,
+      "file_bytes": 157330096,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 9/Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 9/Cache",
+      "entries": 629,
+      "file_bytes": 20909320,
+      "verified": true
+    },
+    {
+      "profile_cache": "/Users/armanisadeghi/Library/Caches/Google/Chrome/Profile 9/Code Cache",
+      "backup": "/Volumes/Samsung2TB/code/.stabilization-scratch/private-chrome-profile-caches-20261008-2122/Profile 9/Code Cache",
+      "entries": 358,
+      "file_bytes": 1401452,
+      "verified": true
+    }
+  ],
+  "outcome": "Recovered ~2.2GiB available headroom; two fresh independent reviewer sessions subsequently created. Still below20GiB localheavy floor."
+}

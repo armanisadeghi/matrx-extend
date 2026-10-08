@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "run_id": 37844046722,
+  "run_head_sha": "7ec10eec28b2f73ffa1b83da99f20b81d45baa93",
+  "conclusion": "failure",
+  "frozen_product": {
+    "ci_run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "version": "0.2.414",
+    "digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964"
+  },
+  "native_artifact": {
+    "id": 11579985370,
+    "digest": "sha256:08f404e11fd4d3918a60d22d83e3009712f40beadc5cd8bf4478a9f2e0086d11",
+    "receipt_sha256": "e080c77937e27d10efce736fe4c7dbf7284b8820ae5da77c188e32c736f6ebb8",
+    "fixture_journal_sha256": "280154dac086012de64e53475719c342ed38d5c35c5150a0a91e3557582ef8dd",
+    "package_journal_sha256": "6944a760cb9170d10eb98c6fee4679637d17036c94fc1b9f7d6ba1ed2fa25484",
+    "browser_journal_sha256": "a91ea2770f3e7b59a3eeefdced081c0adc07c3552d23944aad681d5ddf7bf0cc",
+    "guest_journal_sha256": "c670d9ad6efa9c44e799a49e235e0fc0e4e83f2364dd92e8dbae120922ae0b93"
+  },
+  "resource": "Package and browser resource-valid exit 0; guest resource-valid child_failed exit 1.",
+  "first_failure": {
+    "boundary": "body",
+    "phase": "records_fixture_recovery_list",
+    "classification": "records_fixture_request_exception",
+    "request_method": "GET",
+    "http_status": null,
+    "transport_failure_class": "command_timeout"
+  },
+  "fixture_cleanup": {
+    "journal_phase": "planned",
+    "table_id_present": false,
+    "row_id_present": false,
+    "create_reached": false,
+    "separate_authenticated_read": {
+      "auth_status": 200,
+      "list_status": 200,
+      "list_complete": true,
+      "exact_owned_marker_count": 0,
+      "raw_body_or_identifiers_retained": false
+    }
+  },
+  "credential_cleanup": {
+    "temporary_secret_names_deleted": true,
+    "names_only_absence_verified": true,
+    "private_staging_payload_removed": true
+  },
+  "product_result": "C02/C03 and three malformed-input refusals retained; C04/C05 positive reads unverified.",
+  "next_boundary": "Existing recordsFixtureRequest awaits fetch inside Runtime.evaluate(awaitPromise:true), which shares the owned CDP 5000 ms command deadline. Repair this command/network lifetime mismatch separately; no replay or source fix in this native lane.",
+  "raw_evidence": ".research/records-cdp-native-20261008/raw contains byte-exact sanitized receipt, planned fixture journal, screenshots, and current resource journals."
+}

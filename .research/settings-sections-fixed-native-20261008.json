@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "scope": "One hosted guest Settings-controls native run on the frozen development artifact; no retry.",
+  "run": {
+    "id": "37843040511",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37843040511",
+    "conclusion": "success",
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_head_sha": "cabe935247db834ee61a1706da0fbe3fa48d3ca6",
+    "lane": "B",
+    "case": "settings-controls",
+    "runner": "macos-15",
+    "artifact": {
+      "id": "11577869873",
+      "name": "hosted-guest-37843040511-1",
+      "size_bytes": 68102,
+      "digest": "sha256:35fc653e6047c452183905294ffaae3d0df807f6ee31d700b995d740229ccf27"
+    }
+  },
+  "source_binding": {
+    "reviewed_settings_source_commit": "0c8ae904c926a360fe1c05d63dc19628e42183fb",
+    "settings_source_unchanged_at_dispatch": true,
+    "focused_gate": {
+      "run_id": "37842734890",
+      "result": "passed"
+    },
+    "independent_source_review": "Peer approved the source repair before dispatch. The native harness author is not an independent native adjudicator; the raw receipt is available for separate review."
+  },
+  "product_artifact": {
+    "source_run": "37818621428",
+    "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "artifact_id": "11568846736",
+    "version": "0.2.414",
+    "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "receipt_verified": true,
+    "scope": "Frozen unpublished development artifact, not current-main or Store product acceptance."
+  },
+  "resource": {
+    "package_readiness": "Current-run package journal is present, admitted, child exit0, final valid; earlier missing-journal statement was corrected by independent review.",
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "raw/hosted-guest-37843040511-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37843040511-1.jsonl",
+      "sha256": "ce2017e9a7caca6c8ddb97953d74ad4f036c1121fc20d7160182167ff8bb4d74"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "raw/hosted-guest-37843040511-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37843040511-1.jsonl",
+      "sha256": "4ab17e871d29b6256d611e3f39594c5ebe220d812f9dce92a8945a5014433965",
+      "cpu_pending": true,
+      "cpu_recovered_before_exit": true,
+      "detail": "A high-load/busy sample entered CPU_PENDING; the process attribution listed NewsToday2 and Chromium. Subsequent healthy samples emitted CPU_RECOVERED before final RESOURCE_FINAL_DECISION valid."
+    },
+    "package_journal": ".research/settings-sections-fixed-native-20261008/raw/hosted-guest-37843040511-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37843040511-1.jsonl",
+    "package_sha256": "30826e37d8560aaea2fea56ebc9d700e8c1d141260251b6db286e4106365ca82"
+  },
+  "behavior": {
+    "receipt_status": "unverified",
+    "case_counts": {
+      "pass": 12,
+      "unverified": 7,
+      "fail": 0
+    },
+    "T04": {
+      "status": "pass",
+      "evidence": "Dark, Light, and System each changed the selected UI value, stored preference, and rendered appearance; each persisted across panel-document reload."
+    },
+    "T10": {
+      "status": "pass",
+      "evidence": "Ask and Act each changed the selected UI value and stored preference, persisted across panel-document reload, and were inherited by a newly started chat with the matching label and icon."
+    },
+    "T28": {
+      "status": "bounded_panel_reload_pass;full_extension_unverified",
+      "criteria_passed": 44,
+      "criteria_failed": 0,
+      "evidence": "All 11 section labels were recognized. Each section opened and closed with honest content in the warm panel and after panel-document reload; the settings digest remained unchanged. Census found 15 aria-expanded controls total, of which 4 were non-section nested controls excluded by the DOM-shape selector. Cleanup restored the original state. No T28 rerun followed full extension reload."
+    },
+    "T40": {
+      "status": "unverified",
+      "evidence": "Switch directions, persistence across panel-document reload, and cleanup restoration passed; downstream background capture behavior remains unverified."
+    },
+    "T67": {
+      "status": "pass",
+      "evidence": "Capture and Scroll & capture picker choices, storage, panel-document reload persistence, and cleanup restoration passed. Downstream capture behavior is not claimed."
+    },
+    "full_extension_reload": "The run completed an extension reload and reopened Settings after the cases. T04, T10, T28, T40, and T67 were not rerun after that boundary; no full-extension persistence credit."
+  },
+  "raw_evidence": {
+    "artifact_directory": ".research/settings-sections-fixed-native-20261008/raw/hosted-guest-37843040511-1/",
+    "receipt": "raw/hosted-guest-37843040511-1/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+    "receipt_sha256": "4f5c3f7bd9bed1bccf618171971eec64f9102af82c317d53c710cd782976d3e9",
+    "resource_journals": "Current-run browser and guest journals are retained with exact hashes above. The downloaded artifact also contains older journal files for runs 37105304739 and 37724762467; those are preserved but not used as evidence for this run.",
+    "screenshots": "The two screenshots from the disposable signed-out guest run are preserved in the raw artifact directory."
+  },
+  "limitations": [
+    "The workflow completed successfully, but the native receipt overall status is unverified because seven unrelated Settings criteria remain unverified.",
+    "No T04, T10, or T28 reassertion followed full extension reload.",
+    "T40 downstream background capture and T67 downstream capture remain unverified.",
+    "No retry or additional native launch was performed."
+  ],
+  "next_harness_task": "Extend the existing shared full-extension reload stage to reassert T04, T10, T28, T40, and T67 after worker and panel replacement. Reuse the existing reload boundary, capture the selected UI value, storage, and consumer/downstream behavior required by each case, and keep T40/T67 downstream capture explicitly unverified until observed.",
+  "independent_review": {
+    "reviewer": "records_native_recover_2010",
+    "zero_Settings_authorship": true,
+    "A": "Bounded approve.44/44 T28 checks:22warm+22panel reload;11ordered sections,4nested controls excluded, unchanged preferences and restored open/closed state. No full-extension repeat.",
+    "B": "Approve.Receipt/hash/frozen414artifact/GitHubidentity checked; package/browser/guest journals valid. Corrected missing package-journal claim; no broader health inference."
+  }
+}
