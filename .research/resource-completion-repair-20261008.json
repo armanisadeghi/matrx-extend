@@ -1,0 +1,11 @@
+{
+  "task_id":"resource-completion-repair-20261008","lane":"resource-guard","model":"gpt-6","status":"SOURCE_READY_NATIVE_PENDING","defect_ids":["EXT-D-0168"],
+  "summary":"Successful child exit during CPU pending now holds the same lease until the existing guard observes confirmed recovery; second bad CPU, confirmation expiry, and memory unsafe remain invalid. Prior ARM 37732615934 stays invalid.",
+  "changed_files":["scripts/stabilization-resource.mjs","scripts/test-stabilization-resource-cpu-integration.mjs","docs/stabilization/resource-policy.json"],
+  "verification":{"red":{"run_id":"resource-completion-red-20261008","outer_decision":"child_failed","failure":"scratch old-behavior mutant exits invalid after one bad/two healthy and child exit","log_sha256":"e345f3da5be17dc12d1ecaf2f8746e9b7c4a237450ef07de0b54ba18ba14a520","journal_sha256":"12d5b0915cc02cf3c1ab44e4a4aec5d145eea91f5a4338a8154d28dbde510756"},
+  "green":{"run_id":"resource-completion-green-20261008","outer_decision":"valid","tests":"2 passed; completion recovery, second bad CPU, expiry, memory unsafe, pending action refusal and lease retention exercised","log_sha256":"57eef27f545c62dd4ba3183219b00000e3edebbd8e4903b3e283dfd3ba96963a","journal_sha256":"aede1ea813a02f840063c9d52d891e26a203190786e47702b4ccc86964ef7d5f"}},
+  "controls_green":{"run_id":"resource-completion-controls-green-20261008","outer_decision":"valid","tests":"3 passed; adds pending child exit1, injected ChildProcess error, and operator stop; all invalid","log_sha256":"539a49219c1ae3381bcca06bbb0a0d30eb1ef3383e372f9c1c14f316f2f7166f","journal_sha256":"9cf949e6cab48bb3db028de90d644982b9e50ba350b5ea3cbd4ae0b13541cdd9"},
+  "limits":"Inner scratch guards stub host telemetry and legacy-host ownership only; each test workload was admitted by the unmodified real outer host guard. Synthetic proof is not native Settings acceptance.",
+  "open":"Independent source review and one bounded exact-artifact native Settings attempt remain; measurement-failure completion control is untested, no native acceptance credit or release claim.",
+  "commit_shas":["7e72f04a0cce79cd3bd0f2cf0c5c8a5879020f03"],"next_action":"Fresh peer checks source and negative cases, then root coordinates one admitted native run."
+}
