@@ -58,7 +58,7 @@ test('hosted acceptance has exactly two fixed concurrency lanes, including diagn
 
 test('lane admission refuses unknown lanes and isolates shared credentials', () => {
   assert.match(admission, /BEGIN hosted lane admission/);
-  const check = (lane, acceptanceCase, scrapeAuth = 'guest') =>
+  const check = (lane, acceptanceCase, scrapeAuth = 'guest', seoCaseScope = 'full') =>
     spawnSync('bash', ['-euo', 'pipefail', '-c', admission], {
       encoding: 'utf8',
       env: {
@@ -67,6 +67,7 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
         ACCEPTANCE_CASE: acceptanceCase,
         SCRAPE_AUTH_MODE: scrapeAuth,
         DESKTOP_SETTINGS_CASE: 'full',
+        SEO_CASE_SCOPE: seoCaseScope,
       },
     });
   for (const lane of ['A', 'B']) assert.equal(check(lane, 'guest-chat').status, 0, lane);
@@ -91,4 +92,7 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
   }
   assert.equal(check('B', 'guest-scrape', 'guest').status, 0);
   assert.equal(check('B', 'guest-seo').status, 0);
+  assert.equal(check('B', 'guest-seo', 'guest', 'controlled').status, 0);
+  assert.notEqual(check('B', 'guest-chat', 'guest', 'controlled').status, 0);
+  assert.notEqual(check('B', 'guest-seo', 'guest', 'unknown').status, 0);
 });
