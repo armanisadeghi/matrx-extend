@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T08:12:42.238558+00:00",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "status": "dashboard_not_rechecked_resource_admission_refused",
+  "schedule_claim": {
+    "mechanism": "master schedule fallback; schedule_claim not exposed",
+    "claim_commit": "2d9a81486",
+    "window": "2026-10-08 America/Los_Angeles"
+  },
+  "admission": {
+    "run_id": "daily-store-preflight-20261008-01",
+    "journal": "docs/stabilization/resource-journals/daily-store-preflight-20261008-01.jsonl",
+    "decision": "refused",
+    "reason": "RESOURCE_DISK_LOW",
+    "system_free_gib": 14.672035217285156,
+    "minimum_free_gib": 20,
+    "browser_started": false
+  },
+  "dashboard": {
+    "current_published_version": null,
+    "current_pending_version": null,
+    "last_verified_record": ".research/daily-store-20261007.json",
+    "last_verified_at": "2026-10-07T16:23:30Z",
+    "last_verified_published": "0.2.205",
+    "last_verified_pending": false,
+    "freshness_limit": "Oct7 observation only, not a fresh Oct8 dashboard verdict."
+  },
+  "release_actions": { "build": false, "upload": false, "submission": false },
+  "review_queue_feedback": {
+    "status": "unverified",
+    "reason": "Available Supabase MCP selects by project ID, unlike current canonical self-hosted DB. Existing least-privilege reader path refused missing SUPABASE_READER_PASSWORD in aidream and ai-matrx configured env sources; no Vault connector exposed and browser admission refused. No fallback to broader credentials or cloud project."
+  },
+  "next_action": "Continue isolated hosted public guest and non-Chat acceptance. Retry authenticated dashboard only under valid resource admission; no threshold weakening. Read-only eligible artifact audit is separately owned by daily_guest_oct08."
+}
