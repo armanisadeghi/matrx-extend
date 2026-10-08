@@ -31,7 +31,9 @@
     ".research/settings397-boundary-native-20261007.json",
     ".research/settings-resource-strategy-peer-20261007.json",
     ".research/settings397-arm-native-20261007.json",
-    ".research/settings397-arm-resource-peer-20261007.json"
+    ".research/settings397-arm-resource-peer-20261007.json",
+    ".research/settings-completion-native-20261008.json",
+    ".research/settings-completion-native-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -55,7 +57,7 @@
   ],
   "diagnostic_candidate": "da3645de",
   "closure_requirement": "Reviewed safe boundary diagnostics, resource-valid original native retest, confirmed underlying cause/repair if needed, verified baseline restoration and surrounding guest fixture behavior.",
-  "next_action": "Assess bounded end-of-case resource-health barrier using existing guard recovery contract, unchanged thresholds/timeout, and meaningful second-bad/expiry failure controls. Source review and exact focused CI before one further original-boundary native attempt. No blind retry; original missing Settings view cause and baseline restoration remain unresolved.",
+  "next_action": "Use existing guarded local ARM Settings driver with exact CI397 artifact11527132614 after capacity and import verification; no rebuild, guard relaxation or deadline increase. Changedhost strategy peer4950cf00. Native path still untested here.",
   "source_review": {
     "candidate": "da3645de",
     "peer": "4f5ddb9b",
@@ -86,5 +88,13 @@
     "peer": "a5fe56d2",
     "reason": "High-load busy sample followed by only two of three required healthy recovery samples before child exit; pending state correctly invalidates final verdict.",
     "observations_only": "T34 four switch observations and T64 five Ask-again observations; no reacquire exception. Restoration/downstream consumers remain unverified."
+  },
+  "latest_native_attempt": {
+    "run_id": "37735318823",
+    "result": "resource_invalid_setup_failure",
+    "case_steps": 0,
+    "acceptance_credit": false,
+    "detail": "Owned Chromium CDP timeout during CPUbusy startup; child1 wrapper3. All16cases zero steps. Successful-child recovery not exercised.",
+    "peer": "4950cf00"
   }
 }

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T05:46:38.062590+00:00",
+  "updated_at": "2026-10-08T06:15:08.792845+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -7144,8 +7144,36 @@
                 "Reload remains guest with System theme and no prior auth/theme/fixtures"
               ],
               "remaining": "Default chat preference matches initial guest baseline; narrow source-backed oracle reconciliation in progress. D15 original no-workspace obstruction closed; do not infer retained data from matching default alone."
-            }
+            },
+        {
+          "run_id": "37735318823",
+          "mode": "guest",
+          "build": "0.2.397",
+          "status": "unverified",
+          "resource_valid": false,
+          "report": ".research/settings-completion-native-20261008.json",
+          "case_ids": [
+            "EXT-F-1003-T04",
+            "EXT-F-1003-T10",
+            "EXT-F-1003-T13",
+            "EXT-F-1003-T16",
+            "EXT-F-1003-T19",
+            "EXT-F-1003-T22",
+            "EXT-F-1003-T31",
+            "EXT-F-1003-T34",
+            "EXT-F-1003-T37",
+            "EXT-F-1003-T46",
+            "EXT-F-1003-T63",
+            "EXT-F-1003-T64",
+            "EXT-F-1003-T70",
+            "EXT-F-1003-T73",
+            "EXT-F-1003-T76",
+            "EXT-F-1003-T92"
           ],
+          "proven": "Artifact identity imported; no Settings action executed.",
+          "limits": "Owned Chromium CDP startup timeout; guest resource-invalid. All16cases zero steps. D168 successful-child recovery not exercised; existing case results unchanged."
+        }
+      ],
           "results": {
             "admin": {
               "status": "pass",
