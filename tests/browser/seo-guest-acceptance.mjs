@@ -12,8 +12,8 @@ import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifac
 import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-identity.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
-import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
