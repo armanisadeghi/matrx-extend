@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "lane": "B_public_no_login_guest_chat",
+  "observed_at_utc": "2026-10-08T08:21:28.600246+00:00",
+  "run": {
+    "id": 37748038743,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37748038743",
+    "workflow": "hosted-guest-acceptance.yml",
+    "event": "workflow_dispatch",
+    "runner": "macos-15 ARM64",
+    "acceptance_case": "guest-chat",
+    "published_store_crx": true,
+    "head_sha": "3ab075f80468a407bb44b246771289a98d75d086",
+    "conclusion": "failure",
+    "started_at_utc": "2026-10-08T08:10:09Z",
+    "completed_at_utc": "2026-10-08T08:19:39Z",
+    "artifact_id": 11536553641,
+    "artifact_name": "hosted-guest-37748038743-1",
+    "artifact_zip_sha256": "3fa87c89b2eb94b765e139f38bde756a462bfc6ea9885626774f856feb827b53"
+  },
+  "verdict": {
+    "bounded_acceptance": "fail",
+    "failure_class": "guest_post_reload_terminal_content_absent",
+    "overall_product_health": "not_established",
+    "resource_validity": "valid_resources_child_failed",
+    "reason": "Opening and same-conversation follow-up reached grounded terminal answers. A distinct post-reload conversation returned HTTP 200 and completed page-text retrieval, then its continuation recorded HTTP 409 and no terminal assistant reply."
+  },
+  "published_store_artifact": {
+    "kind": "published_store_crx_unpacked",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "public_download_sha256_matched_pinned_crx": true,
+    "unpacked_copy_adapted_for_chrome_identity": true
+  },
+  "server": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "before_git_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
+    "after_git_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
+    "post_run_spot_check_git_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
+    "stable_during_run_and_post_run_check": true
+  },
+  "guest_chat": {
+    "opening": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "d3700e9a2b80d8ca",
+      "grounded_page_code": true,
+      "stage_names_in_order": true
+    },
+    "same_conversation_followup": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": false,
+      "conversation_fingerprint": "d3700e9a2b80d8ca",
+      "grounded_page_code": true,
+      "conversation_identity_verified": true
+    },
+    "post_reload_new_conversation": {
+      "terminal_verdict": "terminal_not_observed",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "00152d91baf7516d",
+      "page_text_tool_completed_on_fixture": true,
+      "continuation_error_http_status": 409,
+      "visible_assistant_reply_count_at_failure": 0,
+      "grounded_page_code": false,
+      "fixture_heading": false
+    },
+    "all_initial_guest_requests_http_200": true,
+    "post_reload_conversation_distinct": true
+  },
+  "defect_report": {
+    "observed_at_utc": "2026-10-08T08:16:34Z to 2026-10-08T08:19:35Z",
+    "target": "published Chrome Web Store CRX 0.2.205 unpacked in fresh signed-out ARM Chromium profile against server 53aec906f047b524495ff0d93bae8e67eb55537f",
+    "reproduction": "Open public demo page, ask for the article opening code and ordered workflow stages; ask a follow-up in the same conversation for the follow-up code and heading; reload the side panel, begin a new conversation, and ask for the page code and heading. The existing registered guest-chat harness executed these steps once.",
+    "expected": "Each guest turn ends with a visible page-grounded assistant answer.",
+    "actual": "First and same-conversation turns did. After reload, the new conversation sent HTTP 200 and get_page_text returned the correct fixture. The next stream run recorded HTTP 409, left zero visible assistant replies, and never reached terminal_answer before the bounded harness assertion.",
+    "failure_stage": "real_guest_followup_answer",
+    "failure_code": "assertionerror",
+    "failure_reason": "new guest conversation after reload must ground in the page fixture",
+    "prior_accepted_comparison": "2026-10-07 public run 37649504416 passed all three turns on the same Store tree with server 8fe201b44e7a4c8fe3bf726b77546ad533926a60. This comparison does not isolate the cause.",
+    "cause": "unassigned; no source change or blind retry in this lane"
+  },
+  "resources": {
+    "journals": {
+      "package": {
+        "path": "raw/hosted-package-37748038743-1.jsonl",
+        "opened": true,
+        "admitted": true,
+        "child_exit_code": 0,
+        "final_decision": "valid",
+        "resource_invalid": false,
+        "final_reasons": [],
+        "sha256": "dea98195a34c52352ce28a4ed2545bbfd3c4440ba4bd864ea2b28cf8fb7b37f7"
+      },
+      "browser": {
+        "path": "raw/hosted-browser-37748038743-1.jsonl",
+        "opened": true,
+        "admitted": true,
+        "child_exit_code": 0,
+        "final_decision": "valid",
+        "resource_invalid": false,
+        "final_reasons": [],
+        "sha256": "25c60454487563163d3236e924aaf602a8b78204716cd5bfdf86177ad23747cb"
+      },
+      "guest": {
+        "path": "raw/hosted-guest-37748038743-1.jsonl",
+        "opened": true,
+        "admitted": true,
+        "child_exit_code": 1,
+        "final_decision": "child_failed",
+        "resource_invalid": false,
+        "final_reasons": [],
+        "sha256": "fc50adcc4ff15470561e2d14f1ccb317850ef68543b89ed09dc6387a0d85afa7"
+      }
+    },
+    "stale_journals_from_upload_excluded": true,
+    "excluded_stale_run_ids": [
+      37105304739,
+      37724762467
+    ]
+  },
+  "evidence": {
+    "directory": ".research/daily-guest-20261008-run37748038743/raw",
+    "original_receipt": "raw/guest-chat.receipt.original.json",
+    "files": [
+      {
+        "path": "raw/guest-chat-failure.png",
+        "sha256": "6743837bc58b9b5b6924ded5d8c958683867414507433f53a60d3b0d23d74803",
+        "bytes": 25338
+      },
+      {
+        "path": "raw/guest-chat-real-answer.png",
+        "sha256": "a0de277cdc52bdd17194cdaee1158ffa823a6e9bdc3d609c9685d3c561b1a8f4",
+        "bytes": 26181
+      },
+      {
+        "path": "raw/guest-chat-same-conversation-followup.png",
+        "sha256": "4cb0224fb9067943ccb855a02e2837cf43285aaa8199321c9e8490970378a594",
+        "bytes": 29931
+      },
+      {
+        "path": "raw/guest-chat.receipt.original.json",
+        "sha256": "bcefadc61486da4ee55995ceddf7aee3587d98b627fdc1d24faab5d625e04700",
+        "bytes": 22045
+      },
+      {
+        "path": "raw/hosted-browser-37748038743-1.jsonl",
+        "sha256": "25c60454487563163d3236e924aaf602a8b78204716cd5bfdf86177ad23747cb",
+        "bytes": 989
+      },
+      {
+        "path": "raw/hosted-guest-37748038743-1.jsonl",
+        "sha256": "fc50adcc4ff15470561e2d14f1ccb317850ef68543b89ed09dc6387a0d85afa7",
+        "bytes": 6377
+      },
+      {
+        "path": "raw/hosted-package-37748038743-1.jsonl",
+        "sha256": "dea98195a34c52352ce28a4ed2545bbfd3c4440ba4bd864ea2b28cf8fb7b37f7",
+        "bytes": 988
+      },
+      {
+        "path": "raw/native-side-panel.png",
+        "sha256": "13933645ed5af2e7cd63f250583c9d943dce8e16b73794509138fc1729df5cab",
+        "bytes": 26834
+      },
+      {
+        "path": "raw/normal-target-after-open.png",
+        "sha256": "f4af16553f5e732b1cc4a69842d1955a0c7dbea7a9e12ea9bdc80109d4e6e772",
+        "bytes": 36619
+      }
+    ],
+    "originals_byte_exact": true,
+    "reviewed_for_private_content": "Receipt and five screenshots inspected; fixture is synthetic public demo and no credentials or private account content observed."
+  },
+  "limits": [
+    "The method loads the public CRX as an adapted unpacked extension; it does not prove installation through Chrome Web Store UI.",
+    "The CDP observer attaches after panel load, so it does not establish absence of earlier requests.",
+    "One failed run gives a bounded failure on this exact server/artifact pair; cause and recurrence remain unverified.",
+    "A current authenticated Store dashboard recheck is separately owned."
+  ]
+}
