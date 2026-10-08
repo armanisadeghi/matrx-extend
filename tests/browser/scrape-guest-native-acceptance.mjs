@@ -47,6 +47,7 @@ import {
   assertCaptureExportUnchanged,
   assertCompleteTabCoverage,
   capturePaneSnapshot,
+  observeEmptyArticlePane,
   observeEmptyLinksPane,
   observeEmptyMediaPanes,
   readCaptureExport,
@@ -104,6 +105,8 @@ document.querySelector('#late').innerHTML='<h2>Preparation checklist</h2><p>${la
 </script></body></html>`;
 const secondPage =
   '<!doctype html><html><head><title>Harbor Dental referral hours</title></head><body><main><article><h1>Harbor Dental referral hours</h1><p>Referral coordinators answer weekday calls.</p></article></main></body></html>';
+const blankArticleTitle = 'Harbor Dental blank notice';
+const blankArticlePage = `<!doctype html><html><head><title>${blankArticleTitle}</title></head><body></body></html>`;
 const report = {
   schema_version: 1,
   feature: 'EXT-F-1007',
@@ -988,6 +991,7 @@ try {
       '/referrals': secondPage,
       '/forms': secondPage,
       '/appointments': secondPage,
+      '/blank-article': blankArticlePage,
     },
     ownedAssets: {
       '/intake.svg': { contentType: 'image/svg+xml', body: intakeImage },
@@ -1630,6 +1634,45 @@ try {
       t20.evidence.previous_content_cleared = true;
       t20.remaining = ['Full extension reload lifecycle remains unverified.'];
 
+      report.stage = 'warm_empty_article_capture';
+      await requireResourceHealth();
+      await resourceAction(() => page.goto(`${origin}/blank-article`));
+      await waitFor(
+        'scrape_warm_blank_article_empty',
+        () => scrapeState(panel),
+        (state) => state?.ready && state.empty && state.title === blankArticleTitle,
+      );
+      assert.equal(
+        (await page.locator('body').textContent())?.trim(),
+        '',
+        'scrape_warm_blank_page_not_blank',
+      );
+      await resourceAction(() =>
+        click(panel, 'title', 'Capture the page exactly as it is right now'),
+      );
+      warmEmptyPanes.article = await observeEmptyArticlePane({
+        panel,
+        phase: 'warm',
+        title: blankArticleTitle,
+        click,
+        resourceAction,
+        requireResourceHealth,
+        scrapeState,
+        waitFor,
+        readExport: () =>
+          readCaptureExport({
+            panel,
+            browserSession,
+            panelUrl: panelTarget.url,
+            mode: selection.mode,
+            url: `${origin}/blank-article`,
+            title: blankArticleTitle,
+            resourceAction,
+            requireResourceHealth,
+          }),
+      });
+      t08.evidence.matching_content.article_empty = warmEmptyPanes.article;
+
       report.stage = 'restricted_error';
       await requireResourceHealth();
       await resourceAction(() => page.goto('chrome://settings/'));
@@ -2052,6 +2095,44 @@ try {
               mode: selection.mode,
               url: `${origin}/referrals`,
               title: 'Harbor Dental referral hours',
+              resourceAction,
+              requireResourceHealth,
+            }),
+        });
+        t08.evidence.post_reload_empty_panes = reloadEmptyPanes;
+        report.stage = 'post_reload_empty_article_capture';
+        await requireResourceHealth();
+        await resourceAction(() => page.goto(`${origin}/blank-article`));
+        await waitFor(
+          'scrape_reload_blank_article_empty',
+          () => scrapeState(replacement.panel),
+          (state) => state?.ready && state.empty && state.title === blankArticleTitle,
+        );
+        assert.equal(
+          (await page.locator('body').textContent())?.trim(),
+          '',
+          'scrape_reload_blank_page_not_blank',
+        );
+        await resourceAction(() =>
+          click(replacement.panel, 'title', 'Capture the page exactly as it is right now'),
+        );
+        reloadEmptyPanes.article = await observeEmptyArticlePane({
+          panel: replacement.panel,
+          phase: 'reload',
+          title: blankArticleTitle,
+          click,
+          resourceAction,
+          requireResourceHealth,
+          scrapeState,
+          waitFor,
+          readExport: () =>
+            readCaptureExport({
+              panel: replacement.panel,
+              browserSession,
+              panelUrl: replacement.panelTarget?.url ?? panelTarget.url,
+              mode: selection.mode,
+              url: `${origin}/blank-article`,
+              title: blankArticleTitle,
               resourceAction,
               requireResourceHealth,
             }),

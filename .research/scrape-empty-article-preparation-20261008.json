@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only preparation for guest EXT-F-1007-T08 empty Article pane using an owned blank page. No browser, build, hosted run, or release was launched.",
+  "finding": {
+    "producer": "The real runScrape pipeline on a title-only blank HTML document returns empty article content; articleToMarkdown then renders No clean article extracted. A populated referrals document still yields article text and does not render the fallback.",
+    "nuance": "In the focused DOM test, Defuddle returns empty content rather than null; the visible fallback is based on falsy content_markdown, not extractor=fallback. The native browser outcome remains to be observed."
+  },
+  "native_procedure": "The existing Scrape guest driver serves a blank title-only /blank-article page. After the existing warm and post-reload coverage, it navigates to that real owned page, requires an empty Scrape state and empty page body, captures with the native Fast control, observes the visible Article fallback, revisits Article through SEO, and compares full capture exports before and after. The T08 coverage gate requires the Article evidence in both phases while retaining all prior pane and capture guards.",
+  "verification": {
+    "commands": [
+      "node --test tests/browser/scrape-tab-coverage.test.mjs",
+      "pnpm exec vitest run tests/unit/scrape-empty-article.test.ts",
+      "node --check tests/browser/scrape-guest-native-acceptance.mjs"
+    ],
+    "result": "7 Node tests and 1 focused Vitest test passed; driver syntax passed.",
+    "fail_capable": "The source producer test went red when articleToMarkdown was mutated to send populated content to the empty branch and when its empty fallback text was removed. plant.py restored the source identically. The helper test rejects missing fallback, pane mutation, and export mutation.",
+    "limit": "Native execution and T08 credit remain pending independent review and a future owned hosted run; no product fix is claimed."
+  }
+}

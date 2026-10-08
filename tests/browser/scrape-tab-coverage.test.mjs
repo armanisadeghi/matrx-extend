@@ -5,6 +5,7 @@ import {
   assertCompleteTabCoverage,
   captureExportFingerprint,
   capturePaneSnapshot,
+  observeEmptyArticlePane,
   observeEmptyLinksPane,
   verifyCaptureUnchanged,
 } from './scrape-tab-coverage.mjs';
@@ -84,6 +85,13 @@ test('T08 coverage refuses absent reload empty panes or a skipped capture compar
       add_control_visible: true,
       export: { identity_unchanged: true, exported_payload_unchanged: true },
     },
+    article: {
+      pane: 'Article',
+      state: 'empty',
+      fallback_visible: true,
+      pane_unchanged: true,
+      export: { identity_unchanged: true, exported_payload_unchanged: true },
+    },
   };
   const warm = { invariance, empty };
   const reload = { invariance, empty };
@@ -99,6 +107,14 @@ test('T08 coverage refuses absent reload empty panes or a skipped capture compar
       /scrape_reload_.*empty/,
     );
   }
+  assert.throws(
+    () =>
+      assertCompleteTabCoverage({
+        warm,
+        reload: { invariance, empty: { ...empty, article: undefined } },
+      }),
+    /scrape_reload_article_empty_pane_missing/,
+  );
   assert.throws(
     () => assertCompleteTabCoverage({ warm, reload: { invariance: undefined, empty } }),
     /scrape_reload_capture_invariance_missing/,
@@ -121,6 +137,65 @@ test('T08 coverage refuses absent reload empty panes or a skipped capture compar
         reload: { invariance: { ...invariance, panes_compared: labels.slice(1) }, empty },
       }),
     /scrape_reload_capture_panes_missing/,
+  );
+});
+
+test('empty Article observation rejects missing fallback, pane mutation and export mutation', async () => {
+  const run = async ({
+    articleText = 'No clean article extracted.',
+    changedPane = false,
+    afterDigest = 'same',
+  } = {}) => {
+    let selected = 'Article';
+    let reads = 0;
+    let articleVisits = 0;
+    return observeEmptyArticlePane({
+      panel: {},
+      phase: 'warm',
+      title: 'Harbor Dental blank notice',
+      click: async (_panel, kind, label) => {
+        assert.equal(kind, 'scrape-result-tab');
+        selected = label;
+      },
+      resourceAction: (action) => action(),
+      requireResourceHealth: async () => {},
+      scrapeState: async () => {
+        if (selected === 'Article') articleVisits += 1;
+        return {
+          ...state(selected, selected === 'Article' ? articleText : 'SEO data'),
+          title: 'Harbor Dental blank notice',
+          resultText:
+            selected === 'Article' && changedPane && articleVisits > 1
+              ? `${articleText} changed`
+              : selected === 'Article'
+                ? articleText
+                : 'SEO data',
+        };
+      },
+      waitFor: async (_name, read, ready) => {
+        const value = await read();
+        assert.equal(ready(value), true);
+        return value;
+      },
+      readExport: async () => ({
+        identity: 'same',
+        digest: ++reads === 1 ? 'same' : afterDigest,
+        format: 'full_capture_ai_markdown',
+        bytes: 200,
+      }),
+    });
+  };
+  const observed = await run();
+  assert.equal(observed.fallback_visible, true);
+  assert.equal(observed.export.exported_payload_unchanged, true);
+  await assert.rejects(
+    run({ articleText: 'Unexpected body' }),
+    /scrape_warm_article_empty_missing/,
+  );
+  await assert.rejects(run({ changedPane: true }), /scrape_warm_empty_article_pane_changed/);
+  await assert.rejects(
+    run({ afterDigest: 'changed' }),
+    /scrape_warm_empty_article_capture_payload_changed/,
   );
 });
 
