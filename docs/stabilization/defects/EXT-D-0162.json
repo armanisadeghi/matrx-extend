@@ -7,7 +7,7 @@
   "title": "Settings acceptance clicks before replacement tab readiness is established",
   "severity": "S2: repeated test failure prevents full-reload acceptance; product regression unproven",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/settings_reload_target_diagnosis",
   "preconditions": [
     "Frozen CI37698216289/artifact11516342905/version0.2.391 with reviewed D161 diagnostics, isolated signed-out profile and valid resource permits."
@@ -26,7 +26,9 @@
     ".research/settings-reload-final-readiness-peer-20261007.json",
     ".research/settings-reload-native-retest-20261007.json",
     ".research/settings-reload-resource-peer-20261007.json",
-    ".research/settings-valid-reload-round-20261007.json"
+    ".research/settings-valid-reload-round-20261007.json",
+    ".research/settings-intel-controlled-retest-20261007.json",
+    ".research/settings-intel-native-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -52,10 +54,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Readiness repair65637cd5 plus covering causal guard c8459a93; exact focusedCI37715732203 succeeded and fresh20048283 peer accepted source readiness. Native retest pending."
+    },
+    {
+      "at": "2026-10-08T03:03:29.534526+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Intel native37719749636 replaces worker/panel and opens Settings; original and surrounding criteria pass with all three current journals valid. Fresh independent35856d28 confirms closure requirement."
+    },
+    {
+      "at": "2026-10-08T03:03:29.534526+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original readiness defect no longer reproduces on frozen391, with surrounding guest Settings checks. No conclusion about cause of prior ARM CPU invalidation or current-main/Store behavior."
     }
   ],
   "closure_requirement": "Independent source review and covering negative control plus resource-valid original native full-reload and surrounding Settings checks. Preserve guest versus member scope.",
-  "next_action": "Resolve repeated hosted resource invalidation through bounded independent diagnosis/review before another full-reload native attempt; do not weaken watchdog or count invalid observations.",
+  "next_action": "Defect closed at original frozen391 scope. Continue remaining Settings/member/admin cases and exact current release candidate gates.",
   "fix_commits": ["65637cd5", "c8459a93"],
   "retest_attempts": [
     {
@@ -73,6 +87,15 @@
       "acceptance_credit": false,
       "observation": "Replacement worker/panel and Settings-open observed; guest watcher saw CPU0.85 then0.36, recovery pending at child exit; final invalid/wrapper3.",
       "next_action": "Two unusable attempts trigger host/resource lifecycle diagnosis, not another unchanged launch. Resource owner hosted_resource_recovery_diagnosis; thresholds preserved."
+    },
+    {
+      "run_id": "37719749636",
+      "recorded_at": "2026-10-08T03:03:29.534526+00:00",
+      "status": "pass-bounded",
+      "acceptance_credit": true,
+      "peer_commit": "35856d28",
+      "resource_invalid": false,
+      "scope": "Original frozen391 Settings full-reload and named guest cases on Intel. Readiness package revision1194 logged; exact running browser version not retained."
     }
   ]
 }

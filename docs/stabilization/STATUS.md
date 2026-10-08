@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-08 02:27 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T02:27:10.888219+00:00. 205 features · 769 cases · 1351 controls · 162 linked defect records.
+Generated 2026-10-08 03:03 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T03:03:29.534526+00:00. 205 features · 769 cases · 1351 controls · 162 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 87 · Partial: 84 · Fail: 2 · Unverified: 1056 · N/A: 1.
+Applicable case-by-role slots: **1230** — Pass: 88 · Partial: 83 · Fail: 2 · Unverified: 1056 · N/A: 1.
 Unverified splits into **136 explicitly marked unverified** and **920 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 29 cases without steps, 29 without expected outcomes, 27 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 14 pass · 5 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 28, partial 15, fail 0, unverified 51, n/a 1 | 2 |
+| [Settings](#settings) | 1 | 15 pass · 4 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 29, partial 14, fail 0, unverified 51, n/a 1 | 1 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -367,9 +367,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 92. **Controls:** 39.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0159, EXT-D-0162
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0159
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (closed), [EXT-D-0086](defects/EXT-D-0086.json) (closed), [EXT-D-0087](defects/EXT-D-0087.json) (closed), [EXT-D-0093](defects/EXT-D-0093.json) (closed), [EXT-D-0155](defects/EXT-D-0155.json) (closed), [EXT-D-0157](defects/EXT-D-0157.json) (closed), [EXT-D-0159](defects/EXT-D-0159.json) (fixed), [EXT-D-0161](defects/EXT-D-0161.json) (closed), [EXT-D-0162](defects/EXT-D-0162.json) (fixed)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0006](defects/EXT-D-0006.json) (closed), [EXT-D-0007](defects/EXT-D-0007.json) (closed), [EXT-D-0009](defects/EXT-D-0009.json) (closed), [EXT-D-0011](defects/EXT-D-0011.json) (closed), [EXT-D-0012](defects/EXT-D-0012.json) (closed), [EXT-D-0015](defects/EXT-D-0015.json) (closed), [EXT-D-0084](defects/EXT-D-0084.json) (closed), [EXT-D-0086](defects/EXT-D-0086.json) (closed), [EXT-D-0087](defects/EXT-D-0087.json) (closed), [EXT-D-0093](defects/EXT-D-0093.json) (closed), [EXT-D-0155](defects/EXT-D-0155.json) (closed), [EXT-D-0157](defects/EXT-D-0157.json) (closed), [EXT-D-0159](defects/EXT-D-0159.json) (fixed), [EXT-D-0161](defects/EXT-D-0161.json) (closed), [EXT-D-0162](defects/EXT-D-0162.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -435,7 +435,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T60 Audit key export | N/A | N/A | Pass | EXT-F-1003-C24, EXT-F-1003-C38 |
 | EXT-F-1003-T61 Audit key re-key confirmation | N/A | N/A | Partial | EXT-F-1003-C25 |
 | EXT-F-1003-T62 Audit receipt origin filters | N/A | N/A | Unverified | EXT-F-1003-C26 |
-| EXT-F-1003-T63 Advanced capabilities member denial | Partial | Unverified | N/A | EXT-F-1003-C27 |
+| EXT-F-1003-T63 Advanced capabilities member denial | Pass | Unverified | N/A | EXT-F-1003-C27 |
 | EXT-F-1003-T64 guest: Ask again for a never-capture site | Pass | N/A | N/A | EXT-F-1003-C28 |
 | EXT-F-1003-T65 member: Ask again for a never-capture site | N/A | Unverified | N/A | EXT-F-1003-C28 |
 | EXT-F-1003-T66 admin: Ask again for a never-capture site | N/A | N/A | Unverified | EXT-F-1003-C28 |
@@ -542,20 +542,20 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T62 · admin: Unverified. No receipt-origin filter selection, per-filter row/count assertion, or empty-origin assertion.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
-- EXT-F-1003-T63 · guest: Partial. Warm signed-out guest Settings shows admin controls absent. Real extension reload replaced targets but Settings-open failed before click; post-reload guest denial and ordinary-member behavior remain unverified.
-  Evidence / build / date recorded: 37714389856, ['.research/settings-unrecorded-native-20261007.json', '.research/settings-unrecorded-native-peer-20261007.json']
-- EXT-F-1003-T64 · guest: Pass. Trusted Ask again removes only selected of two disposable loopback origins; the other persists through panel reload. Removing the last hides the empty list in UI and storage, persisting after reload. Direct preference seeding covers Settings list behavior, not earlier capture-denial flow; final cleanup has no separate readback.
-  Evidence / build / date recorded: 37714389856, ['.research/settings-unrecorded-native-20261007.json', '.research/settings-unrecorded-native-peer-20261007.json']
+- EXT-F-1003-T63 · guest: Pass. Signed-out guest admin/Advanced actions and optional-permission controls absent before and after full extension replacement. Guest slot passes; ordinary-member slot remains unverified.
+  Evidence / build / date recorded: 37719749636, ['.research/settings-intel-controlled-retest-20261007.json', '.research/settings-intel-native-peer-20261007.json']
+- EXT-F-1003-T64 · guest: Pass. Each Ask again removes only selected origin; unrelated origin persists through panel reload, then final empty list remains hidden after reload. Local owned preference fixtures only, not preceding capture-choice flow.
+  Evidence / build / date recorded: 37719749636, ['.research/settings-intel-controlled-retest-20261007.json', '.research/settings-intel-native-peer-20261007.json']
 - EXT-F-1003-T67 · guest: Pass. Capture and Scroll & capture each persisted after full extension Reload. Restored Capture and verified after final reload.
   Evidence / build / date recorded: guest-autoscrape-native-20261002-01, docs/stabilization/reports/guest-autoscrape-native-20261002.json
 - EXT-F-1003-T70 · guest: Unverified. Identity/readiness/no-update path observed;5passed/5unverified criteria. Alternate API/update branches untested; no full-case pass. Guest only; other modes retain their own evidence.
   Evidence / build / date recorded: 37693743871, development0.2.387/source14305391, ['.research/frozen-settings-native-retest-20261007.json', '.research/native-batch-evidence-peer-20261007.json']
 - EXT-F-1003-T72 · admin: Unverified.
   Evidence / build / date recorded: release-native-verification, docs/stabilization/runs/release-native-verification.json
-- EXT-F-1003-T73 · guest: Pass. Guest Account section: email unavailable, Name and role absent, Sign in footer; verified warm and after full extension reload.
-  Evidence / build / date recorded: 37705986945, ['.research/guest-settings-breadth-native-20261007.json', '.research/native-breadth-batch-peer-20261007.json']
-- EXT-F-1003-T76 · guest: Pass. Guest Organization section: archive filter and Acting as row absent; zero organization requests observed; verified warm and after full extension reload.
-  Evidence / build / date recorded: 37705986945, ['.research/guest-settings-breadth-native-20261007.json', '.research/native-breadth-batch-peer-20261007.json']
+- EXT-F-1003-T73 · guest: Pass. Guest Account shows signed-out presentation before and after full extension replacement; no authenticated identity inferred.
+  Evidence / build / date recorded: 37719749636, ['.research/settings-intel-controlled-retest-20261007.json', '.research/settings-intel-native-peer-20261007.json']
+- EXT-F-1003-T76 · guest: Pass. Guest Organization guidance observed before and after full extension replacement; no signed-in organization behavior inferred.
+  Evidence / build / date recorded: 37719749636, ['.research/settings-intel-controlled-retest-20261007.json', '.research/settings-intel-native-peer-20261007.json']
 - EXT-F-1003-T82 · guest: Pass. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.
   Evidence / build / date recorded: hosted-settings-37115406435, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-acceptance-record.json']
 - EXT-F-1003-T83 · member: Pass. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. The actual Retry save control clears the failure and persists the latest choice; no other preference-control coverage inferred.
@@ -574,8 +574,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T91 · admin: Partial. Unavailable-lock details/export/rotation states disabled actions and preserved history; restoration/read-only retry recovered. Cold auth-shell boot and ordinary retryable failures were not tested in this case.
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
-- EXT-F-1003-T92 · guest: Pass. Guest negative access only: sole signed-out prompt row; no extra membership text, archived marker, restoration action, or organization request; verified warm and after full extension reload.
-  Evidence / build / date recorded: 37705986945, ['.research/guest-settings-breadth-native-20261007.json', '.research/native-breadth-batch-peer-20261007.json']
+- EXT-F-1003-T92 · guest: Pass. Guest member-only organization control denial observed warm and after full extension replacement; member/admin slots separate and unverified.
+  Evidence / build / date recorded: 37719749636, ['.research/settings-intel-controlled-retest-20261007.json', '.research/settings-intel-native-peer-20261007.json']
 
 
 ## Profile
