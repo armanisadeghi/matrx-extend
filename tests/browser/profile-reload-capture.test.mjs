@@ -51,6 +51,44 @@ test('reload capture preserves owned target order while excluding arbitrary targ
   assert.doesNotMatch(JSON.stringify(captured), /private/);
 });
 
+test('reload receipt keeps the callback class and click worker state without raw reply text', () => {
+  const captured = captureLifecycleEvidence({
+    open_panel_request: {
+      click_monotonic_ms: 48123,
+      worker_at_click: {
+        status: 'activated',
+        running_status: 'running',
+        scriptURL: 'private URL',
+      },
+      received: true,
+      ok: true,
+      opened: false,
+      category: 'open_refused',
+      reason: 'private URL token',
+    },
+  });
+  assert.deepEqual(captured.open_panel_request, {
+    click_monotonic_ms: 48123,
+    worker_at_click: { status: 'activated', running_status: 'running' },
+    received: true,
+    ok: true,
+    opened: false,
+    category: 'open_refused',
+  });
+  assert.doesNotMatch(JSON.stringify(captured), /private|token/);
+  assert.equal(
+    captureLifecycleEvidence({
+      open_panel_request: {
+        click_monotonic_ms: 48124,
+        worker_at_click: { status: 'installing', running_status: 'starting' },
+        received: false,
+        category: 'click_failed',
+      },
+    }).open_panel_request.category,
+    'click_failed',
+  );
+});
+
 test('context boundary capture keeps only counts and elapsed time', () => {
   const captured = captureContextBoundary({
     first: {

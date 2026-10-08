@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape_reload_reply_capture_20261007",
+  "defect_id": "EXT-D-0166",
+  "status": "diagnostic_capture_repaired_cause_unresolved",
+  "source_run_id": "37726590928",
+  "source_receipt": ".research/scrape397-final-native-20261007-run37726590928-originals/matrx-extend/matrx-extend/test-results/scrape-guest-native-4a07e4d8-566b-43d4-b4ab-ec4b6bd60514.json",
+  "finding": "The reload driver clicked the fixture Open panel control but discarded its FRONTEND_RPC callback before polling for the replacement panel. The source run therefore could not identify whether the request was delivered or accepted. The old worker and panel were retired, a replacement worker appeared, and no replacement panel target was observed. This change does not assign a cause to that native failure.",
+  "change": "The existing owned-page Open panel request path now clears stale reply text, clicks the same trusted control, and observes its fresh callback. The reload callback wait and target discovery share one deadline set at that click, using the prior 15-second target window. The reload driver records receipt, ok, opened, a fixed outcome category, monotonic click time, and the replacement worker's observed activation and running states at the click. The allowlist serializer carries those fields into the Scrape disk receipt on both success and failure. Raw reply, reason, error, URL, and token text are excluded. Existing target and context acceptance gates remain in place.",
+  "red_guard": "The native harness guard failed at the actual reloadOwnedExtension-to-captureLifecycleEvidence seam when the callback fields were omitted by the serializer; expected open_refused, observed undefined.",
+  "green_checks": [
+    "Unguarded local lightweight test: node tests/browser/native-sidepanel-qa-harness.test.mjs, 27/27 passed after the shared-deadline adjustment (137.6 seconds)",
+    "Unguarded local lightweight tests: node --test tests/browser/native-panel-open-reply.test.mjs tests/browser/profile-reload-capture.test.mjs, 7/7 passed after the shared-deadline adjustment",
+    "Unguarded local formatting: pnpm exec biome check on five owned source/test files passed after the shared-deadline adjustment",
+    "Unguarded local whitespace: git diff --check on owned files passed"
+  ],
+  "resource_admission": "Not used; no browser or native launch occurred, and this report does not cite a resource journal for these local tests.",
+  "limits": "No native Chrome rerun, build, release, or product change was authorized in this lane. The callback wait now consumes part of the same click-to-target deadline; it can reduce target polling time when the callback is late, but does not extend the original target window. The root owner will obtain an independent review and run the resource-admitted native diagnostic against the frozen artifact before deciding the missing-panel cause."
+}
