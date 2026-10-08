@@ -26,7 +26,7 @@
    (The Tooltip family this app once forked moved OUT of tap-target in its
    0.2.0 and is owned by @ai-matrx/design-system since 0.7.0 — import Tooltip
    from design-system, never from here.) */
-@import "@ai-matrx/tap-target/styles.css";
+@import "@ai-matrx/design-system/tap-target.css";
 
 /* @ai-matrx/agents/catalog's structural sheet — THE ONE agent picker's own
    rules and its `--matrx-agent-*` token defaults (the favourite star, the
@@ -39,7 +39,6 @@
 /* Tailwind must scan the packages' BUILT output — the semantic utility classes
    their components wear exist only if these are sources. */
 @source "../../node_modules/@ai-matrx/design-system/dist";
-@source "../../node_modules/@ai-matrx/tap-target/dist";
 @source "../../node_modules/@ai-matrx/agents/dist";
 @source "../../node_modules/@ai-matrx/associations/dist";
 @source "../../node_modules/@ai-matrx/chat/dist";

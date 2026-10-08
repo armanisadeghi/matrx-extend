@@ -78,7 +78,6 @@
     "@ai-matrx/media": "latest",
     "@ai-matrx/realtime": "latest",
     "@ai-matrx/records": "latest",
-    "@ai-matrx/tap-target": "latest",
     "@hookform/resolvers": "^3.10.0",
     "@joplin/turndown-plugin-gfm": "^1.0.68",
     "@mozilla/readability": "^0.6.0",
