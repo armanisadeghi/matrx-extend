@@ -45,6 +45,7 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
     version_events_dropped: 0,
     old_host_probe: null,
     replacement_host_probe: null,
+    fresh_replacement: null,
   };
   let browserSession;
   let pageSession;
@@ -174,6 +175,70 @@ export async function startReloadLifetimeDiagnostic({ browser, context, page, ex
     async probe(oldTargetId, replacementTargetId) {
       evidence.old_host_probe = await probeOne(oldTargetId, 'worker');
       evidence.replacement_host_probe = await probeOne(replacementTargetId, 'worker');
+    },
+    async observeFreshReplacement(replacementTargetId) {
+      const expected = [...versions.values()].filter(
+        (item) =>
+          item.target_id === replacementTargetId && item.version_id !== evidence.old_version_id,
+      );
+      const result = {
+        outcome: 'unmeasured',
+        version_id: expected.length === 1 ? expected[0].version_id : null,
+        registration_id: expected.length === 1 ? expected[0].registration_id : null,
+        target_id: safeId(replacementTargetId),
+        running_status: null,
+        status: null,
+        observations: 0,
+      };
+      evidence.fresh_replacement = result;
+      if (!safeId(replacementTargetId) || expected.length !== 1) return result;
+      let freshSession;
+      let finish;
+      let timer;
+      const completion = new Promise((resolve) => {
+        finish = resolve;
+      });
+      const onVersion = ({ versions: updates }) => {
+        let matchingSnapshot = false;
+        for (const version of updates ?? []) {
+          if (!version?.scriptURL?.startsWith(prefix)) continue;
+          const versionId = safeId(version.versionId);
+          const registrationId = safeId(version.registrationId);
+          const targetId = safeId(version.targetId);
+          if (versionId !== expected[0].version_id && targetId !== replacementTargetId) continue;
+          matchingSnapshot = true;
+          result.observations += 1;
+          result.version_id = versionId;
+          result.registration_id = registrationId;
+          result.target_id = targetId;
+          result.running_status = RUNNING.has(version.runningStatus) ? version.runningStatus : null;
+          result.status = STATUS.has(version.status) ? version.status : null;
+          result.outcome =
+            versionId === expected[0].version_id &&
+            registrationId === expected[0].registration_id &&
+            targetId === replacementTargetId
+              ? result.running_status === 'running' && result.status === 'activated'
+                ? 'activated'
+                : 'not_activated'
+              : 'identity_mismatch';
+        }
+        if (matchingSnapshot) finish();
+      };
+      try {
+        freshSession = await context.newCDPSession(page);
+        freshSession.on('ServiceWorker.workerVersionUpdated', onVersion);
+        timer = setTimeout(finish, 3000);
+        await freshSession.send('ServiceWorker.enable');
+        await completion;
+      } catch {
+        result.outcome = 'unavailable';
+      } finally {
+        clearTimeout(timer);
+        freshSession?.off('ServiceWorker.workerVersionUpdated', onVersion);
+        await freshSession?.send('ServiceWorker.disable').catch(() => {});
+        await freshSession?.detach().catch(() => {});
+      }
+      return result;
     },
     async close() {
       for (const [session, name, handler] of listeners) session.off(name, handler);

@@ -762,6 +762,7 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
     }
     if (!replacementWorker) {
       await lifetime.probe(oldWorkerId, replacementWorkerId);
+      await lifetime.observeFreshReplacement(replacementWorkerId);
       const error = new Error('native_extension_worker_retirement_unverified');
       error.lifecycleEvidence = {
         ...retirementEvidence,

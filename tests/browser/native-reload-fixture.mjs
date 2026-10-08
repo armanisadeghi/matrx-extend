@@ -14,6 +14,7 @@ export async function reloadCase({
   retainedHost = false,
   multipleWorkers = false,
   executionEvidence = 'valid',
+  freshSnapshot = null,
   openReply = { ok: true, result: { opened: true } },
   openPanelClickFailure = false,
   panelAppears = true,
@@ -136,7 +137,11 @@ export async function reloadCase({
               },
             ],
           });
-          if (executionEvidence === 'valid' || executionEvidence === 'noReplacementVersion') {
+          if (
+            executionEvidence === 'valid' ||
+            executionEvidence === 'noReplacementVersion' ||
+            executionEvidence === 'replacementStarting'
+          ) {
             pageSession.emit('ServiceWorker.workerVersionUpdated', {
               versions: [
                 {
@@ -146,15 +151,16 @@ export async function reloadCase({
                   runningStatus: 'stopped',
                   status: 'redundant',
                 },
-                ...(executionEvidence === 'valid'
+                ...(executionEvidence === 'valid' || executionEvidence === 'replacementStarting'
                   ? [
                       {
                         versionId: 'version-new',
                         registrationId: 'registration-2',
                         scriptURL: worker.url,
                         targetId: worker.targetId,
-                        runningStatus: 'running',
-                        status: 'activated',
+                        runningStatus:
+                          executionEvidence === 'replacementStarting' ? 'starting' : 'running',
+                        status: executionEvidence === 'replacementStarting' ? 'new' : 'activated',
                       },
                     ]
                   : []),
@@ -197,10 +203,31 @@ export async function reloadCase({
       return {};
     },
   };
+  const freshSession = new EventEmitter();
+  freshSession.send = async (method) => {
+    if (method === 'ServiceWorker.enable' && freshSnapshot)
+      freshSession.emit('ServiceWorker.workerVersionUpdated', {
+        versions: [
+          {
+            versionId: 'version-new',
+            registrationId: 'registration-2',
+            scriptURL: worker.url,
+            targetId: worker.targetId,
+            ...freshSnapshot,
+          },
+        ],
+      });
+    return {};
+  };
+  freshSession.detach = async () => {};
+  let pageSessionCount = 0;
   const resultPromise = reloadOwnedExtension({
     cdp,
     browser: { newBrowserCDPSession: async () => independent },
-    context: { newPage: async () => details, newCDPSession: async () => pageSession },
+    context: {
+      newPage: async () => details,
+      newCDPSession: async () => (pageSessionCount++ === 0 ? pageSession : freshSession),
+    },
     page: {
       bringToFront: async () => {},
       locator: (selector) => {

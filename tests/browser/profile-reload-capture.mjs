@@ -278,6 +278,34 @@ export function captureReloadLifetime(value) {
     version_observation: value.version_observation === 'visible' ? 'visible' : 'unavailable',
     old_host_probe: probe(value.old_host_probe),
     replacement_host_probe: probe(value.replacement_host_probe),
+    fresh_replacement:
+      value.fresh_replacement &&
+      ['activated', 'not_activated', 'identity_mismatch', 'unavailable', 'unmeasured'].includes(
+        value.fresh_replacement.outcome,
+      )
+        ? {
+            outcome: value.fresh_replacement.outcome,
+            version_id: id(value.fresh_replacement.version_id),
+            registration_id: id(value.fresh_replacement.registration_id),
+            target_id: id(value.fresh_replacement.target_id),
+            running_status: ['stopped', 'starting', 'running', 'stopping'].includes(
+              value.fresh_replacement.running_status,
+            )
+              ? value.fresh_replacement.running_status
+              : null,
+            status: [
+              'new',
+              'installing',
+              'installed',
+              'activating',
+              'activated',
+              'redundant',
+            ].includes(value.fresh_replacement.status)
+              ? value.fresh_replacement.status
+              : null,
+            observations: safeCount(value.fresh_replacement.observations),
+          }
+        : null,
   };
 }
 

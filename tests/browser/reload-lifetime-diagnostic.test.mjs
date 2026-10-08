@@ -143,3 +143,49 @@ test('missing pre-click mapping remains unmeasured and cleanup survives probe fa
   await diagnostic.close();
   assert.equal(f.browserSession.detached, true);
 });
+
+test('fresh replacement observer distinguishes activation from stale, wrong, and unavailable status without accepting reload', async () => {
+  const original = {
+    versionId: 'version-new',
+    registrationId: 'registration-2',
+    scriptURL: `${prefix}background.js`,
+    targetId: 'new-worker',
+    runningStatus: 'starting',
+    status: 'new',
+  };
+  for (const [name, update, expected] of [
+    ['activated', { ...original, runningStatus: 'running', status: 'activated' }, 'activated'],
+    ['still new', original, 'not_activated'],
+    ['wrong version', { ...original, versionId: 'foreign-version' }, 'identity_mismatch'],
+    [
+      'wrong registration',
+      { ...original, registrationId: 'foreign-registration' },
+      'identity_mismatch',
+    ],
+    ['wrong target', { ...original, targetId: 'foreign-worker' }, 'identity_mismatch'],
+    ['unavailable', null, 'unavailable'],
+  ]) {
+    const f = fixture();
+    const diagnostic = await startReloadLifetimeDiagnostic({ ...f, extensionId });
+    diagnostic.correlateOld('old-worker');
+    f.pageSession.emit('ServiceWorker.workerVersionUpdated', { versions: [original] });
+    const fresh = new Session((method, _, session) => {
+      if (method === 'ServiceWorker.enable') {
+        if (!update) throw new Error('private protocol failure');
+        session.emit('ServiceWorker.workerVersionUpdated', { versions: [update] });
+      }
+      return {};
+    });
+    f.context.newCDPSession = async () => fresh;
+    const result = await diagnostic.observeFreshReplacement('new-worker');
+    assert.equal(result.outcome, expected, name);
+    assert.equal(diagnostic.executionRetired('old-worker', 'new-worker'), false, name);
+    const captured = captureReloadLifetime(diagnostic.evidence);
+    assert.equal(captured.fresh_replacement.outcome, expected);
+    assert.doesNotMatch(JSON.stringify(captured), /private|background\.js/);
+    assert.equal(fresh.detached, true);
+    assert.equal(fresh.listenerCount('ServiceWorker.workerVersionUpdated'), 0);
+    assert.deepEqual(fresh.calls, ['ServiceWorker.enable', 'ServiceWorker.disable']);
+    await diagnostic.close();
+  }
+});
