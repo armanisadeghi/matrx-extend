@@ -8,7 +8,7 @@
   "severity": "S2: cleanup and subsequent fixture acceptance blocked; underlying product impact unconfirmed",
   "priority": "P1",
   "state": "in-fix",
-  "owner": "root/settings397_arm_native",
+  "owner": "root",
   "preconditions": [
     "Frozen development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614; driverae437676; isolated Intel Chrome guest sidepanel; current package/browser/guest journals admitted and resource-valid."
   ],
@@ -29,7 +29,9 @@
     ".research/settings-reacquire-source-peer-20261007.json",
     ".research/settings-reacquire-final-peer-20261007.json",
     ".research/settings397-boundary-native-20261007.json",
-    ".research/settings-resource-strategy-peer-20261007.json"
+    ".research/settings-resource-strategy-peer-20261007.json",
+    ".research/settings397-arm-native-20261007.json",
+    ".research/settings397-arm-resource-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -53,7 +55,7 @@
   ],
   "diagnostic_candidate": "da3645de",
   "closure_requirement": "Reviewed safe boundary diagnostics, resource-valid original native retest, confirmed underlying cause/repair if needed, verified baseline restoration and surrounding guest fixture behavior.",
-  "next_action": "One ARM macos-15 lane B run owned by settings397_arm_native, same frozen397 artifact and reviewed diagnostic, unchanged resource thresholds. Host class alone changes per measured resource peer38b99120; preserve failure identity, actual restoration and fixture boundaries. No cause or closure claim.",
+  "next_action": "Assess bounded end-of-case resource-health barrier using existing guard recovery contract, unchanged thresholds/timeout, and meaningful second-bad/expiry failure controls. Source review and exact focused CI before one further original-boundary native attempt. No blind retry; original missing Settings view cause and baseline restoration remain unresolved.",
   "source_review": {
     "candidate": "da3645de",
     "peer": "4f5ddb9b",
@@ -74,5 +76,15 @@
     "result": "resource_invalid_no_case_receipt",
     "acceptance_credit": false,
     "reason": "Intel guest watchdog stopped after repeated unsafe CPU/load samples; package/browser valid, guest invalid exit3. Independent peer38b99120 confirms no Settings receipt."
+  },
+  "arm_resource_attempt": {
+    "run_id": "37732615934",
+    "workflow_sha": "710997735cc220d09bd3cc2e54f951a77584265d",
+    "result": "resource_invalid",
+    "acceptance_credit": false,
+    "child_exit_code": 0,
+    "peer": "a5fe56d2",
+    "reason": "High-load busy sample followed by only two of three required healthy recovery samples before child exit; pending state correctly invalidates final verdict.",
+    "observations_only": "T34 four switch observations and T64 five Ask-again observations; no reacquire exception. Restoration/downstream consumers remain unverified."
   }
 }
