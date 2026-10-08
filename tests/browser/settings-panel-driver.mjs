@@ -242,6 +242,10 @@ export async function click(panel, kind, label, onPhase = undefined) {
     }
     else if (kind === 'settings-button') candidates = [...(${activeTabPanelExpression('Settings')}?.querySelectorAll('button') ?? [])]
       .filter((el) => el.textContent.trim() === label);
+    else if (kind === 'settings-ask-again') candidates = [...(${activeTabPanelExpression('Settings')}?.querySelectorAll('li') ?? [])]
+      .filter((row) => row.querySelector('span')?.textContent.trim() === label)
+      .flatMap((row) => [...row.querySelectorAll('button')])
+      .filter((button) => button.textContent.trim() === 'Ask again');
     else if (kind === 'screenshot-open') {
       const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
       const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T00:48:26.547746+00:00",
+  "updated_at": "2026-10-08T01:37:08.426904+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -4915,17 +4915,15 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "hosted-settings-37115406435",
-              "native_run_status": "pass",
-              "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
-              "build_version": "0.2.176",
-              "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+              "run_id": "37712686956",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
               "evidence": [
-                ".research/settings-all-modes-evidence-peer.json",
-                ".research/settings-acceptance-record.json"
+                ".research/settings-batch-native-20261007.json",
+                ".research/settings-native-newcases-peer-20261007.json"
               ],
-              "detail": "Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.",
-              "release_scope": "Development artifact only; newer than frozen Store package."
+              "detail": "Dark/Light/System trusted selection, displayed option, persisted value and document dark class match current OS preference through each panel reload. Rendered appearance and preference through full extension Reload remain unverified.",
+              "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -4957,6 +4955,25 @@
                 "detail": "All six receipt-recorded native guest assertions passed. Reload evidence is a Settings panel reload, not full Chrome extension Reload. Earlier full-extension-reload theme matrix remains retained in result_history; this retest does not cover member/admin or all Settings controls."
               },
               "retained_reason": "Preserve earlier bounded evidence; current exact-development-artifact evidence separately identifies panel reload and visual limits."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "hosted-settings-37115406435",
+                "native_run_status": "pass",
+                "source_sha": "3092444e73094cb0023f6086202869ccbd22978b",
+                "build_version": "0.2.176",
+                "build_tree_sha256": "025e793195c5f15352220d6f47fc9c4af26fa258f8dfb1bed813020444e35660",
+                "evidence": [
+                  ".research/settings-all-modes-evidence-peer.json",
+                  ".research/settings-acceptance-record.json"
+                ],
+                "detail": "Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.",
+                "release_scope": "Development artifact only; newer than frozen Store package."
+              },
+              "superseded_at": "2026-10-08T01:37:08.426904+00:00",
+              "reason": "Fresh independently reviewed scoped guest Settings native evidence; retain historical scope without transferring it to current artifact."
             }
           ]
         },
@@ -5137,13 +5154,32 @@
           "dimensions": ["warm", "reload"],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "render-retest-001",
-              "detail": "pass_restored_Ask_before_acting",
-              "evidence": "docs/stabilization/runs/render-retest-001.json"
+              "status": "partial",
+              "run_id": "37712686956",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/settings-batch-native-20261007.json",
+                ".research/settings-native-newcases-peer-20261007.json"
+              ],
+              "detail": "Ask/Act trusted selection and UI/storage persistence pass through panel reload. New conversation inheritance remains unverified; latest result is partial despite historical pass retained in history.",
+              "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
             }
           },
-          "linked_defects": ["EXT-D-0087"]
+          "linked_defects": ["EXT-D-0087"],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "render-retest-001",
+                "detail": "pass_restored_Ask_before_acting",
+                "evidence": "docs/stabilization/runs/render-retest-001.json"
+              },
+              "superseded_at": "2026-10-08T01:37:08.426904+00:00",
+              "reason": "Fresh independently reviewed scoped guest Settings native evidence; retain historical scope without transferring it to current artifact."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T11",
@@ -5194,12 +5230,31 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "render-retest-001",
-              "detail": "pass_restored_Fast",
-              "evidence": "docs/stabilization/runs/render-retest-001.json"
+              "run_id": "37712686956",
+              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+              "build_version": "0.2.391",
+              "evidence": [
+                ".research/settings-batch-native-20261007.json",
+                ".research/settings-native-newcases-peer-20261007.json"
+              ],
+              "detail": "Fast/Thinking trusted selection and UI/storage persistence pass warm and after each panel reload. No deeper Chat behavior claimed.",
+              "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
             }
           },
-          "linked_defects": ["EXT-D-0087"]
+          "linked_defects": ["EXT-D-0087"],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "render-retest-001",
+                "detail": "pass_restored_Fast",
+                "evidence": "docs/stabilization/runs/render-retest-001.json"
+              },
+              "superseded_at": "2026-10-08T01:37:08.426904+00:00",
+              "reason": "Fresh independently reviewed scoped guest Settings native evidence; retain historical scope without transferring it to current artifact."
+            }
+          ]
         },
         {
           "id": "EXT-F-1003-T14",
@@ -7201,7 +7256,8 @@
           "expected": [
             "The admin-only section, optional permission controls and audit-key actions are absent for guest and ordinary member before and after reload."
           ],
-          "dimensions": ["warm", "reload"]
+          "dimensions": ["warm", "reload"],
+          "linked_defects": ["EXT-D-0161"]
         },
         {
           "id": "EXT-F-1003-T64",
@@ -7533,7 +7589,8 @@
               "detail": "Guest Account section: email unavailable, Name and role absent, Sign in footer; verified warm and after full extension reload.",
               "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
             }
-          }
+          },
+          "linked_defects": ["EXT-D-0161"]
         },
         {
           "id": "EXT-F-1003-T74",
@@ -7605,7 +7662,8 @@
               "detail": "Guest Organization section: archive filter and Acting as row absent; zero organization requests observed; verified warm and after full extension reload.",
               "limits": "Exact frozen development artifact only; predates current-main organization resolver changes. T92 member/admin results remain separate and unverified."
             }
-          }
+          },
+          "linked_defects": ["EXT-D-0161"]
         },
         {
           "id": "EXT-F-1003-T77",
@@ -8230,7 +8288,8 @@
               "status": "unverified",
               "detail": "Source census only; current-build native acceptance and owned fixture setup pending."
             }
-          ]
+          ],
+          "linked_defects": ["EXT-D-0161"]
         }
       ],
       "cells": {
@@ -29857,9 +29916,15 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37356729984",
-              "evidence": ".research/guest-turn-boundary-native.json",
-              "detail": "Bounded public0.2.205 adaptedunpackedCRX: opening, SAME-conversation follow-up and post-reload newconversation all actualHTTP200, distinctgrounded terminal_answer; wire samefingerprint/is_new=false then newfingerprint/is_new=true. Before/afterserver624b0cee540b8d6d957ac008af8773cd285bd29c stable; exactartifactunchanged and all3journalsvalid. Rootreadoriginalreceipt,alljournals,followupscreenshot. Not actualStoreinstalled/returningallowance or wholeChat."
+              "run_id": "37712132094",
+              "build_version": "0.2.205",
+              "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+              "server_sha": "1d535d990e3d85eaa24e526a531e49951cfacd07",
+              "evidence": [
+                ".research/public-guest-arm-retest-20261007.json",
+                ".research/public-arm-acceptance-peer-20261007.json"
+              ],
+              "detail": "Independent bounded PASS: fresh signed-out publicCRX unpacked in actual native sidepanel; three distinct grounded terminal answers, HTTP200 each. Same-conversation follow-up keeps wire fingerprint/is_new=false; new conversation after panel reload changes fingerprint/is_new=true. Runtime extension ID observed, exacttree unchanged, server before/after stable, all3 current resource journals valid. Observer starts after panel load. Not StoreUI installation, returning allowance remedy, member, or wholeChat."
             }
           },
           "defect_verification": {
@@ -29929,6 +29994,17 @@
                 "detail": "Google public0.2.205 CRX, verified hash/identity and immutable adapted unpacked tree, completed fresh signed-out and post-panel-reload grounded answers; both realHTTP200; all3resourcejournals valid with zero unsafeevents. Headless nativeSIDE_PANEL; not actualStoreinstalled lifecycle or exhaustiveChat. Same-conversation follow-up and current-backend pair explicitly remain unverified; source7f0a02d2 awaits fresh independent review/full CI/guarded browser run. Existing first+reload proof retained, no new pass."
               },
               "superseded_at": "2026-10-05T18:43:31.038094+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37356729984",
+                "evidence": ".research/guest-turn-boundary-native.json",
+                "detail": "Bounded public0.2.205 adaptedunpackedCRX: opening, SAME-conversation follow-up and post-reload newconversation all actualHTTP200, distinctgrounded terminal_answer; wire samefingerprint/is_new=false then newfingerprint/is_new=true. Before/afterserver624b0cee540b8d6d957ac008af8773cd285bd29c stable; exactartifactunchanged and all3journalsvalid. Rootreadoriginalreceipt,alljournals,followupscreenshot. Not actualStoreinstalled/returningallowance or wholeChat."
+              },
+              "superseded_at": "2026-10-08T01:30:07.304264+00:00",
+              "reason": "Fresh independently reviewed publicCRX three-turn browser check on current observed live server revision."
             }
           ]
         },

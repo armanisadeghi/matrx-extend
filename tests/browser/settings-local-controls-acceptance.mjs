@@ -9,7 +9,13 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { GUEST_PREFERENCES, runGuestPreferenceCase } from './settings-guest-preference-batch.mjs';
+import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
+  classifyReloadSettingsFailure,
+  observeReloadSettingsPanel,
+} from './settings-reload-boundary.mjs';
+import {
+  activeTabPanelExpression,
   click,
   evaluate,
   guestSettingsChecks,
@@ -28,9 +34,20 @@ const DEV_EXTENSION_DIR = process.env.SETTINGS_DEV_EXTENSION_DIR
 const DEV_BUILD_RECEIPT = process.env.SETTINGS_DEV_BUILD_RECEIPT;
 const EXTENSION_ID = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 const CASE_PORT = 65001;
-const IDS = ['T04', 'T10', 'T13', 'T22', 'T37', 'T46', 'T70', 'T73', 'T76', 'T92'].map(
-  (id) => `EXT-F-1003-${id}`,
-);
+const IDS = [
+  'T04',
+  'T10',
+  'T13',
+  'T22',
+  'T37',
+  'T46',
+  'T63',
+  'T64',
+  'T70',
+  'T73',
+  'T76',
+  'T92',
+].map((id) => `EXT-F-1003-${id}`);
 const report = {
   schema_version: 1,
   scope: 'real isolated Chrome-for-Testing native side panel; signed-out guest',
@@ -43,7 +60,7 @@ const report = {
   cases: IDS.map((id) => ({
     id,
     role: 'guest',
-    ...(id.endsWith('T92') && { scope: 'guest-negative-access-only' }),
+    ...((id.endsWith('T92') || id.endsWith('T63')) && { scope: 'guest-negative-access-only' }),
     status: 'unverified',
     steps: [],
     criteria: [],
@@ -79,8 +96,11 @@ async function startObservedDeadPort() {
   };
 }
 
-async function settings(panel) {
+async function settings(panel, onStep = () => {}) {
+  onStep('before_click');
   await click(panel, 'title', 'Settings');
+  onStep('click_returned');
+  onStep('guest_wait_started');
   await waitFor(
     'guest_settings',
     () =>
@@ -116,11 +136,15 @@ async function reloadSettings(panel) {
 async function guestSections(panel) {
   return evaluate(
     panel,
-    `(() => ({
-    sections: [...document.querySelectorAll('button[aria-expanded]')].map((b) => b.textContent.trim()),
-    advancedText: (document.body?.innerText ?? '').includes('Advanced agent capabilities'),
-    adminControls: ['Audit key', 'Permission gate'].filter((s) => (document.body?.innerText ?? '').includes(s)),
-  }))()`,
+    `(() => {
+    const pane = ${activeTabPanelExpression('Settings')};
+    const text = pane?.innerText ?? '';
+    return { active: !!pane,
+      sections: [...(pane?.querySelectorAll('button[aria-expanded]') ?? [])].map((b) => b.textContent.trim()),
+      advancedText: text.includes('Advanced agent capabilities'),
+      adminControls: ['Audit key', 'Permission gate'].filter((s) => text.includes(s)),
+      permissionControlCount: pane?.querySelectorAll('[aria-label="DevTools Protocol permission"]').length ?? 0 };
+  })()`,
   );
 }
 
@@ -416,6 +440,33 @@ function recordGuestPhase(phase, observation) {
   }
 }
 
+async function recordGuestAdvancedDenial(phase, panel, observation) {
+  const c = byId('T63');
+  const state = await guestSections(panel);
+  const signedOut = guestSettingsChecks(
+    observation.state,
+    observation.organizationRequests,
+  ).signedOut;
+  const passed =
+    signedOut &&
+    state.active &&
+    !state.sections.includes('Advanced agent capabilities') &&
+    !state.advancedText &&
+    state.adminControls.length === 0 &&
+    state.permissionControlCount === 0;
+  c.steps.push({
+    phase,
+    action: 'Inspect guest Settings admin section and actions',
+    observation: { signedOut, ...state },
+  });
+  criterion(
+    c,
+    `${phase}: guest admin section, optional controls and audit actions absent`,
+    passed ? 'pass' : 'fail',
+    { signedOut, ...state },
+  );
+}
+
 async function runCase(c, fn) {
   try {
     await fn();
@@ -499,6 +550,17 @@ try {
             );
         });
       }
+      await runCase(byId('T64'), async () => {
+        const c = byId('T64');
+        await runGuestAskAgainCase(panel, reloadSettings, (name, observation, passed) => {
+          c.steps.push({
+            phase: name.includes('reload') ? 'reload' : 'warm',
+            action: name,
+            observation,
+          });
+          criterion(c, name, passed ? 'pass' : 'fail', observation);
+        });
+      });
       await runCase(byId('T22'), async () => {
         const c = byId('T22');
         for (const phase of ['warm', 'reload']) {
@@ -890,7 +952,9 @@ try {
       });
       let guestStage = 'warm_observation';
       try {
-        recordGuestPhase('warm', await observeGuestIdentityAndOrganization(panel));
+        const warmGuest = await observeGuestIdentityAndOrganization(panel);
+        recordGuestPhase('warm', warmGuest);
+        await recordGuestAdvancedDenial('warm', panel, warmGuest);
         guestStage = 'extension_reload';
         const replacement = await reloadExtension();
         report.guestExtensionReload = {
@@ -904,12 +968,30 @@ try {
           'owned extension reload lifecycle incomplete',
         );
         guestStage = 'reload_settings';
-        await settings(replacement.panel);
+        let reloadStep = 'before_click';
+        try {
+          await settings(replacement.panel, (step) => {
+            reloadStep = step;
+          });
+          report.guestReloadBoundary = {
+            status: 'settings_opened',
+            panel: await observeReloadSettingsPanel(replacement.panel, EXTENSION_ID),
+          };
+        } catch (error) {
+          report.guestReloadBoundary = {
+            status: 'settings_open_failed',
+            failure: classifyReloadSettingsFailure(error, reloadStep),
+            panel: await observeReloadSettingsPanel(replacement.panel, EXTENSION_ID),
+          };
+          throw error;
+        }
         guestStage = 'reload_observation';
-        recordGuestPhase('reload', await observeGuestIdentityAndOrganization(replacement.panel));
+        const reloadedGuest = await observeGuestIdentityAndOrganization(replacement.panel);
+        recordGuestPhase('reload', reloadedGuest);
+        await recordGuestAdvancedDenial('reload', replacement.panel, reloadedGuest);
       } catch {
         report.guestStageFailed = guestStage;
-        for (const suffix of ['T73', 'T76', 'T92']) {
+        for (const suffix of ['T63', 'T73', 'T76', 'T92']) {
           const c = byId(suffix);
           criterion(c, `${guestStage}: native observation complete`, 'unverified', {
             stage: guestStage,
@@ -917,11 +999,18 @@ try {
           });
         }
       }
-      for (const suffix of ['T73', 'T76', 'T92']) {
+      criterion(
+        byId('T63'),
+        'ordinary member denial',
+        'unverified',
+        'This guest runner has no ordinary-member principal.',
+      );
+      for (const suffix of ['T63', 'T73', 'T76', 'T92']) {
         const c = byId(suffix);
         c.status = c.criteria.some((item) => item.status === 'fail')
           ? 'fail'
-          : c.criteria.length === 2 && c.criteria.every((item) => item.status === 'pass')
+          : c.criteria.length === (suffix === 'T63' ? 3 : 2) &&
+              c.criteria.every((item) => item.status === 'pass')
             ? 'pass'
             : 'unverified';
       }

@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "status": "boundary_diagnostic_added_product_cause_unverified",
+  "original_native_workflow": 37712686956,
+  "original_development_source": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+  "original_driver_checkout": "271e9d479e4d4cbe97b3787ab8d01027728f80d3",
+  "original_receipt": ".research/settings-batch-native-20261007/evidence/raw/settings-local-controls-acceptance.json",
+  "original_observation": {
+    "guestStageFailed": "reload_settings",
+    "chrome_reload_clicked": true,
+    "old_targets_retired": true,
+    "worker_replaced": true,
+    "panel_replaced": true,
+    "warm_guest_account_organization_checks": "passed with no token, profile or organization choice",
+    "reload_guest_account_organization_checks": "unverified because the failure occurred before their observation",
+    "screenshots": "The retained screenshots were taken at setup, before full extension reload. No post-reload image exists.",
+    "resource_journals": "Three final resource decisions valid; not a resource-invalid result."
+  },
+  "first_unresolved_boundary": "The replacement panel existed and its runtime context was observed by the shared harness. The next driver step was a trusted Settings tab click followed by waiting for guest Settings. The driver discarded that exception, so the original receipt cannot distinguish click target failure, panel transport loss, or guest-state wait failure.",
+  "confirmed_source_cause": "The Settings guest proof catch recorded only guestStageFailed and last warm observation. It omitted the first failing click/wait category and replacement-panel state, making this native failure opaque.",
+  "discriminating_predictions": [
+    "If Settings click could not select a target, the new receipt records before_click with a safe pointer category and Settings tab count.",
+    "If the click returned but guest content did not settle, it records guest_wait_started and guest_state_not_observed plus fixed panel/guest booleans.",
+    "If the replacement CDP panel died, the category or panel probe identifies the transport failure without copying its raw message."
+  ],
+  "change": "Instrument only the existing post-extension-reload Settings opening boundary with fixed stage, allowlisted error category, and fixed replacement-panel booleans. No retry, timeout change, product change or native verdict promotion.",
+  "verification": {
+    "local_source_check": "Targeted node checks 6/6 passed; syntax and diff checks passed. Supporting source evidence only.",
+    "automatic_focused_ci": "Run 37713797315 succeeded at exact source a5d303193f8684c46512136f0d6ff30db040676d. This does not reproduce the native failure.",
+    "native": "No retry before independent review; original artifact cannot exercise this new diagnostic."
+  },
+  "next_action": "Obtain independent source/native review, then coordinate one guarded frozen-artifact run only after the original failure is classified. T63 and existing guest full-reload cells remain unverified."
+}
