@@ -4,7 +4,8 @@
   "verification": [
     "node --check scripts/test-stabilization-resource-cpu-integration.mjs passed.",
     "MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST=1 node --test --test-name-pattern='scenario diagnostic reports' scripts/test-stabilization-resource-cpu-integration.mjs passed in 70 ms without launching a guard or browser.",
-    "A scratch-copy mutation that changed the reported guard event code to BROKEN made the diagnostic self-test fail with ERR_ASSERTION; the scratch copy was removed."
+    "A scratch-copy mutation that changed the reported guard event code to BROKEN made the diagnostic self-test fail with ERR_ASSERTION; the scratch copy was removed.",
+    "Peer review identified that RESOURCE_MEASUREMENT_FAILED embeds error.message in reasons; a focused test first failed because diagnostic output contained a scratch path and token-like suffix, then passed after fixed-code classification removed both."
   ],
-  "limits": "The heavy integration and browser paths were deliberately not run locally. The next automatic CI run is needed to distinguish aggregate budget exhaustion from a specific scenario stall; no production guard behavior or timeout changed. If fixture creation fails before returning its scratch path, cleanup reports unavailable, because the pre-existing fixture API does not expose that path."
+  "limits": "The heavy integration and browser paths were deliberately not run locally. The next automatic CI run is needed to distinguish aggregate budget exhaustion from a specific scenario stall; no production guard behavior or timeout changed. Diagnostic reasons are limited to ten entries and fixed codes, with unknown values collapsed to RESOURCE_REASON_OTHER. If fixture creation fails before returning its scratch path, cleanup reports unavailable, because the pre-existing fixture API does not expose that path."
 }

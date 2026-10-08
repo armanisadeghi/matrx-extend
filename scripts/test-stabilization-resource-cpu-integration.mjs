@@ -21,6 +21,23 @@ const watchCodes = new Set([
   'RESOURCE_WATCH_HEALTHY',
   'RESOURCE_WATCH_UNSAFE',
 ]);
+const safeReasonCodes = new Set([
+  'RESOURCE_PRESSURE_UNSAFE',
+  'RESOURCE_MEMORY_LOW',
+  'RESOURCE_CPU_BUSY',
+  'RESOURCE_CPU_HIGH_LOAD_BUSY',
+  'RESOURCE_DISK_LOW',
+  'RESOURCE_SWAP_BASELINE_MISSING',
+  'RESOURCE_SWAP_GROWTH',
+  'RESOURCE_CPU_CONFIRMATION_EXPIRED',
+]);
+
+function diagnosticReasonCode(reason) {
+  if (safeReasonCodes.has(reason)) return reason;
+  if (typeof reason === 'string' && reason.startsWith('RESOURCE_MEASUREMENT_FAILED:'))
+    return 'RESOURCE_MEASUREMENT_FAILED';
+  return 'RESOURCE_REASON_OTHER';
+}
 
 async function fixture({ pauseOwnerRewrite = false, simulateChildError = false } = {}) {
   const scratch = await mkdtemp(join(tmpdir(), 'resource-cpu-wrapper-'));
@@ -255,7 +272,9 @@ function scenarioDiagnostic(kind, groupStartedAt) {
     onEvent: (event) => {
       lastGuardEvent = {
         code: event.code,
-        ...(event.reasons && { reasons: event.reasons }),
+        ...(Array.isArray(event.reasons) && {
+          reasons: [...new Set(event.reasons.slice(0, 10).map(diagnosticReasonCode))],
+        }),
         ...(event.childExitCode !== undefined && { childExitCode: event.childExitCode }),
       };
       report('guard_event');
@@ -536,6 +555,17 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
       second.setCleanup('unavailable');
       second.report('end');
       second.stop();
+      const third = scenarioDiagnostic('measurement-error', groupStartedAt);
+      third.onEvent({
+        code: 'RESOURCE_WATCH_UNSAFE',
+        reasons: [
+          "RESOURCE_MEASUREMENT_FAILED:ENOENT: open '/private/tmp/resource-cpu-wrapper-secret/cpu-phase'",
+          'RESOURCE_FUTURE:--secret-token=fixture-private',
+        ],
+      });
+      third.setCleanup('failed');
+      third.report('end');
+      third.stop();
     } finally {
       console.error = originalError;
     }
@@ -564,10 +594,21 @@ if (process.env.MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST === '1') {
           child: null,
           cleanup: 'unavailable',
         },
+        {
+          kind: 'measurement-error',
+          lastGuardEvent: {
+            code: 'RESOURCE_WATCH_UNSAFE',
+            reasons: ['RESOURCE_MEASUREMENT_FAILED', 'RESOURCE_REASON_OTHER'],
+          },
+          child: null,
+          cleanup: 'failed',
+        },
       ],
     );
+    assert(!lines.join('\n').includes('/private/tmp/resource-cpu-wrapper-secret/cpu-phase'));
+    assert(!lines.join('\n').includes('--secret-token=fixture-private'));
     assert(entries.every(({ elapsedMs, groupElapsedMs }) => elapsedMs >= 0 && groupElapsedMs >= 0));
-    assert.equal(entries.filter(({ point }) => point === 'guard_event').length, 2);
+    assert.equal(entries.filter(({ point }) => point === 'guard_event').length, 3);
   });
 }
 
