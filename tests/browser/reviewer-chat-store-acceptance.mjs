@@ -561,6 +561,15 @@ async function observeActionTransport(native, expectedUrl, mode) {
       if (!results && !start) return;
       const entry = {
         kind: start ? 'start' : 'result',
+        startDoor: start && path.includes('/mandates/') ? 'mandate' : start ? 'agent' : null,
+        targetKind:
+          start && decodeURIComponent(path.split('/').at(-1)).startsWith('mandate:')
+            ? 'mandate_reference'
+            : start && /\/mandates\//.test(path)
+              ? 'mandate_key'
+              : start
+                ? 'concrete_agent'
+                : null,
         conversation: results ? hash(results[1]) : null,
         status: null,
         responseConversation: null,
@@ -641,6 +650,8 @@ async function observeActionTransport(native, expectedUrl, mode) {
         ),
         backend_request_fingerprint: start?.backendRequest ?? null,
         start_http_status: start?.status ?? null,
+        start_endpoint_door: start?.startDoor ?? null,
+        start_target_kind: start?.targetKind ?? null,
         successful_create_tab_result_posted: Boolean(result),
         result_http_status: result?.status ?? null,
         result_post_count: results.length,

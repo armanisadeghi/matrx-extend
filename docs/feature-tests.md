@@ -1657,9 +1657,9 @@ Every entry follows this shape:
   2. Click **Start Pilot** in the header. Chrome opens a new tab group
      (blue, titled "Pilot") seeded with the currently active tab. The
      header switches to **End** with the group id + tab count.
-  3. Send a message like `take a screenshot of this tab`. The agent uses
-     the pilot toolset (full read+action+ask kit) and the screenshot
-     comes from a tab inside the group.
+  3. With the default Browser Chat target, send `take a screenshot of this tab`.
+     Repeat in a new Pilot chat with a saved agent selected. Both starts succeed;
+     the pilot toolset runs and the screenshot comes from inside the group.
   4. Open another tab OUTSIDE the group (Cmd-T). Then ask the agent to
      `click_element ref:1 on tab id <outside-tab-id>`.
   5. Click **End**. Every tab in the group closes.

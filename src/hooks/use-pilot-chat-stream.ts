@@ -18,7 +18,7 @@
 import {
   type AgentStartRequest,
   type RequestInitiation,
-  agentExecutePath,
+  agentTargetExecutePath,
 } from '@/lib/api/routes/ai';
 import { conversationResumePath } from '@/lib/api/routes/tool-results';
 import {
@@ -627,7 +627,7 @@ export function usePilotChatStream() {
 
       await send(CHANNELS.STREAM_START, {
         runId,
-        endpoint: agentExecutePath(opts.agentId),
+        endpoint: agentTargetExecutePath(opts.agentId),
         body,
         parser: 'rich-events' as const,
         agentName: opts.agentName ?? null,
