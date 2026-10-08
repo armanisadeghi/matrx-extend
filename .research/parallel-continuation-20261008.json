@@ -1,0 +1,47 @@
+{
+  "observed_at": "2026-10-08T14:22:49.520364+00:00",
+  "previous_turn_classification": "progress: approved parallel docs, independently verified startup diagnostic and truthful invalid-run inventory retained",
+  "native_run": {
+    "id": "37791330758",
+    "owner": "startup_bracket_native",
+    "purpose": "one diagnostic-only startup causal observation",
+    "acceptance_credit": false
+  },
+  "local_preflight": {
+    "journal": "docs/stabilization/resource-journals/continuation-preflight-20261008-1417.jsonl",
+    "decision": "refused",
+    "system_free_gib": 15.981121063232422,
+    "reason": "RESOURCE_DISK_LOW",
+    "safe_cleanup_report": ".research/local-disk-admission-recovery-20261008.json",
+    "human_only_blocker": false,
+    "alternative": "Existing resource-admitted hosted test workflow remains available."
+  },
+  "ci": {
+    "run_id": "37790643945",
+    "source": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "conclusion": "success",
+    "resource_guard_integration": "success",
+    "checks": "success",
+    "development_artifact_id": 11556064167,
+    "artifact_version": "0.2.414",
+    "expired": false,
+    "limit": "Exact source only; later main is not inferred green. Intermittent D182 is not closed by passing rerun."
+  },
+  "release": {
+    "latest_observed_workflow": "37180303468",
+    "created_at": "2026-10-04T05:34:52Z",
+    "new_store_package_observed": false,
+    "limit": "Workflow listing is not authenticated dashboard status; no new submission or publication claimed."
+  },
+  "records_guard": {
+    "source": "d65ac528",
+    "peer": "667c2574",
+    "verdict": "source seam pass; native D91 remains open"
+  },
+  "ci_diagnostics": {
+    "source": "e87d1d29",
+    "peer": "667c2574",
+    "verdict": "privacy finding confirmed; repair pending",
+    "defect": "EXT-D-0182"
+  }
+}

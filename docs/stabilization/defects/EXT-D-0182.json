@@ -1,0 +1,46 @@
+{
+  "id": "EXT-D-0182",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T03", "EXT-F-0002-T04"],
+  "surface": "Resource guard CI integration",
+  "auth_mode": "all; infrastructure before authentication",
+  "title": "Serial resource scenarios exhaust aggregate CI test timeout without identifying active boundary",
+  "severity": "S2: required CI gate intermittently fails; production guard regression not established",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "extend-stabilization",
+  "reproduction": [
+    "Use automatic CI run37789659379/source99cb09b6; inspect resource-guard-integration CPU confirmation and native action boundary log.",
+    "First test executes seven real-wrapper scenarios serially under one30000ms test timeout. It expired at30003.82ms without a scenario assertion or named active boundary.",
+    "Identical guard/test/policy source passed preceding CI37789394542 at29031.81ms. Reproduction is intermittent; do not classify a passing rerun as resolution."
+  ],
+  "expected": "Each scenario has actionable failure evidence, and required real resource refusals/recovery/cleanup remain reliably verified.",
+  "actual": "The aggregate test expires before identifying whether one scenario stalled or total expected runtime exceeded its budget.",
+  "evidence": [
+    ".research/ci-guard-timeout-triage-20261008.json",
+    ".research/ci-scenario-timing-20261008.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/37789659379"
+  ],
+  "root_cause": "Unresolved: narrow aggregate timing margin demonstrated; active scenario absent from original logs.",
+  "closure_requirement": "Actual automatic CI scenario timing identifies cause; repair preserving refusal/recovery/cleanup assertions passes independent source and automatic original-group/surrounding checks. No threshold reduction or blind timeout hike.",
+  "transition_history": [
+    {
+      "at": "2026-10-08T14:21:11.152144+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Observed required automaticCI timeout with precise run/source."
+    },
+    {
+      "at": "2026-10-08T14:21:11.152144+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Identical prior source passed near30s limit; actual scenario unknown."
+    },
+    {
+      "at": "2026-10-08T14:21:11.152144+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "e87d1d29 adds per-scenario diagnostics; fresh review and automaticCI evidence pending, no cause fix yet."
+    }
+  ]
+}

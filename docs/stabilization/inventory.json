@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T14:07:42.687971+00:00",
+  "updated_at": "2026-10-08T14:21:11.152144+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -727,7 +727,7 @@
               "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             }
           },
-          "defect_ids": ["EXT-D-0083", "EXT-D-0119", "EXT-D-0168"],
+          "defect_ids": ["EXT-D-0083", "EXT-D-0119", "EXT-D-0168", "EXT-D-0182"],
           "supporting_evidence": [
             {
               "level": "resource startup experiment; no native outcome",
@@ -786,7 +786,7 @@
               "evidence": "docs/stabilization/reports/infrastructure-coverage-audit.json"
             }
           },
-          "defect_ids": ["EXT-D-0168"]
+          "defect_ids": ["EXT-D-0168", "EXT-D-0182"]
         },
         {
           "id": "EXT-F-0002-T05",
