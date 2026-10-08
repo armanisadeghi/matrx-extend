@@ -1,0 +1,187 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "settings-unrecorded-native",
+  "status": "partial_native_resource_valid_independent_review_pending",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37714389856",
+    "run_id": 37714389856,
+    "job_id": 113107430679,
+    "status": "completed",
+    "conclusion": "success",
+    "head_branch": "main",
+    "head_sha": "6764c8b903cb39719157b9e80952f3b74b00a0e6",
+    "acceptance_lane": "B",
+    "acceptance_case": "settings-controls",
+    "auth_mode": "signed-out guest",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "duration": "6m39s"
+  },
+  "source_readiness": {
+    "new_case_candidate": "831cd1d572d41e576dd92395bfb5732398f424cf",
+    "diagnostic_repair": "ed97df724c958dce6040a90b2830d688af5e3e5c",
+    "diagnostic_peer_review": ".research/settings-reload-final-peer-20261007.json",
+    "diagnostic_peer_commit": "2bb7dec33688be9bdc00b20c136b0f3c90c267e5",
+    "focused_ci": "37714158197 succeeded at exact repair SHA ed97df72; source evidence only."
+  },
+  "selected_development_artifact": {
+    "run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "artifact_name": "matrx-extend-development-test-52487361b1b6a8663b958dbb2196cbcc9b1af31c-37698216289-1",
+    "expired": false,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "verification": "The native report tree hash matches the preserved original CI receipt and provenance. The CI receipt reports verified=true."
+  },
+  "native_outcome": {
+    "driver": "tests/browser/settings-local-controls-acceptance.mjs",
+    "report_status": "unverified",
+    "guest_stage_failed": "reload_settings",
+    "scope": "This report summarizes only the requested guest EXT-F-1003-T63/T64 subtargets. The raw native report preserves the full settings-controls output; no other case or role is credited here.",
+    "cases": {
+      "EXT-F-1003-T63": {
+        "status": "partial_warm_guest_observation",
+        "warm_observation": {
+          "signedOut": true,
+          "activeSettings": true,
+          "adminSectionAndActionsPresent": false,
+          "optionalPermissionControlCount": 0
+        },
+        "full_extension_reload": {
+          "managementReloadClicked": true,
+          "oldTargetsRetired": true,
+          "workerReplaced": true,
+          "panelReplaced": true,
+          "status": "unverified"
+        },
+        "first_failure_diagnostic": {
+          "status": "settings_open_failed",
+          "step": "before_click",
+          "category": "pointer_target_not_unique",
+          "matchedTargetCount": 0,
+          "visibleMatchCount": 0,
+          "hitTarget": false,
+          "panelProbe": {
+            "sampled": true,
+            "runtimeIdMatches": true,
+            "documentReady": true,
+            "visible": true,
+            "settingsTabCount": 1,
+            "settingsActiveCount": 0,
+            "guestBannerPresent": false,
+            "guestOrganizationGuidancePresent": false
+          }
+        },
+        "ordinary_member": "unverified; this guest run has no ordinary-member principal.",
+        "scope_limit": "The first failed substep is now categorized, but no product cause is established and the post-extension-reload guest result remains unverified."
+      },
+      "EXT-F-1003-T64": {
+        "status": "pass_bounded_guest_settings_behavior",
+        "observations": [
+          {
+            "step": "Two disposable loopback origins are visible and stored",
+            "rowCount": 2,
+            "storageCount": 2,
+            "firstPresent": true,
+            "secondPresent": true,
+            "emptyListHeadingVisible": true
+          },
+          {
+            "step": "First Ask again removes only the selected origin",
+            "rowCount": 1,
+            "storageCount": 1,
+            "firstPresent": false,
+            "secondPresent": true,
+            "emptyListHeadingVisible": true
+          },
+          {
+            "step": "The unrelated origin remains after panel reload",
+            "rowCount": 1,
+            "storageCount": 1,
+            "firstPresent": false,
+            "secondPresent": true,
+            "emptyListHeadingVisible": true
+          },
+          {
+            "step": "Removing the last origin hides the empty list",
+            "rowCount": 0,
+            "storageCount": 0,
+            "firstPresent": false,
+            "secondPresent": false,
+            "emptyListHeadingVisible": false
+          },
+          {
+            "step": "The empty list remains hidden after panel reload",
+            "rowCount": 0,
+            "storageCount": 0,
+            "firstPresent": false,
+            "secondPresent": false,
+            "emptyListHeadingVisible": false
+          }
+        ],
+        "cleanup": {
+          "attempted": true,
+          "mechanism": "The helper's finally block removes only the two disposable origins and preserves unrelated values; normal case completion reaches that block.",
+          "post_cleanup_readback": "Not recorded in the native report. The hosted profile is disposable and the job completed."
+        },
+        "scope_limit": "Direct preference seeding proves Settings list behavior only; it does not prove a preceding login or Never-for-this-site capture decision."
+      }
+    },
+    "baseline_batch": {
+      "EXT-F-1003-T04": "pass for theme selection and panel reload; rendered appearance and full-extension-reload preference remain outside this evidence.",
+      "EXT-F-1003-T10": "Ask/Act selection and persistence pass; new-chat inheritance remains unverified.",
+      "EXT-F-1003-T13": "pass for Thinking/Fast selection and panel reload.",
+      "credit": "These are preserved in the raw report but are not promoted or edited by this task."
+    }
+  },
+  "resource_gate": {
+    "decision": "valid",
+    "resource_invalid": false,
+    "journal_count": 3,
+    "journals": [
+      ".research/settings-unrecorded-native-20261007/evidence/resource-journals/hosted-package-37714389856-1.jsonl",
+      ".research/settings-unrecorded-native-20261007/evidence/resource-journals/hosted-browser-37714389856-1.jsonl",
+      ".research/settings-unrecorded-native-20261007/evidence/resource-journals/hosted-guest-37714389856-1.jsonl"
+    ],
+    "observation": "All three completed journals end with RESOURCE_FINAL_DECISION valid and exitCode 0. Hosted runner architecture was logged as ARM64/arm64."
+  },
+  "evidence": {
+    "directory": ".research/settings-unrecorded-native-20261007/evidence/",
+    "files": [
+      "raw/ci-build-receipt.json",
+      "raw/ci-build-provenance.json",
+      "raw/settings-local-controls-acceptance.json",
+      "resource-journals/hosted-package-37714389856-1.jsonl",
+      "resource-journals/hosted-browser-37714389856-1.jsonl",
+      "resource-journals/hosted-guest-37714389856-1.jsonl",
+      "screenshots/native-side-panel.png",
+      "screenshots/normal-target-after-open.png"
+    ],
+    "native_artifact": {
+      "id": 11523397869,
+      "name": "hosted-guest-37714389856-1",
+      "digest": "sha256:61bb1b312d7f8a60f58a595cb477da3848f12270fa2b1f626ed0428694c551d2"
+    },
+    "native_report_sha256": "76309a77e26f8efcca30fccd83b47e8c1e6379b56d0742dfd0828b6d2243cb64",
+    "ci_receipt_sha256": "d8b29a5eb04a778400ffd595a0d71eae43873b28bcfcd1639b64572f0c8da490",
+    "resource_journal_sha256": {
+      "hosted-package-37714389856-1.jsonl": "f6bcbea37f7a3259355f16c18970e8211ed8c08fc74e729156211f091a9475aa",
+      "hosted-browser-37714389856-1.jsonl": "f58f4ca55167ef5419eaab6d82827cc72ae2d542cb6374ec216c4316b00e7ccd",
+      "hosted-guest-37714389856-1.jsonl": "c51ec3f10747b0a87dd6d454536600ec8fbceb3717bb94c1073c29a7d21ee8f6"
+    },
+    "screenshot_scope": "Both retained screenshots are setup captures, not post-selection visual evidence."
+  },
+  "review": {
+    "native_peer_review": "pending; root owns independent review",
+    "inventory_credit": "No inventory cells are changed by this report. Root decides whether to record the bounded T64 pass and T63 warm observation."
+  },
+  "not_run": [
+    "No retry or second hosted workflow was dispatched.",
+    "No build, release, deploy, version change, or inventory edit was performed.",
+    "No authentication secrets were accessed or staged by this lane."
+  ]
+}
