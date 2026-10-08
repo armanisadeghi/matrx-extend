@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T11:41:53+00:00",
+  "updated_at": "2026-10-08T11:48:19+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -32808,25 +32808,20 @@
           ],
           "results": {
             "guest": {
-              "status": "fail",
-              "run_id": "37764808590",
+              "status": "pass",
+              "run_id": "37770686993",
+              "build_version": "0.2.205 public CRX adapted unpacked",
+              "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+              "server_sha": "32f3a398789e0a56b590089ff47b90aff6abe159",
+              "resource_valid": true,
               "evidence": [
-                ".research/guest409-live-retest-20261008.json",
-                ".research/guest409-live-retest-peer-20261008.json"
+                ".research/guest-position-fix-live-retest-20261008.json",
+                ".research/guest-position-native-adjudication-20261008.json",
+                ".research/guest-position-fix-live-peer-20261008.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37770686993"
               ],
-              "detail": "Original public205 postreloadguestacceptancefails on stabledeployed5be despite initial409repair; continuationRuntimeError afterpage tool, noanswer. Resourcevalid and independentlyreviewed. First/followupremain boundedpasses only.",
-              "historical_result": {
-                "status": "fail",
-                "run_id": "37748038743",
-                "build_version": "0.2.205",
-                "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
-                "server_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
-                "evidence": [
-                  ".research/daily-guest-20261008.json",
-                  ".research/daily-guest-409-peer-20261008.json"
-                ],
-                "detail": "Independent bounded failure on publicCRX unpacked: first and same-conversation turns returned grounded terminal answers. After panelreload, distinct newconversation initialHTTP200 and correct get_page_text result were followed by continuationHTTP409 and zero visibleassistantanswers for180seconds. All3resourcejournals valid; server stable. Refusalcode/rootcause unproven. Not actualStoreUIinstallation or wholeChat."
-              }
+              "scope": "bounded original reproduction only",
+              "detail": "Bounded original reproduction passes on the published 0.2.205 CRX loaded as an adapted unpacked extension. Three signed-out guest turns produced distinct page-grounded terminal answers: opening, same-conversation follow-up, and a new conversation after full panel reload. All three current-run resource journals were valid; the artifact tree was unchanged and the live server SHA was stable. The independent adjudication refutes the cross-turn stage-criteria objection: the final diagnostic describes the post-reload code-and-heading prompt, while the stage-order assertion belongs to the separately checked opening turn. This does not establish Chrome Web Store UI installation, whole Chat feature health, or current development 0.2.407 health."
             }
           },
           "defect_verification": {
@@ -32926,6 +32921,32 @@
               },
               "superseded_at": "2026-10-08T08:25:35.145066+00:00",
               "reason": "Fresh resource-valid public guest reproduction fails after panelreload; preserve older bounded pass."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "fail",
+                "run_id": "37764808590",
+                "evidence": [
+                  ".research/guest409-live-retest-20261008.json",
+                  ".research/guest409-live-retest-peer-20261008.json"
+                ],
+                "detail": "Original public205 postreloadguestacceptancefails on stabledeployed5be despite initial409repair; continuationRuntimeError afterpage tool, noanswer. Resourcevalid and independentlyreviewed. First/followupremain boundedpasses only.",
+                "historical_result": {
+                  "status": "fail",
+                  "run_id": "37748038743",
+                  "build_version": "0.2.205",
+                  "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+                  "server_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
+                  "evidence": [
+                    ".research/daily-guest-20261008.json",
+                    ".research/daily-guest-409-peer-20261008.json"
+                  ],
+                  "detail": "Independent bounded failure on publicCRX unpacked: first and same-conversation turns returned grounded terminal answers. After panelreload, distinct newconversation initialHTTP200 and correct get_page_text result were followed by continuationHTTP409 and zero visibleassistantanswers for180seconds. All3resourcejournals valid; server stable. Refusalcode/rootcause unproven. Not actualStoreUIinstallation or wholeChat."
+                }
+              },
+              "superseded_at": "2026-10-08T11:48:19+00:00",
+              "reason": "Superseded for this bounded original reproduction by independently adjudicated run 37770686993; the prior failure remains preserved as historical evidence."
             }
           ],
           "attempt_history": [
@@ -32943,6 +32964,24 @@
                 ".research/guest409-live-retest-peer-20261008.json"
               ],
               "detail": "Immediate409 no longer reproduced, but same postreload userreproduction fails with ConversationResumeRuntimeError after completedpage tool; no completedassistantanswer. First/followup pass, no recovery."
+            },
+            {
+              "at": "2026-10-08T11:39:16Z",
+              "mode": "guest",
+              "run_id": "37770686993",
+              "status": "pass",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "build_version": "0.2.205 public CRX adapted unpacked",
+              "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+              "server_sha": "32f3a398789e0a56b590089ff47b90aff6abe159",
+              "evidence": [
+                ".research/guest-position-fix-live-retest-20261008.json",
+                ".research/guest-position-native-adjudication-20261008.json",
+                ".research/guest-position-fix-live-peer-20261008.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37770686993"
+              ],
+              "detail": "Bounded original reproduction passes on the published 0.2.205 CRX loaded as an adapted unpacked extension. Three signed-out guest turns produced distinct page-grounded terminal answers: opening, same-conversation follow-up, and a new conversation after full panel reload. All three current-run resource journals were valid; the artifact tree was unchanged and the live server SHA was stable. The independent adjudication refutes the cross-turn stage-criteria objection: the final diagnostic describes the post-reload code-and-heading prompt, while the stage-order assertion belongs to the separately checked opening turn. This does not establish Chrome Web Store UI installation, whole Chat feature health, or current development 0.2.407 health."
             }
           ]
         },
