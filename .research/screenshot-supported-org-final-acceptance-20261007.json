@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "lane": "fresh independent screenshot verifier",
+  "zero_authorship": true,
+  "source_review_commits": [
+    "51f609175bd961ce6b4f79f2e287da994f8bdc04",
+    "c1bad05f2be40b6e1a00bde2e8f8686d059be0ab",
+    "76521c6b6099e417b77a03da10e32c3b159a46ce"
+  ],
+  "findings_addressed": {
+    "canonical_account_choice_without_device_override": "source pass; native approved organization selection pass",
+    "exact_enabled_owned_grant_selector": "source pass; UI execution not reached"
+  },
+  "verdict_a": {
+    "status": "partial",
+    "retained_grant_service_cleanup": "failed before revoke: owner_gated_exact_file_grant_not_unique",
+    "full_requested_native_targets": "unverified; stopped at first causal failure"
+  },
+  "verdict_b": {
+    "status": "pass",
+    "reason": "Organization selection accepts absent device override while matching any present ID; actual share RPC headers remain verified. Recovery requires real actor and exact file/grant/creation proof before canonical revoke and reread. Exact enabled grant pointer excludes historical disabled rows."
+  },
+  "run_id": "screenshot-supported-org-grant-cleanup-20261007",
+  "resource_journal": "docs/stabilization/resource-journals/screenshot-supported-org-grant-cleanup-20261007.jsonl",
+  "runtime_report": "test-results/screenshot-full-page-d7c0af4b-79e0-4d13-8245-68d7ba52c612.json",
+  "runtime_report_sha256": "d5407be61a32d8dfe5176f6a91c2e3e15ad5e46f2f96d48a531bf4dafea868e4",
+  "build": {
+    "version": "0.2.397",
+    "treeSha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+    "runId": 37727998755,
+    "runAttempt": 1,
+    "artifactId": 11528732938,
+    "githubArtifactDigest": "sha256:e996032fdecac4e515632f242962856351703cc22bcaad9e945d6a7c9b90ddff",
+    "source": {
+      "originMain": "a8387df5d599eef76891287d9842e65454a301e1",
+      "localHead": "da3645dea57d4f71f2688be22c6d61acb317735a",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "organization_selection": {
+    "globalActingAsLabelCount": 1,
+    "originalComboboxCount": 1,
+    "originalPickerMatchesApproved": true,
+    "originalPickerTextSha256": "61e154af11cd32c0501d6c5754026e618b50a7b726adfd0c915cd3882a7dd64a",
+    "organizationSectionPresent": true,
+    "scopedActingAsLabelCount": 1,
+    "scopedComboboxCount": 1,
+    "scopedPickerMatchesApproved": true,
+    "persistedNameMatchesApproved": false,
+    "persistedEntryPresent": false,
+    "persistedNamePresent": false,
+    "persistedIdPresent": false,
+    "persistedIdMatchesApproved": false,
+    "persistedNameSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "persistedIdSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uiErrorCount": 0,
+    "uiErrorTextSha256": []
+  },
+  "failure": {
+    "stage": "retained_owned_grant_service_recovery",
+    "code": "retained_owned_grant_cleanup_unverified",
+    "diagnostic": {
+      "runtimeCode": null,
+      "timeout": false,
+      "assertion": false,
+      "viewerStep": null,
+      "pointerTarget": {
+        "kind": "option",
+        "target": "private_label",
+        "targetSha256": "61e154af11cd32c0501d6c5754026e618b50a7b726adfd0c915cd3882a7dd64a",
+        "phase": "release_returned"
+      },
+      "pointerDiagnostic": null,
+      "pointerCode": null
+    }
+  },
+  "retained_grant_service_cleanup": {
+    "failure": "owner_gated_exact_file_grant_not_unique"
+  },
+  "owned_jobs": "terminal valid; child exit 1; no retry or subsequent browser job",
+  "private_recovery": "retained; no revoke attempted",
+  "limitations": [
+    "Service check combines status and exact row count; cannot distinguish HTTP failure from absent exact grant.",
+    "No Store installation/publication claim."
+  ],
+  "next_action": "Read-only exact retained-grant state and bounded service diagnostics before re-verification."
+}
