@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "review_scope": "Independent adjudication of one hosted native admin Records C02 run, its exact raw receipt and current-run journals, and the workflow driver versus the frozen development414 extension artifact.",
+  "evidence_identity": {
+    "run_id": 37806859039,
+    "run_sha": "38ec4a2ad4a77155351b358c05ab868617297fca",
+    "run_interval_utc": [
+      "2026-10-08T16:11:45Z",
+      "2026-10-08T16:18:19Z"
+    ],
+    "artifact_id": 11563093896,
+    "artifact_digest": "sha256:078eaf41bedec7e3bba5e9ad209f1ad2aa6ec1d2189f4e67cd49be25d69450d4",
+    "raw_receipt_sha256": "0e8cec6e4920c60cdf7c1c7794710d8f00ab6c0269385e89b678a203b0d32b9d",
+    "current_journals": {
+      "package": "sha256:35c5c36ba8d183eaee6572c84484e4acc9ce0c0aa213c9b41bfa737afa75a1cd",
+      "browser": "sha256:48e6afbcd710ca91148fd3a15f041063af847218c98c3222b725f3e0617c13c7",
+      "guest": "sha256:eacf49ef66a9e41e40a60ff45f36bf0e88ca630a11fb538ed395be30600c1389"
+    },
+    "raw_hash_verification": "PASS. Programmatic SHA-256 and byte-count checks matched every curated raw file in artifact-manifest.json and every raw_evidence entry in the formatted report. Hashes were computed over original file bytes; parsed/reformatted JSON was not treated as equivalent raw evidence."
+  },
+  "verdict_a_native_acceptance": {
+    "verdict": "BOUNDED PASS",
+    "basis": "The exact current-run native-receipt.json records a visible successful table_list for the approved organization (50 tables), a finished HTTP 200 request matching the authenticated principal and organization, then a visible finished HTTP 200 invalid_arguments refusal whose message names limit. It records Page.reload followed by matching admin identity, organization, principal, and a further visible successful table_list result. Failure code is null.",
+    "independent_checks": "The three run journals each show RESOURCE_ADMITTED, child exit 0, resourceInvalid false, and final decision valid. The run/job metadata identify workflow_dispatch run 37806859039 on main at 38ec4a2ad4a77155351b358c05ab868617297fca. The report's receipt claims correlate to the byte-hash-verified raw receipt.",
+    "claim_limit": "This establishes one bounded admin C02 action only. Records T01 remains partial; member, Store installation, later-main product behavior, and owned-table visibility are unverified."
+  },
+  "verdict_b_driver_and_product_boundary": {
+    "verdict": "PASS for this bounded driver contract",
+    "driver_source": {
+      "workflow_checkout_sha": "38ec4a2ad4a77155351b358c05ab868617297fca",
+      "records_driver_blob": "e27e6bdcdfa2ab9261fd9297d089555d55b30960",
+      "wrapper_blob": "1ffa59426e5a684243c9c6b1e557b4e2d435b894",
+      "route_blob": "aa7127717dd805e281e66552fe592fa47912bf2d",
+      "implementation_commit_is_ancestor": true
+    },
+    "frozen_product": {
+      "version": "0.2.414",
+      "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+      "artifact_id": 11556064167,
+      "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046"
+    },
+    "adjudication": "The workflow driver is sourced from the later checkout, while the installed extension under test is the exact frozen 0.2.414 artifact. The driver verifies the artifact tree/version; observes a single finished request with exact body, organization and bearer-hash match; extracts one correlated full_result completion; and requires visible output deep-equal to that completion. The invalid result must be false/invalid_arguments and name limit. It explicitly reloads the panel, checks restored admin identity/organization and unchanged bearer hash, then requires another positively matched read. This guards against stale visible success for the negative step."
+  },
+  "backend_and_cleanup": {
+    "backend_samples": "HTTP 200 at 2026-10-08T16:11:24.966102Z and 2026-10-08T16:19:32.049477Z reported the same git_sha 8924a396d490558ec31253b2a3db3dc3b32655e9. The native Records requests ran between those observations. The sampled endpoint payload has no built_at timestamp, so the samples do not establish the exact backend SHA/build serving each request.",
+    "secret_names": "The read-only current process environment-name listing found MATRX_PREPARE_ADMIN_CREDENTIALS_JSON and MATRX_PROFILE_APPROVED_ORGANIZATION_JSON absent; no values were read or printed. Separately, the read-only repository secret-name listing at repository_secret_names_observed_at_utc found both GitHub repository secret names absent. Hosted wrapper source stages private files, sets the three secret JSON variables to undefined in the browser child’s environment, and removes staged admin/organization files in finally. The raw cleanup receipt confirms both staged files absent after terminal. Current local and repository listings are observations at their stated times, not post-run listings from the terminated hosted VM.",
+    "repository_secret_names_observed_at_utc": "2026-10-08T16:26:53Z",
+    "repository_secret_listing": {
+      "method": "Read-only `gh secret list --json name`; output contained names only, no values.",
+      "absent_names": [
+        "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+        "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+      ],
+      "interpretation": "Both requested GitHub repository secret names were absent from the repository-level listing at the observation time. This is separate from the hosted run’s child-environment unsetting and staged-file cleanup."
+    }
+  },
+  "limitations": "No new browser, job, build, compile, source edit, or test execution was performed. This adjudication accepts the recorded native run within its bounded scope and does not certify whole Records T01 or other roles/install channels.",
+  "references": [
+    ".research/records-validation-reload-native-20261008-1614.json",
+    ".research/records-validation-reload-native-20261008-1614/raw/native-receipt.json",
+    ".research/records-validation-reload-native-20261008-1614/raw/hosted-package-37806859039-1.jsonl",
+    ".research/records-validation-reload-native-20261008-1614/raw/hosted-browser-37806859039-1.jsonl",
+    ".research/records-validation-reload-native-20261008-1614/raw/hosted-guest-37806859039-1.jsonl",
+    "tests/browser/records-readonly-native-acceptance.mjs",
+    "tests/browser/records-readonly-native-proof.mjs",
+    "scripts/hosted-guest-acceptance.mjs",
+    "scripts/hosted-showcase-route.mjs"
+  ]
+}

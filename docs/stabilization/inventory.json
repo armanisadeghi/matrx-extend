@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T16:13:38.966554+00:00",
+  "updated_at": "2026-10-08T16:31:38.406450+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -64028,6 +64028,30 @@
             "admin": {
               "status": "partial",
               "passed_subtargets": [
+                "C02 real table_list include_app_tables=true with exact input/request and correlated visible successful completion",
+                "C02 malformed limit produces correlated finished invalid_arguments failure naming limit and matching visible error",
+                "Full Page.reload restores admin identity/organization and a subsequent correlated successful table_list read"
+              ],
+              "unverified_dimensions": [
+                "C02 owned-created-table visibility",
+                "non-admin mode",
+                "remaining Records controls C01 and C03-C25"
+              ],
+              "run_id": "37806859039",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/records-validation-reload-native-20261008-1614.json",
+                ".research/records-validation-live-peer-20261008-1625.json"
+              ],
+              "release_scope": "Bounded admin C02 acceptance on frozen development0.2.414; workflow38ec4a2a differs from product sourcee7b7dc1e. All three current resource journals valid. Backend8924a396 sampled before/after only, not bound per request. No member, other-action, latest-main or Store acceptance."
+            }
+          },
+          "result_history": [
+            {
+              "mode": "admin",
+              "status": "partial",
+              "passed_subtargets": [
                 "C02 real table_list include_app_tables=true with exact input/request and correlated visible successful completion"
               ],
               "unverified_dimensions": [
@@ -64046,7 +64070,7 @@
               ],
               "release_scope": "One authenticated native read on frozen development414. Backend SHA88fbdae6fb22e43d7bef8c4641d54372ca7af4a3 sampled after run only; no request-time deployed-source binding. Not full case, latest-main or Store acceptance."
             }
-          }
+          ]
         },
         {
           "id": "EXT-F-4130-T02",

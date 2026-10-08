@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "native_upload": {
+    "id": 11563093896,
+    "name": "hosted-guest-37806859039-1",
+    "expired": false,
+    "digest": "sha256:078eaf41bedec7e3bba5e9ad209f1ad2aa6ec1d2189f4e67cd49be25d69450d4",
+    "size_in_bytes": 65894
+  },
+  "frozen_development_artifact": {
+    "id": 11556064167,
+    "name": "matrx-extend-development-test-e7b7dc1ecae946369cebb482915faf7ef792c692-37790643945-1",
+    "expired": false,
+    "digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "size_in_bytes": 41816589
+  },
+  "curated_files": [
+    {
+      "path": "artifacts.raw.json",
+      "bytes": 737,
+      "sha256": "cc057cb47569fe06f32fa454a4e92be35f4a23003af9eabdd6af888f691f04e1"
+    },
+    {
+      "path": "backend-version-after.json",
+      "bytes": 152,
+      "sha256": "840f117455aad11efe8a3e264af1ed35b2a4e81c3e15379a5dddbc73c39477bf"
+    },
+    {
+      "path": "backend-version-before.json",
+      "bytes": 151,
+      "sha256": "a9a0429d9a71dad284041f8426d39637eff9802f6000123e24b69d36935b284e"
+    },
+    {
+      "path": "focused-ci.raw.json",
+      "bytes": 324,
+      "sha256": "7f953cd0183eb0888f47e9224d47aeb6a9acdacf9fecb787fe9edd0688289dfc"
+    },
+    {
+      "path": "hosted-browser-37806859039-1.jsonl",
+      "bytes": 984,
+      "sha256": "48e6afbcd710ca91148fd3a15f041063af847218c98c3222b725f3e0617c13c7"
+    },
+    {
+      "path": "hosted-guest-37806859039-1.jsonl",
+      "bytes": 1813,
+      "sha256": "eacf49ef66a9e41e40a60ff45c36bf0e88ca630a11fb538ed395be30600c1389"
+    },
+    {
+      "path": "hosted-package-37806859039-1.jsonl",
+      "bytes": 1001,
+      "sha256": "35c5c36ba8d183eaee6572c84484e4acc9ce0c0aa213c9b41bfa737afa75a1cd"
+    },
+    {
+      "path": "jobs.raw.json",
+      "bytes": 4375,
+      "sha256": "93c63ee9837439c5604c3830652719c8a3e1f0bfe09bf12d5661b678f0158a0f"
+    },
+    {
+      "path": "local-secret-cleanup.json",
+      "bytes": 70,
+      "sha256": "b0a9a0d5d4dccfa499b19460dc727a3d9e317d82062cbd3db59a44b6aae3ee37"
+    },
+    {
+      "path": "native-receipt.json",
+      "bytes": 2255,
+      "sha256": "0e8cec6e4920c60cdf7c1c7794710d8f00ab6c0269385e89b678a203b0d32b9d"
+    },
+    {
+      "path": "run.raw.json",
+      "bytes": 4030,
+      "sha256": "33074f56dd6d9eb58affe5673dfe5a0f19096fe091f766fbf7ec268ab3d6015c"
+    },
+    {
+      "path": "source-artifacts.raw.json",
+      "bytes": 798,
+      "sha256": "9e4d6e339829b6ff2af38829f19bf1128a25b1840d02dff4c5e04d43bf1dafe7"
+    },
+    {
+      "path": "source-run.raw.json",
+      "bytes": 308,
+      "sha256": "96c7892c3e7e30ddfc7734cfc87d219538524b86c728613798ee4a99b77222bf"
+    }
+  ],
+  "curation": "Copied the run receipt and only the three current-run journals byte-for-byte from the uploaded artifact. Two prior-run journal sets in the uploaded artifact and two setup screenshots are not acceptance evidence and were not copied."
+}
