@@ -165,6 +165,11 @@ const negativeInputs = [
   { action: 'record_read', args: { record_id: 'not-a-uuid' } },
   { action: 'record_aggregate', args: { table_id: 'not-a-uuid', measure: 'count' } },
   { action: 'record_history', args: { record_id: 'not-a-uuid' } },
+  { action: 'record_delete', args: { record_id: 'not-a-uuid' } },
+  {
+    action: 'record_restore_version',
+    args: { record_id: '00000000-0000-4000-8000-000000000001', version: 'not-an-integer' },
+  },
 ];
 const negativeResult = (field) => ({
   success: false,
@@ -278,6 +283,8 @@ const defaultCompletions = [
   negativeResult('record_id'),
   negativeResult('table_id'),
   negativeResult('record_id'),
+  negativeResult('record_id'),
+  negativeResult('version'),
   positiveOwnedList(),
   positiveOwnedSearch(),
   rowTextNotStructure(),
@@ -287,7 +294,15 @@ const defaultCompletions = [
 ];
 const tableListSchema = (visibilityField = 'include_platform_tables') => ({
   action: {
-    enum: ['table_list', 'metadata_search', 'record_read', 'record_aggregate', 'record_history'],
+    enum: [
+      'table_list',
+      'metadata_search',
+      'record_read',
+      'record_aggregate',
+      'record_history',
+      'record_delete',
+      'record_restore_version',
+    ],
   },
   $variants: {
     table_list: {
@@ -299,6 +314,8 @@ const tableListSchema = (visibilityField = 'include_platform_tables') => ({
     record_read: { record_id: { type: 'string' } },
     record_aggregate: { table_id: { type: 'string' } },
     record_history: { record_id: { type: 'string' } },
+    record_delete: { record_id: { type: 'string' } },
+    record_restore_version: { record_id: { type: 'string' }, version: { type: 'integer' } },
   },
 });
 
@@ -342,6 +359,7 @@ function runDriver({
     result: null,
     metadata_search: null,
     negative_reads: [],
+    negative_mutations: [],
     positive_reads: [],
     fixture_cleanup: null,
     fixture_diagnostics: [],
@@ -602,6 +620,30 @@ test('actual callback requires finished matching success, refusal, and post-relo
       },
     ],
   );
+  assert.deepEqual(
+    scenario.report.negative_mutations.map(
+      ({ inventory_case, action, error_class, positive_read_verified }) => ({
+        inventory_case,
+        action,
+        error_class,
+        positive_read_verified,
+      }),
+    ),
+    [
+      {
+        inventory_case: 'EXT-F-4130-C07',
+        action: 'record_delete',
+        error_class: 'invalid_arguments',
+        positive_read_verified: false,
+      },
+      {
+        inventory_case: 'EXT-F-4130-C09',
+        action: 'record_restore_version',
+        error_class: 'invalid_arguments',
+        positive_read_verified: false,
+      },
+    ],
+  );
   assert.equal(scenario.active.size, 0);
   assert.deepEqual(
     scenario.report.positive_reads.map((row) => row.inventory_case),
@@ -832,7 +874,7 @@ test('metadata search rejects unrelated matches, wrong echo, and false success',
   }
 });
 
-test('actual callback refuses malformed read inputs with their own field named', async () => {
+test('actual callback refuses malformed read and mutation inputs before fixture writes', async () => {
   const base = [
     positive('appointments'),
     refusal,
@@ -842,12 +884,16 @@ test('actual callback refuses malformed read inputs with their own field named',
     negativeResult('record_id'),
     negativeResult('table_id'),
     negativeResult('record_id'),
+    negativeResult('record_id'),
+    negativeResult('version'),
   ];
   for (const [index, field, action] of [
     [4, 'query', 'metadata_search'],
     [5, 'record_id', 'record_read'],
     [6, 'table_id', 'record_aggregate'],
     [7, 'record_id', 'record_history'],
+    [8, 'record_id', 'record_delete'],
+    [9, 'version', 'record_restore_version'],
   ]) {
     for (const [bad, failure] of [
       [{ success: true, output: { action } }, /false_success/],
@@ -862,13 +908,14 @@ test('actual callback refuses malformed read inputs with their own field named',
       const scenario = runDriver({ completions });
       await assert.rejects(scenario.run(), failure);
       assert.equal(scenario.runs, index + 1);
-      assert.equal(scenario.report.negative_reads.length, index - 4);
+      assert.equal(scenario.report.negative_reads.length, Math.min(index - 4, 4));
+      assert.equal(scenario.report.negative_mutations.length, Math.max(index - 8, 0));
       assert.equal(scenario.active.size, 0);
     }
   }
 });
 
-test('negative read action or field missing from live card contract refuses before negative calls', async () => {
+test('negative action or field missing from live card contract refuses before negative calls', async () => {
   const baseline = tableListSchema();
   for (const serverSchema of [
     {
@@ -877,9 +924,11 @@ test('negative read action or field missing from live card contract refuses befo
     },
     { ...baseline, $variants: { ...baseline.$variants, record_aggregate: {} } },
     { ...baseline, $variants: { ...baseline.$variants, record_history: {} } },
+    { ...baseline, $variants: { ...baseline.$variants, record_delete: {} } },
+    { ...baseline, $variants: { ...baseline.$variants, record_restore_version: {} } },
   ]) {
     const scenario = runDriver({ serverSchema });
-    await assert.rejects(scenario.run(), /records_negative_read_contract_drift/);
+    await assert.rejects(scenario.run(), /records_negative_wire_contract_drift/);
     assert.equal(scenario.runs, 4);
     assert.deepEqual(scenario.report.negative_reads, []);
     assert.equal(scenario.active.size, 0);
@@ -965,6 +1014,8 @@ test('successful callback retains all exact completion guards and safe shapes', 
       null,
       'table_list',
       'metadata_search',
+      null,
+      null,
       null,
       null,
       null,

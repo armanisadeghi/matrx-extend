@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "scope": "EXT-F-4130-C06/C07/C09 owned Records mutation preparation",
+  "status": "safe_negative_boundaries_ready_positive_batch_blocked_on_approval_cleanup",
+  "source_contract": {
+    "deployed_server_sha_sample": "980226cf48b0e8606ed41d8fb48be0bfbfbd759d",
+    "inspected_records_source_diff_from_sample_to_local_head": "none for tool, wire args, store client, and tool-test route",
+    "inventory": "C06 is record_write; C09 requires applied update, changed readback, original-version restore and restored readback; C07 requires final record_delete and absence.",
+    "approval_boundary": "The Records tool dispatches with Actor.agent. The existing disposable table is created by the signed-in person through REST, not claimed as this tool-test conversation's agent table. record_propose, record_restore_version, and record_delete each consult custom.agent_change_approval; the default ask policy can return applied=false with awaiting_approval=true. The current browser harness has no verified cancel/decline route for a held approval."
+  },
+  "implemented": "The real manual Tools callback now verifies the live card contract and invalid_arguments refusal for malformed C07 record_delete and C09 record_restore_version before fixture writes. These remain negative wire evidence only, recorded separately from positive reads. C06's unknown-field negative was intentionally omitted because its wire model accepts the object and the downstream refusal is not deterministic.",
+  "forcing_guards": "The driver rejects false success, wrong error class, missing field name, missing live action/field contract, and verifies a refused malformed mutation cannot reach the fixture callback or earn positive credit.",
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-positive-fixture.test.mjs",
+    "result": "44 passed, 0 failed; a test completion-order mismatch was caught and fixed before the final green run.",
+    "format": "Biome check on the two owned browser files passed."
+  },
+  "next_decision": "Establish an authorized, verified held-approval cancellation path or a disposable agent-owned table provenance with equivalent durable cleanup before sending a positive C06/C09/C07 native mutation. Never treat held or pending as applied, and never change the organization's approval preference to force the test.",
+  "limits": "No positive mutation was authored or run, no API Actions were used, and no credential, native, build, or release work occurred. Existing accepted C02/C03/C04/C05/C08 evidence remains unchanged."
+}
