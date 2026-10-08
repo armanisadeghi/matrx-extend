@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "source_run_id": 37804469749,
+  "source_receipt": ".research/t57-arm-414-native-20261008-1552-originals/raw/receipt.raw.json",
+  "scope": "Source diagnosis and bounded public-race driver repair only; no native rerun, product change, build, or release.",
+  "observed": {
+    "failure_stage": "public_race_release",
+    "failure_code": "public_current_binding_packet_not_observed",
+    "old_and_labeled_current_share_loader": "D6A962355576453464EFF09FBBB3BB61",
+    "separate_current_loader_in_contexts": "43BCA86BE9D692A1E7DEE0A7C4A1F32D",
+    "third_target_rejected_as_extra": 1,
+    "old_lifecycle": "failed",
+    "labeled_current_lifecycle": "finished",
+    "labeled_current_release": "continued",
+    "current_binding_matches_labeled_response": false,
+    "saved_result": null
+  },
+  "cause": "The driver assigned the second matching response to the current slot by arrival order before checking its Network loader. The native receipt proves that response was another old-document request. The actual new-document response was therefore rejected as an extra target, and the binding assertion compared against the wrong document. This is a driver classification defect; the receipt does not establish a product capture defect.",
+  "repair": "Reserve response slots synchronously by Network loader before asynchronous body reads; continue duplicate prior-document target responses unchanged and count them separately. Preserve exact URL/body identity, response hash, lifecycle, binding, and cleanup predicates.",
+  "verification": {
+    "red": "node --test --test-name-pattern='a second prior-document response' tests/browser/showcase-d47-public-race-preflight.test.mjs: public_race_current_ambiguous (3 !== 2) before repair",
+    "green": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs: 14 pass, 0 fail after repair",
+    "format": "pnpm exec biome check on both changed helper files: pass",
+    "compile": "pnpm compile: blocked by pre-existing missing @ai-matrx/media/react useReadAloud, @ai-matrx/chat/host createMemoryNavigation, @ai-matrx/media/speech and dependent implicit-any errors outside changed files"
+  },
+  "limits": "The rejected third target's request identity and response hash were not retained in the original receipt, so its exact match to the old request and its binding remain unverified. No native rerun was authorized for this lane. T57 stays unverified.",
+  "next_action": "On the next authorized exact-artifact native run, confirm paused[0] and paused[1] have distinct loaders and matching identity hashes, duplicate-prior counter records any extra old response, current binding matches the released response hash, and the exact saved result settles. If current identity mismatches, inspect that sanitized counter before changing the strict predicate."
+}

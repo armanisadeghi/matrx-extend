@@ -317,6 +317,64 @@ test('controller continues original paused responses in order and disables inter
   );
 });
 
+test('a second prior-document response cannot occupy the current-document slot', async () => {
+  const cdp = new EventEmitter();
+  const continued = [];
+  cdp.send = async (method, args) => {
+    if (method === 'Page.getFrameTree')
+      return { frameTree: { frame: { id: 'main', loaderId: 'initial' } } };
+    if (method === 'Runtime.enable')
+      queueMicrotask(() =>
+        cdp.emit('Runtime.executionContextCreated', {
+          context: { uniqueId: 'initial-context', auxData: { isDefault: true, frameId: 'main' } },
+        }),
+      );
+    if (method === 'Fetch.getResponseBody') return { body: '{"hits":[]}', base64Encoded: false };
+    if (method === 'Fetch.continueRequest') continued.push(args.requestId);
+    return {};
+  };
+  cdp.detach = async () => {};
+  const controller = await createPublicRacePreflight(
+    { context: () => ({ newCDPSession: async () => cdp }) },
+    {},
+    '/1/indexes/Item_dev/query',
+    100,
+  );
+  const pause = (networkId, loaderId) => {
+    cdp.emit('Network.requestWillBeSent', { requestId: networkId, frameId: 'main', loaderId });
+    cdp.emit('Fetch.requestPaused', {
+      requestId: `hold-${networkId}`,
+      networkId,
+      responseStatusCode: 200,
+      request,
+    });
+  };
+  try {
+    cdp.emit('Page.frameNavigated', { frame: { id: 'main', loaderId: 'old' } });
+    cdp.emit('Runtime.executionContextCreated', {
+      context: { uniqueId: 'old-context', auxData: { isDefault: true, frameId: 'main' } },
+    });
+    pause('old-first', 'old');
+    await controller.oldPaused();
+    pause('old-second', 'old');
+    cdp.emit('Page.frameNavigated', { frame: { id: 'main', loaderId: 'current' } });
+    cdp.emit('Runtime.executionContextCreated', {
+      context: { uniqueId: 'current-context', auxData: { isDefault: true, frameId: 'main' } },
+    });
+    pause('new', 'current');
+    await controller.currentPaused();
+    pause('old-third', 'old');
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(controller.facts.paused[1].loader_id, 'current');
+    assert.equal(controller.facts.unmatched_target_count, 0);
+    assert.ok(continued.includes('hold-old-second'));
+    assert.ok(continued.includes('hold-old-third'));
+    assert.equal(controller.facts.pause_rejections.target_duplicate_prior_document, 2);
+  } finally {
+    await controller.cleanup();
+  }
+});
+
 test('missing old response records the first failing CDP boundary without exposing traffic', async () => {
   const observe = async (networkSeen, bodyAvailable) => {
     const cdp = new EventEmitter();
@@ -671,6 +729,7 @@ const valid = {
     { step: 'current', outcome: 'continued' },
   ],
   unmatched_target_count: 0,
+  continuation_rejections: { non_target: 0, target: 0 },
   cleanup: 'disabled_detached',
   old_paused_before_replay: true,
   extension_capture_at_current_pause: true,
@@ -694,6 +753,7 @@ test('preflight requires two matching real request identities, new document and 
     { contexts: [valid.contexts[0], { ...valid.contexts[1], unique_id: 'old-context' }] },
     { release_attempts: [...valid.release_attempts].reverse() },
     { unmatched_target_count: 1 },
+    { continuation_rejections: { non_target: 0, target: 1 } },
     { cleanup: 'unverified' },
     { old_paused_before_replay: false },
     { extension_capture_at_current_pause: false },

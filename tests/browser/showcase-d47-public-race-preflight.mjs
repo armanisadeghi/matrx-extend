@@ -78,6 +78,7 @@ export function assessPublicRacePreflight(facts) {
     !['captured_initial_request', 'honest_retrigger_guidance'].includes(facts.terminal_outcome) ||
     facts.capture_probe_cleanup !== 'removed_detached' ||
     facts.unmatched_target_count !== 0 ||
+    facts.continuation_rejections.target !== 0 ||
     facts.cleanup !== 'disabled_detached'
   )
     return 'unverified';
@@ -237,6 +238,8 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       target_without_network: 0,
       target_outside_main_frame: 0,
       target_unexpected_status_or_extra: 0,
+      target_duplicate_prior_document: 0,
+      target_current_identity_mismatch: 0,
       target_body_unavailable: 0,
     },
     continuation_rejections: { non_target: 0, target: 0 },
@@ -250,6 +253,7 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
   report.public_race_preflight = facts;
   const requests = new Map();
   const held = new Map();
+  const slots = [];
   const terminal = new Map();
   const passthrough = new Set();
   let enabled = false;
@@ -331,12 +335,33 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       status: event.responseStatusCode,
       lifecycle: terminal.get(event.networkId) ?? 'pending',
     };
-    if (facts.paused.length >= 2 || item.status !== 200) {
+    if (item.status !== 200) {
       facts.pause_rejections.target_unexpected_status_or_extra++;
       facts.unmatched_target_count++;
       continueUnmatched(event.requestId, target);
       return;
     }
+    if (slots.length > 0 && item.loader_id === slots[0].loader_id) {
+      facts.pause_rejections.target_duplicate_prior_document++;
+      continueUnmatched(event.requestId, target);
+      return;
+    }
+    if (slots.length >= 2) {
+      facts.pause_rejections.target_unexpected_status_or_extra++;
+      facts.unmatched_target_count++;
+      continueUnmatched(event.requestId, target);
+      return;
+    }
+    if (slots.length === 1 && item.identity_sha256 !== slots[0].identity_sha256) {
+      facts.pause_rejections.target_current_identity_mismatch++;
+      facts.unmatched_target_count++;
+      continueUnmatched(event.requestId, target);
+      return;
+    }
+    // Reserve by Network loader before the asynchronous response-body read.
+    // The public page can issue another matching request from its old document
+    // while the first body is still being read.
+    slots.push(item);
     held.set(event.requestId, item);
     try {
       const response = await cdp.send('Fetch.getResponseBody', { requestId: event.requestId });
@@ -350,7 +375,8 @@ export async function createPublicRacePreflight(page, report, expectedPath, time
       const bytes = Buffer.from(response.body, response.base64Encoded ? 'base64' : 'utf8');
       if (closed) return;
       item.response_sha256 = digest(bytes);
-      facts.paused.push(item);
+      while (slots[facts.paused.length]?.response_sha256)
+        facts.paused.push(slots[facts.paused.length]);
     } catch {
       if (closed) return;
       facts.pause_rejections.target_body_unavailable++;
