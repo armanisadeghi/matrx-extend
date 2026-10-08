@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0169",
+  "feature_id": "EXT-F-1008",
+  "status": "SOURCE_DIAGNOSTIC_READY_FOR_FRESH_PEER; NATIVE_BEHAVIOR_UNVERIFIED",
+  "starting_evidence": {
+    "peer": ".research/seo-social-failure-peer-20261008.json",
+    "native_run": "37734224612",
+    "finding": "The resource-valid guest run stopped after a trusted social copy click because the feedback poll saw false. It never read the clipboard or reached the T02 page mutation. No product copy failure or successful new coverage was proven.",
+    "cause_limit": "The title-only feedback selector is source-confirmed as incomplete because TooltipProvider may move title to data-matrx-title. The failed run did not establish that this particular mismatch caused its false sample."
+  },
+  "source_change": {
+    "selector": "The social preflight and feedback reader share the same dual-title button identity as the existing trusted click primitive, restricted to the linked SEO pane.",
+    "diagnostic": "After the trusted click and before the next permission change, bounded samples record only elapsed milliseconds, pane/button identity booleans, and Check/X/Copy booleans. Actual clipboard contents are read even when transient feedback is missed; raw text is never put into the new diagnostic receipt.",
+    "truth_guard": "A wrong clipboard or observed red X is a failed T14 subtarget; an unchanged already-matching clipboard is unverified. No T14 pass is recorded unless exact public-DOM-derived tags are newly observed in the clipboard. Every temporary clipboard-read permission is restored.",
+    "isolation": "A controlled T14 copy-predicate result can remain failed or unverified while the independent owned-page T02 mutation and trusted Re-audit proceed. Resource/lifecycle or other unexpected failures still propagate. The owned DOM mutation remains protected by finally; any T14 issue leaves overall status unverified and exit nonzero."
+  },
+  "source_validation": {
+    "green": "node --test tests/browser/seo-new-coverage-oracle.test.mjs: 5 pass, 0 fail; node --check tests/browser/seo-guest-acceptance.mjs passed; Biome check passed for touched source files.",
+    "red": "A scratch-copy mutation restoring the old title-only selector made the moved-title test fail (exit 1). Focused tests also reject wrong clipboard, observed failure icon, unchanged clipboard, stale audit, and continuation after a simulated guard stop.",
+    "automatic_ci": "The existing focused-acceptance job includes this oracle test and is triggered by tests/** changes; current commit result pending."
+  },
+  "native_execution": "PENDING_FRESH_PEER_REVIEW; no blind retry or inventory credit",
+  "limitations": [
+    "This is a runner oracle and diagnostic correction, not a proven product fix.",
+    "A source guard cannot prove whether the prior click wrote the clipboard; only a fresh authorized native run can distinguish selector, feedback, copy, and lifecycle outcomes.",
+    "No new T02/T14 runtime coverage or full SEO case/feature pass is claimed."
+  ],
+  "owned_paths": [
+    "tests/browser/seo-guest-acceptance.mjs",
+    "tests/browser/seo-new-coverage-oracle.mjs",
+    "tests/browser/seo-new-coverage-oracle.test.mjs",
+    ".research/seo-social-feedback-fix-20261008.json"
+  ]
+}

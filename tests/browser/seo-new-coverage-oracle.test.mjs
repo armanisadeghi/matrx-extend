@@ -2,8 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   expectedMissingSocialTags,
+  runCopyCheckThenRecapture,
+  socialCopyButtonObservation,
   verifyManualRecapture,
   verifySocialClipboard,
+  verifySocialCopyOutcome,
 } from './seo-new-coverage-oracle.mjs';
 
 const sparse = {
@@ -57,4 +60,78 @@ test('manual recapture oracle rejects a stale native audit after a changed publi
     () => verifyManualRecapture(sparse, changed, newAudit, newAudit),
     /old native audit remains before the trusted click/,
   );
+});
+
+test('social feedback finds a button whose title moved to data-matrx-title', () => {
+  const label = 'Copy the meta tags this page is missing';
+  const button = {
+    getAttribute: (key) => (key === 'data-matrx-title' ? label : null),
+    getBoundingClientRect: () => ({ width: 20 }),
+    querySelector: (selector) => (selector === 'svg.lucide-check' ? {} : null),
+  };
+  const pane = {
+    querySelectorAll: (selector) => (selector.includes('button[data-matrx-title]') ? [button] : []),
+  };
+  assert.deepEqual(socialCopyButtonObservation(pane, label), {
+    buttonCount: 1,
+    visible: true,
+    hasTitleAttr: false,
+    hasDataTitleAttr: true,
+    check: true,
+    failed: false,
+    idle: false,
+  });
+});
+
+test('copy outcome refuses failed feedback, wrong clipboard, and unchanged clipboard', () => {
+  const copied = expectedMissingSocialTags(sparse);
+  assert.deepEqual(
+    verifySocialCopyOutcome(copied, sparse, { feedbackFailed: false, previousClipboard: '' }),
+    { copiedTags: 5, exactClipboardMatch: true },
+  );
+  assert.throws(
+    () =>
+      verifySocialCopyOutcome('wrong', sparse, { feedbackFailed: false, previousClipboard: '' }),
+    { code: 'SOCIAL_CLIPBOARD_MISMATCH' },
+  );
+  assert.throws(
+    () => verifySocialCopyOutcome(copied, sparse, { feedbackFailed: true, previousClipboard: '' }),
+    { code: 'SOCIAL_COPY_FAILURE_FEEDBACK' },
+  );
+  assert.throws(
+    () =>
+      verifySocialCopyOutcome(copied, sparse, { feedbackFailed: false, previousClipboard: copied }),
+    { code: 'SOCIAL_CLIPBOARD_UNCHANGED' },
+  );
+});
+
+test('copy case failure continues independent recapture; guard stop does not', async () => {
+  const calls = [];
+  const result = await runCopyCheckThenRecapture(
+    async () => {
+      calls.push('copy-failed');
+      return { status: 'fail' };
+    },
+    async () => {
+      calls.push('recapture');
+      return { status: 'pass' };
+    },
+  );
+  assert.deepEqual(calls, ['copy-failed', 'recapture']);
+  assert.deepEqual(result, { copyResult: { status: 'fail' }, recaptureResult: { status: 'pass' } });
+  calls.length = 0;
+  await assert.rejects(
+    () =>
+      runCopyCheckThenRecapture(
+        async () => {
+          calls.push('guard-stop');
+          throw new Error('resource_stop');
+        },
+        async () => {
+          calls.push('recapture');
+        },
+      ),
+    /resource_stop/,
+  );
+  assert.deepEqual(calls, ['guard-stop']);
 });

@@ -25,6 +25,52 @@ export function verifySocialClipboard(actual, source) {
   return { copiedTags: expected.split('\n').length, exactClipboardMatch: true };
 }
 
+// This selector matches the native title click primitive: TooltipProvider may
+// move the title to data-matrx-title while the pointer is over the button.
+export function socialCopyButtonObservation(pane, label) {
+  const buttons = [
+    ...(pane?.querySelectorAll('button[title], button[data-matrx-title]') ?? []),
+  ].filter(
+    (button) => (button.getAttribute('title') ?? button.getAttribute('data-matrx-title')) === label,
+  );
+  const button = buttons.length === 1 ? buttons[0] : null;
+  return {
+    buttonCount: buttons.length,
+    visible: !!button && button.getBoundingClientRect().width > 0,
+    hasTitleAttr: !!button?.getAttribute('title'),
+    hasDataTitleAttr: !!button?.getAttribute('data-matrx-title'),
+    check: !!button?.querySelector('svg.lucide-check'),
+    failed: !!button?.querySelector('svg.lucide-x'),
+    idle: !!button?.querySelector('svg.lucide-copy'),
+  };
+}
+
+export function verifySocialCopyOutcome(actual, source, { feedbackFailed, previousClipboard }) {
+  let verified;
+  try {
+    verified = verifySocialClipboard(actual, source);
+  } catch {
+    throw Object.assign(new Error('social_clipboard_mismatch'), {
+      code: 'SOCIAL_CLIPBOARD_MISMATCH',
+    });
+  }
+  if (feedbackFailed)
+    throw Object.assign(new Error('social_copy_failure_feedback'), {
+      code: 'SOCIAL_COPY_FAILURE_FEEDBACK',
+    });
+  if (actual === previousClipboard)
+    throw Object.assign(new Error('social_clipboard_unchanged'), {
+      code: 'SOCIAL_CLIPBOARD_UNCHANGED',
+    });
+  return verified;
+}
+
+export async function runCopyCheckThenRecapture(copyCheck, recapture) {
+  const copyResult = await copyCheck();
+  const recaptureResult = await recapture();
+  return { copyResult, recaptureResult };
+}
+
 export function verifyManualRecapture(before, changed, stale, refreshed) {
   assert.notEqual(before.title, changed.title, 'owned public title changed before re-audit');
   assert.notEqual(
