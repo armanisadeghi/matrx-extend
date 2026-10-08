@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-08 07:54 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T06:30:08.992059+00:00. 205 features · 769 cases · 1351 controls · 171 linked defect records.
+Generated 2026-10-08 08:05 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T08:05:47.429235+00:00. 205 features · 769 cases · 1351 controls · 171 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 90 · Partial: 88 · Fail: 2 · Unverified: 1049 · N/A: 1.
-Unverified splits into **132 explicitly marked unverified** and **917 with no result record**.
+Applicable case-by-role slots: **1230** — Pass: 90 · Partial: 89 · Fail: 2 · Unverified: 1048 · N/A: 1.
+Unverified splits into **132 explicitly marked unverified** and **916 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 6 cases without steps, 6 without expected outcomes, 27 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -25,7 +25,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 8 pass · 5 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 8 partial · 0 fail · 24 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 8, partial 13, fail 0, unverified 70, n/a 0 | 9 |
-| [SEO](#seo) | 1 | 0 pass · 5 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 5, fail 0, unverified 37, n/a 0 | 2 |
+| [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 36, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
@@ -926,9 +926,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 14. **Controls:** 14.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0169, EXT-D-0170
+**Next:** Finish the missing criteria and repeat the partial case in the extension.
 
-**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (closed), [EXT-D-0169](defects/EXT-D-0169.json) (fixed), [EXT-D-0170](defects/EXT-D-0170.json) (fixed)
+**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (closed), [EXT-D-0169](defects/EXT-D-0169.json) (retest-pass), [EXT-D-0170](defects/EXT-D-0170.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -945,20 +945,22 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1008-T11 AI recommendation copy/regenerate/agent link | Unverified | Unverified | Unverified | EXT-F-1008-C11 |
 | EXT-F-1008-T12 Stage one SEO fix in Chat | Unverified | Unverified | Unverified | EXT-F-1008-C12 |
 | EXT-F-1008-T13 Stage all SEO fixes in Chat | Unverified | Unverified | Unverified | EXT-F-1008-C13 |
-| EXT-F-1008-T14 Copy missing social meta tags | Unverified | Unverified | Unverified | EXT-F-1008-C14 |
+| EXT-F-1008-T14 Copy missing social meta tags | Partial | Unverified | Unverified | EXT-F-1008-C14 |
 
 **Recorded case details and evidence:**
 
 - EXT-F-1008-T01 · guest: Partial.
   Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
-- EXT-F-1008-T02 · guest: Partial.
-  Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
+- EXT-F-1008-T02 · guest: Partial. Changed page title/description with old audit still visible before click; native audit title refreshed after trusted Re-audit. Description refresh has indirect subsequent clipboard evidence, not direct description-display proof.
+  Evidence / build / date recorded: 37746166364, ['.research/seo-controlled-native-20261008.json', '.research/seo-controlled-native-peer-20261008.json']
 - EXT-F-1008-T03 · guest: Partial.
   Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
 - EXT-F-1008-T07 · guest: Partial.
   Evidence / build / date recorded: 37708611887, ['.research/seo-intel-native-20261007.json', '.research/auth-repair-intel-native-peer-20261007.json']
 - EXT-F-1008-T09 · guest: Partial.
   Evidence / build / date recorded: 37731560399, ['.research/seo397-guest-native-20261007.json', '.research/seo397-native-peer-20261007.json']
+- EXT-F-1008-T14 · guest: Partial. Actual clipboard matched five then six independently expected tags; feedback observed before and after changed-page Re-audit.
+  Evidence / build / date recorded: 37746166364, ['.research/seo-controlled-native-20261008.json', '.research/seo-controlled-native-peer-20261008.json']
 
 
 ## Screenshots

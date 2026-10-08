@@ -7,8 +7,8 @@
   "title": "Dynamic public audit fixture blocks independent controlled copy and recapture cases",
   "severity": "S3: lost independent test coverage, product fault unconfirmed",
   "priority": "P1",
-  "state": "fixed",
-  "owner": "root/seo_controlled_native",
+  "state": "closed",
+  "owner": "root",
   "preconditions": [
     "Frozen development397/sourcecedcec02/CI37724859892/artifact11527132614; native driver9295e037 includes reviewed3dcf2903; hosted ARM laneA."
   ],
@@ -34,7 +34,9 @@
     ".research/seo-local397-native-20261008.json",
     ".research/seo-local397-peer-20261008.json",
     ".research/seo-controlled-batch-20261008.json",
-    ".research/seo-controlled-batch-peer-20261008.json"
+    ".research/seo-controlled-batch-peer-20261008.json",
+    ".research/seo-controlled-native-20261008.json",
+    ".research/seo-controlled-native-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -60,9 +62,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Actual driver reordered and original direct-return/swap/omission guard findings addressed; fresh source review confirms current structural order. Exact focused CI success. Native retest outstanding."
+    },
+    {
+      "at": "2026-10-08T08:05:47.429235+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent native evidence review accepts controlled guest copy/reaudit execution on frozen397; original timeout/sequence blockage did not recur."
+    },
+    {
+      "at": "2026-10-08T08:05:47.429235+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Stated bounded harness closure gate met: source peer plus valid native independent controlled targets; volatile T09 remains explicitly excluded and incomplete."
     }
   ],
-  "next_action": "Independent source peer accepted explicit controlled batch partition with default full scope preserved; one guarded hosted controlled native retest is owned. T09 remains separately tracked, not waived. No native closure before valid resource/build/target proof.",
+  "next_action": "Harness sequencing defect closed only for controlled partition. Continue incomplete T02/T14 dimensions and T09 separately; do not claim full SEO/current-main/Store health.",
   "closure_requirement": "Independent source review plus resource-valid native execution reaching controlledT02/T14; unstablepublicfixture still accurately reported. No producthealthpromotion from sourceordering alone.",
   "source_candidate": "ad3a7c3a394a07bf5ea2518d89073719e3b37b60",
   "review_rounds": [
@@ -91,14 +105,14 @@
     "review_commit": "0101dcec"
   },
   "latest_native_attempt": {
-    "run_id": "seo-local397-native-20261008",
+    "run_id": "37746166364",
     "auth_mode": "guest",
     "resource_valid": true,
-    "acceptance_credit": false,
-    "result": "Admitted child exited before browser/profile creation after artifact identity; zero targets. Playwright setup cause is source/environment inference because original exception absent. Corrected-runtime preflights refused disk floor; corrected browser never launched.",
+    "acceptance_credit": "bounded controlled T02/T14 subtargets only",
+    "result": "Feedback and actual clipboard before/after changed-title Re-audit pass. All three journals valid; frozen397 build identity unchanged. T09 volatile phases excluded, not passed.",
     "evidence": [
-      ".research/seo-local397-native-20261008.json",
-      ".research/seo-local397-peer-20261008.json"
+      ".research/seo-controlled-native-20261008.json",
+      ".research/seo-controlled-native-peer-20261008.json"
     ]
   }
 }
