@@ -1,0 +1,54 @@
+{
+  "id": "EXT-D-0173",
+  "feature_id": "EXT-F-1012",
+  "case_ids": ["EXT-F-1012-T57"],
+  "surface": "Hosted D47 acceptance infrastructure / organization checkpoint",
+  "auth_mode": "admin",
+  "title": "D47 native drivers omit verified organization UUID required by shared checkpoint",
+  "severity": "S2: acceptance infrastructure prevents testing; no product failure established",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/d47_org_handoff_fix",
+  "preconditions": [
+    "Frozen development0.2.407 CI37754055905 artifact11539827040; hosted workflow sourcefae3d07d",
+    "Canonical private approved organization fixture contains verified name and UUID; normal admin UI sign-in, no injected session or headers"
+  ],
+  "reproduction": [
+    "Run hosted-guest-acceptance case showcase-d47-public-admin on laneA with d47_public_race_preflight=true and the stated frozen artifact, using canonical private credential preflight and resource guards.",
+    "After real admin sign-in reaches organization stage, the D47 public initial-load driver calls runShowcaseOrganizationCheckpoint without requiredOrganizationId.",
+    "The checkpoint immediately asserts d87_approved_organization_id_required before invoking resourceAction or making a product organization request.",
+    "The D47 document-lifecycle driver has the same omission; the picker caller correctly passes both fields."
+  ],
+  "expected": "Every strict checkpoint caller forwards the verified fixture name and UUID; the checkpoint then validates actual product request identity without injecting organization state.",
+  "actual": "Both D47 callers pass only the name, so the strict shared checkpoint aborts before product verification. Native37767661089 records AssertionError at organization stage.",
+  "evidence": [
+    ".research/t57-preflight-repaired-native-20261008.json",
+    ".research/parallel-native-failure-peer-20261008.json"
+  ],
+  "evidence_limits": [
+    "Native37767661089 final guest resource envelope is invalid; native observations alone do not establish product behavior. Caller omission is independently source-confirmed.",
+    "No new T57 pass and no product organization defect inferred."
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T11:17:30.141094+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Native setup failure captured with independent receipt/source inspection."
+    },
+    {
+      "at": "2026-10-08T11:17:30.141094+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Both real D47 callers omit a newly required verified fixture UUID."
+    },
+    {
+      "at": "2026-10-08T11:17:30.141094+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Sol owns both caller repairs and causal wiring guard; independent review and native checkpoint remain required."
+    }
+  ],
+  "next_action": "Repair and independently review all caller handoffs, then one resource-valid original native test with actual matching product request/header lineage.",
+  "closure_requirement": "Original D47 path passes verified organization checkpoint in resource-valid native run and surrounding caller guard remains green; original product T57 result tracked separately."
+}
