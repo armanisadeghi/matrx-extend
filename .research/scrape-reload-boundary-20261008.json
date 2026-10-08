@@ -1,0 +1,30 @@
+{
+  "task": "scrape-reload-boundary-20261008",
+  "status": "no_safe_source_repair_proven",
+  "at_utc": "2026-10-08T09:29:00Z",
+  "native_run": 37755458660,
+  "frozen_source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+  "workflow_checkout_sha": "5fa2365acb72aa4b03dd971a98a64872e408b7b7",
+  "receipt": ".research/nonchat-native-batch-20261008-evidence/selected/scrape-guest-native-a926890f-d536-490a-987c-3c4ff6fec372.json",
+  "resource_result": "All three phases admitted without resource invalidation; package/browser exit 0, guest child exit 1. This is an acceptance failure, not a resource failure.",
+  "diagnosis": {
+    "first_failed_boundary": "Chrome management reload proof inside tests/browser/native-sidepanel-qa-harness.mjs before the replacement panel and post-reload Scrape cases",
+    "old_worker": "Pre-click version 0 uniquely correlated to old target and running/activated. Last update at 09:24:01.909Z is stopped/redundant with target omitted. Old panel/worker absent from final target snapshot; a detached old debugger host is still probeable. TargetDestroyed was not observed, but this is not required by the current execution predicate.",
+    "replacement_worker": "Distinct target was created and is the sole owned worker in final target snapshot, but its last ServiceWorker version 1 event at 09:24:01.589Z is starting/new. No running/activated event exists in the retained 9-event sequence, with zero dropped version events. Target presence and attachment do not prove execution readiness.",
+    "predicate_replay": "reloadExecutionRetired on the byte-exact receipt returns false. In-memory addition of only a same-identity replacement running/activated event returns true; removing old stopped/redundant from that counterfactual returns false. The missing proof is replacement activation, not debugger-host destruction.",
+    "causal_limit": "The receipt does not distinguish a replacement worker that never activated from one that activated but whose final version event was not delivered to this observer. No source alteration is justified by this single trace.",
+    "unsafe_patch_excluded": "Do not accept target absence, replacement target presence, or old stopped/redundant alone. Existing peer review identified a false-green when a destroyed-target alternative bypassed replacement execution proof; current AND predicate closes it. A longer timeout or retry is not causal repair."
+  },
+  "sibling_census": {
+    "canonical_helper": "tests/browser/reload-lifetime-diagnostic.mjs exports the only reloadExecutionRetired and startReloadLifetimeDiagnostic definitions",
+    "live_caller": "tests/browser/native-sidepanel-qa-harness.mjs calls the helper for full management reload; Scrape and Profile native acceptance share this harness boundary",
+    "capture_only": "tests/browser/profile-reload-capture.mjs sanitizes the lifecycle evidence without deciding acceptance",
+    "related_defects": "EXT-D-0163 and EXT-D-0164 were separate warm/empty-copy driver defects closed by native retest; EXT-D-0166 concerns intermittent missing replacement panel after a separately proven full worker transition and remains open. None supplies the missing activation event for this run."
+  },
+  "checks": [
+    "Live receipt replay: actual false; with only replacement running/activated true; with old retirement removed false.",
+    "node --test tests/browser/reload-execution-retirement.test.mjs tests/browser/reload-lifetime-diagnostic.test.mjs: 19 passed, 0 failed. Existing guard refuses replacement starting/new or stopped; these checks are source-only."
+  ],
+  "next_observation": "On an independently warranted guarded native run, capture an end-of-boundary fresh ServiceWorker version snapshot from a separate surviving CDP session and an exact replacement-worker execution/activation observation, with dropped-event accounting. If it remains new/starting, investigate Chrome/extension startup; if independently activated, localize missing delivery in the existing page CDP observer before changing the predicate. Preserve old stopped/redundant identity and all downstream panel/case checks.",
+  "verdict": "No repair, no case promotion, no product defect claim. This run demonstrates missing replacement execution proof, not an unavailable TargetDestroyed requirement."
+}
