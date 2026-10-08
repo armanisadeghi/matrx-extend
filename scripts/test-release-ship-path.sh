@@ -534,6 +534,8 @@ check "the package gate ran again on the new candidate" '[[ $(( $(grep -c "check
 check "the replaced candidate leaves no ERROR"         '! grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/catchup-out"'
 # An install that lags a lockfile which is already current is not a stop: the
 # update fixes the install and the same candidate is checked again in full.
+# The committed lockfile must be the current one: nothing for a catch-up to commit.
+git diff --quiet HEAD -- pnpm-lock.yaml package.json || git_q commit -m "fixture: settle lockfile" -- pnpm-lock.yaml package.json
 touch "$SANDBOX/stale-packages" "$SANDBOX/install-lag"; PKG_CHECKS_BEFORE="$(grep -c 'check:matrx-packages' "$SANDBOX/pnpm-calls")"
 LAG_STATUS=0; run_release install-lag-out || LAG_STATUS=$?
 rm -f "$SANDBOX/install-lag" "$SANDBOX/stale-packages"
