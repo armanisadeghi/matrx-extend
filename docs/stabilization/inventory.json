@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T15:48:53.830295+00:00",
+  "updated_at": "2026-10-08T16:01:34.134274+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -62021,7 +62021,7 @@
                   "limit": "not-an-integer"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "none",
               "guide_argument_contract": {
                 "limit": {
@@ -62042,7 +62042,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C03": {
               "action": "metadata_search",
@@ -62063,7 +62063,7 @@
                   "query": null
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "none",
               "guide_argument_contract": {
                 "query": {
@@ -62084,7 +62084,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C04": {
               "action": "record_read",
@@ -62104,7 +62104,7 @@
                   "record_id": "not-a-uuid"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "none",
               "guide_argument_contract": {
                 "record_id": {
@@ -62145,7 +62145,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C05": {
               "action": "record_aggregate",
@@ -62169,7 +62169,7 @@
                   "table_id": "not-a-uuid"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "none",
               "guide_argument_contract": {
                 "table_id": {
@@ -62235,7 +62235,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C06": {
               "action": "record_write",
@@ -62313,7 +62313,7 @@
                   "record_id": "not-a-uuid"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "undo=true is the supported reversal; final delete only after every read/history/restore dependent on the row",
               "guide_argument_contract": {
                 "record_id": {
@@ -62329,7 +62329,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C08": {
               "action": "record_history",
@@ -62349,7 +62349,7 @@
                   "record_id": "not-a-uuid"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "none",
               "guide_argument_contract": {
                 "record_id": {
@@ -62375,7 +62375,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C09": {
               "action": "record_restore_version",
@@ -62401,7 +62401,7 @@
                   "version": "not-an-integer"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "If the update applied, restore the case-created original version and verify the revert before final C07 delete; stop on held approval without verified cancellation.",
               "guide_argument_contract": {
                 "record_id": {
@@ -62432,7 +62432,7 @@
                 }
               },
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C10": {
               "action": "field_propose",
@@ -62455,7 +62455,7 @@
                   "name": "bad"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No field deletion action exists in 25-action Records contract; use disposable table and a verified table-removal door or retain isolated fixture",
               "guide_argument_contract": {
                 "table_id": {
@@ -62521,7 +62521,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C11": {
               "action": "table_propose",
@@ -62552,7 +62552,7 @@
                   "fields": "not-an-array"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No table deletion action in Records contract; require verified disposable table removal outside this tool before run",
               "guide_argument_contract": {
                 "name": {
@@ -62588,7 +62588,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C12": {
               "action": "form_propose",
@@ -62619,7 +62619,7 @@
                   "table_id": "not-a-uuid"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No form deletion action in Records contract; require verified form/archive removal by returned id",
               "guide_argument_contract": {
                 "title": {
@@ -62695,7 +62695,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C13": {
               "action": "booking_propose",
@@ -62730,7 +62730,7 @@
                   "table_id": "not-a-uuid"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No booking deletion action in Records contract; require verified booking removal by returned id",
               "guide_argument_contract": {
                 "title": {
@@ -62806,7 +62806,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C14": {
               "action": "import_propose",
@@ -62834,7 +62834,7 @@
                   "table_id": "not-a-uuid"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "Delete each actually created case-owned row by returned id; unresolved approval/candidate columns need explicit cancellation/removal",
               "guide_argument_contract": {
                 "table": {
@@ -62900,7 +62900,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C15": {
               "action": "dashboard_propose",
@@ -62933,7 +62933,7 @@
                   "blocks": "not-an-array"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No dashboard deletion action in Records contract; require verified dashboard removal by returned id",
               "guide_argument_contract": {
                 "name": {
@@ -62984,7 +62984,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C16": {
               "action": "pipeline_propose",
@@ -63015,7 +63015,7 @@
                   "stage_field": "not-an-object"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No board/rule/field deletion action in Records contract; require verified removal of all returned IDs",
               "guide_argument_contract": {
                 "table": {
@@ -63086,7 +63086,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C17": {
               "action": "document_propose",
@@ -63110,7 +63110,7 @@
                   "body": null
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No template/render deletion action in Records contract; require verified removal for each returned id",
               "guide_argument_contract": {
                 "title": {
@@ -63166,7 +63166,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C18": {
               "action": "checklist_propose",
@@ -63194,7 +63194,7 @@
                   "steps": "not-an-array"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No checklist deletion action in Records contract; require verified removal by returned id",
               "guide_argument_contract": {
                 "name": {
@@ -63255,7 +63255,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C19": {
               "action": "capture_propose",
@@ -63285,7 +63285,7 @@
                   "table_id": "not-a-uuid"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No capture deletion action in Records contract; require verified removal by returned id",
               "guide_argument_contract": {
                 "title": {
@@ -63346,7 +63346,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C20": {
               "action": "enrich_propose",
@@ -63377,7 +63377,7 @@
                   "columns": "not-an-array"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "NOT_EXECUTABLE until a verified removal path exists for the persisted field and enrichment configuration (and any held approval). run=false and preview_only=true do not provide cleanup.",
               "guide_argument_contract": {
                 "columns": {
@@ -63428,7 +63428,7 @@
               },
               "run_condition": "Do not execute until current live schema/guide and an owned table fixture are verified AND every created field/enrichment configuration and held proposal has a verified cleanup path; no model run does not mean no write.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C21": {
               "action": "portal_propose",
@@ -63457,7 +63457,7 @@
                   "tables": "not-an-array"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No portal/relation deletion action in Records contract; require verified removal by returned IDs",
               "guide_argument_contract": {
                 "title": {
@@ -63498,7 +63498,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C22": {
               "action": "signature_request",
@@ -63518,7 +63518,7 @@
                   "record_id": "not-a-uuid"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No owned signature-format field or document render/template fixture is established, and Records exposes no signature-request cancellation action. Require verified fixture creation and revocation/removal before execution; do not substitute case_signature plain text or omit render_id/template_id.",
               "guide_argument_contract": {
                 "record_id": {
@@ -63569,7 +63569,7 @@
                 }
               },
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C23": {
               "action": "subscription_propose",
@@ -63600,7 +63600,7 @@
                   "tell": []
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "No subscription/view deletion action in Records contract; require verified disable/removal and owned recipient before run",
               "guide_argument_contract": {
                 "table_id": {
@@ -63631,7 +63631,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C24": {
               "action": "entity_read",
@@ -63653,7 +63653,7 @@
                   "record_id": "not-a-uuid"
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "none",
               "guide_argument_contract": {
                 "entity": {
@@ -63669,7 +63669,7 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             },
             "EXT-F-4130-C25": {
               "action": "entity_write",
@@ -63697,7 +63697,7 @@
                   "values": {}
                 }
               },
-              "negative_expected": "Expect success=false with error.error_type='validation' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
+              "negative_expected": "Expect success=false with error.error_type='invalid_arguments' from RecordsArgs wire validation for the supplied malformed required/type/id value; assert no action dispatch, no write receipt, and unchanged case-owned baseline. This proves the shared wire guard only, not an action-specific refusal. Do not accept empty authorized output or an unavailable target as a pass.",
               "supported_cleanup_or_gap": "Restore captured original custom value on same row; cannot proceed without owned standard row, writable field and approval cleanup",
               "guide_argument_contract": {
                 "entity": {
@@ -63718,12 +63718,14 @@
               },
               "run_condition": "Requires current authenticated live /tools/test/list schema and guide matching this source SHA, an authorized disposable organization fixture, actual returned IDs, and verified cleanup for all created artifacts. Source validation alone is not a runtime pass.",
               "negative_status": "SOURCE_DETERMINISTIC_WIRE_VALIDATION",
-              "negative_source": "RecordsArgs.model_validate selects the action wire; RecordsWire._ids_are_ids rejects malformed *_id values, and tool dispatch maps argument validation failures to error_type=validation before store dispatch."
+              "negative_source": "Registered /tools/test/execute invokes ToolExecutor with RecordsArgs. Executor prevalidation rejects this malformed input as invalid_arguments before dispatch; direct Records function fallback validation is a different call path. Source audit .research/records-negative-contract-audit-20261008-1602.json; no runtime acceptance inferred."
             }
           },
           "procedure_evidence": [
             ".research/records-control-procedures-20261008.json",
-            ".research/records-control-procedures-final-peer-20261008.json"
+            ".research/records-control-procedures-final-peer-20261008.json",
+            ".research/records-dimensions-peer-20261008-1559.json",
+            ".research/records-negative-contract-audit-20261008-1602.json"
           ],
           "procedure_status": "source_reviewed_conditional_not_runtime_verified",
           "attempt_history": [

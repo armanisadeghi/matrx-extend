@@ -38,7 +38,10 @@
     ".research/records-input-failure-repair-20261008.json",
     ".research/records-input-final-peer-20261008.json",
     ".research/records-native-retest-20261008.json",
-    ".research/records-live-peer-20261008-1529.json"
+    ".research/records-live-peer-20261008-1529.json",
+    ".research/records-dimensions-repair-20261008-1553.json",
+    ".research/records-dimensions-peer-20261008-1559.json",
+    ".research/records-negative-contract-audit-20261008-1602.json"
   ],
   "transition_history": [
     {
@@ -78,6 +81,6 @@
     "entity_write"
   ],
   "current_work": "One post-deployment native admin table_list read now has independent bounded acceptance on development414: run37799435980 and peer7a38cfc2. Exact input reached finished request and correlated visible output; all three resource journals valid. This repairs the prior test-driver input obstacle, not product source. Other Records actions, negative cases, reload and non-admin modes remain unverified; D91 stays in-fix. Backend sampled only after run; do not infer request-time source or all-action health.",
-  "native_acceptance_preparation": "Next expand bounded read acceptance to validation-error and full-reload dimensions, then owned-fixture dependent actions and non-admin role. Reuse real UI, exact request identity/correlation and cleanup assertions; no more input mocks substitute for native evidence.",
+  "native_acceptance_preparation": "Sourceac4d5b23 extends existing real driver with exact correlated invalid_arguments refusal and Page.reload plus renewed admin/org positive read.9 focused tests and exact focused CI37804765159 pass; fresha92483f4 source review passes, native pending. Source audit4c68c482 corrects23 registered executor-prevalidation procedure expectations; C01/C06 exclusions preserved. Next one native A attempt after T57 terminal and secret cleanup.",
   "native_acceptance_attempt": "37799435980 succeeds after test-driver repair04ba1909; fresh7a38cfc2 verifies actual receipt/producer assertions, all journals and present secret-name absence. C02 positive read only; original37795653439 failure remains in history."
 }
