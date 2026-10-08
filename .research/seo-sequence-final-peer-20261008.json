@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "review_of": [
+    "76ac7be5dd9ef28bbca7cb265a212044f2fe7765",
+    "9e7a9856"
+  ],
+  "scope": "EXT-D-0170 scoped source-only re-review of the native SEO driver sequence guard",
+  "prior_finding": {
+    "status": "PARTIALLY_ADDRESSED",
+    "detail": "The new guard reads the actual exercisePanel callback and rejects swapped callbacks and outright removal of runSeoCaseSequence. It still accepts a driver that syntactically retains the call but skips it, or a controlled callback that returns before T14 and T02 execute."
+  },
+  "verdict_a_native_readiness": {
+    "status": "PARTIAL",
+    "evidence": "Current source awaits runSeoCaseSequence directly in exercisePanel. The first callback runs controlled social-copy and changed-metadata recapture work; the second navigates to the Wikipedia detail source. The controlled DOM restoration remains in finally. The manual_source_stability assertion still marks T09 unverified and rethrows before exact manual-detail targets; the outer catch sets report.status to unverified and exitCode to 1.",
+    "limit": "No native, browser, or build run was authorized. T02/T14 execution in a real browser and EXT-D-0169 product behavior remain unverified."
+  },
+  "verdict_b_quality": {
+    "status": "IMPORTANT_FINDINGS",
+    "addressed": [
+      "Swapping the two actual driver callbacks is rejected by the new source guard.",
+      "Replacing the actual direct sequence statement with an unrelated await is rejected.",
+      "Commit 9e7a9856 adds the new guard to package.json test:focused-acceptance, which both focused-acceptance.yml and ci.yml invoke."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/seo-driver-sequence.test.mjs:51",
+        "detail": "The guard checks AST presence and call counts, not whether the driver reaches the sequence or whether the controlled callback reaches its work. In-memory mutants of the actual source that insert `return;` immediately before `await runSeoCaseSequence(...)` or at the start of the controlled callback both pass inspectDriverSequence. The latter skips T14/T02 while the Wikipedia callback still runs.",
+        "impact": "A real bypass or silent omission of the independent observations can pass the guard, so the prior forcing-function concern remains open for this class of failure."
+      }
+    ]
+  },
+  "verification": {
+    "focused": "node --test tests/browser/seo-driver-sequence.test.mjs tests/browser/seo-new-coverage-oracle.test.mjs tests/browser/clipboard-observation.test.mjs: 30 passed, 0 failed",
+    "mutation": "Executed inspectDriverSequence from the new test against the actual driver source and two in-memory early-return mutants: normal PASS, skip-controlled-callback PASS, skip-whole-sequence PASS.",
+    "focused_ci_wiring": "Confirmed 9e7a9856 adds tests/browser/seo-driver-sequence.test.mjs to the package.json focused command; both relevant workflows invoke that command. Root owns the full focused CI run.",
+    "format": "pnpm exec biome check tests/browser/seo-driver-sequence.test.mjs: passed",
+    "diff": "git diff --check 76ac7be5^ 76ac7be5: passed"
+  }
+}
