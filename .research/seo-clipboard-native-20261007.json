@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-F-1008-T07",
+  "scope": "One guest SEO native clipboard attempt using Text and For AI agent on the frozen comparator artifact; two public pages and post-reload criteria were not credited because the run was resource-invalidated.",
+  "status": "bounded_native_assertions_observed_resource_invalidated",
+  "source": {
+    "driver": "tests/browser/seo-guest-acceptance.mjs",
+    "helper": "tests/browser/seo-guest-clipboard.mjs",
+    "source_commit": "accbad52e7c261e01d6b4cf9f71bd888581b990d",
+    "independent_source_peer": "8ef00678",
+    "focused_ci_run_id": 37707039862,
+    "focused_ci_verdict": "success",
+    "source_peer_verdict": "PASS for bounded guest source; native behavior remains unverified",
+    "seo_product_source_diff_from_frozen_comparator": []
+  },
+  "attempt": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "run_id": 37707310443,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37707310443",
+    "checkout_sha": "d4d03326b34f7183416554dae24f4100f9a84409",
+    "acceptance_case": "guest-seo",
+    "lane": "B",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "clipboard_assertions": "unverified; no native pass credit",
+    "uploaded_artifact_id": 11520457034,
+    "driver_output": "PARTIAL seo_guest_native_batch at 2026-10-08T00:27:40.388Z; subsequent resource final decision invalidated the guarded command."
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "artifact_source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "eligible_for_bounded_original_case_comparison": true,
+    "current_main_health_claim": false
+  },
+  "resource_verdict": {
+    "admitted": true,
+    "invalidated": true,
+    "boundary": "RESOURCE_CPU_PENDING at 2026-10-08T00:27:39.698Z (RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY); driver emitted PARTIAL seo_guest_native_batch at 00:27:40.388Z, then RESOURCE_FINAL_DECISION was invalid, child exit code 3.",
+    "resource_valid_journals": 2,
+    "resource_invalid_journals": 1,
+    "journals": [
+      {
+        "file": ".research/seo-clipboard-native-evidence/run37707310443/hosted-package-37707310443-1.jsonl",
+        "sha256": "98ffda534aac31ef381e9ec908d24cbf4233309a8e24d10acddecb9b2632e147",
+        "bytes": 988,
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "file": ".research/seo-clipboard-native-evidence/run37707310443/hosted-browser-37707310443-1.jsonl",
+        "sha256": "79ee42e3e26a5191ea87dde011ca530518c3e5babdf20830b36371c77a9212ba",
+        "bytes": 983,
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "file": ".research/seo-clipboard-native-evidence/run37707310443/hosted-guest-37707310443-1.jsonl",
+        "sha256": "aa68a9e1760f7b00976ce689b694867d72e17171694b0d56403bce9e87f65ab4",
+        "bytes": 3402,
+        "admitted": true,
+        "resource_invalid": true,
+        "exit_code": 3,
+        "decision": "invalid"
+      }
+    ]
+  },
+  "uploaded_case_receipt": {
+    "file": ".research/seo-clipboard-native-evidence/run37707310443/seo-guest-acceptance.raw.json.txt",
+    "sha256": "acacef785826cf2d72da09945f81d9eac49deb887ac1f8510be13e69a96ee335",
+    "status": "byte-identical run receipt preserved in committed evidence directory",
+    "prior_run_id": 37702963336,
+    "prior_receipt_sha256": "43593cf6129afb5a74ebc2193b5752af6ed2279d8a11425c051fefc998ac5728",
+    "prior_receipt_bytes": 9335,
+    "note": "The imported artifact run/artifact IDs identify the frozen comparator build and are expected; they do not identify the native run.",
+    "artifact_member_path": "test-results/seo-guest-acceptance.json"
+  },
+  "limits": [
+    "One native run observed successful Text and AI clipboard assertions on two public pages and after side-panel reload, but the guarded command ended resource-invalidated; no resource-valid T07 pass is claimed.",
+    "No clipboard payload, unrestricted page text, credentials, or raw logs are included.",
+    "Member/admin, JSON contents, full field-by-field parity, and broader current-main health remain unverified."
+  ],
+  "native_outcomes": {
+    "receipt_sha256": "acacef785826cf2d72da09945f81d9eac49deb887ac1f8510be13e69a96ee335",
+    "receipt_bytes": 10416,
+    "receipt_status": "partial",
+    "receipt_current_operation": "build_recheck",
+    "receipt_interpretation": "Fresh driver output: its SHA-256 and byte size differ from the prior guest SEO run receipt (43593cf6129afb5a74ebc2193b5752af6ed2279d8a11425c051fefc998ac5728; 9335 bytes). The imported CI run/artifact identifiers are expected frozen build provenance, not a native run identifier.",
+    "targets": [
+      {
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+        "status": "pass",
+        "evidence": {
+          "textMatchesPublicPage": true,
+          "aiWrapsExactSummary": true,
+          "trustedCopyClicks": 2,
+          "clipboardReadback": true,
+          "observationPermissionRestored": true
+        }
+      },
+      {
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+        "status": "pass",
+        "evidence": {
+          "textMatchesPublicPage": true,
+          "aiWrapsExactSummary": true,
+          "trustedCopyClicks": 2,
+          "clipboardReadback": true,
+          "observationPermissionRestored": true
+        }
+      },
+      {
+        "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+        "status": "pass",
+        "evidence": {
+          "textMatchesPublicPage": true,
+          "aiWrapsExactSummary": true,
+          "trustedCopyClicks": 2,
+          "clipboardReadback": true,
+          "observationPermissionRestored": true
+        }
+      },
+      {
+        "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+        "status": "pass",
+        "evidence": {
+          "textChoice": true,
+          "agentChoice": true,
+          "jsonAbsent": true
+        }
+      },
+      {
+        "subtarget": "guest_role_gate_after_reload",
+        "status": "pass",
+        "evidence": {
+          "textChoice": true,
+          "agentChoice": true,
+          "jsonAbsent": true
+        }
+      }
+    ],
+    "scope_limit": "The source peer notes the summary oracle checks core displayed/public facts and required sections, not every audit field or independently validated Description/Page stats values.",
+    "receipt_path": ".research/seo-clipboard-native-evidence/run37707310443/seo-guest-acceptance.raw.json.txt",
+    "evidence_directory": ".research/seo-clipboard-native-evidence/run37707310443/"
+  }
+}
