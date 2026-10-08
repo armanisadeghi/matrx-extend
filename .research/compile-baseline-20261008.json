@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-08",
+  "scope": "Matrx Extend compile baseline after pnpm-lock.yaml refresh",
+  "command": "pnpm -s compile",
+  "result": "failed",
+  "errors": [
+    "@ai-matrx/media/react has no exported member useReadAloud",
+    "@ai-matrx/chat/host has no exported member createMemoryNavigation",
+    "@ai-matrx/media/speech cannot be found",
+    "Three callback parameters have implicit any types because these imported APIs are absent"
+  ],
+  "installed": {
+    "@ai-matrx/media": "0.14.0",
+    "@ai-matrx/chat": "0.4.22"
+  },
+  "lockfileImporter": {
+    "@ai-matrx/media": "0.15.0",
+    "@ai-matrx/chat": "0.5.2"
+  },
+  "packageEvidence": {
+    "media": "CHANGELOG.md 0.15.0 adds /speech and useReadAloud from /react; installed 0.14.0 has no /speech export",
+    "chat": "CHANGELOG.md 0.4.25 adds createMemoryNavigation from /host; installed 0.4.22 predates it"
+  },
+  "conclusion": "The local node_modules tree is older than the committed lockfile. No consumer code change is indicated. Compile must be rerun after a normal frozen-lockfile install in the integration environment; this lane did not install packages or claim a green compile.",
+  "unrelatedWorkingTreeFilePreserved": ".research/scrape-tabs-coverage-peer-20261008.json"
+}
