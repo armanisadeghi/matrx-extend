@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-F-1008-T07",
+  "scope": "One guest SEO native clipboard attempt on the original frozen CI development artifact using the existing hosted macos-15-intel runner option.",
+  "attempt": {
+    "workflow": "Hosted guest side-panel acceptance",
+    "run_id": 37708611887,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37708611887",
+    "job_id": 113088890761,
+    "checkout_sha": "0fbec09268721e436e5e2b7a93856576d0413822",
+    "acceptance_case": "guest-seo",
+    "lane": "B",
+    "runner_label": "macos-15-intel",
+    "runner_arch": "x64 (Intel)",
+    "workflow_conclusion": "success",
+    "native_case_step": "success",
+    "uploaded_artifact_id": 11520459433,
+    "artifact_name": "hosted-guest-37708611887-1"
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "artifact_source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "version": "0.2.391",
+    "selected_exact_original": true,
+    "newer_comparator_selected": false
+  },
+  "resource_verdict": {
+    "admitted": true,
+    "resource_invalid": false,
+    "final_exit_code": 0,
+    "cpu_architecture": "4 logical CPUs",
+    "guest_admission": {
+      "available_memory_gib": 12.6,
+      "required_memory_gib": 4,
+      "pressure_level": 1,
+      "cpu_busy_fraction": 0.0071428571428571435,
+      "one_minute_load": 0.92,
+      "swap_used_mib": 0
+    },
+    "guest_watch_sample": {
+      "available_memory_gib": 12.46,
+      "cpu_busy_fraction": 0.64,
+      "one_minute_load": 1.39,
+      "swap_used_mib": 0,
+      "code": "RESOURCE_WATCH_HEALTHY"
+    },
+    "journals": [
+      {
+        "file": ".research/seo-intel-native-20261007-evidence/run37708611887/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37708611887-1.jsonl",
+        "sha256": "2154058656f67914d8a131a411b66f633f64464862b4a5017017989c522962e0",
+        "bytes": 981,
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "file": ".research/seo-intel-native-20261007-evidence/run37708611887/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37708611887-1.jsonl",
+        "sha256": "e21d1d78413c03f05bd7cbecd38ab1e78c332e777fa99bf1bf8bead11c008bfd",
+        "bytes": 984,
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "file": ".research/seo-intel-native-20261007-evidence/run37708611887/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37708611887-1.jsonl",
+        "sha256": "e47ee5d9f1e1baa5850eac60826a12346b8c3887374a0206d5eef9e716c1bb51",
+        "bytes": 1400,
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    ]
+  },
+  "native_receipt": {
+    "file": ".research/seo-intel-native-20261007-evidence/run37708611887/matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json",
+    "workflow_status": "partial",
+    "current_operation": "build_recheck",
+    "build_before_after_match": true,
+    "version": "0.2.391",
+    "imported_artifact_run_id": 37698216289,
+    "imported_artifact_id": 11516342905,
+    "targets": {
+      "actual_text_clipboard_two_distinct_public_pages": "pass",
+      "actual_ai_clipboard_two_distinct_public_pages": "pass",
+      "actual_text_and_ai_after_side_panel_reload": "pass",
+      "guest_menu_text_and_ai_with_json_absent": "pass",
+      "guest_role_gate_after_reload": "pass"
+    }
+  },
+  "result": {
+    "status": "resource_valid_bounded_guest_clipboard_observed",
+    "native_claim": "Resource-valid run with real Text and For AI agent clipboard readback on two public pages and after side-panel reload; menu and reload role gate passed.",
+    "limits": [
+      "The native receipt is partial because the driver stopped at build_recheck after its bounded clipboard assertions.",
+      "The summary oracle checks core displayed/public facts and required sections, not every audit field; exact Description and Page stats values remain unverified.",
+      "Member/admin modes, JSON contents, and broader current-main health remain unverified."
+    ]
+  },
+  "source_context": {
+    "seo_source_commit": "accbad52e7c261e01d6b4cf9f71bd888581b990d",
+    "seo_source_diff_from_frozen_comparator": [],
+    "source_peer": "8ef00678",
+    "focused_ci_run_id": 37707039862,
+    "full_ci_run_id": 37707353523
+  }
+}
