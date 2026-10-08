@@ -645,6 +645,18 @@ async function exerciseApproval(native) {
           .context()
           .pages()
           .filter((candidate) => candidate.url() === url);
+        if (opened.length === 1) {
+          // Read the tab created by the real action, then correlate its returned id.
+          // The harness never supplies this id to dispatch or creates the marker tab.
+          const tabId = await evaluate(
+            panel,
+            `(async () => {
+            const matches = (await chrome.tabs.query({})).filter((tab) => tab.url === ${JSON.stringify(url)});
+            return matches.length === 1 ? matches[0].id : null;
+          })()`,
+          );
+          transport.observeTab(tabId);
+        }
         if (observed.approvals > 0) {
           approvalSamples += 1;
           if (!firstApprovalSaved) {
