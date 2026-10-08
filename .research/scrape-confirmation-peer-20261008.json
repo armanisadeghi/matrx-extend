@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "175718392f597d214caaf9310afc5122a2f4ae62",
+  "defect_id": "EXT-D-0178",
+  "verdict_a_source_readiness_native": {
+    "status": "PARTIAL",
+    "evidence": "The post-reload native script calls runPostReloadCaptureBoundary after confirming the owned referrals fixture is ready, titled, and empty. The boundary accepts the exact unsaved-edits dialog only in that state, invokes the existing scrape-recapture-dialog trusted pointer action, then waits for visible Article content containing the referral sentence. Ready/title alone cannot pass. The saved native diagnostic used the older frozen artifact and records one delivered Capture click, no busy state, and no resulting article; it did not record the dialog. No fresh native run of this commit was authorized.",
+    "first_unverified_boundary": "A fresh resource-admitted native run must show the real dialog and completed capture on a new frozen artifact; the existing receipt cannot prove that the confirmation appeared or that this repair resolves the native case."
+  },
+  "verdict_b_guard_quality": {
+    "status": "PASS",
+    "findings": [],
+    "evidence": "The change is limited to the test boundary, its focused tests, and a report. The dialog probe checks exact title and action text; the trusted driver filters to one visible, hit-tested target before dispatching a pointer. A dialog on another page is refused, and only the final owned media-edit path gained confirmation. Capture acceptance still requires visible Article content and the exact referral sentence. The timeout diagnostic remains an allowlist of booleans, and the click/busy probes are disposed in finally. The parent's article-only predicate necessarily times out on a dialog; the candidate's focused dialog test passes, but the claimed historical red result was not independently rerun. No production code, dependency, database, or access path was added.",
+    "checks": [
+      "node --test tests/browser/scrape-post-reload-capture-boundary.test.mjs tests/browser/scrape-native-recapture.test.mjs: 10 passed, 0 failed",
+      "Reviewed candidate commit diff, native integration, ScrapeView guard, and trusted pointer driver"
+    ]
+  },
+  "overall": "SOURCE_READY_NATIVE_PENDING",
+  "limits": "Read-only verification of source and focused tests; no native run, build, release, or application edits. The dialog probe itself matches DOM text without a visibility filter, while the pointer driver enforces visibility and hit testing before any action."
+}
