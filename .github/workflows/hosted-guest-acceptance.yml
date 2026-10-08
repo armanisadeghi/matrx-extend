@@ -1,4 +1,5 @@
 name: Hosted guest side-panel acceptance
+run-name: "Native ${{ inputs.acceptance_lane }} · ${{ inputs.acceptance_case }}"
 
 on:
   workflow_dispatch:
