@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "task": "One corrected independent Records hosted native A attempt",
+  "authorship": "No fixture helper, native driver, product source, or test code authored in this lane.",
+  "source": {
+    "workflow_head_sha": "d7a0b9552f61fecdce81b8460601a5c87b568b9a",
+    "workflow_blob": "a8cda2ffa6678fbf7fccc8b6b8c3c3e615928e64",
+    "hosted_wrapper_blob": "061a939ca6dd28d27a575ed419179b9a31156cf2",
+    "fixture_helper_blob": "954241df0919f3f9a750782dd6da9af0b6aa175b",
+    "native_acceptance_blob": "8f2a5f490ab7b56a96fef3bd60928d14bd980483",
+    "native_proof_blob": "8174446e199124eced36b569bb097aec1cee5c97",
+    "reviewed_focused_gate": {
+      "run_id": 37836302781,
+      "head_sha": "9c4280dad79b388f141340b2458e4af678164742",
+      "conclusion": "success",
+      "relevant_source_blobs_unchanged": true
+    }
+  },
+  "frozen_artifact": {
+    "source_ci_run": 37790643945,
+    "artifact_id": 11556064167,
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "native_receipt_tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "expired_at_dispatch": false
+  },
+  "native_attempt": {
+    "run_id": 37837671077,
+    "attempt": 1,
+    "lane": "A records-readonly-admin",
+    "runner": "macos-15",
+    "started_at": "2026-10-08T20:12:13Z",
+    "completed_at": "2026-10-08T20:20:54Z",
+    "status": "completed",
+    "conclusion": "failure",
+    "no_retry": true,
+    "resource_admission": {
+      "package": "admitted, resource-valid, exit 0",
+      "browser": "admitted, resource-valid, exit 0",
+      "guest": "admitted, resource-valid, child exit 1"
+    },
+    "failure_boundary": "records_fixture_recovery_list before any fixture write",
+    "failure_code": "records_fixture_cleanup_failed",
+    "first_diagnostic": {
+      "boundary": "body",
+      "phase": "records_fixture_recovery_list",
+      "classification": "records_fixture_unexpected_error",
+      "request_method": null,
+      "http_status": null
+    },
+    "cleanup_diagnostic": "None emitted. The journal remained planned, so the helper's cleanup branch did not issue an archive or other write.",
+    "underlying_exception": "Not retained by the native wrapper; the precise CDP/browser or request cause is unknown. The cleanup-stage wrapper label is not evidence that archive cleanup failed."
+  },
+  "product_observations": {
+    "C02_table_list": "Finished authenticated HTTP 200 and matching visible success with 50 results; approved organization covered; full panel reload retained admin and organization and repeated the successful read.",
+    "C03_metadata_search": "Finished authenticated HTTP 200 and matching visible success; independently selected table identity matched.",
+    "negative_reads": "Malformed metadata_search query, record_read record_id, and record_aggregate table_id each received visible finished invalid_arguments refusals naming the field.",
+    "C04_positive_record_read": "unverified",
+    "C05_positive_record_aggregate": "unverified"
+  },
+  "fixture_and_credential_cleanup": {
+    "journal_phase": "planned",
+    "journal_has_table_id": false,
+    "journal_has_row_id": false,
+    "write_boundary": "No table-create or row-create call was reached; the helper writes create_sent durably before table-create POST.",
+    "separate_read_only_status": {
+      "admin_auth_status": 200,
+      "approved_org_table_list_status": 200,
+      "list_complete": true,
+      "live_exact_owned_marker_count": 0,
+      "raw_body_or_identifiers_retained": false
+    },
+    "fixture_result": "No owned live fixture remained. No cleanup write was necessary for this run.",
+    "temporary_secret_names_deleted_after_terminal": true,
+    "names_only_absence_verified": true,
+    "external_0600_payload_files_removed": true,
+    "external_artifact_extraction_removed": true,
+    "credential_values_or_tokens_retained": false
+  },
+  "backend_identity": {
+    "post_run_health_version_sha": "9ec37c66a983f170b34a602ce58daf7d02f076f6",
+    "post_run_health_version_built_at": "2026-10-08T19:50:49Z",
+    "request_time_attribution": "unverified; no pre-run sample bracketed this attempt"
+  },
+  "verdict_A_behavior_and_spec": "Partial C02/C03 and malformed-input evidence only. No positive C04/C05 credit and no full Records acceptance claim.",
+  "verdict_B_quality_and_validity": "The corrected credential staging passed preflight and the resource-admitted native driver ran, but the fixture recovery list failed with an uncategorized error before setup. This is a failed native attempt. Owned fixture absence and both temporary secret removals were separately verified.",
+  "tests": {
+    "hosted_focused_gate": "Run 37836302781 passed on the reviewed source blobs.",
+    "hosted_native": "Run 37837671077 failed at fixture recovery list.",
+    "local": "None; no local test, browser, build, or release."
+  },
+  "evidence_files": ".research/records-positive-corrected-native-20261008/raw/ contains the sanitized native receipt, source/artifact identities, run and resource outcomes, aggregate fixture absence status, journal phase, post-run backend sample, and names-only secret cleanup proof."
+}
