@@ -27,7 +27,9 @@
     ".research/seo-social-feedback-error-fix-20261008.json",
     ".research/seo-error-boundary-peer-20261008.json",
     ".research/seo-feedback-escalation-20261008.json",
-    ".research/seo-escalation-final-peer-20261008.json"
+    ".research/seo-escalation-final-peer-20261008.json",
+    ".research/seo169-native-retest-20261008.json",
+    ".research/seo169-native-peer-20261008.json"
   ],
   "reproducibility": "One resource-valid native attempt; no blind retry. Package/browser valid, guest admitted and healthy child_failed exit1, resourceInvalid=false.",
   "cause": "Source-confirmed feedback selector onlytitle whileclick accepts tooltip-lifted data-matrx-title; actualnativecause still unknown because pointerdown can restoretitle and clipboardwrite mayfail.",
@@ -57,7 +59,7 @@
       "reason": "Astra escalation repaired coherent observed-copy boundary; freshpeerb49abdae accepts both priorfindings addressed,27checks and meaningfulmutations; focusedCI37736350529 success exact3dcf2903. Nativecause/behavior pending."
     }
   ],
-  "next_action": "One native guest-seo laneA attempt with reviewed3dcf2903 driver and frozen397 artifact, resourceguard unchanged. Observe actualcopy/clipboard and newlyisolatedT02; independentnativepeer before anyclosure or newcoverage.",
+  "next_action": "D170phase isolation/order must pass sourcepeer andnative before D169originalcopy retest canbeassessed. Source fix remainsfixed, notclosed.",
   "repair_review_rounds": [
     {
       "commit": "4094c08d",
@@ -72,5 +74,11 @@
       "finding": "Thrownerrorfixed; successfulreadwithinvalidpane is treated asmissedicon, cancontinueclipboard."
     }
   ],
-  "fix_commit": "3dcf290381afd7a76eea45794af6a10a617117e9"
+  "fix_commit": "3dcf290381afd7a76eea45794af6a10a617117e9",
+  "latest_native_attempt": {
+    "run_id": "37736744238",
+    "resource_valid": true,
+    "result": "controlledT02T14_not_reached",
+    "reason": "DynamicWikipedia source-stability check abortedearlier; trackedD170. No newcoverage or D169originalretetest."
+  }
 }

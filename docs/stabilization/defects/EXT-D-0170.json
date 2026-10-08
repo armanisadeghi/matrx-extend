@@ -1,0 +1,49 @@
+{
+  "id": "EXT-D-0170",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T09", "EXT-F-1008-T02", "EXT-F-1008-T14"],
+  "surface": "SEO native acceptance sequencing",
+  "auth_mode": "guest",
+  "title": "Dynamic public audit fixture blocks independent controlled copy and recapture cases",
+  "severity": "S3: lost independent test coverage, product fault unconfirmed",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/seo_stability_isolation",
+  "preconditions": [
+    "Frozen development397/sourcecedcec02/CI37724859892/artifact11527132614; native driver9295e037 includes reviewed3dcf2903; hosted ARM laneA."
+  ],
+  "reproduction": [
+    "Execute guest-seo native workflow37736744238 with stated product/driver.",
+    "Reach Wikipedia manual source-stability check; current originalreceipt records internal links1783 then1784 between samples.",
+    "Observe next_detail_manual_source_stability_assertion aborts the suite before independent controlled Example.org social-copy and changed-metadata cases."
+  ],
+  "expected": "Unstable public-page comparisons remain explicitly unverified/failed; independently executable controlled cases are not prevented solely by preceding dynamicfixture checks.",
+  "actual": "Fourteen earlier predicates pass, but later T02/T14 criteria neverrun; no newcoverage.",
+  "cause": "Sequential driver orders dynamicWikipedia block before controlledExample.org block, with fatalstabilityassertion at earlierboundary. Assertion itself correctly avoids unstabledata acceptance.",
+  "evidence": [
+    ".research/seo169-native-retest-20261008.json",
+    ".research/seo169-native-peer-20261008.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T06:30:19.057366+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Selfcontained resource-valid run shows independenttargets unreached."
+    },
+    {
+      "at": "2026-10-08T06:30:19.057366+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Freshnativepeer validates zero newcoverage; sourceworker confirms sequential dependency."
+    },
+    {
+      "at": "2026-10-08T06:30:19.057366+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Minimal existingphase ordering/isolation repair, no suppression of unstableoracle orresourcefailures."
+    }
+  ],
+  "next_action": "Meaningfulactualphase-sequence RED/GREEN; preserve allbaselinechecks and fixturecleanup; freshsourcepeer before native.",
+  "closure_requirement": "Independent source review plus resource-valid native execution reaching controlledT02/T14; unstablepublicfixture still accurately reported. No producthealthpromotion from sourceordering alone."
+}
