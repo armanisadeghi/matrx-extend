@@ -1,0 +1,58 @@
+{
+  "status": "source_diagnosis_only",
+  "native_run_id": "37858551975",
+  "source_scope": "Settings helper and receipt path; no native rerun or source change",
+  "observed": {
+    "T04": "System baseline, Dark visible+stored selection, and worker/panel replacement passed. The next expected observation, Dark surviving full extension reload, is absent; the terminal failure is full_extension_preference_or_restore_failed.",
+    "T10_T40_T67": "Each full-extension recheck terminates with full_extension_recheck_exception; no per-case stage detail is retained.",
+    "limitations": "Replacement success proves lifecycle transition only. It does not prove replacement Settings reacquisition or persistence. No cause is established."
+  },
+  "evidence": [
+    {
+      "file": "tests/browser/settings-guest-extension-rechecks.mjs",
+      "functions": ["restartAndRead", "runGuestChoicesAcrossExtensionRestarts"],
+      "finding": "After recording replacement success, restartAndRead detaches the old panel, opens Settings and the section, then waits for a matching preference; only after that does it record survives full extension reload. Catch blocks retain stage booleans internally but discard exceptions; final safe stage is emitted only for explicitly allowlisted cases."
+    },
+    {
+      "file": "tests/browser/settings-full-extension-rechecks.mjs",
+      "functions": ["rerunGuestSettingsAfterExtensionReload", "runFullExtensionRecheck"],
+      "finding": "T04/T10 inner errors are replaced by full_extension_preference_or_restore_failed. The outer catch records that category only, except a narrow T67 safe-category path. Other failures become full_extension_recheck_exception."
+    },
+    {
+      "file": "tests/browser/settings-local-controls-acceptance.mjs",
+      "function": "guest reload_observation catch",
+      "finding": "The generic per-choice error has no lifecycleEvidence/contextBoundary, and guestStage is reload_observation, so captureFailure/transport classification is skipped."
+    }
+  ],
+  "ranked_unresolved_hypotheses": [
+    {
+      "rank": 1,
+      "boundary": "After replacement lifecycle pass, before the matching persistence observation",
+      "possibilities": ["replacement panel Settings reacquisition failed", "opening the target section failed", "the preference read/wait failed or observed a nonmatching visible/stored value"],
+      "basis": "These operations occur between the last T04 pass and the next expected record. Receipt cannot distinguish them."
+    },
+    {
+      "rank": 2,
+      "boundary": "Restoration after the first choice failure",
+      "possibilities": ["restore panel/section/read failed", "alternate-to-baseline selection or its observation failed", "baseline full-extension reload/recheck failed"],
+      "basis": "The wrapper category combines choice and restoration failure; no original-preference-restored record appears."
+    },
+    {
+      "rank": 3,
+      "boundary": "Transport during a subsequent operation",
+      "possibilities": ["a later CDP command timed out or failed"],
+      "basis": "Possible but unproven; the replacement lifecycle record passed and transport class was not propagated through the inner catches."
+    }
+  ],
+  "minimal_safe_discriminating_probe": {
+    "scope": "Next separately authorized native run only; no retry loop",
+    "record": [
+      "First-choice failure stage and restoration failure stage independently, using fixed allowlisted enums.",
+      "For restartAndRead, mark entry/completion for old-panel detach, Settings reacquisition, section open, and preference wait/read.",
+      "Retain only safe booleans/enums: replacement target changed, Settings active, section open, selected label, stored-value match, and whether recovery panel acquisition succeeded.",
+      "Preserve only existing allowlisted lifecycle/failure codes and transportFailureClass (including command_timeout); discard raw exception text, page text, URLs, and arbitrary DOM content."
+    ],
+    "decision": "The first failed stage distinguishes lifecycle/transport from Settings reacquisition, section navigation, preference mismatch, and restoration."
+  },
+  "verdict": "The current receipt establishes a bounded failure after successful replacement and before T04 persistence confirmation, but neither the failing substage nor the underlying cause. T10/T40/T67 generic failures are separate unresolved results; do not assume the same cause."
+}
