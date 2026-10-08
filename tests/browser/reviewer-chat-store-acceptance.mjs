@@ -682,6 +682,146 @@ async function exerciseApproval(native) {
       panel,
       `[...(${paneExpression(surface)}?.querySelectorAll('button') ?? [])].filter((el) => el.textContent.trim() === 'Allow')`,
     );
+  const historyRows = `[...document.querySelectorAll('[data-radix-popper-content-wrapper] button')].filter((el) => el.querySelector('span.line-clamp-1'))`;
+  const toggleHistory = () =>
+    pointer(
+      panel,
+      `[...(${paneExpression('Chat')}?.querySelectorAll('button') ?? [])].filter((el) => (el.title || el.getAttribute('data-matrx-title')) === 'History')`,
+    );
+  const historyOrigin = await supabaseOrigin(REPO);
+  // The History DOM exposes titles, not UUIDs. Correlate the real list response
+  // with every rendered row, then click the original UUID's index, even if titles repeat.
+  const reopenOwnedHistory = async (boundary) => {
+    const original = report.approval.cases[0].transport.conversation_fingerprint;
+    const evidence = {
+      conversation_fingerprint: original,
+      history_http_status: null,
+      actual_response_matched_rendered_rows: false,
+      native_history_reopened: false,
+      hydrated_replies_observed: false,
+      next_request_conversation_identity_required: true,
+    };
+    report.approval[boundary] = evidence;
+    stage = `${boundary}_fresh_chat`;
+    await waitFor(
+      `${boundary}_chat_tab_ready`,
+      () => evaluate(panel, `document.querySelectorAll('button[role="tab"][title="Chat"]').length`),
+      (value) => value === 1,
+      30_000,
+    );
+    await click(panel, 'title', 'Chat');
+    await waitFor(
+      `${boundary}_fresh_chat_ready`,
+      () => approvalObservation(panel),
+      (value) => value?.ready && value.replies === 0,
+      30_000,
+    );
+    const requests = new Map();
+    const pending = new Set();
+    let history = null;
+    const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
+      try {
+        const url = new URL(request.url);
+        const profile = Object.entries(request.headers ?? {}).find(
+          ([name]) => name.toLowerCase() === 'accept-profile',
+        )?.[1];
+        if (
+          request.method === 'GET' &&
+          url.origin === historyOrigin &&
+          url.pathname === '/rest/v1/conversation' &&
+          profile === 'chat' &&
+          url.searchParams.get('order') === 'updated_at.desc'
+        )
+          requests.set(requestId, { status: null });
+      } catch {
+        /* Ignore unrelated requests. */
+      }
+    });
+    const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
+      const entry = requests.get(requestId);
+      if (entry) entry.status = response.status;
+    });
+    const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
+      if (requests.get(requestId)?.status !== 200) return;
+      const task = panel
+        .send('Network.getResponseBody', { requestId })
+        .then(({ body, base64Encoded }) => {
+          const rows = JSON.parse(
+            base64Encoded ? Buffer.from(body, 'base64').toString('utf8') : body,
+          );
+          if (
+            Array.isArray(rows) &&
+            rows.length &&
+            rows.every(
+              (row) =>
+                UUID.test(row.id ?? '') && (row.title === null || typeof row.title === 'string'),
+            )
+          )
+            history = rows.map((row) => ({
+              fingerprint: hash(row.id),
+              title: row.title?.trim() || 'Untitled chat',
+            }));
+        })
+        .catch(() => {});
+      pending.add(task);
+      void task.finally(() => pending.delete(task));
+    });
+    try {
+      await panel.send('Network.enable');
+      stage = `${boundary}_history_response`;
+      await toggleHistory();
+      await waitFor(
+        `${boundary}_actual_history_response`,
+        () => history,
+        (value) => Array.isArray(value),
+        30_000,
+      );
+      const observedHistory = history;
+      evidence.history_http_status = 200;
+      const indexes = observedHistory.flatMap((row, index) =>
+        row.fingerprint === original ? [index] : [],
+      );
+      assert.equal(
+        indexes.length,
+        1,
+        'real History response must contain the exact owned conversation once',
+      );
+      const index = indexes[0];
+      const titles = observedHistory.map((row) => row.title);
+      stage = `${boundary}_history_dom_match`;
+      await waitFor(
+        `${boundary}_history_dom_matches_actual_response`,
+        () =>
+          evaluate(
+            panel,
+            `JSON.stringify((${historyRows}).map((el) => el.querySelector('span.line-clamp-1')?.textContent.trim())) === ${JSON.stringify(JSON.stringify(titles))}`,
+          ),
+        (value) => value === true,
+        30_000,
+      );
+      evidence.actual_response_matched_rendered_rows = true;
+      stage = `${boundary}_native_history_pointer`;
+      await pointer(
+        panel,
+        `(${historyRows}).filter((el, index) => index === ${index} && el.querySelector('span.line-clamp-1')?.textContent.trim() === ${JSON.stringify(observedHistory[index].title)})`,
+      );
+      evidence.native_history_reopened = true;
+      stage = `${boundary}_history_hydration`;
+      await waitFor(
+        `${boundary}_owned_chat_loaded`,
+        () => approvalObservation(panel),
+        (value) => value?.ready && value.replies > 0 && value.mode === 'Ask before acting',
+        30_000,
+      );
+      evidence.history_row_title_fingerprint = hash(observedHistory[index].title);
+      evidence.hydrated_replies_observed = true;
+    } finally {
+      offRequest();
+      offResponse();
+      offFinished();
+      await Promise.allSettled([...pending]);
+    }
+  };
   const runAction = async (caseId, expected, surface = 'Chat') => {
     stage = caseId;
     await native.requireResourceHealth();
@@ -720,6 +860,20 @@ async function exerciseApproval(native) {
           .pages()
           .filter((candidate) => candidate.url() === url);
         lastOpenedCount = opened.length;
+        const chatPrior = report.approval.cases.find((prior) => prior.surface === surface);
+        const currentTransport = transport.snapshot();
+        if (chatPrior && currentTransport.conversation_fingerprint)
+          assert.equal(
+            currentTransport.conversation_fingerprint,
+            chatPrior.transport.conversation_fingerprint,
+            'original conversation identity required before approval assertions',
+          );
+        // An approval sampled before Network post-data arrives is not yet attributable.
+        // Wait for the actual request identity rather than mistake a new chat for lost trust.
+        if (chatPrior && observed.approvals > 0 && !currentTransport.conversation_fingerprint) {
+          await new Promise((resolvePoll) => setTimeout(resolvePoll, 100));
+          continue;
+        }
         if (opened.length === 1) {
           // Read the tab created by the real action, then correlate its returned id.
           // The harness never supplies this id to dispatch or creates the marker tab.
@@ -887,25 +1041,14 @@ async function exerciseApproval(native) {
     await runAction('ask_remember_repeat', 'none');
     stage = 'warm_panel_reload';
     await panel.send('Page.reload', { ignoreCache: false });
-    await waitFor(
-      'warm_chat_restored',
-      () => approvalObservation(panel),
-      (value) => value?.ready && value.mode === 'Ask before acting',
-      30_000,
-    );
+    await reopenOwnedHistory('warm_panel_reload');
     await runAction('ask_remember_warm_reload', 'none');
     stage = 'full_extension_reload';
     const reload = await native.reloadExtension();
     const { panel: replacementPanel, ...lifecycle } = reload;
     report.approval.full_reload = lifecycle;
     panel = replacementPanel;
-    await click(panel, 'title', 'Chat');
-    await waitFor(
-      'full_reload_chat_restored',
-      () => approvalObservation(panel),
-      (value) => value?.ready && value.mode === 'Ask before acting',
-      30_000,
-    );
+    await reopenOwnedHistory('full_extension_reload_history');
     await runAction('ask_remember_full_reload', 'none');
     report.approval.limitations.push(
       'Privileged tools and ask-user input are outside this ordinary-action acceptance.',
