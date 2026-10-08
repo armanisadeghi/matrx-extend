@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T11:48:19+00:00",
+  "updated_at": "2026-10-08T12:20:29.457642+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -19232,7 +19232,8 @@
               "build_version": "0.2.407",
               "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
               "evidence": [
-                ".research/seo-metadata-native-20261008.json"
+                ".research/seo-metadata-native-20261008.json",
+                ".research/parallel-native-boundary-peer-20261008.json"
               ],
               "detail": "Exact frozen artifact imported and side panel opened; CPU/load watchdog invalidated run before native SEO receipt or Airbnb metadata criterion. No new/revalidated acceptance or product failure; no unchanged retry."
             }
@@ -23587,7 +23588,9 @@
               "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
               "evidence": [
                 ".research/t57-request-diagnostic-native-20261008.json",
-                ".research/t57-records-target-fix-20261008.json"
+                ".research/t57-records-target-fix-20261008.json",
+                ".research/t57-records-diagnostic-peer-20261008.json",
+                ".research/parallel-native-boundary-peer-20261008.json"
               ],
               "detail": "Admin and approved rendered organization passed; observer initialized and Tools navigation completed. Records pointer failed pointer_target_not_unique before any product request; zero versus multiple targets unknown. Resource-valid failure; cleanup succeeded, temporary secret names absent. Source diagnostic f1e5052c now preserves counts; independent5aea98c7 accepted source diagnostic. No product defect or acceptance inferred."
             }
