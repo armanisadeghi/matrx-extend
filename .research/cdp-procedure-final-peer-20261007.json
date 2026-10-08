@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-final-procedure-peer-review",
+  "reviewed_proposal": ".research/cdp-remaining-procedures-20261007.json",
+  "reviewed_initial_commit": "529f579286fa0e7a04da33d02f1869ae14ab3cc8",
+  "reviewed_correction_commit": "3fa47ced712830641c5513377c9632489a08dbc1",
+  "review_method": "Read the corrected proposal and compared its case steps with current handler schemas, implementation, manual-run path, fixture source, and fixture-server lifecycle. Source-only review; no tests, browser, build, release, or runtime execution.",
+  "verdict_a_prior_findings": [
+    {
+      "finding": "4106 exact-value positive oracle assumed Input.insertText replaced the seeded value without establishing selection/focus.",
+      "status": "ADDRESSED",
+      "evidence": "The corrected steps require a full seed selection and effective #keys focus at the Input.insertText boundary, explicitly say pre-opening visual selection is insufficient, and prohibit running/scoring the positive without an independent native preflight. Handler src/lib/tools/handlers/cdp.ts:370-394 only sends Input.insertText and performs no focus or selection."
+    },
+    {
+      "finding": "4106 positive/manual fixture was unavailable; permission result could not be established by manual Run.",
+      "status": "ADDRESSED",
+      "evidence": "The proposal keeps design_status NOT_EXECUTABLE, identifies the missing manual fixture host and unresolved insertion boundary, and leaves positive, permission, and runtime results unverified. ToolsView direct handler invocation at src/features/tools/ToolsView.tsx:453-462 bypasses dispatcher checks as documented. This is safe proposal status, not evidence the host or runtime exists."
+    },
+    {
+      "finding": "4156 procedure lacked an available manual fixture host and needed permission/runtime results kept open.",
+      "status": "ADDRESSED",
+      "evidence": "It now explicitly remains NOT_EXECUTABLE pending the owned route, requires a real recorded loopback URL/hash, and says manual Run cannot prove permission gating. Canonical schema and wait branches match src/lib/tools/handlers/canonical.ts:650-799; duplicate Action row distinction matches registry registration order."
+    },
+    {
+      "finding": "4168 procedure needed the worker-local attachment-list limitation, restart/idle uncertainty, and exact owned-ID cleanup.",
+      "status": "ADDRESSED",
+      "evidence": "It requires an unambiguous baseline, exactly one owned delta, exact-ID detach, preservation of baseline IDs, and treats worker restart/idle detach/unexpected changes as inconclusive. This matches src/lib/cdp/client.ts attachment bookkeeping and the admin-only wrapper/delegates in src/lib/tools/handlers/canonical-mergers.ts:482-516 and src/lib/tools/handlers/cdp.ts:41-85. Host and permission remain explicitly unresolved."
+    },
+    {
+      "finding": "4169 clear {ok:true} was not a sufficient cleanup oracle because unattached clear succeeds and UA reset errors are swallowed.",
+      "status": "ADDRESSED",
+      "evidence": "The corrected procedure requires native viewport, DPR, and UA readback against baseline; any mismatch, unavailable readback, or ambiguous debugger state leaves cleanup unverified and forbids detach/closure claims. Source confirms the no-attachment success and swallowed UA reset in src/lib/tools/handlers/cdp.ts:589-611."
+    },
+    {
+      "finding": "4169 host/runtime positive was unavailable and set creates an attachment that must be measured before cleanup.",
+      "status": "ADDRESSED",
+      "evidence": "It retains NOT_EXECUTABLE pending the host/receipt, measures attachment delta, and allows detach only after verified restoration and exact ownership. No runtime result is asserted."
+    }
+  ],
+  "verdict_a_procedural_readiness": {
+    "EXT-F-4106-T01": "NOT_EXECUTABLE; setup is described for a future preflight only. No positive acceptance procedure is presently executable because both fixture hosting and insertion-time focus/selection observation are unresolved.",
+    "EXT-F-4156-T01": "NOT_EXECUTABLE pending owned manual fixture host. Source branches and selectors are usable once host/receipt exists; dispatcher permissions remain a separate unverified dimension.",
+    "EXT-F-4168-T01": "NOT_EXECUTABLE pending owned manual fixture host. Source procedure is bounded by exact ownership and worker-state uncertainty; admin/permission/runtime results remain unverified.",
+    "EXT-F-4169-T01": "NOT_EXECUTABLE pending owned manual fixture host. Set/restore procedure has a meaningful native readback oracle, but no runtime observations or permission result exist."
+  },
+  "verdict_b_quality": {
+    "overall": "PASS_WITH_EXECUTION_PREREQUISITES_OPEN",
+    "findings": [],
+    "basis": "The proposed procedures align with the reviewed source, separate schema outcomes from dispatcher permissions, preserve pre-existing CDP attachments, require native cleanup verification, and make missing fixture/runtime evidence explicit. Source review does not validate that the proposed future manual host can be operated or that Chrome DevTools readback will be available without ambiguous debugger state; the proposal correctly treats that ambiguity as unverified and stops cleanup claims."
+  },
+  "non_promotion": "No inventory status, mode cell, role outcome, permission result, host availability, runtime verdict, build identity, or fixture existence is promoted. The owned fixture is source code currently served only from the automated test lifecycle; no manual server was run or verified.",
+  "source_evidence": [
+    "src/lib/tools/handlers/cdp.ts:370-394,562-611",
+    "src/lib/tools/handlers/canonical.ts:650-799",
+    "src/lib/tools/handlers/canonical-mergers.ts:482-562",
+    "src/lib/cdp/client.ts:35-85,271-301,352-388",
+    "src/features/tools/ToolsView.tsx:390-462",
+    "tests/browser/fixtures/form-controls.html",
+    "tests/browser/form-control-owned-fixture.test.mjs:72-94",
+    "tests/browser/owned-fixture-server.mjs:1-24"
+  ]
+}

@@ -7,8 +7,8 @@
   "title": "Scrape native acceptance compares against a pre-click scroll baseline and misses tooltip-managed controls",
   "severity": "S2: acceptance driver false failure prevents trustworthy scroll proof and obstructs independent copy coverage; no product defect established",
   "priority": "P1",
-  "state": "fixed",
-  "owner": "root/scrape_scroll_native_retest",
+  "state": "closed",
+  "owner": "root",
   "preconditions": [
     "Use original frozen development CI37698216289/artifact11516342905/source52487361/version0.2.391 with current reviewed guest Scrape driver.",
     "Owned disposable guest profile, narrow360px panel, ARM macos-15, valid resource permits and owned intake/referrals fixture."
@@ -27,7 +27,9 @@
     ".research/scrape-scroll-native-diagnosis-20261007.json",
     ".research/scrape-scroll-repair-peer-20261007.json",
     ".research/scrape-scroll-native-retest-20261007.json",
-    ".research/scrape-warm-native-peer-20261007.json"
+    ".research/scrape-warm-native-peer-20261007.json",
+    ".research/scrape397-reply-native-20261007.json",
+    ".research/scrape397-reload-pass-peer-20261007.json"
   ],
   "resource_verdict": "All three current journals valid; acceptance child1/resourceInvalidfalse. Not resource exhaustion.",
   "transition_history": [
@@ -54,15 +56,29 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "fa05a939 exact focused CI37721518128 passed; independent source peer d8ff02ed accepts repaired baseline/control probes and T09 isolation. Native original warm/reload retest pending."
+    },
+    {
+      "at": "2026-10-08T05:08:04.308991+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Resource-valid native37729682008 on frozen397 completed original warm/navigation/full-reload requirements. Fresh independent peer de1acac8 accepts scoped original-defect closure."
+    },
+    {
+      "at": "2026-10-08T05:08:04.308991+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original driver defect no longer reproduces and surrounding Scrape copy/scroll acceptance passes. D166 earlier intermittent panel absence remains separate and unresolved; no whole-product or Store claim."
     }
   ],
   "closure_requirement": "Establish cause without weakening T07; causal source guard, independent review, then resource-valid original warm and reload native on/off proof plus surrounding independent Scrape copy checks.",
-  "next_action": "Preserve warm proof; complete original full-reload on/off proof after D164 navigation interruption resolved. D163 remains fixed, not closed.",
+  "next_action": "Closed at original test-driver defect scope; preserve D166 unresolved intermittent reload investigation and all untested modes/surfaces.",
   "retest": {
-    "run_id": "37721838779",
-    "warm": "pass",
-    "reload": "unverified_not_reached",
-    "independent_review": "cf9c773e",
-    "closure": "not_satisfied_reload_outstanding"
+    "run_id": "37729682008",
+    "product": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+    "driver": "reviewed197f4053 descendant workflowae437676",
+    "original_reproduction": "pass",
+    "surrounding_cases": ["EXT-F-1007-T07", "EXT-F-1007-T09"],
+    "resource_verdict": "all three current journals admitted/valid exit0",
+    "independent_review": ".research/scrape397-reload-pass-peer-20261007.json"
   }
 }

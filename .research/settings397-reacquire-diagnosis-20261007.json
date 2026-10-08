@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "lane": "settings397-reacquire-diagnosis",
+  "status": "missing_discriminator_no_source_fix",
+  "run": {
+    "id": 37729701473,
+    "resource_decision": "valid_package_browser_guest_admitted_child_failed",
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "product_version": "0.2.397",
+    "driver_head_sha": "ae437676714d30fce63adf99ce528b73cf534e90",
+    "receipt": ".research/settings397-fresh-native-20261007-originals/settings-local-controls-acceptance.json",
+    "guest_resource_journal": ".research/settings397-fresh-native-20261007-originals/resource-journals/hosted-guest-37729701473-1.jsonl"
+  },
+  "first_failure": {
+    "case_id": "EXT-F-1003-T34",
+    "boundary": "The Privacy helper's finally cleanup calls reloadSettings(panel); that sends Page.reload on the existing panel and waits for a visible Settings tab before clicking it.",
+    "observed": "Four earlier T34 warm and panel-reload UI/storage checks passed. The cleanup readiness poll then ended with replacement_settings_tab_ready_not_observed:{\"matched\":0,\"visible\":0}. The receipt has no baseline-restoration observation for T34.",
+    "source_locations": [
+      "tests/browser/settings-guest-privacy-batch.mjs:120-154",
+      "tests/browser/settings-local-controls-acceptance.mjs:100-155",
+      "tests/browser/settings-panel-driver.mjs:14-55"
+    ],
+    "root_cause_status": "unknown",
+    "reason": "The final poll only records two DOM counts. It does not record the panel target identity, current URL, document readiness, runtime availability, or React/console state at the failure boundary. Thus zero Settings tabs could mean the same document did not mount, the panel navigated elsewhere, or the CDP session observed the wrong/stale document."
+  },
+  "distinction_from_D162": {
+    "D162": "Frozen391 failure clicked too early on a newly replaced panel after full extension reload; readiness wait 65637cd5 and focused retest addressed that scope.",
+    "this_run": "The existing readiness wait ran and timed out during T34's additional same-panel reload in cleanup. Later in this run a separate full extension reload replaced worker and panel, then observed one active Settings tab and signed-out guest Account/Organization rows. The current event does not reopen D162 without boundary evidence."
+  },
+  "T64_separate": {
+    "observed": "T64 has zero steps and fails owned_never_capture_fixture_requires_signed_out_guest immediately after T34. Its signed-out predicate requires an active Settings pane and guest Account rows, in addition to empty auth storage. No T64 state sample was recorded.",
+    "interpretation": "Potential downstream effect of the preceding missing Settings view, not evidence that guest authentication changed or the product's Ask again control failed. The later full-extension reload shows guest identity again."
+  },
+  "candidate_discriminators_for_one_guarded_retest": [
+    {
+      "hypothesis": "Same CDP panel remains on extension URL but React never mounts Settings after cleanup Page.reload.",
+      "prediction": "At the failure boundary the target ID, URL, runtime ID, and document readiness remain valid, while Settings count is zero; app mount/error observations separate render failure from slow mount."
+    },
+    {
+      "hypothesis": "The CDP session points at a stale or navigated document after Page.reload.",
+      "prediction": "At failure the target ID or URL diverges from the pre-reload owned panel, or runtime ID is absent/mismatched; a fresh owned panel attachment differs."
+    },
+    {
+      "hypothesis": "The Settings tab mounts after the fixed observation window.",
+      "prediction": "A timestamped DOM transition and app-ready signal after the timeout show late mount on the same valid target. No timeout extension is justified until this is observed."
+    }
+  ],
+  "next_action": "On one resource-admitted hosted run, capture sanitized target ID equality, extension URL/path class, document ready/visibility, runtime-ID equality, root/tab counts, and first app exception immediately before Page.reload and at the failed readiness boundary. Keep the same readiness oracle and timeout. If the panel is valid but mount fails, trace the product render boundary; if target/navigation differs, trace panel attachment. Record a separate T64 signed-out predicate sample before any fixture action. Retest T34 restoration and T64 only after a proven cause and focused fix.",
+  "limits": [
+    "No native retest was authorized in this lane; source review cannot establish the root cause.",
+    "No product auth defect is inferred from T64; no restoration or downstream consumer pass is inferred from T34's four prior checks.",
+    "No driver or product source changed because no red-capable reproduction isolates a repair."
+  ]
+}

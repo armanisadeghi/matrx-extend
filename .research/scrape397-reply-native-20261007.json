@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape397-reply-native-20261007",
+  "status": "resource_valid_bounded_native_pass",
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0166",
+  "workflow": {
+    "run_id": 37729682008,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37729682008",
+    "conclusion": "success",
+    "checkout_sha": "ae437676714d30fce63adf99ce528b73cf534e90",
+    "inputs": {
+      "acceptance_lane": "A",
+      "runner_label": "macos-15",
+      "acceptance_case": "guest-scrape-development",
+      "scrape_auth_mode": "guest",
+      "scrape_width_mode": "narrow",
+      "development_run_id": 37724859892,
+      "development_artifact_id": 11527132614
+    },
+    "output_artifact": {
+      "id": 11529208967,
+      "name": "hosted-guest-37729682008-1",
+      "size_bytes": 183823,
+      "zip_sha256_from_workflow_log": "b07d2c69fcf9507ea7c11df5b7bac53f6bdaf550262df3c1b6acae4b8e617016"
+    }
+  },
+  "driver": {
+    "reviewed_diagnostic_commit": "197f405303eed3f529ff6fcee475b3f8e8483525",
+    "checkout_is_descendant": true,
+    "relevant_files_unchanged_from_reviewed_commit": true,
+    "driver_git_blob": "44ddb52110ba4b1de774b8f1856cb1f505d3d23b",
+    "focused_ci_run_id": 37729348256,
+    "focused_ci_pass": 64
+  },
+  "product": {
+    "artifact": {
+      "kind": "ci_development_test",
+      "channel": "development",
+      "version": "0.2.397",
+      "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+      "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+      "run_id": 37724859892,
+      "artifact_id": 11527132614
+    },
+    "browser_version": "Chrome/141.0.7390.37",
+    "extension_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "auth_mode": "guest",
+    "guest_storage_empty": true,
+    "width_mode": "narrow"
+  },
+  "receipt": {
+    "path": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/test-results/scrape-guest-native-75076628-e28a-48b0-935a-052925a3eb77.json",
+    "sha256": "0b4bafb4d9201c69e5e830e6d7d70bbd46f38df75a33033f4eba67dcf0f92352",
+    "bytes": 248657,
+    "status": "partial",
+    "stage": "post_reload_link_controls",
+    "failure": null,
+    "case_statuses": {
+      "EXT-F-1007-T20": "passed",
+      "EXT-F-1007-T01": "partial",
+      "EXT-F-1007-T08": "partial",
+      "EXT-F-1007-T10": "passed",
+      "EXT-F-1007-T11": "passed",
+      "EXT-F-1007-T12": "passed",
+      "EXT-F-1007-T13": "partial",
+      "EXT-F-1007-T02": "partial",
+      "EXT-F-1007-T07": "passed",
+      "EXT-F-1007-T09": "passed",
+      "EXT-F-1007-T14": "partial"
+    }
+  },
+  "requested_cases": {
+    "EXT-F-1007-T07": {
+      "verdict": "passed",
+      "warm_passed": true,
+      "reload_passed": true
+    },
+    "EXT-F-1007-T09": {
+      "verdict": "passed",
+      "intake_warm_options": 22,
+      "referrals_offered_options": 13,
+      "referrals_empty_sections": [
+        "Copy images",
+        "Copy videos",
+        "Copy links"
+      ],
+      "intake_reload_options": 22,
+      "offered_option_checks_passed": true
+    }
+  },
+  "reload": {
+    "management_reload_clicked": true,
+    "old_targets_retired": true,
+    "worker_replaced": true,
+    "panel_replaced": true,
+    "old_worker_destroyed_event": true,
+    "replacement_worker_created_event": true,
+    "replacement_worker_present": true,
+    "observed_worker_count": 1,
+    "open_panel_request": {
+      "worker_at_click": {
+        "status": "activated",
+        "running_status": "running"
+      },
+      "received": true,
+      "ok": true,
+      "opened": true,
+      "category": "opened"
+    },
+    "context_boundary": {
+      "first": {
+        "side_panel_count": 1,
+        "exact_expected_count": 0,
+        "elapsed_ms": 30
+      },
+      "last": {
+        "side_panel_count": 1,
+        "exact_expected_count": 1,
+        "elapsed_ms": 135
+      },
+      "attempts": 2,
+      "exact_expected_appeared": true
+    },
+    "scrape_tab_boundary": {
+      "first": {
+        "matched": 1,
+        "visible": 1
+      },
+      "last": {
+        "matched": 1,
+        "visible": 1
+      },
+      "attempts": 1
+    },
+    "milestones": [
+      "reload_extension",
+      "open_scrape_in_replacement_panel",
+      "observe_replacement_scrape",
+      "replacement_scrape_observed"
+    ]
+  },
+  "resources": {
+    "classification": "valid",
+    "journals": [
+      {
+        "kind": "package",
+        "path": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37729682008-1.jsonl",
+        "sha256": "dde4262b3d261129fff5f34426cda85e4e74f3e749a426ca675631ddd9d176ae",
+        "event_count": 4,
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "kind": "browser",
+        "path": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37729682008-1.jsonl",
+        "sha256": "30cec2bc81af080484e5f4332a99f32d4857a6a11842749dd3430872e2232468",
+        "event_count": 4,
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "kind": "guest",
+        "path": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37729682008-1.jsonl",
+        "sha256": "14e99ec0d20a8275f2f864c5c640bd7be71f55a6205d294713c8fdf160bd44c5",
+        "event_count": 8,
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    ],
+    "prior_journals_in_download_excluded": 6,
+    "prior_journal_names": [
+      "hosted-guest-37724762467-1.jsonl",
+      "hosted-browser-37105304739-1.jsonl",
+      "hosted-guest-37105304739-1.jsonl",
+      "hosted-browser-37724762467-1.jsonl",
+      "hosted-package-37105304739-1.jsonl",
+      "hosted-package-37724762467-1.jsonl"
+    ]
+  },
+  "screenshots": [
+    {
+      "path": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-cYvXzK/native-side-panel.png",
+      "sha256": "d9d40c6d68da4b569c22cf9f15aa3a50bc01b2f83e15210328075548e6abe106",
+      "bytes": 32353
+    },
+    {
+      "path": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-cYvXzK/normal-target-after-open.png",
+      "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2",
+      "bytes": 27078
+    },
+    {
+      "path": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-cYvXzK/scrape-deep-article.png",
+      "sha256": "cc471a2c804ddb8f6edff50c63ced316c8f712f4e3cc7a65065003c57ab83c7e",
+      "bytes": 37567
+    },
+    {
+      "path": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-cYvXzK/scrape-fast-article.png",
+      "sha256": "1099e3b9e94e3381aa250573ca492e6da91fb4a2646e8f424200283a364a9e33",
+      "bytes": 37330
+    },
+    {
+      "path": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-cYvXzK/scrape-restricted-error.png",
+      "sha256": "e7853f9aa3b864bbeb2aff9172383957fc7e61c93beac41006ff85046384c275",
+      "bytes": 32732
+    }
+  ],
+  "limits": [
+    "One native run only; no retry.",
+    "This is a development artifact, not Store-installed acceptance.",
+    "The original receipt overall is partial because surrounding cases remain partial; T07 and T09 are passed.",
+    "Independent native peer review and canonical inventory/defect integration remain with the root owner.",
+    "No product cause is inferred from a successful reload callback."
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "artifact_type": "independent-source-procedure-review",
+  "reviewed_commit": "529f579286fa0e7a04da33d02f1869ae14ab3cc8",
+  "reviewed_path": ".research/cdp-remaining-procedures-20261007.json",
+  "scope": "Source-only review of four proposed inventory procedures. No browser, handler, build, test, release, or runtime execution occurred.",
+  "verdict_a_procedural_usefulness": {
+    "overall": "PARTIAL",
+    "rows": [
+      {
+        "case_id": "EXT-F-4106-T01",
+        "verdict": "REPAIR_BEFORE_USE",
+        "supported": ["String and numeric tab_id schema, explicit tab targeting, direct manual-run boundary, and the unresolved focus gate match source."],
+        "missing_or_incorrect": ["The fixture initializes #keys to 'seed'. The proposed positive call uses CDP Input.insertText, which inserts at the focused caret; source performs no select-all, clear, or replacement. Requiring the value exactly 'ext-f-4106-probe' is therefore unsupported and likely fails even with correct focus. A valid positive path must establish an empty field or selected contents and prove insertion-time focus before asserting an exact value.", "The fixture is mounted only by a short-lived unit test; there is no repeatable manual host. Warm and reload positive paths remain unexecutable until one is supplied."],
+        "evidence": ["tests/browser/fixtures/form-controls.html: #keys value='seed'", "src/lib/tools/handlers/cdp.ts:370-394 Input.insertText without focus or replacement", "src/features/tools/ToolsView.tsx:390-459 manual Run", "tests/browser/form-control-owned-fixture.test.mjs:75-95 ephemeral server"]
+      },
+      {
+        "case_id": "EXT-F-4156-T01",
+        "verdict": "DESIGN_USABLE_AFTER_HOST",
+        "supported": ["Read-tier canonical schema uses string tab_id, four conditions, target refinement, exact fixture selectors and heading, bounded timeout, and distinct schema rejection versus handler timeout. The duplicate legacy Action row warning is accurate."],
+        "missing_or_incorrect": ["No current manual fixture host exposes /form-controls, so positive branches are conditional rather than executable now. Permission dimension remains open because direct Run bypasses dispatch. The procedure must retain NOT_EXECUTABLE design status until a real host and receipt exist."],
+        "evidence": ["src/lib/tools/handlers/canonical.ts:650-799", "src/lib/tools/registry.ts:137-155,235-236", "src/features/tools/ToolsView.tsx:121-235,390-459", "tests/browser/form-control-owned-fixture.test.mjs:75-95"]
+      },
+      {
+        "case_id": "EXT-F-4168-T01",
+        "verdict": "DESIGN_USABLE_AFTER_HOST",
+        "supported": ["Admin-only declaration, list/attach/detach schema, explicit numeric tab ID, baseline/delta ownership, repeated attach, exact-ID cleanup, and reload reacquisition follow the source behavior."],
+        "missing_or_incorrect": ["The claimed owned route cannot currently be opened through a standalone manual host, so positive execution is blocked. The list reports the extension worker's in-memory set; service-worker restart or idle detach can invalidate a baseline between steps. A run must treat such a change as inconclusive rather than a product failure. Direct Run cannot prove the admin or debugger gate."],
+        "evidence": ["src/lib/tools/handlers/canonical-mergers.ts:482-516", "src/lib/tools/handlers/cdp.ts:41-85", "src/lib/cdp/client.ts:35-85,271-301,352-388", "tests/browser/form-control-owned-fixture.test.mjs:75-95"]
+      },
+      {
+        "case_id": "EXT-F-4169-T01",
+        "verdict": "REPAIR_EXPECTATION_BEFORE_USE",
+        "supported": ["Set and clear schema, missing-field handler refusal, out-of-range width schema rejection, admin declaration, explicit tab targeting, and the host blocker match source."],
+        "missing_or_incorrect": ["Clear reports {ok:true} even if the tab is not attached. When attached it catches and discards a user-agent reset error. Therefore the procedure must not present {ok:true} as proof that viewport or UA was restored; it needs independent native readback and must keep cleanup unverified on mismatch. The host is absent, so runtime positives remain blocked.", "The set path attaches to CDP and does not detach; the proposed exact-owned delta cleanup is necessary and must be measured before any detach."],
+        "evidence": ["src/lib/tools/handlers/canonical-mergers.ts:517-562", "src/lib/tools/handlers/cdp.ts:562-611", "src/lib/cdp/client.ts:271-301", "tests/browser/form-control-owned-fixture.test.mjs:75-95"]
+      }
+    ],
+    "integration_ruling": "The four rows can be integrated as explicitly conditional source proposals with design_status and runtime/permissions unverified. Before anyone executes them for acceptance, repair 4106's exact-value setup, qualify 4169's cleanup result, and supply an owned manual fixture host. No row is presently an executable positive acceptance procedure."
+  },
+  "verdict_b_quality": {
+    "overall": "PARTIAL",
+    "supported": ["The patch preserves inventory scope and mode applicability, separates schema invalidity from permission refusal, requires a receipt and real extension reload, avoids claiming runtime results, and protects pre-existing CDP attachments."],
+    "issues": ["4106's exact-value oracle contradicts the fixture and insertText semantics; important because it can turn a working feature into a false failure.", "4169's clear return is an insufficient cleanup oracle because UA reset failure is swallowed; important because the procedure could leave changed browser state while reporting success.", "All four depend on an unimplemented manual fixture host, correctly disclosed but preventing immediate execution."],
+    "runtime_unknown": "No source review establishes current fixture availability, user focus at insertion time, native CDP effects, permission enforcement, role behavior, or warm/reloaded results."
+  }
+}

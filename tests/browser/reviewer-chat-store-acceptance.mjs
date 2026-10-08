@@ -106,13 +106,17 @@ async function approvedOrganizationObservation(panel) {
       const organization = [...document.querySelectorAll('button[aria-expanded]')]
         .find((button) => button.textContent.trim() === 'Organization');
       const orgSection = organization?.parentElement?.nextElementSibling;
-      const pickers = ${actingOrganizationPickersExpression()};
+      const pickers = (${actingOrganizationPickersExpression()}).filter((element) => {
+        const rect = element.getBoundingClientRect(), style = getComputedStyle(element);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+      });
       const picker = pickers.length === 1 ? pickers[0] : null;
       const active = stored['matrx.org.active'];
       return {
         actingAsPickerCount: pickers.length,
         pickerMatchesApproved: picker?.textContent?.trim() === ${JSON.stringify(approvedOrganization.name)},
-        persistedIdMatchesApproved: active?.id === ${JSON.stringify(approvedOrganization.id)},
+        deviceOverridePresent: active !== undefined && active !== null,
+        deviceOverrideMatchesApproved: active?.id === ${JSON.stringify(approvedOrganization.id)} && active?.name === ${JSON.stringify(approvedOrganization.name)},
       };
     }))()`,
   );
@@ -1299,7 +1303,12 @@ try {
             approvedSelection = await waitFor(
               'reviewer_approved_organization_selected',
               () => approvedOrganizationObservation(panel),
-              (value) => value?.pickerMatchesApproved && value?.persistedIdMatchesApproved,
+              // A load-time account choice is intentionally not saved as a device override.
+              // A present override must agree; the real request header is checked below.
+              (value) =>
+                value?.actingAsPickerCount === 1 &&
+                value?.pickerMatchesApproved &&
+                (!value?.deviceOverridePresent || value?.deviceOverrideMatchesApproved),
               30_000,
             );
           } catch (error) {
@@ -1339,16 +1348,16 @@ try {
             },
           }),
         };
+        if (UNINTERRUPTED) {
+          await exerciseApproval(native);
+          return;
+        }
+
         assert.equal(
           storageShape.activeOrganizationPresent,
           true,
           'selected organization must persist as a valid object',
         );
-
-        if (UNINTERRUPTED) {
-          await exerciseApproval(native);
-          return;
-        }
 
         stage = 'open_chat';
         await click(panel, 'title', 'Chat');

@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "task": "screenshot-org-selection-diagnosis",
+  "run_id": "screenshot-org-predicate-diagnostic-20261007",
+  "source_diagnostic_commit": "526ef4e4",
+  "artifact": {
+    "version": "0.2.397",
+    "treeSha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+    "runId": 37727998755,
+    "runAttempt": 1,
+    "artifactId": 11528732938,
+    "githubArtifactDigest": "sha256:e996032fdecac4e515632f242962856351703cc22bcaad9e945d6a7c9b90ddff",
+    "source": {
+      "originMain": "833300a9e2a808f18dfb0cd2daf4025e422684c3",
+      "localHead": "833300a9e2a808f18dfb0cd2daf4025e422684c3",
+      "trackedDirty": true,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "observation": {
+    "globalActingAsLabelCount": 1,
+    "originalComboboxCount": 1,
+    "originalPickerMatchesApproved": true,
+    "originalPickerTextSha256": "61e154af11cd32c0501d6c5754026e618b50a7b726adfd0c915cd3882a7dd64a",
+    "organizationSectionPresent": true,
+    "scopedActingAsLabelCount": 1,
+    "scopedComboboxCount": 1,
+    "scopedPickerMatchesApproved": true,
+    "persistedNameMatchesApproved": false,
+    "persistedNamePresent": false,
+    "persistedIdPresent": false,
+    "persistedIdMatchesApproved": false,
+    "persistedNameSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "persistedIdSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "uiErrorCount": 0,
+    "uiErrorTextSha256": [],
+    "privateScreenshot": {
+      "sha256": "6ad57721bf46e0f15a7a6504ba7e2f0e0a40f780a61d2a9fe781e847be3ee668",
+      "byteCount": 19817
+    }
+  },
+  "failure": {
+    "stage": "select_approved_organization",
+    "code": "owned_harness_or_ui_stage_failed",
+    "diagnostic": {
+      "runtimeCode": null,
+      "timeout": false,
+      "assertion": false,
+      "viewerStep": null,
+      "pointerTarget": {
+        "kind": "option",
+        "target": "private_label",
+        "targetSha256": "61e154af11cd32c0501d6c5754026e618b50a7b726adfd0c915cd3882a7dd64a",
+        "phase": "release_returned"
+      },
+      "pointerDiagnostic": null,
+      "pointerCode": null
+    }
+  },
+  "cause": "Native approved UI identity succeeds; optional device organization entry is absent under the canonical account-choice load ladder. Harness incorrectly requires a device override.",
+  "siblings": [
+    "selectOrganization",
+    "verifyCanonicalShare expected org",
+    "recoverOwnedGrant device-only identity"
+  ],
+  "behavior_verdict": "diagnostic boundary proven; corrected native run pending independent verifier",
+  "code_quality_verdict": "syntax and focused Biome pass; independent review pending",
+  "cleanup": "No grant revoke attempted. Private exact recovery receipt preserved. Owned guarded run terminal valid child_failed; browser/profile process group exited."
+}

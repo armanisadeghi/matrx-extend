@@ -1,0 +1,42 @@
+{
+  "task_id": "screenshot-cleanup-fresh-reverify",
+  "lane": "independent native verification",
+  "status": "partial",
+  "source_verdict": "pass",
+  "source_commits": [
+    "c1bad05f",
+    "76521c6b"
+  ],
+  "live_verdict": "unverified",
+  "retained_grant_read_only_verification": {
+    "exactGrant": true,
+    "actorFileOrganizationCreatedAtMatch": true,
+    "activeBeforeRun": true
+  },
+  "run_id": "screenshot-fresh-retained-grant-20261007",
+  "native_report": "test-results/screenshot-full-page-2aa479b7-dfd7-4650-b7e5-5bc07997ac11.json",
+  "artifact": {
+    "sourceSha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+    "runId": 37727998755,
+    "artifactId": 11528732938,
+    "version": "0.2.397",
+    "treeSha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd"
+  },
+  "first_failure": {
+    "stage": "select_approved_organization",
+    "approvedOptionNativeClickCompleted": true,
+    "selectedOrganizationObserverDidNotPass": true,
+    "diagnosticActualObserverValues": "unavailable"
+  },
+  "retainedGrantServiceCleanup": "not_reached",
+  "requestedScreenshotAcceptance": "not_started",
+  "resource_valid": true,
+  "ownedProcessesRemaining": false,
+  "ownedProfileDirectoryEmpty": true,
+  "limitations": [
+    "Fixture observer failure is not product failure.",
+    "Exact retained grant remains active; no revoke attempted.",
+    "Store publication and installation unverified."
+  ],
+  "next_action": "Capture actual organization observer components, repair diagnosed fixture seam, then guarded retained grant cleanup and requested screenshot native retest."
+}
