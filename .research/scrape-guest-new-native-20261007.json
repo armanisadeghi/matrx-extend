@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape-guest-new-native-20261007",
+  "lane": "A",
+  "model": "GPT-6 (variant and effort not exposed)",
+  "status": "completed_with_native_mismatch",
+  "feature_ids": ["EXT-F-1007"],
+  "defect_ids": [],
+  "summary": "One guarded hosted development-artifact run completed with valid resource admission. Warm T07 observed a scroll-sync mismatch after stopping follow; T09 was not reached. No root cause or source fix is claimed.",
+  "workflow": {
+    "run_id": 37720057690,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37720057690",
+    "workflow_name": "Hosted guest side-panel acceptance",
+    "event": "workflow_dispatch",
+    "checkout_ref": "main",
+    "checkout_sha": "f79fbe757fa05450fe1d760293e3b6a976dbce56",
+    "acceptance_case": "guest-scrape-development",
+    "acceptance_lane": "A",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "runner_machine": "arm64",
+    "runner_name": "GitHub Actions 1000097216",
+    "auth_mode": "guest",
+    "width_mode": "narrow",
+    "observed_panel_width_px": 360,
+    "workflow_conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "version": "0.2.391",
+    "ci_run_id": 37698216289,
+    "artifact_id": 11516342905,
+    "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+    "tree_sha256": "04fddf9bfada089f50702254d64f53b1880d788f815f337c02471907ea994793",
+    "artifact_verified_by_workflow_import": true
+  },
+  "driver_identity": {
+    "path": "tests/browser/scrape-guest-native-acceptance.mjs",
+    "sha256": "1d2dc04e345a5678759d269fb7943be9443811125ef854efb0568138bc047d2a",
+    "behavior_oracle_path": "tests/browser/scrape-guest-behavior-batch.mjs",
+    "behavior_oracle_sha256": "3d0e829d33133eaca1729469602027c105c6b30c86ee4de4a549874159a3603f",
+    "source_review": ".research/scrape-copy-path-final-peer-20261007.json",
+    "reviewed_driver_commits": ["5a836098", "6b6fb20f", "16a5c39d0ae560f99fb1a0954e6e5ba2e8273452"],
+    "focused_ci_run_id": 37719671634,
+    "focused_ci_conclusion": "success"
+  },
+  "resource_admission": {
+    "valid": true,
+    "resource_invalid": false,
+    "journals": [
+      {
+        "path": ".research/scrape-guest-new-native-20261007-run37720057690-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37720057690-1.jsonl",
+        "decision": "valid",
+        "resource_invalid": false,
+        "child_exit_code": 0
+      },
+      {
+        "path": ".research/scrape-guest-new-native-20261007-run37720057690-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37720057690-1.jsonl",
+        "decision": "valid",
+        "resource_invalid": false,
+        "child_exit_code": 0
+      },
+      {
+        "path": ".research/scrape-guest-new-native-20261007-run37720057690-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37720057690-1.jsonl",
+        "decision": "child_failed",
+        "resource_invalid": false,
+        "child_exit_code": 1
+      }
+    ],
+    "interpretation": "The native driver assertion failed while the host resource permit remained valid; this is not an infrastructure-invalid run."
+  },
+  "verification": [
+    {
+      "case_id": "EXT-F-1007-T07",
+      "run_id": 37720057690,
+      "verdict": "observed_failure",
+      "evidence": {
+        "driver_status": "failed",
+        "stage": "guest_scroll_sync",
+        "native_stage": "exercise_panel",
+        "failure_code": "scrape_guest_scroll_sync_mismatch",
+        "warm": {
+          "start": {
+            "page_y": 0,
+            "article_top": 0,
+            "sync_off_control": true
+          },
+          "following": {
+            "page_y": 650,
+            "article_top": 310,
+            "stop_follow_control": true
+          },
+          "after_stop_and_page_reverse": {
+            "page_y": 0,
+            "article_top": 0,
+            "sync_off_control": false,
+            "stop_follow_control": false
+          },
+          "oracle_expected_article_top_after_stop": 310
+        },
+        "raw_driver_receipt": ".research/scrape-guest-new-native-20261007-run37720057690-originals/matrx-extend/matrx-extend/test-results/scrape-guest-native-ba20f254-0d25-4074-b763-c3543c5cf412.json",
+        "screenshots": [
+          ".research/scrape-guest-new-native-20261007-run37720057690-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-2IogAV/scrape-fast-article.png",
+          ".research/scrape-guest-new-native-20261007-run37720057690-originals/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-2IogAV/scrape-deep-article.png"
+        ],
+        "failure_stage_screenshot": null,
+        "reload_subcase": "not_reached"
+      }
+    },
+    {
+      "case_id": "EXT-F-1007-T09",
+      "run_id": 37720057690,
+      "verdict": "unverified_not_reached",
+      "evidence": {
+        "raw_driver_receipt_has_case_entry": false,
+        "reason": "The driver stopped on T07 before adding T09 or exercising any of its 22 menu options across intake/referrals/full reload. No sentinel, menu selection, or clipboard readback ran."
+      }
+    }
+  ],
+  "limitations": [
+    "Only warm T07 was observed. Its full-reload subcase and all T09 behavior remain unverified.",
+    "The receipt does not identify a Chrome version or extension runtime ID, and no screenshot was captured at the exact mismatch stage.",
+    "The downloaded workflow artifact also contained three resource journals for older run 37105304739; those stale journals were excluded from the curated originals and all acceptance interpretation."
+  ],
+  "originals_directory": ".research/scrape-guest-new-native-20261007-run37720057690-originals",
+  "next_action": "Root independently triages the warm T07 observation. Keep T09 unverified; this one-attempt lane has no retry authorization."
+}
