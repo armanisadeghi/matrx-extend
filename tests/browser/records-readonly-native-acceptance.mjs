@@ -7,12 +7,12 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { approvedShowcaseOrganization } from './settings-native-auth-driver.mjs';
 import {
   assertRecordsVisibleCompletion,
   observeRecordsExecution,
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
+import { approvedShowcaseOrganization } from './settings-native-auth-driver.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 import {
   panelBearerHash,
