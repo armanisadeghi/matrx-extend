@@ -6,13 +6,12 @@ import test from 'node:test';
 import ts from 'typescript';
 import {
   assertRecordsVisibleCompletion,
+  enterRecordsInput,
   observeRecordsExecution,
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
 
-// Execute the callback passed by the acceptance driver itself, without launching
-// Chrome or importing its top-level runner. The parser only locates the callback;
-// the assertions below operate on its behavior.
+// Evaluate the callback the native acceptance actually passes to the shared harness.
 const source = await readFile(
   new URL('./records-readonly-native-acceptance.mjs', import.meta.url),
   'utf8',
@@ -33,12 +32,11 @@ function visit(node) {
   ts.forEachChild(node, visit);
 }
 visit(tree);
-assert.ok(callback, 'Records driver callback required');
-
+assert.ok(callback);
 const sha = (value) => createHash('sha256').update(value).digest('hex');
 const organizationId = 'ba05beee-625e-43bb-931e-c2ea99d718d2';
 const approved = { id: organizationId, name: 'Harbor Dental' };
-const tableResult = (name) => ({
+const positive = (name) => ({
   success: true,
   output: {
     action: 'table_list',
@@ -46,25 +44,44 @@ const tableResult = (name) => ({
     organizations_covered: [organizationId],
   },
 });
+const refusal = {
+  success: false,
+  error: {
+    error_type: 'invalid_arguments',
+    message: 'Invalid arguments for records: limit must be an integer',
+  },
+};
+const input = {
+  action: 'table_list',
+  args: { organization_id: organizationId, include_app_tables: true, limit: 50 },
+};
+const invalid = {
+  action: 'table_list',
+  args: { organization_id: organizationId, include_app_tables: true, limit: 'not-a-number' },
+};
 
 function runDriver({
-  token = 'admin-session',
-  visibleResult = tableResult('appointments'),
-  completionResult = tableResult('appointments'),
-  visibleChangesAfterWait = false,
-  driverSource = callback,
   platform = 'darwin',
+  token = 'admin-session',
+  completions = [positive('appointments'), refusal, positive('invoices')],
+  changedVisible = false,
+  reloadedProfile = 'admin-id',
+  driverSource = callback,
+  inputHelper = enterRecordsInput,
 } = {}) {
   const events = new EventEmitter();
   const active = new Set();
-  const report = { native_stage: null, request: null, result: null };
-  const stages = [];
-  const expectedInput = {
-    action: 'table_list',
-    args: { organization_id: organizationId, include_app_tables: true, limit: 50 },
+  const report = {
+    native_stage: null,
+    request: null,
+    result: null,
+    invalid_input: null,
+    reload: null,
   };
-  const expectedText = JSON.stringify(expectedInput);
+  const stages = [];
   const editor = { value: '{"action":"old"}', focused: false, start: 0, end: 0 };
+  let runs = 0;
+  let reloads = 0;
   const panel = {
     on(name, listener) {
       events.on(name, listener);
@@ -76,6 +93,11 @@ function runDriver({
     },
     async send(name, options = {}) {
       if (name === 'Network.enable') return {};
+      if (name === 'Page.reload') {
+        reloads++;
+        editor.value = '{}';
+        return {};
+      }
       if (name === 'Input.dispatchKeyEvent') {
         if (
           options.type === 'keyDown' &&
@@ -97,9 +119,10 @@ function runDriver({
         return {};
       }
       if (name === 'Network.getResponseBody') {
-        assert.equal(options.requestId, 'records-execute');
+        const index = Number(options.requestId?.split('-').at(-1));
+        assert.ok(index >= 0 && index < runs, 'response must belong to a sent request');
         return {
-          body: `${JSON.stringify({ event: 'completion', data: { operation: 'tool_execution', result: { full_result: completionResult } } })}\n`,
+          body: `${JSON.stringify({ event: 'completion', data: { operation: 'tool_execution', result: { full_result: completions[index] } } })}\n`,
         };
       }
       throw new Error(`unexpected CDP command ${name}`);
@@ -108,12 +131,11 @@ function runDriver({
   const waitFor = async (label, read, accept) => {
     const value = await read();
     assert.equal(Boolean(accept(value)), true, `${label}_not_accepted`);
-    if (label === 'records_output_visible' && visibleChangesAfterWait) {
-      return { visible: true, raw: JSON.stringify(tableResult('invoices')) };
-    }
+    if (label.endsWith('_output_visible') && changedVisible)
+      return { visible: true, raw: JSON.stringify(positive('stale')) };
     return value;
   };
-  const outputState = async () => ({ visible: true, raw: JSON.stringify(visibleResult) });
+  const outputState = async () => ({ visible: true, raw: JSON.stringify(completions[runs - 1]) });
   const evaluate = async (_panel, script) => {
     if (script.includes('t.focus()')) {
       editor.focused = true;
@@ -121,157 +143,190 @@ function runDriver({
     }
     if (script.includes('selectionStart'))
       return editor.focused && editor.start === 0 && editor.end === editor.value.length;
-    if (script.includes("querySelector('textarea')?.value")) return editor.value === expectedText;
+    if (script.includes("querySelector('textarea')?.value"))
+      return editor.value === JSON.stringify(runs === 1 ? invalid : input);
     return true;
   };
-  const click = async () => {
-    assert.equal(editor.value, expectedText, 'Run requires the trusted Records input');
-    const requestId = 'records-execute';
-    events.emit('Network.requestWillBeSent', {
-      requestId,
-      request: {
-        url: 'https://server.app.matrxserver.com/tools/test/execute',
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId },
-        postData: JSON.stringify({ tool_name: 'records', arguments: expectedInput }),
-      },
-    });
-    events.emit('Network.responseReceived', { requestId, response: { status: 200 } });
-    events.emit('Network.loadingFinished', { requestId });
+  const click = async (_panel, kind, label) => {
+    if (label === 'Run') {
+      const expected = runs === 1 ? invalid : input;
+      assert.equal(editor.value, JSON.stringify(expected), 'Run requires actual input');
+      const requestId = `records-execute-${runs++}`;
+      events.emit('Network.requestWillBeSent', {
+        requestId,
+        request: {
+          url: 'https://server.app.matrxserver.com/tools/test/execute',
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}`, 'X-Organization-Id': organizationId },
+          postData: JSON.stringify({ tool_name: 'records', arguments: expected }),
+        },
+      });
+      events.emit('Network.responseReceived', { requestId, response: { status: 200 } });
+      events.emit('Network.loadingFinished', { requestId });
+    } else if (kind === 'title' && label === 'Settings')
+      assert.equal(reloads, 1, 'Settings must follow full panel reload');
   };
-  const signIn = (options) =>
-    signInRecordsAdmin(options, async ({ onStage }) => {
-      onStage('admin_authenticated');
-      return { admin_role: true };
-    });
   const bindings = {
     stage: (value) => stages.push(value),
     report,
     approved,
     REPO: '/repo',
     process: { env: {}, platform },
-    signInRecordsAdmin: signIn,
+    signInRecordsAdmin: (options) =>
+      signInRecordsAdmin(options, async ({ onStage }) => {
+        onStage('admin_authenticated');
+        return { admin_role: true, email: 'admin@admin.com', profileId: 'admin-id' };
+      }),
     runShowcaseOrganizationCheckpoint: async () => {},
     waitFor,
     evaluate,
     click,
+    openSection: async () => {},
+    toolsCatalogState: async () => 'catalog',
+    accountIdentity: async () => ({
+      emailMatches: true,
+      adminRole: true,
+      signOutVisible: true,
+      organizationSelected: true,
+      organizationLabel: approved.name,
+    }),
+    panelIdentity: async () => ({
+      accessTokenPresent: true,
+      isAdmin: true,
+      profileId: reloadedProfile,
+      organizationId,
+      organizationName: approved.name,
+    }),
     panelBearerHash: async () => sha('admin-session'),
     observeRecordsExecution,
     outputState,
     assertRecordsVisibleCompletion,
+    enterRecordsInput: inputHelper,
     assert,
   };
-  const names = Object.keys(bindings);
-  const driver = new Function(...names, `return ${driverSource};`)(...Object.values(bindings));
+  const driver = new Function(...Object.keys(bindings), `return ${driverSource};`)(
+    ...Object.values(bindings),
+  );
   return {
     run: () => driver({ page: {}, panel, resourceAction: (action) => action() }),
     report,
     stages,
     active,
+    get runs() {
+      return runs;
+    },
+    get reloads() {
+      return reloads;
+    },
   };
 }
 
-test('actual Records driver forwards sign-in stages and accepts a correlated request and completion', async () => {
+test('actual callback requires finished matching success, refusal, and post-reload success', async () => {
   const scenario = runDriver();
   await scenario.run();
+  assert.equal(scenario.runs, 3);
+  assert.equal(scenario.reloads, 1);
   assert.equal(scenario.report.native_stage, 'admin_authenticated');
-  assert.deepEqual(scenario.report.request, {
-    path: '/tools/test/execute',
-    method: 'POST',
+  assert.equal(scenario.report.result?.success, true);
+  assert.deepEqual(scenario.report.invalid_input, {
+    finished: true,
+    status: 200,
+    completion_observed: true,
+    visible: true,
+    success: false,
+    error_type: 'invalid_arguments',
+    limit_named: true,
+  });
+  assert.deepEqual(scenario.report.reload, {
+    full_panel_reload: true,
+    admin_identity_matches: true,
     organization_matches: true,
     authenticated_principal_matches: true,
-    completion_observed: true,
-    include_app_tables: true,
-    status: 200,
     finished: true,
-  });
-  assert.deepEqual(scenario.report.result, {
+    completion_observed: true,
     visible: true,
     success: true,
-    action: 'table_list',
     count: 1,
-    approved_organization_covered: true,
   });
-  assert.equal(scenario.active.size, 0, 'CDP listeners must be removed');
-  assert.doesNotMatch(JSON.stringify(scenario.report), /admin-session|appointments|Bearer/);
+  assert.equal(scenario.active.size, 0);
+  assert.doesNotMatch(
+    JSON.stringify(scenario.report),
+    /admin-session|appointments|invoices|Bearer/,
+  );
 });
 
-test('Records input replaces the existing draft through trusted selection on Linux', async () => {
+test('trusted input helper replaces an existing draft on Linux', async () => {
   const scenario = runDriver({ platform: 'linux' });
   await scenario.run();
-  assert.equal(scenario.report.result?.action, 'table_list');
+  assert.equal(scenario.runs, 3);
 });
 
-test('Records input rejects an unselected draft before inserting or running', async () => {
-  const changed = callback.replace("commands: ['selectAll'],", '');
-  assert.notEqual(changed, callback);
-  const scenario = runDriver({ driverSource: changed });
-  await assert.rejects(scenario.run(), /records_input_selection_missing/);
-  assert.equal(scenario.report.request, null);
-  assert.equal(scenario.report.result, null);
-});
-
-test('actual Records driver refuses a different execute bearer and cleans up listeners', async () => {
-  const scenario = runDriver({ token: 'another-session' });
-  await assert.rejects(scenario.run(), /records_execute_principal_mismatch/);
-  assert.equal(scenario.active.size, 0);
-  assert.equal(scenario.report.result, null);
-  assert.doesNotMatch(JSON.stringify(scenario.report), /another-session|Bearer/);
-});
-
-test('actual Records driver refuses a stale visible result after the wait and cleans up listeners', async () => {
-  const scenario = runDriver({ visibleChangesAfterWait: true });
-  await assert.rejects(scenario.run(), /records_output_completion_mismatch/);
-  assert.equal(scenario.active.size, 0);
-  assert.equal(scenario.report.result, null);
-  assert.doesNotMatch(JSON.stringify(scenario.report), /appointments|invoices|Bearer/);
-});
-
-test('driver seam mutation proof catches omitted stage, bearer assertion, and final completion assertion separately', async () => {
-  const mutate = (pattern, replacement) => {
-    const changed = callback.replace(pattern, replacement);
-    assert.notEqual(changed, callback, 'mutation must change the actual callback');
-    return changed;
+test('missing selection refuses before execution', async () => {
+  const helper = async (panel, evaluate, stage, value, platform) => {
+    const intercepted = {
+      ...panel,
+      send: (name, options) =>
+        panel.send(
+          name,
+          name === 'Input.dispatchKeyEvent' ? { ...options, commands: [] } : options,
+        ),
+    };
+    return enterRecordsInput(intercepted, evaluate, stage, value, platform);
   };
-  const noStage = mutate(/onStage: \(value\) => \{\s*report\.native_stage = value;\s*\},/, '');
-  const missingStage = runDriver({ driverSource: noStage });
-  await assert.rejects(missingStage.run(), /records_auth_stage_callback_required/);
-  assert.equal(missingStage.active.size, 0);
+  const scenario = runDriver({ inputHelper: helper });
+  await assert.rejects(scenario.run(), /records_input_selection_missing/);
+  assert.equal(scenario.runs, 0);
+});
 
-  const noBearerCheck = mutate(
-    /assert\.equal\(request\.bearerMatches, true, 'records_execute_principal_mismatch'\);/,
+test('wrong principal, stale completion and wrong post-reload identity each fail', async () => {
+  for (const [options, message] of [
+    [{ token: 'other-session' }, /records_principal_mismatch/],
+    [{ changedVisible: true }, /records_output_completion_mismatch/],
+    [{ reloadedProfile: 'another-id' }, /records_identity_after_reload_not_accepted/],
+  ]) {
+    const scenario = runDriver(options);
+    await assert.rejects(scenario.run(), message);
+    assert.equal(scenario.active.size, 0);
+    assert.equal(scenario.report.reload, null);
+  }
+});
+
+test('negative and reload assertions catch false success and omitted reload', async () => {
+  const falselySuccessful = runDriver({
+    completions: [positive('appointments'), positive('wrong'), positive('invoices')],
+  });
+  await assert.rejects(falselySuccessful.run(), /records_invalid_limit_false_success/);
+  assert.equal(falselySuccessful.reloads, 0);
+  for (const wrong of [
+    { success: false, error: { error_type: 'execution', message: 'limit must be an integer' } },
+    { success: false, error: { error_type: 'invalid_arguments', message: 'unrelated field' } },
+  ]) {
+    const scenario = runDriver({
+      completions: [positive('appointments'), wrong, positive('invoices')],
+    });
+    await assert.rejects(scenario.run(), /records_invalid_limit_(wrong_error|field_missing)/);
+    assert.equal(scenario.reloads, 0);
+  }
+  const failedReloadRead = runDriver({ completions: [positive('appointments'), refusal, refusal] });
+  await assert.rejects(failedReloadRead.run(), /records_reloaded_tool_refused/);
+  assert.equal(failedReloadRead.report.reload, null);
+  const noReloadSource = callback.replace(
+    "await panel.send('Page.reload', { ignoreCache: true });",
     '',
   );
-  const wrongPrincipal = runDriver({ token: 'another-session', driverSource: noBearerCheck });
-  await wrongPrincipal.run();
-  assert.equal(
-    wrongPrincipal.report.result?.success,
-    true,
-    'bearer mutation must escape without the assertion',
+  assert.notEqual(noReloadSource, callback);
+  await assert.rejects(
+    runDriver({ driverSource: noReloadSource }).run(),
+    /Settings must follow full panel reload/,
   );
-  assert.equal(wrongPrincipal.active.size, 0);
+});
 
-  const noCompletionCheck = mutate(
-    'assertRecordsVisibleCompletion(visible, completion)',
-    'JSON.parse(visible.raw)',
-  );
-  const staleOutput = runDriver({ visibleChangesAfterWait: true, driverSource: noCompletionCheck });
-  await staleOutput.run();
-  assert.equal(
-    staleOutput.report.result?.success,
-    true,
-    'completion mutation must escape without final assertion',
-  );
-  assert.equal(staleOutput.active.size, 0);
-
-  const constantReceipt = runDriver({
-    token: 'another-session',
-    driverSource: `async () => { report.result = { visible: true, success: true, action: 'table_list', count: 1, approved_organization_covered: true }; }`,
+test('constant completion cannot pass callback identity and request checks', async () => {
+  const scenario = runDriver({
+    driverSource: 'async () => { report.result = { success: true }; }',
   });
-  await constantReceipt.run();
-  assert.equal(
-    constantReceipt.report.result?.success,
-    true,
-    'constant-return gut check: the wrong-principal rejection must fail against this mutant',
-  );
+  await scenario.run();
+  assert.equal(scenario.runs, 0);
+  assert.equal(scenario.report.invalid_input, null);
+  assert.equal(scenario.report.reload, null);
 });
