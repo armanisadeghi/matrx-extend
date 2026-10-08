@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "status": "HANDOFF",
+  "lane": "fresh retained grant native verifier",
+  "zero_authorship": true,
+  "source_review_commits": [
+    "5d09cdbd1707877fdbce2c70a3cd49819868ddb8",
+    "11564fe786ca47bade2c33718710504ed145eb66"
+  ],
+  "verdict_a": {
+    "status": "unverified",
+    "reason": "Exact artifact verification and real native panel passed; approved organization UI pointer matched zero controls before any service lookup or revoke."
+  },
+  "verdict_b": {
+    "status": "pass",
+    "reason": "Differentiated safe HTTP, shape, count diagnostics preserve real actor, exact file and grant creation checks before canonical revoke and inactive reread; no product logic replaced."
+  },
+  "initial_infrastructure_attempt": {
+    "run_id": "retained-share-diagnostic-native-20261007",
+    "evidence": ".research/retained-share-diagnostic-native-20261007.json",
+    "commit": "e4f8afa3",
+    "reason": "Verifier omitted three required artifact selector environment values; corrected with explicit root authorization."
+  },
+  "run_id": "retained-share-diagnostic-native-corrected-20261007",
+  "resource_journal": "docs/stabilization/resource-journals/retained-share-diagnostic-native-corrected-20261007.jsonl",
+  "runtime_report": "test-results/screenshot-full-page-9745f863-56ac-4191-9d7a-b065611e1414.json",
+  "runtime_sha256": "bc9ecf20bdf1327b1e14d28563171d3462fd572343e35112f767130d44d1f117",
+  "build": {
+    "version": "0.2.397",
+    "treeSha256": "9e0c2f1e18317f856c79aaf0a3529b4637cdf5858ddb64a2ebfff7fac37311cd",
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "4a5c78a50f8d41709b6abffb30c351898e5eb0ae",
+    "runId": 37727998755,
+    "runAttempt": 1,
+    "artifactId": 11528732938,
+    "githubArtifactDigest": "sha256:e996032fdecac4e515632f242962856351703cc22bcaad9e945d6a7c9b90ddff",
+    "source": {
+      "originMain": "e4f8afa3befa582e7e573952d114052e0a1e22ec",
+      "localHead": "e4f8afa3befa582e7e573952d114052e0a1e22ec",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "first_boundary": {
+    "stage": "select_approved_organization",
+    "code": "owned_harness_or_ui_stage_failed",
+    "diagnostic": {
+      "runtimeCode": null,
+      "timeout": false,
+      "assertion": false,
+      "viewerStep": null,
+      "pointerTarget": {
+        "kind": "organization",
+        "target": "Acting as",
+        "phase": "resolving"
+      },
+      "pointerDiagnostic": {
+        "code": "pointer_target_not_unique",
+        "sampleStage": null,
+        "matchedTargetCount": 0,
+        "visibleMatchCount": 0,
+        "uniqueVisibleTarget": false,
+        "hitTarget": false,
+        "animating": false,
+        "stableSamples": 0,
+        "positionStable": false,
+        "targetHasArea": null,
+        "clippedTargetHasArea": null,
+        "selectedPointAvailable": null,
+        "centerHitCategory": null,
+        "targetDisabled": null,
+        "pointerEventsNone": null,
+        "clippingAncestorCount": null,
+        "testedPointCount": null,
+        "interiorHitKinds": null,
+        "targetRectangle": null,
+        "centerOccluder": null,
+        "firstInteriorOccluder": null
+      },
+      "pointerCode": "pointer_target_not_unique"
+    }
+  },
+  "organization_observation": null,
+  "service_lookup_attempted": false,
+  "revoke_attempted": false,
+  "private_recovery": "retained unchanged mode 0600",
+  "owned_jobs": "all terminal; child exit 1, valid resource decision, browser and profile closed",
+  "remaining": "Diagnose missing approved organization native control before another native lookup. No product/service failure inferred; grant remains untouched."
+}
