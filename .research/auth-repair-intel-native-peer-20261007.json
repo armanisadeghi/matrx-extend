@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "role": "fresh independent source and terminal native evidence peer; no source authorship or native execution",
+  "addressed_finding": "PASS: ce0d39c5 closes the Important privacy-guard gap in .research/intel-batch-auth-peer-20261007.json. Raw error, URL, body, and data are injected into unused fields and invalid allowed slots, then excluded from the callback and serialized receipt. Legitimate signed-out and authenticated states remain distinct.",
+  "verdict_A_source_readiness": "PASS for bounded auth diagnostic forwarding; native admin completion remains unverified. The phase and click-code enums match admin-settings-signin.mjs; panel and selector flags are booleans, sign-in count is a nonnegative integer, and panelIdentity produces boolean access-token/admin flags and a string-or-null profile ID.",
+  "verdict_B_quality": "PASS for the repaired source/privacy guard. Focused CI 37709098725 passed on exact head ce0d39c5; no local test ran because the resource guard was DISK_LOW. The guard extracts source into a mock harness, so it does not establish native auth behavior.",
+  "audit_A": {
+    "report": ".research/audit-intel-native-20261007.json",
+    "run": 37708712354,
+    "native_workflow_head": "0fbec09268721e436e5e2b7a93856576d0413822",
+    "conclusion": "failure",
+    "uploaded_artifact_id": 11521285656,
+    "frozen_artifact": "CI 37698216289 / artifact 11516342905 / source 52487361b1b6a8663b958dbb2196cbcc9b1af31c / version 0.2.391",
+    "receipt_sha256": "267dc933f9e1bf57a11bf1b23c777d53ef17687a0c6db10f53c169b892719ef6",
+    "current_journal_sha256": {
+      "package": "5555693d8e32806e5a299ac24e0308ca618d88772c97a96e803f9859ca8ee827",
+      "browser": "058a1d89a4d279d7595f95054ac4dfc56ec6c4389716c6d629c6f88ce8d103e9",
+      "guest": "79f53d050cb5ce69cc3d61da1d6bd21cd7339ef7c214eb1a79c8c0a8942b47df"
+    },
+    "verdict": "NO PRODUCT CREDIT: package and browser journals were valid, but the guest journal ended resourceInvalid=true after CPU busy; the receipt has zero cases and failed at native:cdp_connect with owned_cdp_endpoint_timeout. EXT-D-0159 closure and T27/T61/T62/T86 product criteria remain unverified. Zero active-key writes in other receipts cannot establish zero rotateDeviceKey invocations.",
+    "report_finding": "Important evidence error: resource_admission.acceptance.child_exit_code is 0 in the lane report, but its cited current guest journal records RESOURCE_JOB_EXIT childExitCode=1. The GitHub failed step also says native side-panel acceptance exited 1. Correct that field; the resource-invalid and no-case verdict remains sound."
+  },
+  "seo_B": {
+    "report": ".research/seo-intel-native-20261007.json",
+    "run": 37708611887,
+    "native_workflow_head": "0fbec09268721e436e5e2b7a93856576d0413822",
+    "conclusion": "success",
+    "uploaded_artifact_id": 11520459433,
+    "frozen_artifact": "CI 37698216289 / artifact 11516342905 / source 52487361b1b6a8663b958dbb2196cbcc9b1af31c / version 0.2.391",
+    "receipt_sha256": "551ce91a2db02fb01814604c63f2f0b59d97dc2d5fc194bdf78155fb602045dd",
+    "current_journal_sha256": {
+      "package": "2154058656f67914d8a131a411b66f633f64464862b4a5017017989c522962e0",
+      "browser": "e21d1d78413c03f05bd7cbecd38ab1e78c332e777fa99bf1bf8bead11c008bfd",
+      "guest": "e47ee5d9f1e1baa5850eac60826a12346b8c3887374a0206d5eef9e716c1bb51"
+    },
+    "verdict": "RESOURCE-VALID BOUNDED CREDIT: all three current journals ended valid with zero exit. Receipt supports real guest Text and For AI clipboard readback on two public pages and after side-panel reload, plus its named T01/T02/T03/T09 checks. It is partial at build_recheck; the displayed automatic link/image counts differed from live DOM, readability value correctness was unverified, and all-field SEO parity, member/admin, current-main, and Store behavior remain unverified."
+  },
+  "provenance": "The original artifact's GitHub digest sha256:927854cfdda6e57d272277653e0b4c507720c29d74978da235d80c064c1017ee and source SHA match both receipts. Focused source CI, native workflow checkout, and imported frozen build are three distinct identities."
+}
