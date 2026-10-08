@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-08T14:58:21.737Z",
+  "scope": "One hosted native read-only Records table_list attempt; no product or harness changes.",
+  "case": {
+    "defect": "D91",
+    "control_case": "EXT-F-4130-C02",
+    "action": "table_list",
+    "status": "unverified",
+    "claim_limit": "No Records execute request or table_list output was observed; D91 and all remaining controls stay open."
+  },
+  "source_gate": {
+    "independent_records_review": ".research/records-repair-final-peer-20261008.json",
+    "independent_driver_guard": ".research/records-ci-diagnostics-peer-20261008.json",
+    "records_source_repair_commit": "e4ed23d3",
+    "records_driver_guard_commit": "d65ac528",
+    "focused_ci_run_id": 37793634857,
+    "focused_ci_source": "e6d83e7d0476ab91347a660bdea844d751d1aa72",
+    "focused_ci_conclusion": "success",
+    "development_ci_run_id": 37790643945,
+    "development_ci_source": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "development_ci_conclusion": "success",
+    "development_artifact_id": 11556064167,
+    "development_artifact_expired": false,
+    "development_artifact_digest": "sha256:7a93776a9322c27973756ddb542fd2e8580d900c356d28a0ad1504928edf3964",
+    "imported_tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046",
+    "imported_version": "0.2.414",
+    "run_artifact_id": 11559445454,
+    "run_artifact_digest": "sha256:3f0d57d3c1205093dbb416046e6dc1d8cfff493e37b2a72a59f40eb81882f54e",
+    "run_artifact_expired": false
+  },
+  "hosted_run": {
+    "id": 37795653439,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37795653439",
+    "lane": "A",
+    "case": "records-readonly-admin",
+    "workflow_head_sha": "d729dde0940985b4097fd1be94d33653252e49c3",
+    "status": "completed",
+    "conclusion": "failure",
+    "started_at_utc": "2026-10-08T14:50:13Z",
+    "completed_at_utc": "2026-10-08T14:57:11Z"
+  },
+  "private_fixture_and_auth": {
+    "canonical_admin_source_used": true,
+    "admin_secret_preflight_passed": true,
+    "approved_organization_fixture_exists": true,
+    "approved_organization_fixture_private_mode_0600": true,
+    "approved_fixture_schema_passed": true,
+    "rendered_admin_email_matches": true,
+    "rendered_admin_role_matches": true,
+    "rendered_profile_matches_web_identity": true,
+    "rendered_approved_organization_matches": true,
+    "approved_organization_id_header_matched_on_finished_schema_request": true,
+    "admin_principal_matched_on_finished_schema_request": true,
+    "schema_request": {
+      "path": "/tools/test/list",
+      "method": "GET",
+      "finished": true,
+      "http_200": true,
+      "exactly_one": true
+    },
+    "schema_observer_cleanup_success": true,
+    "sensitive_values_printed_or_committed": false
+  },
+  "native_receipt": {
+    "status": "unverified",
+    "stage": "records_input",
+    "native_stage": "admin_rendered_identity",
+    "failure_code": "records_input_failed",
+    "records_execute_observed": false,
+    "table_list_visible_output_observed": false,
+    "execute_principal_or_organization_match": null,
+    "failure_boundary": "The driver stopped during records_input before clicking Run; no /tools/test/execute request or Records output was produced.",
+    "exactly_one_driver_failure_code": "records_input_failed"
+  },
+  "resource_phases": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0,
+      "reason_count": 0
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid",
+      "exit_code": 0,
+      "reason_count": 0
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": true,
+      "decision": "invalid",
+      "exit_code": 3,
+      "reason_count": 0
+    }
+  },
+  "backend_health_version": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "observations": [
+      {
+        "label": "pre_run",
+        "observed_at_utc": "2026-10-08T14:50:49.533Z",
+        "http_status": 200,
+        "git_sha": "3682f88fa375a10966bf1cafc4e3358141f29801"
+      },
+      {
+        "label": "before_native_exercise_step",
+        "observed_at_utc": "2026-10-08T14:55:35.010Z",
+        "http_status": 200,
+        "git_sha": "3682f88fa375a10966bf1cafc4e3358141f29801"
+      },
+      {
+        "label": "after_native_step_terminal",
+        "observed_at_utc": "2026-10-08T14:58:21.737Z",
+        "http_status": 200,
+        "git_sha": "3682f88fa375a10966bf1cafc4e3358141f29801"
+      }
+    ],
+    "sampled_identity_stable": true,
+    "movement_attributed": false
+  },
+  "secret_lifecycle": {
+    "lane_a_available_before_staging": true,
+    "temporary_secret_names_absent_before": true,
+    "staged_for_single_attempt": true,
+    "both_names_deleted_after_terminal": true,
+    "independent_absence_count_after_cleanup": 0,
+    "local_owned_0700_directory_and_0600_files_removed_after_terminal": true
+  },
+  "raw_evidence": [
+    "raw/hosted-guest-37795653439-1/records-readonly-native-37795653439-1.json",
+    "raw/hosted-guest-37795653439-1/hosted-package-37795653439-1.jsonl",
+    "raw/hosted-guest-37795653439-1/hosted-browser-37795653439-1.jsonl",
+    "raw/hosted-guest-37795653439-1/hosted-guest-37795653439-1.jsonl"
+  ],
+  "privacy": "Only bounded receipt fields and resource journals are retained. No organization ID/name, credential, bearer, response body, table name, screenshot, or row content is retained."
+}

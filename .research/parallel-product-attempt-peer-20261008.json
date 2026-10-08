@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-08T15:04:55Z",
+  "scope": "Independent raw-evidence adjudication of the current Records lane A run 37795653439 and SEO lane B run 37795616638. No native retry or product change was made.",
+  "overall": {
+    "acceptance_credit": "none for either current run",
+    "records_D91": "unverified",
+    "seo_controlled_cases": "unverified",
+    "reason": "Both child processes exited before their requested product actions completed; the guest wrapper's invalid terminal decisions prohibit acceptance promotion."
+  },
+  "records_lane_a": {
+    "run_id": 37795653439,
+    "frozen_product_version": "0.2.414",
+    "verdict_A_evidence_conformance": "partial prerequisite evidence only; no Records acceptance",
+    "verdict_B_evidence_quality": "bounded and internally consistent, with one terminology caveat",
+    "findings": [
+      {
+        "severity": "Important",
+        "location": ".research/records-first-native-acceptance-20261008/raw/hosted-guest-37795653439-1/records-readonly-native-37795653439-1.json",
+        "finding": "The receipt reaches records_input and reports records_input_failed. Its request and result are null, so no /tools/test/execute request, table_list output, or execute-time principal/organization match exists. D91/EXT-F-4130-C02 remains unverified."
+      },
+      {
+        "severity": "Minor",
+        "location": ".research/records-first-native-acceptance-20261008.json",
+        "finding": "The guest phase has a RESOURCE_CPU_PENDING event with RESOURCE_CPU_HIGH_LOAD_BUSY before child exit. The terminal resourceInvalid=true and exitCode=3 arise while CPU confirmation is pending after childExitCode=1; a final reason_count of zero does not mean no CPU warning occurred and is not proof that the watchdog stopped the child."
+      }
+    ],
+    "positive_observations": [
+      "The private receipt reports rendered admin email, role, profile, and approved organization matches; one finished successful GET /tools/test/list response with matching organization header and principal; and observer cleanup. These are driver-recorded bounded observations, not an execute-time assertion.",
+      "Package and browser resource phases ended valid with child exit zero. The guest phase was initially admitted and had two healthy watch samples before its pending CPU sample.",
+      "The report records three successful /health/version samples with identical backend git SHA 3682f88fa375a10966bf1cafc4e3358141f29801. This supports sampled identity stability only, not continuous uptime or causal attribution.",
+      "The workflow names MATRX_PREPARE_ADMIN_CREDENTIALS_JSON and MATRX_PROFILE_APPROVED_ORGANIZATION_JSON as the temporary Records inputs. A read-only GitHub secret-name listing at review time contains neither name. This checks post-run absence by name only; it cannot independently prove prior staging or deletion timing."
+    ],
+    "resource_interpretation": "At 14:56:49.135Z the guest journal recorded RESOURCE_CPU_PENDING with load 6.24/3 logical CPUs and busy fraction 0.65. At 14:56:49.151Z the child exited 1; the wrapper then finalized invalid/3. No confirmed CPU expiry or resource kill is recorded. The concrete driver failure is records_input_failed."
+  },
+  "seo_lane_b": {
+    "run_id": 37795616638,
+    "frozen_product_version": "0.2.407",
+    "verdict_A_evidence_conformance": "startup-only partial receipt; zero controlled SEO case credit",
+    "verdict_B_evidence_quality": "current-run receipt and resource journals are internally consistent; the cause of endpoint timeout is unproved",
+    "findings": [
+      {
+        "severity": "Important",
+        "location": ".research/seo-controlled-native-lane-b-20261008/raw/seo-guest-acceptance.json",
+        "finding": "The receipt stopped at build_identity_verified, with zero targets and no product action. None of T01/T02/T03/T07/T09/T14 or the controlled T14-before, T02-recapture, T14-after sequence ran. Do not promote the controlled partition or whole SEO inventory from this attempt."
+      },
+      {
+        "severity": "Important",
+        "location": ".research/seo-controlled-native-lane-b-20261008.json",
+        "finding": "The native startup failed with owned_cdp_endpoint_timeout after the CPU_PENDING sample. Chromium spawn was observed, but DevTools listening was not. The CPU sample and timeout are temporally adjacent; these records do not establish that CPU pressure caused the timeout or that SEO product behavior failed."
+      },
+      {
+        "severity": "Minor",
+        "location": "docs/stabilization/defects/EXT-D-0183.json",
+        "finding": "This run demonstrates an incremental receipt surviving with the early build_identity_verified stage. It does not test retention of an already completed SEO target under interruption, because no target ran. The original completed-target interruption claim remains unproven by this new receipt."
+      }
+    ],
+    "positive_observations": [
+      "The current-run receipt identifies the frozen 0.2.407 source and tree, selected controlled cases, explicit T09 exclusions, and last safe startup phase. Its evidence-sha256 manifest verifies for all four listed files.",
+      "Package and browser phases ended valid with child exit zero. Guest resource admission and three watch samples were healthy before a CPU busy fraction of 0.96 produced RESOURCE_CPU_PENDING at 14:57:24.055Z; child exit 1 followed at 14:57:37.701Z and the wrapper finalized invalid/3.",
+      "The earlier controlled native receipt at .research/seo-controlled-native-20261008.json reports bounded positive T14/T02/T14 observations on a different frozen product and run. Those observations cannot be transferred to this lane B attempt."
+    ],
+    "resource_interpretation": "The guest wrapper invalidated a pending CPU phase after child exit. There is no confirmed CPU refusal or guard-initiated stop in the retained journal. The native failure boundary is owned CDP endpoint startup, before SEO product actions."
+  },
+  "verification": {
+    "github_run_status": "Both GitHub runs independently queried as completed/failure at head d729dde0940985b4097fd1be94d33653252e49c3.",
+    "seo_manifest": "shasum -a 256 -c evidence-sha256.txt: four of four OK",
+    "secret_name_listing": "gh api repository actions/secrets names only; temporary Records names absent",
+    "limits": "Private Records request data and native browser logs were intentionally not retained in the raw artifact. Driver receipt fields are treated as observations reported by the driver, not separately replayed packet captures."
+  }
+}

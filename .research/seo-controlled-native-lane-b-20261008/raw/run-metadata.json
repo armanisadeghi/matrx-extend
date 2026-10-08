@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": 37795616638,
+  "run_attempt": 1,
+  "job_id": 113374182105,
+  "event": "workflow_dispatch",
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37795616638/job/113374182105",
+  "head_sha": "d729dde0940985b4097fd1be94d33653252e49c3",
+  "status": "completed",
+  "conclusion": "failure",
+  "started_at": "2026-10-08T14:50:08Z",
+  "completed_at": "2026-10-08T14:57:45Z",
+  "runner_label_input": "macos-15-intel",
+  "runner_group": "GitHub Actions",
+  "dispatch_inputs": {
+    "acceptance_lane": "B",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": false,
+    "development_run_id": 37754055905,
+    "development_artifact_id": 11539827040
+  },
+  "product_artifact": {
+    "id": 11539827040,
+    "run_id": 37754055905,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "version": "0.2.407",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "digest": "sha256:1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893",
+    "eligible": true,
+    "expired": false
+  },
+  "uploaded_run_artifact": {
+    "id": 11559081001,
+    "name": "hosted-guest-37795616638-1",
+    "digest": "sha256:9b41505db944c17325f31196c0b8fbe22cc5abeeaa2c819285d16ec473469686",
+    "expired": false
+  },
+  "steps": {
+    "package_readiness": "success",
+    "browser_driver_prepare": "success",
+    "browser_readiness": "success",
+    "chromium_prepare": "success",
+    "acceptance_readiness": "success",
+    "native_acceptance": "failure",
+    "evidence_upload": "success"
+  }
+}

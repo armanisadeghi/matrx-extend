@@ -145,7 +145,7 @@ try {
         action: 'table_list',
         args: { organization_id: approved.id, include_app_tables: true, limit: 50 },
       };
-      stage('records_input');
+      stage('records_input_focus');
       assert.equal(
         await evaluate(
           panel,
@@ -158,17 +158,29 @@ try {
         type: 'keyDown',
         key: 'a',
         code: 'KeyA',
-        modifiers: 2,
+        modifiers: process.platform === 'darwin' ? 4 : 2,
         windowsVirtualKeyCode: 65,
+        commands: ['selectAll'],
       });
       await panel.send('Input.dispatchKeyEvent', {
         type: 'keyUp',
         key: 'a',
         code: 'KeyA',
-        modifiers: 2,
+        modifiers: process.platform === 'darwin' ? 4 : 2,
         windowsVirtualKeyCode: 65,
       });
+      stage('records_input_selection');
+      assert.equal(
+        await evaluate(
+          panel,
+          `(() => { const b=[...document.querySelectorAll('button')].find(el=>el.querySelector('span.font-mono')?.textContent.trim()==='records'); const t=b?.parentElement?.querySelector('textarea'); return Boolean(t && document.activeElement===t && t.selectionStart===0 && t.selectionEnd===t.value.length); })()`,
+        ),
+        true,
+        'records_input_selection_missing',
+      );
+      stage('records_input_insert');
       await panel.send('Input.insertText', { text: JSON.stringify(input) });
+      stage('records_input_visible');
       assert.equal(
         await evaluate(
           panel,

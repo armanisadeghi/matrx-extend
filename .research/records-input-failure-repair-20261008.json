@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "scope": "Records read-only native acceptance input driver and its focused behavioral guard",
+  "source_evidence": ".research/records-first-native-acceptance-20261008.json",
+  "observed_boundary": {
+    "hosted_run_id": 37795653439,
+    "hosted_os": "macOS",
+    "authenticated_schema_get_finished_200": true,
+    "native_receipt_stage": "records_input",
+    "execute_request_observed": false,
+    "visible_result_observed": false,
+    "exact_input_substep_from_original_receipt": "unknown",
+    "guest_resource_journal": "invalid after child exit 1; CPU causation not established"
+  },
+  "driver_defect": {
+    "old_behavior": "The driver sent Ctrl+A (CDP modifiers 2) even on macOS and did not check whether the existing textarea draft was selected. The earlier test returned true for every DOM evaluation and accepted every CDP key command.",
+    "new_behavior": "The driver sends Command+A (modifiers 4) on macOS and Ctrl+A (modifiers 2) elsewhere, explicitly requests selectAll, checks full selection before trusted text insertion, and records focus, selection, insertion, and visible-value stages separately.",
+    "class": "Platform-specific trusted input replacement in a prefilled controlled textarea",
+    "product_source_changed": false
+  },
+  "verification": {
+    "red": "node --test tests/browser/records-readonly-native-driver.test.mjs failed at records_input_not_visible with a prefilled textarea and macOS key semantics before the driver repair",
+    "green": "node --test tests/browser/records-readonly-native-driver.test.mjs: 6 passed",
+    "mutation": "Removing the selectAll command makes the focused test fail at records_input_selection_missing before Run",
+    "native_retest": "pending; no product defect or D91 closure claimed"
+  },
+  "privacy": "No organization ID, credential, bearer, response body, table name, screenshot, or row content retained."
+}

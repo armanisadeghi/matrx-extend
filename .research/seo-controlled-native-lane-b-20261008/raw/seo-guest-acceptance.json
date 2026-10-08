@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "unverified",
+  "scope": "public-page guest SEO actions in an owned native side panel",
+  "targets": [],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04-T06,T08",
+      "part": "database save, history, and diff flows"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "broken social preview image and detail controls beyond the bounded next batch; optional hreflang/schema doors remain unverified when their live source data is absent"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "build_identity_verified",
+  "last_safe_observable": null,
+  "current_operation": null,
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.407",
+      "treeSha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0"
+    },
+    "after": null
+  },
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "runId": 37754055905,
+    "runAttempt": 1,
+    "artifactId": 11539827040,
+    "githubArtifactDigest": "sha256:1b883fc212351a6ef30e3b6cc43f9cb1a03c8584affaf3ffecdf679c59087893",
+    "treeSha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "source": {
+      "originMain": "483856f94e5181d752ea65b11f16b572084a55a9",
+      "localHead": "d729dde0940985b4097fd1be94d33653252e49c3",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "case_selection": {
+    "scope": "controlled",
+    "selected_cases": [
+      "T01",
+      "T02",
+      "T03",
+      "T07",
+      "T09",
+      "T14"
+    ],
+    "excluded_cases": [
+      "T09 volatile public detail",
+      "T09 optional metadata fixture"
+    ]
+  },
+  "resource_diagnostic_enabled": false,
+  "failure_stage": "build_identity_verified"
+}
