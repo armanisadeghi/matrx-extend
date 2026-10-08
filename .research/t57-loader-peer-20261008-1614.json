@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "review_id": "T57-loader-peer-20261008-1614",
+  "reviewed_commit": "f7971902652732076639d597b19e5c55d54d7206",
+  "reviewed_at_head": "38ec4a2ad4a77155351b358c05ab868617297fca",
+  "source_receipt": ".research/t57-arm-414-native-20261008-1552-originals/raw/receipt.raw.json",
+  "source_evidence": ".research/t57-binding-diagnosis-20261008-1608.json",
+  "verdicts": {
+    "A_source_readiness": "not_ready_for_native_rerun",
+    "A_native_status": "pending_unverified",
+    "B_helper_quality": "blocked_false_current_slot_acceptance"
+  },
+  "receipt_limits": {
+    "known": "The two retained paused responses share loader D6A962355576453464EFF09FBBB3BB61; their request identity hashes differ; a third target was rejected as extra.",
+    "unknown": "The rejected third target request identity and response hash were not retained. It cannot be called current or old from this receipt."
+  },
+  "review_finding": {
+    "code": "current_slot_accepts_nonactive_loader_with_prior_context",
+    "severity": "blocker",
+    "details": "Slot 1 accepts any loader different from slot 0 when request identity_sha256 matches. currentPaused only requires a context recorded for that loader. A previously observed stale main-frame loader with the same request identity can therefore satisfy the current slot even after activeLoader has advanced.",
+    "reproduction": "A lightweight in-memory CDP event probe observed contexts and navigations for old, stale, then current loaders; after filling slot 0 with old, it emitted a matching target response from stale. currentPaused resolved with paused[1].loader_id='stale' while activeLoader='current'.",
+    "impact": "A false current-document classification can pass the loader/context gate and misidentify which response was released, undermining request-to-document binding."
+  },
+  "preserved_guards_review": {
+    "no_packet_failure": "Present in assessPublicRacePreflight through required terminal_outcome and capture proof predicates.",
+    "request_identity": "Exact URL/body identity SHA-256 check remains required for slot 1 against slot 0.",
+    "response_body_hash": "Both paused records still require a SHA-256 response hash.",
+    "cleanup": "Disabled/detached and removed capture probe remain required.",
+    "concurrency": "Slots reserve synchronously before body reads; duplicate slot-0 loader responses continue unchanged.",
+    "unresolved": "There is no predicate tying the current slot loader to the active main-frame loader at classification time; there is also no negative test for a previously observed stale loader."
+  },
+  "verification": {
+    "focused_node_tests": "node --test tests/browser/showcase-d47-public-race-preflight.test.mjs: 14 passed, 0 failed.",
+    "adversarial_probe": "Confirmed false slot acceptance: stale response loader was accepted as slot 1 while active loader was current.",
+    "focused_ci": "Reported by task owner as successful for commit 69bfe8a7; not independently inspected in this review.",
+    "compile_or_browser_or_native": "Not run, per lane limits."
+  },
+  "native_success_criteria": [
+    "The source guard rejects any candidate current response whose Network loader_id is not the active main-frame loader for that replay, while preserving the original URL/body identity and response hash checks.",
+    "A helper negative case with a previously observed stale loader fails currentPaused; the active current loader case passes.",
+    "An authorized exact-artifact native run records distinct old/current loaders, correct request and response hashes, current binding equal to the released current response hash, exact saved-result settlement, and successful interception/probe cleanup.",
+    "Missing packet, mismatched identity, rejected continuation, or incomplete cleanup remains unverified."
+  ],
+  "scope": "Independent source review only. No product source edits and no native run. Original D47 remains closed; this finding belongs to new driver defect EXT-D-0184."
+}
