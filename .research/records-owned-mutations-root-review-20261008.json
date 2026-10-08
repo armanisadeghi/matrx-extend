@@ -1,0 +1,18 @@
+{
+  "status": "source_review_pass_native_pending",
+  "commit": "fcf1cecc80593aba209897186fa9cd9618fb578f",
+  "reviewer": "root; zero code authorship; fresh reviewer spawn failed ENOSPC",
+  "verification": {
+    "command": "TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/records-readonly-native-driver.test.mjs tests/browser/records-positive-fixture.test.mjs",
+    "passed": 44,
+    "failed": 0
+  },
+  "findings": "Malformed delete UUID and restore version are required to return invalid_arguments naming the field, with exact completion guards and live-card contract checks. Mutation refusals are kept separate from positive reads. Tests reject false success, wrong error class and missing field before fixture creation.",
+  "limits": "Source review only. No live C07/C09 refusal result and no positive C06/C07/C09 acceptance. Positive mutation approval/cleanup path remains unresolved.",
+  "documentation_review": {
+    "reviewer": "reused settings_behavior_review; supplemental, not fresh",
+    "result": "No conflicting next actions or ownership in whole PLAN and COORDINATOR",
+    "fresh_attempt": "thread writer lock creation failed ENOSPC",
+    "goal": "Active; approved parallel objective in PLAN; app objective cannot be edited by available status-only API"
+  }
+}
