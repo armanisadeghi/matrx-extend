@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "defect_id": "EXT-D-0173",
+  "reviewed_commits": ["0eebbca39c95d62f401f3866123177ce92c4d51a", "3749335640ea68887e00e38560fab302cda03aca"],
+  "prior_finding": "ADDRESSED: the original guard injected its own known-good fixture reader; the follow-up resolves the named import from each production entrypoint and invokes its exported binding in the extracted caller expression.",
+  "verdict_a_source_current_wiring": {
+    "result": "PASS",
+    "evidence": "Both D47 entrypoints currently import approvedShowcaseOrganization from settings-native-auth-driver.mjs, load the approved private fixture, and pass its name and UUID into the unchanged runShowcaseOrganizationCheckpoint. The checkpoint still requires a UUID, matching authenticated product header and principal, and a successful response.",
+    "native_t57": "PENDING: no browser/native run, product request, or live response was observed in this scoped review."
+  },
+  "verdict_b_guard_quality": {
+    "result": "PASS",
+    "evidence": "For both production sources, the AST census checks the import, approved fixture call, and exact name/UUID properties; the extracted expression executes with the dynamically imported production binding. Removed-import and name-only alias mutants fail; two distinct synthetic private fixture identities pass.",
+    "limit": "This focused guard executes extracted caller expressions, not the full native entrypoint."
+  },
+  "checks": [
+    "node --test tests/browser/showcase-d47-organization-handoff.test.mjs tests/browser/showcase-organization-diagnostic.test.mjs: 11/11 pass",
+    "pnpm exec biome check tests/browser/showcase-d47-organization-handoff.test.mjs: pass",
+    "node --check on both D47 entrypoints: pass",
+    "git diff --check 37493356^ 37493356: pass"
+  ],
+  "privacy": "Only synthetic names and UUIDs were used. No private fixture values, bearer tokens, or credentials were read or recorded.",
+  "scope_limit": "Source and light focused checks only; no browser, native, build, deploy, install, or release verification."
+}
