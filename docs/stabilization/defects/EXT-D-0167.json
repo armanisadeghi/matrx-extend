@@ -25,7 +25,8 @@
   "evidence": [
     ".research/settings397-fresh-native-20261007.json",
     ".research/settings397-native-acceptance-peer-20261007.json",
-    ".research/settings397-reacquire-diagnosis-20261007.json"
+    ".research/settings397-reacquire-diagnosis-20261007.json",
+    ".research/settings-reacquire-source-peer-20261007.json"
   ],
   "transition_history": [
     {
@@ -49,5 +50,11 @@
   ],
   "diagnostic_candidate": "da3645de",
   "closure_requirement": "Reviewed safe boundary diagnostics, resource-valid original native retest, confirmed underlying cause/repair if needed, verified baseline restoration and surrounding guest fixture behavior.",
-  "next_action": "Finish independent source review and CI, then one admitted native diagnostic; no timeout or oracle weakening."
+  "next_action": "Finish independent source review and CI, then one admitted native diagnostic; no timeout or oracle weakening.",
+  "source_review": {
+    "candidate": "da3645de",
+    "peer": "4f5ddb9b",
+    "verdict": "repair_required_before_native",
+    "finding": "New pre-reload Target.getTargetInfo can timeout and poison shared transport before otherwise healthy Page.reload. Remove diagnostic-only success-path fault; meaningful guard required. Individual CDP commands are bounded, so indefinite stall hypothesis was refuted."
+  }
 }
