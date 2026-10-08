@@ -1,0 +1,53 @@
+{
+  "id": "EXT-D-0167",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T34", "EXT-F-1003-T64"],
+  "surface": "Settings / Privacy cleanup reload",
+  "auth_mode": "guest",
+  "title": "Settings tab absent during Privacy cleanup reload without document identity diagnostics",
+  "severity": "S2: cleanup and subsequent fixture acceptance blocked; underlying product impact unconfirmed",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/settings_reacquire_source_peer",
+  "preconditions": [
+    "Frozen development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614; driverae437676; isolated Intel Chrome guest sidepanel; current package/browser/guest journals admitted and resource-valid."
+  ],
+  "reproduction": [
+    "Run hosted settings-controls lane B with the stated artifact; observed37729701473 on GitHub Actions1000097595.",
+    "Reach guest Privacy and complete T16/T19/T31 on/off UI/storage and panel-reload checks.",
+    "Run T34 presentation toggle; four UI/storage observations pass.",
+    "Finally cleanup invokes reloadSettings on the same panel using Page.reload; existing Settings readiness poll times out with matched0/visible0.",
+    "Observe later T64 has zero steps and fails its signed-out/active-Settings fixture precondition. A subsequent full extension reload restores observable guest Settings/account state."
+  ],
+  "expected": "Cleanup restores the original setting and visible Settings panel; failures preserve bounded document/runtime/target identity so failed mount versus stale/navigated target can be distinguished.",
+  "actual": "T34 four prior observations pass but cleanup Settings reacquisition fails; restoration unproven and no boundary identity retained. T64 precondition failure cannot establish a product auth or Ask again defect.",
+  "cause": "Missing diagnostic identity confirmed. Underlying missing Settings view remains unknown; distinct from D162 full-extension replacement click readiness.",
+  "evidence": [
+    ".research/settings397-fresh-native-20261007.json",
+    ".research/settings397-native-acceptance-peer-20261007.json",
+    ".research/settings397-reacquire-diagnosis-20261007.json"
+  ],
+  "transition_history": [
+    {
+      "at": "2026-10-08T05:10:28.331547+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-valid native failure recorded at original same-panel cleanup boundary."
+    },
+    {
+      "at": "2026-10-08T05:10:28.331547+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Fresh peer confirms T34 failure and T64 zero-step precondition; source diagnosis identifies missing boundary observations."
+    },
+    {
+      "at": "2026-10-08T05:10:28.331547+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Diagnostic candidate da3645de awaits fresh source review and exact CI; no product fix or cause claimed."
+    }
+  ],
+  "diagnostic_candidate": "da3645de",
+  "closure_requirement": "Reviewed safe boundary diagnostics, resource-valid original native retest, confirmed underlying cause/repair if needed, verified baseline restoration and surrounding guest fixture behavior.",
+  "next_action": "Finish independent source review and CI, then one admitted native diagnostic; no timeout or oracle weakening."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T05:08:05.445470+00:00",
+  "updated_at": "2026-10-08T05:10:28.331547+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -4987,6 +4987,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "pass",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -5168,15 +5179,12 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37712686956",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
-              "evidence": [
-                ".research/settings-batch-native-20261007.json",
-                ".research/settings-native-newcases-peer-20261007.json"
-              ],
-              "detail": "Ask/Act trusted selection and UI/storage persistence pass through panel reload. New conversation inheritance remains unverified; latest result is partial despite historical pass retained in history.",
-              "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Ask/Act choice UI/storage persists across panel-document reload; new-chat inheritance and full-extension default behavior unverified. No Store/current-main/whole-feature health claim."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -5191,6 +5199,22 @@
               },
               "superseded_at": "2026-10-08T01:37:08.426904+00:00",
               "reason": "Fresh independently reviewed scoped guest Settings native evidence; retain historical scope without transferring it to current artifact."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37712686956",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/settings-batch-native-20261007.json",
+                  ".research/settings-native-newcases-peer-20261007.json"
+                ],
+                "detail": "Ask/Act trusted selection and UI/storage persistence pass through panel reload. New conversation inheritance remains unverified; latest result is partial despite historical pass retained in history.",
+                "release_scope": "Frozen development artifact only. Three current journals valid; later shared full-extension Settings reload failed and does not certify baseline reload cases."
+              },
+              "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
           ],
           "attempt_history": [
@@ -5204,6 +5228,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "unverified",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -5292,6 +5327,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "pass",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -5352,19 +5398,12 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37722572578",
-              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
-              "evidence": ".research/settings-privacy-native-20261007.json",
-              "independent_review": ".research/settings-privacy-native-peer-20261007.json",
-              "verified_at": "2026-10-08T03:40:14.154920+00:00",
-              "verified_substeps": [
-                "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
-              ],
-              "remaining_criteria": [
-                "Agent identity and email context sharing remains unverified.",
-                "Full extension-management reload of these preference states remains unverified."
-              ],
-              "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -5382,6 +5421,26 @@
                   "Verify whether identity/email context sharing follows the preference; no sharing action or network behavior was exercised."
                 ]
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37722572578",
+                "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+                "evidence": ".research/settings-privacy-native-20261007.json",
+                "independent_review": ".research/settings-privacy-native-peer-20261007.json",
+                "verified_at": "2026-10-08T03:40:14.154920+00:00",
+                "verified_substeps": [
+                  "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
+                ],
+                "remaining_criteria": [
+                  "Agent identity and email context sharing remains unverified.",
+                  "Full extension-management reload of these preference states remains unverified."
+                ],
+                "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
+              },
+              "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
           ],
           "attempt_history": [
@@ -5395,6 +5454,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "unverified",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -5448,19 +5518,12 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37722572578",
-              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
-              "evidence": ".research/settings-privacy-native-20261007.json",
-              "independent_review": ".research/settings-privacy-native-peer-20261007.json",
-              "verified_at": "2026-10-08T03:40:14.154920+00:00",
-              "verified_substeps": [
-                "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
-              ],
-              "remaining_criteria": [
-                "Post-login save offer remains unverified.",
-                "Full extension-management reload of these preference states remains unverified."
-              ],
-              "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim."
             }
           },
           "attempt_history": [
@@ -5474,6 +5537,39 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "unverified",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
+            }
+          ],
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37722572578",
+                "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+                "evidence": ".research/settings-privacy-native-20261007.json",
+                "independent_review": ".research/settings-privacy-native-peer-20261007.json",
+                "verified_at": "2026-10-08T03:40:14.154920+00:00",
+                "verified_substeps": [
+                  "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
+                ],
+                "remaining_criteria": [
+                  "Post-login save offer remains unverified.",
+                  "Full extension-management reload of these preference states remains unverified."
+                ],
+                "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
+              },
+              "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
           ]
         },
@@ -5625,6 +5721,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "pass",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -5852,19 +5959,12 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37722572578",
-              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
-              "evidence": ".research/settings-privacy-native-20261007.json",
-              "independent_review": ".research/settings-privacy-native-peer-20261007.json",
-              "verified_at": "2026-10-08T03:40:14.154920+00:00",
-              "verified_substeps": [
-                "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
-              ],
-              "remaining_criteria": [
-                "Saved-login offer on a supported sign-in form remains unverified.",
-                "Full extension-management reload of these preference states remains unverified."
-              ],
-              "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -5882,6 +5982,26 @@
                   "Open supported sign-in form and verify the saved-login offer follows preference; no form was exercised."
                 ]
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37722572578",
+                "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+                "evidence": ".research/settings-privacy-native-20261007.json",
+                "independent_review": ".research/settings-privacy-native-peer-20261007.json",
+                "verified_at": "2026-10-08T03:40:14.154920+00:00",
+                "verified_substeps": [
+                  "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
+                ],
+                "remaining_criteria": [
+                  "Saved-login offer on a supported sign-in form remains unverified.",
+                  "Full extension-management reload of these preference states remains unverified."
+                ],
+                "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
+              },
+              "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
           ],
           "attempt_history": [
@@ -5895,6 +6015,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "unverified",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -5949,19 +6080,12 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37722572578",
-              "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
-              "evidence": ".research/settings-privacy-native-20261007.json",
-              "independent_review": ".research/settings-privacy-native-peer-20261007.json",
-              "verified_at": "2026-10-08T03:40:14.154920+00:00",
-              "verified_substeps": [
-                "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
-              ],
-              "remaining_criteria": [
-                "On-page suggestion presentation on a supported site remains unverified.",
-                "Full extension-management reload of these preference states remains unverified."
-              ],
-              "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -5979,6 +6103,26 @@
                   "Verify on-page suggestion presentation changes between enabled and quiet; no credential form was exercised."
                 ]
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37722572578",
+                "build_variant": "development0.2.391/source52487361/CI37698216289/artifact11516342905",
+                "evidence": ".research/settings-privacy-native-20261007.json",
+                "independent_review": ".research/settings-privacy-native-peer-20261007.json",
+                "verified_at": "2026-10-08T03:40:14.154920+00:00",
+                "verified_substeps": [
+                  "Trusted switch off/on and actual active-panel UI plus chrome.storage.local values pass; both states persist after side-panel document reload."
+                ],
+                "remaining_criteria": [
+                  "On-page suggestion presentation on a supported site remains unverified.",
+                  "Full extension-management reload of these preference states remains unverified."
+                ],
+                "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
+              },
+              "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
           ],
           "attempt_history": [
@@ -5992,8 +6136,20 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "fail",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
-          ]
+          ],
+          "defect_ids": ["EXT-D-0167"]
         },
         {
           "id": "EXT-F-1003-T35",
@@ -6143,6 +6299,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "pass",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -6637,6 +6804,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "pass",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -7470,15 +7648,12 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37719749636",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
-              "evidence": [
-                ".research/settings-intel-controlled-retest-20261007.json",
-                ".research/settings-intel-native-peer-20261007.json"
-              ],
-              "detail": "Signed-out guest admin/Advanced actions and optional-permission controls absent before and after full extension replacement. Guest slot passes; ordinary-member slot remains unverified.",
-              "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
             }
           },
           "result_history": [
@@ -7498,6 +7673,22 @@
               },
               "superseded_at": "2026-10-08T03:03:29.534526+00:00",
               "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37719749636",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/settings-intel-controlled-retest-20261007.json",
+                  ".research/settings-intel-native-peer-20261007.json"
+                ],
+                "detail": "Signed-out guest admin/Advanced actions and optional-permission controls absent before and after full extension replacement. Guest slot passes; ordinary-member slot remains unverified.",
+                "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
+              },
+              "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
           ],
           "attempt_history": [
@@ -7511,6 +7702,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "unverified",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -7572,8 +7774,20 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "fail",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
-          ]
+          ],
+          "defect_ids": ["EXT-D-0167"]
         },
         {
           "id": "EXT-F-1003-T65",
@@ -7704,15 +7918,13 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "37693743871",
-              "evidence": [
-                ".research/frozen-settings-native-retest-20261007.json",
-                ".research/native-batch-evidence-peer-20261007.json"
-              ],
-              "detail": "Identity/readiness/no-update path observed;5passed/5unverified criteria. Alternate API/update branches untested; no full-case pass. Guest only; other modes retain their own evidence.",
-              "build_variant": "development0.2.387/source14305391",
-              "observed_at": "2026-10-07T22:18:59.711910+00:00"
+              "status": "partial",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Observed identity/readiness and no-update branch pass. Password API unavailable, update available, throttled, error and update API unavailable branches remain unverified. No Store/current-main/whole-feature health claim."
             }
           },
           "result_history": [
@@ -7768,6 +7980,21 @@
                 ".research/settings-hosted-retest.json"
               ],
               "detail": "Bounded actual guest controls before/after reload; see exact per-criterion observations. Does not exercise D84 rejected storage/retry or D86 overlapping writes. T70 retains unverified branches."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "37693743871",
+                "evidence": [
+                  ".research/frozen-settings-native-retest-20261007.json",
+                  ".research/native-batch-evidence-peer-20261007.json"
+                ],
+                "detail": "Identity/readiness/no-update path observed;5passed/5unverified criteria. Alternate API/update branches untested; no full-case pass. Guest only; other modes retain their own evidence.",
+                "build_variant": "development0.2.387/source14305391",
+                "observed_at": "2026-10-07T22:18:59.711910+00:00"
+              },
+              "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
           ],
           "attempt_history": [
@@ -7781,6 +8008,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "unverified",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -7892,15 +8130,12 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37719749636",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
-              "evidence": [
-                ".research/settings-intel-controlled-retest-20261007.json",
-                ".research/settings-intel-native-peer-20261007.json"
-              ],
-              "detail": "Guest Account shows signed-out presentation before and after full extension replacement; no authenticated identity inferred.",
-              "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
             }
           },
           "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
@@ -7922,6 +8157,22 @@
               },
               "superseded_at": "2026-10-08T03:03:29.534526+00:00",
               "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37719749636",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/settings-intel-controlled-retest-20261007.json",
+                  ".research/settings-intel-native-peer-20261007.json"
+                ],
+                "detail": "Guest Account shows signed-out presentation before and after full extension replacement; no authenticated identity inferred.",
+                "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
+              },
+              "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
           ],
           "attempt_history": [
@@ -7935,6 +8186,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "pass",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -7997,15 +8259,12 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37719749636",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
-              "evidence": [
-                ".research/settings-intel-controlled-retest-20261007.json",
-                ".research/settings-intel-native-peer-20261007.json"
-              ],
-              "detail": "Guest Organization guidance observed before and after full extension replacement; no signed-in organization behavior inferred.",
-              "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
             }
           },
           "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
@@ -8027,6 +8286,22 @@
               },
               "superseded_at": "2026-10-08T03:03:29.534526+00:00",
               "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37719749636",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/settings-intel-controlled-retest-20261007.json",
+                  ".research/settings-intel-native-peer-20261007.json"
+                ],
+                "detail": "Guest Organization guidance observed before and after full extension replacement; no signed-in organization behavior inferred.",
+                "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
+              },
+              "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
           ],
           "attempt_history": [
@@ -8040,6 +8315,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "pass",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         },
@@ -8636,15 +8922,12 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37719749636",
-              "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
-              "build_version": "0.2.391",
-              "evidence": [
-                ".research/settings-intel-controlled-retest-20261007.json",
-                ".research/settings-intel-native-peer-20261007.json"
-              ],
-              "detail": "Guest member-only organization control denial observed warm and after full extension replacement; member/admin slots separate and unverified.",
-              "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "verified_at": "2026-10-08T05:10:28.331547+00:00",
+              "detail": "Guest negative visibility before and after genuine full extension reload passes; replacement worker/panel and active Settings are observed. Ordinary-member/admin dimensions are separate and remain at their own recorded status. No Store/current-main/whole-feature health claim."
             },
             "member": {
               "status": "unverified",
@@ -8682,6 +8965,22 @@
               },
               "superseded_at": "2026-10-08T03:03:29.534526+00:00",
               "reason": "Independent resource-valid Intel frozen391 full-reload evidence; retain prior build/scope."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37719749636",
+                "source_sha": "52487361b1b6a8663b958dbb2196cbcc9b1af31c",
+                "build_version": "0.2.391",
+                "evidence": [
+                  ".research/settings-intel-controlled-retest-20261007.json",
+                  ".research/settings-intel-native-peer-20261007.json"
+                ],
+                "detail": "Guest member-only organization control denial observed warm and after full extension replacement; member/admin slots separate and unverified.",
+                "release_scope": "Frozen development artifact, actual Intel native observation. Three current journals valid; no current-main/Store/whole-feature health. Browser package revision1194 logged; exact runtime browser version absent from retained receipt."
+              },
+              "superseded_at": "2026-10-08T05:10:28.331547+00:00"
             }
           ],
           "linked_defects": ["EXT-D-0161", "EXT-D-0162"],
@@ -8696,6 +8995,17 @@
               "independent_review": ".research/settings397-resource-peer-20261007.json",
               "detail": "Startup CDP endpoint timeout before any Settings interaction; zero acceptance credit. CPU threshold crossed; causal link to timeout not established. Prior scoped historical results preserved.",
               "at": "2026-10-08T04:28:35.530547+00:00"
+            },
+            {
+              "at": "2026-10-08T05:10:28.331547+00:00",
+              "mode": "guest",
+              "run_id": "37729701473",
+              "build_variant": "development0.2.397/sourcecedcec02",
+              "receipt_status": "pass",
+              "resource_invalid": false,
+              "evidence": ".research/settings397-fresh-native-20261007.json",
+              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+              "detail": "Receipt status applies only to observed steps. Panel-document reload is not full extension reload. T34 cleanup failure and T64 unexecuted fixture failure are tracked in D167; no auth regression inferred."
             }
           ]
         }

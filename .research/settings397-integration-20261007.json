@@ -1,0 +1,22 @@
+{
+  "at": "2026-10-08T05:10:28.331547+00:00",
+  "run_id": "37729701473",
+  "updated_case_results": [
+    "EXT-F-1003-T10",
+    "EXT-F-1003-T16",
+    "EXT-F-1003-T19",
+    "EXT-F-1003-T31",
+    "EXT-F-1003-T34",
+    "EXT-F-1003-T63",
+    "EXT-F-1003-T70",
+    "EXT-F-1003-T73",
+    "EXT-F-1003-T76",
+    "EXT-F-1003-T92"
+  ],
+  "all_16_attempts_recorded": true,
+  "raw_case_results_promoted_blindly": false,
+  "historical_passes_preserved": "T04 remains partial; T13/T22/T37/T46 prior scoped passes retained with new panel-only attempt evidence; T64 historical pass retained but this397 attempt has no control evidence.",
+  "defect_id": "EXT-D-0167",
+  "review": ".research/settings397-native-acceptance-peer-20261007.json",
+  "member_scope_ruling": "T63 guest cell accepts actual guest denial warm/full-extension reload; ordinary-member denial remains unverified in its separate mode cell."
+}
