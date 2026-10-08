@@ -37,7 +37,7 @@
     "identity_note": "Expected package identity comes from the frozen CI provenance. The diagnostic receipt does not report a runtime extension ID."
   },
   "startup": {
-    "result": "cdp_connected_before_deadline",
+    "result": "cdp_connected_without_timeout",
     "observation": {
       "phase": "cdp_connected",
       "endpoint_present": true,
@@ -47,10 +47,11 @@
       "polls": 0,
       "observed_at_utc": "2026-10-08T01:09:33.014Z"
     },
-    "deadline_ms": 5000,
-    "margin_before_deadline_ms": 106,
+    "endpoint_poll_deadline_ms": 5000,
+    "elapsed_scope": "elapsedMs spans browser spawn start through the full connectOwnedCdp return; it is not the standalone endpoint-poll duration, so no margin against the five-second poll deadline is inferred.",
     "timeout_branch_taken": false,
     "late_endpoint_observation": null,
+    "post_timeout_probe_performed": false,
     "owned_child_exit": {
       "diagnostic_observation": "child still running at CDP connection",
       "guarded_wrapper_exit_code": 0,
@@ -81,7 +82,7 @@
       "exercise_panel"
     ],
     "panel_ready_at_utc": "2026-10-08T01:09:36.040Z",
-    "interpretation": "This run shows one headed Intel startup connecting just inside the existing five-second bound. It does not establish why the earlier run timed out or whether headed mode or host scheduling caused that attempt."
+    "interpretation": "This run shows a headed Intel startup connected without taking the timeout branch. It does not establish why the earlier run timed out or whether headed mode or host scheduling caused that attempt."
   },
   "resources": {
     "journals": {
@@ -124,7 +125,7 @@
   },
   "limits": [
     "One diagnostic run is not enough to attribute startup timing to headed mode, host scheduling, or another cause.",
-    "The endpoint connected 106 ms before the five-second deadline; this is a near-boundary observation, not a repeatable latency estimate.",
+    "The receipt reports total spawn-to-connectOwnedCdp elapsed time, not the standalone DevToolsActivePort polling duration; no deadline margin can be calculated from it.",
     "Endpoint connection and panel readiness do not prove guest Chat, assistant content, or production behavior.",
     "The runtime extension ID was not reported by the diagnostic receipt."
   ],
