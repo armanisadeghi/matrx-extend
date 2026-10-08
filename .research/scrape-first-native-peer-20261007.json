@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "reviewer_role": "fresh independent verifier; zero source authorship",
+  "reviewed_commit": "410c2af0509e51b4c5da6ada503ef2478942eefd",
+  "reviewed_report": ".research/scrape-guest-new-native-20261007.json",
+  "reviewed_evidence": ".research/scrape-guest-new-native-20261007-run37720057690-originals",
+  "verdict_a_behavior_and_scope": {
+    "status": "WARM T07 FAILURE ESTABLISHED; overall T07 partial, T09 unverified",
+    "evidence": [
+      "The native receipt is workflow run 37720057690, development artifact 0.2.391 / CI 37698216289 / artifact 11516342905 / source 52487361b1b6a8663b958dbb2196cbcc9b1af31c. The workflow checkout is f79fbe757fa05450fe1d760293e3b6a976dbce56.",
+      "The exact workflow-checkout driver hash is 1d2dc04e345a5678759d269fb7943be9443811125ef854efb0568138bc047d2a, matching the frozen report. Its T07 predicate requires the stopped article scroller to remain within 4px of its followed top, the page to have reversed, and the sync-off control to be present.",
+      "Receipt T07 warm samples: start pageY/top 0/0 with sync-off present; following pageY/top 650/310 with stop-follow present; stopped pageY/top 0/0 with neither control present. `passed:false`; failure stage `guest_scroll_sync`, code `scrape_guest_scroll_sync_mismatch`. This establishes a warm native procedure assertion failure.",
+      "The driver throws on a failed warm T07 before it marks or invokes T09. The raw receipt has no T09 case entry. No T09 menu, sentinel, selection, clipboard read, navigation copy, or reload copy action ran.",
+      "T07 full-extension-reload subcase was not reached. The single run therefore establishes the warm failure only; it does not establish reload behavior, full T07 lifecycle outcome, or product root cause."
+    ],
+    "missing_or_unverified": [
+      "T07 after full extension reload and all T09 behavior remain unverified."
+    ]
+  },
+  "verdict_b_evidence_quality_and_privacy": {
+    "status": "PARTIAL; sufficient to establish the recorded warm assertion failure",
+    "evidence": [
+      "Workflow provenance, raw native receipt, and all three original run-37720057690 journals agree on the run. Package and browser journals are `valid`, child exit 0; guest journal is admitted with no health reasons and final `child_failed`, exit 1. This is a child assertion failure, not resource-invalid admission.",
+      "The driver and behavior-oracle hashes match the frozen report and workflow checkout. The receipt artifact identity matches workflow provenance. Receipt outer status `unverified` coexists with the explicit T07 case status `failed`; preserving that distinction is accurate.",
+      "Receipt guest auth storage reports no access token and no user profile. Provenance says no credential secret was created or staged; no credential or clipboard contents appear in the reviewed report/evidence."
+    ],
+    "limits": [
+      "No screenshot was captured at the exact mismatch stage; the receipt has no Chrome version or extension runtime ID. These limit visual/runtime corroboration but do not erase the recorded assertion and samples.",
+      "Do not infer a product cause from the missing controls or scroll reset. Root-cause diagnosis remains separate."
+    ]
+  },
+  "files": [".research/scrape-first-native-peer-20261007.json"],
+  "own_shas": [],
+  "checks": ["Compared frozen report with original receipt, workflow provenance, all three journals, and the exact workflow-checkout driver and oracle hashes."],
+  "not_run": ["No browser, source edit, build, test, release, credential use, or new native run."],
+  "conclusion": "The frozen report's T07 warm mismatch and T09-not-reached conclusions are supported. Report the warm T07 failure as observed at the procedure assertion boundary; retain reload/full T07 and T09 as unverified, and do not claim root cause."
+}
