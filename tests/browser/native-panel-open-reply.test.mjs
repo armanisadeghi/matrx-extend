@@ -1,55 +1,62 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { requestOwnedPanelOpen } from './native-sidepanel-qa-harness.mjs';
+import { beginReloadPanelReplyObservation } from './native-sidepanel-qa-harness.mjs';
 
-test('owned Open panel request records a fresh callback without exposing its error text', async () => {
-  for (const [response, expected] of [
+function ownedPage(response, readFails = false) {
+  let result = '{"ok":true,"result":{"opened":true}}';
+  let resolveReply;
+  const locator = {
+    evaluate: async (mutate) => {
+      const element = { textContent: result };
+      mutate(element);
+      result = element.textContent;
+    },
+    click: async () => {
+      assert.equal(result, '', 'stale initial-open reply must be cleared');
+      if (response !== null)
+        result = response === 'malformed' ? '{malformed' : JSON.stringify(response);
+      resolveReply?.();
+    },
+    filter: () => locator,
+    waitFor: async () => {
+      if (result) return;
+      await new Promise((resolve) => {
+        resolveReply = resolve;
+      });
+    },
+    textContent: async () => {
+      if (readFails) throw new Error('private URL token');
+      return result;
+    },
+  };
+  return { locator: () => locator };
+}
+
+test('reload observer captures fixed callback classes without changing the trusted click', async () => {
+  for (const [response, category] of [
     [{ ok: true, result: { opened: true } }, 'opened'],
     [{ ok: true, result: { opened: false, reason: 'private URL token' } }, 'open_refused'],
     [{ ok: false, error: 'private URL token' }, 'rpc_refused'],
+    ['malformed', 'malformed_reply'],
   ]) {
-    let result = '{"ok":true,"result":{"opened":true}}';
-    const locator = {
-      evaluate: async (mutate) => {
-        const element = { textContent: result };
-        mutate(element);
-        result = element.textContent;
-      },
-      click: async () => {
-        assert.equal(result, '', 'stale initial reply must be cleared');
-        result = JSON.stringify(response);
-      },
-      filter: () => locator,
-      waitFor: async () => assert.notEqual(result, ''),
-      textContent: async () => result,
-    };
-    const outcome = await requestOwnedPanelOpen({ locator: () => locator });
-    assert.equal(outcome.category, expected);
-    assert.equal(outcome.received, true);
-    assert.doesNotMatch(JSON.stringify(outcome), /private|token/);
+    let clicked = false;
+    const observation = await beginReloadPanelReplyObservation(ownedPage(response), () => {
+      clicked = true;
+    });
+    await observation.settled();
+    assert.equal(clicked, true);
+    assert.equal(observation.close().category, category);
+    assert.doesNotMatch(JSON.stringify(observation.outcome), /private|token/);
   }
 });
 
-test('reply read failure remains distinct from a failed click', async () => {
-  let cleared = false;
-  const locator = {
-    evaluate: async (mutate) => {
-      const element = { textContent: 'stale' };
-      mutate(element);
-      cleared = element.textContent === '';
-    },
-    click: async () => assert.equal(cleared, true),
-    filter: () => locator,
-    waitFor: async () => {},
-    textContent: async () => {
-      throw new Error('private URL token');
-    },
-  };
-  const outcome = await requestOwnedPanelOpen({ locator: () => locator });
-  assert.deepEqual(outcome, {
-    received: false,
-    ok: null,
-    opened: null,
-    category: 'reply_read_failed',
-  });
+test('reply read failure stays bounded, and no callback remains unobserved', async () => {
+  const unreadable = await beginReloadPanelReplyObservation(
+    ownedPage({ ok: true, result: { opened: true } }, true),
+    () => {},
+  );
+  await unreadable.settled();
+  assert.equal(unreadable.close().category, 'reply_read_failed');
+  const absent = await beginReloadPanelReplyObservation(ownedPage(null), () => {});
+  assert.equal(absent.close().category, 'reply_not_observed');
 });

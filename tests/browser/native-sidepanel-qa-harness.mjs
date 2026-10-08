@@ -52,44 +52,60 @@ function panelOpenReplyCategory(reply) {
   return 'unexpected_reply';
 }
 
-async function requestOwnedPanelOpen(page, beforeClick = () => {}, timeoutMs = undefined) {
+async function beginReloadPanelReplyObservation(page, beforeClick) {
   const result = page.locator('#result');
   await result.evaluate((element) => {
     element.textContent = '';
   });
   beforeClick();
   await page.locator('#open-panel').click();
-  const replyTimeoutMs = typeof timeoutMs === 'function' ? timeoutMs() : timeoutMs;
-  try {
-    await result.filter({ hasText: /\S/ }).waitFor({
-      state: 'visible',
-      ...(replyTimeoutMs !== undefined && { timeout: replyTimeoutMs }),
-    });
-  } catch (error) {
-    return {
+  let active = true;
+  const outcome = {
+    received: false,
+    ok: null,
+    opened: null,
+    category: 'reply_not_observed',
+  };
+  const pending = result
+    .filter({ hasText: /\S/ })
+    .waitFor({ state: 'visible', timeout: ATTEMPTS * WAIT_MS })
+    .then(async () => {
+      let rawReply;
+      try {
+        rawReply = await result.textContent();
+      } catch {
+        return { received: false, ok: null, opened: null, category: 'reply_read_failed' };
+      }
+      let reply;
+      try {
+        reply = JSON.parse(rawReply || '');
+      } catch {
+        return { received: true, ok: null, opened: null, category: 'malformed_reply' };
+      }
+      return {
+        received: true,
+        ok: typeof reply?.ok === 'boolean' ? reply.ok : null,
+        opened: typeof reply?.result?.opened === 'boolean' ? reply.result.opened : null,
+        category: panelOpenReplyCategory(reply),
+      };
+    })
+    .catch((error) => ({
       received: false,
       ok: null,
       opened: null,
       category: error?.name === 'TimeoutError' ? 'reply_not_observed' : 'reply_wait_failed',
-    };
-  }
-  let rawReply;
-  try {
-    rawReply = await result.textContent();
-  } catch {
-    return { received: false, ok: null, opened: null, category: 'reply_read_failed' };
-  }
-  let reply;
-  try {
-    reply = JSON.parse(rawReply || '');
-  } catch {
-    return { received: true, ok: null, opened: null, category: 'malformed_reply' };
-  }
+    }))
+    .then((reply) => {
+      if (active) Object.assign(outcome, reply);
+    });
   return {
-    received: true,
-    ok: typeof reply?.ok === 'boolean' ? reply.ok : null,
-    opened: typeof reply?.result?.opened === 'boolean' ? reply.result.opened : null,
-    category: panelOpenReplyCategory(reply),
+    outcome,
+    settled: () => pending,
+    close: () => {
+      active = false;
+      void pending;
+      return { ...outcome };
+    },
   };
 }
 
@@ -587,6 +603,7 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
   let lastOwned = [];
   let finalPredicate = false;
   let retirementEvidence;
+  let replyObservation;
   const record = (phase, data = {}) => {
     const entry = { at: new Date().toISOString(), phase, ...data };
     if (timeline.length < 80) timeline.push(entry);
@@ -754,37 +771,24 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
       throw error;
     }
     await page.bringToFront();
-    let openDeadline;
-    let reply;
     try {
-      reply = await requestOwnedPanelOpen(
-        page,
-        () => {
-          openDeadline = performance.now() + ATTEMPTS * WAIT_MS;
-          retirementEvidence.open_panel_request = {
-            click_monotonic_ms: Math.round(performance.now()),
-            worker_at_click: workerActivationAtClick(lifetime, replacementWorker.targetId),
-            received: false,
-            ok: null,
-            opened: null,
-            category: 'click_pending',
-          };
-        },
-        () => Math.max(1, Math.round(openDeadline - performance.now())),
-      );
+      replyObservation = await beginReloadPanelReplyObservation(page, () => {
+        retirementEvidence.open_panel_request = {
+          click_monotonic_ms: Math.round(performance.now()),
+          worker_at_click: workerActivationAtClick(lifetime, replacementWorker.targetId),
+          received: false,
+          ok: null,
+          opened: null,
+          category: 'reply_not_observed',
+        };
+      });
     } catch (error) {
       if (retirementEvidence.open_panel_request)
         retirementEvidence.open_panel_request.category = 'click_failed';
       throw error;
     }
-    Object.assign(retirementEvidence.open_panel_request, reply);
-    if (reply.category !== 'opened') throw new Error('native_extension_replacement_open_refused');
     let replacementPanel;
-    for (
-      let attempt = 0;
-      attempt < ATTEMPTS && (attempt === 0 || performance.now() < openDeadline);
-      attempt += 1
-    ) {
+    for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
       const { targetInfos } = await cdp.send('Target.getTargets');
       const owned = targetInfos.map(describe).filter(Boolean);
       lastOwned = owned.slice(0, 16);
@@ -798,7 +802,7 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
           target.type === 'page' && target.url === panelUrl && target.targetId !== oldPanelId,
       );
       if (replacementPanel) break;
-      await wait(Math.min(WAIT_MS, Math.max(0, openDeadline - performance.now())));
+      await wait(WAIT_MS);
     }
     if (!replacementPanel) throw new Error('native_extension_replacement_panel_unverified');
     const contextBoundary = await observeSidePanelContext({
@@ -817,6 +821,7 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
     retirementEvidence.timeline.final_snapshot = lastOwned;
     retirementEvidence.timeline.dropped_entries = timelineDropped;
     retirementEvidence.reload_lifetime = lifetime.evidence;
+    Object.assign(retirementEvidence.open_panel_request, replyObservation.close());
     return {
       management_before: managementBefore,
       management_after: managementAfter,
@@ -829,6 +834,8 @@ async function reloadOwnedExtension({ cdp, browser, context, page, extensionId, 
       management_reload_clicked: true,
     };
   } catch (error) {
+    if (replyObservation && retirementEvidence?.open_panel_request)
+      Object.assign(retirementEvidence.open_panel_request, replyObservation.close());
     if (error && typeof error === 'object') {
       error.lifecycleEvidence = {
         ...retirementEvidence,
@@ -1498,9 +1505,12 @@ export async function runNativeSidepanelQa({
     onStage('local_page_navigation');
     await page.goto(`http://localhost:${serverPort}/`);
     onStage('panel_open');
-    const reply = await requestOwnedPanelOpen(page); // Real trusted Chromium input.
+    await page.locator('#open-panel').click(); // Real trusted Chromium input.
+    await page.locator('#result').waitFor({ state: 'visible' });
     onStage('panel_reply');
-    if (reply.category !== 'opened') throw new Error('native_sidepanel_open_refused');
+    const reply = JSON.parse((await page.locator('#result').textContent()) || '{}');
+    if (reply?.ok !== true || reply?.result?.opened !== true)
+      throw new Error(`native_sidepanel_open_refused:${JSON.stringify(reply)}`);
 
     const normalTarget = (await cdp.send('Target.getTargets')).targetInfos.find(
       (entry) => entry.type === 'page' && entry.url === page.url(),
@@ -1657,7 +1667,7 @@ export {
   waitForInitialPanelReady,
   activateOwnedSidePanel,
   reloadOwnedExtension,
-  requestOwnedPanelOpen,
+  beginReloadPanelReplyObservation,
   isSettledGuestPanel,
   requireReleaseReceipt,
   requireExpectedExtension,
