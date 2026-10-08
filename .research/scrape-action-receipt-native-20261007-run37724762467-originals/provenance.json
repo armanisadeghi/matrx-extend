@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "source": "GitHub Actions artifact",
+  "workflow_run_id": 37724762467,
+  "workflow_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37724762467",
+  "workflow_artifact_id": 11527457146,
+  "workflow_artifact_name": "hosted-guest-37724762467-1",
+  "workflow_artifact_size_bytes": 144962,
+  "development_run_id": 37698216289,
+  "development_artifact_id": 11516342905,
+  "checkout_sha": "10c8a2433167a369420689c971056ee188bd3910",
+  "files": [
+    {
+      "path": "docs/stabilization/resource-journals/hosted-package-37724762467-1.jsonl",
+      "bytes": 986,
+      "sha256": "3410f7e6f9442f56e34a9bd6f9c381de721bff440e31487f370e0d094733e3a0"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-browser-37724762467-1.jsonl",
+      "bytes": 991,
+      "sha256": "70dd9b6fb4de6e5f119e939acd296782dfb56cf5cdd091c056f09d73c18a0344"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-guest-37724762467-1.jsonl",
+      "bytes": 6443,
+      "sha256": "c36252c0fe502603e65d7fb7a4435642035ebacadc52757c1930fffe04e33d3a"
+    },
+    {
+      "path": "test-results/scrape-guest-native-b5453107-9bbd-40e1-93ad-7e65d123c1b5.json",
+      "bytes": 133937,
+      "sha256": "a1ade2430349888aac0dcff0aa17a62dff5b34687dd336e0d5f7932fc5df224e"
+    },
+    {
+      "path": "test-results/native-sidepanel-qa-lZKFpR/scrape-fast-article.png",
+      "bytes": 37572,
+      "sha256": "a4d3c63be707f177d60f4195394c168ce4d22b388b42be06c5cd98ed94714822"
+    },
+    {
+      "path": "test-results/native-sidepanel-qa-lZKFpR/native-side-panel.png",
+      "bytes": 32352,
+      "sha256": "476cbab446e52319ed7b05c289ce8de763c43b8637d8ac133ccb13d6420146e6"
+    },
+    {
+      "path": "test-results/native-sidepanel-qa-lZKFpR/scrape-deep-article.png",
+      "bytes": 37508,
+      "sha256": "a33b389aeae1b41a412d01f5b5cb2d0539383ea319302be40633ba0f80d42c52"
+    },
+    {
+      "path": "test-results/native-sidepanel-qa-lZKFpR/normal-target-after-open.png",
+      "bytes": 27078,
+      "sha256": "c939d4f6417b874eefffbe4a8c9bd1cf05088fe2b42ab7a7e13c65d79a024fd2"
+    }
+  ]
+}
