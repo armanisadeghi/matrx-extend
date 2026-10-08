@@ -133,6 +133,7 @@ case " \$* " in
   *" lint "*) [ -f "$SANDBOX/fail-lint" ] && exit 1 ;;
   *" exec vitest run --maxWorkers=4 "*)
     git rev-parse HEAD >> "$SANDBOX/checked-shas"
+    { [ -e .research ] || [ -e docs/stabilization/SEED.md ]; } && touch "$SANDBOX/inert-visible"
     # A foreign push lands while this candidate's unit tests are still running.
     if [ -f "$SANDBOX/race-during" ] && [ ! -f "$SANDBOX/raced-during" ]; then
       touch "$SANDBOX/raced-during"
@@ -140,6 +141,14 @@ case " \$* " in
         && git -c user.name=t -c user.email=t@t commit -qm race-during && git push -q origin main ) >/dev/null 2>&1
       echo \$\$ > "$SANDBOX/race-during-pids"
       sleep 30 & echo \$! >> "$SANDBOX/race-during-pids"; wait
+    fi
+    # A foreign push of evidence only (no gate reads it) lands mid-check.
+    if [ -f "$SANDBOX/inert-during" ] && [ ! -f "$SANDBOX/inerted-during" ]; then
+      touch "$SANDBOX/inerted-during"
+      ( cd "$SANDBOX/other" && git pull -q origin main && mkdir -p .research docs/stabilization \
+        && echo '{}' > .research/inert-during.json && echo during > docs/stabilization/STATUS.md && git add -A \
+        && git -c user.name=t -c user.email=t@t commit -qm inert-during && git push -q origin main ) >/dev/null 2>&1
+      sleep 4
     fi
     if [ -f "$SANDBOX/fail-tests" ]; then
       echo " FAIL  tests/unit/release-contract.test.ts"
@@ -545,9 +554,40 @@ check "published SHA is the last fully checked SHA"    '[[ "$(tail -1 "$SANDBOX/
 check "the abandoned check left no process behind"     '[[ -s "$SANDBOX/race-during-pids" ]] && ! (for p in $(cat "$SANDBOX/race-during-pids"); do kill -0 "$p" 2>/dev/null && exit 0; done; exit 1)'
 cd "$SANDBOX/checkout"
 
+# 84% of foreign pushes only add investigation evidence (.research/, the
+# non-code files of docs/stabilization/) that no gate and no build reads; gates
+# run on snapshots without those paths. Such a push, mid-check or at the push,
+# must not discard the verdicts: the candidate is rebuilt on the new main with
+# a byte-identical gate tree and published (v0.2.398: nine lost races, 30 min).
+echo "release — evidence-only pushes keep the verdicts"
+# Start level with origin (the sandbox checkout only), so the install is current.
+git checkout -q -- shared.txt && git fetch -q origin && git merge -q --ff-only origin/main
+( cd "$SANDBOX/other" && git pull -q origin main && mkdir -p .research docs/stabilization && echo '{}' > .research/seed.json \
+  && echo seed > docs/stabilization/SEED.md && git add -A && git -c user.name=t -c user.email=t@t commit -qm seed-evidence && git push -q origin main ) >/dev/null 2>&1
+touch "$SANDBOX/inert-during"
+INERT_CHECKED_BEFORE="$(wc -l < "$SANDBOX/checked-shas")"
+INERT_PUSH_CMD="[ -f '$SANDBOX/inert-pushed' ] || { touch '$SANDBOX/inert-pushed'; cd '$SANDBOX/other' && git pull -q origin main && echo '{}' > .research/inert-push.json && git add -A && git -c user.name=t -c user.email=t@t commit -qm inert-push && git push -q origin main; }"
+set +e
+RELEASE_RACE_POLL_SECS=1 RELEASE_TEST_BEFORE_PUSH="$INERT_PUSH_CMD" PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/inert-out" 2>&1
+INERT_STATUS=$?
+set -e
+rm -f "$SANDBOX/inert-during"
+git fetch -q --tags origin 2>/dev/null || true
+INERT_TAG="$(sed -n 's/^\(v[0-9.]*\)  pushed.*/\1/p' "$SANDBOX/inert-out")"
+check "both evidence pushes happened"                  '[[ -f "$SANDBOX/inerted-during" && -f "$SANDBOX/inert-pushed" ]]'
+check "release after evidence-only pushes exits zero"  '[[ $INERT_STATUS -eq 0 && -n "$INERT_TAG" ]]'
+check "no race was counted for evidence-only pushes"   '! grep -q "lost .* race" tmp/release-logs/latest.log'
+check "the verdicts were kept, not re-run"             '[[ $(grep -c "verdicts kept" tmp/release-logs/latest.log) -ge 2 && $(( $(wc -l < "$SANDBOX/checked-shas") - INERT_CHECKED_BEFORE )) -eq 1 ]]'
+check "the evidence pushes survived on main"           'git cat-file -e origin/main:.research/inert-during.json && git cat-file -e origin/main:.research/inert-push.json'
+check "the tag is main, not a side commit"             '[[ "$(git rev-parse "$INERT_TAG^{commit}")" == "$(git rev-parse origin/main)" ]]'
+check "gates never saw the evidence paths"             '[[ ! -e "$SANDBOX/inert-visible" ]]'
+eval "$(sed -n '/^GATE_INERT_RE=/p; /^gate_tree() {/,/^}/p' release.sh)"
+check "published gate tree is the checked gate tree"   '[[ "$(gate_tree origin/main)" == "$(gate_tree "$(tail -1 "$SANDBOX/checked-shas")")" ]]'
+
 if [[ $FAILED -ne 0 ]]; then
   echo "--- catch-up output ---"; tail -30 "$SANDBOX/catchup-out" 2>/dev/null
   echo "--- mid-check race output ---"; tail -30 "$SANDBOX/race-during-out" 2>/dev/null
+  echo "--- evidence-only push output ---"; tail -30 "$SANDBOX/inert-out" 2>/dev/null
   echo "--- ship output ---"; tail -30 "$SANDBOX/ship-out" 2>/dev/null
   echo "--- failed release output ---"; tail -30 "$SANDBOX/failed-out"
   echo "--- failed release log ---"; tail -60 "$SANDBOX/failed-release.log" 2>/dev/null

@@ -157,6 +157,33 @@ commit_message() {
     else echo "release: $1"; fi
 }
 
+# ── Gate inputs: the bytes every gate and the build read ─────────────────────
+# origin/main moves about once a minute (2026-10-07: 330 commits in 6 h) and one
+# candidate takes ~150 s to check and build, so a release that threw its
+# verdicts away on every foreign push almost never found a quiet window
+# (v0.2.398: nine lost validation races in 30 min, nothing published). Most of
+# those pushes (84%) only add investigation evidence that no gate and no build
+# reads: .research/ (biome-ignored, outside tsconfig/vitest/wxt) and the
+# non-code files of docs/stabilization/ (biome 1.9 processes none of them;
+# inventory.json and reports/ are biome-ignored). Those paths are removed from
+# every snapshot a gate or the build runs in, so no verdict can depend on them
+# BY CONSTRUCTION — and a candidate whose gate tree hashes the same as an
+# already-validated one has, byte for byte, the inputs that validation saw.
+# A path joins this list only when no gate, test or build step reads it; one
+# that a gate needs fails that gate loudly in the snapshot, never silently.
+GATE_INERT_RE='^(\.research/|docs/stabilization/(.*\.(md|html|png|txt|log|jsonl|pending|patch|zip)|inventory\.json|reports/.*)$)'
+gate_tree() {  # treeish → prints the tree id of what gates and the build read
+    local idx t rc=0
+    idx="$(mktemp)"; rm -f "$idx"
+    if GIT_INDEX_FILE="$idx" git read-tree "$1" \
+        && GIT_INDEX_FILE="$idx" git ls-files -z \
+            | GATE_INERT_RE="$GATE_INERT_RE" perl -0 -ne 'chomp; print "$_\0" if m{$ENV{GATE_INERT_RE}}' \
+            | GIT_INDEX_FILE="$idx" git update-index -z --force-remove --stdin \
+        && t="$(GIT_INDEX_FILE="$idx" git write-tree)"; then :; else rc=1; fi
+    rm -f "$idx"
+    [[ $rc == 0 && -n "$t" ]] && echo "$t"
+}
+
 # ── Throwaway export of a commit/tree (never this checkout) ─────────────────
 # <root>/matrx-extend holds the files; node_modules and ../aidream are symlinks
 # to the real ones, and the untracked .env files are copied, so every pnpm
@@ -181,7 +208,9 @@ export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never ca
     # message — a silent "could not export" that only appears under load
     # (ship-all 2026-10-07_00-13-36). Write the archive whole, then extract it.
     # Every failing step is named in the log; a signalled step prints nothing.
-    git archive -o "$root/snapshot.tar" "$1" \
+    local gtree
+    gtree="$(gate_tree "$1")" || { log "export of ${1:0:12}: gate tree failed"; return 1; }
+    git archive -o "$root/snapshot.tar" "$gtree" \
         || { log "export of ${1:0:12}: git archive failed (exit $?)"; return 1; }
     tar -x -C "$dir" -f "$root/snapshot.tar" \
         || { log "export of ${1:0:12}: tar extraction failed (exit $?)"; return 1; }
@@ -192,7 +221,7 @@ export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never ca
     ( cd "$dir" && git init -q \
         && echo "$GIT_ABS_DIR/objects" > .git/objects/info/alternates \
         && printf 'node_modules\n' >> .git/info/exclude \
-        && git update-ref HEAD "$2" && git read-tree "$1" && git update-index -q --refresh ) >> "$RELEASE_LOG_FILE" 2>&1 \
+        && git update-ref HEAD "$2" && git read-tree "$gtree" && git update-index -q --refresh ) >> "$RELEASE_LOG_FILE" 2>&1 \
         || { log "export of ${1:0:12}: snapshot git init failed (exit $?)"; return 1; }
     [[ -d "$REPO_ROOT/node_modules" ]] && ln -s "$REPO_ROOT/node_modules" "$dir/node_modules"
     [[ -d "$REPO_ROOT/../aidream" ]] && ln -s "$(cd "$REPO_ROOT/../aidream" && pwd)" "$root/aidream"
@@ -510,12 +539,42 @@ stop_background() {
     for entry in ${BG_PIDS[@]+"${BG_PIDS[@]}"}; do wait "${entry%%|*}" 2>/dev/null; done
     BG_PIDS=()
 }
-origin_moved() {  # 0 when origin main left BASE or NEW_TAG was claimed; unreachable = not moved (the push decides)
+origin_moved() {  # 0 when origin main left BASE (in gate inputs) or NEW_TAG was claimed; unreachable = not moved (the push decides)
     local refs head
     refs="$(bounded 20 git ls-remote "$REMOTE" "refs/heads/$BRANCH" "refs/tags/$NEW_TAG" 2>/dev/null)" || return 1
+    grep -q "refs/tags/$NEW_TAG\$" <<< "$refs" && return 0
     head="$(awk -v ref="refs/heads/$BRANCH" '$2 == ref { print $1 }' <<< "$refs")"
-    [[ -n "$head" && "$head" != "$BASE" ]] && return 0
-    grep -q "refs/tags/$NEW_TAG\$" <<< "$refs"
+    [[ -n "$head" && "$head" != "$BASE" ]] || return 1
+    adopt_inert_move && return 1
+    return 0
+}
+# origin/main moved: rebuild this candidate on the new main and keep its
+# verdicts ONLY when the rebuilt candidate's gate tree is identical to the one
+# validated (the move touched gate-inert paths alone). Anything else — a
+# conflict, a changed gate input, a claimed tag, an unreachable origin — is a
+# race, and the new candidate is checked and built from the beginning.
+INERT_ADOPTIONS=0
+adopt_inert_move() {
+    local head merged sha parents
+    [[ -n "${VALIDATED_GATE_TREE:-}" ]] || return 1
+    fetch_main || return 1
+    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" || return 1
+    tag_taken "$NEW_TAG" && return 1
+    head="$(git rev-parse "$REMOTE/$BRANCH")"
+    [[ "$head" == "$BASE" ]] && return 0
+    git merge-base --is-ancestor "$BASE" "$head" || return 1
+    merged="$(git merge-tree --write-tree "$head" "$RELEASE_SHA" 2>/dev/null)" || return 1
+    if [[ "$(gate_tree "$merged")" != "$VALIDATED_GATE_TREE" ]]; then
+        log "$REMOTE/$BRANCH moved to ${head:0:9} and changed gate inputs"
+        return 1
+    fi
+    parents=(-p "$head")
+    git merge-base --is-ancestor "$LOCAL_HEAD" "$head" || parents+=(-p "$LOCAL_HEAD")
+    sha="$(git commit-tree "$merged" "${parents[@]}" -m "$COMMIT_MSG")" || return 1
+    INERT_ADOPTIONS=$((INERT_ADOPTIONS + 1))
+    log "$REMOTE/$BRANCH moved to ${head:0:9} in gate-inert paths only — $NEW_TAG rebuilt on it as $sha; gate tree ${VALIDATED_GATE_TREE:0:12} unchanged, verdicts kept (adoption $INERT_ADOPTIONS)"
+    BASE="$head"
+    RELEASE_SHA="$sha"
 }
 await_background() {  # rc-file... → 0 once each job wrote its rc; 1 when origin moved first (jobs stopped)
     local f all next=$((SECONDS + RACE_POLL_SECS))
@@ -781,8 +840,9 @@ note_race() {  # where — origin moved: drop this candidate, refetch, and stop 
     fi
 }
 while :; do
-    # A foreign main advance changes the candidate. Re-merge, regenerate,
-    # bump, check and build from the beginning; old verdicts never transfer.
+    # A foreign main advance that changes gate inputs changes the candidate.
+    # Re-merge, regenerate, bump, check and build from the beginning; verdicts
+    # transfer only to a candidate with an identical gate tree (adopt_inert_move).
     ATTEMPT_ROOTS_FROM=${#SNAP_ROOTS[@]}
     base_tree
     verify_installed_dependency_inputs
@@ -795,6 +855,7 @@ while :; do
     COMMIT_MSG="$(commit_message "$NEW_TAG")"
     build_commit || hard_stop "could not assemble $NEW_TAG — nothing was pushed"
     log "candidate $NEW_TAG is $RELEASE_SHA; only committed paths are included"
+    VALIDATED_GATE_TREE="$(gate_tree "$RELEASE_SHA")" || hard_stop "could not compute the gate tree of $NEW_TAG — nothing was pushed"
     CHECK_SNAP=""; BUILD_SNAP=""
     export_snapshot "$RELEASE_SHA" "$RELEASE_SHA" prepare && CHECK_SNAP="$SNAP_DIR"         || hard_stop "could not prepare check export for $NEW_TAG — nothing was pushed"
     export_snapshot "$RELEASE_SHA" "$RELEASE_SHA" && BUILD_SNAP="$SNAP_DIR"         || hard_stop "could not export build candidate for $NEW_TAG — nothing was pushed"
@@ -819,18 +880,24 @@ while :; do
     report_excluded_dirty
     # Local fixture hook: a foreign commit can land at the last possible point.
     [[ -n "${RELEASE_TEST_BEFORE_PUSH:-}" ]] && bash -c "$RELEASE_TEST_BEFORE_PUSH" >/dev/null 2>&1
-    if quiet git push --atomic "$REMOTE" \
-        "${RELEASE_SHA}:refs/heads/$BRANCH" "${RELEASE_SHA}:refs/tags/$NEW_TAG"; then
-        PUSHED=true
+    while :; do
+        if quiet git push --atomic "$REMOTE" \
+            "${RELEASE_SHA}:refs/heads/$BRANCH" "${RELEASE_SHA}:refs/tags/$NEW_TAG"; then
+            PUSHED=true
+            break
+        fi
+        previous_base="$BASE"
+        fetch_main || hard_stop "cannot reach $REMOTE/$BRANCH after push rejection — nothing was published"
+        REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" \
+            || hard_stop "cannot read remote tags after push rejection — nothing was published"
+        if [[ "$(git rev-parse "$REMOTE/$BRANCH")" == "$previous_base" ]] && ! tag_taken "$NEW_TAG"; then
+            hard_stop "atomic push rejected without a branch or tag race — nothing was published"
+        fi
+        # Main moved only in gate-inert paths: push the same validated bytes on it.
+        (( SECONDS - SHIP_START < SHIP_RACE_BUDGET_SECS )) && adopt_inert_move && continue
         break
-    fi
-    previous_base="$BASE"
-    fetch_main || hard_stop "cannot reach $REMOTE/$BRANCH after push rejection — nothing was published"
-    REMOTE_TAGS="$(git ls-remote --tags "$REMOTE" 'refs/tags/v*')" \
-        || hard_stop "cannot read remote tags after push rejection — nothing was published"
-    if [[ "$(git rev-parse "$REMOTE/$BRANCH")" == "$previous_base" ]] && ! tag_taken "$NEW_TAG"; then
-        hard_stop "atomic push rejected without a branch or tag race — nothing was published"
-    fi
+    done
+    $PUSHED && break
     note_race push
 done
 $PUSHED || hard_stop "no candidate was published — nothing was published"
