@@ -139,6 +139,14 @@ export async function runCopyCheckThenRecapture(copyCheck, recapture) {
   return { copyResult, recaptureResult };
 }
 
+// The controlled page checks use their own public source. A volatile detail
+// fixture must run only after they have produced their native observations.
+// Errors still propagate so a broken source or lost target fails the run.
+export async function runSeoCaseSequence(runControlledCases, runDynamicDetailCases) {
+  await runControlledCases();
+  await runDynamicDetailCases();
+}
+
 export function verifyManualRecapture(before, changed, stale, refreshed) {
   assert.notEqual(before.title, changed.title, 'owned public title changed before re-audit');
   assert.notEqual(
