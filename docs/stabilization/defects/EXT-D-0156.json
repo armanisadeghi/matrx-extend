@@ -6,7 +6,7 @@
   "title": "Uninterrupted mode and remembered approvals have remaining parallel and persistence races",
   "surface": "Chat / Pilot / parallel browser child runs",
   "auth_mode": "guest/member/admin as source-applicable; parallel requires signed in",
-  "state": "fixed",
+  "state": "in-fix",
   "owner": "root/uninterrupted-approval",
   "priority": "P1",
   "severity": "S2",
@@ -21,24 +21,26 @@
     "Construct Pilot browser DOM state while Assistant mode differs; pre-repair builder advertises Assistant mode."
   ],
   "expected": "Act ordinary actions execute uninterrupted, child runs inherit parent mode, each surface advertises its own choice, remembered approvals survive concurrent choices and continuation.",
-  "actual": "Source races repaired and guards pass. Independent native test confirms Act reaches backend, but first requested action did not complete within bounded180sec; product versus agent/harness boundary not yet established.",
+  "actual": "Independent native 0.2.397 confirms Act first/repeat and Ask remembered repeat, including same-chat warm reopen. Full extension reload clears remembered approval and incorrectly prompts in that same chat.",
   "cause_sibling_census": [
     "Missing pre-stream permission latch in parallel child path; main bootstrap already latches it.",
     "Shared conversation trust map writes not serialized; remembered choice persistence not awaited in warm and recovered confirmation paths.",
     "Pilot capability envelope uses Assistant store.",
-    "Run metadata map shares the concurrent read-modify-write bug; parallel children can lose restart mode. Queue writes/pruning and wait pending mirrors on lookup."
+    "Run metadata map shares the concurrent read-modify-write bug; parallel children can lose restart mode. Queue writes/pruning and wait pending mirrors on lookup.",
+    "Remembered conversation trust uses chrome.storage.session, which is cleared on full extension reload. Durable actor/conversation storage repair in progress."
   ],
   "evidence": [
     ".research/uninterrupted-independent-approval-audit-20261007.md",
     "docs/stabilization/resource-journals/approval-audit-20261007.jsonl",
     ".research/uninterrupted-final-review-20261007.json",
     ".research/uninterrupted-ci-verification-20261007.json",
-    ".research/resumed-completion-20261007.json"
+    ".research/resumed-completion-20261007.json",
+    ".research/approval-current-contract-acceptance-20261007.json"
   ],
   "verification": {
     "source": "Independent source review and full CI2175 tests PASS. Fresh guarded30 focused tests PASS. Run metadata and conversation trust race guards show meaningful RED then GREEN with restored source. Pilot/parallel native and broader causal proofs remain pending. Constant-SUT gut stand-ins caused7 meaningful semantic assertion failures; source restored byte-identical and21 current focused tests pass across6files.",
     "local_checks": "PASS valid guarded current pnpm compile and pnpm lint; catalog/docs regenerated,30 focused tests and clean race mutation RED/GREEN evidence. Disk obstruction resolved.",
-    "native": "Four real core cases PASS on0.2.391: Act first+repeat no approval, Ask remember before real effect, next Ask repeat no approval. Reload test selected newchat because product intentionally resets on rehydrate; not evidence of sameconversation trust failure. Corrected native History reopen driver0f573742; fresh sameconversation reload/Pilot acceptance pending on0.2.397. Actual parallel/concurrent native remain unverified.",
+    "native": "PASS five real cases on 0.2.397: Act first/repeat, Ask remember before effect, Ask remembered repeat, same-chat warm reopen. FAIL same-chat full extension reload: worker and panel replaced, exact original conversation reopened, ordinary action prompted. Pilot and parallel/concurrent native remain unverified.",
     "release": "Pending; workspace forbids manually initiating release/build on this Mac.",
     "automatic_ci": {
       "run_id": 37694579646,
@@ -73,10 +75,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source repair pushed, independent review plus current typecheck/lint/CI and meaningful mutation/gut RED-GREEN pass. Four real core approval cases pass; remaining native reload/Pilot/parallel gates pending."
+    },
+    {
+      "at": "2026-10-08T05:14:29.648536+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Independent exact same-conversation full extension reload reproduces unexpected ordinary action approval."
+    },
+    {
+      "at": "2026-10-08T05:14:29.648536+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Bounded durable actor/conversation remembered trust repair; regression guards authored before production change."
     }
   ],
   "closure_requirement": "Guarded checks and independent native original/parallel/concurrent approvals/Ask control/Pilot opposing modes with warm and full reload proof; source tests alone cannot close.",
-  "next_action": "Finish independent native sameconversation warm/fullreload plus Pilot acceptance on exact imported0.2.397 source4a5c78a5; parallel/concurrent native and Store remain separate pending gates.",
+  "next_action": "Finish durable remembered approval repair, independent source review and exact updated CI artifact native cold reload, Pilot and parallel acceptance. Store installation remains separate pending gate.",
   "review_queue_id": "bf959dba-5441-45a1-b06e-ec013cb21fb5",
   "code_shas": ["15df9e3571b526a42b4e61980ebcc865c644ee6b"]
 }

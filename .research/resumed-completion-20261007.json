@@ -1,5 +1,5 @@
 {
-  "observed_at": "2026-10-08T04:32:03.065806+00:00",
+  "observed_at": "2026-10-08T05:14:29.648536+00:00",
   "all_tasks_complete": false,
   "screenshots": {
     "schema_version": 1,
@@ -226,5 +226,21 @@
     "Native sameconversation warm/fullreload and Pilot",
     "Native parallel initial action/concurrent approval scopes",
     "Store publication and installation"
-  ]
+  ],
+  "current_remaining_truth": {
+    "all_tasks_complete": false,
+    "approval": {
+      "five_native_cases": "pass",
+      "same_chat_full_extension_reload": "confirmed product failure; durable storage repair in progress",
+      "evidence": ".research/approval-current-contract-acceptance-20261007.json"
+    },
+    "screenshots": {
+      "capture_local_viewer_warm_reload": "pass",
+      "primary_copy_public_link_clipboard_anonymous_identical_bytes": "pass",
+      "retained_owned_test_grant_cleanup": "pending; owner-gated lookup failed before revoke; bounded service diagnosis",
+      "evidence": ".research/screenshot-supported-org-final-acceptance-20261007.json"
+    },
+    "disk_cleanup": "complete; approximately14GiB recovered",
+    "publication": "Store installation/release unverified"
+  }
 }
