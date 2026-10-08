@@ -268,6 +268,7 @@ async function selectReviewerOrganization(panel) {
       const eligible = options.filter((option) => option.getAttribute('aria-disabled') !== 'true' && !option.disabled && !option.hasAttribute('data-disabled'));
       const matches = eligible.filter((option) => option.textContent.trim() === ${JSON.stringify(expectedName)});
       if (matches.length !== 1) return { labels, optionCount: options.length, eligibleCount: eligible.length, matchedCount: matches.length, target: null };
+      if (${UNINTERRUPTED}) return { optionCount: options.length, eligibleCount: eligible.length, matchedCount: 1, target: null };
       const option = matches[0], rect = option.getBoundingClientRect(), hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
       return { labels, optionCount: options.length, eligibleCount: eligible.length, matchedCount: 1, target: hit === option || option.contains(hit), x: rect.x + rect.width / 2, y: rect.y + rect.height / 2 };
     })()`,
@@ -279,11 +280,21 @@ async function selectReviewerOrganization(panel) {
     pointer_target_verified: target?.target === true,
     approved_name_fingerprint: hash(expectedName),
   };
-  if (target?.matchedCount !== 1 || target.target !== true) {
+  if (target?.matchedCount !== 1 || (!UNINTERRUPTED && target.target !== true)) {
     const error = new Error('reviewer_organization_option_unavailable');
     error.safeOptions = target?.labels ?? [];
     error.safeSelection = diagnostics;
     throw error;
+  }
+  if (UNINTERRUPTED) {
+    try {
+      // The shared driver scrolls and requires a stable point inside every overflow clip.
+      await click(panel, 'option', expectedName);
+      return { ...diagnostics, pointer_target_verified: true };
+    } catch (error) {
+      error.safeSelection = diagnostics;
+      throw error;
+    }
   }
   await panel.send('Input.dispatchMouseEvent', {
     type: 'mousePressed',
