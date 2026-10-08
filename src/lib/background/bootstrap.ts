@@ -94,6 +94,7 @@ import {
 import {
   handleWebmcpCall,
   recordAssignedTab,
+  runDeviceToolCall,
   runLocalNetworkDiscovery,
   runLocalSavedPattern,
   startToolDispatcher,
@@ -629,9 +630,28 @@ function registerHandlers(): void {
   });
 }
 
+/**
+ * A delegated browser tool from the package chat runs through the extension's REAL gate — the
+ * same `handleCall` its own chat uses (`runDeviceToolCall`: approval / ask-user cards, Ask/Act,
+ * pinned to the tab the person sent from) — never the WebMCP page path, which refuses every
+ * ask-user and privileged tool.
+ */
 async function runDeviceToolForAgent(call: DeviceToolCallRef): Promise<DeviceToolRunAnswer> {
-  const mode = await readDefaultPermissionMode();
-  return handleWebmcpCall(call, { permissionMode: mode, initiator: 'agent' });
+  const mode =
+    call.permissionMode === 'act' || call.permissionMode === 'ask'
+      ? call.permissionMode
+      : await readDefaultPermissionMode();
+  if (!call.conversationId) {
+    return { ok: false, error: 'device tool: conversationId is required' };
+  }
+  return runDeviceToolCall({
+    callId: call.callId,
+    toolName: call.toolName,
+    args: call.args,
+    conversationId: call.conversationId,
+    permissionMode: mode,
+    assignedTabId: typeof call.assignedTabId === 'number' ? call.assignedTabId : null,
+  });
 }
 
 function deviceHandOffDeps(): DeviceHandOffDeps {

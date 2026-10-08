@@ -25,6 +25,12 @@ export interface DeviceToolCallRef {
   callId: string;
   toolName: string;
   args: unknown;
+  /** The package chat's conversation; with it the call runs through the real gate (`runDeviceToolCall`). */
+  conversationId?: string;
+  /** The agent's ask/act choice latched by the package at send time. */
+  permissionMode?: 'ask' | 'act';
+  /** The tab the person sent from (the package's turn device reference). */
+  assignedTabId?: number | null;
 }
 
 export interface DeviceHandOffCall extends DeviceToolCallRef {

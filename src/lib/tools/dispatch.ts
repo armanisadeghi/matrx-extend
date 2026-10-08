@@ -698,6 +698,12 @@ async function handleCall(
      */
     preApproved?: boolean;
     recoveredOperation?: RecoveredApproval;
+    /**
+     * Where the outcome goes instead of the server. Set by `runDeviceToolCall` (the package
+     * chat's `deviceTools` port): the package owns the delegated call's result submit and resume,
+     * so this gate answers the caller and posts nothing. Every gate above still runs.
+     */
+    sink?: DeviceCallSink;
   } = {},
 ): Promise<void> {
   // Normalize credential-bearing Network saves before any durable observer.
@@ -736,8 +742,16 @@ async function handleCall(
   // Local fail closure — captures rawArgs + startedAt so the completed
   // receipt covers them on every error exit. `finishWithError` itself
   // doesn't take args, so we wrap it here.
-  const fail = (message: string): Promise<void> =>
-    finishWithError(handler, ctx, message, rawArgs, startedAt, origin);
+  const sink = gateOpts.sink;
+  const fail = (message: string): Promise<void> => {
+    if (sink) {
+      log.error('sw', `tool ${handler.name} error`, message);
+      void emitCompletedReceipt(handler.name, rawArgs, null, false, ctx, startedAt, origin);
+      sink({ ok: false, error: message });
+      return Promise.resolve();
+    }
+    return finishWithError(handler, ctx, message, rawArgs, startedAt, origin);
+  };
 
   // Validate args.
   const parsed = handler.argsSchema.safeParse(rawArgs);
@@ -874,6 +888,12 @@ async function handleCall(
   const failureMessage = clientResultFailureMessage(result);
   if (failureMessage) {
     return fail(failureMessage);
+  }
+
+  if (sink) {
+    void emitCompletedReceipt(handler.name, rawArgs, result, true, ctx, startedAt, origin);
+    sink({ ok: true, result });
+    return;
   }
 
   // postResult settles the row itself: `completed` once the server accepted
@@ -1448,6 +1468,69 @@ interface WebmcpCallResponse {
  *     If no sidepanel is open, the confirmation times out (fail-closed)
  *     after 5 minutes, matching the dispatcher behaviour.
  */
+type DeviceCallOutcome = { ok: true; result: unknown } | { ok: false; error: string };
+type DeviceCallSink = (outcome: DeviceCallOutcome) => void;
+
+/** One delegated browser-tool call from the package chat (`deviceTools` port). */
+export interface DeviceToolCallPayload {
+  callId: string;
+  toolName: string;
+  args: unknown;
+  conversationId: string;
+  /** The agent's ask/act choice, latched by the package when the person sent. */
+  permissionMode: 'ask' | 'act';
+  /** The tab the person sent from (the package's turn device reference); null = active tab. */
+  assignedTabId: number | null;
+  agentName?: string | null;
+}
+
+/**
+ * The package chat's delegated browser tools run through THE SAME gate the extension's own chat
+ * uses (`handleCall`: Zod validation → admin / browser / optional-permission gates → effective
+ * tier × Ask/Act → approval or ask-user card → handler), pinned to the tab the person sent from.
+ * The only difference: the outcome is returned to the caller — the package submits the result
+ * and resumes the run itself — instead of posted to the server here.
+ *
+ * Approvals the person grants for a `tool@host` are remembered for the rest of that
+ * conversation, as in the extension's own chat.
+ */
+export async function runDeviceToolCall(p: DeviceToolCallPayload): Promise<WebmcpCallResponse> {
+  const handler = lookupTool(p.toolName);
+  if (!p.callId || !handler) {
+    return { ok: false, error: `webmcp: tool '${p.toolName}' not registered` };
+  }
+  const runId = `device:${p.conversationId}`;
+  const prior = await getRunMeta(runId);
+  const meta: RunMeta = {
+    conversationId: p.conversationId,
+    requestId: null,
+    permissionMode: p.permissionMode === 'act' ? 'act' : 'ask',
+    agentName: p.agentName ?? null,
+    trustedThisConversation: prior?.trustedThisConversation ?? new Set<string>(),
+    assignedTabId: p.assignedTabId ?? null,
+  };
+  runs.set(runId, meta);
+  mirrorRunMeta(runId, meta);
+  const ctx: ToolContext = {
+    conversationId: p.conversationId,
+    runId,
+    callId: p.callId,
+    agentName: meta.agentName,
+    permissionMode: meta.permissionMode,
+    assignedTabId: meta.assignedTabId,
+  };
+  return new Promise<WebmcpCallResponse>((resolve) => {
+    const sink: DeviceCallSink = (outcome) =>
+      resolve(outcome.ok ? { ok: true, result: outcome.result } : { ok: false, error: outcome.error });
+    handleCall(handler, p.args, ctx, meta, { sink }).then(
+      // Every path above answers the sink first; this only fires if one ever does not.
+      () => resolve({ ok: false, error: `tool '${p.toolName}' finished without an answer` }),
+      (err: unknown) =>
+        resolve({ ok: false, error: `Tool dispatch crashed: ${(err as Error)?.message ?? String(err)}` }),
+    );
+  });
+}
+
 export async function handleWebmcpCall(
   payload: WebmcpCallPayload,
   opts: { permissionMode: 'ask' | 'act'; initiator?: ConfirmInitiator; assignedTabId?: number },
