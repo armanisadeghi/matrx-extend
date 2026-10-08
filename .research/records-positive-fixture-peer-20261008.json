@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "candidate_sha": "f7e5ab09c6f390a3bbd9326741a56d38724c795b",
+  "review_type": "independent source-only review",
+  "verdict_A_spec_source": "FAIL acceptance as written; C04/C05 source coverage is present, but durable interrupted recovery is incomplete.",
+  "verdict_B_quality_safety": "FAIL to accept fixture lifecycle until recovery paths are closed. No reviewed branch deletes ambiguous data, but unresolved phases can strand this fixture.",
+  "findings": [
+    {
+      "severity": "high",
+      "file": "tests/browser/records-positive-fixture.mjs",
+      "lines": "150-153, 186-187, 225-231",
+      "finding": "When create response says created=false or organization mismatches, phase becomes ownership_unverified. Cleanup explicitly skips that phase, and subsequent recovery also throws recovery_cleanup_only then skips cleanup. This avoids deleting a possibly preexisting/concurrent table, but leaves no durable resolution path if ownership can later be established."
+    },
+    {
+      "severity": "high",
+      "file": "tests/browser/records-positive-fixture.mjs",
+      "lines": "190-199",
+      "finding": "Recovery handles an absent table only in create_sent or archive_sent. Journals in no_fixture_created or archived_verified with an absent table fall through to the exactly-one assertion and fail on every retry. These terminal phases should safely confirm absence without another write."
+    },
+    {
+      "severity": "high",
+      "file": "tests/browser/records-readonly-native-acceptance.mjs",
+      "lines": "41-44, 604-610",
+      "finding": "Journal path is derived from output path. Hosted route assigns output a run-and-attempt-specific path (scripts/hosted-showcase-route.mjs:53-56), so a new hosted retry points to a new journal and cannot automatically recover the previous interrupted run. The helper is cleanup-only when given the same journal, but the driver has no stable recovery journal input/discovery."
+    }
+  ],
+  "positive_evidence": [
+    "C04/C05 use the person API's returned table and row IDs, with extension token hash checked in page context and X-Organization-Id carried on fixture requests (records-positive-fixture.mjs:19-55, 107-118).",
+    "Pre-write run-unique name and phase are journaled; interrupted create/table/row/archive phases attempt cleanup through the same person API; archival is verified by an empty filtered list (records-positive-fixture.mjs:128-223).",
+    "The native driver requires one finished Records POST with matching org/principal and exact args, parses one completion, and requires visible output equality (records-readonly-native-acceptance.mjs:254-337). C04 validates returned row/table/org/value and provenance triple; C05 validates table, count measure, and one bucket with one row/count (lines 612-689).",
+    "Existing malformed C03/C04/C05 requests remain and are recorded with positive_read_verified=false (records-readonly-native-acceptance.mjs:531-603); driver tests reject wrong positive row value and aggregate count (records-readonly-native-driver.test.mjs:824-845).",
+    "Scope remains C04/C05 only; no C11 or C06 credit."
+  ],
+  "limitations": [
+    "Source-only review. No local tests, build, browser, or native actions performed per task constraints.",
+    "Root reported exact focused CI run 37830788881 on this SHA completed successfully; that does not cover a real hosted person-API lifecycle or the uncovered interrupted-retry cases."
+  ],
+  "recommended_repairs": [
+    "Use a stable per-case recovery journal path across hosted attempts, or carry forward the exact prior journal path as an explicit recovery input.",
+    "Define safe handling for each terminal/ambiguous journal phase. Preserve the no-delete-on-ambiguous-ownership rule while providing a durable inspect/reconcile path for ownership_unverified.",
+    "Add focused source tests proving rerun behavior for no_fixture_created and archived_verified absent states, stable cross-attempt journal recovery, and ownership_unverified disposition."
+  ]
+}
