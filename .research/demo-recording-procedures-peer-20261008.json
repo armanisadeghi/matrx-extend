@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "artifact_type": "source-procedure-peer-review",
+  "reviewed_commit": "544d6aee",
+  "reviewed_artifact": ".research/demo-recording-procedures-20261008.json",
+  "scope": "Exactly EXT-F-4131-T01 through EXT-F-4136-T01; source review only. No browser, build, fixture, upload, deletion, or runtime execution.",
+  "verdicts": {
+    "A_procedure_usable": "CONDITIONAL_WITH_CORRECTIONS",
+    "B_source_quality": "CORRECTIONS_REQUIRED"
+  },
+  "case_reviews": {
+    "EXT-F-4131-T01": {
+      "verdict": "CONDITIONAL",
+      "finding": "Valid, invalid-duration, and returned-video oracles match video.ts:30-49,69-166. The manual runner bypasses the optional tabCapture gate at dispatch.ts:792-802; the proposal correctly leaves denial unverified. An owned tab, granted permission, receipt, and retained remote file are still required."
+    },
+    "EXT-F-4132-T01": {
+      "verdict": "BLOCKED_AS_WRITTEN",
+      "finding": "The manual runner directly invokes record_demo in the side panel (ToolsView.tsx:453-462). recorder.ts:20,89-92 keeps active state in that module instance, while bootstrap.ts:550-552 handles captured events in the service worker instance. No cross-context recorder event relay is present. A panel start/status/stop can therefore report an active recording yet save zero captured steps. This is a source-supported path gap, not a runtime-reproduced product defect. The NOT_EXECUTABLE classification and conditional post-repair steps are justified."
+    },
+    "EXT-F-4133-T01": {
+      "verdict": "CONDITIONAL",
+      "finding": "list_demos reads the local summary index (storage.ts:32-36), and JSON null fails the object schema (demos.ts:198-208; ToolsView.tsx:414-419). An owned saved fixture is required. The list does not prove a body or cloud synchronization."
+    },
+    "EXT-F-4134-T01": {
+      "verdict": "CONDITIONAL_WITH_CAVEAT",
+      "finding": "The handler hydrates an absent body, redacts sensitive input_text, and returns the full demo (demos.ts:215-229). Empty demo_id fails schema. Cloud read errors can throw, while a known reference with missing body returns demo_body_unavailable (demos.ts:54-80; cloud-sync.ts:162-178). A bogus ID is only a missing oracle if it is confirmed unowned and absent; do not classify any read refusal as demo_not_found."
+    },
+    "EXT-F-4135-T01": {
+      "verdict": "CONDITIONAL_WITH_CORRECTION",
+      "finding": "The privileged confirmation is bypassed by ToolsView.tsx:453-462, so the dry_run:true restriction is appropriate. replay.ts:56-65 reloads or navigates the start URL, and lines 91-146 can also navigate to later recorded URLs and execute scroll steps during dry run. Only selector-driven DOM actions skip mutation (line 285). The procedure must explicitly bound every recorded navigation and scroll on the owned fixture and not call dry run a complete side-effect-free replay."
+    },
+    "EXT-F-4136-T01": {
+      "verdict": "ORACLE_CORRECTION_REQUIRED",
+      "finding": "storage.ts:70-82 removes the local index/body while scheduling the cloud tombstone without awaiting it. describe_demo then calls getDemoOrHydrate (demos.ts:219-221; cloud-sync.ts:162-174), which can fetch and restore a still-live cloud row. Thus immediate demo_not_found is not a reliable local-cleanup oracle, and a second delete need not return No demo. Verify local absence with list_demos and exact-ID local storage evidence; assess cloud tombstone and independent post-sync read separately. Preserve the owned ID until this is resolved."
+    }
+  },
+  "cross_case_limits": [
+    "All six remain NOT_EXECUTABLE without the receipt-bound build and owned fixtures. Separate member/admin results and warm/extension-reload runs are future work, not pass evidence.",
+    "Manual Tools Run validates JSON/Zod then calls handler.run directly. It does not exercise dispatcher Ask/Act confirmation, admin enforcement, optional-permission denial, or agent tab assignment (ToolsView.tsx:390-462; dispatch.ts:792-837).",
+    "The proposed video artifact has no deletion step in this handler. Demo cloud save/delete are asynchronous; exact local results do not prove remote completion.",
+    "No tests were run because this review changes only a source-review JSON artifact and the brief excludes runtime and heavy checks."
+  ]
+}
