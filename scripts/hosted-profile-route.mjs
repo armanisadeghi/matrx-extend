@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { isRfc9562Uuid } from '@ai-matrx/kit/uuid';
-import { requireSettingsCredential } from '../tests/browser/settings-native-auth-driver.mjs';
+import {
+  isNativeUuid,
+  requireSettingsCredential,
+} from '../tests/browser/settings-native-auth-driver.mjs';
 
 export function hostedProfileRoute(acceptanceCase, prepared, outputDir, runId) {
   assert.ok(
@@ -100,8 +102,7 @@ export function profileOrganizationConfig(env, requireId = false) {
     'hosted_profile_org_name_invalid',
   );
   const id = config?.approved_organization_id;
-  if (requireId || id !== undefined)
-    assert.ok(isRfc9562Uuid(id ?? ''), 'hosted_profile_org_id_invalid');
+  if (requireId || id !== undefined) assert.ok(isNativeUuid(id), 'hosted_profile_org_id_invalid');
   return { approved_organization_name: name, ...(id && { approved_organization_id: id }) };
 }
 

@@ -14,6 +14,11 @@ const MEMBER_FINGERPRINT = '3d6137db6c081c07';
 export const MEMBER_TEST_ORGANIZATION_NAME = "Matrx's Org";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+// Hosted credential preflight runs before package installation on a fresh runner.
+export function isNativeUuid(value) {
+  return typeof value === 'string' && UUID.test(value);
+}
+
 function fingerprint(value) {
   return createHash('sha256').update(value.toLowerCase()).digest('hex').slice(0, 16);
 }
@@ -89,7 +94,7 @@ export async function approvedShowcaseOrganization(file) {
     typeof name === 'string' && name.trim() === name && name.length > 0,
     'd87_approved_admin_organization_invalid',
   );
-  assert.match(id ?? '', UUID, 'd87_approved_admin_organization_id_invalid');
+  assert.ok(isNativeUuid(id), 'd87_approved_admin_organization_id_invalid');
   return { name, id };
 }
 

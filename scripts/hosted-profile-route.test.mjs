@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import { cp, mkdtemp, readFile, rm, stat } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -188,6 +188,49 @@ test('other hosted acceptance still passes credential preflight without runtime 
   });
   assert.equal(result.status, 0, result.stderr);
   assert.match(result.stdout, /HOSTED_CREDENTIAL_PREFLIGHT_READY/);
+});
+
+test('hosted credential preflight executes from a fresh checkout without installed packages', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'hosted-preflight-fresh-'));
+  try {
+    await cp('scripts', join(root, 'scripts'), { recursive: true });
+    await cp('tests/browser', join(root, 'tests/browser'), { recursive: true });
+    await cp('docs/stabilization', join(root, 'docs/stabilization'), { recursive: true });
+    const run = (acceptanceCase, extraEnv = {}) =>
+      spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
+        cwd: root,
+        env: {
+          GITHUB_ACTIONS: 'true',
+          MATRX_HOSTED_PHASE: 'preflight',
+          MATRX_HOSTED_ACCEPTANCE_CASE: acceptanceCase,
+          ...extraEnv,
+        },
+        encoding: 'utf8',
+      });
+    const guest = run('guest-chat');
+    assert.equal(guest.status, 0, guest.stderr);
+    assert.match(guest.stdout, /HOSTED_CREDENTIAL_PREFLIGHT_READY/);
+
+    const showcaseEnv = {
+      MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: '{"email":"admin@admin.com","password":"opaque"}',
+      MATRX_HOSTED_PROFILE_ORGANIZATION_JSON:
+        '{"approved_organization_name":"Matrx Org","approved_organization_id":"72336a38-f816-442f-ad48-18610128fb67"}',
+    };
+    const showcase = run('showcase-d47-public-admin', showcaseEnv);
+    assert.equal(showcase.status, 0, showcase.stderr);
+    assert.match(showcase.stdout, /HOSTED_CREDENTIAL_PREFLIGHT_READY/);
+
+    const invalid = run('showcase-d47-public-admin', {
+      ...showcaseEnv,
+      MATRX_HOSTED_PROFILE_ORGANIZATION_JSON:
+        '{"approved_organization_name":"Matrx Org","approved_organization_id":"invalid"}',
+    });
+    assert.notEqual(invalid.status, 0);
+    assert.match(invalid.stderr, /hosted_profile_org_id_invalid/);
+    assert.doesNotMatch(invalid.stderr, /ERR_MODULE_NOT_FOUND/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 test('non-Profile package and browser phases retain resource admission', () => {

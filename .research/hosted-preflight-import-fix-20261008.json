@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "case_id": "EXT-F-1012-T57",
+  "failed_hosted_run": 37766646825,
+  "failure": "The preflight entry loaded hosted-profile-route.mjs, whose static @ai-matrx/kit/uuid import was unavailable before package installation on the fresh hosted runner.",
+  "repair": "Use the existing dependency-free UUID pattern in settings-native-auth-driver.mjs through a shared isNativeUuid function for hosted organization validation.",
+  "causal_guard": {
+    "command": "node --test --test-name-pattern='fresh checkout without installed packages' scripts/hosted-profile-route.test.mjs",
+    "boundary": "Copy the hosted scripts, browser drivers, and required resource policy to a temporary checkout with no node_modules; run the actual hosted credential preflight entry.",
+    "red_before_fix": "ERR_MODULE_NOT_FOUND: @ai-matrx/kit imported from hosted-profile-route.mjs",
+    "green_after_fix": "Guest and showcase-d47-public-admin reach HOSTED_CREDENTIAL_PREFLIGHT_READY; invalid approved organization ID is refused with hosted_profile_org_id_invalid.",
+    "mutation": "A constant-true UUID validator in a scratch copy makes the invalid-ID assertion fail; the working tree is unchanged."
+  },
+  "sibling_census": "The fresh-checkout guard imports the full static hosted entry graph and found no further unavailable package imports after the repair. Existing preflight cases in hosted profile, scrape, showcase, and desktop settings route tests passed. Other native-driver UUID regex uses remain outside this preinstallation failure boundary.",
+  "verification": {
+    "focused_tests": "41 passed",
+    "biome_touched_files": "passed",
+    "package_twins": "passed with pre-existing census debt",
+    "compile": "failed on unrelated package API exports in SpeakerButton.tsx, package-chat/host.ts, and speech-host.ts"
+  },
+  "limits": "No hosted retry, native launch, installation, artifact import, resource admission, browser setup, or T57 race check was performed. The original native acceptance outcome remains unverified."
+}
