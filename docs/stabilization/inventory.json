@@ -16280,7 +16280,8 @@
               ],
               "detail": "Frozen 0.2.407 guest 600px attempt: warm observations remain partial. The replacement worker activated, but the open-panel request received no reply, so extension reload/panel readiness remained unverified. The post-reload capture probe was not exercised. Resource journals were valid; no new pass or acceptance credit."
             }
-          ]
+          ],
+          "defect_ids": ["EXT-D-0175"]
         },
         {
           "id": "EXT-F-1007-T09",
@@ -17859,7 +17860,8 @@
             "EXT-D-0139",
             "EXT-D-0154",
             "EXT-D-0163",
-            "EXT-D-0164"
+            "EXT-D-0164",
+            "EXT-D-0175"
           ],
           "run_ids": [
             "guest-local-001",
@@ -19180,7 +19182,7 @@
               }
             }
           ],
-          "defect_ids": ["EXT-D-0170"],
+          "defect_ids": ["EXT-D-0170", "EXT-D-0174"],
           "attempt_history": [
             {
               "at": "2026-10-08T06:31:41.651988+00:00",
@@ -19219,6 +19221,20 @@
                 ".research/seo-local397-native-20261008.json",
                 ".research/seo-local397-peer-20261008.json"
               ]
+            },
+            {
+              "at": "2026-10-08T12:19:03.105236+00:00",
+              "mode": "guest",
+              "run_id": "37774478094",
+              "status": "unverified",
+              "resource_valid": false,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/seo-metadata-native-20261008.json"
+              ],
+              "detail": "Exact frozen artifact imported and side panel opened; CPU/load watchdog invalidated run before native SEO receipt or Airbnb metadata criterion. No new/revalidated acceptance or product failure; no unchanged retry."
             }
           ]
         },
@@ -19401,7 +19417,7 @@
       "cells": {
         "guest": {
           "test_status": "partial",
-          "defect_ids": ["EXT-D-0076"],
+          "defect_ids": ["EXT-D-0076", "EXT-D-0174"],
           "run_ids": [
             "seo-guest-001",
             "seo-guest-002",
@@ -23559,6 +23575,21 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/37769779267"
               ],
               "detail": "Admin sign-in and visible approved organization checks passed, and the required organization UUID reached the checkpoint. The run failed at organization_product_request before recording a completed product request or proving its X-Organization-Id header; the sanitized error does not establish whether a request was sent. No product attribution, T57 Network race, capture, saved replay, or new acceptance credit. Resource journals were valid."
+            },
+            {
+              "at": "2026-10-08T12:15:49.093870+00:00",
+              "mode": "admin",
+              "run_id": "37773402208",
+              "status": "unverified",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/t57-request-diagnostic-native-20261008.json",
+                ".research/t57-records-target-fix-20261008.json"
+              ],
+              "detail": "Admin and approved rendered organization passed; observer initialized and Tools navigation completed. Records pointer failed pointer_target_not_unique before any product request; zero versus multiple targets unknown. Resource-valid failure; cleanup succeeded, temporary secret names absent. Source diagnostic f1e5052c now preserves counts; independent5aea98c7 accepted source diagnostic. No product defect or acceptance inferred."
             }
           ]
         },

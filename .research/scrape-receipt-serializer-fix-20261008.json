@@ -1,0 +1,11 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "defect": "EXT-D-0175",
+  "scope": "Persist the allowlisted Open panel diagnostic, fixture trace, and replacement panel creation event through captureLifecycleEvidence on both Scrape receipt paths.",
+  "root_cause": "The native reload producer attached these fields to retirement evidence, but captureLifecycleEvidence discarded them before the success or failure report was written.",
+  "red": "node --test tests/browser/scrape-reload-receipt-serialization.test.mjs failed: persisted replacement_panel_created_event was undefined instead of true.",
+  "green": "node --test tests/browser/scrape-reload-receipt-serialization.test.mjs tests/browser/profile-reload-capture.test.mjs tests/browser/scrape-reload-open-diagnostic.test.mjs: 11 passed, 0 failed; pnpm exec biome check on the two owned code/test files passed.",
+  "guard": "Writes and rereads JSON in the success and failure receipt shapes, asserts differing diagnostic milestones, rejects private values, and confirms ordinary receipts omit opt-in fields.",
+  "classification": "The diagnostic-only evidence class and nonzero acceptance refusal remain in scrape-reload-open-diagnostic.mjs, unchanged.",
+  "limit": "No native product run, build, or release in this lane. The receipt guard uses representative producer values at the real serializer function and JSON persistence seam; it does not prove live browser delivery or a hosted receipt."
+}

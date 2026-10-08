@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-metadata-native-20261008",
+  "lane": "B hosted guest SEO native acceptance",
+  "status": "RESOURCE_INVALID_NOT_ACCEPTED",
+  "case": {
+    "feature_id": "EXT-F-1008",
+    "case_id": "EXT-F-1008-T09",
+    "mode": "guest",
+    "acceptance_case": "guest-seo",
+    "scope": "full",
+    "metadata_fixture": "airbnb",
+    "new_target": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+    "inventory_criterion": "guest_manual_hreflang_and_schema_doors_match_page"
+  },
+  "workflow": {
+    "run_id": 37774478094,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37774478094",
+    "workflow_checkout_sha": "e9d861c3c67dd4771b4d484aad78507829b7dbe4",
+    "conclusion": "failure",
+    "artifact_id": 11549487595,
+    "artifact_name": "hosted-guest-37774478094-1",
+    "artifact_sha256": "cef87e9661173fe6bdfc68b5a715b3640b5894d32c4db9793e652649cafc1f7a",
+    "dispatch_inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "full",
+      "seo_metadata_fixture": "airbnb",
+      "development_run_id": 37754055905,
+      "development_artifact_id": 11539827040
+    }
+  },
+  "frozen_product": {
+    "development_run_id": 37754055905,
+    "development_artifact_id": 11539827040,
+    "artifact_expired": false,
+    "development_source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "development_tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "extension_version": "0.2.407",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "resource": {
+    "package_preparation": "valid",
+    "browser_preparation": "valid",
+    "native_initial_admission": "admitted",
+    "native_final_decision": "invalid",
+    "resource_invalid": true,
+    "invalidating_event": "RESOURCE_WATCH_UNSAFE followed by RESOURCE_STOP_AT_SAFE_BOUNDARY and watchdog SIGTERM",
+    "last_safe_sample": {
+      "at": "2026-10-08T12:14:19.768Z",
+      "logical_cpus": 4,
+      "cpu_busy_fraction": 0.89,
+      "one_minute_load": 11.15,
+      "available_memory_gib": 12.6,
+      "swap_used_mib": 0,
+      "reasons": [
+        "RESOURCE_CPU_BUSY",
+        "RESOURCE_CPU_HIGH_LOAD_BUSY"
+      ]
+    },
+    "process_attribution": "Chromium Helper, ps, provider job process, Node and Chromium were present; watchdog stopped the owned process group."
+  },
+  "native_observation": {
+    "frozen_artifact_import": "verified by hosted driver output with matching source SHA and tree hash",
+    "side_panel_context": "one exact expected extension side-panel context was observed",
+    "airbnb_navigation_observed": "not evidenced",
+    "metadata_door_comparison_observed": "not evidenced",
+    "new_target_status": "unverified",
+    "reason": "The selected Chrome interaction step was stopped by resource invalidation before the SEO driver wrote its acceptance report. The live public page and its hreflang/schema links therefore cannot be compared from this run.",
+    "revalidated_criteria_credit": "none; this resource-invalid attempt cannot qualify product criteria"
+  },
+  "fresh_native_receipt": {
+    "status": "not produced",
+    "reason": "The resource watchdog sent SIGTERM during the selected Chrome interaction. No test-results/seo-guest-acceptance.json was uploaded, so no native acceptance receipt is claimed or synthesized."
+  },
+  "raw_evidence": {
+    "downloaded_artifact_directory": ".research/seo-metadata-native-20261008/raw/",
+    "current_resource_journals": [
+      ".research/seo-metadata-native-20261008/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37774478094-1.jsonl",
+      ".research/seo-metadata-native-20261008/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37774478094-1.jsonl",
+      ".research/seo-metadata-native-20261008/raw/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37774478094-1.jsonl"
+    ],
+    "receipt_absent": true,
+    "remote_run_metadata": ".research/seo-metadata-native-20261008/raw/hosted-run-metadata.json",
+    "remote_artifact_listing": ".research/seo-metadata-native-20261008/raw/remote-artifact-listing.json",
+    "uploaded_artifact_file_manifest": ".research/seo-metadata-native-20261008/raw/uploaded-artifact-file-manifest.json",
+    "sanitized_import_observation": ".research/seo-metadata-native-20261008/raw/artifact-import-observation.json"
+  },
+  "limits": [
+    "No T09 pass or failure is inferred from the resource-invalid run.",
+    "No retry was dispatched; the hosted job is terminal and invalidated.",
+    "No inventory status was changed and no overall health claim is made.",
+    "No private admin credentials were accessed."
+  ],
+  "provenance_supplement": {
+    "source": "remote GitHub Actions run metadata, artifact API listing, downloaded-artifact file manifest, and two filtered scalar workflow observations",
+    "full_workflow_logs_retained": false,
+    "fresh_independent_validation_of_supplement": false,
+    "receipt_absence_basis": "the downloaded remote artifact manifest enumerates all 11 uploaded files and contains no test-results/seo-guest-acceptance.json"
+  }
+}

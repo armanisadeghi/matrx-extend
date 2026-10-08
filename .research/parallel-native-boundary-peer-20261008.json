@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "task": "Independent bounded-outcome audit of T57 run 37773402208 and SEO run 37774478094",
+  "inputs": [
+    ".research/t57-request-diagnostic-native-20261008.json",
+    ".research/seo-metadata-native-20261008.json"
+  ],
+  "A_actual_evidence_verdict_per_run": {
+    "t57_run_37773402208": {
+      "verdict": "SUPPORTED_PRE_REQUEST_DIAGNOSTIC_FAILURE; NO_ACCEPTANCE_CREDIT",
+      "source_build_identity": {
+        "confirmed": "The raw T57 receipt names development run 37754055905, artifact 11539827040, source SHA 5d845f42cb22c10e2486af8048d1ac9f3ac8e114, tree SHA-256 f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0, and version 0.2.407. Raw run metadata names workflow head b782cd67f2ca7500e54a303675cbb4ef83952f08. These are distinct workflow-source and frozen-product identities, as expected.",
+        "not_independently_confirmed": "Exact import of the frozen artifact in hosted execution and workflow checkout inclusion of diagnostic/peer commits are stated in the summary report but are not fields in the retained raw receipt/run/artifact records or resource journals."
+      },
+      "actual_boundary": "Raw receipt records stage organization, substage organization_records_click, failure pointer_target_not_unique, and failure code showcase_organization_pointer_failed. It records matching rendered admin identity/role/profile/organization, picker available with selection, observer cleanup success, and no product request or response. This supports a UI pointer-target failure before product-call evidence; it does not establish whether the target count was zero or multiple.",
+      "resource_journals": "Package and browser each end admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Guest ends admitted=true, resourceInvalid=false, exitCode=1, decision=child_failed. The transient CPU_PENDING sample recovered before job exit; it did not invalidate the run.",
+      "credit": "No T57 public Network race result, capture, saved replay, product organization defect, or acceptance proof. No acceptance credit justified."
+    },
+    "seo_run_37774478094": {
+      "verdict": "RESOURCE_INVALID_NO_SEO_RESULT; NO_ACCEPTANCE_CREDIT",
+      "source_build_identity": {
+        "reported": "The summary report identifies workflow checkout SHA e9d861c3c67dd4771b4d484aad78507829b7dbe4 and frozen product run 37754055905/artifact 11539827040, source SHA 5d845f42cb22c10e2486af8048d1ac9f3ac8e114, tree SHA-256 f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0, version 0.2.407, extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml.",
+        "independent_limit": "The tracked SEO raw bundle contains only the three current resource journals. It does not contain raw workflow/run metadata, artifact manifest, hosted driver output, or SEO receipt, so checkout SHA, dispatch linkage, artifact import, version, and extension ID cannot be independently verified from the retained originals."
+      },
+      "actual_boundary": "Package and browser journals end admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Guest was admitted, then journaled RESOURCE_WATCH_UNSAFE at 12:14:19.768Z with CPU_BUSY and CPU_HIGH_LOAD_BUSY, followed by RESOURCE_STOP_AT_SAFE_BOUNDARY and owned-process-group SIGTERM; final decision is admitted=true, resourceInvalid=true, exitCode=3, decision=invalid. Last unsafe sample was 89% CPU busy and one-minute load 11.15 on four logical CPUs, with 12.6 GiB available memory and zero swap.",
+      "receipt": "No SEO acceptance receipt exists in the retained raw bundle; the summary reports no uploaded test-results/seo-guest-acceptance.json. No receipt is synthesized. Because the guest resource journal is invalid and there is no driver result, navigation and metadata comparison remain unobserved; no pass or product failure can be inferred.",
+      "credit": "No T09 or other product criterion credit justified."
+    }
+  },
+  "B_provenance_and_claim_quality": {
+    "t57": "Strong primary evidence for the failure boundary and resource outcomes: raw receipt, raw workflow run metadata, raw artifact listing, and all three terminal resource journals. The report's raw SHA-256 values for receipt, run metadata, artifact listing, and journals were reproduced exactly. Hosted import and commit-inclusion statements exceed what these retained primary files independently prove; they should be treated as reported provenance, not peer-verified facts.",
+    "seo": "Strong primary evidence for the resource-invalid outcome: all three current journals are present and internally keyed to run 37774478094-1; their final decisions match the summary. The journals' computed SHA-256 values are recorded in this peer report. The absent receipt claim is consistent with the raw bundle contents and the summary, but completeness against the remote artifact cannot be independently tested without raw artifact listing/manifest or run metadata. Frozen-artifact linkage is summary-only here.",
+    "overall": "Both summaries correctly withhold acceptance credit. T57 is a test UI targeting failure before product-request evidence, not a product defect verdict. SEO is invalidated evidence, not a test pass or product failure."
+  },
+  "evidence_sha256": {
+    "t57_receipt": "2dd098705072f88b97de5031a61b074139c78c2b67f5e5595e499bc676ba592a",
+    "t57_run_metadata": "7a72ebf3b14310d7fa2aa224aa2c449bc97df5b3be88a4f93e0f4221338da282",
+    "t57_artifact_listing": "23840997c62db15acd4d11cc8d284cffea25f69bf89e80a828f40ff1ecb2ffa0",
+    "t57_package_journal": "c0b1f346bb9e34f9b77570c7bc82cfba09f8fae8fba8a958bc62d312669d8bfd",
+    "t57_browser_journal": "796c494f5a619ceecc9727f0813cbe0dc40283b9ccca9f9987d224e259b0f211",
+    "t57_guest_journal": "3bcc80351119e54202227d6095c5c6839029647d577340a30c8e282989c2abb2",
+    "seo_package_journal": "5dccdf994f3831a16477f27dc5a5cc85d593d4849f2f4ca104c9c6a87dcd2f7c",
+    "seo_browser_journal": "e5292cf92982b70cd21dc4082e6de9239b73360b39f9aa5d431e19029db15f97",
+    "seo_guest_journal": "160e1b2d29a1968d9c9cb13c9bb2025cb11a08fcd4c18b30269ac4fa9f070ab9"
+  }
+}

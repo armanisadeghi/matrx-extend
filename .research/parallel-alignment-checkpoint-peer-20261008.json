@@ -1,0 +1,53 @@
+{
+  "review": "Independent bounded alignment and fresh-reader review of docs/stabilization/PLAN.md and COORDINATOR.md",
+  "mode": "REPORT — findings only; shared docs untouched",
+  "observed_at": "2026-10-08",
+  "source_head": "4ca820bbf325dc7ffd07951ab1dcf006fb0d0fe5",
+  "alignment_verdict": "Approved accelerated parallel testing, inventory reconciliation alongside it, owner plus three workers, two isolated resource-admitted native lanes, independent retests, and bounded health claims are all represented. The older unfinished app-goal text is identified accurately; no app-text update is claimed. One current-state fact in the plan needs correction.",
+  "A_alignment_factual_findings": [
+    {
+      "document": "docs/stabilization/PLAN.md",
+      "line": 140,
+      "quote": "non-admin test identity and memberships not yet verified",
+      "finding": "The blanket identity claim is stale. A hosted signed-in non-admin member run used an existing reviewer, observed selected organization and a real Chat answer. It does not establish every membership or all member feature coverage, but an authorized member identity exists and has been used. The row can send the next worker back to identity discovery instead of the next unverified member case.",
+      "evidence": [
+        ".research/hosted-member205-final.json",
+        "docs/stabilization/STATUS.md"
+      ],
+      "recommendation": "Replace the current-state cell with a pointer to the inventory's specific unverified member cases and fixture requirements. Preserve the rule that admin success cannot establish member behavior."
+    }
+  ],
+  "B_durable_guidance_findings": [
+    {
+      "document": "docs/stabilization/PLAN.md",
+      "line": 140,
+      "quote": "non-admin test identity and memberships not yet verified",
+      "tell": "6 — an undated snapshot as a fact",
+      "verdict": "REWRITE",
+      "new_text": "Ordinary-member coverage | Use an authorized member identity and verify the memberships required by each case | Keep cases without a suitable principal or membership unverified; admin success does not prove member behavior",
+      "applied": false,
+      "reason": "The operating plan should retain the test rule; live identity availability and missing fixtures belong in COORDINATOR.md or linked case evidence."
+    }
+  ],
+  "fresh_reader_table_counts": {
+    "CUT": 0,
+    "REWRITE": 1,
+    "MOVE": 0,
+    "ASK": 0,
+    "GUARD": 0
+  },
+  "document_lengths_lines": {
+    "PLAN_before": 156,
+    "PLAN_after": 156,
+    "COORDINATOR_before": 27,
+    "COORDINATOR_after": 27
+  },
+  "claim_checks": [
+    "Goal and automation evidence reports the active unfinished goal and approved parallel automation; it does not claim app objective replacement.",
+    "T57 run 37773402208 stopped at the Records pointer before any product GET or organization-header proof.",
+    "SEO run 37774478094 was resource-invalid before an acceptance receipt; no new case credit follows.",
+    "Scrape receipt source review 23d26dad, corrected by 4ca820bb, passed with native outcome still unverified; the current coordinator wording reflects that.",
+    "Generated STATUS.md reports zero complete feature-role pairs and nine cases without control links."
+  ],
+  "scope_limit": "No native run, build, release, delegation, or edits to shared documents. This reports blocking inaccuracies only."
+}

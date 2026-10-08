@@ -7,7 +7,7 @@
   "title": "Hosted workflow cannot select the existing real-page metadata acceptance fixture",
   "severity": "S2: test infrastructure prevents required coverage; no product SEO failure established",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/seo_fixture_route_wiring",
   "preconditions": [
     "Existing guest-seo hosted TEST route and tests/browser/seo-guest-acceptance.mjs; before source5d5b985f",
@@ -42,13 +42,19 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Candidate5d5b985f wires explicit none/airbnb selector with causal guards; fresh independent peer is active."
+    },
+    {
+      "at": "2026-10-08T12:15:49.115998+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source contract and eight focused tests accepted; native fixture criterion remains pending."
     }
   ],
   "source_candidate": {
     "sha": "5d5b985f",
-    "independent_review": "pending",
+    "independent_review": "5218c544; .research/seo-fixture-route-peer-20261008.json",
     "native_retest": "pending"
   },
   "closure_requirement": "Independent source/guard review and a resource-valid hosted execution proves the selected real fixture reaches its actual metadata criterion. Product T09 pass requires actual DOM-versus-UI agreement, not fixture selection alone.",
-  "next_action": "Complete independent source review, run one admitted guest SEO metadata attempt on isolated laneB, then independently review actual criterion and resources. Never infer a product pass from route tests."
+  "next_action": "Review run37774478094 resource-invalid receipt; no acceptance credit. Diagnose resource pressure before another fixture attempt; source fix alone does not close this defect."
 }
