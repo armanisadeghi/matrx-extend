@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "task": "Bounded T67 full-extension failure diagnosis and safe stage capture",
-  "status": "focused-gate-passed; independent-review-complete; native-attempt-terminal-before-T67",
+  "status": "focused-gate-passed; independent-review-complete; native-T67-post-extension-recheck-pass; core-T04-T10-pass; T40-capture-unverified",
   "independent_review": ".research/settings-t67-stage-root-review-20261008.json",
   "source_commit": "53685685b5101628ad9f24d30c16804a73a2b407",
   "integration_commit": "744f0bbdf52a48c6b5fa3d93abe8cff20fe8f1d9",
@@ -33,9 +33,9 @@
     }
   },
   "limitations": [
-    "The exact cleanup operation in prior native failure 37847922569 remains unknown; this attempt did not reach the browser or the T67 diagnostic stage.",
-    "The single authorized native attempt terminated before browser acceptance: frozen development artifact import failed after a GitHub API connection error. T67 was not exercised; no product-level native conclusion or retry.",
-    "Native run journals and workflow timings are retained; failed run emitted no settings acceptance receipt."
+    "The exact cleanup operation in prior native failure 37847922569 remains unknown; the later T67 retest completed its setting changes and baseline restoration successfully.",
+    "The first retest attempt 37850621932 failed during frozen artifact import before browser acceptance; its bounded failure record is retained and a single authorized replacement completed successfully.",
+    "T40 background capture follows the persisted switch remains unverified. This run does not establish full T40 acceptance or downstream capture behavior."
   ],
   "native_retest": {
     "run_id": 37850621932,
@@ -94,6 +94,65 @@
       ".research/settings-t67-restoration-repair-20261008/raw/hosted-package-37850621932-1.jsonl.raw": "5880c17b8b3585fddd7b9447b578aa5f640b13e6d8492383e29f1d7d89fd03eb",
       ".research/settings-t67-restoration-repair-20261008/raw/hosted-browser-37850621932-1.jsonl.raw": "e8d02904adc2bef94655a442117f8e6428c9941d2f6c109fda4c6f9b00758b34",
       ".research/settings-t67-restoration-repair-20261008/raw/hosted-guest-37850621932-1.jsonl.raw": "1c9ba5468f4d7b38ca4d3f42b991d966f3fdb7a99031cf7b4e29d15eb4d0042c"
+    }
+  },
+  "replacement_native_retest": {
+    "run_id": 37851603306,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37851603306",
+    "supersedes_preproduct_attempt": 37850621932,
+    "workflow": "Hosted guest side-panel acceptance",
+    "case": "settings-controls",
+    "lane": "B guest-only",
+    "runner": "macos-15",
+    "head_sha": "e799de3770526dff4a6deed782d9bc96cea22678",
+    "started_at": "2026-10-08T22:09:06Z",
+    "completed_at": "2026-10-08T22:17:24Z",
+    "conclusion": "success",
+    "frozen_ci_run": 37818621428,
+    "frozen_artifact_id": 11568846736,
+    "frozen_source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "frozen_artifact_expired": false,
+    "development_version": 414,
+    "build": {
+      "kind": "local_dev_unpacked",
+      "verified": true,
+      "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6"
+    },
+    "acceptance_receipt": {
+      "artifact_id": 11581959124,
+      "artifact_name": "hosted-guest-37851603306-1",
+      "overall_status": "unverified",
+      "raw": ".research/settings-t67-restoration-repair-20261008/raw/settings-local-controls-acceptance-37851603306.json.raw",
+      "sha256": "851cc5d6464565e28fa995f678facd8ec2b3f84e013caa3c0fc24dc4d47b0151",
+      "cases": {
+        "EXT-F-1003-T04": {"status": "pass", "criteria_passed": 14, "criteria_total": 14, "post_extension_reload_rechecks": "pass; after one extension reload, each theme was changed and verified through panel reload, then baseline restored", "theme_choices": "Dark, Light, System; applied appearance and stored preference verified"},
+        "EXT-F-1003-T10": {"status": "pass", "criteria_passed": 14, "criteria_total": 14, "post_extension_reload_rechecks": "pass; after one extension reload, each mode was changed and verified through panel reload, then baseline restored", "modes": "Act without asking and Ask before acting; stored preference and new-chat inherited mode verified"},
+        "EXT-F-1003-T28": {"status": "pass", "criteria_passed": 88, "criteria_total": 88, "post_extension_reload_section_rechecks": "pass"},
+        "EXT-F-1003-T40": {"status": "unverified", "criteria_passed": 10, "criteria_total": 11, "unverified_criterion": "background capture follows the persisted switch", "post_extension_reload_ui_preference_and_restore_checks": "pass"},
+        "EXT-F-1003-T67": {"status": "pass", "criteria_passed": 10, "criteria_total": 10, "post_extension_reload_setting_rechecks": "pass; after one extension reload, both modes were changed and verified through panel reload, then baseline restored", "restoration": "pass"}
+      },
+      "scope_limit": "Only one full extension reload was performed at the start of the full-extension recheck phase. Each choice was then changed and verified through panel reload; the run did not restart the extension separately after every nonbaseline choice."
+    },
+    "resource_journals": {
+      "package": {"path": ".research/settings-t67-restoration-repair-20261008/raw/hosted-package-37851603306-1.jsonl.raw", "decision": "valid", "admitted": true},
+      "browser": {"path": ".research/settings-t67-restoration-repair-20261008/raw/hosted-browser-37851603306-1.jsonl.raw", "decision": "valid", "admitted": true},
+      "guest": {"path": ".research/settings-t67-restoration-repair-20261008/raw/hosted-guest-37851603306-1.jsonl.raw", "decision": "valid", "admitted": true, "final_exit_code": 0, "min_available_memory_gib": 5.74, "required_memory_gib": 4, "swap_used_mib": 0},
+      "all_terminal": true
+    },
+    "workflow_step_durations_seconds": {
+      "package_readiness": 50,
+      "pinned_browser_driver_prep": 83,
+      "browser_readiness": 33,
+      "chromium_prep": 83,
+      "acceptance_readiness": 34,
+      "actual_acceptance": 196,
+      "upload": 2
+    },
+    "raw_sha256_manifest": {
+      ".research/settings-t67-restoration-repair-20261008/raw/hosted-package-37851603306-1.jsonl.raw": "5a24b5fcc8d730a061afc6b1f0ee0c1bb28b98717897e346fd59ef4fd13d1740",
+      ".research/settings-t67-restoration-repair-20261008/raw/hosted-browser-37851603306-1.jsonl.raw": "a2ce7dc0a130a147339f11eef355c690fbbac8fec3fee098dd32ce66f1241b86",
+      ".research/settings-t67-restoration-repair-20261008/raw/hosted-guest-37851603306-1.jsonl.raw": "ef437ce4c2f38b6b5a2079b908a64471492f36a10914da50ad7a9cc793a81ead",
+      ".research/settings-t67-restoration-repair-20261008/raw/settings-local-controls-acceptance-37851603306.json.raw": "851cc5d6464565e28fa995f678facd8ec2b3f84e013caa3c0fc24dc4d47b0151"
     }
   }
 }
