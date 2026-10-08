@@ -10,12 +10,20 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { captureFailure } from './profile-reload-capture.mjs';
 import {
+  FULL_EXTENSION_RECHECK_IDS,
+  captureGuestPreferenceBaselines,
+  enforceFullExtensionRechecks,
+  initializeFullExtensionRechecks,
+  rerunGuestSettingsAfterExtensionReload,
+  snapshotPanelDocumentReload,
+} from './settings-full-extension-rechecks.mjs';
+import {
   GUEST_PREFERENCES,
   observeGuestNewChatDefault,
   observeGuestPreference,
   preferenceBaseline,
-  runGuestPreferenceCase,
   restoreGuestPreferenceBaseline,
+  runGuestPreferenceCase,
 } from './settings-guest-preference-batch.mjs';
 import {
   GUEST_PRIVACY_SWITCHES,
@@ -26,14 +34,6 @@ import {
   runGuestAutoScrapeModeCase,
   runGuestSectionsCase,
 } from './settings-guest-scrape-controls.mjs';
-import {
-  captureGuestPreferenceBaselines,
-  enforceFullExtensionRechecks,
-  FULL_EXTENSION_RECHECK_IDS,
-  initializeFullExtensionRechecks,
-  rerunGuestSettingsAfterExtensionReload,
-  snapshotPanelDocumentReload,
-} from './settings-full-extension-rechecks.mjs';
 import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
   activeTabPanelExpression,

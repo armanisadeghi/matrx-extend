@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import {
+  FULL_EXTENSION_RECHECK_IDS,
   captureGuestPreferenceBaselines,
   enforceFullExtensionRechecks,
-  FULL_EXTENSION_RECHECK_IDS,
   initializeFullExtensionRechecks,
   rerunGuestSettingsAfterExtensionReload,
   runFullExtensionRecheck,

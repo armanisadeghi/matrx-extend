@@ -475,8 +475,10 @@ export async function withRecordsPositiveFixture({
         const found = await list();
         assert.equal(found.status, 200, 'records_fixture_cleanup_list_failed');
         assert.equal(found.list_complete, true, 'records_fixture_cleanup_list_incomplete');
-        if (found.tables.length === 0 && state.pending_write_unknown === true)
-          throw new Error('records_fixture_cleanup_unverified');
+        assert.ok(
+          !(found.tables.length === 0 && state.pending_write_unknown === true),
+          'records_fixture_cleanup_unverified',
+        );
         if (
           found.tables.length === 0 &&
           ['create_sent', 'no_fixture_created'].includes(state.phase)

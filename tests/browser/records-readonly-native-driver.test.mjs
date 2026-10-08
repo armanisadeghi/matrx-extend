@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
 import ts from 'typescript';
+import { withRecordsPositiveFixture } from './records-positive-fixture.mjs';
 import {
   assertRecordsVisibleCompletion,
   enterRecordsInput,
@@ -15,7 +16,6 @@ import {
   retainRecordsFailure,
   signInRecordsAdmin,
 } from './records-readonly-native-proof.mjs';
-import { withRecordsPositiveFixture } from './records-positive-fixture.mjs';
 
 // Evaluate the callback the native acceptance actually passes to the shared harness.
 const source = await readFile(

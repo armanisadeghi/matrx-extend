@@ -183,7 +183,7 @@ export async function restoreGuestPreferenceBaseline(
   assertPreferenceBaseline(choice, preference);
   const [value, label] = choice;
   await driver.openSection(panel, preference.section);
-  let current = await observeGuestPreference(panel, preference, driver);
+  const current = await observeGuestPreference(panel, preference, driver);
   if (!preferenceMatches(current, preference, value, label)) {
     await driver.click(panel, 'settings-select', preference.label);
     await driver.click(panel, 'option', label);
