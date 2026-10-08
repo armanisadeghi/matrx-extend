@@ -15,7 +15,14 @@
       "Biome package.json format passed"
     ],
     "local_tests": "not_run_resource_DISK_LOW_guard_not_bypassed",
-    "automatic_run": "pending_push"
+    "automatic_run": {
+      "source_commit": "85c6a4c74ddef6851c29a1d935e849a2d6080f31",
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37707039862",
+      "status": "completed_success",
+      "install_dependencies": "pass",
+      "focused_acceptance_guards": "pass",
+      "full_ci_at_observation": "queued"
+    }
   },
   "limits": [
     "This lane proves only the four source guards. Full CI remains the release gate, and native/browser behavior requires separate admitted execution.",
