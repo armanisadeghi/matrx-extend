@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "04ba190910b8824e97fb82c4d43d3cbfe9ae7477",
+  "scope": "Independent scoped review of the Records native acceptance input repair; no native run or product edit performed.",
+  "verdict_a_live_outcome": {
+    "status": "PARTIAL",
+    "reason": "The original hosted receipt stopped at records_input before Run, with no exact substep. The repaired driver has not been rerun on macOS, so trusted insertion, React state update, execute correlation, and visible table_list output remain unverified on the live surface.",
+    "observed_boundary": "Hosted run 37795653439 completed authenticated admin and organization schema GET 200, then records_input_failed; no execute request or visible result.",
+    "next_proof": "Rerun the repaired native macOS acceptance and require the post-Run execute body to equal the newly entered table_list input, with principal, organization, response completion, and visible output correlated. Keep D91 open until that result."
+  },
+  "verdict_b_driver_quality": {
+    "status": "PARTIAL",
+    "passes": [
+      "The real driver now uses Command+A on macOS, Ctrl+A elsewhere, an explicit selectAll edit command, and verifies full textarea selection before Input.insertText.",
+      "It checks the visible textarea value before Run and retains the existing bearer, organization, exact request body, response completion, visible result, read-only action, listener cleanup, and privacy assertions.",
+      "The focused seam executes the actual driver callback with a prefilled editor model; removing selectAll fails before insertion and before Run. A Linux scenario covers the alternate modifier."
+    ],
+    "important_gap": {
+      "location": "tests/browser/records-readonly-native-driver.test.mjs:119",
+      "finding": "The test's click stub emits the expected execute body from expectedInput whenever the editor value matches. It does not model the React onChange state used by ToolsView.runManually, so the local green result cannot prove native insertion reached React state. The actual native request-body assertion remains the required proof.",
+      "impact": "Do not treat the six local tests as native acceptance or close D91 on this evidence."
+    },
+    "cause_limit": "The previous Ctrl+A and absent selection check were real driver weaknesses, but the old receipt lacks an exact input substep; neither is proven to have caused hosted run 37795653439. Guest resource journal invalidity after child exit does not establish CPU causation."
+  },
+  "checks_run": [
+    "node --test tests/browser/records-readonly-native-driver.test.mjs: 6 passed, 0 failed",
+    "Inspected git show --stat -U10 04ba1909 for the three changed files and compared the original hosted receipt.",
+    "Inspected ToolsView controlled textarea and runManually state read; no DOM value assignment or authorization injection in the repair."
+  ],
+  "overall": "REOPEN native acceptance; scoped driver repair is plausible and locally guarded, but the live behavior remains unverified.",
+  "privacy": "No credential, bearer, organization identifier, response body, table name, screenshot, or row content retained."
+}
