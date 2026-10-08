@@ -1,0 +1,52 @@
+{
+  "date": "2026-10-08",
+  "purpose": "Read-only diagnosis of recoverable generated artifacts on the nearly full macOS system volume.",
+  "scope": "No files were deleted or moved. No full-volume scan, test, build, browser session, or app restart was performed.",
+  "volumes": {
+    "system_data": {
+      "mount": "/System/Volumes/Data",
+      "capacity": "228 GiB",
+      "available": "1.5 GiB",
+      "utilization": "100%"
+    },
+    "external_workspace": {
+      "mount": "/Volumes/Samsung2TB",
+      "capacity": "1.8 TiB",
+      "available": "1.6 TiB",
+      "utilization": "11%"
+    }
+  },
+  "candidates": [
+    {
+      "path": "/Users/armanisadeghi/Library/Caches/pnpm/dlx",
+      "size": "111 MiB",
+      "evidence": "Four pnpm dlx temporary installs; largest is shadcn@3.8.5 at 101 MiB, with files dated Feb 20 2026. No pnpm/npm/yarn/bun process was present and lsof found no open references beneath this directory.",
+      "assessment": "Strongest safe/recoverable candidate for modest headroom. It is package-manager-owned temporary execution state and can be recreated by rerunning the package command; cleanup should use the package manager's supported mechanism. No cleanup was performed."
+    },
+    {
+      "path": "/Users/armanisadeghi/Library/Caches/com.openai.codex/org.sparkle-project.Sparkle/Installation/qKUsaLR0U",
+      "size": "2.3 GiB",
+      "evidence": "Contains a 684 MiB downloaded update archive dated Oct 7 12:26 and its 1.6 GiB expanded ChatGPT.app build 26.1002.52244/13536. Installed app reports 26.930.61225/13232. Sparkle Autoupdate and Updater processes (PIDs 36891 and 36892) have been alive since Oct 7 12:26; ChatGPT itself is running. The updater currently has no archive/staging file open according to lsof.",
+      "assessment": "Not safe to clean while ChatGPT and its updater are running: this is a pending staged app update, despite the absence of current open file handles. Reassess only after the update lifecycle completes and the updater exits."
+    },
+    {
+      "path": "/Users/armanisadeghi/Library/Caches/ms-playwright/chromium-1228",
+      "size": "344 MiB",
+      "evidence": "Playwright Chromium test-browser payload. No Playwright/Chromium test process was present, but NotificationCenter (PID 1053) has an open executable-resource file from this app bundle.",
+      "assessment": "Re-downloadable test runtime, but not a safe immediate cleanup candidate because a system process still has a file open. It is a browser binary cache, not a browser profile; left untouched."
+    },
+    {
+      "path": "/Users/armanisadeghi/.cache/codex-runtimes",
+      "size": "1.6 GiB",
+      "evidence": "Codex runtime cache; Codex desktop and code-mode processes are active. No per-runtime ownership/idle proof was established.",
+      "assessment": "Unknown and excluded because it may back active Codex sessions."
+    },
+    {
+      "path": "/Users/armanisadeghi/Library/Caches/CloudKit",
+      "size": "32 GiB (reported observation)",
+      "assessment": "Excluded. This is unrelated system/user state and was not inspected or targeted."
+    }
+  ],
+  "repository_context": "matrx-extend node_modules is 1.4 GiB on the external Samsung2TB volume, so removing it would not recover system-volume space.",
+  "conclusion": "The 111 MiB inactive pnpm dlx cache is the only presently well-supported small cleanup candidate. The much larger Sparkle stage is tied to a live update, and the other large caches lack sufficient safe-disposal evidence."
+}
