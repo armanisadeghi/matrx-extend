@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-08",
+  "reviewer": "root",
+  "independence": "Zero Settings source/test authorship; direct review used after fresh reviewer creation/resume failed ENOSPC and repeated lower-tier repair findings.",
+  "commit": "12a9fa2f57e74f688ec327a5a0e77e4a3bee0d2e",
+  "A": "Bounded source approve; native pending. Actual callback captures theme/mode before reload, opens replacement Settings, forwards baseline into tested orchestration; comparison checks original value before cycling options. Restoration returns to Settings even when Chat observation throws. Missing/failed reruns and prior warm failures remain failed.",
+  "B": "Approve review-findings repair. Only fixed error categories retained. Actual orchestration tests cover baseline drift, Chat failure, failed restore, unknown error redaction and allfive calls; restoration dropdown seam separately exercised. Root ran full-extension-rechecks and guest-preference-batch tests6/6pass in75ms. Source wiring inspected independently.",
+  "hosted_gate": {
+    "run": "37847622681",
+    "head": "12a9fa2f57e74f688ec327a5a0e77e4a3bee0d2e",
+    "status": "success",
+    "verified_by": "root"
+  },
+  "limits": "One pre-extension baseline per preference crosses full restart; cycling choices afterward uses panel reload. Do not infer all chosen values survived a full restart. T40/T67 downstream capture unverified; native result required."
+}
