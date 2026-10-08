@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-07",
+  "task_id": "settings_reload_target_diagnosis",
+  "status": "source_repair_verified_native_retest_pending",
+  "scope": "Frozen development artifact 0.2.391 Settings guest full-extension-reload boundary in workflows 37712686956 and 37714389856",
+  "cause": {
+    "finding": "The shared Settings acceptance driver clicks immediately after the replacement CDP panel target appears. A target and runtime context can exist before React mounts the Settings tab. The fresh receipt records the first click failing with matchedTargetCount=0, followed by a same-panel probe with settingsTabCount=1. This supports an early click race in the driver; it does not establish a Settings product defect.",
+    "native_evidence": ".research/settings-unrecorded-native-20261007/evidence/raw/settings-local-controls-acceptance.json",
+    "earlier_evidence": ".research/settings-reload-failure-diagnosis-20261007.json",
+    "alternatives": "The replacement panel was alive, document-ready and in the expected runtime, which weighs against a missing replacement or closed CDP transport for the recorded first failure. The first native receipt lacked a substep category, so it cannot independently discriminate this cause."
+  },
+  "change": "Wait for exactly one visible Settings tab in the replacement panel before dispatching the trusted click. Preserve a safe explicit wait stage and classify an unmet readiness predicate distinctly. No retry of a failed click, timeout increase, or product change.",
+  "changed_files": [
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/settings-reload-boundary.mjs",
+    "tests/browser/settings-replacement-tab.test.mjs",
+    ".research/settings-reload-target-diagnosis-20261007.json"
+  ],
+  "verification": {
+    "negative_control": "node --test tests/browser/settings-replacement-tab.test.mjs failed before the repair because the readiness helper was absent. The new test drives the real evaluate/waitFor seam with a replacement panel whose Settings tab is first missing, then hidden, then uniquely visible; a second case rejects a tab that never renders.",
+    "focused_after": "node --test tests/browser/settings-replacement-tab.test.mjs tests/browser/settings-reload-boundary.test.mjs: 6/6 passed",
+    "typescript": "pnpm compile passed",
+    "format": "pnpm exec biome format --write on all four changed source/test files; focused biome check pending final commit check",
+    "native": "Not run: this machine prohibits manual build/release/deploy and this lane forbids browser dispatch. Existing native guest full-reload acceptance remains unverified."
+  },
+  "resource_status": "No heavy job, browser, build, release, deployment, credential access, or secret staging was started by this lane.",
+  "questions": [],
+  "next_action": "Independent review, then one admitted frozen-artifact native retest of the original guest Settings full reload. Credit product cases only from that native result.",
+  "commit_shas": ["65637cd5"]
+}
