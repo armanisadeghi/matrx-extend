@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08T09:48:24Z",
+  "reviewed_commit": "eacb7c1c",
+  "scope": "Independent source review of the reload fresh-CDP observer and focused guards; no code authorship, native run, browser, build, deployment, or product-health claim",
+  "verdict": "PARTIAL: observational diagnostic and strict refusal are source-supported, but the claimed bounded failure path is not",
+  "findings": [
+    {
+      "severity": "important",
+      "location": "tests/browser/reload-lifetime-diagnostic.mjs:216-237",
+      "finding": "The 3000 ms timer bounds only completion after session creation. newCDPSession and ServiceWorker.enable are awaited outside a deadline; cleanup also awaits ServiceWorker.disable and detach without deadlines. A stalled CDP operation can therefore hang reload failure handling indefinitely.",
+      "guard_gap": "The focused tests exercise rejected ServiceWorker.enable, not a never-settling session creation, enable, disable, or detach. A nonsettling-CDP mutation is still green or hangs rather than proving the intended bound.",
+      "recommended_repair": "Bound each protocol/session operation and cleanup with a shared deadline or bounded race; preserve cleanup attempts and the final strict refusal. Prove the old unbounded path fails and the repaired actual harness failure path returns within the budget."
+    }
+  ],
+  "source_checks": {
+    "session_and_commands": "The observer opens a separate context.newCDPSession(page), registers workerVersionUpdated before ServiceWorker.enable, and issues no ServiceWorker.startWorker, stopWorker, or target mutation. It removes its listener, attempts ServiceWorker.disable, and detaches in finally. Chromium's ServiceWorkerHandler separates enable/disable watcher registration from start/stop worker commands.",
+    "identity": "It requires one expected replacement version from the original event map sharing the replacement target and differing from the old version, then checks version ID, registration ID, and target ID in the fresh event before reporting activated. Mismatches remain diagnostic identity_mismatch.",
+    "freshness": "Chromium's ServiceWorkerContextWatcher::Start obtains registrations and GetAllLiveVersionInfo after enabling the observer. That makes the fresh session's version event a fresh live-state snapshot rather than merely the original session's stale event. This is a source conclusion, not a live observation of the failing host.",
+    "safe_fields": "The new receipt mapper emits only sanitized IDs, enumerated running/status/outcome, and observation count; it does not emit worker script URL or arbitrary error text.",
+    "strict_acceptance": "native-sidepanel-qa-harness.mjs calls the fresh observer only after strict reload polling has failed and still throws native_extension_worker_retirement_unverified. The fresh activated diagnostic cannot currently turn that failure into an accepted reload. The actual reloadOwnedExtension failure path is exercised by reload-fresh-observer-harness.test.mjs through its reloadCase harness, with fake CDP boundary.",
+    "future_predicate": "A fresh activated version snapshot can potentially supply the replacement running/activated fact to strict acceptance, but it must be joined to the original pre-click old-worker identity, post-click old stopped/redundant evidence, exact replacement registration/target identity, no dropped events, and final sole-worker target snapshot. Current code does not perform that join, so diagnostic-only is the correct present verdict; fresh proof is not intrinsically insufficient."
+  },
+  "verification": {
+    "command": "node --test tests/browser/reload-lifetime-diagnostic.test.mjs tests/browser/reload-fresh-observer-harness.test.mjs",
+    "result": "PASS, 4/4 focused tests; fake CDP boundary, no native browser verification",
+    "limitations": "No nonsettling CDP-call guard, live target-binding proof, or native acceptance run was performed by this reviewer."
+  },
+  "primary_sources": [
+    "https://chromedevtools.github.io/devtools-protocol/tot/ServiceWorker/",
+    "https://chromium.googlesource.com/chromium/src/+/cc5c4286cb619bf0534f3e302f4ae571409a3459/content/browser/devtools/protocol/service_worker_handler.cc",
+    "https://chromium.googlesource.com/chromium/src/+/141.0.7390.122/content/browser/service_worker/service_worker_context_watcher.cc"
+  ],
+  "release_advice": "Repair and independently verify the bounded CDP observer before another instrumented native attempt; this source review does not advance T57 or guest-scrape acceptance."
+}
