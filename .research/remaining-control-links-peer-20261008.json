@@ -1454,7 +1454,7 @@
         {
           "control_id": "EXT-F-2012-C31",
           "verdict": "reject",
-          "basis": "Schema-copy action is outside the stated \u201ccopy result\u201d step.",
+          "basis": "Schema-copy action is outside the stated “copy result” step.",
           "inventory_action": "Copy currently expanded JSON schema",
           "source_anchors": [
             "src/features/tools/ToolsView.tsx:1",
@@ -1468,7 +1468,7 @@
         {
           "control_id": "EXT-F-2012-C32",
           "verdict": "reject",
-          "basis": "Argument-copy action is outside the stated \u201ccopy result\u201d step.",
+          "basis": "Argument-copy action is outside the stated “copy result” step.",
           "inventory_action": "Copy current manual-run arguments",
           "source_anchors": [
             "src/features/tools/ToolsView.tsx:1",
@@ -1482,7 +1482,7 @@
         {
           "control_id": "EXT-F-2012-C33",
           "verdict": "reject",
-          "basis": "Tool-name copy is outside the stated \u201ccopy result\u201d step.",
+          "basis": "Tool-name copy is outside the stated “copy result” step.",
           "inventory_action": "Copy handler identifier",
           "source_anchors": [
             "src/features/tools/ToolsView.tsx:1",
@@ -1496,7 +1496,7 @@
         {
           "control_id": "EXT-F-2012-C34",
           "verdict": "reject",
-          "basis": "Error-copy action is outside the stated \u201ccopy result\u201d step.",
+          "basis": "Error-copy action is outside the stated “copy result” step.",
           "inventory_action": "Copy parse, schema or execution error",
           "source_anchors": [
             "src/features/tools/ToolsView.tsx:1",
@@ -6455,7 +6455,7 @@
           "For cap, selected-label, and invalid-input assertions, use the owned long synthetic fixture. A read-only public page is also valid for a positive summary/classification native acceptance run; record the page identity without copying page text into the run report."
         ],
         "steps": [
-          "In Tools \u2192 Smart tests, expand Summarize active page; set cap to 1k, type to key-points, and length to medium. Run once.",
+          "In Tools → Smart tests, expand Summarize active page; set cap to 1k, type to key-points, and length to medium. Run once.",
           "Inspect timing, result or visible refusal, and expand input the model saw. Verify the request event includes the selected type/length and page content is capped at 1,000 characters; use only fixture text.",
           "Expand Classify active page, replace labels with 'article, landing page', and Run. Then enter the invalid one-label value 'article' and Run once more."
         ],
@@ -6676,7 +6676,7 @@
         ],
         "steps": [
           "Expand Detect page language and Run on the active fixture.",
-          "Expand Proofread selection; return to the fixture, select only 'Thiss sentense has a speling mistake.', reopen Tools \u2192 Smart tests, and Run.",
+          "Expand Proofread selection; return to the fixture, select only 'Thiss sentense has a speling mistake.', reopen Tools → Smart tests, and Run.",
           "Activate the owned controlled fixture. Expand Prompt-injection scan and Run on its harmless synthetic PAPERCLIP instruction.",
           "On the owned fixture, expand Describe first image, set the question to What color is the circle?, and Run on the page with the local PNG. Then activate the owned sibling no-image fixture and Run once to exercise the missing-image path."
         ],
@@ -6848,7 +6848,7 @@
           "Complete shared artifact/profile setup; sign in as a member or admin with an explicitly selected open organization on this device. Use the owned fixture tab; for the audio-on run, have that tab play only a locally generated test tone after a user gesture."
         ],
         "steps": [
-          "Open Tools \u2192 Recorder. Set Duration (sec) to 1, then 60, and confirm the field accepts both displayed bounds. Set it to 2 for each short capture; toggle Capture audio off for the first and on for the second.",
+          "Open Tools → Recorder. Set Duration (sec) to 1, then 60, and confirm the field accepts both displayed bounds. Set it to 2 for each short capture; toggle Capture audio off for the first and on for the second.",
           "With the fixture active, click Record. If Chrome asks for optional tabCapture permission, grant it for this positive path. Observe Checking permission/Starting/Recording and elapsed time, then click Stop before the duration expires.",
           "Wait for Finalizing/Uploading to finish; inspect the saved row, duration, title, MIME, size, and audio badge. Reload the side panel/extension using the documented artifact cycle and confirm the metadata row rehydrates."
         ],
@@ -7087,7 +7087,7 @@
           "Use a separate profile already signed out; complete artifact identity and reload setup."
         ],
         "steps": [
-          "Open the side panel, inspect main navigation, and attempt Tools \u2192 Recorder only through visible navigation."
+          "Open the side panel, inspect main navigation, and attempt Tools → Recorder only through visible navigation."
         ],
         "expected": [
           "Signed-in Tools and nested Recorder content are unavailable to guest; a visible sign-in path remains. No Record or list-management control is reachable."
@@ -7148,71 +7148,5 @@
     "Source presence and source-level linkage do not show native UI visibility, successful interaction, or a passing result.",
     "The nine cases with no proposed IDs remain unmapped; this review did not add controls or change inventory.",
     "Cross-repository source anchors are only treated as identifiers in the canonical inventory; this lane did not inspect sibling repositories."
-  ],
-  "followup_review_20261008": {
-    "schema_version": 1,
-    "reviewed_at_utc": "2026-10-08T15:40:00Z",
-    "proposal": ".research/remaining-control-links-20261008.json",
-    "reviewed_commit": "532c43544957d7ff720c89764344dd0ae80c6a31",
-    "review_scope": "source-only; inventory and runtime statuses not changed",
-    "verdict_a_inventory_fidelity": {
-      "verdict": "ACCEPT_WITH_T02_REVISION",
-      "runtime_status": "unverified; source review cannot establish runtime behavior or change results",
-      "dispositions": [
-        {
-          "case_id": "EXT-F-0003-T07",
-          "verdict": "accept C12 and link C12 plus existing C03",
-          "evidence": [
-            "release.sh:428-439 defines matrx-packages as the first mandatory candidate gate",
-            "scripts/test-release-ship-path.sh:199-218 asserts stale packages stop before unit tests and publication"
-          ],
-          "note": "Distinct, source-backed release control; C03 alone describes refusal but not stale-graph freshness/order."
-        },
-        {
-          "case_id": "EXT-F-0003-T10",
-          "verdict": "leave unmapped",
-          "evidence": [
-            "docs/stabilization/inventory.json:1652 describes popup-test teardown and unhandled imports",
-            "docs/stabilization/INVENTORY-CONTRACT.md:7 defines controls as controls/actions"
-          ],
-          "note": "Test harness lifecycle case has no product control. Do not invent one to reduce the unmapped count."
-        },
-        {
-          "case_id": "EXT-F-1015-T39",
-          "verdict": "accept C21 and link it",
-          "evidence": [
-            "src/hooks/use-auth.ts:30-55 serializes generation-checked admin-gate storage writes",
-            "src/hooks/use-auth.ts:148-191 clears the gate before verification and reports storage/read failures",
-            "src/hooks/use-auth.ts:229-255 revalidates after cross-context auth changes",
-            "src/lib/tools/dispatch.ts:763-768 checks the stored gate at execution time"
-          ],
-          "note": "A distinct stateful auth gate despite having no dedicated visible button. Source supports the behavior; runtime remains unverified."
-        },
-        {
-          "case_id": "EXT-F-2012-T02",
-          "verdict": "accept existing C11, C13, C14 links; reject new C38-C40",
-          "evidence": [
-            "src/features/tools/ToolsView.tsx:87-101 exposes Smart tests and Recorder tabs",
-            "EXT-F-2015 has granular scenario controls and mapped scenario cases",
-            "EXT-F-2016 has granular recording, permission recovery, and saved-row controls mapped to cases"
-          ],
-          "note": "C38-C40 repeat child-feature behavior in a broader parent feature and bundle multiple distinct actions. The umbrella case may link the existing tab/dialog controls it exercises, while behavior remains tracked in EXT-F-2015/2016."
-        }
-      ]
-    },
-    "verdict_b_quality_no_false_coverage": {
-      "verdict": "REVISE_T02; OTHERWISE_ACCEPT",
-      "findings": [
-        "T07 C12 adds the freshness/order dimension missing from C03; its C03 link is appropriate for the no-publication outcome.",
-        "T10 should remain the one unmapped non-product harness case.",
-        "T39 C21 accurately identifies the persisted execution gate and its race/error conditions; it must not be represented as a visible UI button.",
-        "T02's proposed C38-C40 duplicate the owning Smart Tests and Recorder feature inventories and collapse granular controls. Keep T02 as a parent navigation/dialog umbrella with existing C13/C14/C11 links; detailed actions stay under EXT-F-2015 and EXT-F-2016."
-      ]
-    },
-    "limitations": [
-      "No browser, build, or runtime execution was performed.",
-      "No inventory or proposal mutation was performed by this review.",
-      "The proposal is a source map and does not establish pass status."
-    ]
-  }
+  ]
 }
