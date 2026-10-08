@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "reviewed_at_utc": "2026-10-08T09:23:28Z",
+  "candidate_sha": "a43ed74ceb5eedb50ccb1aebf8d6b23d64d1e063",
+  "case_id": "EXT-F-1012-T57",
+  "review_role": "independent source and guard review",
+  "verdict_source": {
+    "status": "PASS_SOURCE_CONTRACT_NATIVE_RERUN_PENDING",
+    "findings": [
+      {
+        "file": ".github/workflows/hosted-guest-acceptance.yml:284",
+        "severity": "none",
+        "finding": "The workflow retains sudo mdutil -a -i off on a GitHub-hosted macOS VM. It then queries only / and /System/Volumes/Data, requires each command to succeed, and requires each result to say indexing disabled (.github/workflows/hosted-guest-acceptance.yml:285). The irrelevant Preboot status is no longer queried; enabled or unreadable relevant volumes still stop the step."
+      },
+      {
+        "file": ".research/t57-diagnostic-native-20261008.json",
+        "severity": "none",
+        "finding": "The recorded native attempt failed at the all-volume status command before package readiness, browser startup, or resource admission. It records no product verdict and reports T57 unverified. The source repair is bounded to runner setup."
+      }
+    ],
+    "native_status": "NOT_RERUN: this review authorizes no host command or hosted dispatch; separate reviewer approval precedes any retry."
+  },
+  "verdict_guard": {
+    "status": "PASS_FORCING_GUARD",
+    "tests": [
+      {
+        "command": "node --test scripts/test-hosted-indexing-step.mjs",
+        "result": "1 passed"
+      },
+      {
+        "command": "HOSTED_INDEXING_WORKFLOW_FILE=/tmp/hosted-guest-acceptance-before-a43ed74.yml node --test scripts/test-hosted-indexing-step.mjs",
+        "result": "expected RED: exit 1 at the unrelated Preboot transition assertion"
+      }
+    ],
+    "finding": "The guard reads and executes the actual workflow shell block with only sudo/mdutil replaced by temporary shims. It is green when Preboot reports the recorded transition, and separately fails when root or Data remains enabled or its status command fails. The previous all-volume workflow is red against the same transition fixture. No host indexing setting was changed during review."
+  },
+  "limits": [
+    "No native browser attempt, hosted rerun, build, deployment, or host-setting change was performed.",
+    "Runtime/product status remains unverified; the report supports only source and guard readiness."
+  ]
+}
