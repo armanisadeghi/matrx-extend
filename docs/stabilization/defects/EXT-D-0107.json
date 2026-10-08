@@ -14,7 +14,7 @@
   "actual": "Startup refused endpoint with three possible source boundaries under one code. Zero authentication or Profile actions; no owned profile row fixture created. Original branch/cause not yet known.",
   "severity": "S2 test execution blocked; product impact not established",
   "priority": "P1 admin acceptance prerequisite",
-  "state": "triaged",
+  "state": "in-fix",
   "owner": "owned_endpoint_diagnosis",
   "evidence": [
     ".research/profile-admin-fields-native.json",
@@ -25,7 +25,12 @@
     ".research/guest-scrape-store-native.json",
     ".research/hosted-chrome-startup-repair.json",
     ".research/hosted-startup-diagnostics-peer.json",
-    ".research/native-startup-deadline-diagnosis-20261008.json"
+    ".research/native-startup-deadline-diagnosis-20261008.json",
+    ".research/seo-late-endpoint-native-20261008.json",
+    ".research/seo-startup-observation-wiring-20261008.json",
+    ".research/seo-startup-observation-peer-20261008.json",
+    ".research/native-startup-deadline-repair-20261008.json",
+    ".research/native-deadline-final-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -39,8 +44,25 @@
       "from": "open",
       "to": "triaged",
       "reason": "Original refusal boundary unrecoverable. Safe exact-branch capture4d54b6d9 passed independent producer/sink review4b163efa; one new guarded admin attempt owns decisive observation. No root-cause repair claimed."
+    },
+    {
+      "at": "2026-10-08T13:47:29.638430+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Resource-valid native37785284577 proves a late endpoint beyond5s; bounded native startup policy repair37ca7d88 enters fresh peer/native loop, original refusal remains distinct."
     }
   ],
   "closure_requirement": "Prove and repair demonstrated startup class with actual helper red/green and independent review; native admin original scenario and surrounding ownership rejection must pass.",
-  "next_action": "The original admin endpoint refusal remains unresolved. Later guest SEO run 37783095637 and Settings run 37735318823 timed out before UI with repeated endpoint polls and CPU_PENDING, but do not prove the same source cause or justify changing the five-second deadline. The existing post-timeout observation is enabled only on a separate headed diagnostic route. Before another A acceptance attempt, add bounded post-timeout observation to the diagnostic-only headless SEO path and run one guarded exact-artifact discriminator after the B job; preserve resource validity and zero acceptance credit for an invalid run. See .research/native-startup-deadline-diagnosis-20261008.json."
+  "next_action": "One resource-admitted uninstrumented SEO/Scrape batch on reviewed37ca7d88-or-descendant relevant source with native policy8s. Keep original admin refusal and ownership surrounding-case closure requirement; do not close D107 from late-start variant alone.",
+  "confirmed_late_start_variant": {
+    "run_id": "37785284577",
+    "resource_valid": true,
+    "endpoint_timeout_ms": 5024,
+    "endpoint_observed_after_timeout_ms": 1145,
+    "exit_observed": false,
+    "source_repair": "37ca7d88",
+    "policy": "nativeCdpStartupDeadlineMs=8000; independent socket/command timeout and ownership checks preserved",
+    "verification": "Fresh19049513 source/evidence review passes real-file timing, connector, harness, and resource-safety checks. Native uninstrumented acceptance pending; exact8s source policy verified; test intentionally proves late-endpoint behavior rather than freezing a configurable number.",
+    "scope_limit": "Does not establish equivalence to original331ms admin endpoint refusal or full D107 closure."
+  }
 }
