@@ -23,7 +23,7 @@
     "lint:fix": "biome check --write .",
     "format": "biome format --write .",
     "test": "vitest run --maxWorkers=2",
-    "test:focused-acceptance": "node --test tests/browser/audit-key-native-faults.test.mjs tests/browser/settings-panel-driver.guest.test.mjs tests/browser/settings-guest-preference-batch.test.mjs tests/browser/settings-guest-unrecorded-cases.test.mjs tests/browser/seo-guest-clipboard.test.mjs tests/browser/showcase-stale-runtime-boundary.test.mjs scripts/test-hosted-startup-interval-diagnostic.mjs",
+    "test:focused-acceptance": "node --test tests/browser/audit-key-native-faults.test.mjs tests/browser/settings-panel-driver.guest.test.mjs tests/browser/settings-guest-preference-batch.test.mjs tests/browser/settings-guest-unrecorded-cases.test.mjs tests/browser/settings-reload-boundary.test.mjs tests/browser/seo-guest-clipboard.test.mjs tests/browser/showcase-stale-runtime-boundary.test.mjs scripts/test-hosted-startup-interval-diagnostic.mjs",
     "test:watch": "vitest",
     "update-api-types": "node scripts/update-api-types.mjs",
     "update-api-types:local": "node scripts/update-api-types.mjs --local",

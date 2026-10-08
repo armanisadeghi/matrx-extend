@@ -11,6 +11,10 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { GUEST_PREFERENCES, runGuestPreferenceCase } from './settings-guest-preference-batch.mjs';
 import { runGuestAskAgainCase } from './settings-guest-unrecorded-cases.mjs';
 import {
+  classifyReloadSettingsFailure,
+  observeReloadSettingsPanel,
+} from './settings-reload-boundary.mjs';
+import {
   activeTabPanelExpression,
   click,
   evaluate,
@@ -92,8 +96,11 @@ async function startObservedDeadPort() {
   };
 }
 
-async function settings(panel) {
+async function settings(panel, onStep = () => {}) {
+  onStep('before_click');
   await click(panel, 'title', 'Settings');
+  onStep('click_returned');
+  onStep('guest_wait_started');
   await waitFor(
     'guest_settings',
     () =>
@@ -961,7 +968,23 @@ try {
           'owned extension reload lifecycle incomplete',
         );
         guestStage = 'reload_settings';
-        await settings(replacement.panel);
+        let reloadStep = 'before_click';
+        try {
+          await settings(replacement.panel, (step) => {
+            reloadStep = step;
+          });
+          report.guestReloadBoundary = {
+            status: 'settings_opened',
+            panel: await observeReloadSettingsPanel(replacement.panel, EXTENSION_ID),
+          };
+        } catch (error) {
+          report.guestReloadBoundary = {
+            status: 'settings_open_failed',
+            failure: classifyReloadSettingsFailure(error, reloadStep),
+            panel: await observeReloadSettingsPanel(replacement.panel, EXTENSION_ID),
+          };
+          throw error;
+        }
         guestStage = 'reload_observation';
         const reloadedGuest = await observeGuestIdentityAndOrganization(replacement.panel);
         recordGuestPhase('reload', reloadedGuest);
