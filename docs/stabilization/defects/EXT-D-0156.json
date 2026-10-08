@@ -2,11 +2,11 @@
   "id": "EXT-D-0156",
   "feature_id": "EXT-F-2013",
   "feature_ids": ["EXT-F-2013", "EXT-F-2014", "EXT-F-1003"],
-  "case_ids": ["EXT-F-1003-T10", "EXT-F-1003-T11", "EXT-F-1003-T12"],
-  "title": "Uninterrupted mode and remembered approvals have remaining parallel and persistence races",
+  "case_ids": ["EXT-F-1003-T10", "EXT-F-1003-T11", "EXT-F-1003-T12", "EXT-F-2014-T02"],
+  "title": "Uninterrupted mode, remembered approvals and Pilot start routing gaps",
   "surface": "Chat / Pilot / parallel browser child runs",
   "auth_mode": "guest/member/admin as source-applicable; parallel requires signed in",
-  "state": "fixed",
+  "state": "in-fix",
   "owner": "root/uninterrupted-approval",
   "priority": "P1",
   "severity": "S2",
@@ -21,13 +21,14 @@
     "Construct Pilot browser DOM state while Assistant mode differs; pre-repair builder advertises Assistant mode."
   ],
   "expected": "Act ordinary actions execute uninterrupted, child runs inherit parent mode, each surface advertises its own choice, remembered approvals survive concurrent choices and continuation.",
-  "actual": "Act ordinary actions and warm remembered approvals pass native checks. Confirmed full extension reload trust loss repaired in durable actor/conversation storage; updated native verification pending.",
+  "actual": "Six real corrected Chat checks PASS, including saved-chat remembered action after full extension reload. Pilot opposing-mode test hits HTTP422 before tool dispatch because a mandate reference is sent through the UUID agent route.",
   "cause_sibling_census": [
     "Missing pre-stream permission latch in parallel child path; main bootstrap already latches it.",
     "Shared conversation trust map writes not serialized; remembered choice persistence not awaited in warm and recovered confirmation paths.",
     "Pilot capability envelope uses Assistant store.",
     "Run metadata map shares the concurrent read-modify-write bug; parallel children can lose restart mode. Queue writes/pruning and wait pending mirrors on lookup.",
-    "Remembered conversation trust uses chrome.storage.session, which is cleared on full extension reload. Durable actor/conversation storage repair in progress."
+    "Remembered conversation trust uses chrome.storage.session, which is cleared on full extension reload. Durable actor/conversation storage repair in progress.",
+    "Pilot start routes mandate references through agentExecutePath (UUID route), unlike canonical agentTargetExecutePath used by Chat. Real hook baseline proves mandate and bare mandate doors fail while concrete agent cases pass."
   ],
   "evidence": [
     ".research/uninterrupted-independent-approval-audit-20261007.md",
@@ -37,12 +38,13 @@
     ".research/resumed-completion-20261007.json",
     ".research/approval-current-contract-acceptance-20261007.json",
     ".research/cold-reload-conversation-trust-repair-20261007.json",
-    ".research/cold-trust-source-review-20261007.json"
+    ".research/cold-trust-source-review-20261007.json",
+    ".research/cold-trust-native-acceptance-20261007.json"
   ],
   "verification": {
     "source": "PASS fresh independent cold trust source review86ca7beb; baseline3 intended assertion failures, constant trust gut7 assertion failures then byte-identical restoration and8 guards GREEN. Earlier mode/parallel/Pilot/concurrent guards remain covered.",
     "local_checks": "PASS admitted pnpm compile and all167 handler catalog imports after canonical identity imports. Prior current full lint passes; updated automatic CI ongoing.",
-    "native": "PASS five real cases on 0.2.397: Act first/repeat, Ask remember before effect, Ask remembered repeat, same-chat warm reopen. FAIL same-chat full extension reload: worker and panel replaced, exact original conversation reopened, ordinary action prompted. Pilot and parallel/concurrent native remain unverified.",
+    "native": "PASS6 real Chat checks on corrected source11564fe7/CI37731510284/artifact11530615740. Actual worker/panel replacement and same saved-chat warm/full reload verified. Pilot sends Ask and correctorg butHTTP422 before action/approval; canonical target routing repair in progress. Parallel/concurrent native and Store remain unverified.",
     "release": "Pending; workspace forbids manually initiating release/build on this Mac.",
     "automatic_ci": {
       "run_id": 37694579646,
@@ -95,10 +97,22 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Durable actor/conversation cold trust source7601248b pushed; meaningful RED/GREEN and gut, typecheck/catalog, fresh source review PASS. Native updated artifact pending."
+    },
+    {
+      "at": "2026-10-08T05:38:13.684742+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Cold trust actual native PASS. Adjacent Pilot opposing-mode acceptance exposes a real HTTP422 start route mismatch before action."
+    },
+    {
+      "at": "2026-10-08T05:38:13.684742+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Bounded canonical target route repair and actual Pilot hook RED/GREEN guard; no backend field guesses."
     }
   ],
   "closure_requirement": "Guarded checks and independent native original/parallel/concurrent approvals/Ask control/Pilot opposing modes with warm and full reload proof; source tests alone cannot close.",
-  "next_action": "Exact updated automatic CI artifact independent Chat warm/full saved-chat reload and Pilot acceptance. Parallel/concurrent native and Store installation remain separate pending gates.",
+  "next_action": "Finish canonical Pilot request routing repair, independent review and exact new automaticCI artifact Pilot/return-to-Chat retest. Parallel/concurrent native and Store installation remain separate gates.",
   "review_queue_id": "bf959dba-5441-45a1-b06e-ec013cb21fb5",
   "code_shas": [
     "15df9e3571b526a42b4e61980ebcc865c644ee6b",
