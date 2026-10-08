@@ -17672,6 +17672,16 @@
               "new_acceptance_credit": false,
               "detail": "New fresh-recapture/manual re-audit criterion was not reached; prior manual-button subtarget repeated. Live Wikipedia internal links changed 1783 to 1784 at prerequisite source-stability assertion; no new acceptance credit.",
               "limits": "Live external fixture changed during driver samples; T02 fresh recapture and T14 social copy unreached. Earlier bounded results remain intact. No current-main or Store result."
+            },
+            {
+              "run_id": "37739519875",
+              "auth_mode": "guest",
+              "resource_valid": false,
+              "acceptance_credit": false,
+              "result": "Controlled T02/T14 observations precede later dynamic-page stability refusal; CPU-pending journal ends invalid. No acceptance or closure credit.",
+              "evidence": [
+                ".research/seo170-native-20261008.json"
+              ]
             }
           ]
         },
@@ -18332,6 +18342,16 @@
               "new_acceptance_credit": false,
               "detail": "Resource-valid native attempt stopped at public Wikipedia DOM source-stability assertion: internal links changed 1783 to 1784 during manual re-audit. Previously passed detail subtargets were repeated; no new case credit or product defect established.",
               "limits": "Live external fixture changed during driver samples; T02 fresh recapture and T14 social copy unreached. Earlier bounded results remain intact. No current-main or Store result."
+            },
+            {
+              "run_id": "37739519875",
+              "auth_mode": "guest",
+              "resource_valid": false,
+              "acceptance_credit": false,
+              "result": "Controlled T02/T14 observations precede later dynamic-page stability refusal; CPU-pending journal ends invalid. No acceptance or closure credit.",
+              "evidence": [
+                ".research/seo170-native-20261008.json"
+              ]
             }
           ]
         },
@@ -18446,6 +18466,16 @@
               "new_acceptance_credit": false,
               "detail": "Social copy, feedback and actual clipboard before/after were not reached. Driver stopped at prerequisite live Wikipedia source-stability assertion (internal links 1783 to 1784); no new acceptance credit.",
               "limits": "Live external fixture changed during driver samples; T02 fresh recapture and T14 social copy unreached. Earlier bounded results remain intact. No current-main or Store result."
+            },
+            {
+              "run_id": "37739519875",
+              "auth_mode": "guest",
+              "resource_valid": false,
+              "acceptance_credit": false,
+              "result": "Controlled T02/T14 observations precede later dynamic-page stability refusal; CPU-pending journal ends invalid. No acceptance or closure credit.",
+              "evidence": [
+                ".research/seo170-native-20261008.json"
+              ]
             }
           ]
         }

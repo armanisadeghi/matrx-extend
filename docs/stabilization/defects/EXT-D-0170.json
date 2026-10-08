@@ -8,7 +8,7 @@
   "severity": "S3: lost independent test coverage, product fault unconfirmed",
   "priority": "P1",
   "state": "fixed",
-  "owner": "root/seo170_native",
+  "owner": "root",
   "preconditions": [
     "Frozen development397/sourcecedcec02/CI37724859892/artifact11527132614; native driver9295e037 includes reviewed3dcf2903; hosted ARM laneA."
   ],
@@ -28,7 +28,9 @@
     ".research/seo-sequence-guard-fix-20261008.json",
     ".research/seo-sequence-final-peer-20261008.json",
     ".research/seo-sequence-guard-escalation-20261008.json",
-    ".research/seo170-escalation-peer-20261008.json"
+    ".research/seo170-escalation-peer-20261008.json",
+    ".research/seo170-native-20261008.json",
+    ".research/seo170-native-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -56,7 +58,7 @@
       "reason": "Actual driver reordered and original direct-return/swap/omission guard findings addressed; fresh source review confirms current structural order. Exact focused CI success. Native retest outstanding."
     }
   ],
-  "next_action": "root/seo170_native owns one guarded hosted retest; independent native peer must confirm controlled T02/T14 are reached before closure.",
+  "next_action": "Independent peer84ea3d00 confirms zero acceptance credit. Next native attempt must change host/execution conditions after preflight, preserve frozen product and original oracle. No unchanged hosted retry or closure from invalid observations.",
   "closure_requirement": "Independent source review plus resource-valid native execution reaching controlledT02/T14; unstablepublicfixture still accurately reported. No producthealthpromotion from sourceordering alone.",
   "source_candidate": "510538cc",
   "review_rounds": [
@@ -83,5 +85,14 @@
     "disposition": "Accept bounded guard with explicit limitation; no such bypass found in current driver. This guard protects observed direct-return/swap/omission regressions, not arbitrary JavaScript reachability. Native execution remains mandatory for closure. Stop source-review loop at published breaker.",
     "cost_if_wrong": "Future nested control-flow regression could evade this guard; native missing-target receipt must prevent closure.",
     "review_commit": "0101dcec"
+  },
+  "latest_native_attempt": {
+    "run_id": "37739519875",
+    "auth_mode": "guest",
+    "resource_valid": false,
+    "acceptance_credit": false,
+    "result": "Controlled T02/T14 observations precede later dynamic-page stability refusal; CPU-pending journal ends invalid. No acceptance or closure credit.",
+    "evidence": [".research/seo170-native-20261008.json"],
+    "independent_review": ".research/seo170-native-peer-20261008.json"
   }
 }
