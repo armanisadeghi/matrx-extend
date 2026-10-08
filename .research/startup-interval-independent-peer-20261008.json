@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "source_commit": "364c2ca0c7d4fd63024ac6075937e6ea503f398a",
+  "reviewer_role": "independent_peer_no_authorship",
+  "verdict_a_source_target_conformance": {
+    "status": "PARTIAL",
+    "evidence": [
+      "The enabled path starts a read-only ps capture immediately before browser_spawn and finishes after connectNativeStartupOwnedCdp succeeds or throws; elapsedMs is captured before the post-capture read.",
+      "The unchanged child spawn arguments, owned CDP deadline, guard thresholds, and outer finally cleanup remain in place. With MATRX_STARTUP_INTERVAL_DIAGNOSTIC unset, no process capture runs.",
+      "parseProcessTimes retains executable basenames rather than command arguments; output separates stable category CPU deltas from newly appeared process lifetime CPU and labels its diagnostic-only limits."
+    ],
+    "finding": "The finish call is only in the inner CDP try/catch. A synchronous spawn() exception after the before snapshot enters the outer finally without emitting BROWSER_STARTUP_CPU_INTERVAL, so that startup failure has no bracket. Tests do not exercise this harness path.",
+    "native_verification": "UNVERIFIED: no native browser or hosted runner was launched in this peer review."
+  },
+  "verdict_b_doctrine_and_test_quality": {
+    "status": "PARTIAL",
+    "evidence": [
+      "The helper reuses the canonical parseProcessTimes/processTimeBracket and leaves the existing resource guard as the sole verdict.",
+      "Nine focused helper/attribution/hosted tests passed, the owned CDP deadline test passed, and scoped Biome check passed.",
+      "The reported RED mutation catches omission of newborn Chrome, but the new two-test helper suite has no real harness success/failure callsite assertion and no test proving an observation failure leaves startup outcome and cleanup intact."
+    ],
+    "recommendation": "Add a seam covering actual harness spawn-to-CDP success and failure instrumentation, including synchronous spawn failure or explicitly classify it as unavailable, and prove that diagnostic failures cannot change browser startup behavior."
+  },
+  "commands": [
+    "node --test scripts/test-startup-process-interval.mjs scripts/test-startup-interval-attribution.mjs scripts/test-hosted-startup-interval-diagnostic.mjs",
+    "node --test tests/browser/native-cdp-startup-deadline.test.mjs",
+    "pnpm exec biome check scripts/startup-process-interval.mjs scripts/test-startup-process-interval.mjs tests/browser/native-sidepanel-qa-harness.mjs"
+  ]
+}
