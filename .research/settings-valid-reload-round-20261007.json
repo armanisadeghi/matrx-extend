@@ -834,5 +834,6 @@
     "No current-main or Store acceptance is established by the frozen 0.2.391 artifact."
   ],
   "evidence_directory": ".research/settings-valid-reload-round-20261007-originals",
-  "next_action": "Escalate exact hosted watchdog measurements for a different host strategy; do not retry in lane B or count any cases from this run."
+  "next_action": "Escalate exact hosted watchdog measurements for a different host strategy; do not retry in lane B or count any cases from this run.",
+  "artifact_contents_note": "The downloaded workflow artifact also included three stale 37105304739 journals. They are preserved in the originals directory for source fidelity but are excluded from all current-run verdicts; only hosted-package/browser/guest-37718106224-1 are the required current journals."
 }
