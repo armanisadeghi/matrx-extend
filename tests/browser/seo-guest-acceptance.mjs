@@ -15,6 +15,7 @@ import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
 import {
+  pollSocialFeedback,
   runCopyCheckThenRecapture,
   socialCopyButtonObservation,
   verifyManualRecapture,
@@ -337,21 +338,8 @@ async function copySocialTags({ panel, browserSession, panelTarget }, source, ph
     feedbackSamples.push(observation);
     return observation;
   };
-  let feedback = await sample();
-  if (!feedback.check && !feedback.failed) {
-    try {
-      feedback = await waitFor(
-        `social_${phase}_copy_feedback`,
-        sample,
-        (state) => state?.check || state?.failed,
-        1500,
-      );
-    } catch (error) {
-      if (!String(error?.message).startsWith(`social_${phase}_copy_feedback_not_observed:`))
-        throw error;
-      feedback = feedbackSamples.at(-1);
-    }
-  }
+  enter(`social_${phase}_copy_feedback`);
+  const { state: feedback, iconObserved } = await pollSocialFeedback(sample, { timeoutMs: 1500 });
   report.social_copy_feedback ??= [];
   report.social_copy_feedback.push({ phase, samples: feedbackSamples });
   advance(`social_${phase}_feedback_sampled`, {
@@ -361,6 +349,7 @@ async function copySocialTags({ panel, browserSession, panelTarget }, source, ph
     check: feedback.check,
     failed: feedback.failed,
     idle: feedback.idle,
+    iconObserved,
   });
   await panel.send('Page.bringToFront');
   const clipboardObservation = {};

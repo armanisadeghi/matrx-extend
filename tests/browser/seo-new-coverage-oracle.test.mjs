@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   expectedMissingSocialTags,
+  pollSocialFeedback,
   runCopyCheckThenRecapture,
   socialCopyButtonObservation,
   verifyManualRecapture,
@@ -134,4 +135,69 @@ test('copy case failure continues independent recapture; guard stop does not', a
     /resource_stop/,
   );
   assert.deepEqual(calls, ['guard-stop']);
+});
+
+test('actual feedback poll distinguishes a missed icon from a fatal native read', async () => {
+  let tick = 0;
+  const missed = await pollSocialFeedback(async () => ({ check: false, failed: false }), {
+    timeoutMs: 200,
+    intervalMs: 100,
+    now: () => tick,
+    sleep: async (ms) => {
+      tick += ms;
+    },
+  });
+  assert.deepEqual(missed, { state: { check: false, failed: false }, iconObserved: false });
+
+  tick = 0;
+  let reads = 0;
+  const observed = await pollSocialFeedback(
+    async () => {
+      reads += 1;
+      return { check: reads === 2, failed: false };
+    },
+    {
+      timeoutMs: 200,
+      intervalMs: 100,
+      now: () => tick,
+      sleep: async (ms) => {
+        tick += ms;
+      },
+    },
+  );
+  assert.deepEqual(observed, { state: { check: true, failed: false }, iconObserved: true });
+
+  tick = 0;
+  let clipboardRead = false;
+  let recaptureStarted = false;
+  await assert.rejects(
+    () =>
+      runCopyCheckThenRecapture(
+        async () => {
+          let samples = 0;
+          await pollSocialFeedback(
+            async () => {
+              samples += 1;
+              if (samples === 2) throw new Error('lost_target');
+              return { check: false, failed: false };
+            },
+            {
+              timeoutMs: 200,
+              intervalMs: 100,
+              now: () => tick,
+              sleep: async (ms) => {
+                tick += ms;
+              },
+            },
+          );
+          clipboardRead = true;
+        },
+        async () => {
+          recaptureStarted = true;
+        },
+      ),
+    /lost_target/,
+  );
+  assert.equal(clipboardRead, false);
+  assert.equal(recaptureStarted, false);
 });

@@ -45,6 +45,28 @@ export function socialCopyButtonObservation(pane, label) {
   };
 }
 
+// A missing transient icon is observable; an unreadable native target is not.
+// Unlike the shared general waitFor, this boundary never converts read errors
+// into ordinary false samples before the clipboard or T02 actions run.
+export async function pollSocialFeedback(
+  read,
+  {
+    timeoutMs,
+    intervalMs = 100,
+    now = Date.now,
+    sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  },
+) {
+  const deadline = now() + timeoutMs;
+  let state;
+  for (;;) {
+    state = await read();
+    if (state?.check || state?.failed) return { state, iconObserved: true };
+    if (now() >= deadline) return { state, iconObserved: false };
+    await sleep(intervalMs);
+  }
+}
+
 export function verifySocialCopyOutcome(actual, source, { feedbackFailed, previousClipboard }) {
   let verified;
   try {
