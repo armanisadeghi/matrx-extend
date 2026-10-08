@@ -1,0 +1,8 @@
+{
+  "behavior": "Authentication secret JSON parsing failed before package/browser setup.",
+  "error_code": "d87_auth_secret_invalid",
+  "product_request_or_fixture_write": false,
+  "raw_log_or_credentials_retained": false,
+  "staging_semantics": "gh secret set --body - treats hyphen as the --body value; stdin is used only when --body is omitted.",
+  "step": "Require selected authentication before browser setup"
+}
