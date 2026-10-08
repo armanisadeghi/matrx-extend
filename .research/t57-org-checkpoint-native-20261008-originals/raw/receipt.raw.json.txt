@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1012-T57",
+  "defect_id": "EXT-D-0047",
+  "status": "unverified",
+  "stage": "signin",
+  "target": {
+    "host": "hn.algolia.com",
+    "public": true,
+    "injected_fetch": false
+  },
+  "artifact": {
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "version": "0.2.407"
+  },
+  "capture": null,
+  "capture_observations": {},
+  "saved_result": null,
+  "owned_recipe": null,
+  "auth_diagnostic": {
+    "phase": "admin_rendered_identity",
+    "outcome": "rendered_identity_unobserved",
+    "web_identity_verified": true,
+    "storage_profile_matches_web": true,
+    "storage_admin_flag": true,
+    "storage_access_token_present": true,
+    "rendered_admin_email": true,
+    "rendered_admin_role": true,
+    "rendered_sign_out": true,
+    "rendered_organization_selected": true,
+    "rendered_organization_matches_storage": false
+  },
+  "click_observations": [],
+  "failure": {
+    "name": "Error",
+    "stage": "signin",
+    "message_code": "d87_rendered_identity_not_observed"
+  },
+  "terminal_budget": {
+    "capture_window_ms": 20000,
+    "cleanup_ms": 20000,
+    "delivery_ms": 10000,
+    "poll_ms": 100,
+    "timeout_ms": 50000,
+    "source_sha256": {
+      "runner": "ec8af7d4e75da1997c2dcb3064b8484fe26bae4d1d3413b56bebd3e88fd93046",
+      "core": "c65b4678be7e49829f4f346926d9ff9dbdce8b7b8506be23565abf644dba3596",
+      "handler": "fa1eb3990d5611c597004b23999829d42d3833a6765f79d3865bedc8267d62cb",
+      "panelDriver": "d0262fc0057d8f170d5ad7e5d3e51d4c9f877aaeaae1e15dd40c0d5453c4c255"
+    }
+  },
+  "native_stage": "exercise_panel",
+  "auth_stage": "admin_rendered_identity"
+}

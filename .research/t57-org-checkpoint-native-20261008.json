@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-08",
+  "task_id": "EXT-F-1012-T57",
+  "lane": "A",
+  "scope": "One hosted native T57 showcase-d47-public-admin attempt on the frozen development artifact after the independently accepted organization checkpoint; no build, release, deployment, product, or harness edit.",
+  "run": {
+    "id": 37763007487,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37763007487",
+    "status": "completed",
+    "conclusion": "failure",
+    "checkout_sha": "f316c34ddf172f4fc267e858973ad4faf831ccc7",
+    "checkout_includes_checkpoint_sha": "ad771d37c6add55dedaf31730e4b5c859570bf67",
+    "checkout_includes_indexing_repair_sha": "a43ed74c",
+    "acceptance_case": "showcase-d47-public-admin",
+    "d47_public_race_preflight": true,
+    "runner_label": "macos-15",
+    "attempt_count": 1
+  },
+  "frozen_artifact": {
+    "ci_run_id": 37754055905,
+    "artifact_id": 11539827040,
+    "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+    "tree_sha256": "f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "version": "0.2.407",
+    "exact_import_observed_in_hosted_log": true
+  },
+  "native_receipt": {
+    "stage": "signin",
+    "auth_stage": "admin_rendered_identity",
+    "message_code": "d87_rendered_identity_not_observed",
+    "web_identity_verified": true,
+    "storage_profile_matches_web": true,
+    "storage_admin_flag": true,
+    "storage_access_token_present": true,
+    "rendered_admin_email": true,
+    "rendered_admin_role": true,
+    "rendered_sign_out": true,
+    "rendered_organization_selected": true,
+    "rendered_organization_matches_storage": false,
+    "capture": null,
+    "saved_result": null
+  },
+  "resource_journals": {
+    "hosted_package": {
+      "run_id": "hosted-package-37763007487-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid"
+    },
+    "hosted_browser": {
+      "run_id": "hosted-browser-37763007487-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid"
+    },
+    "hosted_guest": {
+      "run_id": "hosted-guest-37763007487-1",
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid",
+      "watchdog_observation": "one RESOURCE_CPU_HIGH_LOAD_BUSY pending sample; final journal independently decides invalid"
+    }
+  },
+  "credential_lifecycle": {
+    "canonical_private_preflight": "passed before staging",
+    "temporary_secret_names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "both_deleted_immediately_after_terminal": true,
+    "independent_name_listing_absent": true,
+    "private_admin_source": "existing aidream dotenv at point of use",
+    "approved_organization_fixture_mode": "0600",
+    "credential_values_retained": false
+  },
+  "originals": {
+    "artifact_id": 11543920349,
+    "artifact_digest": "sha256:baa5023d3e0b24ca4937ca2e94e4d0ab43eb976e3cce7b9582c20e751c38b60b",
+    "private_recursive_download": "/Volumes/Samsung2TB/.stabilization-scratch/t57-org-checkpoint-native-37763007487",
+    "tracked_raw_directory": ".research/t57-org-checkpoint-native-20261008-originals/raw",
+    "raw_sha256": {
+      "receipt.raw.json.txt": "587bcf1b5cc8c399db407626c5d630580530a1587fc5803ffe796e89c92f7032",
+      "hosted-package-37763007487-1.jsonl": "5df97d7826472d604aa22bbd180703c72b84d0c052cfcaaef66aa4750d39f876",
+      "hosted-browser-37763007487-1.jsonl": "03cf2e037ca707878713bf69e68c91487b2355fb626424d0fb7b371e136c4327",
+      "hosted-guest-37763007487-1.jsonl": "c01593f74e031441ae7301cdfce7766708f9f3508895f37dde1ac458e449dd1e",
+      "run.raw.json": "036c1a32b13c3363db619f17b2e135401fb2b831ec4f497b2f41cb88fbf24a4d",
+      "artifacts.raw.json": "3991b8862f39f18ab7fd4499a32f462cf00111d943f7d463fdd9f5b810f7f2a8"
+    },
+    "private_failed_step_log_sha256": "891401456a46ae68bcaac662efc3ecccd0573b53087a7cba69b061a7881e4fec"
+  },
+  "interpretation": "Native sign-in stopped at the existing rendered-identity check before the repaired organization checkpoint and before the public Network race. Its storage-match predicate is false while the other listed admin identity checks are true. This is consistent with the documented account/start-up membership ladder and absent device-choice storage, but the guest resource decision is invalid; no product defect or organization/header pass is established.",
+  "claim_limit": "T57 original Network-race acceptance remains unverified. One informative attempt only; no rerun. The accepted source checkpoint was not exercised natively.",
+  "next_action": "Repair or instrument the upstream rendered-identity harness to accept a verified load-ladder selection without relying on device-choice storage, independently review that precise gate, then consider a separately authorized fresh native attempt. Preserve the approved UUID and product-generated header comparison in the later T57 checkpoint."
+}
