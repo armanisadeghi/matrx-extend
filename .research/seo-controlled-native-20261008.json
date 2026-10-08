@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0170 controlled native acceptance partition",
+  "status": "bounded_native_pass",
+  "owned_attempt": {
+    "run_id": 37746166364,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37746166364",
+    "job_id": 113208058763,
+    "conclusion": "success",
+    "workflow_checkout_sha": "8320bd56fbb73f149a7eaac0ee76f8641e16f3e1",
+    "inputs": {
+      "acceptance_lane": "A",
+      "runner_label": "macos-15",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "controlled",
+      "development_run_id": 37724859892,
+      "development_artifact_id": 11527132614
+    },
+    "active_owned_job_at_handoff": false
+  },
+  "source_admission": {
+    "reviewed_source_commits": [
+      "ad3a7c3a394a07bf5ea2518d89073719e3b37b60",
+      "b6b4eb0e88d36bbdf5a8d09f79d9169064bce52e",
+      "8b796abd9ac148f096d06241ece011aa029286a5"
+    ],
+    "independent_peer": ".research/seo-controlled-batch-peer-20261008.json",
+    "focused_ci": {
+      "run_id": 37745523179,
+      "head_sha": "e69745283b59426ed5fc6532871f4c1609c10fda",
+      "conclusion": "success",
+      "result": "102 passed, 0 failed, including YAML lane admission"
+    },
+    "checkout_delta": "The hosted workflow, SEO driver and route, profile route, and lane-admission guard were unchanged from the focused CI SHA through the dispatch checkout. The checked package.json difference was version 0.2.403 to 0.2.404 only. This driver checkout is separate from the imported product artifact."
+  },
+  "frozen_product": {
+    "ci_run_id": 37724859892,
+    "ci_conclusion": "success",
+    "artifact_id": 11527132614,
+    "artifact_name": "matrx-extend-development-test-cedcec02a3fb4e52a3f63ebfda8728809eff418a-37724859892-1",
+    "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+    "version": "0.2.397",
+    "tree_sha256": "1035cd28ce5a63ac6233626f35102f016f7c7e7e0ef0717d259a3ec40fc856ed",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "build_before_after_exact_match": true
+  },
+  "native_observation": {
+    "receipt_status": "partial",
+    "target_entries": 18,
+    "target_failures": 0,
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "excluded_phases": ["T09 volatile public detail", "T09 optional metadata fixture"],
+    "controlled_targets": {
+      "T14_before_reaudit": {
+        "status": "pass",
+        "copied_tags": 5,
+        "exact_clipboard_match": true,
+        "feedback_observed": true
+      },
+      "T02_changed_metadata_recapture": {
+        "status": "pass",
+        "public_title_changed": true,
+        "public_description_changed": true,
+        "old_audit_visible_before_click": true,
+        "native_title_matches_changed_public_dom": true,
+        "trusted_reaudit_click": true
+      },
+      "T14_after_reaudit": {
+        "status": "pass",
+        "copied_tags": 6,
+        "exact_clipboard_match": true,
+        "feedback_observed": true
+      }
+    },
+    "last_safe_stage": "controlled_public_source_restored",
+    "current_operation_at_receipt": "build_recheck"
+  },
+  "resource_decisions": {
+    "hosted_package": "valid; admitted; resourceInvalid=false; exitCode=0",
+    "hosted_browser": "valid; admitted; resourceInvalid=false; exitCode=0",
+    "hosted_guest": "valid; admitted; resourceInvalid=false; exitCode=0"
+  },
+  "originals": {
+    "artifact_id": 11535749411,
+    "artifact_name": "hosted-guest-37746166364-1",
+    "root": ".research/seo-controlled-native-20261008-originals",
+    "selection": "Downloaded artifact recursively. Kept the byte-exact owned SEO receipt, all three journals for run 37746166364, and the two current-run screenshots. Excluded six historical journals for runs 37724762467 and 37105304739 carried by the checkout.",
+    "sha256": {
+      "seo-guest-acceptance.original.json.txt": "c84acf5c52fc0a392fa0a2b44f77c049bf70ed0060acc384297f63b66db366e9",
+      "hosted-package-37746166364-1.jsonl": "bf10d4bc2b91c1c610d5204adfbb82c28aec9daf0eb9f530f00de499d630ba57",
+      "hosted-browser-37746166364-1.jsonl": "886835c1087867962a946a63479f8013cf9f698fb632f014129dcbc6bf2a4df4",
+      "hosted-guest-37746166364-1.jsonl": "df78eeb37f716e8c7b9a547476c1756b44ca896a1517a6b486de1bb6406ecc92",
+      "native-side-panel.png": "e057f1b26a910b74f7f87b4255fd33454ef2462051d610d33f014c419f78ea13",
+      "normal-target-after-open.png": "e32004dabcfdf40f2b0c3a957b23d7619a6c84adbc806bce2b1ad6c919af9d89"
+    }
+  },
+  "limits": [
+    "This is bounded native evidence for the controlled guest T02/T14 sequence on frozen development version 0.2.397; the receipt remains partial and does not certify whole SEO.",
+    "The excluded volatile T09 public-detail and optional metadata phases have no credit from this run.",
+    "Other deferred SEO parts, member/admin modes, current main, and Store remain unverified by this attempt.",
+    "This report does not itself promote inventory cells or close D170; canonical coordinator/defect owners decide those transitions."
+  ]
+}

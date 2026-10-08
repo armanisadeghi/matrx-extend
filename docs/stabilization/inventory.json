@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T06:30:08.992059+00:00",
+  "updated_at": "2026-10-08T08:05:47.429235+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -17546,23 +17546,26 @@
           "results": {
             "guest": {
               "status": "partial",
-              "passed_subtargets": [
-                "manual_button_returns_to_current_page"
-              ],
-              "unverified_dimensions": [
-                "fresh capture and updated audit",
-                "running button state",
-                "stale advice cleared",
-                "failure report"
-              ],
-              "run_id": "37731560399",
+              "run_id": "37746166364",
               "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
               "build_version": "0.2.397",
               "evidence": [
-                ".research/seo397-guest-native-20261007.json",
-                ".research/seo397-native-peer-20261007.json"
+                ".research/seo-controlled-native-20261008.json",
+                ".research/seo-controlled-native-peer-20261008.json"
               ],
-              "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes."
+              "release_scope": "Frozen unpacked development artifact only; no current-main, Store or member/admin acceptance.",
+              "passed_subtargets": [
+                "manual_button_returns_to_current_page",
+                "changed_public_title_recaptured_after_trusted_reaudit"
+              ],
+              "unverified_dimensions": [
+                "displayed description directly matches changed page",
+                "running button state",
+                "stale advice cleared",
+                "failure report",
+                "reload"
+              ],
+              "detail": "Changed page title/description with old audit still visible before click; native audit title refreshed after trusted Re-audit. Description refresh has indirect subsequent clipboard evidence, not direct description-display proof."
             }
           },
           "result_history": [
@@ -17641,9 +17644,35 @@
                 ],
                 "release_scope": "Exact frozen guest development artifact; broaderdimensions/member/admin/Store unverified."
               }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "manual_button_returns_to_current_page"
+                ],
+                "unverified_dimensions": [
+                  "fresh capture and updated audit",
+                  "running button state",
+                  "stale advice cleared",
+                  "failure report"
+                ],
+                "run_id": "37731560399",
+                "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+                "build_version": "0.2.397",
+                "evidence": [
+                  ".research/seo397-guest-native-20261007.json",
+                  ".research/seo397-native-peer-20261007.json"
+                ],
+                "release_scope": "Bounded guest native acceptance on exact frozen CI development artifact; no full case, current-main, or Store verdict. Member/admin remain separate unverified modes."
+              }
             }
           ],
-          "defect_ids": ["EXT-D-0169", "EXT-D-0170"],
+          "defect_ids": [
+            "EXT-D-0169",
+            "EXT-D-0170"
+          ],
           "attempt_history": [
             {
               "mode": "guest",
@@ -17693,6 +17722,19 @@
                 ".research/seo-local397-native-20261008.json",
                 ".research/seo-local397-peer-20261008.json"
               ]
+            },
+            {
+              "at": "2026-10-08T08:05:47.429235+00:00",
+              "mode": "guest",
+              "run_id": "37746166364",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "evidence": [
+                ".research/seo-controlled-native-20261008.json",
+                ".research/seo-controlled-native-peer-20261008.json"
+              ],
+              "detail": "Changed page title/description with old audit still visible before click; native audit title refreshed after trusted Re-audit. Description refresh has indirect subsequent clipboard evidence, not direct description-display proof."
             }
           ]
         },
@@ -18459,7 +18501,10 @@
             "warm",
             "reload"
           ],
-          "defect_ids": ["EXT-D-0169", "EXT-D-0170"],
+          "defect_ids": [
+            "EXT-D-0169",
+            "EXT-D-0170"
+          ],
           "attempt_history": [
             {
               "mode": "guest",
@@ -18509,8 +18554,45 @@
                 ".research/seo-local397-native-20261008.json",
                 ".research/seo-local397-peer-20261008.json"
               ]
+            },
+            {
+              "at": "2026-10-08T08:05:47.429235+00:00",
+              "mode": "guest",
+              "run_id": "37746166364",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "evidence": [
+                ".research/seo-controlled-native-20261008.json",
+                ".research/seo-controlled-native-peer-20261008.json"
+              ],
+              "detail": "Actual clipboard matched five then six independently expected tags; feedback observed before and after changed-page Re-audit."
             }
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "run_id": "37746166364",
+              "source_sha": "cedcec02a3fb4e52a3f63ebfda8728809eff418a",
+              "build_version": "0.2.397",
+              "evidence": [
+                ".research/seo-controlled-native-20261008.json",
+                ".research/seo-controlled-native-peer-20261008.json"
+              ],
+              "release_scope": "Frozen unpacked development artifact only; no current-main, Store or member/admin acceptance.",
+              "passed_subtargets": [
+                "exact_clipboard_matches_current_missing_tags_before_reaudit",
+                "exact_clipboard_matches_current_missing_tags_after_reaudit",
+                "copy_feedback_observed"
+              ],
+              "unverified_dimensions": [
+                "button absent when no snippet applies",
+                "other social page states",
+                "reload"
+              ],
+              "detail": "Actual clipboard matched five then six independently expected tags; feedback observed before and after changed-page Re-audit."
+            }
+          }
         }
       ],
       "cells": {

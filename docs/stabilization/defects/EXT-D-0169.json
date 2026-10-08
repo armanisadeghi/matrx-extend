@@ -7,7 +7,7 @@
   "title": "Social snippet copy feedback not observed in native guest acceptance",
   "severity": "S2: social-copy verification blocks following reaudit checks; product impact unconfirmed",
   "priority": "P1",
-  "state": "fixed",
+  "state": "retest-pass",
   "owner": "root",
   "preconditions": [
     "Frozen development0.2.397/sourcecedcec02a3fb4e52a3f63ebfda8728809eff418a, CI37724859892/artifact11527132614; guest ARM macos-15; driver a58478db includes3658c0bc."
@@ -33,7 +33,9 @@
     ".research/seo170-native-20261008.json",
     ".research/seo170-native-peer-20261008.json",
     ".research/seo-local397-native-20261008.json",
-    ".research/seo-local397-peer-20261008.json"
+    ".research/seo-local397-peer-20261008.json",
+    ".research/seo-controlled-native-20261008.json",
+    ".research/seo-controlled-native-peer-20261008.json"
   ],
   "reproducibility": "One resource-valid native attempt; no blind retry. Package/browser valid, guest admitted and healthy child_failed exit1, resourceInvalid=false.",
   "cause": "Source-confirmed feedback selector onlytitle whileclick accepts tooltip-lifted data-matrx-title; actualnativecause still unknown because pointerdown can restoretitle and clipboardwrite mayfail.",
@@ -61,9 +63,15 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Astra escalation repaired coherent observed-copy boundary; freshpeerb49abdae accepts both priorfindings addressed,27checks and meaningfulmutations; focusedCI37736350529 success exact3dcf2903. Nativecause/behavior pending."
+    },
+    {
+      "at": "2026-10-08T08:05:47.429235+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh independent native evidence review accepts controlled guest copy/reaudit execution on frozen397; original timeout/sequence blockage did not recur."
     }
   ],
-  "next_action": "Native acceptance remains open. Configure proven runtime paths, verify real resource admission, then retest; current local disk floor and hosted API availability prevent launch. Independent procedure work continues. No threshold weakening or closure from setup evidence.",
+  "next_action": "Bounded native verification blocker retests pass, but keep closure pending: original native timeout cause is not established and broader social-copy/reload states remain unverified. Do not characterize this as a confirmed product defect repair.",
   "repair_review_rounds": [
     {
       "commit": "4094c08d",
@@ -80,14 +88,14 @@
   ],
   "fix_commit": "3dcf290381afd7a76eea45794af6a10a617117e9",
   "latest_native_attempt": {
-    "run_id": "seo-local397-native-20261008",
+    "run_id": "37746166364",
     "auth_mode": "guest",
     "resource_valid": true,
-    "acceptance_credit": false,
-    "result": "Admitted child exited before browser/profile creation after artifact identity; zero targets. Playwright setup cause is source/environment inference because original exception absent. Corrected-runtime preflights refused disk floor; corrected browser never launched.",
+    "acceptance_credit": "bounded controlled T02/T14 subtargets only",
+    "result": "Feedback and actual clipboard before/after changed-title Re-audit pass. All three journals valid; frozen397 build identity unchanged. T09 volatile phases excluded, not passed.",
     "evidence": [
-      ".research/seo-local397-native-20261008.json",
-      ".research/seo-local397-peer-20261008.json"
+      ".research/seo-controlled-native-20261008.json",
+      ".research/seo-controlled-native-peer-20261008.json"
     ]
   }
 }
