@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { withRecordsPositiveFixture } from './records-positive-fixture.mjs';
 import {
   assertRecordsVisibleCompletion,
   enterRecordsInput,
@@ -52,6 +53,8 @@ const report = {
   result: null,
   metadata_search: null,
   negative_reads: [],
+  positive_reads: [],
+  fixture_cleanup: null,
   invalid_input: null,
   reload: null,
   failure_code: null,
@@ -598,6 +601,101 @@ try {
           positive_read_verified: false,
         });
       }
+      stage('records_positive_fixture');
+      const fixture = await withRecordsPositiveFixture({
+        panel,
+        evaluate,
+        orgId: approved.id,
+        bearerHash: reloadBearerHash,
+        journalPath: `${output}.fixture-journal.json`,
+        onStage: stage,
+        exercise: async ({ tableId, rowId, rowName }) => {
+          for (const [caseId, action, args] of [
+            ['EXT-F-4130-C04', 'record_read', { record_id: rowId }],
+            [
+              'EXT-F-4130-C05',
+              'record_aggregate',
+              { table_id: tableId, measure: 'count', match: { name: rowName } },
+            ],
+          ]) {
+            const read = { action, args };
+            await enterRecordsInput(panel, evaluate, stage, read, process.platform);
+            const result = await execute(read, reloadBearerHash, `records_positive_${action}`);
+            assert.equal(result.success, true, `records_positive_${action}_refused`);
+            assert.equal(result.output?.action, action, `records_positive_${action}_wrong_action`);
+            if (action === 'record_read') {
+              assert.equal(result.output.record?.id, rowId, 'records_positive_read_wrong_row');
+              assert.equal(
+                result.output.record?.table_id,
+                tableId,
+                'records_positive_read_wrong_table',
+              );
+              assert.equal(
+                result.output.record?.organization_id,
+                approved.id,
+                'records_positive_read_wrong_org',
+              );
+              assert.equal(
+                result.output.record?.values?.name,
+                rowName,
+                'records_positive_read_wrong_value',
+              );
+              assert.ok(
+                result.output.triples?.some(
+                  (triple) =>
+                    triple.field === 'name' &&
+                    triple.record_id === rowId &&
+                    typeof triple.field_id === 'string' &&
+                    Number.isInteger(triple.value_version),
+                ),
+                'records_positive_read_triples_missing',
+              );
+              assert.equal(result.output.withheld, undefined, 'records_positive_read_withheld');
+            } else {
+              assert.equal(
+                result.output.table_id,
+                tableId,
+                'records_positive_aggregate_wrong_table',
+              );
+              assert.equal(
+                result.output.measure,
+                'count',
+                'records_positive_aggregate_wrong_measure',
+              );
+              assert.equal(
+                result.output.buckets?.length,
+                1,
+                'records_positive_aggregate_bucket_count',
+              );
+              assert.equal(
+                result.output.buckets[0].row_count,
+                1,
+                'records_positive_aggregate_wrong_rows',
+              );
+              assert.equal(
+                result.output.buckets[0].measure?.count,
+                1,
+                'records_positive_aggregate_wrong_count',
+              );
+            }
+            report.positive_reads.push({
+              inventory_case: caseId,
+              action,
+              finished: true,
+              status: 200,
+              completion_observed: true,
+              visible: true,
+              owned_fixture_matched: true,
+            });
+          }
+        },
+      });
+      assert.equal(fixture.archived_verified, true, 'records_fixture_cleanup_unverified');
+      report.fixture_cleanup = {
+        archived_verified: true,
+        same_principal: true,
+        table_invisible: true,
+      };
     },
   });
   report.status = 'passed';
