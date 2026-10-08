@@ -11,7 +11,10 @@
   ],
   "expected": "Open the exact persisted delivered context for that turn through the canonical viewer API.",
   "actual": "GET /ai/context/delivered requires the persisted server user message_id; the extension context_receipt and optimistic message state do not supply that identity.",
-  "evidence": ["docs/stabilization/reports/oct02-agents-consumer-20261002.json"],
+  "evidence": [
+    "docs/stabilization/reports/oct02-agents-consumer-20261002.json",
+    ".research/settings-auto-scrape-native-adapter-20261008.json"
+  ],
   "severity": "S3: incomplete or misleading context inspection; not proof that Chat sending fails",
   "priority": "P2 cross-repo viewer completion after contained surfaces",
   "state": "triaged",
@@ -29,5 +32,7 @@
       "to": "triaged",
       "reason": "Package/server contracts and consumer source inspected."
     }
-  ]
+  ],
+  "related_case_ids": ["EXT-F-1003-T40"],
+  "current_source_observation": "2026-10-08: ContextRulesComposerChip also omits the package loadView callback. Package 0.29.0 Consumer action supplies the existing canonical preview/delivered loader contract; the current Values UI renders counts and a dash without it. Native current-build viewer behavior and server identity repair remain unverified. This blocks the proposed rendered-content proof for Settings T40; no new product defect ID or acceptance credit is invented."
 }

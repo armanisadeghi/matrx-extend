@@ -1,6 +1,6 @@
 {
-  "observed_at": "2026-10-08T23:04:54.231166+00:00",
-  "last_all_remotes_fetched": "2026-10-08T23:04:54.231166+00:00",
+  "observed_at": "2026-10-08T23:34:55.841652+00:00",
+  "last_all_remotes_fetched": "2026-10-08T23:34:55.841652+00:00",
   "baseline_verified_from": "/Volumes/Samsung2TB/code/.stabilization-scratch/census-provenance-ledger-baseline.json",
   "repositories": [
     {
@@ -23,11 +23,11 @@
     },
     {
       "repo": "aidream",
-      "prior_origin_main": "2afccc2cef7738257aa7e19f844587869e4ad187",
-      "origin_main": "d8a75448c463e8d8562a0e0e7ab5c2dd76cba93f",
-      "last_update": "2026-10-08T16:04:49-07:00",
-      "files_modified_since_prior_ledger": 53,
-      "pushed_to_main": "2026-10-08T16:04:49-07:00",
+      "prior_origin_main": "d8a75448c463e8d8562a0e0e7ab5c2dd76cba93f",
+      "origin_main": "41f3d783ec7fc80473de35ec4ac901602be740f9",
+      "last_update": "2026-10-08T16:34:44-07:00",
+      "files_modified_since_prior_ledger": 214,
+      "pushed_to_main": "2026-10-08T16:34:44-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -35,17 +35,17 @@
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/aidream\nHEAD d8a75448c463e8d8562a0e0e7ab5c2dd76cba93f\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/aidream\nHEAD 41f3d783ec7fc80473de35ec4ac901602be740f9\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
     {
       "repo": "ai-matrx",
-      "prior_origin_main": "639aba2eb4f0cd8a9b40e0f87c7c032f110d314a",
-      "origin_main": "d40567fd52314dd7ef2779f0b96350d42b980ef4",
-      "last_update": "2026-10-08T16:03:57-07:00",
-      "files_modified_since_prior_ledger": 10,
-      "pushed_to_main": "2026-10-08T16:03:57-07:00",
+      "prior_origin_main": "d40567fd52314dd7ef2779f0b96350d42b980ef4",
+      "origin_main": "559eb009cdb52d0500379b94b9c5ec354cc48c7b",
+      "last_update": "2026-10-08T16:33:37-07:00",
+      "files_modified_since_prior_ledger": 73,
+      "pushed_to_main": "2026-10-08T16:33:37-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -53,44 +53,46 @@
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/ai-matrx\nHEAD d40567fd52314dd7ef2779f0b96350d42b980ef4\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/ai-matrx\nHEAD 559eb009cdb52d0500379b94b9c5ec354cc48c7b\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
     {
       "repo": "matrx-extend",
-      "prior_origin_main": "56787ea2eec61b08f7060ba838dbde12119aecef",
-      "origin_main": "f36e0832d8f74f465986dcf4e6785c5701dd2d31",
-      "last_update": "2026-10-08T16:03:41-07:00",
-      "files_modified_since_prior_ledger": 5,
-      "pushed_to_main": "2026-10-08T16:03:41-07:00",
+      "prior_origin_main": "0d1b7c02e5d0c6ed34bba3d23aa45ded9cceebfc",
+      "origin_main": "5ae199cc8f86d71ac2e179f6dcb22d1ca29e2e30",
+      "last_update": "2026-10-08T16:31:28-07:00",
+      "files_modified_since_prior_ledger": 5292,
+      "pushed_to_main": "2026-10-08T16:31:28-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [
-        "M .research/settings-auto-scrape-behavior-preparation-20261008.json",
-        " M docs/stabilization/CHECKLIST.md",
-        " M docs/stabilization/COORDINATOR.md",
-        " M docs/stabilization/STATUS.html",
-        " M docs/stabilization/STATUS.md",
-        " M docs/stabilization/inventory.json",
-        " M package.json",
-        "?? .research/approval-and-autoscrape-review-20261008.json"
+        "M .research/parallel-goal-automation-20261007.json",
+        " M .research/settings-auto-scrape-behavior-preparation-20261008.json",
+        " M .research/settings-auto-scrape-native-adapter-20261008.json",
+        " M docs/stabilization/defects/EXT-D-0075.json",
+        " M docs/stabilization/defects/EXT-D-0186.json",
+        " M tests/browser/records-readonly-native-driver.test.mjs",
+        " M tests/browser/records-readonly-native-proof.mjs",
+        "?? .research/records-c06-failure-diagnosis-20261008.json",
+        "?? .research/records-c06-source-peer-20261008.json",
+        "?? .research/settings-per-choice-binding-native-peer-20261008.json"
       ],
       "stashes": [],
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD f36e0832d8f74f465986dcf4e6785c5701dd2d31\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/matrx-extend\nHEAD 5ae199cc8f86d71ac2e179f6dcb22d1ca29e2e30\nbranch refs/heads/main"
       ],
-      "exception": "Active edits: M .research/settings-auto-scrape-behavior-preparation-20261008.json;  M docs/stabilization/CHECKLIST.md;  M docs/stabilization/COORDINATOR.md;  M docs/stabilization/STATUS.html;  M docs/stabilization/STATUS.md;  M docs/stabilization/inventory.json;  M package.json; ?? .research/approval-and-autoscrape-review-20261008.json"
+      "exception": "Active edits: M .research/parallel-goal-automation-20261007.json;  M .research/settings-auto-scrape-behavior-preparation-20261008.json;  M .research/settings-auto-scrape-native-adapter-20261008.json;  M docs/stabilization/defects/EXT-D-0075.json;  M docs/stabilization/defects/EXT-D-0186.json;  M tests/browser/records-readonly-native-driver.test.mjs;  M tests/browser/records-readonly-native-proof.mjs; ?? .research/records-c06-failure-diagnosis-20261008.json; ?? .research/records-c06-source-peer-20261008.json; ?? .research/settings-per-choice-binding-native-peer-20261008.json"
     },
     {
       "repo": "matrx-local",
       "prior_origin_main": "c327ba806012b604c381ecfc47cc8a69be53522b",
-      "origin_main": "c327ba806012b604c381ecfc47cc8a69be53522b",
-      "last_update": "2026-10-08T15:47:53-07:00",
-      "files_modified_since_prior_ledger": 0,
-      "pushed_to_main": "\u2014",
+      "origin_main": "ae94862f192857aec5302189d122eab0ad60e058",
+      "last_update": "2026-10-08T16:21:03-07:00",
+      "files_modified_since_prior_ledger": 7,
+      "pushed_to_main": "2026-10-08T16:21:03-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -98,7 +100,7 @@
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/matrx-local\nHEAD c327ba806012b604c381ecfc47cc8a69be53522b\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/matrx-local\nHEAD ae94862f192857aec5302189d122eab0ad60e058\nbranch refs/heads/main"
       ],
       "exception": "None"
     },
@@ -158,11 +160,11 @@
     },
     {
       "repo": "matrx-common-docs",
-      "prior_origin_main": "581bf19258999a59fc8ce9cb3bd7a58740f503af",
-      "origin_main": "0736971d2a3e82b8263b321b2eb8746e77c557ad",
-      "last_update": "2026-10-08T16:04:03-07:00",
-      "files_modified_since_prior_ledger": 6,
-      "pushed_to_main": "2026-10-08T16:04:03-07:00",
+      "prior_origin_main": "0736971d2a3e82b8263b321b2eb8746e77c557ad",
+      "origin_main": "6f58778028a3b2dbfba1d6acd44ceaad1555d5db",
+      "last_update": "2026-10-08T16:25:12-07:00",
+      "files_modified_since_prior_ledger": 19,
+      "pushed_to_main": "2026-10-08T16:25:12-07:00",
       "branch": "main",
       "ahead_behind": "0\t0",
       "dirty_paths": [],
@@ -170,7 +172,7 @@
       "other_branches": ["main"],
       "unmerged_remote_branches": [],
       "worktrees": [
-        "worktree /Volumes/Samsung2TB/code/matrx-common-docs\nHEAD 0736971d2a3e82b8263b321b2eb8746e77c557ad\nbranch refs/heads/main"
+        "worktree /Volumes/Samsung2TB/code/matrx-common-docs\nHEAD 6f58778028a3b2dbfba1d6acd44ceaad1555d5db\nbranch refs/heads/main"
       ],
       "exception": "None"
     },

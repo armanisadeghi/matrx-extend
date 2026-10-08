@@ -1,0 +1,14 @@
+{
+  "reviewer": "root; zero Settings driver code authorship; fresh reviewer seat unavailable ENOSPC",
+  "run_id": 37858551975,
+  "status": "resource_valid_attempt_failed_no_new_per_choice_acceptance",
+  "verification": "Independently SHA256-verified original receipt and three exact-run journals; all admitted/resourceInvalid=false, package/browserexit0valid, guestexit1child_failed. Receipt build414 tree662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6.",
+  "observations": [
+    "Warm/panel preference checks retained; no new full-choice pass",
+    "Initial extension replacement succeeds; Dark selected then another worker/panel replacement succeeds",
+    "No Dark post-replacement observation/restoration criterion; subsequent full rechecks cascade",
+    "Generic catch erases the specific failing boundary; cannot attribute to product persistence or harness transport"
+  ],
+  "next": "Bounded diagnostic probe before replay; preserve safe failure substage and last enum/boolean UI/storage state; do not repeat unchanged.",
+  "limitations": "No overall health, current-main dependency build, Store or signed-in acceptance inferred."
+}
