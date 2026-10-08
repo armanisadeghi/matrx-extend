@@ -1,0 +1,18 @@
+{
+  "scope": "Independent narrow review of commit 54607f44 and the resource CPU scenario timing diagnostic. No full integration, browser, build, or native Chrome run.",
+  "verdicts": {
+    "A_diagnostic_privacy": "PASS for the dedicated resource-cpu-scenario diagnostic lines; actual CI timeout remains unverified",
+    "B_adversarial_test_and_preservation": "PASS for the focused regression test and unchanged scenario thresholds, assertions, order, and 30000 ms group timeouts; timeout-time cleanup remains unverified"
+  },
+  "findings": [
+    "The reporter now emits a bounded, deduplicated set of fixed reason codes. RESOURCE_MEASUREMENT_FAILED: plus a dynamic error message becomes RESOURCE_MEASUREMENT_FAILED; an unknown reason becomes RESOURCE_REASON_OTHER. The reporter does not copy the tested scratch path or token-like argument into its dedicated JSON lines.",
+    "The diagnostic self-test covers distinct normal, expiry, and measurement-error cases. The old raw-reasons implementation, planted with the repository mutation helper, failed the same self-test on the measurement error and secret-bearing unknown reason. The helper restored the file byte-for-byte; the current implementation passed.",
+    "Commit 54607f44 changes only reason classification and the focused self-test. It does not alter scenario order, guard thresholds, assertions, cleanup flow, or the three 30000 ms group timeouts. The one-second progress ticker, monotonic elapsed fields, stage, child close status, and cleanup status remain in the reporter.",
+    "The focused self-test directly calls scenarioDiagnostic; it does not prove cleanup after a Node timeout or establish why automatic CI timed out. Native CI remains necessary for that conclusion."
+  ],
+  "evidence": [
+    "MATRX_RESOURCE_CPU_DIAGNOSTIC_SELF_TEST=1 node --test --test-name-pattern='scenario diagnostic reports' scripts/test-stabilization-resource-cpu-integration.mjs: 1 passed, 0 failed, about 72 ms.",
+    "Controlled mutation replacing classified reasons with raw event.reasons: same focused test failed with expected versus actual diff showing the scratch path and token-like argument; plant.py reported VERDICT: RED and byte-identical restoration.",
+    "git show 54607f44 and source review of reporter, runScenario, and guard emission paths."
+  ]
+}
