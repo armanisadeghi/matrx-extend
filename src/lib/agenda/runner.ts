@@ -21,6 +21,7 @@
 
 import type { RequestInitiation } from '@/lib/api/routes/ai';
 import { log } from '@/lib/debug/log';
+import { isPackageChatMode, sendThroughPackageChat } from '@/lib/chat-target';
 import { DEFAULT_CHAT_MANDATE_REF } from '@/lib/mandates';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -95,6 +96,10 @@ export async function runTask(
     return null;
   }
   log.info('sys', `agenda: claimed run ${run.id} for task "${task.title}"`);
+
+  // Package mode: the run is a send through the shared chat; its settle comes from that send, not
+  // from the old stream events (which the package chat never emits).
+  if (isPackageChatMode()) return runThroughPackageChat(task, run);
 
   // Tab-switch + chat-store priming so the user sees the run in the chat tab.
   useSidepanelTabStore.getState().setTab('chat');
@@ -211,6 +216,42 @@ export async function runTask(
   }
 
   return run;
+}
+
+/**
+ * The package-mode run: one send through the shared chat (an AI send — callers and tests decide
+ * when it is allowed to happen). Settles the run from the send's own outcome.
+ */
+export async function runThroughPackageChat(
+  task: AgendaTask,
+  run: AgendaRun,
+  sendMessage: typeof sendThroughPackageChat = sendThroughPackageChat,
+): Promise<AgendaRun | null> {
+  const agentRef =
+    task.agent_id ?? useSettingsStore.getState().defaultAgentId ?? DEFAULT_CHAT_MANDATE_REF;
+  const target = agentRef.startsWith('mandate:')
+    ? { mandateKey: agentRef.slice('mandate:'.length) }
+    : { agentId: agentRef };
+  inFlightByTaskId.set(task.id, { run, task, unsubscribe: () => undefined });
+  try {
+    const { conversationId } = await sendMessage({
+      text: task.prompt,
+      ...target,
+      conversationId: task.persistent_conversation_id,
+    });
+    await markRunStarted(run.id, conversationId);
+    if (task.trigger_type === 'heartbeat' && !task.persistent_conversation_id) {
+      await updateTask(task.id, { persistent_conversation_id: conversationId });
+    }
+    await finishRun(run.id, 'success');
+    return run;
+  } catch (err) {
+    log.error('sys', `agenda: package-chat send failed for run ${run.id}`, err);
+    await finishRun(run.id, 'failed', { error_message: (err as Error).message });
+    return null;
+  } finally {
+    inFlightByTaskId.delete(task.id);
+  }
 }
 
 /** For UI: cancel an in-flight run we know about. */

@@ -1,0 +1,2 @@
+import{Za as e}from"./globals-CkYqf0Y5.js";import{r as t}from"./_shared-D5qLN-pz.js";import{t as n}from"./GenericRenderer-FCSaeGt4.js";import{ScrapeOverlay as r}from"./ScrapeOverlay-BCADH2UM.js";import{SearchOverlay as i}from"./SearchOverlay-Ca1vJ_u0.js";import{t as a}from"./webAction-CDoD7C6Y.js";var o=e(),s=e=>{let s=a(t(e.entry,`action`));return s===`search`?(0,o.jsx)(i,{...e}):s===`read`?(0,o.jsx)(r,{...e}):(0,o.jsx)(n,{...e})};export{s as WebOverlay};
+//# sourceMappingURL=WebOverlay-DvImNxVv.js.map

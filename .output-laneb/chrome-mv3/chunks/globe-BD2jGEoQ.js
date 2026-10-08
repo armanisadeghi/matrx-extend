@@ -1,0 +1,2 @@
+import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`globe`,size:24,node:[[`circle`,{cx:`12`,cy:`12`,r:`10`,key:`1mglay`}],[`path`,{d:`M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20`,key:`13o1zl`}],[`path`,{d:`M2 12h20`,key:`9i4pu4`}]]};r.node;var i=t(r);export{n,i as t};
+//# sourceMappingURL=globe-BD2jGEoQ.js.map

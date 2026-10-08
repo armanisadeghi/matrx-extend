@@ -1,0 +1,2 @@
+import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`chevrons-right-left`,size:24,node:[[`path`,{d:`m20 17-5-5 5-5`,key:`30x0n2`}],[`path`,{d:`m4 17 5-5-5-5`,key:`16spf4`}]]};t.node;var n=e(t);export{t as __iconData,n as default};
+//# sourceMappingURL=chevrons-right-left-Bor7wYJo.js.map

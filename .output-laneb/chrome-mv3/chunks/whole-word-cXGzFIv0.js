@@ -1,0 +1,2 @@
+import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`whole-word`,size:24,node:[[`circle`,{cx:`7`,cy:`12`,r:`3`,key:`12clwm`}],[`path`,{d:`M10 9v6`,key:`17i7lo`}],[`circle`,{cx:`17`,cy:`12`,r:`3`,key:`gl7c2s`}],[`path`,{d:`M14 7v8`,key:`dl84cr`}],[`path`,{d:`M22 17v1c0 .5-.5 1-1 1H3c-.5 0-1-.5-1-1v-1`,key:`lt2kga`}]]};r.node;var i=t(r);export{n,i as t};
+//# sourceMappingURL=whole-word-cXGzFIv0.js.map

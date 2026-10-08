@@ -1,0 +1,2 @@
+import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`navigation`,size:24,node:[[`polygon`,{points:`3 11 22 2 13 21 11 13 3 11`,key:`1ltx0t`}]]};r.node;var i=t(r);export{n,i as t};
+//# sourceMappingURL=navigation-BgAw-JV3.js.map

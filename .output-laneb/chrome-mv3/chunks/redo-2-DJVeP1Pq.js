@@ -1,0 +1,2 @@
+import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`redo-2`,size:24,node:[[`path`,{d:`m15 14 5-5-5-5`,key:`12vg1m`}],[`path`,{d:`M20 9H9.5A5.5 5.5 0 0 0 4 14.5A5.5 5.5 0 0 0 9.5 20H13`,key:`6uklza`}]]};r.node;var i=t(r);export{n,i as t};
+//# sourceMappingURL=redo-2-DJVeP1Pq.js.map

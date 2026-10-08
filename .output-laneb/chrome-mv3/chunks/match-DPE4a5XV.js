@@ -1,0 +1,2 @@
+function e(e){if(!e)return null;try{let t=new URL(e),n=t.host.toLowerCase();n.startsWith(`www.`)&&(n=n.slice(4));let r=t.pathname||`/`;return r.length>1&&r.endsWith(`/`)&&(r=r.slice(0,-1)),`${n}${r}${t.search}`}catch{return null}}function t(t,n){let r=e(t),i=e(n);return r!==null&&i!==null&&r===i}export{t as n,e as t};
+//# sourceMappingURL=match-DPE4a5XV.js.map

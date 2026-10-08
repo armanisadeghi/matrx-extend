@@ -1,0 +1,2 @@
+import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`stretch-horizontal`,size:24,node:[[`rect`,{width:`20`,height:`6`,x:`2`,y:`4`,rx:`2`,key:`qdearl`}],[`rect`,{width:`20`,height:`6`,x:`2`,y:`14`,rx:`2`,key:`1xrn6j`}]]};r.node;var i=t(r);export{n,i as t};
+//# sourceMappingURL=stretch-horizontal-DEkhnNVn.js.map

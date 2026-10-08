@@ -89,6 +89,16 @@ import {
   runLocalSavedPattern,
   startToolDispatcher,
 } from '@/lib/tools/dispatch';
+import { enqueueUndeliveredResult } from '@/lib/tools/dispatch-persist';
+import { deliverToolResult } from '@/lib/tools/deliver-tool-result';
+import {
+  type DeviceHandOffCall,
+  type DeviceHandOffDeps,
+  type DeviceToolCallRef,
+  type DeviceToolRunAnswer,
+  handOffDeviceCalls,
+  runDeviceToolOnce,
+} from '@/lib/tools/device-handoff';
 import type {
   VideoErrorEvent,
   VideoRequestPayload,
@@ -572,8 +582,17 @@ function registerHandlers(): void {
     if (sender.tab || sender.id !== chrome.runtime.id) {
       return { ok: false, error: 'device tool: extension pages only' };
     }
-    const mode = await readDefaultPermissionMode();
-    return handleWebmcpCall(payload, { permissionMode: mode, initiator: 'agent' });
+    // One run per call id: a hand-off for the same id (the panel closing) joins this run.
+    return runDeviceToolOnce(payload, runDeviceToolForAgent);
+  });
+
+  // The panel is going away with delegated calls in flight: finish them and deliver the results.
+  on<{ calls?: DeviceHandOffCall[] }, { ack: true }>(CHANNELS.DEVICE_TOOL_HANDOFF, (payload, sender) => {
+    if (sender.tab || sender.id !== chrome.runtime.id) return { ack: true };
+    void handOffDeviceCalls(Array.isArray(payload.calls) ? payload.calls : [], deviceHandOffDeps()).catch((err) =>
+      log.error('sw', 'device tool hand-off crashed', err),
+    );
+    return { ack: true };
   });
 
   // WebMCP: pages on the allowlist (see src/lib/origin-allowlist.ts) can
@@ -604,6 +623,36 @@ function registerHandlers(): void {
       assignedTabId,
     });
   });
+}
+
+async function runDeviceToolForAgent(call: DeviceToolCallRef): Promise<DeviceToolRunAnswer> {
+  const mode = await readDefaultPermissionMode();
+  return handleWebmcpCall(call, { permissionMode: mode, initiator: 'agent' });
+}
+
+function deviceHandOffDeps(): DeviceHandOffDeps {
+  return {
+    run: runDeviceToolForAgent,
+    deliver: async (conversationId, result) => {
+      const { response, delivered } = await deliverToolResult(conversationId, result);
+      if (!response.ok) {
+        const retryable = response.status === 0 || response.status === 408 || response.status === 429 || response.status >= 500;
+        // A hard refusal (the server does not know the call) cannot be replayed: report it, do not loop.
+        if (!retryable) return { delivered: false, continuation: null };
+        throw new Error(`tool_results ${response.status}: ${response.error}`);
+      }
+      const data = response.data;
+      return {
+        delivered,
+        continuation: data.continuation_needed
+          ? { conversationId, userRequestId: data.user_request_id ?? null }
+          : null,
+      };
+    },
+    enqueue: (input) => enqueueUndeliveredResult(input),
+    continueRun: (signal) => broadcast(CHANNELS.STREAM_CONTINUE, signal),
+    report: (message, detail) => log.warn('sw', message, detail),
+  };
 }
 
 function registerWebmcpTabUpdateGate(): void {

@@ -1,0 +1,2 @@
+import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`credit-card`,size:24,node:[[`rect`,{width:`20`,height:`14`,x:`2`,y:`5`,rx:`2`,key:`ynyp8z`}],[`line`,{x1:`2`,x2:`22`,y1:`10`,y2:`10`,key:`1b3vmo`}],[`path`,{d:`M6 14h2`,key:`mk7k0u`}]]};r.node;var i=t(r);export{n,i as t};
+//# sourceMappingURL=credit-card-MI29kzEc.js.map

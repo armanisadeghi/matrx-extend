@@ -1,0 +1,2 @@
+import{Za as e}from"./globals-CkYqf0Y5.js";import{i as t}from"./prose-inline-elements-wFP7Ynq6.js";import{n,t as r}from"./variant-root-DgoitDCF.js";import{n as i}from"./NestedRichContent-D4czvECh.js";var a=e();function o({source:e,isStreaming:o,className:s,depthCap:c,variant:l,imagePolicy:u}){return(0,a.jsx)(a.Fragment,{children:t(u,(0,a.jsx)(r,{variant:l,children:(0,a.jsx)(n,{depth:0,cap:c,children:(0,a.jsx)(i,{source:e,isStreaming:o,className:s})})}))})}export{o as default};
+//# sourceMappingURL=RichContentStandardImpl-DKgQBeHf.js.map

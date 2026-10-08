@@ -1,0 +1,2 @@
+import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`grip-vertical`,size:24,node:[[`circle`,{cx:`9`,cy:`12`,r:`1`,key:`1vctgf`}],[`circle`,{cx:`9`,cy:`5`,r:`1`,key:`hp0tcf`}],[`circle`,{cx:`9`,cy:`19`,r:`1`,key:`fkjjf6`}],[`circle`,{cx:`15`,cy:`12`,r:`1`,key:`1tmaij`}],[`circle`,{cx:`15`,cy:`5`,r:`1`,key:`19l28e`}],[`circle`,{cx:`15`,cy:`19`,r:`1`,key:`f4zoj3`}]]};r.node;var i=t(r);export{n,i as t};
+//# sourceMappingURL=grip-vertical-QKDPz-Hq.js.map

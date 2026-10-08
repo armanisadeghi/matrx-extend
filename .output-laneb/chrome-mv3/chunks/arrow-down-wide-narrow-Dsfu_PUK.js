@@ -1,0 +1,2 @@
+import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`arrow-down-wide-narrow`,size:24,node:[[`path`,{d:`m3 16 4 4 4-4`,key:`1co6wj`}],[`path`,{d:`M7 20V4`,key:`1yoxec`}],[`path`,{d:`M11 4h10`,key:`1w87gc`}],[`path`,{d:`M11 8h7`,key:`djye34`}],[`path`,{d:`M11 12h4`,key:`q8tih4`}]],aliases:[`sort-desc`]};r.node;var i=t(r);export{n,i as t};
+//# sourceMappingURL=arrow-down-wide-narrow-Dsfu_PUK.js.map

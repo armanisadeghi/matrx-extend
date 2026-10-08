@@ -1,0 +1,2 @@
+import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`redo`,size:24,node:[[`path`,{d:`M21 7v6h-6`,key:`3ptur4`}],[`path`,{d:`M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7`,key:`1kgawr`}]]};t.node;var n=e(t);export{t as __iconData,n as default};
+//# sourceMappingURL=redo-BPbpo89w.js.map

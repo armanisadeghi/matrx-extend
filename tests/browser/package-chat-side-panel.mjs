@@ -16,8 +16,9 @@ import { resolveBrowserRuntime } from './browser-runtime.mjs';
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = resolve(HERE, '..', '..');
 const WORKSPACE = resolve(REPO, '..');
-const EXTENSION_DIR = join(REPO, '.output', 'chrome-mv3');
-const SHOTS = join(REPO, '.output', 'package-chat-side-panel');
+const OUT = process.env.WXT_OUT_DIR || '.output';
+const EXTENSION_DIR = join(REPO, OUT, 'chrome-mv3');
+const SHOTS = join(REPO, OUT, 'package-chat-side-panel');
 const ORGANIZATION_ID = '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f';
 
 function readEnvFile(path) {
@@ -56,13 +57,23 @@ mkdirSync(SHOTS, { recursive: true });
 const { chromium, executablePath } = await resolveBrowserRuntime();
 const context = await chromium.launchPersistentContext('', {
   executablePath,
-  headless: false,
+  headless: process.env.PACKAGE_CHAT_HEADED === '1' ? false : true,
   viewport: { width: 420, height: 900 },
   args: [
     '--headless=new',
     `--disable-extensions-except=${EXTENSION_DIR}`,
     `--load-extension=${EXTENSION_DIR}`,
   ],
+});
+// AI SPEND: abort every POST to the aidream server's run endpoints; capture bodies for assertions.
+const blockedPosts = [];
+await context.route('**/*', (route) => {
+  const req = route.request();
+  if (req.method() === 'POST' && /\/(ai|agent|agents|chat|execute|conversation)\b/.test(new URL(req.url()).pathname) && !/supabase|\/auth\/|\/rest\//.test(req.url())) {
+    blockedPosts.push({ url: req.url(), body: req.postData() });
+    return route.abort();
+  }
+  return route.continue();
 });
 const results = [];
 const check = (name, ok, detail = '') => {
@@ -218,5 +229,6 @@ try {
 } finally {
   await context.close();
 }
+console.log(`  blocked POSTs: ${blockedPosts.length}`);
 console.log(`  screenshots ${SHOTS.replace(WORKSPACE + '/', '')}`);
 process.exit(results.every((r) => r.ok) ? 0 : 1);

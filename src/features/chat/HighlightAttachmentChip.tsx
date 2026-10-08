@@ -12,7 +12,7 @@ import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { Highlighter, X } from 'lucide-react';
 import { useMemo } from 'react';
 
-export function HighlightAttachmentChip() {
+export function HighlightAttachmentChip({ inline = false }: { inline?: boolean } = {}) {
   const attachedIds = useHighlightStore((s) => s.attachedIds);
   const items = useHighlightStore((s) => s.items);
   const clearAttached = useHighlightStore((s) => s.clearAttached);
@@ -26,6 +26,34 @@ export function HighlightAttachmentChip() {
   }, [attachedIds, items]);
 
   if (attachedIds.length === 0) return null;
+
+  // Inline: a pill in a host's own attachment rail (the package composer) — no row of its own.
+  if (inline) {
+    return (
+      <span
+        data-rail-entry=""
+        className="inline-flex h-7 shrink-0 items-center gap-1 rounded-full border border-amber-400/40 bg-amber-400/10 pl-2 pr-1 text-xs"
+      >
+        <Highlighter className="size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+        <button
+          type="button"
+          onClick={() => setTab('highlight')}
+          className="font-medium text-amber-700 hover:underline dark:text-amber-300"
+          title={preview ? `Open the Highlight tab: “${preview}”` : 'Open the Highlight tab'}
+        >
+          {attachedIds.length} highlight{attachedIds.length === 1 ? '' : 's'}
+        </button>
+        <button
+          type="button"
+          onClick={clearAttached}
+          className="rounded-full p-0.5 text-amber-600/70 hover:bg-amber-400/20 hover:text-amber-700 dark:text-amber-400/70"
+          title="Detach all"
+        >
+          <X className="size-3.5" />
+        </button>
+      </span>
+    );
+  }
 
   return (
     <div className="mx-3 mb-1.5 flex items-center gap-2 rounded-xl border border-amber-400/40 bg-amber-400/10 px-3 py-1.5 text-xs">

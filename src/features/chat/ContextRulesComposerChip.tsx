@@ -17,7 +17,7 @@
  *   was built from; any difference turns the chip amber.
  */
 
-import { resolveAttachedGoogleFileIds, resolveAttachedHighlights } from '@/hooks/use-chat-stream';
+import { resolveAttachedGoogleFileIds, resolveAttachedHighlights } from '@/lib/chat/attached-context';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildChatContextValues } from '@/lib/chat/context';
 import { contextRowSources } from '@/lib/chat/context/request-context';

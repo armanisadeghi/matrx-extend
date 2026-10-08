@@ -1,0 +1,2 @@
+import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`heading-1`,size:24,node:[[`path`,{d:`M4 12h8`,key:`17cfdx`}],[`path`,{d:`M4 18V6`,key:`1rz3zl`}],[`path`,{d:`M12 18V6`,key:`zqpxq5`}],[`path`,{d:`m17 12 3-2v8`,key:`1hhhft`}]]};r.node;var i=t(r);export{n,i as t};
+//# sourceMappingURL=heading-1-Bt3QoKwe.js.map

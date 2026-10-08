@@ -1,0 +1,2 @@
+import{Za as e}from"./globals-CkYqf0Y5.js";import{a as t}from"./registry-BRjup-le.js";var n=e();function r({error:e}){let r=t(`ErrorActions`);return r?(0,n.jsx)(r,{error:e}):null}export{r as t};
+//# sourceMappingURL=ErrorActions-B3xdAMt_.js.map

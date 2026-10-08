@@ -1,0 +1,2 @@
+import{At as e}from"./ui-slots-DrX2oZR5.js";import{requestSurfaceNavigation as t}from"./request-surface-navigation.thunk--1BUruAY.js";async function n({dispatch:n,surfaceKey:r,newConversationId:i}){await e({title:`Branch created`,description:`Everything up to this message was duplicated into a new conversation. Open the new branch now, or stay in this one?`,confirmLabel:`Go to new branch`,cancelLabel:`Stay here`})&&n(t({surfaceKey:r,conversationId:i,reason:`fork`}))}export{n as promptForkOutcome};
+//# sourceMappingURL=promptForkOutcome-BdmbH8Y6.js.map

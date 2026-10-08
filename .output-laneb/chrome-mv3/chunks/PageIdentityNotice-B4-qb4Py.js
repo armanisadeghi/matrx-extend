@@ -1,0 +1,2 @@
+import{Za as e}from"./globals-CkYqf0Y5.js";import{r as t}from"./use-active-tab-AuTbxBPm.js";var n=e();function r({tab:e}){return e.pageKey?null:(0,n.jsxs)(`output`,{className:`mx-3 my-2 rounded-xl bg-secondary/40 px-3 py-2 text-xs text-muted-foreground`,children:[e.identityError??`Checking the current page…`,` `,(0,n.jsx)(`button`,{type:`button`,className:`font-medium text-primary underline`,onClick:()=>void t(),children:`Retry`})]})}export{r as t};
+//# sourceMappingURL=PageIdentityNotice-B4-qb4Py.js.map

@@ -1,0 +1,1 @@
+export{ct as deleteMessage}from"./PackageChatView-D-0YAJe6.js";
