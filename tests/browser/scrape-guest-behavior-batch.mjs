@@ -265,6 +265,31 @@ export function menuMatches(actual, expected) {
   );
 }
 
+async function copyTargetContext(panel, sample) {
+  return sample(
+    panel,
+    `(() => {
+    const tabs = [...document.querySelectorAll('button[role="tab"][title="Scrape"][data-state="active"]')];
+    const pane = tabs.length === 1 ? document.getElementById(tabs[0].getAttribute('aria-controls')) : null;
+    const active = pane?.matches('[role="tabpanel"][data-state="active"]') === true;
+    const buttons = [...(active ? pane.querySelectorAll('button') : [])];
+    const selected = pane?.querySelector('[role="tablist"] [role="tab"][aria-selected="true"]');
+    const content = selected ? document.getElementById(selected.getAttribute('aria-controls')) : null;
+    return {
+      activeScrapeTabs: tabs.length,
+      activeScrapePanel: active,
+      copyTitleCount: buttons.filter((b) => b.getAttribute('title') === 'Copy capture').length,
+      copyDataTitleCount: buttons.filter((b) => b.getAttribute('data-matrx-title') === 'Copy capture').length,
+      copyAriaLabelCount: buttons.filter((b) => b.getAttribute('aria-label') === 'Copy capture').length,
+      captureContentVisible: content?.getAttribute('data-state') === 'active' &&
+        content.getBoundingClientRect().height > 0,
+      previousPageBanner: pane?.textContent.includes('A capture from a previous page is retained') === true,
+      emptyPrompt: pane?.textContent.includes('Capture this page to extract content.') === true,
+    };
+  })()`,
+  );
+}
+
 export async function runGuestCopyMenus({
   panel,
   browserSession,
@@ -294,7 +319,21 @@ export async function runGuestCopyMenus({
       })()`,
       );
       if (seeded !== true) throw new Error(`scrape_copy_sentinel_not_seeded:${title}:${option}`);
-      await resourceAction(() => pointer(panel, 'title', title));
+      try {
+        await resourceAction(() => pointer(panel, 'title', title));
+      } catch (error) {
+        if (
+          title === 'Copy capture' &&
+          error?.driverFailure?.code === 'pointer_target_not_unique'
+        ) {
+          try {
+            error.copyTargetContext = await copyTargetContext(panel, sample);
+          } catch {
+            error.copyTargetContext = { observationUnavailable: true };
+          }
+        }
+        throw error;
+      }
       const labels = await poll(
         `copy_menu_${title}_${option}`,
         () => menuLabels(panel, sample),

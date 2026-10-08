@@ -63,6 +63,46 @@ test('copy verdict rejects unchanged clipboard and wrong selected representation
   assert.equal(menuMatches([...labels, 'Full capture (JSON)'], labels), false);
 });
 
+test('missing Copy capture keeps the pointer failure and records bounded panel context', async () => {
+  const failure = new Error('unique visible pointer target');
+  failure.driverFailure = { code: 'pointer_target_not_unique', matchedTargetCount: 0 };
+  const context = {
+    activeScrapeTabs: 1,
+    activeScrapePanel: true,
+    copyTitleCount: 0,
+    copyDataTitleCount: 0,
+    copyAriaLabelCount: 0,
+    captureContentVisible: false,
+    previousPageBanner: true,
+    emptyPrompt: true,
+  };
+  let observations = 0;
+  await assert.rejects(
+    runGuestCopyMenus({
+      panel: {},
+      browserSession: {},
+      panelUrl: 'chrome-extension://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/panel.html',
+      origin: 'http://127.0.0.1:65000',
+      fixtureKey: 'referrals',
+      resourceAction: (action) => action(),
+      menus: [['Copy capture', null, ['Markdown']]],
+      adapters: {
+        click: async () => {
+          throw failure;
+        },
+        evaluate: async (_panel, expression) => {
+          if (expression.includes('MATRX_QA_COPY_SENTINEL')) return true;
+          observations++;
+          assert.match(expression, /copyAriaLabelCount/);
+          return context;
+        },
+      },
+    }),
+    (caught) => caught === failure && caught.copyTargetContext === context,
+  );
+  assert.equal(observations, 1);
+});
+
 test('copy oracle separates section formats, empty URL lists and page freshness', () => {
   const origin = 'http://127.0.0.1:65000';
   const intake = COPY_FIXTURES.intake;
