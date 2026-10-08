@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0159",
+  "lane": "source-only audit native startup diagnosis",
+  "status": "DONE_WITH_CONCERNS",
+  "scope": "No native launch, credential access, build, release, or product-case retest. Diagnosis of hosted run 37708712354 against its frozen CI artifact and current-run evidence.",
+  "verified_boundary": {
+    "run": 37708712354,
+    "checkout_sha": "0fbec09268721e436e5e2b7a93856576d0413822",
+    "artifact": "CI 37698216289 / artifact 11516342905 / source 52487361b1b6a8663b958dbb2196cbcc9b1af31c / version 0.2.391",
+    "first_failure": "BROWSER_STARTUP_FAILURE: owned_cdp_endpoint_timeout at native:cdp_connect, before any audit case; the owned profile's DevToolsActivePort was absent at the existing 5000 ms deadline.",
+    "log_observation": "The actual run log reports spawnObserved=true, launchFailed=false, child exitCode=null and signalCode=null, stderrFlags.hadStderr=false, 149 ENOENT polls over 5010 ms, longestReadMs=81. These fields do not prove the child remained alive throughout or why no endpoint appeared.",
+    "receipt": ".research/audit-intel-native-evidence/receipts/audit-key-native-4ca3fbc0-d97f-471f-9a93-50771687d928.json",
+    "resource_order": "RESOURCE_CPU_PENDING at 00:44:01.688Z with cpuBusyFraction=0.92 followed BROWSER_STARTUP_FAILURE at 00:43:59.912Z by about 1.78 s. Process attribution at 00:44:01.834Z shows Chromium PID 23522 at 95.6% plus Chromium Helpers, but is a later snapshot. Guest child exited 1; guard finalized resourceInvalid=true and wrapper exit 3. Package and browser setup journals finalized valid.",
+    "product_verdict": "No audit cases reached and no EXT-D-0159 or T27/T61/T62/T86 acceptance credit. CPU invalidation is a guard verdict, not a product failure."
+  },
+  "source_boundary": {
+    "connector": "tests/browser/vault-owned-cdp.cjs connectOwnedCdp polls DevToolsActivePort every 25 ms and throws after a 5000 ms default; read errors other than ENOENT use a different failure code. No endpoint record, lock-owner check, WebSocket attempt, extension discovery, or admin sign-in was reached.",
+    "launcher": "tests/browser/native-sidepanel-qa-harness.mjs creates a fresh owned profile, spawns full Chromium with remote-debugging-port=0, and immediately calls connectOwnedCdp. Audit calls it with headed=true. The SEO guest comparator uses the default headed=false and adds --headless=new.",
+    "same_artifact_comparator": "Intel SEO run 37708611887 used the same checkout and frozen artifact, reached BROWSER_PANEL_CONTEXT_READY, completed bounded guest clipboard cases, and had a valid resource journal. This excludes a deterministic artifact or universal Intel Chromium failure, but does not isolate headed mode from host scheduling, fixture, or run timing.",
+    "arm_comparator": "ARM audit run 37706132089 reached BROWSER_PANEL_CONTEXT_READY and AUDIT_NATIVE_RESULT pass before its own resource-invalid guard decision. The audit path can reach cases on another host; it does not prove Intel headed startup reliability."
+  },
+  "ranked_uncertainty": [
+    {
+      "rank": 1,
+      "hypothesis": "Cold headed Chromium startup on this Intel host exceeded the fixed endpoint wait while Chromium was busy initializing.",
+      "prediction": "A bounded observation that leaves the existing guard and launch unchanged would see the owned endpoint appear after 5 seconds, before the child stops, with a later successful CDP attach if a separate diagnostic were permitted.",
+      "limit": "The run ended at the five-second boundary; endpoint creation after it was not observed. Later high CPU is compatible but not causal proof."
+    },
+    {
+      "rank": 2,
+      "hypothesis": "The headed Chromium child stalled in macOS display or GPU startup and never published the endpoint.",
+      "prediction": "A guard-owned startup observation would show no endpoint through the admitted interval and a persistent child, or a classified child exit/stderr event before shutdown.",
+      "limit": "The safe stderr flags were all false and the child had no observed exit at timeout; neither identifies a display/GPU fault."
+    },
+    {
+      "rank": 3,
+      "hypothesis": "A transient host scheduling spike delayed the harness or Chromium independently of headed mode.",
+      "prediction": "Repeated fresh Intel runs under identical startup parameters would vary with measured host scheduling; endpoint timing would correlate with per-host load rather than audit content.",
+      "limit": "One failed audit and one successful headless SEO run cannot estimate that correlation; 149 polls indicate the harness did run during the five seconds."
+    }
+  ],
+  "next_executable_move": "No source repair is justified. If a new hosted diagnostic attempt is authorized, instrument only the existing owned Chrome startup boundary to record bounded endpoint-exists time, child exit state and classified stderr flags through the already guarded interval on macos-15-intel, using the exact frozen artifact and headed audit launch parameters. Preserve the current resource thresholds and stop on its decision. An ARM-only startup-resource-diagnostic is already available, but it cannot discriminate this Intel headed failure without a source change. Do not increase the timeout or retry acceptance as a causal fix before that observation.",
+  "evidence": [
+    ".research/audit-intel-native-20261007.json",
+    ".research/audit-intel-native-evidence/resource-journals/hosted-guest-37708712354-1.jsonl",
+    ".research/seo-intel-native-20261007.json",
+    ".research/auth-repair-intel-native-peer-20261007.json",
+    "GitHub Actions failed-step log for run 37708712354 (BROWSER_STARTUP_FAILURE and resource events)",
+    "GitHub Actions run 37708611887 log (BROWSER_PANEL_CONTEXT_READY)",
+    "GitHub Actions failed-step log for run 37706132089 (BROWSER_PANEL_CONTEXT_READY and AUDIT_NATIVE_RESULT pass)"
+  ],
+  "changed_files": [".research/audit-cdp-timeout-diagnosis-20261007.json"],
+  "verification": "Compared run logs to current receipts, resource journals, and source at the exact hosted checkout SHA; no native execution or local heavy tests.",
+  "limitations": "The original run did not capture post-timeout endpoint appearance, child lifetime through the full wait, or a causal macOS/Chromium startup trace. The ranked hypotheses remain unproven."
+}
