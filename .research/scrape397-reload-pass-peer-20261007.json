@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "task_id": "scrape397-reload-pass-peer-20261007",
+  "status": "DONE",
+  "scope": "Fresh zero-authorship review of original native run 37729682008/artifact 11529208967 and commit 014d7795. No browser replay, source edit, build, or release.",
+  "verdict_A_exact_acceptance": {
+    "EXT-F-1007-T07_guest_development397": "PASS: Original receipt records warm and full-extension-reload scroll sync. Warm pageY 0→650→0 with Article top 0→310→310; reload pageY 0→650→0 with Article top 0→291→291. On/off controls and selected Article scroller are present at the expected steps. Both phases satisfy the reviewed driver's scrollSyncMatches predicate.",
+    "EXT-F-1007-T09_guest_development397": "PASS: Original receipt records 22 offered intake options before navigation, 13 offered referrals options plus explicit empty Images/Video/Links section checks after navigation, and 22 intake options after full extension reload. Every offered action records correct menu, actual clipboard read, unique sentinel replacement, fixture-specific format/current-content predicate, and restored read permission. Empty sections were checked as empty current panes with no Copy control, not counted as copy actions.",
+    "EXT-D-0163_original_driver_bug": "MAY CLOSE after canonical integration: original full warm/reload T07 and surrounding copy checks now pass on a resource-valid native run; causal driver fix and independent source review predate this run. This is acceptance-driver closure, not evidence of a product scroll bug.",
+    "EXT-D-0164_original_driver_bug": "MAY CLOSE after canonical integration: original navigation/reload T09 reaches all offered options and all three intentionally empty referrals sections on a resource-valid native run; the fixture-specific guard is exercised. This is acceptance-driver closure, not evidence of a product copy bug.",
+    "EXT-D-0166_separate_missing_panel": "DO NOT infer a cause or blanket closure. This run records an activated/running worker at Open-panel click, callback received with ok=true/opened=true/category=opened, one replacement worker, and a distinct replacement panel containing Scrape. The prior missing-panel outcome did not recur. The earlier run lacked a callback reply and panel; one subsequent successful callback cannot establish why that earlier outcome occurred or an intermittent failure rate.",
+    "overall": "PARTIAL: original receipt status remains partial at post_reload_link_controls; T07 and T09 are passed guest cells only. Other Scrape cases, member/admin, current-main, and Store-installed behavior are outside this verdict."
+  },
+  "verdict_B_evidence_quality": {
+    "result": "PASS for the bounded original-run claims, with stated limits.",
+    "provenance": "GitHub run 37729682008 was workflow_dispatch attempt 1, successful at checkout ae437676714d30fce63adf99ce528b73cf534e90; GitHub artifact API identifies output 11529208967 at that run. Workflow inputs and log identify development run 37724859892/artifact 11527132614. That CI run succeeded at product source cedcec02a3fb4e52a3f63ebfda8728809eff418a, and its artifact API identity matches. Reviewed diagnostic commit 197f4053 is an ancestor of checkout ae437676; the Scrape behavior driver Git blob is identical at both (a72ce46195642730f3c3b29c1537b0a42716e43a). Product source and later acceptance driver are distinct identities.",
+    "integrity": "Original receipt is 248657 bytes, SHA-256 0b4bafb4d9201c69e5e830e6d7d70bbd46f38df75a33033f4eba67dcf0f92352. All five committed screenshots match the report's SHA-256 entries. GitHub upload log gives output ZIP SHA-256 b07d2c69fcf9507ea7c11df5b7bac53f6bdaf550262df3c1b6acae4b8e617016; no ZIP file was found by recursive search in the committed originals or .research, so that ZIP digest was not recomputed locally.",
+    "resources": "All three current-run package/browser/guest journals match reported SHA-256 values and end admitted=true, resourceInvalid=false, exitCode=0, decision=valid; guest journal includes healthy watches. Six older journals appear in the prior download but none are in the current-run originals directory and none was used for current resource admission.",
+    "predicate_strength": "The reviewed copy oracle rejects unchanged sentinels and named stale-fixture text, checks fixture-specific title/article/URL/media/schema representation and option format, and checks actual clipboard read and permission restoration. Empty referrals sections require the current capture title, selected visible pane, zero items/Copy controls, and the add control. Raw clipboard contents are intentionally absent from the receipt, so this is predicate evidence, not independently retained text.",
+    "limits": "One native run; no independent browser replay. The report and original receipt cannot establish underlying D166 cause, intermittent behavior, Store health, or whole-feature pass."
+  },
+  "evidence_paths": {
+    "original_report": ".research/scrape397-reply-native-20261007.json",
+    "original_receipt": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/test-results/scrape-guest-native-75076628-e28a-48b0-935a-052925a3eb77.json",
+    "current_journals": ".research/scrape397-reply-native-20261007-run37729682008-originals/matrx-extend/matrx-extend/docs/stabilization/resource-journals/",
+    "driver": "tests/browser/scrape-guest-behavior-batch.mjs",
+    "original_defects": ["docs/stabilization/defects/EXT-D-0163.json", "docs/stabilization/defects/EXT-D-0164.json", "docs/stabilization/defects/EXT-D-0166.json"]
+  }
+}
