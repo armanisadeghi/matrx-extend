@@ -18,6 +18,50 @@ const POINTER_STAGES = new Set([
   'animation_observation',
 ]);
 const safeCount = (value) => (Number.isInteger(value) && value >= 0 ? value : null);
+const TRANSPORT_CLOSED = /Target closed|Session closed|WebSocket closed/;
+
+function guestWaitFailureCategory(message) {
+  const prefix = 'guest_settings_not_observed:';
+  if (!message.startsWith(prefix)) return null;
+  try {
+    const last = JSON.parse(message.slice(prefix.length));
+    if (typeof last?.transient === 'string') {
+      if (TRANSPORT_CLOSED.test(last.transient)) return 'panel_transport_closed';
+      if (last.transient === 'panel_runtime_exception') return 'panel_runtime_exception';
+      return 'guest_observation_unavailable';
+    }
+    return 'guest_state_not_observed';
+  } catch {
+    return 'guest_observation_unavailable';
+  }
+}
+
+export function sanitizeReloadSettingsSample(sample) {
+  if (!sample || typeof sample !== 'object' || Array.isArray(sample)) return { sampled: false };
+  const booleanKeys = [
+    'runtimeIdMatches',
+    'documentReady',
+    'visible',
+    'guestBannerPresent',
+    'guestOrganizationGuidancePresent',
+  ];
+  if (
+    booleanKeys.some((key) => typeof sample[key] !== 'boolean') ||
+    safeCount(sample.settingsTabCount) === null ||
+    safeCount(sample.settingsActiveCount) === null
+  )
+    return { sampled: false };
+  return {
+    sampled: true,
+    runtimeIdMatches: sample.runtimeIdMatches,
+    documentReady: sample.documentReady,
+    visible: sample.visible,
+    settingsTabCount: sample.settingsTabCount,
+    settingsActiveCount: sample.settingsActiveCount,
+    guestBannerPresent: sample.guestBannerPresent,
+    guestOrganizationGuidancePresent: sample.guestOrganizationGuidancePresent,
+  };
+}
 
 export function classifyReloadSettingsFailure(error, step) {
   const pointer = error?.driverFailure;
@@ -29,13 +73,12 @@ export function classifyReloadSettingsFailure(error, step) {
       : 'unknown',
     category:
       pointerCode ??
-      (message.startsWith('guest_settings_not_observed:')
-        ? 'guest_state_not_observed'
-        : message === 'panel_runtime_exception'
-          ? 'panel_runtime_exception'
-          : /Target closed|Session closed|WebSocket closed/.test(message)
-            ? 'panel_transport_closed'
-            : 'other'),
+      guestWaitFailureCategory(message) ??
+      (message === 'panel_runtime_exception'
+        ? 'panel_runtime_exception'
+        : TRANSPORT_CLOSED.test(message)
+          ? 'panel_transport_closed'
+          : 'other'),
     pointer: pointerCode
       ? {
           sampleStage: POINTER_STAGES.has(pointer.sampleStage) ? pointer.sampleStage : null,
@@ -68,8 +111,7 @@ export async function observeReloadSettingsPanel(panel, extensionId) {
         guestOrganizationGuidancePresent: text.includes('Sign in to choose') };
     })()`,
     );
-    if (!sample || typeof sample !== 'object') return { sampled: false };
-    return { sampled: true, ...sample };
+    return sanitizeReloadSettingsSample(sample);
   } catch {
     return { sampled: false };
   }
