@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-08",
+  "lane": "settings-sections-scrape-native",
+  "reviewer": {
+    "independent_native_review": true,
+    "prior_source_peer": "1d04d0af",
+    "reviewed_source_commits": ["70b65e93", "2d8ff3ff"],
+    "candidate_authorship": "zero"
+  },
+  "artifact": {
+    "ci_run_id": "37818621428",
+    "ci_run_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+    "ci_artifact_id": "11568846736",
+    "ci_artifact_name": "matrx-extend-development-test-5f7fe7c29d7dd78528161c8928d3da78b41aa55b-37818621428-1",
+    "ci_artifact_digest": "sha256:22afa363bf065f0bfcf7a2ab2e1b3f994c2adde07bde0d9f21d0d5f4c3fa6958",
+    "version": "0.2.414",
+    "tree_sha256": "662ba26b278c67581abf3aff93764ce84b6c6c185f31726ee4000bf5c20d83d6",
+    "verified_in_native_receipt": true
+  },
+  "native_run": {
+    "run_id": "37837587382",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37837587382",
+    "workflow_commit": "d7a0b9552f61fecdce81b8460601a5c87b568b9a",
+    "case": "settings-controls",
+    "lane": "B",
+    "runner": "macos-15 ARM64",
+    "conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "artifact_id": "11577090487",
+    "artifact_name": "hosted-guest-37837587382-1",
+    "artifact_digest": "sha256:5c16f74132c8b4b0ae0a8c37c12f25939267476ded92c92adb8a3d52a95c86a8",
+    "artifact_size_bytes": 66588
+  },
+  "verdict_a_behavior": {
+    "status": "partial_with_t28_failure",
+    "T28": "Failed before any section open/close action. The runner asserted baseline.active && baseline.headings.length === 11 and reported guest_settings_sections_missing; it did not record baseline.active or the headings array. The result establishes a failed census assertion, but cannot distinguish an inactive Settings pane from a heading-count mismatch and is not by itself a product defect finding.",
+    "T40": "The Auto-scrape on/off control and persisted value agreed in warm and panel-document-reload observations; cleanup restored false/Capture. The case remains unverified overall because the downstream page-load capture was not exercised.",
+    "T67": "Capture and Scroll & capture each matched the picker label and stored value after panel-document reload; cleanup restored Capture. No downstream capture behavior is claimed.",
+    "full_extension_reload": "The harness reloaded the extension and reopened Settings at the end. It did not repeat T28, T40, or T67 after that boundary, so these cases receive no full-extension-reload credit.",
+    "other_case_scope": "T04, T10, T13, T22, T37, T46, T64, T73, T76, and T92 passed in this run. T16, T19, T31, T34, T63, and T70 remain unverified. The overall native report status is fail because T28 failed."
+  },
+  "verdict_b_evidence_quality": {
+    "status": "partial",
+    "finding": "T28's first assertion records only a generic failure string; missing the observed active flag and heading list prevents an independent reviewer from identifying the failed part of the census. No T28 steps were recorded.",
+    "focused_acceptance": "Run 37836302781 at 9c4280dad79b388f141340b2458e4af678164742 completed successfully with Focused acceptance guards passing. The T28/T40/T67 runner and tests remain included in package.json test:focused-acceptance and match source commit 2d8ff3ff.",
+    "source_identity": "SettingsView.tsx and settings-state blobs match between the frozen artifact source SHA and reviewed source. T28/T40/T67 acceptance source blobs match the reviewed candidate at the native workflow commit.",
+    "resource": "Package and browser journals are valid with exitCode 0. The guest journal has resourceInvalid=false and decision=child_failed with exitCode 1, consistent with the T28 assertion failure rather than an invalid resource run.",
+    "execution_scope": "One hosted attempt only; no retry, local browser, build, test run, secret staging/deletion, or inventory edit."
+  },
+  "limitations": [
+    "No page-load/background scrape was executed for T40 or T67.",
+    "T28 did not record the actual section census and performed no expand/collapse steps.",
+    "No T28/T40/T67 preference or section result was rechecked after the full extension reload."
+  ],
+  "raw_evidence": {
+    "directory": ".research/settings-sections-scrape-native-20261008/evidence/raw/",
+    "files": {
+      "settings-local-controls-acceptance.json": "13485e64c666ef9ef9bd46286c74b2f71dd705edeb242b737c8c98ce5eab8cc9",
+      "hosted-package-37837587382-1.jsonl": "0f1a4b99fba923ec8bc55160ab5fbc1882b8b2abc243c20d37903db545d6b84f",
+      "hosted-browser-37837587382-1.jsonl": "056471c446b44ef171f327f0d06ec027749b755a309c323871941d0ff1f4687c",
+      "hosted-guest-37837587382-1.jsonl": "e25cf0ddf6f211026131083671af1982891e4be12ca92ee7736e6c43a8baec85"
+    },
+    "screenshots": "The hosted artifact includes setup screenshots, but none records the section census or its failed state; omitted from this evidence bundle."
+  }
+}
