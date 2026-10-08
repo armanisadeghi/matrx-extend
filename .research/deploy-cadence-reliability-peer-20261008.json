@@ -1,0 +1,34 @@
+{
+  "task": "deploy-cadence-reliability-peer-20261008",
+  "reviewed_repository": "aidream",
+  "reviewed_unit_sha": "1d92af7142d6580ab88a75865085cf5fb57199df",
+  "reviewed_integrated_sha": "1b123ca37db78475bce7c8c347e604b89a7c89b8",
+  "verdict_a_source_contract": "PARTIAL: main runtime pushes wake the existing cadence watch; the 10-minute schedule, >45-minute breach, no-active-deploy check, immutable commit release_ref, and dry-run gate remain present. Test-only classification has a concrete false runtime case. No live wake/deploy was performed or inferred.",
+  "verdict_b_guard_quality": "FAIL: the tests prove the Git pathspec against several committed examples but do not exercise the breach/dispatch decision. A scratch-copy always-true breach mutant kept all four focused tests green.",
+  "findings": [
+    {
+      "severity": "Important",
+      "location": "aidream/.github/workflows/deploy-cadence-watch.yml:8,64; aidream/scripts/FEATURE.md:288",
+      "issue": "A root conftest.py-only push is test-only but matches none of paths-ignore and is not excluded by runtime_paths. It wakes the watch and becomes newest runtime commit. After a 45-minute deploy-start gap it can dispatch a build for a test fixture change, contrary to the documented exclusion.",
+      "proof": "The real repository has root conftest.py. In a scratch Git repository, a runtime commit followed by conftest.py made the exact workflow pathspec select the conftest commit. GitHub's documented paths-ignore rule runs a workflow if any changed path is outside the ignore patterns; conftest.py is outside them."
+    },
+    {
+      "severity": "Important",
+      "location": "aidream/tests/test_deploy_cadence_watch.py:47-121",
+      "issue": "The added trigger test only searches text and the behavioral test only executes git log path selection. Neither executes the workflow's stale/current/active/duplicate/dry-run/dispatch branch, so a broken breach condition can still pass.",
+      "proof": "Copied the exact workflow and focused tests to scratch, changed only the breach condition to `if true; then`, and reran all four focused tests: 4 passed. This mutation would dispatch on a healthy or stale runtime whenever no active run exists; source in shared checkout was untouched."
+    }
+  ],
+  "passed_observations": [
+    "GitHub push filter names main and paths-ignore; mixed runtime plus ignored files still trigger per GitHub workflow syntax.",
+    "The workflow-level concurrency group keeps one running watch and does not cancel it; a newer pending run may replace an older pending run, which is compatible with evaluating current main.",
+    "The watched SHA is obtained from `git log` and passed as `release_ref` to deploy.yml, which accepts immutable tag or commit input.",
+    "Exact focused tests run locally: `uv run --no-sync pytest -q tests/test_deploy_cadence_watch.py` -> 4 passed."
+  ],
+  "preexisting_limit": "The watch reads the newest deploy.yml run START without distinguishing runtime-moving releases from verify-only, candidate-report-only or browser-image-only invocations. Those can reset its cadence clock without moving production. This predates the reviewed unit and is not attributed to the new push trigger, but limits the alarm's practical claim.",
+  "remaining": "Repair the test-only classifier and add a fast behavioral decision guard for stale/healthy/active/breach and duplicate prevention, proven red under wrong-branch mutation. Then obtain a fresh source peer and let the external workflow supply live wake/deploy evidence. No manual workflow dispatch, build, release, or deployment was performed in this review.",
+  "external_sources": [
+    "https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax",
+    "https://docs.github.com/en/actions/concepts/workflows-and-actions/concurrency"
+  ]
+}
