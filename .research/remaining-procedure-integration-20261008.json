@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "artifact_type": "remaining-procedure-integration-report",
+  "date": "2026-10-08",
+  "proposal_path": ".research/remaining-tool-procedures-20261008.json",
+  "final_peer_path": ".research/remaining-tool-procedures-final-peer-20261008.json",
+  "final_peer_reviewed_commit": "c33d3946",
+  "inventory_path": "docs/stabilization/inventory.json",
+  "changed_case_ids": [
+    "EXT-F-4124-T01",
+    "EXT-F-4127-T01",
+    "EXT-F-4128-T01",
+    "EXT-F-4150-T01",
+    "EXT-F-4160-T01"
+  ],
+  "expected_changed_case_ids": [
+    "EXT-F-4124-T01",
+    "EXT-F-4127-T01",
+    "EXT-F-4128-T01",
+    "EXT-F-4150-T01",
+    "EXT-F-4160-T01"
+  ],
+  "exactly_five_case_objects_changed": true,
+  "protected_fields": [
+    "id",
+    "modes",
+    "control_ids",
+    "dimensions",
+    "design_status",
+    "results",
+    "defect_ids"
+  ],
+  "protected_fields_before_after_hashes": {
+    "EXT-F-4124-T01": {
+      "before": "872be7d085d0b55b62b7a05f211d89cf0861d38b07a63bf86f97d99744f25f7b",
+      "after": "872be7d085d0b55b62b7a05f211d89cf0861d38b07a63bf86f97d99744f25f7b"
+    },
+    "EXT-F-4127-T01": {
+      "before": "dc7b7393032b1f6b4f8550646fbd45a7c19c3f8c3a5af22ad78dbf8ff9c17501",
+      "after": "dc7b7393032b1f6b4f8550646fbd45a7c19c3f8c3a5af22ad78dbf8ff9c17501"
+    },
+    "EXT-F-4128-T01": {
+      "before": "59a9ae22468b6af3f9aa912d2268e3dceed8764556caa36379db4b4938a63943",
+      "after": "59a9ae22468b6af3f9aa912d2268e3dceed8764556caa36379db4b4938a63943"
+    },
+    "EXT-F-4150-T01": {
+      "before": "467068297c8f605774ec76f441ed06826b2c14ed2cb8a7f154fba4597e710da9",
+      "after": "467068297c8f605774ec76f441ed06826b2c14ed2cb8a7f154fba4597e710da9"
+    },
+    "EXT-F-4160-T01": {
+      "before": "a2ed166a8f94106d744e72a866d819241171015e54591ec867e61cc0ceaa5caf",
+      "after": "a2ed166a8f94106d744e72a866d819241171015e54591ec867e61cc0ceaa5caf"
+    }
+  },
+  "all_case_results_before_hash": "acc6a129573d2b94c44164cd806813e227cb7047791508fc368466ba65120837",
+  "all_case_results_after_hash": "acc6a129573d2b94c44164cd806813e227cb7047791508fc368466ba65120837",
+  "feature_cells_before_hash": "d10284496cd7a7cf1398943092e3fd6bb22e001c83eb8f8c9702c462e9b0e849",
+  "feature_cells_after_hash": "d10284496cd7a7cf1398943092e3fd6bb22e001c83eb8f8c9702c462e9b0e849",
+  "records_feature_before_hash": "d2ab7eabcc2689b85738a9dc7d9b019de5a431a634d6417e0b20df6fd71e934f",
+  "records_feature_after_hash": "d2ab7eabcc2689b85738a9dc7d9b019de5a431a634d6417e0b20df6fd71e934f",
+  "records_unresolved": {
+    "case_id": "EXT-F-4130-T01",
+    "steps_count": 0,
+    "expected_count": 0,
+    "design_status": "needed",
+    "control_count": 25,
+    "case_hash_unchanged": true
+  },
+  "computer_duplicate_step_removed": {
+    "proposal_case_id": "EXT-F-4150-T01",
+    "step_count": 5,
+    "C10_held": true
+  },
+  "generated_views": [
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html"
+  ],
+  "runtime_results_added": false,
+  "product_passes_claimed": 0,
+  "limits": [
+    "All five are source-grounded procedures conditional on their recorded fixtures and limits. No browser, dispatch, backend, DB, or product runtime was executed.",
+    "EXT-F-4130-T01 remains unresolved pending live guide/schema and owned fixture per control; its complete feature and existing result history are unchanged."
+  ]
+}
