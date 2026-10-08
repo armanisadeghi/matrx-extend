@@ -36,7 +36,9 @@
     ".research/records-first-native-acceptance-20261008.json",
     ".research/parallel-product-attempt-peer-20261008.json",
     ".research/records-input-failure-repair-20261008.json",
-    ".research/records-input-final-peer-20261008.json"
+    ".research/records-input-final-peer-20261008.json",
+    ".research/records-native-retest-20261008.json",
+    ".research/records-live-peer-20261008-1529.json"
   ],
   "transition_history": [
     {
@@ -75,7 +77,7 @@
     "entity_read",
     "entity_write"
   ],
-  "current_work": "Release 0.2.176 (source 3fe608d949a06aa10bfea57b43c9b05638386bc1) includes extension commit 41670d8d; aidream source c971bc6314 supplies the canonical server contract. The release artifact records strict release gates exiting 0, and source review confirms the executor retirement, retained discovery/manual UI, and complete contract gate. This supersedes the stale claim that source review and the strict gate are still pending. D91 remains in-fix: the retained independent live check predates server deployment, no post-deployment Records user result is recorded, and the focused native Manual Tools Records read-only case is still not executed. Do not infer all-action acceptance from the strict gate or unrelated guest/member Chat runs.",
-  "native_acceptance_preparation": "Input repair04ba1909 passes six focused tests and focused CI37797807542. Fresh02ec651e is PARTIAL: exact original substep and real React propagation require native proof. Next run must prove actual table_list include_app_tables request, organization/principal, terminal response and visible correlated result on414 or a newer eligible artifact. No further mock can substitute for that proof; all other Records actions remain unverified.",
-  "native_acceptance_attempt": "37795653439 on frozen development414/macOS15 ARM: real admin, approved organization and finished schema GET matched. records_input_failed before execute; zero action acceptance. CPU_PENDING preceded child exit1, not confirmed resource kill. Both temporary secrets independently absent; sampled backend3682f88fa375a10966bf1cafc4e3358141f29801 stable."
+  "current_work": "One post-deployment native admin table_list read now has independent bounded acceptance on development414: run37799435980 and peer7a38cfc2. Exact input reached finished request and correlated visible output; all three resource journals valid. This repairs the prior test-driver input obstacle, not product source. Other Records actions, negative cases, reload and non-admin modes remain unverified; D91 stays in-fix. Backend sampled only after run; do not infer request-time source or all-action health.",
+  "native_acceptance_preparation": "Next expand bounded read acceptance to validation-error and full-reload dimensions, then owned-fixture dependent actions and non-admin role. Reuse real UI, exact request identity/correlation and cleanup assertions; no more input mocks substitute for native evidence.",
+  "native_acceptance_attempt": "37799435980 succeeds after test-driver repair04ba1909; fresh7a38cfc2 verifies actual receipt/producer assertions, all journals and present secret-name absence. C02 positive read only; original37795653439 failure remains in history."
 }

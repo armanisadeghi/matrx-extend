@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-08 15:21 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T15:21:34.749399+00:00. 205 features · 769 cases · 1358 controls · 183 linked defect records.
+Generated 2026-10-08 15:30 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-08T15:30:34.527664+00:00. 205 features · 769 cases · 1358 controls · 183 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 90 · Partial: 89 · Fail: 2 · Unverified: 1048 · N/A: 1.
-Unverified splits into **132 explicitly marked unverified** and **916 with no result record**.
+Applicable case-by-role slots: **1230** — Pass: 90 · Partial: 90 · Fail: 2 · Unverified: 1047 · N/A: 1.
+Unverified splits into **132 explicitly marked unverified** and **915 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -51,7 +51,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Vault password generator](#vault-password-generator) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 154 unverified · 0 deferred; 0/150 full | 0 pass · 0 partial · 0 fail · 173 unverified · 0 deferred; 0/169 full | pass 0, partial 0, fail 0, unverified 327, n/a 0 | 7 |
+| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 154 unverified · 0 deferred; 0/150 full | 0 pass · 1 partial · 0 fail · 172 unverified · 0 deferred; 0/169 full | pass 0, partial 1, fail 0, unverified 326, n/a 0 | 7 |
 
 Role counts include only case-role combinations listed in each case. The all-role column includes every applicable recorded or unrecorded slot. Open each feature for case evidence, defects, and next action.
 
@@ -3463,7 +3463,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 ### records (EXT-F-4130)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 2. **Controls:** 25.
+**Role status:** guest: N/A · member: Unverified · admin: Partial. **Cases:** 2. **Controls:** 25.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0071, EXT-D-0089, EXT-D-0091
 
@@ -3471,8 +3471,13 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4130-T01 Controlled manual execution: records | N/A | Unverified | Unverified | EXT-F-4130-C01, EXT-F-4130-C02, EXT-F-4130-C03, EXT-F-4130-C04, EXT-F-4130-C05, EXT-F-4130-C06, EXT-F-4130-C07, EXT-F-4130-C08, EXT-F-4130-C09, EXT-F-4130-C10, EXT-F-4130-C11, EXT-F-4130-C12, EXT-F-4130-C13, EXT-F-4130-C14, EXT-F-4130-C15, EXT-F-4130-C16, EXT-F-4130-C17, EXT-F-4130-C18, EXT-F-4130-C19, EXT-F-4130-C20, EXT-F-4130-C21, EXT-F-4130-C22, EXT-F-4130-C23, EXT-F-4130-C24, EXT-F-4130-C25 |
+| EXT-F-4130-T01 Controlled manual execution: records | N/A | Unverified | Partial | EXT-F-4130-C01, EXT-F-4130-C02, EXT-F-4130-C03, EXT-F-4130-C04, EXT-F-4130-C05, EXT-F-4130-C06, EXT-F-4130-C07, EXT-F-4130-C08, EXT-F-4130-C09, EXT-F-4130-C10, EXT-F-4130-C11, EXT-F-4130-C12, EXT-F-4130-C13, EXT-F-4130-C14, EXT-F-4130-C15, EXT-F-4130-C16, EXT-F-4130-C17, EXT-F-4130-C18, EXT-F-4130-C19, EXT-F-4130-C20, EXT-F-4130-C21, EXT-F-4130-C22, EXT-F-4130-C23, EXT-F-4130-C24, EXT-F-4130-C25 |
 | EXT-F-4130-T02 Records organization filter matches canonical catalog and preserves omitted/null semantics | N/A | Unverified | Unverified | EXT-F-4130-C01 |
+
+**Recorded case details and evidence:**
+
+- EXT-F-4130-T01 · admin: Partial.
+  Evidence / build / date recorded: 37799435980, ['.research/records-native-retest-20261008.json', '.research/records-live-peer-20261008-1529.json']
 
 **Other remaining work:** Author concrete fixture-specific server procedures before this tool is executed; gated/negative permission cases required; Current source identifies a server capability, absent from the local generated executor catalog. Imported input schema and live DB binding need fresh reconciliation.
 

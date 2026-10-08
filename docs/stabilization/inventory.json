@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T15:21:34.749399+00:00",
+  "updated_at": "2026-10-08T15:30:34.527664+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -62978,8 +62978,44 @@
               "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
               "evidence": [".research/records-first-native-acceptance-20261008.json"],
               "detail": "Realadmin/approvedorg and matching finishedschemaGET observed; records_input_failed beforeactionPOST/output. Guestwrapperinvalid duechildexit1; environmentalCPUcause notinferred. Both temporarysecrets removed; stable sampledbackend3682f88f. No Recordstable_list acceptance."
+            },
+            {
+              "at": "2026-10-08T15:30:34.527664+00:00",
+              "run_id": "37799435980",
+              "mode": "admin",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "evidence": [
+                ".research/records-native-retest-20261008.json",
+                ".research/records-live-peer-20261008-1529.json"
+              ],
+              "detail": "Independent peer verifies bounded C02 read; three valid resource journals; original test-driver input failure no longer reproduces. Full T01 and D91 remain incomplete."
             }
-          ]
+          ],
+          "results": {
+            "admin": {
+              "status": "partial",
+              "passed_subtargets": [
+                "C02 real table_list include_app_tables=true with exact input/request and correlated visible successful completion"
+              ],
+              "unverified_dimensions": [
+                "C02 malformed-input validation",
+                "C02 owned-created-table visibility",
+                "full reload",
+                "non-admin mode",
+                "remaining Records controls C01 and C03-C25"
+              ],
+              "run_id": "37799435980",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/records-native-retest-20261008.json",
+                ".research/records-live-peer-20261008-1529.json"
+              ],
+              "release_scope": "One authenticated native read on frozen development414. Backend SHA88fbdae6fb22e43d7bef8c4641d54372ca7af4a3 sampled after run only; no request-time deployed-source binding. Not full case, latest-main or Store acceptance."
+            }
+          }
         },
         {
           "id": "EXT-F-4130-T02",
@@ -63028,10 +63064,10 @@
           "retest_status": "not-run"
         },
         "admin": {
-          "test_status": "unverified",
+          "test_status": "partial",
           "defect_ids": ["EXT-D-0071", "EXT-D-0091"],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": ["37799435980"],
+          "retest_status": "partial"
         }
       }
     },
