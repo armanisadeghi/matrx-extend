@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "task_id": "reload_reply_independent_peer_20261007",
+  "reviewed_commit": "011ce6f24b494badedc853a9180eb0c78e7a1ef3",
+  "scope": "Independent, zero-authorship review of git show 011ce6f2 and its six committed paths only; no native browser, build, release, or source edit.",
+  "verdict_a_target_readiness": {
+    "status": "PARTIAL",
+    "passed": [
+      "The real reload path clears the fixture's previous result, clicks the owned Open panel control, classifies the callback, and attaches click-time observed worker status and running status to retirement evidence.",
+      "The allowlist serializer keeps received, ok, opened, category, click monotonic time, and worker states while omitting raw reply, reason, error, URLs, and token text. The Scrape acceptance caller serializes that evidence on both successful reload and top-level failure and writes its report to disk.",
+      "The existing target identity and context checks still execute after an 'opened' callback. The callback wait and panel poll use one deadline based on the prior 15-second target window."
+    ],
+    "missing_or_misunderstood": [
+      {
+        "severity": "Important",
+        "finding": "For any callback other than 'opened', including no response or malformed JSON, reloadOwnedExtension throws before polling Target.getTargets for a replacement panel. A panel that did appear is therefore never observed by the diagnostic. This changes the original target/context acceptance path and can preserve the original ambiguity about whether the request opened a panel.",
+        "evidence": "tests/browser/native-sidepanel-qa-harness.mjs lines 780-803; the new test cases set panelAppears=false whenever the callback is non-opened, so they do not exercise disagreement between callback and actual target."
+      },
+      {
+        "severity": "Unverified",
+        "finding": "No admitted native rerun or resulting on-disk Scrape receipt was available to this review. The static call chain supports serialization, but the exact live callback and worker state at the failure boundary remain unknown.",
+        "evidence": "Implementer report explicitly says no native Chrome rerun and no resource admission; source run 37726590928 predates this commit."
+      }
+    ]
+  },
+  "verdict_b_quality": {
+    "status": "PARTIAL",
+    "passed": [
+      "The new receipt fields are fixed allowlists with validated booleans, status enums, category enums, and safe integer time; untrusted callback strings do not enter the serialized evidence.",
+      "The exact reloadOwnedExtension-to-captureLifecycleEvidence test uses successful, refused, RPC-refused, and unobserved responses; the implementer reported a causal red assertion when the serializer dropped the category and green after repair. This is a meaningful propagation seam, though it is not an actual disk write.",
+      "The implementer reported 27/27 native harness and 7/7 focused local tests green after the deadline adjustment. These were unguarded local checks and were not independently rerun in this lane."
+    ],
+    "findings": [
+      {
+        "severity": "Important",
+        "finding": "The callback wait runs serially before panel polling. It can consume the entire shared deadline and then performs at most one target query. An unobserved callback with a real replacement panel is rejected without even that query. The original poll began after the click, so this also changes the time available to discover a slowly appearing target.",
+        "evidence": "tests/browser/native-sidepanel-qa-harness.mjs lines 755-803; no test covers a delayed callback with an independently appearing target."
+      },
+      {
+        "severity": "Minor",
+        "finding": "The explicit CI test list runs native-sidepanel-qa-harness.test.mjs but does not include the new native-panel-open-reply.test.mjs or profile-reload-capture.test.mjs. The focused acceptance script does not include any of these three tests. The new classification and serializer unit guards therefore rely on manual runs.",
+        "evidence": ".github/workflows/ci.yml lines 161-171 and package.json line 26."
+      },
+      {
+        "severity": "Minor",
+        "finding": "The helper handles malformed callback JSON and click failure, but the new focused helper tests do not assert the malformed case or a click exception. The integrated reload test checks refusal, RPC refusal, and timeout only.",
+        "evidence": "tests/browser/native-panel-open-reply.test.mjs and the added reloadCase loop in tests/browser/native-sidepanel-qa-harness.test.mjs."
+      }
+    ],
+    "forcing_test_limit": "The reported red/green establishes the serializer propagation guard, not a complete browser-to-disk forcing test. No executed return-expected or mutation proof for the new standalone helper test was supplied."
+  },
+  "recommended_disposition": "Do not claim the diagnostic capture is fully ready until callback observation and target discovery can both be recorded when they disagree, followed by a resource-admitted native run that inspects the actual disk receipt. Preserve the unknown root cause of EXT-D-0166.",
+  "checks_by_reviewer": [
+    "Read the exact commit diff and traced the Scrape success/failure serializer call chain to the final report write.",
+    "Inspected CI and focused acceptance command lists; no tests or native resource actions were run in this reviewer lane."
+  ]
+}
