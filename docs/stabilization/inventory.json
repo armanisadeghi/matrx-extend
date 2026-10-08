@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T17:21:52.246867+00:00",
+  "updated_at": "2026-10-08T17:43:59.594877+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -15855,16 +15855,16 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37801787667",
+              "run_id": "37816940141",
               "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "driver_source_sha": "59f0345b674c34c3d38bb65531133984484dae0f",
               "build_version": "0.2.414",
               "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+                ".research/scrape-reload-deep-native-20261008/report.json",
+                ".research/scrape-reload-deep-peer-20261008.json"
               ],
-              "detail": "Post-reload deep capture and a natural deep failure/retry with mode preservation remain unverified.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "detail": "Warm and post-full-extension-reload deep capture verified: lazy text absent in new document before scroll, actual Scrolling progress, exact text in page DOM and displayed Article. Deep natural failure/retry with mode preservation remains unverified.",
+              "release_scope": "Guest normal600px frozen development414 only; three current journals valid. Same driver blob as focused30f5c006. No member/admin, Store or later-main product inference."
             },
             "member": {
               "status": "partial",
@@ -16006,6 +16006,20 @@
                 }
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "status": "partial",
+              "run_id": "37801787667",
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-arm-414-native-20261008-1532.json",
+                ".research/scrape-live-peer-20261008-1544.json"
+              ],
+              "detail": "Post-reload deep capture and a natural deep failure/retry with mode preservation remain unverified.",
+              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
             }
           ],
           "native_preparation": {
@@ -16013,11 +16027,12 @@
             "independent_review": "e43d1746",
             "evidence": [
               ".research/scrape-reload-deep-source-20261008.json",
-              ".research/scrape-reload-deep-peer-20261008.json"
+              ".research/scrape-reload-deep-peer-20261008.json",
+              ".research/scrape-reload-deep-native-20261008/report.json"
             ],
-            "status": "source-ready-native-pending",
+            "status": "bounded-native-post-reload-deep-pass; full case partial",
             "scope": "After full extension reload: fresh intake empty result, zero lazy nodes, deep capture, observed Scrolling, exact lazy text in actual page and displayed Article. Existing guest result stays partial; deep failure/retry remains unverified.",
-            "next_action": "After exact focused gate and API recovery, run existing guest-scrape-development on lane B with verified exact artifact; inspect actual new post_reload_deep evidence and neighboring cases before coverage update."
+            "next_action": "Exercise genuine deep failure/retry with mode preservation; do not repeat already passed post-reload deep check alone."
           }
         },
         {
@@ -19024,6 +19039,21 @@
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
             }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T01:new_url_replaces_visible_title=pass",
+                "EXT-F-1008-T01:reload_audits_current_url=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
+            }
           ]
         },
         {
@@ -19324,6 +19354,21 @@
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
             }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T02:manual_button_returns_to_current_page=pass",
+                "EXT-F-1008-T02:guest_reaudit_captures_changed_page_metadata=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
+            }
           ]
         },
         {
@@ -19556,6 +19601,21 @@
                 ".research/seo-full-live-peer-20261008-1610.json"
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
+            }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T03:about_blank_clear_error_without_stale_audit=pass",
+                "EXT-F-1008-T03:public_page_recovers_after_restricted_url=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
             }
           ]
         },
@@ -19863,6 +19923,24 @@
                 ".research/seo-full-live-peer-20261008-1610.json"
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
+            }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T07:guest_actual_clipboard_text_and_ai_page_0=pass",
+                "EXT-F-1008-T07:guest_actual_clipboard_text_and_ai_page_1=pass",
+                "EXT-F-1008-T07:guest_menu_offers_text_and_ai_but_hides_json=pass",
+                "EXT-F-1008-T07:guest_role_gate_after_reload=pass",
+                "EXT-F-1008-T07:guest_actual_clipboard_text_and_ai_reload=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
             }
           ]
         },
@@ -20404,6 +20482,24 @@
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
             }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T09:page_0_title_and_headings=pass",
+                "EXT-F-1008-T09:page_1_title_and_headings=pass",
+                "EXT-F-1008-T09:sparse_public_detail_groups=pass",
+                "EXT-F-1008-T09:rich_public_detail_groups_and_canonical_door=pass",
+                "EXT-F-1008-T09:canonical_outbound_opens_expected_public_tab=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
+            }
           ]
         },
         {
@@ -20665,6 +20761,21 @@
                 "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance."
               },
               "superseded_at": "2026-10-08T16:13:38.966554+00:00"
+            }
+          ],
+          "revalidation_history": [
+            {
+              "at": "2026-10-08T17:43:59.594877+00:00",
+              "mode": "guest",
+              "run_id": "37816927539",
+              "build_version": "0.2.414",
+              "status": "bounded-pass",
+              "subtargets": [
+                "EXT-F-1008-T14:guest_social_missing_tags_clipboard_before_reaudit=pass",
+                "EXT-F-1008-T14:guest_social_missing_tags_clipboard_after_reaudit=pass"
+              ],
+              "evidence": [".research/seo-normal-after-stop-20261008/report.json"],
+              "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
             }
           ]
         }

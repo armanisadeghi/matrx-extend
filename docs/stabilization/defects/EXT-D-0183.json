@@ -7,7 +7,7 @@
   "title": "Guard-terminated SEO run loses last stage and completed observations",
   "severity": "S2: test failure cannot be localized; product SEO impact not established",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "seo_progress_receipt_repair",
   "reproduction": [
     "Run existing guest-seo full/Airbnb diagnostic on frozen407 as hosted37791330758.",
@@ -29,7 +29,8 @@
     ".research/seo-deterministic-interrupt-fix-20261008.json",
     ".research/seo-deterministic-stop-peer-20261008.json",
     ".research/seo-stop-live-20261008.json",
-    ".research/seo-interruption-live-adjudication-20261008.json"
+    ".research/seo-interruption-live-adjudication-20261008.json",
+    ".research/seo-normal-after-stop-20261008/report.json"
   ],
   "closure_requirement": "Durable phase/observation write proven by actual interrupted driver seam and freshreview, then independently inspected native interruption/surrounding successfulreceipt; no invalidrun promotion.",
   "transition_history": [
@@ -56,17 +57,29 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Source035caed8 passes fresh721cfa3a; real hosted/native requirement remains pending."
+    },
+    {
+      "at": "2026-10-08T17:43:59.594877+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent real interrupted37815373369 retains completed target checkpoint; normal37816927539 passes18 controlled targets with identical SEO driver blob and frozen414. All current normal journals valid; root verified32 original raw hashes across normal SEO/Scrape artifacts."
+    },
+    {
+      "at": "2026-10-08T17:43:59.594877+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original missing-progress failure and surrounding normal receipt behavior independently verified. Diagnostic remains unverified/no product acceptance credit; no whole SEO health inferred."
     }
   ],
   "fix_commits": ["035caed8", "5de616d9"],
   "native_partial": "37795616638 retained an early failure receipt at build_identity_verified with zero targets. Child exited1 after CDP timeout while CPU_PENDING; no confirmed guard kill. Receipt lacks an interim/checkpoint marker and may be final error output. Original post-panel/completed-target interruption durability remains unverified; no closure.",
-  "normal_completion_retest": "37800877872 preserves all18 selected targets on normal successful completion; peerf8425c5e verifies exact executed workflow driver and raw hashes. No intentional or resource interruption occurred. Original interrupted-target durability remains unverified.",
+  "normal_completion_retest": "37816927539 independently verifies18 controlled targets and ordinary final receipt on same driver766df2a3 and frozen414/tree550863c8 as interrupted37815373369. Current journals valid; no broader SEO/role/Store health claim.",
   "native_interruption_attempts": {
     "runs": ["37809984111", "37811146242"],
     "result": "Both cancelled after native child exit0/null signal; ordinary final receipts with18 controlled passes, no interruption credit. GitHub step status is too coarse for deterministic timing.",
-    "next_action": "Source5de616d9 and independent peeraa6004b3 support controlled selector manual_button_returns_to_current_page. Native still pending: verify exact focused CI, dispatch laneB guest-seo controlled/no fixture/no resource diagnostic with exact CI development artifact, require childSignal SIGTERM + in_progress checkpoint + selected real target/no acceptance credit; compare normal18-target receipt. Focused16tests are source seam evidence only."
+    "next_action": "Completed through deterministic interrupted37815373369 and normal37816927539; earlier mistimed cancellations remain historical only."
   },
-  "dispatch_status": "Quota reset recovered; real interrupted run37815373369 completed and independently adjudicated. One normal same-artifact laneB run assigned alongside isolated laneA guest Scrape run.",
+  "dispatch_status": "Both required native observations terminal and independently verified; no owned native job active.",
   "native_interruption_proof": {
     "run_id": "37815373369",
     "peer_commit": "e67a0ece",
@@ -74,6 +87,6 @@
     "product_version": "0.2.414",
     "workflow_source": "468cab2c",
     "observed": "Real target checkpoint survives native child SIGTERM; in_progress/unverified/no acceptance credit. Outer guard child_failed/resourceInvalid=false, no cleanup failure before finalization.",
-    "remaining": "Normal same-relevant-source/frozen414 surrounding run; historical neighbor used different workflow/product tree."
+    "remaining": "None for bounded receipt-loss defect; broader SEO coverage stays partial."
   }
 }

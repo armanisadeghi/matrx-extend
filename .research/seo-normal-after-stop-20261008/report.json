@@ -56,18 +56,8 @@
     "result": "normal_native_run_completed",
     "acceptance_scope": "controlled guest SEO only",
     "receipt_status": "partial",
-    "selected_cases": [
-      "T01",
-      "T02",
-      "T03",
-      "T07",
-      "T09",
-      "T14"
-    ],
-    "excluded_cases": [
-      "T09 volatile public detail",
-      "T09 optional metadata fixture"
-    ],
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "excluded_cases": ["T09 volatile public detail", "T09 optional metadata fixture"],
     "target_count": 18,
     "target_status_counts": {
       "pass": 18
@@ -111,7 +101,6 @@
     "interruption_run_id": 37815373369,
     "interrupted_receipt": "diagnostic checkpoint retained six passing targets with receipt_state=in_progress; no acceptance credit",
     "source_file": "tests/browser/seo-guest-acceptance.mjs",
-    "same_driver_sha256_at_interruption_fix_and_normal_run": "766df2a3da7f0c8ff742a3fb9e6fe5a399b2d5f0",
     "source_commits_compared": [
       "468cab2c053a5f470670362bda94310b8520353b",
       "5de616d941356c8ef62aad6a23bc82bc75f3c15e",
@@ -125,7 +114,8 @@
       "focused_tests": 161,
       "passed": 161
     },
-    "interpretation": "Together with the independently adjudicated interruption run, the normal run demonstrates receipt completion and target execution on identical relevant driver bytes and the same frozen 0.2.414 product artifact. D183 native surrounding-evidence requirement is met; controlled SEO remains partial."
+    "interpretation": "Together with the independently adjudicated interruption run, the normal run demonstrates receipt completion and target execution on identical relevant driver bytes and the same frozen 0.2.414 product artifact. D183 native surrounding-evidence requirement is met; controlled SEO remains partial.",
+    "same_driver_git_blob_sha1_at_interruption_fix_and_normal_run": "766df2a3da7f0c8ff742a3fb9e6fe5a399b2d5f0"
   },
   "resource_verdict": {
     "current_run_journals": {

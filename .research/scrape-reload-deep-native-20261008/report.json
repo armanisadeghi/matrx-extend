@@ -63,16 +63,12 @@
       {
         "id": "EXT-F-1007-T01",
         "status": "partial",
-        "remaining": [
-          "member/admin modes remain unverified by this receipt."
-        ]
+        "remaining": ["member/admin modes remain unverified by this receipt."]
       },
       {
         "id": "EXT-F-1007-T08",
         "status": "partial",
-        "remaining": [
-          "member/admin modes remain unverified by this receipt."
-        ]
+        "remaining": ["member/admin modes remain unverified by this receipt."]
       },
       {
         "id": "EXT-F-1007-T10",
@@ -92,16 +88,12 @@
       {
         "id": "EXT-F-1007-T13",
         "status": "partial",
-        "remaining": [
-          "member/admin modes remain unverified by this receipt."
-        ]
+        "remaining": ["member/admin modes remain unverified by this receipt."]
       },
       {
         "id": "EXT-F-1007-T02",
         "status": "partial",
-        "remaining": [
-          "Deep failure retry mode remains unverified."
-        ]
+        "remaining": ["Deep failure retry mode remains unverified."]
       },
       {
         "id": "EXT-F-1007-T07",
@@ -134,8 +126,8 @@
       "passed": 159
     },
     "assertion_file": "tests/browser/scrape-guest-native-acceptance.mjs",
-    "same_assertion_file_sha256_in_gate_and_native_workflow": "029a6b6fa680eceeb53107caa76cb89bde4eb282",
-    "interpretation": "The native workflow executed the exact focused-gate driver bytes containing the new deep T02 post-reload assertions; the tested product remains frozen development artifact 0.2.414."
+    "interpretation": "The native workflow executed the exact focused-gate driver bytes containing the new deep T02 post-reload assertions; the tested product remains frozen development artifact 0.2.414.",
+    "same_assertion_git_blob_sha1_in_gate_and_native_workflow": "029a6b6fa680eceeb53107caa76cb89bde4eb282"
   },
   "resource_verdict": {
     "current_run_journals": {
