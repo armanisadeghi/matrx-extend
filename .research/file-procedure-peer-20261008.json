@@ -1,0 +1,51 @@
+{
+  "artifact_type": "source-procedure-peer-review",
+  "reviewed_commit": "2fb0b97138467b3c875512ae90c8cc7cd218606a",
+  "reviewed_file": ".research/file-tool-procedures-20261008.json",
+  "reviewed_cases": ["EXT-F-4070-T01", "EXT-F-4157-T01", "EXT-F-4158-T01", "EXT-F-4159-T01"],
+  "verdicts": {
+    "A_accuracy_executability": "CONCERNS: source-based and currently not executable as marked. The handler contracts and independent output oracles are mostly right, but the file_upload route is hidden by the default Catalog filter and the drop_file negative step can produce success instead of the asserted refusal. No browser or backend result was observed.",
+    "B_provenance_scope_fixture_cleanup": "CONCERNS: original case IDs, control IDs, member/admin modes and four dimensions are preserved; guest exclusion matches the signed-in Tools surface. Direct manual execution is correctly distinguished from dispatcher permission enforcement. The read_pdf tab procedure creates more cloud files than it tracks, including one whose ID is lost on a range error, so its exact-ID cleanup claim is not supportable. The permissions dimension remains unverified by these manual runs."
+  },
+  "findings": [
+    {
+      "severity": "Important",
+      "case": "EXT-F-4070-T01",
+      "location": ".research/file-tool-procedures-20261008.json:46",
+      "source": "src/features/tools/ToolsView.tsx:125,142; src/lib/tools/categories.ts:459-480",
+      "issue": "Catalog starts with the canonical surface filter; file_upload is absent from CANONICAL_SURFACE. Searching file_upload without changing the filter yields no row.",
+      "correction": "Set Catalog surface to Internal or All before searching file_upload, and retain the exact owned file-input selector. The existing synthetic base64 decodes to 26 bytes as asserted."
+    },
+    {
+      "severity": "Important",
+      "case": "EXT-F-4158-T01",
+      "location": ".research/file-tool-procedures-20261008.json:132",
+      "source": "src/lib/tools/handlers/canonical.ts:924-954",
+      "issue": "A real non-drop HTMLElement carrying the chosen ref is still a valid dispatch target and returns ok:true. The handler does not test whether that element accepts drops.",
+      "correction": "For the No drop target branch, use a syntactically valid ref absent from the owned fixture DOM and verify no fixture event was recorded. Keep a separate observer assertion for a present element that ignores drops if needed; its handler result may be ok:true."
+    },
+    {
+      "severity": "Important",
+      "case": "EXT-F-4159-T01",
+      "location": ".research/file-tool-procedures-20261008.json:173-184",
+      "source": "src/lib/tools/handlers/canonical.ts:983-1029; src/lib/api/routes/files.ts:109-167",
+      "issue": "Each tab_id call uploads a PDF before extraction. The procedure repeats full and range calls across warm/reloaded member/admin runs but retains only the first successful file_id. A past-last-page extraction returns ok:false without the new upload's file_id, making exact-ID cleanup impossible from the tool result.",
+      "correction": "Require a fixture of at least three pages. Run at most one tab_id ingestion per role/build when exact cleanup is proven, record and clean every returned ID, and use that ingested file_id for range and past-last-page calls. If a tab_id extraction can fail after upload, provide an independent owner-scoped way to enumerate and identify that exact artifact before authorizing that branch; otherwise keep it blocked."
+    },
+    {
+      "severity": "Important",
+      "case": "all four",
+      "location": ".research/file-tool-procedures-20261008.json:203-205",
+      "source": "docs/stabilization/inventory.json case dimensions; src/features/tools/ToolsView.tsx:453-463",
+      "issue": "The original permissions dimension is retained but none of these direct handler procedures can verify dispatcher Ask/Act permission gating. Member/admin access to Tools and browser/API success are narrower observations.",
+      "correction": "Record permissions as unverified for these runs and link a separate dispatcher or denied-permission case before closing that inventory dimension. Do not award permission credit from the direct manual runner."
+    }
+  ],
+  "verified_procedure_criteria": {
+    "EXT-F-4070-T01": "Use signed-in member and admin separately; Catalog Internal/All; owned focused file-input page with visible input/change counters and payload-byte observer; positive exact 26-byte text/plain filename result, wrong-target refusal, schema refusal, reload repeat, and local reset/close. The current repository fixture has no file input.",
+    "EXT-F-4157-T01": "Use signed-in member and admin separately; exact numeric tab_id encoded as a string, present data-matrx-ref file input, already-owned inert MediaRef with verified filename/MIME/bytes and exact cleanup path; require page change observer, missing-ref refusal, schema refusal, reload repeat, then exact-ID deletion/absence. The current repository fixture and known MediaRef are missing.",
+    "EXT-F-4158-T01": "Use signed-in member and admin separately; exact tab_id, owned ref or observed coordinate, already-owned inert MediaRef and exact cleanup path; require ordered dragenter/dragover/drop and file metadata in visible fixture log; nonexistent-ref refusal, schema refusal, reload repeat, then reset and exact-ID deletion/absence. The current repository fixture and known MediaRef are missing.",
+    "EXT-F-4159-T01": "Use signed-in member and admin separately; controlled fetchable PDF with at least three pages and predeclared per-page text markers; whole text/page count plus slice 2-3 and past-last-page refusal using one ingested file_id; schema refusal and reload repeat. Tab ingestion must not run until every possible upload can be identified and cleaned by exact ownership. No committed controlled PDF fixture or verified cleanup route exists."
+  },
+  "review_limits": "Source, inventory and fixture listing inspection only. No browser, build, test, database, backend, inventory or source modification; no claim of live tool success, permission outcome, or cleanup execution."
+}
