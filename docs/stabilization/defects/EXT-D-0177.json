@@ -7,7 +7,7 @@
   "title": "Records checkpoint clicks before lazy Catalog is ready",
   "severity": "S2: test harness can fail before product request; native cause still conditional",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/records_missing_row_rootcause",
   "preconditions": [
     "Frozen407 includes static Records catalog row; Tools view mounts lazily.",
@@ -22,7 +22,9 @@
   "actual": "Native37776597696 recorded active Tools panel with zero matched/visible Records targets; source establishes a missing readiness await, but that receipt lacks inner state so the native cause is not yet proven.",
   "evidence": [
     ".research/t57-records-counts-native-20261008.json",
-    ".research/native-diagnostics-peer-20261008.json"
+    ".research/native-diagnostics-peer-20261008.json",
+    ".research/records-missing-row-rootcause-20261008.json",
+    ".research/catalog-readiness-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -42,7 +44,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Implementation lane owns state-based readiness and causal guard plus safe failure observations."
+    },
+    {
+      "at": "2026-10-08T12:44:54.084798+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Causal source guard and fresh independent source review passed; actual native original-reproduction retest remains pending."
     }
   ],
-  "closure_requirement": "Independent source/causal guard review plus native observed Catalog readiness and actual Records activation without weakening real product GET/header/principal/finished-response acceptance."
+  "closure_requirement": "Independent source/causal guard review plus native observed Catalog readiness and actual Records activation without weakening real product GET/header/principal/finished-response acceptance.",
+  "fix_commits": ["a7340e6c"]
 }

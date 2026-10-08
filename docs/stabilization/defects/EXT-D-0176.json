@@ -7,7 +7,7 @@
   "title": "Opt-in diagnostic can retain passing acceptance status",
   "severity": "S2: test infrastructure could misclassify instrumented evidence; no product defect",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/seo_diagnostic_classification_fix",
   "preconditions": [
     "Source5c0c03d1 opt-in SEO CPU diagnostic classifier before independent finding af91b965."
@@ -21,7 +21,9 @@
   "evidence": [
     ".research/seo-resource-diagnostic-peer-20261008.json",
     ".research/seo-diagnostic-classification-fix-20261008.json",
-    ".research/seo-classifier-final-peer-20261008.json"
+    ".research/seo-classifier-final-peer-20261008.json",
+    ".research/seo-cpu-optin-native-20261008.json",
+    ".research/seo-native-diagnostic-peer-20261008.json"
   ],
   "root_cause": "Classifier switches only one successful status rather than enforcing the diagnostic evidence class independently of outcome.",
   "transition_history": [
@@ -48,8 +50,21 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh independent peer reproduced prior pass defect and verified actual classifier-to-summary guard22/22. Native diagnostic delivery pending."
+    },
+    {
+      "at": "2026-10-08T12:50:13.858412+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Actual hosted37777965952 receipt is diagnostic_only with zero acceptance targets; independent57ab64db verified classification and prior causal guard. No product acceptance inferred."
+    },
+    {
+      "at": "2026-10-08T12:50:13.858412+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original infrastructure reproduction and surrounding source contracts independently verified; all product coverage gaps preserved."
     }
   ],
   "closure_requirement": "Actual classifier/writer and consumer exclude all diagnostic outcomes, with causal old-red/new-green guard and fresh independent review. Native SEO health stays unverified.",
-  "fix_commits": ["744b92e9"]
+  "fix_commits": ["744b92e9"],
+  "next_action": "Separate resource-valid uninstrumented guest SEO metadata acceptance remains required; no route/classification repair remains."
 }

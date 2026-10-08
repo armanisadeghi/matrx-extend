@@ -7,7 +7,7 @@
   "title": "Hosted workflow cannot select the existing real-page metadata acceptance fixture",
   "severity": "S2: test infrastructure prevents required coverage; no product SEO failure established",
   "priority": "P1",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root/seo_fixture_route_wiring",
   "preconditions": [
     "Existing guest-seo hosted TEST route and tests/browser/seo-guest-acceptance.mjs; before source5d5b985f",
@@ -22,7 +22,9 @@
   "actual": "No input/environment handoff exists; repeated default runs cannot exercise the open metadata criterion.",
   "evidence": [
     ".research/nonchat-guest-coverage-native-20261008.json",
-    ".research/seo-fixture-route-wiring-20261008.json"
+    ".research/seo-fixture-route-wiring-20261008.json",
+    ".research/seo-cpu-optin-native-20261008.json",
+    ".research/seo-native-diagnostic-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -48,6 +50,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Independent source contract and eight focused tests accepted; native fixture criterion remains pending."
+    },
+    {
+      "at": "2026-10-08T12:50:13.858412+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Resource-valid hosted37777965952 reached the actual Airbnb metadata branch; independent57ab64db verified fixture-route infrastructure. Instrumented product T09 remains unverified."
+    },
+    {
+      "at": "2026-10-08T12:50:13.858412+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original infrastructure reproduction and surrounding source contracts independently verified; all product coverage gaps preserved."
     }
   ],
   "source_candidate": {
@@ -56,5 +70,5 @@
     "native_retest": "pending"
   },
   "closure_requirement": "Independent source/guard review and a resource-valid hosted execution proves the selected real fixture reaches its actual metadata criterion. Product T09 pass requires actual DOM-versus-UI agreement, not fixture selection alone.",
-  "next_action": "Review run37774478094 resource-invalid receipt; no acceptance credit. Diagnose resource pressure before another fixture attempt; source fix alone does not close this defect."
+  "next_action": "Separate resource-valid uninstrumented guest SEO metadata acceptance remains required; no route/classification repair remains."
 }

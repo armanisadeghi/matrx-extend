@@ -19250,6 +19250,21 @@
                 ".research/parallel-native-boundary-peer-20261008.json"
               ],
               "detail": "Exact frozen artifact imported and side panel opened; CPU/load watchdog invalidated run before native SEO receipt or Airbnb metadata criterion. No new/revalidated acceptance or product failure; no unchanged retry."
+            },
+            {
+              "at": "2026-10-08T12:53:08.828758+00:00",
+              "mode": "guest",
+              "run_id": "37777965952",
+              "status": "unverified",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.407",
+              "source_sha": "5d845f42cb22c10e2486af8048d1ac9f3ac8e114",
+              "evidence": [
+                ".research/seo-cpu-optin-native-20261008.json",
+                ".research/seo-native-diagnostic-peer-20261008.json"
+              ],
+              "detail": "Resource-valid diagnostic-only receipt: zero acceptance targets,24 diagnostic observations including real Airbnb hreflang/schema branch. Independent57ab64db accepts D174 route and D176 classification infrastructure closure only. CPU pending recovered; matched high interval dominated by owned Chromium, not complete cause proof. Separate uninstrumented T09 remains required."
             }
           ]
         },

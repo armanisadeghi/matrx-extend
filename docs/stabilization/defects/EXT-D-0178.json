@@ -7,7 +7,7 @@
   "title": "Native recapture procedure omits visible discard-edits confirmation",
   "severity": "S2: test harness stops before recapture; product confirmation is expected",
   "priority": "P1",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "root/scrape_postreload_visibility_fix",
   "preconditions": [
     "Frozen407 Scrape view, existing owned test capture with media edits and edited=true.",
@@ -22,7 +22,9 @@
   "actual": "Native37776576395 delivered Capture but later observed ready/title match with article unselected/invisible and text absent. Source diagnosis identifies the expected confirmation omitted by the procedure; uninstrumented retest remains required.",
   "evidence": [
     ".research/scrape-optin-diagnostic-native-20261008.json",
-    ".research/native-diagnostics-peer-20261008.json"
+    ".research/native-diagnostics-peer-20261008.json",
+    ".research/scrape-postreload-visibility-fix-20261008.json",
+    ".research/scrape-confirmation-peer-20261008.json"
   ],
   "transition_history": [
     {
@@ -42,7 +44,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Fixer owns trusted specific confirmation interaction and causal guard, retaining fresh-capture content proof."
+    },
+    {
+      "at": "2026-10-08T12:44:54.084798+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Causal source guard and fresh independent source review passed; actual native original-reproduction retest remains pending."
     }
   ],
-  "closure_requirement": "Fresh independent source review and actual uninstrumented native recapture confirms only owned edits then shows newly captured fixture article; surrounding cancel/confirmation semantics retained."
+  "closure_requirement": "Fresh independent source review and actual uninstrumented native recapture confirms only owned edits then shows newly captured fixture article; surrounding cancel/confirmation semantics retained.",
+  "fix_commits": ["17571839"]
 }
