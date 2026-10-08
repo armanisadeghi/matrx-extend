@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T18:48:21.432135+00:00",
+  "updated_at": "2026-10-08T19:04:39.153325+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5071,6 +5071,18 @@
               "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
+          ],
+          "preparation_history": [
+            {
+              "at": "2026-10-08T19:00:04.498493+00:00",
+              "source_commit": "f20f554c",
+              "evidence": [
+                ".research/settings-next-controls-preparation-20261008.json",
+                ".research/settings-next-controls-peer-20261008.json"
+              ],
+              "scope": "Visible applied theme appearance and new-chat inherited default after panel reload; source tests only, independent source review passed/native pending; no extension-wide reload or server-action claim.",
+              "independent_review": "91b3bc98"
+            }
           ]
         },
         {
@@ -5356,6 +5368,18 @@
               "independent_review": "4a5a8e98",
               "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            }
+          ],
+          "preparation_history": [
+            {
+              "at": "2026-10-08T19:00:04.498493+00:00",
+              "source_commit": "f20f554c",
+              "evidence": [
+                ".research/settings-next-controls-preparation-20261008.json",
+                ".research/settings-next-controls-peer-20261008.json"
+              ],
+              "scope": "Visible applied theme appearance and new-chat inherited default after panel reload; source tests only, independent source review passed/native pending; no extension-wide reload or server-action claim.",
+              "independent_review": "91b3bc98"
             }
           ]
         },
@@ -17223,6 +17247,25 @@
               "new_acceptance_credit": true,
               "evidence": [".research/scrape-empty-links-native-20261008.json"],
               "detail": "Warm emptyLinks zero rows/count, Add link and full-export invariance verified. Extension reload failed before replacementpanel, so postreload Links unverified. Earlierhistoricalresults preserved; no Article or fullcasepass."
+            },
+            {
+              "at": "2026-10-08T19:04:39.153325+00:00",
+              "mode": "guest",
+              "run_id": "37827832123",
+              "status": "partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/scrape-passive-article-native-20261008.json",
+                ".research/scrape-passive-article-native-20261008/raw/manifest.json"
+              ],
+              "passed_subtargets": [
+                "Warm empty Article renders fallback, remains unchanged on pane revisit, and preserves full capture export",
+                "Warm empty Links zero rows/Add link/export invariance revalidated"
+              ],
+              "unverified": "Full extension reload stopped before replacement panel/open click: worker-retirement/activation proof missing. No post-reload Article/Links credit; no member/admin or full T08 pass."
             }
           ]
         },
@@ -64907,7 +64950,20 @@
             ],
             "scope": "C03 metadata_search via actual Tools UI, query from prior post-reload table_list result, require same table ID/name/approved organization in correlated finished visible response. Existing C02 malformed-input/reload guards retained. Current optional flag schema checked before running.",
             "remaining": "Positive C03 verified by37825307247; owned-controlled-table and negative search criteria, other controls and roles remain."
-          }
+          },
+          "preparation_history": [
+            {
+              "at": "2026-10-08T19:00:04.498493+00:00",
+              "source_commit": "b6060f6e",
+              "independent_review": "abe8dfe4",
+              "focused_ci": "37828136338",
+              "evidence": [
+                ".research/records-next-controls-preparation-20261008.json",
+                ".research/records-next-controls-peer-20261008.json"
+              ],
+              "scope": "C03 null-query, C04 malformed-record-ID and C05 malformed-table-ID negative acceptance assertions only; native pending. C04/C05 positives require owned disposable table/record setup and cleanup. Minor test coverage gap for every persisted receipt flag retained in peer report."
+            }
+          ]
         },
         {
           "id": "EXT-F-4130-T02",

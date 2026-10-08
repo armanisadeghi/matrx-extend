@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "scope": "Source-only causal diagnosis of native Scrape reload failure in run 37827832123; no browser, build, native rerun, release, or shared harness edit.",
+  "verdict": "REPLACEMENT_NOT_ACTIVATED_AT_FAILURE; CAUSE_UNCONFIRMED",
+  "evidence": {
+    "native_report": ".research/scrape-passive-article-native-20261008/raw/scrape-guest-native-report.json",
+    "native_summary_commit": "e7d2422d",
+    "resource_admission": "Current package and browser journals finalized valid; guest journal was admitted and resourceInvalid=false, then child_failed on the native case.",
+    "reload_transition": "Chrome management Reload was clicked with Developer mode and extension enabled. Old panel target was destroyed; old worker version 0 changed from running/activated to stopped/redundant and its target left the final target list. A distinct worker target and version 1 appeared; the final target list contained only the replacement worker and no panel.",
+    "acceptance_observer": "The pre-click ServiceWorker observer recorded the replacement as starting/new at 19:01:06.103Z, with no later version transition in its retained 15-second polling window. It recorded zero dropped version events. The strict retirement predicate remained false because replacement running/activated was not observed.",
+    "independent_observer": "After refusal, observeFreshReplacement used a new CDP session and received a matching version 1/registration 1/replacement target snapshot: starting/new, outcome not_activated, cleanup confirmed. It did not observe running/activated.",
+    "management": "Management reported ENABLED with zero runtime and manifest errors at the failure boundary; this is not a proof that worker startup had no error.",
+    "open_panel": "The harness refused before the Open panel click, so no callback or replacement-panel result was sampled. Warm Article and Links observations remain warm-only."
+  },
+  "causal_ruling": {
+    "observer_mismatch": "Contradicted at this sampled boundary: the original observer and an independently enabled observer agreed on the same replacement identity and starting/new state. The strict predicate did not fail solely because Target.targetDestroyed was missed; old execution was recorded stopped/redundant.",
+    "real_activation_state": "Supported only for the sampled failure window: Chrome exposed a replacement target, but its ServiceWorker version had not reached running/activated by refusal. This does not establish whether activation occurred later, why startup stalled, or whether the extension product code caused it.",
+    "host_probe_limit": "Target.getTargetInfo still returned the old host despite old version stopped/redundant and old target absent from Target.getTargets; DevTools host retention is not evidence that old script execution continued.",
+    "failure_class": "Distinct from D166 run 37825316724, where replacement reached running/activated and the later Open-panel reply/panel was missing. Distinct from D107, whose failure occurs before CDP attachment and product exercise."
+  },
+  "ranked_discriminators": [
+    {
+      "hypothesis": "The replacement script fails during startup or registration.",
+      "prediction": "A ServiceWorker.workerErrorReported event for the replacement identity, or a bounded worker Runtime exception, precedes refusal; the replacement never reaches activated in the same observation window.",
+      "next_observation": "On the next authorized native attempt, subscribe before Reload to ServiceWorker.workerErrorReported and retain only safe error category, phase, and matching version/registration identity in the failure receipt. Do not change the acceptance predicate."
+    },
+    {
+      "hypothesis": "The replacement activates after the present acceptance window or the first fresh-observer snapshot.",
+      "prediction": "A bounded independent observer sees a later transition on the same version and target from starting/new to running/activated after the current refusal; no new reload click is needed.",
+      "next_observation": "On refusal, retain a second identity-matched ServiceWorker snapshot or transition after the existing diagnostic budget instead of ending the fresh observer at its first matching snapshot. Keep this diagnostic outside the original acceptance verdict and cleanup boundary."
+    },
+    {
+      "hypothesis": "Chrome startup remains pending without a reported script error in the bounded diagnostic window.",
+      "prediction": "The same version remains starting/new in the later independent snapshot, with no matching workerErrorReported event; the next investigation belongs at Chrome worker startup/owned host state rather than the panel-click path.",
+      "next_observation": "If the first two observations have that combination, retain the owned worker target's attach/host state and Chrome process-level startup failure category; do not infer a product cause from silence."
+    }
+  ],
+  "verification": "Compared raw ServiceWorker version and Target timelines against the harness predicate and fresh-observer implementation, D166's activated-but-no-panel receipt, and D107's pre-CDP defect. No red-capable focused reproduction of the underlying Chrome stall exists in this source-only lane, so no behavior fix or guard is claimed.",
+  "acceptance": "T08 post-reload Article/Links and passive open trace remain unverified; this report is a diagnosis boundary, not product acceptance or D166/D107 closure."
+}

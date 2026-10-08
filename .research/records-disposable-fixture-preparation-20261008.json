@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-4130",
+  "status": "BLOCKED_BEFORE_WRITES",
+  "scope": "Source-only investigation of an owned disposable Records table and row for positive C11, C06, C04, C05 and C07. No native launch, product request, fixture creation, user-data mutation, build or release occurred.",
+  "current_credit": "C02 and C03 positives already have hosted credit. C03, C04 and C05 malformed-input negatives are source-ready in the existing native driver; this unit does not count them again or alter their assertions.",
+  "required_order": [
+    "C11 applied table_propose receipt supplies the owned table id and field keys",
+    "C06 applied record_write receipt supplies the owned record id and version",
+    "C04 record_read checks that exact id and the case-owned value",
+    "C05 record_aggregate checks the owned table count against the one case row",
+    "C07 record_delete soft-deletes only the owned row after dependent reads, with its own observable receipt",
+    "Cleanup archives the owned table and rows and verifies completion even after an earlier assertion fails"
+  ],
+  "source_findings": [
+    {
+      "fact": "The 25-action Records agent contract has table_propose, record_write and record_delete, but no table deletion or archival action. C07 is a soft delete and cannot remove the table fixture.",
+      "sources": [
+        "../aidream/packages/matrx-records/matrx_records/agent/args.py",
+        ".research/records-control-procedures-20261008.json"
+      ]
+    },
+    {
+      "fact": "The separate authenticated person-facing DELETE /api/v1/tables/{table} archives a table and its rows, preserving a restorable artifact. It requires the current person's organization context; a busy result requires repeating the same call until done=true.",
+      "sources": [
+        "../aidream/aidream/api/routers/table_api.py:122",
+        "../aidream/aidream/services/table_api/schema.py:425",
+        "../aidream/packages/matrx-records/matrx_records/store/client.py:2681"
+      ]
+    },
+    {
+      "fact": "table_propose asks the organization's approval policy before creation. In always_ask it files a durable table_add approval request rather than producing an applied table; record_write can likewise file a durable record_add approval. A queued approval can be applied later, so archiving only an already-created table cannot clean a held proposal.",
+      "sources": [
+        "../aidream/packages/matrx-records/matrx_records/store/client.py:3451",
+        "../aidream/packages/matrx-records/matrx_records/store/client.py:3799",
+        "../aidream/packages/matrx-records/matrx_records/store/client.py:1539"
+      ]
+    },
+    {
+      "fact": "When no Home is supplied, table_propose calls ensure_home before its held-versus-applied branch; a held request can therefore leave an additional Home artifact in a blank organization.",
+      "sources": ["../aidream/packages/matrx-records/matrx_records/store/client.py:3810"]
+    },
+    {
+      "fact": "An independent person-facing fixture path exists: authenticated POST /api/v1/tables with TableCreate{name,columns,slug} returns TableMade{done,id,created,organization_id}; POST /api/v1/tables/{table}/rows with RowCreate{values} returns WriteResult{done,row}. The REST surface acts as the person, so these writes bypass agent approval. A unique case slug, created=true, returned table id and same organization are required before using or archiving the table; a replay that found an existing table cannot be treated as owned.",
+      "sources": [
+        "../aidream/aidream/api/routers/table_api.py:114",
+        "../aidream/aidream/api/routers/table_api.py:300",
+        "../aidream/aidream/services/table_api/contract.py:210",
+        "../aidream/aidream/services/table_api/contract.py:468",
+        "../aidream/aidream/services/table_api/caller.py:54",
+        "../aidream/aidream/services/table_api/schema.py:253",
+        "../aidream/aidream/services/table_api/service.py:499"
+      ]
+    }
+  ],
+  "blocking_gap": "C11/C06 agent-action writes remain blocked: the current native driver has no verified same-principal approval preflight or rejection path. A held table_add or record_add approval can apply after table archival. The person-facing API can prepare C04/C05's owned table and row independently, but this harness has not yet proven its live create/archive ownership or durable recovery after partial failure. Archive is the supported, restorable cleanup; no hard deletion contract was found.",
+  "safe_next_step": "For C04/C05 alone, use the same authenticated person and X-Organization-Id to POST a table with a run-unique slug and text/number columns, require done=true, created=true and the expected organization, then POST one row with an Idempotency-Key and require done=true plus its actual id. Journal the slug and returned IDs outside the final receipt so a failed or interrupted run can find only its own fixture, perform C04/C05 reads, and in finally repeat DELETE /api/v1/tables/{owned-id} until done=true and verify it no longer appears in normal table reads. Fail closed on missing ownership or cleanup evidence. This API setup does not credit C11/C06. For C11/C06 specifically, first prove the current approval policy, use an existing Home, and prove the same-person work_approval_decide rejection path; only then encode their agent writes and held-request cleanup.",
+  "positive_native_status": "NOT_RUN; C11/C06/C04/C05/C07 positive credit remains pending. C04/C05 have a source-supported separate setup route, not a live-verified or executable native procedure in this unit. No new driver assertion was added because the owned REST create/archive lifecycle has not been verified in this harness."
+}
