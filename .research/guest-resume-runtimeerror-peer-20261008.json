@@ -1,0 +1,11 @@
+{
+  "defect_id": "EXT-D-0172",
+  "candidate_source_commit": "7ec6c76205f8625bcbd0a70a9f40b417c20a84af",
+  "verdict_a_source": "PASS: exact reserved message UUID is read back; assistant, active, nondeleted, same-conversation and matching tool-call IDs are required without comparing physical position to logical history index. Only an empty pending same-conversation reservation is repaired; completed or foreign content is not overwritten.",
+  "verdict_b_guard": "PASS: the regression uses rebuild_conversation_messages to turn two persisted rows into three logical messages, then calls the real orchestrator and delegated-tool callback. It covers advertised and dispatch-promoted client routes with a server sibling, plus empty-reservation repair and foreign/occupied/deleted refusals.",
+  "independent_test": "uv run pytest packages/matrx-ai/tests/test_guest_delegation_checkpoint.py -q: 17 passed",
+  "source_diff_checked": "git show 7ec6c76205: executor.py, test_guest_delegation_checkpoint.py, orchestrator/FEATURE.md",
+  "native_verdict": "PENDING: no new public guest reload/new-conversation retest was authorized in this reviewer lane; source-only approval does not close the live RuntimeError.",
+  "findings": [],
+  "overall": "FLIP source and guard; retain native pending"
+}
