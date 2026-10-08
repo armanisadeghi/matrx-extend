@@ -1487,6 +1487,22 @@
    "application/json"
   ]
  },
+ "/cms/html-artifacts/{canvas_item_id}/publish": {
+  "post": []
+ },
+ "/cms/html-pages": {
+  "get": [],
+  "post": [
+   "application/json"
+  ]
+ },
+ "/cms/html-pages/{page_id}": {
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
+ },
  "/cms/publish-check": {
   "post": [
    "application/json"
@@ -5090,6 +5106,16 @@
    "application/json"
   ]
  },
+ "/notion-import/connected": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/notion-import/zip": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/ntfy/public/health": {
   "get": []
  },
@@ -5964,6 +5990,11 @@
  },
  "/render-status/public/status": {
   "get": []
+ },
+ "/rendered-output/capture": {
+  "post": [
+   "application/json"
+  ]
  },
  "/replicon/public/status": {
   "get": []
@@ -7731,6 +7762,11 @@
  },
  "/twitch/streams": {
   "get": []
+ },
+ "/typed-tables/confidential": {
+  "post": [
+   "application/json"
+  ]
  },
  "/typeform/public/status": {
   "get": []
