@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-08T08:10:26Z",
+  "scope": "Read-only GitHub Actions release and artifact inventory; no build, version bump, upload, or submission",
+  "public_store_record": {
+    "version": "0.2.205",
+    "status_as_last_observed_on_2026_10_07": "Published - public",
+    "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "source": "/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md"
+  },
+  "latest_successful_release_workflow": {
+    "run_id": 37180303468,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37180303468",
+    "created_at_utc": "2026-10-04T05:34:52Z",
+    "head_sha": "996b2a173c54ebbca654e1ddf7fe6fb08e23cf57",
+    "artifact_id": 11294843385,
+    "artifact_name": "matrx-extend-v0.2.205",
+    "artifact_created_at_utc": "2026-10-04T05:39:23Z",
+    "artifact_expired": false,
+    "store_zip_sha256_from_canonical_record": "6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26"
+  },
+  "recent_artifact_scan": {
+    "api": "GET /repos/armanisadeghi/matrx-extend/actions/artifacts?per_page=100",
+    "total_repository_artifacts": 1368,
+    "scanned_count": 100,
+    "newest_artifact": {
+      "id": 11537245045,
+      "name": "matrx-extend-development-test-befaf2142f77cbf91af697a0e902584161442e66-37747090976-1",
+      "created_at_utc": "2026-10-08T08:08:41Z"
+    },
+    "store_or_release_named_candidates": [],
+    "other_artifact_classes_seen": ["matrx-extend-development-test-*", "hosted-guest-*"]
+  },
+  "newer_validated_store_zip_found": false,
+  "limitation": "The recent-100 artifact scan and release workflow list were read-only. Development-test bundles and native receipts do not establish a Store ZIP. A current authenticated dashboard recheck is separately owned."
+}

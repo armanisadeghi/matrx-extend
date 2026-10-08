@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "artifact_type": "scoped-procedure-reverification",
+  "reviewed_commit": "c33d3946",
+  "current_source_head": "ee70a3576eb781ab931589480c4ee795168816b5",
+  "reviewed_path": ".research/remaining-tool-procedures-20261008.json",
+  "scope": "Fresh source-only re-verification of RTP01-RTP05 and the repair diff. No browser, backend, database, native engine, build, or release execution. Procedure evidence is not runtime proof.",
+  "findings": [
+    {
+      "id": "RTP-01",
+      "status": "ADDRESSED_WITH_EXECUTION_HELD",
+      "case_ids": ["EXT-F-4150-T01"],
+      "evidence": "The revised case explicitly states computer always calls take_screenshot with persist=true, describes cld_files plus extend.wbx_screenshot writes and the returned file reference, records that Screenshots deletion leaves cloud bytes, and blocks C10 until both artifacts have a supported cleanup path. Current source confirms canonical.ts delegates persist:true (318-373), read.ts persists and returns file_id/screenshot_id or inline fallback (331-445), and destructive/operations.ts deleteScreenshot is the gallery cleanup route. No cleanup proof is claimed.",
+      "residual": "C10 remains unexecutable; no supported cloud-file deletion path is evidenced."
+    },
+    {
+      "id": "RTP-02",
+      "status": "ADDRESSED_CONDITIONALLY",
+      "case_ids": ["EXT-F-4128-T01"],
+      "evidence": "The revised prompt names read_page, forbids inference from metadata, requires the child trace to show an actual read_page call and distinct fixture labels mapped to each tab, and directs inspection to Tasks. parallel.ts sends metadata-only browser-dom state with server-driven discovery (189-240); TasksView mounts ParallelRunsPanel (929-931).",
+      "residual": "Availability and execution in child runs remain unverified and are correctly a stop condition; no child trace or fixture exists."
+    },
+    {
+      "id": "RTP-03",
+      "status": "ADDRESSED_CONDITIONALLY",
+      "case_ids": ["EXT-F-4124-T01"],
+      "evidence": "The revised case keeps all positive actions blocked until a known authorized agent/mandate and real Chat/Pilot route exist, specifies exact calls and returned-ID capture, and isolates clear_done in a second disposable conversation with zero completed baseline rows and only one owned completed row. Current storage filters all done rows for a conversation (storage.ts:392-403), and handler delegates clear_done to it (lists.ts:129-131).",
+      "residual": "No authorized agent/mandate or live route fixture is supplied; none of the action branches has been run. Keep positive controls non-executable until that route exists."
+    },
+    {
+      "id": "RTP-04",
+      "status": "NOT_ADDRESSED_AND_CORRECTLY_RETAINED_UNRESOLVED",
+      "case_ids": ["EXT-F-4130-T01"],
+      "evidence": "The revision still lacks live guide-derived payloads, observable outcomes, ID lineage, and cleanup per C02-C25. It explicitly retains all 24 action controls as unresolved, requires the live guide and owned fixture before execution, keeps proposal actions blocked absent inertness and cleanup proof, and orders restore before final delete. ToolsView.tsx and manual-server.ts remain the cited route; no live server contract was fetched.",
+      "residual": "All Records action controls remain unresolved. Preserve their missing steps and expected results; do not merge them as executable procedures."
+    },
+    {
+      "id": "RTP-05",
+      "status": "ADDRESSED_WITH_MINOR_NEW_BREAKAGE",
+      "case_ids": ["EXT-F-4150-T01"],
+      "evidence": "The revision uses a focusable input and requires focused=true plus visible focus evidence and blur evidence, separates malformed string tab_id (Invalid tab_id) from a numeric nonexistent ID (Tab <id> not found), and requires local counters/state. keyboard.ts:249-308 confirms focus may return focused:false and blur returns ok independently of a visible transition, so the required page evidence is appropriate. The malformed/current-missing distinction is consistent with _active-tab.ts:49-60.",
+      "residual": "New minor issue: computer step 4 repeats the exact C11/C13/C14 procedure already given in step 3. Remove the duplicate before treating the text as final; it adds no new assertion and makes the sequence harder to follow. C10 remains blocked under RTP-01."
+    }
+  ],
+  "verdict_A_spec_and_reproducibility": {
+    "overall": "PARTIAL",
+    "accepted_proposal_cases_for_conditional_merge": [
+      {"case_id":"EXT-F-4124-T01","condition":"Keep NOT_EXECUTABLE_FOR_ACTION_CONTROLS until an authorized live agent/mandate and Chat/Pilot route are available."},
+      {"case_id":"EXT-F-4127-T01","condition":"May merge as a bounded proposal only; paired engine, role, and permission behavior remain unverified."},
+      {"case_id":"EXT-F-4128-T01","condition":"May merge as a bounded proposal only; positive run requires child trace proving read_page was called on both distinct fixture tabs."},
+      {"case_id":"EXT-F-4150-T01","condition":"Only C01-C09 and C11-C14 plus safe input-error checks are conditionally specified; keep C10 and full-suite status blocked until owned cloud file and screenshot-index cleanup are supported. Remove duplicated step 4."},
+      {"case_id":"EXT-F-4160-T01","condition":"C01-C08 and C10 text/availability controls are specified as proposals; C09 describe_image remains fixture-blocked. No runtime/API result is verified."}
+    ],
+    "unresolved_case_ids": ["EXT-F-4130-T01"],
+    "notes": "EXT-F-4124 is also not executable now despite its conditional proposal acceptance. EXT-F-4130 must retain per-control missing_steps/expected until current guide and owned fixtures establish payloads, outcomes, lineage, and cleanup. No inventory control is evidenced as run or passed."
+  },
+  "verdict_B_doctrine_and_evidence_quality": {
+    "overall": "PARTIAL",
+    "evidence": [
+      "The repair does not turn proposal text into runtime claims; unavailable agent, child trace, engine, cloud cleanup, and Records guide conditions are named.",
+      "Cleanup is case-owned and guarded for todos; screenshot cleanup is honestly held because gallery deletion leaves cloud storage behind.",
+      "New minor clarity defect: duplicated computer step 4 repeats step 3's drag/focus/blur actions."
+    ],
+    "runtime_proof": "None. Source review verifies the cited behavior only; it does not verify extension execution, permissions, server contracts, model output, or fixture results."
+  },
+  "source_checks": [
+    "src/lib/tools/handlers/canonical.ts:318-373",
+    "src/lib/tools/handlers/read.ts:331-445",
+    "src/lib/destructive/operations.ts:83-85",
+    "src/lib/tools/handlers/parallel.ts:189-240",
+    "src/features/tasks/TasksView.tsx:929-931",
+    "src/lib/lists/storage.ts:392-403",
+    "src/lib/tools/handlers/lists.ts:87-137",
+    "src/lib/tools/handlers/keyboard.ts:249-308",
+    "src/lib/tools/handlers/_active-tab.ts:49-60",
+    ".research/remaining-tool-procedures-20261008.json: case_updates"
+  ]
+}

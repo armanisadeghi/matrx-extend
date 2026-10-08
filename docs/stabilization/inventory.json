@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T08:05:47.429235+00:00",
+  "updated_at": "2026-10-08T08:25:35.145066+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -31605,8 +31605,13 @@
         {
           "id": "EXT-F-2013-T10",
           "title": "Public guest Chat first reply, same-conversation follow-up, and new conversation after reload",
-          "modes": ["guest"],
-          "control_ids": ["EXT-F-2013-C08", "EXT-F-2013-C10"],
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-2013-C08",
+            "EXT-F-2013-C10"
+          ],
           "preconditions": [
             "Build under resource guard, record immutable receipt, load fresh isolated profile with exact unpacked build; verify no account token/profile/organization."
           ],
@@ -31623,19 +31628,24 @@
             "Each request independently completes successfully; a prior assistant response cannot satisfy a later assertion; guest IDs/auth values and raw request bodies never enter evidence.",
             "API-only health or reply evidence is distinguished from actual browser acceptance; development/unpacked evidence is not labeled Store-installed lifecycle."
           ],
-          "defect_ids": ["EXT-D-0096", "EXT-D-0097", "EXT-D-0144"],
+          "defect_ids": [
+            "EXT-D-0096",
+            "EXT-D-0097",
+            "EXT-D-0144",
+            "EXT-D-0172"
+          ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "37712132094",
+              "status": "fail",
+              "run_id": "37748038743",
               "build_version": "0.2.205",
               "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
-              "server_sha": "1d535d990e3d85eaa24e526a531e49951cfacd07",
+              "server_sha": "53aec906f047b524495ff0d93bae8e67eb55537f",
               "evidence": [
-                ".research/public-guest-arm-retest-20261007.json",
-                ".research/public-arm-acceptance-peer-20261007.json"
+                ".research/daily-guest-20261008.json",
+                ".research/daily-guest-409-peer-20261008.json"
               ],
-              "detail": "Independent bounded PASS: fresh signed-out publicCRX unpacked in actual native sidepanel; three distinct grounded terminal answers, HTTP200 each. Same-conversation follow-up keeps wire fingerprint/is_new=false; new conversation after panel reload changes fingerprint/is_new=true. Runtime extension ID observed, exacttree unchanged, server before/after stable, all3 current resource journals valid. Observer starts after panel load. Not StoreUI installation, returning allowance remedy, member, or wholeChat."
+              "detail": "Independent bounded failure on publicCRX unpacked: first and same-conversation turns returned grounded terminal answers. After panelreload, distinct newconversation initialHTTP200 and correct get_page_text result were followed by continuationHTTP409 and zero visibleassistantanswers for180seconds. All3resourcejournals valid; server stable. Refusalcode/rootcause unproven. Not actualStoreUIinstallation or wholeChat."
             }
           },
           "defect_verification": {
@@ -31665,7 +31675,9 @@
               "result": {
                 "status": "fail",
                 "detail": "Published0.2.105 remains the failing Store baseline;0.2.130 pending review. Exact candidate0.2.173 independently passed fresh guest opening and post-panel-reload page-grounded answers on Oct1. Earlier candidate marker miss remains unexplained; live signout privacy remains unverified.",
-                "defect_ids": ["EXT-D-0066"],
+                "defect_ids": [
+                  "EXT-D-0066"
+                ],
                 "candidate_result": {
                   "version": "0.2.173",
                   "status": "pass",
@@ -31716,6 +31728,23 @@
               },
               "superseded_at": "2026-10-08T01:30:07.304264+00:00",
               "reason": "Fresh independently reviewed publicCRX three-turn browser check on current observed live server revision."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37712132094",
+                "build_version": "0.2.205",
+                "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+                "server_sha": "1d535d990e3d85eaa24e526a531e49951cfacd07",
+                "evidence": [
+                  ".research/public-guest-arm-retest-20261007.json",
+                  ".research/public-arm-acceptance-peer-20261007.json"
+                ],
+                "detail": "Independent bounded PASS: fresh signed-out publicCRX unpacked in actual native sidepanel; three distinct grounded terminal answers, HTTP200 each. Same-conversation follow-up keeps wire fingerprint/is_new=false; new conversation after panel reload changes fingerprint/is_new=true. Runtime extension ID observed, exacttree unchanged, server before/after stable, all3 current resource journals valid. Observer starts after panel load. Not StoreUI installation, returning allowance remedy, member, or wholeChat."
+              },
+              "superseded_at": "2026-10-08T08:25:35.145066+00:00",
+              "reason": "Fresh resource-valid public guest reproduction fails after panelreload; preserve older bounded pass."
             }
           ]
         },

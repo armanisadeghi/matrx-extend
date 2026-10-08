@@ -1,0 +1,732 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation",
+  "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.205",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "receipt_kind": "published_store_crx_unpacked"
+  },
+  "server_version_before": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "53aec906f047b524495ff0d93bae8e67eb55537f"
+  },
+  "server_version_after": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "53aec906f047b524495ff0d93bae8e67eb55537f"
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "fixture_reinstalled_before_first_send": false,
+    "session_absent_after_reload": true,
+    "fixture_reinstalled_after_reload": false
+  },
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "812c21f947413847",
+    "opening_code_fingerprint": "a7be959338b2dfae",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": false,
+    "same_conversation_followup_completed": true,
+    "same_conversation_followup_reply_count": 3,
+    "same_conversation_followup_contains_page_code": true,
+    "same_conversation_identity_verified": true
+  },
+  "screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-PO77HM/guest-chat-real-answer.png",
+  "followup_screenshot": null,
+  "failure_stage": "real_guest_followup_answer",
+  "failure_code": "assertionerror",
+  "failure_reason": "new guest conversation after reload must ground in the page fixture",
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "owned_article_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_values_chip_open",
+    "guest_question",
+    "real_guest_answer",
+    "same_conversation_followup_question",
+    "real_same_conversation_followup_answer",
+    "real_panel_reload",
+    "guest_followup_composer",
+    "guest_followup_question",
+    "real_guest_followup_answer"
+  ],
+  "guest_ai_requests": [
+    {
+      "attempt": "opening",
+      "request_at_utc": "2026-10-08T08:16:04.042Z",
+      "cdp_request_id": "12361.156",
+      "status": 200,
+      "code": null,
+      "conversation_fingerprint": "d3700e9a2b80d8ca",
+      "is_new": true
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "request_at_utc": "2026-10-08T08:16:19.021Z",
+      "cdp_request_id": "12361.163",
+      "status": 200,
+      "code": null,
+      "conversation_fingerprint": "d3700e9a2b80d8ca",
+      "is_new": false
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "request_at_utc": "2026-10-08T08:16:34.949Z",
+      "cdp_request_id": "12361.288",
+      "status": 200,
+      "code": null,
+      "conversation_fingerprint": "00152d91baf7516d",
+      "is_new": true
+    }
+  ],
+  "guest_ai_observer": {
+    "mode": "auto_attach",
+    "counters": {
+      "attached": 29,
+      "identity_changed": 2,
+      "network_enabled": 2,
+      "request_events": 109,
+      "post_events": 6,
+      "chat_path_events": 3,
+      "response_events": 109
+    },
+    "provisional_sessions": 1,
+    "confirmed_sessions": 1,
+    "buffered_requests": 3,
+    "observer_failure": null,
+    "target_inventory": [
+      {
+        "identity": "other",
+        "auto_attached_by_observer": true,
+        "type": "service_worker"
+      },
+      {
+        "identity": "other",
+        "auto_attached_by_observer": true,
+        "type": "page"
+      },
+      {
+        "identity": "provisional",
+        "auto_attached_by_observer": true,
+        "type": "page"
+      },
+      {
+        "identity": "offscreen",
+        "auto_attached_by_observer": true,
+        "type": "other_type"
+      },
+      {
+        "identity": "other",
+        "auto_attached_by_observer": true,
+        "type": "page"
+      }
+    ]
+  },
+  "guest_ai_transport_proven": false,
+  "context_rule_reads": [],
+  "grounding_diagnostics": {
+    "before_first_send": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": null
+    },
+    "opening": {
+      "toolEvents": [
+        {
+          "name": "get_page_text",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "tool_delegated",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "started",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "completed",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": true,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "get_page_text",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 2,
+          "toolName": "get_page_text",
+          "phase": "tool_delegated",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 3,
+          "toolName": "get_page_text",
+          "phase": "started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 4,
+          "toolName": "get_page_text",
+          "phase": "completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    },
+    "same_conversation_followup": {
+      "toolEvents": [
+        {
+          "name": "find_text_on_page",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "read_page",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "find_text_on_page",
+          "phase": "tool_delegated",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "find_text_on_page",
+          "phase": "started",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "find_text_on_page",
+          "phase": "completed",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": false
+        },
+        {
+          "name": "read_page",
+          "phase": "tool_delegated",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "read_page",
+          "phase": "started",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "read_page",
+          "phase": "completed",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": true,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 5,
+          "toolName": "find_text_on_page",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 6,
+          "toolName": "read_page",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 7,
+          "toolName": "find_text_on_page",
+          "phase": "tool_delegated",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 8,
+          "toolName": "find_text_on_page",
+          "phase": "started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 9,
+          "toolName": "find_text_on_page",
+          "phase": "completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 10,
+          "toolName": "read_page",
+          "phase": "tool_delegated",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 11,
+          "toolName": "read_page",
+          "phase": "started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 12,
+          "toolName": "read_page",
+          "phase": "completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    },
+    "before_followup_send": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": null
+    },
+    "followup": {
+      "toolEvents": [
+        {
+          "name": "get_page_text",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "tool_delegated",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "started",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "completed",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": true,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 1,
+          "toolName": "get_page_text",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 2,
+          "toolName": "get_page_text",
+          "phase": "tool_delegated",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 3,
+          "toolName": "get_page_text",
+          "phase": "started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 4,
+          "toolName": "get_page_text",
+          "phase": "completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    }
+  },
+  "opening_turn_verdict": "terminal_answer",
+  "opening_turn_timeline": [
+    {
+      "verdict": "in_progress",
+      "runCount": 0,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "in_progress",
+      "runCount": 1,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "awaiting_tool_resume",
+      "runCount": 1,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "in_progress",
+      "runCount": 2,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "terminal_answer",
+      "runCount": 2,
+      "replyCount": 1,
+      "streaming": false
+    }
+  ],
+  "failure_observation": {
+    "guestAccount": true,
+    "accessTokenAbsent": true,
+    "profileAbsent": true,
+    "organizationAbsent": true,
+    "chatVisible": true,
+    "chatSelected": true,
+    "paneVisible": true,
+    "composerVisible": true,
+    "composerLength": 0,
+    "sendEnabled": false,
+    "streaming": false,
+    "replyCount": 0,
+    "answerContainsNonce": false,
+    "answerContainsFixtureHeading": false,
+    "answerMatchesPublicStages": false,
+    "answerStagesInOrder": false,
+    "answerIsRefusal": false,
+    "terminalAnswerError": false,
+    "interruptionNotice": false,
+    "errorNotice": false,
+    "latestAssistantReply": "",
+    "visibleAlerts": [],
+    "streamTrace": {
+      "runs": [
+        {
+          "ordinal": 1,
+          "done": true,
+          "delegated": true,
+          "error": false,
+          "errorCode": null,
+          "errorStatus": null,
+          "endReason": "complete",
+          "userRequestOutcome": "success",
+          "textChunks": 0,
+          "startReplyCount": 0,
+          "doneAt": 1791447399462
+        },
+        {
+          "ordinal": 2,
+          "done": true,
+          "delegated": false,
+          "error": true,
+          "errorCode": null,
+          "errorStatus": 409,
+          "endReason": null,
+          "userRequestOutcome": null,
+          "textChunks": 0,
+          "startReplyCount": 0,
+          "doneAt": 1791447400913
+        }
+      ],
+      "continuations": 1,
+      "events": [
+        {
+          "kind": "opened",
+          "run": 1
+        },
+        {
+          "kind": "tool_started",
+          "run": 1
+        },
+        {
+          "kind": "tool_delegated",
+          "run": 1
+        },
+        {
+          "kind": "user_request_success",
+          "run": 1
+        },
+        {
+          "kind": "continue",
+          "afterRun": 1
+        },
+        {
+          "kind": "user_request_success",
+          "run": 1
+        },
+        {
+          "kind": "end",
+          "run": 1,
+          "reason": "complete"
+        },
+        {
+          "kind": "done",
+          "run": 1
+        },
+        {
+          "kind": "error",
+          "run": 2,
+          "status": 409,
+          "code": null
+        },
+        {
+          "kind": "done",
+          "run": 2
+        }
+      ],
+      "toolEvents": [
+        {
+          "name": "get_page_text",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "tool_delegated",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "started",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "get_page_text",
+          "phase": "completed",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": true,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ]
+    }
+  },
+  "same_conversation_turn_verdict": "terminal_answer",
+  "same_conversation_turn_timeline": [
+    {
+      "verdict": "in_progress",
+      "runCount": 2,
+      "replyCount": 1,
+      "streaming": true
+    },
+    {
+      "verdict": "in_progress",
+      "runCount": 3,
+      "replyCount": 1,
+      "streaming": true
+    },
+    {
+      "verdict": "awaiting_tool_resume",
+      "runCount": 3,
+      "replyCount": 2,
+      "streaming": true
+    },
+    {
+      "verdict": "in_progress",
+      "runCount": 4,
+      "replyCount": 2,
+      "streaming": true
+    },
+    {
+      "verdict": "terminal_answer",
+      "runCount": 4,
+      "replyCount": 3,
+      "streaming": false
+    }
+  ],
+  "same_conversation_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-PO77HM/guest-chat-same-conversation-followup.png",
+  "followup_turn_verdict": "terminal_not_observed",
+  "followup_turn_timeline": [
+    {
+      "verdict": "in_progress",
+      "runCount": 0,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "in_progress",
+      "runCount": 1,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "awaiting_tool_resume",
+      "runCount": 1,
+      "replyCount": 0,
+      "streaming": true
+    },
+    {
+      "verdict": "awaiting_tool_resume",
+      "runCount": 2,
+      "replyCount": 0,
+      "streaming": false
+    }
+  ],
+  "failure_screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-PO77HM/guest-chat-failure.png",
+  "server_version_stable": true
+}
