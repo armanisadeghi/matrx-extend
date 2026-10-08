@@ -40,7 +40,28 @@
       "limit": "One failed audit and one successful headless SEO run cannot estimate that correlation; 149 polls indicate the harness did run during the five seconds."
     }
   ],
-  "next_executable_move": "No source repair is justified. If a new hosted diagnostic attempt is authorized, instrument only the existing owned Chrome startup boundary to record bounded endpoint-exists time, child exit state and classified stderr flags through the already guarded interval on macos-15-intel, using the exact frozen artifact and headed audit launch parameters. Preserve the current resource thresholds and stop on its decision. An ARM-only startup-resource-diagnostic is already available, but it cannot discriminate this Intel headed failure without a source change. Do not increase the timeout or retry acceptance as a causal fix before that observation.",
+  "next_executable_move": "The existing startup-resource-diagnostic now accepts macos-15-intel and launches headed Chromium. A fresh peer should review commit 59ae5fec, then the owner may dispatch one guarded Intel diagnostic with the original frozen artifact. Preserve guard thresholds and the ordinary five-second CDP deadline. Classify whether DevToolsActivePort appears within the one-watch-interval post-timeout observation, whether the owned child has exited, and whether the resource journal remains valid. This is diagnostic-only and cannot promote audit or guest Chat product acceptance.",
+  "source_followup": {
+    "reason": "A second independent Intel native lane, public guest Chat run 37709629346, also ended with owned_cdp_endpoint_timeout before any turn. Its resource-valid child exit does not provide a product verdict. This repeated startup failure motivated a discriminating diagnostic route, not a timeout increase.",
+    "commit": "59ae5feccef4e90838bb8179b6a02434bdd8dd3a",
+    "source_change": "The hosted startup-resource-diagnostic accepts X64 or ARM64, requests headed Chromium, and records sanitized CDP connection or timeout observations. On a timeout it observes the owned DevToolsActivePort and child-exit state for one existing 15-second watchdog interval before ordinary owned-child cleanup. The default native wait stays 5000 ms; the resource guard and its thresholds are unchanged.",
+    "limit": "The post-timeout observation records endpoint presence and whether the child exited, but does not capture later Chromium stderr or prove why startup was delayed. A late endpoint is a timing observation, not permission to widen acceptance timeouts.",
+    "focused_ci": {
+      "run_id": 37710773847,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37710773847",
+      "head_sha": "59ae5feccef4e90838bb8179b6a02434bdd8dd3a",
+      "conclusion": "success",
+      "scope": "Automatic source-only focused acceptance checks, including four new diagnostic tests. No native Chrome launch or product acceptance."
+    },
+    "local_supporting_checks": "Unguarded local focused suite 28/28 passed, Biome and diff checks passed. These checks do not supply guarded acceptance evidence. A separate existing native-sidepanel-qa-harness.test.mjs process printed 30 passes but hung with an unresolved test; it was interrupted after 74 seconds and excluded from the focused gate. Its file remained unchanged. A subsequent process census found no owned test process; no local Chromium was launched.",
+    "changed_files": [
+      ".github/workflows/hosted-guest-acceptance.yml",
+      "package.json",
+      "scripts/hosted-startup-interval-diagnostic.mjs",
+      "scripts/test-hosted-startup-interval-diagnostic.mjs",
+      "tests/browser/native-sidepanel-qa-harness.mjs"
+    ]
+  },
   "evidence": [
     ".research/audit-intel-native-20261007.json",
     ".research/audit-intel-native-evidence/resource-journals/hosted-guest-37708712354-1.jsonl",
@@ -52,5 +73,5 @@
   ],
   "changed_files": [".research/audit-cdp-timeout-diagnosis-20261007.json"],
   "verification": "Compared run logs to current receipts, resource journals, and source at the exact hosted checkout SHA; no native execution or local heavy tests.",
-  "limitations": "The original run did not capture post-timeout endpoint appearance, child lifetime through the full wait, or a causal macOS/Chromium startup trace. The ranked hypotheses remain unproven."
+  "limitations": "The original run did not capture post-timeout endpoint appearance, child lifetime through the full wait, or a causal macOS/Chromium startup trace. The new diagnostic source has not yet run on Intel. The ranked hypotheses remain unproven."
 }
