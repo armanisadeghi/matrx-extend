@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "at": "2026-10-08T22:47:37.769361+00:00",
+  "observation_utc": "2026-10-08T22:46:04Z",
+  "endpoint": "repos/armanisadeghi/matrx-extend/actions/runs/37855322634",
+  "http_status": 403,
+  "resource": "core",
+  "limit": 5000,
+  "remaining": 0,
+  "used": 5000,
+  "reset_epoch": 1791501381,
+  "reset_utc": "2026-10-08T23:16:21Z",
+  "impact": "Cannot verify focused gate, artifact or current lane state; no new native launch. Git fetch/merge/push still operational.",
+  "ownership": "All owned workers terminal; no owned native job active. Automatic focused gate37855322634 terminal status unverified after API loss.",
+  "next": "After reset recheck original focused handle and exact source/artifact/lane admission before one authorized SettingsB retest. Do not rotate credentials or loop before reset."
+}
