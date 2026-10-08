@@ -1344,18 +1344,27 @@ async function recoverOwnedGrant({ panel }, recoveryPath) {
     const rpc=async(name,args)=>{
       const response=await fetch(new URL('/rest/v1/rpc/'+name,config.WXT_SUPABASE_URL),
         {method:'POST',headers,body:JSON.stringify(args)});
-      return {status:response.status,body:response.ok?await response.json():null};
+      let body=null;
+      try { body=await response.json(); } catch { /* Shape is reported below without response text. */ }
+      const errorCode=typeof body?.code==='string'&&/^[A-Z0-9_]{1,40}$/.test(body.code)?body.code:null;
+      return {status:response.status,body,errorCode};
     };
     const args={p_resource_type:'file',p_resource_id:owned.fileId};
     const before=await rpc('list_share_links',args);
     const exact=Array.isArray(before.body)?before.body.filter(link=>link.id===owned.shareLinkId):[];
-    if(before.status!==200||exact.length!==1)return {failure:'owner_gated_exact_file_grant_not_unique'};
+    const lookup={httpStatus:before.status,errorCode:before.errorCode,
+      bodyShape:Array.isArray(before.body)?'array':before.body===null?'null':typeof before.body,
+      returnedRowCount:Array.isArray(before.body)?before.body.length:null,exactGrantCount:exact.length};
+    if(before.status!==200)return {failure:'owner_gated_grant_lookup_http_error',lookup};
+    if(!Array.isArray(before.body))return {failure:'owner_gated_grant_lookup_invalid_shape',lookup};
+    if(exact.length!==1)return {failure:exact.length===0?'owner_gated_exact_grant_absent':'owner_gated_exact_grant_duplicate',lookup};
     if(Date.parse(exact[0].created_at)!==Date.parse(owned.grantCreatedAt))
-      return {failure:'exact_grant_creation_receipt_mismatch'};
+      return {failure:'exact_grant_creation_receipt_mismatch',lookup};
     const revoked=await rpc('revoke_share_link',{p_link_id:owned.shareLinkId});
-    if(revoked.status!==200||revoked.body?.success!==true)return {failure:'exact_actor_grant_revoke_failed'};
+    if(revoked.status!==200||revoked.body?.success!==true)return {failure:'exact_actor_grant_revoke_failed',lookup,
+      revoke:{httpStatus:revoked.status,errorCode:revoked.errorCode,success:revoked.body?.success===true}};
     const after=await rpc('list_share_links',args);
-    return {realActorVerified:true,exactOwnerGatedFileGrantVerified:true,canonicalExactRevoke:true,
+    return {realActorVerified:true,exactOwnerGatedFileGrantVerified:true,canonicalExactRevoke:true,lookup,
       inactiveAfterRealRead:after.status===200&&Array.isArray(after.body)&&
         after.body.filter(link=>link.id===owned.shareLinkId&&link.is_active===false).length===1};
   })()`,

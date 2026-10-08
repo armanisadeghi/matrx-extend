@@ -1,0 +1,48 @@
+{
+  "status": "NEEDS_NATIVE_BOUNDARY_PROOF",
+  "lane": "retained screenshot grant cleanup diagnosis",
+  "cause_confirmed": false,
+  "read_only_database_evidence": {
+    "exactGrantCount": 1,
+    "active": true,
+    "expectedActor": true,
+    "expectedFile": true,
+    "resourceType": "file",
+    "exactFileCount": 1,
+    "expectedFileOwner": true,
+    "activeRegistry": "file -> files.files.created_by",
+    "sameCanonicalFamily": true
+  },
+  "hypotheses": [
+    {
+      "cause": "RPC HTTP failure",
+      "prediction": "real native lookup yields non-200 status and safe PostgREST error code",
+      "test": "single differentiated native lookup"
+    },
+    {
+      "cause": "owner-gated RPC omits retained grant",
+      "prediction": "native 200 array has exactGrantCount zero despite proven database row and file ownership",
+      "test": "single differentiated native lookup"
+    },
+    {
+      "cause": "response shape mismatch",
+      "prediction": "native 200 bodyShape differs from array",
+      "test": "single differentiated native lookup"
+    }
+  ],
+  "eliminated": [
+    "missing exact grant",
+    "wrong grant creator",
+    "wrong file owner",
+    "resource token mismatch",
+    "different grant storage family"
+  ],
+  "verification": [
+    "node --check pass",
+    "single-file Biome format pass"
+  ],
+  "native_run": "not run; host owned by cold trust fixer",
+  "mutations": "none; no revoke attempted",
+  "private_recovery": "retained mode 0600; no identifiers or URLs in report",
+  "remaining": "Run one real authenticated lookup with differentiated diagnostics; prove cause before another repair."
+}
