@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "reviewed_commit": "6d7b299e5bdd52a9f37ab93522a2be2197128074",
+  "reviewed_report": ".research/picker-reinjection-count-escalation-20261007.json",
+  "status": "ready_for_one_bounded_native_retest",
+  "method": "Independent read-only source and evidence review of the owned commit, original native receipt, product producer and relay, test negatives, and exact-source focused CI. No browser, build, release, credential access, or product change.",
+  "verdict_A_native_retest_readiness": {
+    "overall": "PASS_FOR_RETEST_ONLY",
+    "evidence": [
+      "Product producer sends a raw ITEM_DETECTED payload containing session_id; the service-worker relay adds sender tab_id and document_id. The existing observer retains both copies. The new selector counts only fully stamped detection entries and does not remove any observer evidence.",
+      "Lifecycle wait and find select a stamped event for the expected session; the result wait compares that stamped tab/document identity; exact count uses the same stamped selector over the full post-window range.",
+      "The exact count has no session filter and no deduplication. A second stamped delivery, including from another session, remains a failure against expected count one.",
+      "The post-window diagnostic still reports combined detected, current and other session, and producer counts, while adding stamped and unstamped counts. The diagnostic allowlist and failure step preserve bounded first-failure evidence.",
+      "Original native run 37714880948 stopped at lifecycle_B_detection_count with producer_current_detected_count=1 and current_session_detected_count=2. That receipt lacks stamp classification, so the historical cause remains unproven."
+    ],
+    "remaining": "Run one native retest against the exact original 0.2.391 product artifact with this reviewed driver. D158/D42 closure, exact post-Done listener cleanup, surrounding lifecycle cases, ordinary page click, and signed-in nonadmin gate require fresh native evidence."
+  },
+  "verdict_B_quality_and_forcing_tests": {
+    "overall": "PASS_FOR_SCOPED_DRIVER_REPAIR",
+    "evidence": [
+      "Commit changes only browser acceptance-driver and diagnostic files plus its research report; the product relay and producer are unchanged.",
+      "The observer test executes the real observeShowcaseRelay and readShowcaseRelays expressions through a CDP-shaped VM adapter. It asserts raw-only gives zero stamped deliveries, raw plus stamped gives one, a second stamped delivery gives two, malformed stamps stay excluded, a later other-session stamped delivery remains counted, and the combined diagnostic retains raw evidence.",
+      "The source report records RED before repair and temporary-scratch gut/realistic mutations failing; independent diff review confirms the final assertions would reject constant empty output, combined-channel counting, dropped window start, missing stamp validation, and deduplication.",
+      "GitHub Focused acceptance run 37716254653 completed success at exact SHA 6d7b299e5bdd52a9f37ab93522a2be2197128074. Its workflow runs pnpm test:focused-acceptance, which includes showcase-stale-runtime-boundary.test.mjs. Logs show observer subtest ok 38 and 38 pass, 0 fail."
+    ],
+    "limit": "This is source and CI evidence, not a native Chrome product pass. The separate stale-diagnostic.test.mjs is not in focused CI, though the implementer reports its local Node run passed."
+  }
+}
