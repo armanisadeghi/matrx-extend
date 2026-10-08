@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "scope": "Read-only diagnosis of frozen 0.2.407 guest native reload; no native rerun, source fix, retry, acceptance or inventory change.",
+  "verdict": "first_unverified_boundary_is_replacement_panel_open_request; cause_not_proven",
+  "failed_run": {
+    "id": 37767763301,
+    "receipt": ".research/scrape-boundary-native-retest-20261008-evidence/run37767763301/scrape-guest-native-5fa45db4-13e7-4f8b-8914-5319a428965f.json",
+    "resource_valid": true,
+    "old_worker_execution_retired": true,
+    "old_worker_absent": true,
+    "old_panel_absent": true,
+    "replacement_worker_created_event": true,
+    "replacement_worker_running_activated_at_open_click": true,
+    "open_reply": "reply_not_observed",
+    "replacement_panel_target": "absent",
+    "post_reload_capture": "not_exercised"
+  },
+  "working_sibling": {
+    "id": 37761144784,
+    "receipt": ".research/scrape-reload-observer-native-20261008-evidence/selected/scrape-guest-native-ff470f44-ce7d-455f-93ab-c780b0fed14f.json",
+    "same_frozen_build": "0.2.407 source 5d845f42cb22c10e2486af8048d1ac9f3ac8e114 tree f6eabce76c41e694791028e61bfede55fb2cf531568746f0fc8c0512405f27e0",
+    "same_guest_normal_600px_runtime_id_chrome_141": true,
+    "replacement_worker_running_activated_at_open_click": true,
+    "open_reply": "opened",
+    "replacement_panel_target": "F4F6CEB00756A3962BD7DE99356C891C",
+    "post_reload_scrape": "observed"
+  },
+  "second_working_sibling": {
+    "id": 37764002686,
+    "report": ".research/scrape-tabs-native-20261008.json",
+    "observation": "Same frozen build guest reload reached post-reload pane/capture work; its later failure was a separate capture boundary."
+  },
+  "code_boundary": {
+    "trusted_fixture_click": "tests/browser/native-sidepanel-qa-harness.mjs testPage() posts chrome.runtime.sendMessage to the fixed extension ID and writes the callback into #result, including runtime.lastError when the callback runs without a reply.",
+    "observer": "beginReloadPanelReplyObservation clears #result, clicks, and observes its content concurrently with a 150-attempt replacement-panel target poll. Closing that observer at target-poll failure leaves reply_not_observed if no content was seen; this category does not establish whether the message was dispatched, delivered, handled, or answered later.",
+    "extension": "src/lib/background/bootstrap.ts registers onMessageExternal and calls handleFrontendRpc; src/lib/frontend-bridge/handler.ts invokes sidePanel.open before its first await and sends the reply after settling the open attempt.",
+    "first_good_to_unknown_transition": "The fixture click resolved and the replacement worker was running/activated. Neither fixture callback content nor replacement panel target appeared before the bounded poll ended. No same-request ingress, sidePanel.open invocation/settlement, or callback-lastError observation is in the receipt."
+  },
+  "competing_hypotheses": [
+    {
+      "cause": "The page click fired but Chrome did not deliver its external message to the replacement worker.",
+      "prediction": "The fixture records sendMessage invocation and later callback or lastError, while the replacement worker records no matching request ingress."
+    },
+    {
+      "cause": "The replacement worker received the message but its open attempt stalled or failed before sending a reply.",
+      "prediction": "A matching worker ingress exists; the open invocation/settlement or sendResponse boundary identifies the first missing or refused result."
+    },
+    {
+      "cause": "The worker responded, but the page callback or #result observation was lost, and panel creation separately failed or was missed.",
+      "prediction": "A matching sendResponse is recorded despite no fixture callback content; a same-window side-panel target/context observation distinguishes creation from discovery loss."
+    }
+  ],
+  "smallest_missing_observation": "For one request ID on a future authorized native attempt, record sanitized monotonic milestones at fixture sendMessage invocation, callback entry plus presence/lastError category, replacement-worker onMessageExternal ingress, sidePanel.open invocation and settlement, sendResponse, and CDP panel target creation. Preserve one request ID across both sides; record no raw URL, response, token, or error text. This single boundary trace discriminates delivery, handler/open, and callback/target-observer hypotheses without changing acceptance or increasing the timeout.",
+  "limitations": "The failed receipt proves a native reload/panel reopening refusal, not a Scrape product regression or cause. The valid resource journals exclude resource-admission invalidity but do not prove why Chrome did not reopen the panel. No causal RED-to-GREEN source guard exists, so no source fix is justified."
+}
