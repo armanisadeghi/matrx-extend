@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "review_type": "fresh_independent_native_evidence_adjudication",
+  "case_id": "EXT-F-1012-T57",
+  "native_run_id": 37780192222,
+  "source_report": ".research/t57-correct-staging-native-20261008.json",
+  "raw_evidence_dir": ".research/t57-correct-staging-native-20261008-originals/raw",
+  "integrity": {
+    "reported_raw_sha256_count": 9,
+    "matching_sha256_count": 9,
+    "mismatches": [],
+    "run_identity": "run.raw.json and jobs.raw.json agree on run 37780192222, attempt 1, workflow head 5bee4fafe505927f49a330fc856ec8891b2324c5 and failure in the exercise step",
+    "artifact_identity": "artifacts.raw.json names hosted-guest-37780192222-1, id 11552830587, digest sha256:22b85b58c27dc8b56b5ba467b9fcb549d8e8fb9fcdf7c4c1e7e6b6b277188b35",
+    "source_ancestry": "Both 0eebbca39c95d62f401f3866123177ce92c4d51a and a7340e6ca0c5f6860ac19440644d4b38b84e203d are ancestors of the workflow head",
+    "resources": "Raw package and browser journals end admitted=true/resourceInvalid=false/exitCode=0/decision=valid. Guest ends admitted=true/resourceInvalid=false/exitCode=1/decision=child_failed after healthy samples; the child failure is the test assertion, not a resource-invalid result.",
+    "auth_and_cleanup_limit": "The hosted job records successful selected-auth preflight and reaches admin_rendered_identity. Correct stdin command shape, deletion of both temporary repository secret names, independent absence listing, and local private-file cleanup are statements in the source report; the archived raw originals do not contain those operations or a secret-name listing. This review performed no secret operations and cannot independently attest terminal secret cleanup."
+  },
+  "defects": {
+    "EXT-D-0173": {
+      "verdict_A_live_spec": "PASS",
+      "closure": "YES for the bounded organization checkpoint defect",
+      "evidence": "The original public D47 path reached organization_identity_compare. Raw receipt reports matching rendered admin identity and approved organization, one actual product request, approved organization header and bearer principal matches, finished successful response, no duplicate or loading failure, and observer cleanup. The reviewed caller/guard source is in the run head ancestry.",
+      "verdict_B_evidence_quality": "PASS",
+      "limits": "The native receipt records the checkpoint's boolean observations rather than exposing private UUID or bearer bytes. That is consistent with the canonical private-fixture requirement. It proves this original public path, not every D47 caller independently in native execution."
+    },
+    "EXT-D-0177": {
+      "verdict_A_live_spec": "PASS",
+      "closure": "YES for the bounded Records Catalog readiness defect",
+      "evidence": "The raw organization diagnostic records tools_view_state=catalog, then the shared checkpoint reaches organization_identity_compare with an observed single finished successful product request and matching organization header/principal. The run-head checkpoint waits for inner Catalog before the trusted Records click and validates the request after that click; therefore the prior zero-match pre-request failure did not recur on this path.",
+      "verdict_B_evidence_quality": "PASS",
+      "limits": "The receipt records Catalog readiness and the resulting request, but no separately named Records-activation boolean. The production checkpoint's sequential control flow supplies that link; this is bounded native evidence, not a claim about every Tools state."
+    },
+    "EXT-D-0179": {
+      "verdict_A_live_spec": "PASS",
+      "closure": "PREFLIGHT PASS; full defect closure conditional on independently verifying terminal temporary-secret cleanup",
+      "evidence": "The hosted selected-auth job step passed, the receipt reached admin_rendered_identity and later product request/capture, and all three resource phases were admitted. The prior d87_auth_secret_invalid preflight boundary did not recur.",
+      "verdict_B_evidence_quality": "PARTIAL",
+      "limits": "The source report states corrected stdin upload, private schema validation and terminal deletion/absence of temporary secret names, but the archived originals independently establish only successful hosted preflight and later native execution. No raw operation or independent name listing is retained for secret cleanup; closure's cleanup clause remains externally unverified by this review."
+    }
+  },
+  "t57_boundary": {
+    "verdict_A_live_spec": "UNVERIFIED",
+    "verdict_B_evidence_quality": "PASS for bounded failure reporting; no full-product acceptance claim",
+    "observed": "The public HN request was captured and an owned recipe was observed and removed. The attempt stopped at public_race_prior_document_load with public_race_old_response_missing. Raw preflight reports no paused old response, no release order or release attempts, no extension capture at current pause, no matching current binding, and saved_result=null. Interception disable/detach and probe removal were recorded.",
+    "remaining": "A fresh resource-valid original public race must pause the old response, establish the current capture/binding, release in the intended order, and observe a terminal saved result or refusal with provenance. This run cannot establish the prior-versus-current response result or a product defect."
+  },
+  "scope_limit": "Review of tracked evidence and source control only. No native rerun, secret operation, build, deployment, source modification or product retest."
+}
