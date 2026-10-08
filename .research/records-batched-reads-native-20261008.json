@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "scope": "Single hosted Records A native batch of C02, C03, C04, C05, and C08",
+  "run": {
+    "id": 37853642155,
+    "head_sha": "2fecf6d24af12a88331d67a30c41ed105d87ae52",
+    "status": "completed",
+    "conclusion": "success",
+    "runner": "macos-15",
+    "created_at_utc": "2026-10-08T22:28:00Z",
+    "terminal_at_utc": "2026-10-08T22:36:23Z",
+    "attempts": 1
+  },
+  "focused_gate": {
+    "run_id": 37853412606,
+    "conclusion": "success",
+    "head_sha": "a616d1f4d6bf0631a75c5ec24a137116f32a6610",
+    "records_driver_and_shared_harness_blobs_matched_dispatch": true,
+    "independent_source_review": "2fecf6d24"
+  },
+  "frozen_product": {
+    "ci_run_id": 37790643945,
+    "artifact_id": 11556064167,
+    "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+    "version": "0.2.414",
+    "tree_sha256": "550863c8547660fb27bfe2f76ebe58f165f73d0827990c5710ffd8894d0d7046"
+  },
+  "native_artifact": {
+    "id": 11582149890,
+    "digest": "sha256:310437cb015406faa19f4ebde2f7033289b3de69ae6a64d586ee4e77aa1129ba",
+    "receipt_sha256": "ebdcede7b0753cd6223b4d035d3719ad40bb7f68b3ad67774ffced7e6673f310",
+    "fixture_journal_sha256": "0b76a3c91214c513b8a2f1f3e30db62696d6fb3be2cd65116447ee9c9f9dc071",
+    "package_journal_sha256": "c5a6c6bccf9d2cb298682aa6f365750062c2bfa2ab7b3476992a79f8e9297829",
+    "browser_journal_sha256": "ce6462dde84da7bfbe1b5e4278976c7414438c82198d4d7d8fcf486a2ebaf52f",
+    "guest_journal_sha256": "7d32c12b817df28608187a823a5e2054de6c4cb98df441655e54bcab6d2723b9"
+  },
+  "resource_journals": "Current package, browser, and guest journals each ended admitted=true, resourceInvalid=false, exitCode=0, decision=valid.",
+  "receipt": {
+    "status": "passed",
+    "failure_code": null,
+    "completion_diagnostics_count": 14,
+    "completion_failures": 0,
+    "negative_refusals": ["EXT-F-4130-C03", "EXT-F-4130-C04", "EXT-F-4130-C05", "EXT-F-4130-C08"],
+    "positive_reads": ["EXT-F-4130-C02", "EXT-F-4130-C03", "EXT-F-4130-C04", "EXT-F-4130-C05", "EXT-F-4130-C08"],
+    "all_positive_http_200_finished_visible_owned": true,
+    "c03_row_text_excluded": true,
+    "c08_original_version_author_time_observed": true,
+    "fixture_diagnostics_count": 0,
+    "fixture_cleanup": {
+      "archived_verified": true,
+      "same_principal": true,
+      "table_invisible": true,
+      "journal_phase": "archived_verified",
+      "pending_write_unknown": false
+    }
+  },
+  "credential_cleanup": {
+    "temporary_secret_names_deleted": true,
+    "names_only_absence_verified": true,
+    "private_staging_files_removed": true
+  },
+  "github_step_durations_seconds": {
+    "package_readiness": 33,
+    "pinned_browser_driver_preparation": 83,
+    "browser_readiness": 33,
+    "full_chromium_preparation": 83,
+    "acceptance_readiness": 33,
+    "selected_native_case": 212,
+    "setup_before_native_case": 283,
+    "whole_workflow_from_creation_to_terminal": 503
+  },
+  "backend_post_run_sample": {
+    "git_sha": "980226cf48b0e8606ed41d8fb48be0bfbfbd759d",
+    "built_at": "2026-10-08T21:44:54Z",
+    "raw_sha256": "7d3cf951438e92eac02bbb3b83adbd9972545df4591d189634898fb74f038690",
+    "limit": "Post-run sample only; it does not prove the server SHA remained unchanged during the native case."
+  },
+  "claim_boundary": "All five owned Records reads and hosted fixture cleanup passed on the frozen product. Root independent raw review and inventory adjudication remain pending; no build, release, or Store claim follows from this evidence.",
+  "raw_evidence": ".research/records-batched-reads-native-20261008/raw contains byte-exact hosted receipt, fixture journal, resource journals, screenshots, GitHub metadata, and the post-run server sample."
+}
