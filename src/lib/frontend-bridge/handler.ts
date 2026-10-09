@@ -20,6 +20,9 @@
  *   - "capabilities" → enumerate read + action tier tools (no privileged / ask-user)
  *   - "openPanel"    → open the side panel + broadcast an UI hint
  *   - "callTool"     → run a registered tool through the same dispatch path WebMCP uses
+ *   - "captureHandoff.guide"
+ *                    → "Take me there": open a capture job's page in front of the
+ *                      person with the guided-capture overlay on it
  *   - "captureHandoff.pickUp"
  *                    → switch this browser to the organization the web app is
  *                      talking about, point the panel at one waiting page, and
@@ -30,6 +33,7 @@ import { getCurrentUser } from '@/lib/auth/flow';
 import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
 import { CAPTURE_PICKUP_MESSAGE, writeCapturePickup } from '@/lib/capture-ladder/pickup';
 import { countNeedsYou } from '@/lib/capture-ladder/queue';
+import { openGuidedTab } from '@/lib/guided-capture/host';
 import { log } from '@/lib/debug/log';
 import {
   GESTURE_PANEL_ACTIONS,
@@ -91,6 +95,12 @@ const CapturePickUpPayloadSchema = z.object({
   organizationId: z.string().uuid(),
   handoffId: z.string().min(1).optional(),
   url: z.string().min(1).optional(),
+});
+
+/** CONTRACTUAL — matches matrx-frontend `lib/extension-bridge/guideCapture.ts`. */
+const CaptureGuidePayloadSchema = z.object({
+  organizationId: z.string().uuid(),
+  handoffId: z.string().min(1),
 });
 
 // ─── Handler ────────────────────────────────────────────────────────────────
@@ -165,6 +175,8 @@ export async function handleFrontendRpc(
         return await actionCallTool(payload, requestId);
       case 'captureHandoff.pickUp':
         return await actionCaptureHandoffPickUp(payload, requestId, panelAttempt);
+      case 'captureHandoff.guide':
+        return await actionCaptureHandoffGuide(payload, requestId, sender);
       default:
         return {
           ok: false,
@@ -350,43 +362,9 @@ async function actionCaptureHandoffPickUp(
   }
   const { organizationId, handoffId, url } = parsed.data;
 
-  const user = await getCurrentUser();
-  if (!user?.id) {
-    return {
-      ok: false,
-      error:
-        'Nobody is signed in to the Matrx extension in this browser. Open the extension, sign in, and try again.',
-      requestId,
-    };
-  }
-
-  let organizations: Awaited<ReturnType<typeof listMemberOrganizations>>;
-  try {
-    organizations = await listMemberOrganizations('active');
-  } catch (err) {
-    return {
-      ok: false,
-      error: `The extension could not read your workspaces just now, so it cannot open that page: ${
-        (err as Error)?.message ?? String(err)
-      }`,
-      requestId,
-    };
-  }
-  const match = organizations.find((o) => o.id === organizationId);
-  if (!match) {
-    return {
-      ok: false,
-      error:
-        'The person signed in to this extension is not an active member of that workspace, so its waiting pages cannot be opened here. Sign in to the extension as the right person, or ask an admin of that workspace to add you.',
-      requestId,
-    };
-  }
-
-  const previousOrganizationId = await getActiveOrganizationId();
-  const organizationSwitched = previousOrganizationId !== match.id;
-  // The ONE resolver owns the stored selection — this call site never writes
-  // STORAGE_KEYS.ACTIVE_ORGANIZATION itself.
-  await selectActiveOrganization(match);
+  const verified = await verifyAndSelectOrganization(organizationId, requestId);
+  if (!verified.ok) return verified.response;
+  const { match, organizationSwitched } = verified;
 
   await writeCapturePickup({ handoffId, url });
 
@@ -425,6 +403,96 @@ async function actionCaptureHandoffPickUp(
       panelOpened,
       panelReason,
       waitingCount,
+    },
+    requestId,
+  };
+}
+
+type VerifiedOrganization =
+  | {
+      ok: true;
+      match: Awaited<ReturnType<typeof listMemberOrganizations>>[number];
+      organizationSwitched: boolean;
+    }
+  | { ok: false; response: FrontendRpcResponse };
+
+/**
+ * The shared first half of every web-app-to-extension capture action: the
+ * person must be signed in here AND an active member of the organization the
+ * web app named; only then is the extension's organization switched to it.
+ * Refusals are sentences a person can act on, never codes.
+ */
+async function verifyAndSelectOrganization(
+  organizationId: string,
+  requestId: string,
+): Promise<VerifiedOrganization> {
+  const refuse = (error: string): VerifiedOrganization => ({
+    ok: false,
+    response: { ok: false, error, requestId },
+  });
+  const user = await getCurrentUser();
+  if (!user?.id) {
+    return refuse(
+      'Nobody is signed in to the Matrx extension in this browser. Open the extension, sign in, and try again.',
+    );
+  }
+  let organizations: Awaited<ReturnType<typeof listMemberOrganizations>>;
+  try {
+    organizations = await listMemberOrganizations('active');
+  } catch (err) {
+    return refuse(
+      `The extension could not read your workspaces just now, so it cannot open that page: ${
+        (err as Error)?.message ?? String(err)
+      }`,
+    );
+  }
+  const match = organizations.find((o) => o.id === organizationId);
+  if (!match) {
+    return refuse(
+      'The person signed in to this extension is not an active member of that workspace, so its waiting pages cannot be opened here. Sign in to the extension as the right person, or ask an admin of that workspace to add you.',
+    );
+  }
+  const previousOrganizationId = await getActiveOrganizationId();
+  const organizationSwitched = previousOrganizationId !== match.id;
+  // The ONE resolver owns the stored selection — this call site never writes
+  // STORAGE_KEYS.ACTIVE_ORGANIZATION itself.
+  await selectActiveOrganization(match);
+  return { ok: true, match, organizationSwitched };
+}
+
+/**
+ * "Take me there": open the capture job's page in front of the person, with
+ * the guide on it. The organization travels with the request exactly as in
+ * pickUp, and the extension verifies membership before it switches.
+ */
+async function actionCaptureHandoffGuide(
+  payload: unknown,
+  requestId: string,
+  sender: SenderInfo,
+): Promise<FrontendRpcResponse> {
+  const parsed = CaptureGuidePayloadSchema.safeParse(payload);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      error:
+        'captureHandoff.guide needs the organization the capture belongs to (organizationId, a uuid) and the capture (handoffId).',
+      requestId,
+    };
+  }
+  const verified = await verifyAndSelectOrganization(parsed.data.organizationId, requestId);
+  if (!verified.ok) return verified.response;
+  const opened = await openGuidedTab({
+    handoffId: parsed.data.handoffId,
+    organizationId: verified.match.id,
+    openerTabId: sender.tabId ?? null,
+  });
+  if (!opened.ok) return { ok: false, error: opened.sentence, requestId };
+  return {
+    ok: true,
+    result: {
+      tabId: opened.tabId,
+      organizationName: verified.match.name,
+      organizationSwitched: verified.organizationSwitched,
     },
     requestId,
   };

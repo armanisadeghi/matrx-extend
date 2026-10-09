@@ -27,10 +27,11 @@ import type {
   ChatOrgPort,
   ChatOrganization,
 } from '@ai-matrx/chat/host';
-import { createMemoryNavigation } from '@ai-matrx/chat/host';
+import { createMemoryNavigation, createWebPrefs } from '@ai-matrx/chat/host';
 import { browserDomContextSource, isBrowserDeviceRef } from './browser-dom-source';
 import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';
+import { extensionKnobs } from './knobs';
 import { registerExtensionToolRenderers } from './tool-renderers';
 
 /** The panel's last chat address survives a reopen (session storage); a side panel's own URL never moves. */
@@ -148,6 +149,8 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
       // An aimatrx.com page opens in a browser tab, never inside the panel.
       openExternal: (href) => void chrome.tabs.create({ url: href }),
     }),
+    // Drafts and density in the page's own storage, plus the platform settings register (the composer's quick starts are a setting).
+    prefs: { ...createWebPrefs(), knobs: extensionKnobs },
     deviceTools: { invoke: invokeDeviceTool, handOff: handOffDeviceTools },
     registry: { contextSources: [browserDomContextSource, extensionPageContextSource] },
     // Chrome cannot prompt inside a side panel: the grant is asked in the mic-grant popup.

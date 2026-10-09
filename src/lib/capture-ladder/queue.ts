@@ -95,6 +95,20 @@ export async function listNeedsYou(): Promise<Handoff[]> {
   return rows;
 }
 
+/** One handoff by id, as the person can see it; null when it is gone or not theirs. */
+export async function getHandoff(id: string): Promise<Handoff | null> {
+  const { data, error } = await mediaDb()
+    .from('capture_handoff')
+    .select('*')
+    .eq('id', id)
+    .is('deleted_at', null)
+    .maybeSingle();
+  if (error) failDbCall(SITE, error);
+  if (!data) return null;
+  const parsed = handoffSchema.safeParse(data);
+  return parsed.success ? parsed.data : null;
+}
+
 /** How many pages need this browser right now. Same read, same refusal rules. */
 export async function countNeedsYou(): Promise<number> {
   return (await listNeedsYou()).length;

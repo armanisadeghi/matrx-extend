@@ -81,6 +81,11 @@ export interface ResultBody {
    * the wrong one is refused rather than quietly converted.
    */
   caption_track?: CaptionTrackBody;
+  /**
+   * Absolute image URLs the browser saw on the page (a guided social capture).
+   * The server copies the wanted ones into the person's private files.
+   */
+  images?: { src: string; alt?: string; width?: number; height?: number; post_ref?: string }[];
 }
 
 /**

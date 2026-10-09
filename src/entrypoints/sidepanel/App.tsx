@@ -1,3 +1,4 @@
+import { isPackageChatMode } from '@/lib/chat-target';
 import { AuthGate } from '@/components/AuthGate';
 import { NoticeHost } from '@/components/NoticeHost';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
@@ -76,7 +77,7 @@ const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType 
   // extension's own chat stays the default until the package renders every piece it needs
   // in this host (no stand-ins), then this switch and ChatView are deleted together.
   chat: () =>
-    new URLSearchParams(location.search).get('chat') === 'package'
+    isPackageChatMode()
       ? import('@/features/package-chat/PackageChatView').then((m) => ({
           default: m.PackageChatView,
         }))

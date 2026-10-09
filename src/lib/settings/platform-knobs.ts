@@ -13,6 +13,36 @@ import { useAuthStore } from '@/state/auth';
 
 const CACHE_MS = 60_000;
 let cached: { key: string; resolved: Record<string, unknown>; at: number } | null = null;
+const listeners = new Set<() => void>();
+let version = 0;
+
+function notify(): void {
+  version += 1;
+  for (const l of listeners) l();
+}
+
+/** Subscribe to "a snapshot landed" (the package chat's settings register re-renders on it). */
+export function subscribePlatformKnobs(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+export function platformKnobsVersion(): number {
+  return version;
+}
+
+/** The cached value for this session, or `undefined` when no snapshot has landed (or none has this key). */
+export function peekPlatformKnob(fullKey: string): unknown {
+  return cached?.resolved[fullKey];
+}
+
+/** Ask for the snapshot (once, shared); resolves when it landed or failed. Never throws. */
+export function warmPlatformKnobs(): Promise<void> {
+  return snapshot().then(
+    () => undefined,
+    () => undefined,
+  );
+}
 let inFlight: { key: string; promise: Promise<Record<string, unknown> | null> } | null = null;
 
 async function snapshot(): Promise<Record<string, unknown> | null> {
@@ -39,6 +69,7 @@ async function snapshot(): Promise<Record<string, unknown> | null> {
     }
     const resolved = (data as { resolved?: Record<string, unknown> } | null)?.resolved ?? {};
     cached = { key, resolved, at: Date.now() };
+    notify();
     return resolved;
   })().finally(() => {
     if (inFlight?.promise === promise) inFlight = null;

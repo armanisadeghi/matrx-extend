@@ -15,6 +15,8 @@ export type PermissionMode = 'ask' | 'act';
 export type ChatSpeed = 'fast' | 'thinking';
 export type ScrapeAutoMode = 'capture' | 'scroll-capture';
 export type CredentialAssistancePresentation = 'quiet' | 'on_page';
+/** Which chat the side panel's Chat tab shows: the extension's own (default) or the shared package chat. */
+export type ChatSurface = 'default' | 'package';
 
 interface SettingsState {
   theme: 'light' | 'dark' | 'system';
@@ -40,6 +42,8 @@ interface SettingsState {
    * through the system/org/user Binding ladder at run time.
    */
   defaultAgentId: string | null;
+  /** Which chat the side panel shows. `default` is the extension's own chat; `package` is the new shared chat. */
+  chatSurface: ChatSurface;
   /** Fallback for the per-agent ask/act mode when an agent has no override. */
   defaultPermissionMode: PermissionMode;
   /** Composer speed default. NOT WIRED YET — placeholder UI only. */
@@ -104,6 +108,7 @@ interface SettingsState {
   setTheme: (t: SettingsState['theme']) => void;
   setScrapeDeepClean: (b: boolean) => void;
   setDefaultAgentId: (id: string | null) => void;
+  setChatSurface: (s: ChatSurface) => void;
   setDefaultPermissionMode: (m: PermissionMode) => void;
   setDefaultChatSpeed: (s: ChatSpeed) => void;
   setAutoFullScrollOnFirstSubmit: (b: boolean) => void;
@@ -122,6 +127,7 @@ export const useSettingsStore = create<SettingsState>()(
       theme: 'system',
       scrapeDeepClean: false,
       defaultAgentId: DEFAULT_CHAT_MANDATE_REF,
+      chatSurface: 'default',
       defaultPermissionMode: 'ask',
       defaultChatSpeed: 'fast',
       autoFullScrollOnFirstSubmit: false,
@@ -135,6 +141,7 @@ export const useSettingsStore = create<SettingsState>()(
       setTheme: (theme) => set({ theme }),
       setScrapeDeepClean: (scrapeDeepClean) => set({ scrapeDeepClean }),
       setDefaultAgentId: (defaultAgentId) => set({ defaultAgentId }),
+      setChatSurface: (chatSurface) => set({ chatSurface }),
       setDefaultPermissionMode: (defaultPermissionMode) => set({ defaultPermissionMode }),
       setDefaultChatSpeed: (defaultChatSpeed) => set({ defaultChatSpeed }),
       setAutoFullScrollOnFirstSubmit: (autoFullScrollOnFirstSubmit) =>

@@ -23,6 +23,21 @@ const queryClient = new QueryClient({
 });
 
 installSpeechHost();
+
+/** Saved settings (which chat the panel shows) load from extension storage; mount only once they have. */
+async function settingsReady(): Promise<void> {
+  const { useSettingsStore } = await import('@/state/settings');
+  if (useSettingsStore.persist.hasHydrated()) return;
+  await new Promise<void>((resolve) => {
+    const off = useSettingsStore.persist.onFinishHydration(() => {
+      off();
+      resolve();
+    });
+    if (useSettingsStore.persist.hasHydrated()) resolve();
+  });
+}
+
+await settingsReady();
 const root = createRoot(document.getElementById('app')!);
 root.render(
   <React.StrictMode>

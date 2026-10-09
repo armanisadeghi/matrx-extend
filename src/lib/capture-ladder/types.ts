@@ -170,6 +170,8 @@ export const handoffSchema = z.object({
   created_at: z.string().nullable().default(null),
   updated_at: z.string().nullable().default(null),
   deleted_at: z.string().nullable().default(null),
+  /** Free-form job descriptor (`metadata.social` for a social capture; GATED-CAPTURE.md §2). */
+  metadata: z.record(z.string(), z.unknown()).nullable().default(null),
 });
 export type Handoff = z.infer<typeof handoffSchema>;
 

@@ -8,16 +8,22 @@
  */
 
 import { useChatStore } from '@/state/chat';
+import { useSettingsStore } from '@/state/settings';
 import { useSidepanelTabStore } from '@/state/sidepanel-tab';
 import { useEffect, useState } from 'react';
 
-/** True when the panel was opened on the package chat. */
+/**
+ * True when the panel shows the package chat: the person's Settings → Chat choice (persisted), or
+ * `sidepanel.html?chat=package` (a developer override). The side panel waits for settings to load
+ * before it mounts (sidepanel/main.tsx), so this synchronous read is already correct at first render.
+ */
 export function isPackageChatMode(): boolean {
   try {
-    return new URLSearchParams(globalThis.location?.search ?? '').get('chat') === 'package';
+    if (new URLSearchParams(globalThis.location?.search ?? '').get('chat') === 'package') return true;
   } catch {
-    return false;
+    // no location (service worker): fall through to the saved choice
   }
+  return useSettingsStore.getState().chatSurface === 'package';
 }
 
 /** The package's host door, loaded only in package mode. */

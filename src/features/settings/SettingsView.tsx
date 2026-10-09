@@ -366,6 +366,20 @@ export function SettingsView() {
           <Collapsible label="Chat">
             <Card>
               <ControlRow
+                label="Chat version"
+                hint="applies when the panel reopens"
+                control={
+                  <PillSelect
+                    value={settings.chatSurface}
+                    onChange={(v) => settings.setChatSurface(v as typeof settings.chatSurface)}
+                    options={[
+                      { value: 'default', label: 'Current' },
+                      { value: 'package', label: 'New' },
+                    ]}
+                  />
+                }
+              />
+              <ControlRow
                 label="Default agent"
                 control={
                   /* THE ONE agent picker — the same rows, order and filters

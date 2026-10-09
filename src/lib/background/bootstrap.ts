@@ -82,6 +82,7 @@ import {
 } from '@/lib/stream/offscreen-proxy';
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
+import { registerGuidedCaptureHost } from '@/lib/guided-capture/host';
 import { registerSwipeFileHost } from '@/lib/swipe-file/host';
 import { deliverToolResult } from '@/lib/tools/deliver-tool-result';
 import {
@@ -153,6 +154,7 @@ export function bootstrapBackground(): void {
   //        (src/lib/broker/). Tokens are memory-only, never persisted.
   registerBrokerHandlers();
   registerSwipeFileHost();
+  registerGuidedCaptureHost();
   // "Save this login?" host — raw value-bearing listener + value-free bus handlers.
   registerCredentialCaptureHost();
   registerInlineCredentialSuggestionHost();
