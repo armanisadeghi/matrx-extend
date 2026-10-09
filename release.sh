@@ -438,6 +438,9 @@ CHECKS+=(
     "unit-tests|900|ERROR|unit tests failed|pnpm exec vitest run --maxWorkers=4|pnpm -s exec vitest run --maxWorkers=4"
     "schema-routing|300|ERROR|unqualified Supabase table routing (404s at runtime)|pnpm check:schema-routing|pnpm -s check:schema-routing:strict"
     "package-twins|300|ERROR|package logic re-grown outside its @ai-matrx package|pnpm check:package-twins|pnpm -s check:package-twins"
+    # One way to talk to the database: a direct supabase call outside @ai-matrx/data, per file,
+    # against aidream's shrink-only baseline (a new file starts at zero; no aidream checkout = exit 2).
+    "db-doors|300|ERROR|a new direct database call outside @ai-matrx/data (move it onto a generated door)|pnpm check:db-doors|pnpm -s check:db-doors"
     "canonical-pickers|300|ERROR|an alternate agent picker was reintroduced|pnpm check:canonical-pickers|pnpm -s check:canonical-pickers"
     "archived-items|300|ERROR|a list hides archived rows with no way to reveal them|pnpm check:archived-items-law|pnpm -s check:archived-items-law"
     "archived-items-self-test|300|ERROR|the archived-items detector can no longer fail|pnpm check:archived-items-law:self-test|pnpm -s check:archived-items-law:self-test"
