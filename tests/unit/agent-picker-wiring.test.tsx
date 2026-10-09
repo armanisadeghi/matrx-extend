@@ -54,26 +54,27 @@ function fixtureClient(): AgentCatalogClient {
     };
     return builder as never;
   };
-  return {
-    rpc: (fn: string, args?: Record<string, unknown>) => {
-      if (fn === 'agx_get_list_full') return answer(ROWS);
-      if (fn === 'agx_resolve_agent_address') {
-        // The address resolver's own shape (`p_ids` in, `agent_id`/`agent_name`
-        // out) — the door the package uses to name a Mandate Holder that is not
-        // in the loaded list yet.
-        const ids = (args?.p_ids as string[] | undefined) ?? [];
-        return answer(
-          ROWS.filter((r) => ids.includes(r.id)).map((r) => ({
-            agent_id: r.id,
-            agent_name: r.name,
-            description: r.description,
-          })),
-        );
-      }
-      if (fn === 'agx_search') return answer([]);
-      return answer([]);
-    },
+  const rpc = (fn: string, args?: Record<string, unknown>) => {
+    if (fn === 'agx_get_list_full') return answer(ROWS);
+    if (fn === 'agx_resolve_agent_address') {
+      // The address resolver's own shape (`p_ids` in, `agent_id`/`agent_name`
+      // out) — the door the package uses to name a Mandate Holder that is not
+      // in the loaded list yet.
+      const ids = (args?.p_ids as string[] | undefined) ?? [];
+      return answer(
+        ROWS.filter((r) => ids.includes(r.id)).map((r) => ({
+          agent_id: r.id,
+          agent_name: r.name,
+          description: r.description,
+        })),
+      );
+    }
+    if (fn === 'agx_search') return answer([]);
+    return answer([]);
   };
+  // Since @ai-matrx/associations 0.14.0 the catalog's associations store calls
+  // through `schema(name).rpc(...)`, so the stand-in carries both doors.
+  return { rpc, schema: () => ({ rpc }) } as unknown as AgentCatalogClient;
 }
 
 /** Stands in for `src/lib/agents/catalog.ts`'s transport over `buildHeaders`. */

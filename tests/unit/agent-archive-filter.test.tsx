@@ -70,9 +70,10 @@ function fixtureClient(): AgentCatalogClient {
     };
     return builder as never;
   };
-  return {
-    rpc: (fn: string) => (fn === 'agx_get_list_full' ? answer(ROWS) : answer([])),
-  };
+  const rpc = (fn: string) => (fn === 'agx_get_list_full' ? answer(ROWS) : answer([]));
+  // Since @ai-matrx/associations 0.14.0 the catalog's associations store calls
+  // through `schema(name).rpc(...)`, so the stand-in carries both doors.
+  return { rpc, schema: () => ({ rpc }) } as unknown as AgentCatalogClient;
 }
 
 const noTransport: AgentCatalogTransport = {
