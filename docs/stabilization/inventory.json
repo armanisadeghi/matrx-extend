@@ -37351,13 +37351,33 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "38001402806",
+              "run_id": "38002259163",
               "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
-              "workflow_source_sha": "7994463db9e4d3573517d210614c1c661edd724f",
+              "workflow_source_sha": "18b5531143073cee016135167cf7c91f484bc892",
               "development_ci_run_id": 37998294843,
               "development_artifact_id": 11647758423,
-              "hosted_result_artifact_id": 11649197632,
+              "hosted_result_artifact_id": 11649563132,
               "build_version": "0.2.456",
+              "resource_valid": false,
+              "failure_stage": "resource_watch",
+              "failure_code": "RESOURCE_WATCH_UNSAFE",
+              "evidence": [
+                "docs/stabilization/evidence/guest-data-behavior/run38002259163/receipt.json",
+                "docs/stabilization/evidence/guest-data-behavior/run38002259163/hosted-guest-38002259163-1.jsonl"
+              ],
+              "detail": "Guarded guest run imported exact frozen development artifact 11647758423, then the guest resource watcher observed RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY and stopped the child at the safe boundary. Final resourceInvalid=true; no CDP/native side-panel session or Data behavior was reached, so T01 remains unverified."
+            }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "run_id": "38001402806",
+              "status": "unverified",
+              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+              "workflow_source_sha": "7994463db9e4d3573517d210614c1c661edd724f",
+              "ci_run_id": 37998294843,
+              "ci_artifact_id": 11647758423,
+              "hosted_result_artifact_id": 11649197632,
               "resource_valid": false,
               "failure_stage": "cdp_connect",
               "failure_code": "owned_cdp_open_timeout",
@@ -37365,10 +37385,8 @@
                 "docs/stabilization/evidence/guest-data-behavior/run38001402806/receipt.json",
                 "docs/stabilization/evidence/guest-data-behavior/run38001402806/data-guest-native-acceptance.sanitized.json"
               ],
-              "detail": "Guarded guest run imported exact frozen development artifact 11647758423, but Chromium spawned without opening its owned CDP endpoint (owned_cdp_open_timeout, 15,995 ms). The guest resource journal recorded RESOURCE_CPU_BUSY and finalized resourceInvalid=true. Failure occurred at cdp_connect before native panel QA, so T01 remains unverified."
-            }
-          },
-          "result_history": [
+              "detail": "Chromium spawned but its owned CDP endpoint did not become available within 15,995 ms. RESOURCE_CPU_BUSY followed during guest startup, and the guard finalized resourceInvalid=true before native panel QA."
+            },
             {
               "mode": "guest",
               "run_id": "37999961791",
@@ -37569,13 +37587,14 @@
           "run_ids": [
             "37996443185",
             "37999961791",
-            "38001402806"
+            "38001402806",
+            "38002259163"
           ],
           "retest_status": "not-run",
           "retest_evidence": {
-            "run_id": "38001402806",
-            "report": "docs/stabilization/evidence/guest-data-behavior/run38001402806/receipt.json",
-            "scope": "Chromium failed to open owned CDP and the guest resource guard was invalidated by CPU_BUSY before panel QA. Data guest behavior and save gate remain unverified."
+            "run_id": "38002259163",
+            "report": "docs/stabilization/evidence/guest-data-behavior/run38002259163/receipt.json",
+            "scope": "Guest resource watcher stopped the child on CPU_BUSY and CPU_HIGH_LOAD_BUSY before CDP/native panel QA. Data guest behavior and save gate remain unverified."
           }
         },
         "member": {
