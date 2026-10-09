@@ -1035,6 +1035,11 @@
  "/auth/file-session/status": {
   "get": []
  },
+ "/auth/guest/session": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/auth/on-sign-in": {
   "post": [
    "application/json"
@@ -1222,6 +1227,11 @@
   ]
  },
  "/broker/tokens": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/broker/usage": {
   "post": [
    "application/json"
   ]
@@ -7380,6 +7390,72 @@
  },
  "/smugmug/public/status": {
   "get": []
+ },
+ "/social/ads/search": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/capabilities": {
+  "get": []
+ },
+ "/social/collections": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/collections/{collection_id}/items": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/collections/{collection_id}/items/{item_type}/{item_id}": {
+  "delete": []
+ },
+ "/social/collections/{collection_id}/save-link": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/ingest/post": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/ingest/profile": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/outliers": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/posts/{post_id}/analyze": {
+  "post": []
+ },
+ "/social/posts/{post_id}/media": {
+  "get": []
+ },
+ "/social/posts/{post_id}/media/{file_id}": {
+  "get": []
+ },
+ "/social/posts/{post_id}/transcript": {
+  "post": []
+ },
+ "/social/profiles/{profile_id}/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/tracked": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/tracked/{tracked_account_id}": {
+  "delete": []
  },
  "/socio/public/status": {
   "get": []

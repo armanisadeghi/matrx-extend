@@ -2413,6 +2413,21 @@ export interface SearchResultsData {
   results?: SearchResultItem[];
 }
 
+export interface SocialResultEvent {
+  type?: "social_result";
+  operation: "ingest_post" | "ingest_profile" | "track" | "refresh";
+  result: Record<string, JsonValue>;
+}
+
+export interface SocialStageEvent {
+  type?: "social_stage";
+  operation: "ingest_post" | "ingest_profile" | "track" | "refresh";
+  stage: string;
+  label: string;
+  current?: number;
+  total?: number;
+}
+
 export interface StructuredInputFailure {
   url?: string;
   ref?: string;
@@ -2606,6 +2621,8 @@ export type TypedDataPayload =
   | ScrapeBatchCompleteData
   | SearchErrorData
   | SearchResultsData
+  | SocialResultEvent
+  | SocialStageEvent
   | StructuredInputWarningData
   | VideoOutputData
   | WorkflowNodeTestResultData
