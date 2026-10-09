@@ -88,6 +88,7 @@ async function prepareDevelopment(runId, artifactId) {
     sourceSha,
     runId: Number(runId),
     artifactId: Number(artifactId),
+    ciEvidence: evidence,
   };
 }
 
@@ -323,6 +324,41 @@ async function run(prepared, artifactMode) {
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
   if (acceptanceCase === 'guest-data')
     assert.equal(kind, 'ci_development_test', 'Guest Data requires CI development receipt');
+  const guestDataCiReceiptPath =
+    acceptanceCase === 'guest-data'
+      ? join(
+          dirname(relocatedReceipt),
+          `guest-data-ci-receipt-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}.json`,
+        )
+      : null;
+  if (guestDataCiReceiptPath) {
+    assert.equal(
+      prepared.ciEvidence?.kind,
+      'ci_development_test',
+      'data_guest_ci_receipt_required',
+    );
+    const evidence = prepared.ciEvidence;
+    await writeFile(
+      guestDataCiReceiptPath,
+      `${JSON.stringify(
+        {
+          schema_version: evidence.schema_version,
+          kind: evidence.kind,
+          eligibleStore: evidence.eligibleStore,
+          publish_state: evidence.publish_state,
+          sourceSha: evidence.sourceSha,
+          runId: evidence.runId,
+          artifactId: evidence.artifactId,
+          githubArtifactDigest: evidence.githubArtifactDigest,
+          version: evidence.version,
+          treeSha256: evidence.treeSha256,
+        },
+        null,
+        2,
+      )}\n`,
+      { mode: 0o600, flag: 'wx' },
+    );
+  }
   if (acceptanceCase.startsWith('settings-persistence'))
     assert.equal(
       kind,
@@ -523,6 +559,7 @@ async function run(prepared, artifactMode) {
       ? {
           MATRX_DATA_EXTENSION_DIR: extensionDir,
           MATRX_DATA_RECEIPT: relocatedReceipt,
+          MATRX_DATA_CI_RECEIPT: guestDataCiReceiptPath,
           MATRX_DATA_CI_SOURCE_SHA: prepared.sourceSha,
           MATRX_DATA_CI_RUN_ID: String(prepared.runId),
           MATRX_DATA_CI_ARTIFACT_ID: String(prepared.artifactId),

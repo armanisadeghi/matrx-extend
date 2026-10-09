@@ -5,6 +5,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
 import { clickPickerDone, pickerText } from './data-guest-picker-driver.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { activeTabPanelExpression, click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -63,15 +64,17 @@ async function dataState(panel) {
 try {
   assert.ok(extensionDir && receiptPath, 'data_guest_artifact_inputs_missing');
   const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
-  assert.equal(receipt.kind, 'ci_development_test', 'data_guest_dev_receipt_required');
-  assert.equal(hashReleaseTree(extensionDir), receipt.treeSha256, 'data_guest_tree_mismatch');
-  report.artifact = {
-    source_sha: process.env.MATRX_DATA_CI_SOURCE_SHA,
-    run_id: Number(process.env.MATRX_DATA_CI_RUN_ID),
-    artifact_id: Number(process.env.MATRX_DATA_CI_ARTIFACT_ID),
-    tree_sha256: receipt.treeSha256,
-    version: receipt.version,
-  };
+  const ciReceiptPath = process.env.MATRX_DATA_CI_RECEIPT;
+  assert.ok(ciReceiptPath, 'data_guest_ci_receipt_path_required');
+  const ciReceipt = JSON.parse(await readFile(ciReceiptPath, 'utf8'));
+  const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
+  report.artifact = verifyDataGuestArtifact({
+    localReceipt: receipt,
+    ciReceipt,
+    env: process.env,
+    treeSha256: hashReleaseTree(extensionDir),
+    manifestVersion: manifest.version,
+  });
   await runNativeSidepanelQa({
     headed: true,
     extensionDir,

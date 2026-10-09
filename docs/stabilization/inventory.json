@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-09T21:46:06+00:00",
+  "updated_at": "2026-10-09T22:12:46+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -20073,20 +20073,23 @@
           "results": {
             "guest": {
               "status": "partial",
-              "passed_subtargets": ["new_url_replaces_visible_title", "reload_audits_current_url"],
+              "passed_subtargets": [
+                "new_url_replaces_visible_title",
+                "reload_audits_current_url"
+              ],
               "unverified_dimensions": [
                 "one audit per URL",
                 "slow old result cannot overwrite new page"
               ],
-              "run_id": "37804374798",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
-              "build_version": "0.2.414",
+              "run_id": "37995400576",
+              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+              "build_version": "0.2.456",
               "evidence": [
-                ".research/seo-full-arm-414-native-20261008-1552.json",
-                ".research/seo-full-live-peer-20261008-1610.json"
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
               ],
-              "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred."
+              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
             }
           },
           "result_history": [
@@ -20223,6 +20226,30 @@
                 "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance."
               },
               "superseded_at": "2026-10-08T16:13:38.966554+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "new_url_replaces_visible_title",
+                  "reload_audits_current_url"
+                ],
+                "unverified_dimensions": [
+                  "one audit per URL",
+                  "slow old result cannot overwrite new page"
+                ],
+                "run_id": "37804374798",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/seo-full-arm-414-native-20261008-1552.json",
+                  ".research/seo-full-live-peer-20261008-1610.json"
+                ],
+                "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred."
+              },
+              "superseded_at": "2026-10-09T22:12:46Z"
             }
           ],
           "attempt_history": [
@@ -20310,25 +20337,24 @@
               "status": "partial",
               "passed_subtargets": [
                 "manual_button_returns_to_current_page",
-                "native_title_recaptured_after_trusted_reaudit"
+                "guest_reaudit_captures_changed_page_metadata"
               ],
               "unverified_dimensions": [
                 "running button state",
                 "stale advice replacement",
                 "failure report",
-                "displayed description directly matches changed public page",
+                "displayed description directly matches changed page",
                 "reload"
               ],
-              "run_id": "37804374798",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
-              "build_version": "0.2.414",
+              "run_id": "37995400576",
+              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+              "build_version": "0.2.456",
               "evidence": [
-                ".research/seo-full-arm-414-native-20261008-1552.json",
-                ".research/seo-full-live-peer-20261008-1610.json"
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
               ],
-              "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred.",
-              "qualification": "The receipt target is named guest_reaudit_captures_changed_page_metadata, but its direct native-view assertion is title-only. It proves the public title and description changed, old title remained before click, then native title matched the new public title. T14 later clipboard evidence indirectly includes updated social tags; do not credit direct SEO description-display refresh."
+              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
             }
           },
           "result_history": [
@@ -20479,6 +20505,34 @@
                 "qualification": "The receipt target is named guest_reaudit_captures_changed_page_metadata, but its direct native-view assertion is title-only. It proves the public title and description changed, old title remained before click, then native title matched the new public title. T14 later clipboard evidence indirectly includes updated social tags; do not credit direct SEO description-display refresh."
               },
               "superseded_at": "2026-10-08T16:13:38.966554+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "manual_button_returns_to_current_page",
+                  "native_title_recaptured_after_trusted_reaudit"
+                ],
+                "unverified_dimensions": [
+                  "running button state",
+                  "stale advice replacement",
+                  "failure report",
+                  "displayed description directly matches changed public page",
+                  "reload"
+                ],
+                "run_id": "37804374798",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/seo-full-arm-414-native-20261008-1552.json",
+                  ".research/seo-full-live-peer-20261008-1610.json"
+                ],
+                "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred.",
+                "qualification": "The receipt target is named guest_reaudit_captures_changed_page_metadata, but its direct native-view assertion is title-only. It proves the public title and description changed, old title remained before click, then native title matched the new public title. T14 later clipboard evidence indirectly includes updated social tags; do not credit direct SEO description-display refresh."
+              },
+              "superseded_at": "2026-10-09T22:12:46Z"
             }
           ],
           "defect_ids": ["EXT-D-0169", "EXT-D-0170"],
@@ -20632,15 +20686,15 @@
                 "other restricted schemes",
                 "reload behavior"
               ],
-              "run_id": "37804374798",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
-              "build_version": "0.2.414",
+              "run_id": "37995400576",
+              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+              "build_version": "0.2.456",
               "evidence": [
-                ".research/seo-full-arm-414-native-20261008-1552.json",
-                ".research/seo-full-live-peer-20261008-1610.json"
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
               ],
-              "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred."
+              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
             }
           },
           "result_history": [
@@ -20786,6 +20840,31 @@
                 "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance."
               },
               "superseded_at": "2026-10-08T16:13:38.966554+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "about_blank_clear_error_without_stale_audit",
+                  "public_page_recovers_after_restricted_url"
+                ],
+                "unverified_dimensions": [
+                  "unreachable HTTP(S)",
+                  "other restricted schemes",
+                  "reload behavior"
+                ],
+                "run_id": "37804374798",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/seo-full-arm-414-native-20261008-1552.json",
+                  ".research/seo-full-live-peer-20261008-1610.json"
+                ],
+                "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred."
+              },
+              "superseded_at": "2026-10-09T22:12:46Z"
             }
           ],
           "attempt_history": [
@@ -20923,16 +21002,16 @@
                 "admin JSON contents",
                 "complete displayed audit field parity"
               ],
-              "run_id": "37804374798",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
-              "build_version": "0.2.414",
+              "qualification": "Trusted copy actions and clipboard readback were asserted; clipboard bytes are not retained. Coverage does not prove complete parity of every displayed audit field.",
+              "run_id": "37995400576",
+              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+              "build_version": "0.2.456",
               "evidence": [
-                ".research/seo-full-arm-414-native-20261008-1552.json",
-                ".research/seo-full-live-peer-20261008-1610.json"
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
               ],
-              "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred.",
-              "qualification": "Real trusted copy actions and clipboard readback were asserted. Text checks URL, title, a description line, page stats and an available heading; AI output must wrap the exact summary. This is not complete parity between every displayed audit field and clipboard content."
+              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
             }
           },
           "result_history": [
@@ -21108,6 +21187,35 @@
                 "qualification": "Real trusted copy actions and clipboard readback were asserted. Text checks URL, title, a description line, page stats and an available heading; AI output must wrap the exact summary. This is not complete parity between every displayed audit field and clipboard content."
               },
               "superseded_at": "2026-10-08T16:13:38.966554+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "guest_menu_offers_text_and_ai_but_hides_json",
+                  "guest_actual_clipboard_text_and_ai_page_0",
+                  "guest_actual_clipboard_text_and_ai_page_1",
+                  "guest_role_gate_after_reload",
+                  "guest_actual_clipboard_text_and_ai_reload"
+                ],
+                "unverified_dimensions": [
+                  "member/admin role gates",
+                  "admin JSON contents",
+                  "complete displayed audit field parity"
+                ],
+                "run_id": "37804374798",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/seo-full-arm-414-native-20261008-1552.json",
+                  ".research/seo-full-live-peer-20261008-1610.json"
+                ],
+                "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred.",
+                "qualification": "Real trusted copy actions and clipboard readback were asserted. Text checks URL, title, a description line, page stats and an available heading; AI output must wrap the exact summary. This is not complete parity between every displayed audit field and clipboard content."
+              },
+              "superseded_at": "2026-10-09T22:12:46Z"
             }
           ],
           "attempt_history": [
@@ -21221,25 +21329,24 @@
                 "guest_manual_link_counts_match_live_dom",
                 "guest_manual_image_alt_counts_match_live_dom",
                 "guest_manual_readability_display_is_populated_and_explained",
-                "guest_manual_performance_reflects_current_navigation",
-                "guest_airbnb_hreflang_and_schema_doors_match_public_dom"
+                "guest_manual_performance_reflects_current_navigation"
               ],
               "unverified_dimensions": [
-                "Wikipedia hreflang/schema targets had no unique openable live candidates",
+                "hreflang/schema doors: this live public DOM had no unique openable candidates",
                 "broken social preview image",
                 "remaining detail controls",
-                "readability metric algorithmic correctness"
+                "exact readability calculation"
               ],
-              "run_id": "37804374798",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
-              "build_version": "0.2.414",
+              "qualification": "Readability display was populated and explained, but the exact value remains unverified. This fixture-free run does not replace the separate older Airbnb door evidence preserved in history.",
+              "run_id": "37995400576",
+              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+              "build_version": "0.2.456",
               "evidence": [
-                ".research/seo-full-arm-414-native-20261008-1552.json",
-                ".research/seo-full-live-peer-20261008-1610.json"
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
               ],
-              "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred.",
-              "qualification": "Readability check proves populated/explained display only, not numeric metric correctness. Airbnb alternate-language/schema links were actually clicked and destinations verified. Wikipedia candidate absence is unverified, not a product failure."
+              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
             }
           },
           "result_history": [
@@ -21550,6 +21657,41 @@
                 "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance."
               },
               "superseded_at": "2026-10-08T16:13:38.966554+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "page_0_title_and_headings",
+                  "page_1_title_and_headings",
+                  "sparse_public_detail_groups",
+                  "rich_public_detail_groups_and_canonical_door",
+                  "canonical_outbound_opens_expected_public_tab",
+                  "guest_manual_link_counts_match_live_dom",
+                  "guest_manual_image_alt_counts_match_live_dom",
+                  "guest_manual_readability_display_is_populated_and_explained",
+                  "guest_manual_performance_reflects_current_navigation",
+                  "guest_airbnb_hreflang_and_schema_doors_match_public_dom"
+                ],
+                "unverified_dimensions": [
+                  "Wikipedia hreflang/schema targets had no unique openable live candidates",
+                  "broken social preview image",
+                  "remaining detail controls",
+                  "readability metric algorithmic correctness"
+                ],
+                "run_id": "37804374798",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/seo-full-arm-414-native-20261008-1552.json",
+                  ".research/seo-full-live-peer-20261008-1610.json"
+                ],
+                "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred.",
+                "qualification": "Readability check proves populated/explained display only, not numeric metric correctness. Airbnb alternate-language/schema links were actually clicked and destinations verified. Wikipedia candidate absence is unverified, not a product failure."
+              },
+              "superseded_at": "2026-10-09T22:12:46Z"
             }
           ],
           "defect_ids": ["EXT-D-0170", "EXT-D-0174", "EXT-D-0176", "EXT-D-0183"],
@@ -21934,15 +22076,15 @@
                 "reload",
                 "member/admin"
               ],
-              "run_id": "37804374798",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
-              "build_version": "0.2.414",
+              "run_id": "37995400576",
+              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+              "build_version": "0.2.456",
               "evidence": [
-                ".research/seo-full-arm-414-native-20261008-1552.json",
-                ".research/seo-full-live-peer-20261008-1610.json"
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
               ],
-              "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred."
+              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
             }
           },
           "result_history": [
@@ -21997,6 +22139,32 @@
                 "release_scope": "Bounded real guest acceptance on frozen unpublished development414; controlled scope; all three resource journals valid. No full-case, member/admin, latest-main or Store acceptance."
               },
               "superseded_at": "2026-10-08T16:13:38.966554+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "guest_social_missing_tags_clipboard_before_reaudit",
+                  "guest_social_missing_tags_clipboard_after_reaudit"
+                ],
+                "unverified_dimensions": [
+                  "button absent when no snippet applies",
+                  "other social page states",
+                  "reload",
+                  "member/admin"
+                ],
+                "run_id": "37804374798",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "6c1d38be6a1f14fc3ecfd60304751209e28a9f9f",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/seo-full-arm-414-native-20261008-1552.json",
+                  ".research/seo-full-live-peer-20261008-1610.json"
+                ],
+                "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred."
+              },
+              "superseded_at": "2026-10-09T22:12:46Z"
             }
           ],
           "revalidation_history": [
@@ -22045,7 +22213,8 @@
             "seo-current-ci-20261002-02",
             "37731560399",
             "37800877872",
-            "37804374798"
+            "37804374798",
+            "37995400576"
           ],
           "retest_status": "partial"
         },

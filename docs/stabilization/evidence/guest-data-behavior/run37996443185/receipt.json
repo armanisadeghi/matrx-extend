@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37996443185,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37996443185",
+    "lane": "A",
+    "conclusion": "failure",
+    "checkout_sha": "5bb64adcd0ea4b77dcb250791d66a685d9616234"
+  },
+  "acceptance": {
+    "case": "guest-data",
+    "auth_mode": "guest",
+    "scope": "T01",
+    "fixture": "local static /products catalog, not reached",
+    "report_status": "fail_before_product_interaction",
+    "stage": "input",
+    "failure_code": "data_guest_dev_receipt_required",
+    "classification": "acceptance_driver_receipt_contract_mismatch",
+    "product_behavior": "unverified",
+    "native_stage": null,
+    "observations": {},
+    "no_fixture_or_product_action": true,
+    "no_guest_data_write_request_observed": "driver failed before side-panel startup"
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.456",
+    "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+    "ci_run_id": 37986090931,
+    "ci_artifact_id": 11643292724,
+    "ci_artifact_digest": "sha256:2c7e14f379953dd4434e1d79b0a66f9b68450d3cb2b702a5d1db8ae7a74d2ae3",
+    "tree_sha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_run_artifact": {
+    "id": 11648010466,
+    "name": "hosted-guest-37996443185-1",
+    "sha256": "c1118f8e542312b4e7cdfff43b000399270f87ee4eec717d926f5a74c8cb5028",
+    "expired": false
+  },
+  "failure_boundary": {
+    "expected_local_receipt_kind": "local_dev_unpacked",
+    "driver_expected_local_receipt_kind": "ci_development_test",
+    "wrapper_verified_ci_provenance_separately": true,
+    "consequence": "The assertion rejected the correct imported local receipt before starting native side-panel QA. This run provides no Data product pass/fail evidence."
+  },
+  "resource_guards": {
+    "package": { "admitted": true, "resource_invalid": false, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "decision": "valid" },
+    "guest": { "admitted": true, "resource_invalid": false, "decision": "child_failed" }
+  },
+  "evidence_files": [
+    "data-guest-native-acceptance.sanitized.json",
+    "hosted-package-37996443185-1.jsonl",
+    "hosted-browser-37996443185-1.jsonl",
+    "hosted-guest-37996443185-1.jsonl"
+  ]
+}
