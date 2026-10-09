@@ -7,7 +7,7 @@
 > common-docs/systems/agents/agent-tools/STATE.md).
 > Regenerate with `pnpm docs:tools` (also runs on every `release.sh`).
 
-Generated: 2026-10-09T17:52:17.387Z
+Generated: 2026-10-09T18:26:14.134Z
 Total tools: 81
 
 ## ai
