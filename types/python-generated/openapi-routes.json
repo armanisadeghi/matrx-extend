@@ -7410,12 +7410,18 @@
   ]
  },
  "/social/collections/{collection_id}/items/{item_type}/{item_id}": {
+  "put": [
+   "application/json"
+  ],
   "delete": []
  },
  "/social/collections/{collection_id}/save-link": {
   "post": [
    "application/json"
   ]
+ },
+ "/social/credits": {
+  "get": []
  },
  "/social/ingest/post": {
   "post": [
