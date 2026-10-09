@@ -1,0 +1,33 @@
+{
+  "observed_at": "2026-10-09T16:09:07.960582+00:00",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "schedule_claim": "Oct9 fallback masterledger c72186c7d",
+  "dashboard": {
+    "status": "current_versions_unverified",
+    "last_verified_published": "0.2.205 onOctober7 only",
+    "pending_version": null,
+    "recovery": "Correct publisher Chrome profile and saved Package tab refreshed; Google password reauthentication required. Selected existing saved publisher credential; CUA action timed out, subsequent AX and screenshot also timeout. Did not infer login success or ask for credentials.",
+    "human_only_blocker_established": false
+  },
+  "resources": {
+    "journal": "docs/stabilization/resource-journals/daily-store-20261009.jsonl",
+    "admitted": true,
+    "resourceInvalid": false,
+    "decision": "valid",
+    "system_free_gib": 44.75,
+    "browser_work_stopped": true
+  },
+  "release": {
+    "latest_successful_release_workflow": 37180303468,
+    "created": "2026-10-04T05:34:52Z",
+    "bounded_artifact_audit": "No store/release named artifacts in latest100; latest12 development-test bundles",
+    "submission": "none; no verified newer eligible Store package; machine manualrelease restriction honored"
+  },
+  "guest": {
+    "owned_run": 37956537631,
+    "state": "in_progress; worker owns terminal observation",
+    "public_version": "0.2.205 reported by worker from Google update service",
+    "pre_server_sha": "97ea84e3; post sample pending",
+    "acceptance": "pending; notStoreinstalled"
+  }
+}
