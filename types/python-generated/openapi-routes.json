@@ -2046,7 +2046,11 @@
   "get": []
  },
  "/cx/conversations/{conversation_id}": {
-  "get": []
+  "get": [],
+  "patch": [
+   "application/json"
+  ],
+  "delete": []
  },
  "/cx/conversations/{conversation_id}/context-state": {
   "get": []
