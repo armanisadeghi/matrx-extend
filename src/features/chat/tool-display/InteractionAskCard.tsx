@@ -16,6 +16,7 @@
 import { useChatStream } from '@/hooks/use-chat-stream';
 import { cn } from '@/lib/utils';
 import { useChatStore } from '@/state/chat';
+import { CopyToolButton } from '@ai-matrx/chat/tool-call-visualization/configured-rows/CopyToolButton';
 import { Button, Label } from '@ai-matrx/design-system';
 import { Switch } from '@ai-matrx/design-system';
 import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
@@ -23,7 +24,6 @@ import { Check, MessageCircleQuestion } from 'lucide-react';
 import { useState } from 'react';
 import { create } from 'zustand';
 import type { ToolTimelineEntry } from '../ToolTimelineRow';
-import { CopyToolButton } from '@ai-matrx/chat/tool-call-visualization/configured-rows/CopyToolButton';
 
 interface QuestionSpec {
   id: string;

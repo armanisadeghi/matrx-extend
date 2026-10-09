@@ -27,10 +27,10 @@
  * Transforms live in `./registry-transforms.ts`.
  */
 
+import type { ToolDisplayEntry } from '@ai-matrx/chat/tool-call-visualization/configured-rows/types';
 import { BatchToolDisplay } from './BatchToolDisplay';
 import { InteractionAskCard } from './InteractionAskCard';
 import { SleepCountdown } from './SleepCountdown';
-import type { ToolDisplayEntry } from '@ai-matrx/chat/tool-call-visualization/configured-rows/types';
 import './registry-transforms';
 import './row-registrations';
 

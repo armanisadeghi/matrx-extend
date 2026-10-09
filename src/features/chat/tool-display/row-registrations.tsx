@@ -5,7 +5,10 @@
  */
 
 import { MarkdownView } from '@/components/MarkdownView';
-import { registerRowFieldComponents, registerRowIcons } from '@ai-matrx/chat/tool-call-visualization/configured-rows/registries';
+import {
+  registerRowFieldComponents,
+  registerRowIcons,
+} from '@ai-matrx/chat/tool-call-visualization/configured-rows/registries';
 import {
   Accessibility,
   Activity,

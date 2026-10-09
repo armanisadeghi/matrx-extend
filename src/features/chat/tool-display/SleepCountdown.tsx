@@ -6,6 +6,7 @@
  */
 
 import { cn } from '@/lib/utils';
+import { CopyToolButton } from '@ai-matrx/chat/tool-call-visualization/configured-rows/CopyToolButton';
 // THE package formatters (`@ai-matrx/kit/format`, duplication census H1
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
@@ -14,7 +15,6 @@ import { AlertTriangle, Loader2, Moon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ShimmerText } from '../BreathingOrb';
 import type { ToolTimelineEntry } from '../ToolTimelineRow';
-import { CopyToolButton } from '@ai-matrx/chat/tool-call-visualization/configured-rows/CopyToolButton';
 
 type Phase = 'started' | 'completed' | 'error';
 
