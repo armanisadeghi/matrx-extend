@@ -8,7 +8,13 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
 import { clickPickerDone, pickerText } from './data-guest-picker-driver.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { activeTabPanelExpression, click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import {
+  activeTabPanelExpression,
+  click,
+  dataPanelDiagnostic,
+  evaluate,
+  waitFor,
+} from './settings-panel-driver.mjs';
 
 const extensionDir = process.env.MATRX_DATA_EXTENSION_DIR;
 const receiptPath = process.env.MATRX_DATA_RECEIPT;
@@ -85,7 +91,7 @@ try {
     onStage: (value) => {
       report.native_stage = value;
     },
-    exercisePanel: async ({ page, panel, requireResourceHealth, resourceAction }) => {
+    exercisePanel: async ({ page, panel, artifacts, requireResourceHealth, resourceAction }) => {
       report.stage = 'guest_and_fixture';
       await requireResourceHealth();
       const guest = await evaluate(
@@ -109,7 +115,25 @@ try {
         (state) => state.active,
       );
       report.stage = 'picker';
-      await click(panel, 'data-picker-button', 'Pick fields on this page');
+      try {
+        await click(panel, 'data-picker-button', 'Pick fields on this page');
+      } catch (error) {
+        if (error?.driverFailure?.code === 'pointer_target_not_unique') {
+          report.picker_diagnostic = await dataPanelDiagnostic(panel);
+          try {
+            const screenshot = await panel.send('Page.captureScreenshot', { format: 'png' });
+            await writeFile(
+              join(artifacts, 'data-picker-target-failure.png'),
+              Buffer.from(screenshot.data, 'base64'),
+              { mode: 0o600 },
+            );
+            report.picker_diagnostic.screenshot = 'data-picker-target-failure.png';
+          } catch {
+            report.picker_diagnostic.screenshot = 'capture_failed';
+          }
+        }
+        throw error;
+      }
       await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
       await page.locator('.product-card .product-name').first().click();
       await page.locator('.product-card .product-price').nth(1).click();
@@ -185,6 +209,7 @@ try {
       animating: failure.animating ?? null,
       stable_samples: failure.stableSamples ?? null,
       position_stable: failure.positionStable ?? null,
+      data_panel: failure.dataPanelDiagnostic ?? null,
     };
   }
   process.stderr.write(`DATA_GUEST_ACCEPTANCE_FAILED ${report.stage} ${safeMessage}\n`);

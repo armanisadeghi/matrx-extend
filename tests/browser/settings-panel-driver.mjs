@@ -219,6 +219,7 @@ function pointerFailure(code, location) {
       : null,
     toolsCatalogSearchEmpty: location?.toolsCatalogSearchEmpty ?? null,
     toolsCatalogFiltersDefault: location?.toolsCatalogFiltersDefault ?? null,
+    dataPanelDiagnostic: location?.dataPanelDiagnostic ?? null,
     hitTarget: location?.hitTarget === true,
     animating: location?.animating === true,
     stableSamples: location?.stableSamples ?? 0,
@@ -251,6 +252,39 @@ export function activeTabPanelExpression(title) {
     const pane = id ? document.getElementById(id) : null;
     return pane?.matches('[role="tabpanel"][data-state="active"]') ? pane : null;
   })()`;
+}
+
+// Failure receipts need enough context to distinguish a missing or relabelled
+// control from a pointer-hit problem without transporting arbitrary UI text.
+export function dataPanelDiagnosticExpression() {
+  return `(() => {
+    const tabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
+      .filter((tab) => tab.title === 'Data');
+    const id = tabs.length === 1 ? tabs[0].getAttribute('aria-controls') : null;
+    const pane = id ? document.getElementById(id) : null;
+    const active = pane?.matches('[role="tabpanel"][data-state="active"]') === true;
+    const knownLabels = new Set([
+      'Pick fields on this page', 'Picking on page…', 'Sign in to save',
+      'Save pattern', 'Run pattern', 'Run', 'Clear selection',
+    ]);
+    const buttons = [...(pane?.querySelectorAll('button') ?? [])];
+    return {
+      active_tab_count: tabs.length,
+      pane_id: pane?.id ?? null,
+      pane_active: active,
+      button_count: buttons.length,
+      buttons: buttons.map((button) => ({
+        label: knownLabels.has(button.textContent.trim()) ? button.textContent.trim() : 'other',
+        disabled: button.disabled,
+      })),
+      picker_prompt_present: (pane?.textContent ?? '').includes('Pick fields on this page'),
+      guest_explanation_present: (pane?.textContent ?? '').includes('Field selection works as a guest.'),
+    };
+  })()`;
+}
+
+export async function dataPanelDiagnostic(panel) {
+  return evaluate(panel, dataPanelDiagnosticExpression());
 }
 
 // EXT-D-0177: the outer Tools tab becomes active before its lazy Catalog can mount.
@@ -288,6 +322,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
     let toolsPanelActive = null;
     let toolsViewState = null, toolsCatalogRowCount = null;
     let toolsCatalogSearchEmpty = null, toolsCatalogFiltersDefault = null;
+    let dataPanelDiagnostic = null;
     // The shared title tooltip temporarily preserves a hovered title in data-matrx-title.
     if (kind === 'title') candidates = [...document.querySelectorAll('button[title], button[data-matrx-title]')]
       .filter((el) => (el.getAttribute('title') ?? el.getAttribute('data-matrx-title')) === label);
@@ -324,6 +359,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
       const pane = ${activeTabPanelExpression('Data')};
       candidates = [...(pane?.querySelectorAll('button') ?? [])]
         .filter((el) => el.textContent.trim() === label);
+      dataPanelDiagnostic = ${dataPanelDiagnosticExpression()};
     }
     else if (kind === 'tool-row') {
       const pane = ${activeTabPanelExpression('Tools')};
@@ -450,7 +486,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
     candidates = candidates.filter(visible);
     if (candidates.length !== 1) return { count: candidates.length, matchedCount,
       toolsPanelActive, toolsViewState, toolsCatalogRowCount,
-      toolsCatalogSearchEmpty, toolsCatalogFiltersDefault };
+      toolsCatalogSearchEmpty, toolsCatalogFiltersDefault, dataPanelDiagnostic };
     const target = candidates[0];
     // Viewport preparation is not the acceptance action. Reposition on every
     // sample because an expanding section can invalidate a one-shot scroll.

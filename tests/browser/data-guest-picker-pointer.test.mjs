@@ -34,6 +34,26 @@ function makePanel() {
   };
 }
 
+function makeMissingPickerPanel() {
+  const window = new Window({ url: 'https://catalog.test/products' });
+  window.document.body.innerHTML = `
+    <button role="tab" title="Data" data-state="active" aria-controls="data-pane"></button>
+    <div id="data-pane" role="tabpanel" data-state="active">
+      <p>Field selection works as a guest.</p>
+      <button disabled>Picking on page…</button>
+    </div>`;
+  return {
+    window,
+    panel: {
+      async send(method, args) {
+        if (method === 'Runtime.evaluate')
+          return { result: { value: window.eval(args.expression) } };
+        return {};
+      },
+    },
+  };
+}
+
 test('Data picker pointer resolution is scoped to the active Data panel', async () => {
   const { panel, events, window } = makePanel();
   try {
@@ -54,6 +74,31 @@ test('global exact-text matching reproduces the duplicate picker target failure'
       assert.equal(error.driverFailure?.visibleMatchCount, 2);
       return true;
     });
+  } finally {
+    window.happyDOM.abort();
+  }
+});
+
+test('zero picker matches preserve the safe active Data panel state', async () => {
+  const { panel, window } = makeMissingPickerPanel();
+  try {
+    await assert.rejects(
+      click(panel, 'data-picker-button', 'Pick fields on this page'),
+      (error) => {
+        assert.equal(error.driverFailure?.matchedTargetCount, 0);
+        assert.equal(error.driverFailure?.visibleMatchCount, 0);
+        assert.deepEqual(JSON.parse(JSON.stringify(error.driverFailure?.dataPanelDiagnostic)), {
+          active_tab_count: 1,
+          pane_id: 'data-pane',
+          pane_active: true,
+          button_count: 1,
+          buttons: [{ label: 'Picking on page…', disabled: true }],
+          picker_prompt_present: false,
+          guest_explanation_present: true,
+        });
+        return true;
+      },
+    );
   } finally {
     window.happyDOM.abort();
   }
