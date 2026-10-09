@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-08T23:04:33.457617+00:00",
+  "updated_at": "2026-10-09T21:46:06+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -4942,16 +4942,15 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37851603306",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "build_version": "0.2.414",
+              "run_id": "37994579674",
+              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "build_version": "0.2.456",
               "resource_valid": true,
-              "detail": "System baseline and appearance survive full extension reload; Dark/Light/System cycle with panel reload and restore. Nondefault full-extension persistence remains unverified.",
+              "detail": "Guest native run observed selected/stored Dark and dark class, but renderedBackgroundMatches=false while systemDark=false. The mismatch was present at the warm baseline before this case changed the theme or crossed a reload boundary; full-extension theme recheck stopped at baseline observation. Single-run visual mismatch is a candidate, not a confirmed product defect.",
               "evidence": [
-                ".research/settings-t67-restoration-repair-20261008.json",
-                ".research/settings-t67-native-peer-20261008.json"
+                ".research/settings-full-extension-recheck-diagnostics-20261009.json"
               ],
-              "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
+              "scope": "Hosted lane B run 37994579674; exact frozen development artifact 11643292724, source eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b, v0.2.456; macos-15-intel guest. No Store/member/admin result."
             }
           },
           "linked_defects": ["EXT-D-0087", "EXT-D-0186"],
@@ -5037,6 +5036,24 @@
                 "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
               },
               "reason": "Preserve preceding attempted native scope."
+            },
+            {
+              "at": "2026-10-09T21:46:06+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37851603306",
+                "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+                "build_version": "0.2.414",
+                "resource_valid": true,
+                "detail": "System baseline and appearance survive full extension reload; Dark/Light/System cycle with panel reload and restore. Nondefault full-extension persistence remains unverified.",
+                "evidence": [
+                  ".research/settings-t67-restoration-repair-20261008.json",
+                  ".research/settings-t67-native-peer-20261008.json"
+                ],
+                "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
+              },
+              "reason": "Preserve preceding guest result when recording hosted run 37994579674."
             }
           ],
           "attempt_history": [
@@ -5762,15 +5779,21 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37729701473",
-              "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
-              "evidence": ".research/settings397-fresh-native-20261007.json",
-              "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
-              "verified_at": "2026-10-08T05:10:28.331547+00:00",
-              "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim."
+              "run_id": "37994579674",
+              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "build_version": "0.2.456",
+              "resource_valid": true,
+              "detail": "Guest native run passed warm Off/On visible+stored checks and both panel reload observations. During cleanup after the second change, panel reload completed with expected URL, one exact side-panel context, root count 1, runtime ID match, readyState complete and visible target, but Settings tab count was 0; cleanup/restoration did not complete. Candidate duplicate of EXT-D-0167 missing-Settings recovery investigation; cause remains unconfirmed.",
+              "evidence": [
+                ".research/settings-full-extension-recheck-diagnostics-20261009.json"
+              ],
+              "scope": "Hosted lane B run 37994579674; exact frozen development artifact 11643292724, source eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b, v0.2.456; macos-15-intel guest. Member/admin result not tested."
             }
           },
-          "linked_defects": ["EXT-D-0087"],
+          "linked_defects": [
+            "EXT-D-0087",
+            "EXT-D-0167"
+          ],
           "result_history": [
             {
               "mode": "guest",
@@ -5805,6 +5828,20 @@
                 "detail": "Freshpeer3db847dc accepts bounded UI/storage proof and original valid resource journals. Overall case remains incomplete. Restoration assertions passed but receipt omits final restored-value samples."
               },
               "superseded_at": "2026-10-08T05:10:28.331547+00:00"
+            },
+            {
+              "at": "2026-10-09T21:46:06+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37729701473",
+                "build_variant": "development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614",
+                "evidence": ".research/settings397-fresh-native-20261007.json",
+                "independent_review": ".research/settings397-native-acceptance-peer-20261007.json",
+                "verified_at": "2026-10-08T05:10:28.331547+00:00",
+                "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim."
+              },
+              "reason": "Preserve preceding guest result when recording hosted run 37994579674."
             }
           ],
           "attempt_history": [
@@ -7183,16 +7220,15 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37851603306",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "build_version": "0.2.414",
+              "run_id": "37994579674",
+              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "build_version": "0.2.456",
               "resource_valid": true,
-              "detail": "Full-extension preference checks pass; downstream background capture remains unverified.",
+              "detail": "Guest native run passed warm Auto-scrape On/Off visible+stored checks, both panel reloads, and OFF baseline restoration. Its full-extension recheck was explicitly skipped as unverified after T10 could not reacquire the replacement Settings panel. Background capture traffic with the switch on and no-traffic with it off were not exercised; no capture-behavior pass is established.",
               "evidence": [
-                ".research/settings-t67-restoration-repair-20261008.json",
-                ".research/settings-t67-native-peer-20261008.json"
+                ".research/settings-full-extension-recheck-diagnostics-20261009.json"
               ],
-              "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
+              "scope": "Hosted lane B run 37994579674; exact frozen development artifact 11643292724, source eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b, v0.2.456; macos-15-intel guest. Member/admin and downstream page-load capture not tested."
             }
           },
           "linked_defects": ["EXT-D-0087"],
@@ -7268,7 +7304,9 @@
               "result": {
                 "status": "partial",
                 "run_id": "37837587382",
-                "evidence": [".research/settings-sections-scrape-native-20261008.json"],
+                "evidence": [
+                  ".research/settings-sections-scrape-native-20261008.json"
+                ],
                 "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
                 "build_version": "0.2.414",
                 "detail": "Toggle UI and stored scrapeAutoOnLoad matched warm/panel reload; baseline restored. Actual background capture/disabled behavior on fresh document and full-extension-reload preference recheck remain unverified.",
@@ -7294,6 +7332,24 @@
                 "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
               },
               "reason": "Preserve preceding attempted native scope."
+            },
+            {
+              "at": "2026-10-09T21:46:06+00:00",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37851603306",
+                "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+                "build_version": "0.2.414",
+                "resource_valid": true,
+                "detail": "Full-extension preference checks pass; downstream background capture remains unverified.",
+                "evidence": [
+                  ".research/settings-t67-restoration-repair-20261008.json",
+                  ".research/settings-t67-native-peer-20261008.json"
+                ],
+                "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
+              },
+              "reason": "Preserve preceding guest result when recording hosted run 37994579674."
             }
           ],
           "attempt_history": [

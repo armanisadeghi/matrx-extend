@@ -15,8 +15,16 @@
     "result": "workflow_failed_during_case_execution"
   },
   "resource_validity": {
-    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0 },
-    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0 },
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
     "acceptance": {
       "admitted": true,
       "resource_invalid": false,
@@ -36,7 +44,10 @@
       "downstream_background_capture": "unverified",
       "full_extension_reload_error": "full_extension_recheck_exception"
     },
-    "same_generic_recheck_error": ["T28", "T67"],
+    "same_generic_recheck_error": [
+      "T28",
+      "T67"
+    ],
     "separate_case_result": "T04 also failed on a rendered-theme mismatch; it is separate from the T40 recheck error."
   },
   "diagnosis": {
@@ -72,8 +83,16 @@
     "extension_tree_sha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb",
     "result": "workflow_failed_during_case_execution",
     "resource_validity": {
-      "package": { "admitted": true, "resource_invalid": false, "exit_code": 0 },
-      "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0 },
+      "package": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0
+      },
+      "browser": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0
+      },
       "acceptance": {
         "admitted": true,
         "resource_invalid": false,
@@ -92,7 +111,11 @@
         "full_extension_recheck": {
           "name": "Error",
           "code": "other",
-          "source": { "file": "settings-panel-driver.mjs", "line": 33, "column": 9 },
+          "source": {
+            "file": "settings-panel-driver.mjs",
+            "line": 33,
+            "column": 9
+          },
           "stage": "waitFor timeout; the safe receipt did not retain the wait label",
           "downstream_background_capture": "unverified"
         }
@@ -100,11 +123,22 @@
       "t10_recovery": {
         "first_choice_failure_stage": "choice_settings_reopen",
         "restoration_failure_stage": "restore_acquire_panel",
-        "transport_classes": ["protocol_error", "protocol_error"]
+        "transport_classes": [
+          "protocol_error",
+          "protocol_error"
+        ]
       },
       "other_full_extension_recheck_frames": {
-        "T28": { "file": "settings-panel-driver.mjs", "line": 5, "column": 32 },
-        "T67": { "file": "settings-panel-driver.mjs", "line": 5, "column": 32 }
+        "T28": {
+          "file": "settings-panel-driver.mjs",
+          "line": 5,
+          "column": 32
+        },
+        "T67": {
+          "file": "settings-panel-driver.mjs",
+          "line": 5,
+          "column": 32
+        }
       }
     },
     "diagnosis": {
@@ -128,5 +162,140 @@
       }
     }
   },
-  "inventory_disposition": "Keep EXT-F-1003-T40 partial; visible/persisted controls and baseline restoration passed, but downstream capture remains unverified and no product defect is established."
+  "reproduction_run": {
+    "workflow_run_id": 37994579674,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37994579674",
+    "acceptance_lane": "B",
+    "acceptance_case": "settings-controls",
+    "workflow_source_sha": "bc9a0a511bdbea8b7cc77b12cf1ba8f2a58e7f04",
+    "hosted_result_artifact_id": 11646468304,
+    "development_ci_run_id": 37986090931,
+    "development_artifact_id": 11643292724,
+    "product_source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+    "extension_version": "0.2.456",
+    "extension_tree_sha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb",
+    "result": "workflow_failed_during_case_execution",
+    "resource_validity": {
+      "package": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "browser": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "acceptance": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 1,
+        "decision": "child_failed"
+      }
+    },
+    "t40_observed": {
+      "warm_on_visible_and_stored": true,
+      "on_survived_panel_reload": true,
+      "warm_off_visible_and_stored": true,
+      "off_survived_panel_reload": true,
+      "original_off_baseline_restored": true,
+      "background_page_load_capture_traffic": "unverified_not_exercised",
+      "off_mode_no_capture_traffic": "unverified_not_exercised",
+      "full_extension_reload_recheck": "unverified_previous_panel_recovery_failed"
+    },
+    "driver_recovery_evidence": {
+      "t10_choice_failure_stage": "choice_settings_reopen",
+      "t10_restoration_failure_stage": "restore_acquire_panel",
+      "transport_classes": [
+        "protocol_error",
+        "protocol_error"
+      ],
+      "later_rechecks": {
+        "T28": "unverified_previous_panel_recovery_failed",
+        "T40": "unverified_previous_panel_recovery_failed",
+        "T67": "unverified_previous_panel_recovery_failed"
+      },
+      "interpretation": "The reviewed guard stopped later full-extension checks from using a panel after T10 failed to reacquire one; it correctly leaves those checks unverified."
+    },
+    "other_case_results": {
+      "T04": "failed: selected/stored Dark and dark class were observed, but renderedBackgroundMatches was false while systemDark was false.",
+      "T16": "failed: replacement_settings_tab_ready_not_observed (matched 0, visible 0).",
+      "signed_out_guest_prerequisite_cases": "T19, T31, T34, and T64 failed their signed-out-guest preconditions; not member/admin results.",
+      "member_axis": "not tested; member denial remains unverified.",
+      "admin_axis": "not tested."
+    },
+    "scope": "Guest hosted lane B against the exact frozen development artifact above. The warm and panel-reload toggle evidence is real UI/storage evidence only; no capture traffic was measured, so this run does not pass the background-capture behavior. No hosted rerun was performed.",
+    "runner_label": "macos-15-intel",
+    "resource_journal_artifact_paths": [
+      "hosted-guest-37994579674-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37994579674-1.jsonl",
+      "hosted-guest-37994579674-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37994579674-1.jsonl",
+      "hosted-guest-37994579674-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37994579674-1.jsonl"
+    ],
+    "case_statuses": {
+      "EXT-F-1003-T04": "fail",
+      "EXT-F-1003-T10": "fail",
+      "EXT-F-1003-T13": "pass",
+      "EXT-F-1003-T16": "fail",
+      "EXT-F-1003-T19": "fail",
+      "EXT-F-1003-T22": "pass",
+      "EXT-F-1003-T28": "unverified",
+      "EXT-F-1003-T31": "fail",
+      "EXT-F-1003-T34": "fail",
+      "EXT-F-1003-T37": "pass",
+      "EXT-F-1003-T40": "unverified",
+      "EXT-F-1003-T46": "pass",
+      "EXT-F-1003-T63": "unverified",
+      "EXT-F-1003-T64": "fail",
+      "EXT-F-1003-T67": "unverified",
+      "EXT-F-1003-T70": "unverified",
+      "EXT-F-1003-T73": "pass",
+      "EXT-F-1003-T76": "pass",
+      "EXT-F-1003-T92": "pass"
+    },
+    "t16_reacquire_diagnostic": {
+      "error": "replacement_settings_tab_ready_not_observed",
+      "expected_and_actual": {
+        "settings_tabs": 0,
+        "visible_settings_tabs": 0
+      },
+      "reload_boundary": "After T16 privacy switch Off/On each survived panel document reload; final cleanup refresh then found the panel target visible, expected URL, one exact side-panel context, rootCount 1, runtime ID matching, readyState complete, and Settings tab count 0.",
+      "linked_existing_defect": "EXT-D-0167; same missing Settings recovery surface, but underlying cause remains open."
+    },
+    "t04_diagnosis": {
+      "expected": "For selected/stored Dark with dark class and systemDark=false, rendered background should match the Dark theme.",
+      "actual": "renderedBackgroundMatches=false while selected=Dark, stored=dark, darkClass=true, systemDark=false.",
+      "boundary": "Warm baseline before any T04 theme change or reload; failure prevents theme cycle and full-extension preference check.",
+      "triage": "Potential separate rendering defect; not a duplicate of EXT-D-0186 repeated target reuse. One hosted observation only; no defect claim."
+    }
+  },
+  "inventory_disposition": "Keep EXT-F-1003-T40 partial; warm and panel-reload controls plus OFF baseline restoration passed, while background capture traffic, OFF no-traffic behavior, full-extension reload recheck, and member/admin axes remain unverified.",
+  "isolated_theme_probe": {
+    "acceptance_case": "settings-theme-rendering",
+    "driver": "tests/browser/settings-local-controls-acceptance.mjs, restricted to EXT-F-1003-T04",
+    "sequence": ["Dark", "Light", "System"],
+    "cleanup": "Restore the exact initial selected and stored theme after the sequence, including after a driver error.",
+    "observation_fields": [
+      "systemDark",
+      "stored",
+      "selected",
+      "darkClass",
+      "renderedBackgroundMatches",
+      "renderedBackgrounds.token",
+      "renderedBackgrounds.body",
+      "renderedBackgrounds.root",
+      "renderedBackgrounds.activePanel"
+    ],
+    "reload_scope": "No panel-document reload or extension-management reload is performed by the isolated probe.",
+    "provenance_gates": "Hosted workflow lane admission plus the existing package/browser/acceptance resource permits; hosted wrapper requires kind ci_development_test, passes the exact imported receipt/tree, and the driver verifies requireLocalDevReceipt, verifyFrozenArtifactIdentity and final tree hash.",
+    "verification": {
+      "commands": [
+        "node --test scripts/hosted-settings-theme-rendering-route.test.mjs tests/browser/settings-guest-preference-batch.test.mjs tests/browser/settings-full-extension-rechecks.test.mjs"
+      ],
+      "result": "15 passed",
+      "mutation": "Removing the baseline selection during cleanup made the isolated theme probe regression fail with theme_probe_wait_not_observed; source restored and focused tests passed.",
+      "hosted_execution": "not launched; awaiting peer review and a current successful CI development artifact"
+    }
+  }
 }
