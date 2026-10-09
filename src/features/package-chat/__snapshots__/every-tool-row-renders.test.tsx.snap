@@ -1,0 +1,901 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`every browser-tool row config draws through the package's row > draws visible text in the running, done and error states, never throws, never falls to the generic row 1`] = `
+{
+  "ai:check_availability": {
+    "completed": "Checked AI availability",
+    "error": "Checking AI availability",
+    "started": "Checking AI availability",
+  },
+  "ai:check_prompt_injection": {
+    "completed": "Checked for prompt injection",
+    "error": "Checking for prompt injection",
+    "started": "Checking for prompt injection",
+  },
+  "ai:classify": {
+    "completed": "Classified",
+    "error": "Classifying",
+    "started": "Classifying",
+  },
+  "ai:describe_image": {
+    "completed": "Described image",
+    "error": "Describing image",
+    "started": "Describing image",
+  },
+  "ai:detect_language": {
+    "completed": "Detected language",
+    "error": "Detecting language",
+    "started": "Detecting language",
+  },
+  "ai:extract_json": {
+    "completed": "Extracted JSON",
+    "error": "Extracting JSON",
+    "started": "Extracting JSON",
+  },
+  "ai:proofread": {
+    "completed": "Proofread",
+    "error": "Proofreading",
+    "started": "Proofreading",
+  },
+  "ai:summarize": {
+    "completed": "Summarized",
+    "error": "Summarizing",
+    "started": "Summarizing",
+  },
+  "ai:translate": {
+    "completed": "Translated",
+    "error": "Translating",
+    "started": "Translating",
+  },
+  "bookmarks:get": {
+    "completed": "getquarterly revenue report",
+    "error": "getquarterly revenue report",
+    "started": "getquarterly revenue report",
+  },
+  "bookmarks:list": {
+    "completed": "listquarterly revenue report",
+    "error": "listquarterly revenue report",
+    "started": "listquarterly revenue report",
+  },
+  "bookmarks:search": {
+    "completed": "Searched bookmarksquarterly revenue report",
+    "error": "Searching bookmarksquarterly revenue report",
+    "started": "Searching bookmarksquarterly revenue report",
+  },
+  "capture_prospect": {
+    "completed": "Prospect",
+    "error": "Prospect capture failed",
+    "started": "Checking prospect",
+  },
+  "capture_study_set": {
+    "completed": "Study set",
+    "error": "Study-set capture failed",
+    "started": "Reading study set",
+  },
+  "cdp_a11y_tree": {
+    "completed": "Accessibility tree",
+    "error": "A11y read failed",
+    "started": "Reading a11y tree",
+  },
+  "cdp_emulate:get": {
+    "completed": "get",
+    "error": "Emulation failed",
+    "started": "get",
+  },
+  "cdp_emulate:list": {
+    "completed": "list",
+    "error": "Emulation failed",
+    "started": "list",
+  },
+  "cdp_emulate:search": {
+    "completed": "search",
+    "error": "Emulation failed",
+    "started": "search",
+  },
+  "cdp_full_page_screenshot": {
+    "completed": "Full-page screenshot2000msresult",
+    "error": "Full-page capture failed",
+    "started": "Capturing full page",
+  },
+  "cdp_input_click_xy": {
+    "completed": "Clicked (CDP)",
+    "error": "Click failed",
+    "started": "Clicking (CDP)",
+  },
+  "cdp_input_type": {
+    "completed": "Typed (CDP) quarterly revenue report",
+    "error": "Type failed quarterly revenue report",
+    "started": "Typing (CDP) quarterly revenue report",
+  },
+  "cdp_network_capture_drain": {
+    "completed": "Network events events",
+    "error": "Capture drain failed",
+    "started": "Draining network capture",
+  },
+  "cdp_network_capture_start": {
+    "completed": "Network capture started",
+    "error": "Capture start failed",
+    "started": "Starting network capture",
+  },
+  "cdp_network_capture_stop": {
+    "completed": "Network capture stopped",
+    "error": "Capture stop failed",
+    "started": "Stopping network capture",
+  },
+  "cdp_network_get_body": {
+    "completed": "Response body sample request_id",
+    "error": "Body fetch failed sample request_id",
+    "started": "Fetching response body sample request_id",
+  },
+  "cdp_perf_metrics": {
+    "completed": "Perf metrics",
+    "error": "Perf read failed",
+    "started": "Reading perf metrics",
+  },
+  "cdp_print_pdf": {
+    "completed": "Printed PDF",
+    "error": "PDF print failed",
+    "started": "Printing PDF",
+  },
+  "cdp_session:attach": {
+    "completed": "Attached debugger",
+    "error": "Debugger failed",
+    "started": "Attaching debugger",
+  },
+  "cdp_session:detach": {
+    "completed": "Detached debugger",
+    "error": "Debugger failed",
+    "started": "Detaching debugger",
+  },
+  "cdp_session:list": {
+    "completed": "Listed debugger sessions",
+    "error": "Debugger failed",
+    "started": "Listing debugger sessions",
+  },
+  "chrome_bookmarks:get": {
+    "completed": "getquarterly revenue report",
+    "error": "getquarterly revenue report",
+    "started": "getquarterly revenue report",
+  },
+  "chrome_bookmarks:list": {
+    "completed": "listquarterly revenue report",
+    "error": "listquarterly revenue report",
+    "started": "listquarterly revenue report",
+  },
+  "chrome_bookmarks:search": {
+    "completed": "Searched bookmarksquarterly revenue report",
+    "error": "Searching bookmarksquarterly revenue report",
+    "started": "Searching bookmarksquarterly revenue report",
+  },
+  "chrome_cookies:get": {
+    "completed": "Read cookieshttps://example.com/pricing",
+    "error": "Reading cookieshttps://example.com/pricing",
+    "started": "Reading cookieshttps://example.com/pricing",
+  },
+  "chrome_cookies:list": {
+    "completed": "Cookieshttps://example.com/pricing",
+    "error": "Cookieshttps://example.com/pricing",
+    "started": "Cookieshttps://example.com/pricing",
+  },
+  "chrome_cookies:search": {
+    "completed": "Cookieshttps://example.com/pricing",
+    "error": "Cookieshttps://example.com/pricing",
+    "started": "Cookieshttps://example.com/pricing",
+  },
+  "chrome_history:get": {
+    "completed": "getquarterly revenue report",
+    "error": "getquarterly revenue report",
+    "started": "getquarterly revenue report",
+  },
+  "chrome_history:list": {
+    "completed": "listquarterly revenue report",
+    "error": "listquarterly revenue report",
+    "started": "listquarterly revenue report",
+  },
+  "chrome_history:search": {
+    "completed": "Searched historyquarterly revenue report",
+    "error": "Searching historyquarterly revenue report",
+    "started": "Searching historyquarterly revenue report",
+  },
+  "chrome_recently_closed:get": {
+    "completed": "get",
+    "error": "Recently-closed failed",
+    "started": "get",
+  },
+  "chrome_recently_closed:list": {
+    "completed": "Listed recently closed",
+    "error": "Recently-closed failed",
+    "started": "Listing recently closed",
+  },
+  "chrome_recently_closed:search": {
+    "completed": "search",
+    "error": "Recently-closed failed",
+    "started": "search",
+  },
+  "chrome_record_gif:get": {
+    "completed": "GIF recordedget",
+    "error": "GIF recording failedget",
+    "started": "Recording GIFget",
+  },
+  "chrome_record_gif:list": {
+    "completed": "GIF recordedlist",
+    "error": "GIF recording failedlist",
+    "started": "Recording GIFlist",
+  },
+  "chrome_record_gif:search": {
+    "completed": "GIF recordedsearch",
+    "error": "GIF recording failedsearch",
+    "started": "Recording GIFsearch",
+  },
+  "chrome_record_tab_video": {
+    "completed": "Video recorded",
+    "error": "Video recording failed",
+    "started": "Recording video",
+  },
+  "chrome_save_page_as_mhtml": {
+    "completed": "Saved page (MHTML)",
+    "error": "Save failed",
+    "started": "Saving page",
+  },
+  "chrome_tab_audio_inspect": {
+    "completed": "Tab audio",
+    "error": "Audio inspect failed",
+    "started": "Inspecting tab audio",
+  },
+  "chrome_webmcp:get": {
+    "completed": "WebMCPsample tool",
+    "error": "WebMCPsample tool",
+    "started": "WebMCPsample tool",
+  },
+  "chrome_webmcp:list": {
+    "completed": "Listed page toolssample tool",
+    "error": "Listing page toolssample tool",
+    "started": "Listing page toolssample tool",
+  },
+  "chrome_webmcp:search": {
+    "completed": "WebMCPsample tool",
+    "error": "WebMCPsample tool",
+    "started": "WebMCPsample tool",
+  },
+  "click_element": {
+    "completed": "Clicked sample tagquarterly revenue report",
+    "error": "Click failed on ref_",
+    "started": "Clicking ref_12",
+  },
+  "clipboard:get": {
+    "completed": "getquarterly revenue report",
+    "error": "Clipboard failedquarterly revenue report",
+    "started": "getquarterly revenue report",
+  },
+  "clipboard:list": {
+    "completed": "listquarterly revenue report",
+    "error": "Clipboard failedquarterly revenue report",
+    "started": "listquarterly revenue report",
+  },
+  "clipboard:search": {
+    "completed": "searchquarterly revenue report",
+    "error": "Clipboard failedquarterly revenue report",
+    "started": "searchquarterly revenue report",
+  },
+  "computer:blur": {
+    "completed": "Blurredquarterly revenue report2000msresult",
+    "error": "Blurringquarterly revenue report",
+    "started": "Blurringquarterly revenue report",
+  },
+  "computer:double_click": {
+    "completed": "Double-clickedquarterly revenue report2000msresult",
+    "error": "Double-clickingquarterly revenue report",
+    "started": "Double-clickingquarterly revenue report",
+  },
+  "computer:focus": {
+    "completed": "Focusedquarterly revenue report2000msresult",
+    "error": "Focusingquarterly revenue report",
+    "started": "Focusingquarterly revenue report",
+  },
+  "computer:hover": {
+    "completed": "Hoveredquarterly revenue report2000msresult",
+    "error": "Hoveringquarterly revenue report",
+    "started": "Hoveringquarterly revenue report",
+  },
+  "computer:key": {
+    "completed": "Pressedquarterly revenue report2000msresult",
+    "error": "Pressingquarterly revenue report",
+    "started": "Pressingquarterly revenue report",
+  },
+  "computer:left_click": {
+    "completed": "Clickedquarterly revenue report2000msresult",
+    "error": "Clickingquarterly revenue report",
+    "started": "Clickingquarterly revenue report",
+  },
+  "computer:left_click_drag": {
+    "completed": "Draggedquarterly revenue report2000msresult",
+    "error": "Draggingquarterly revenue report",
+    "started": "Draggingquarterly revenue report",
+  },
+  "computer:right_click": {
+    "completed": "Right-clickedquarterly revenue report2000msresult",
+    "error": "Right-clickingquarterly revenue report",
+    "started": "Right-clickingquarterly revenue report",
+  },
+  "computer:screenshot": {
+    "completed": "Captured screenshotquarterly revenue report2000msresult",
+    "error": "Capturing screenshotquarterly revenue report",
+    "started": "Capturing screenshotquarterly revenue report",
+  },
+  "computer:scroll": {
+    "completed": "Scrolledquarterly revenue report2000msresult",
+    "error": "Scrollingquarterly revenue report",
+    "started": "Scrollingquarterly revenue report",
+  },
+  "computer:scroll_to": {
+    "completed": "Scrolled toquarterly revenue report2000msresult",
+    "error": "Scrolling toquarterly revenue report",
+    "started": "Scrolling toquarterly revenue report",
+  },
+  "computer:triple_click": {
+    "completed": "Triple-clickedquarterly revenue report2000msresult",
+    "error": "Triple-clickingquarterly revenue report",
+    "started": "Triple-clickingquarterly revenue report",
+  },
+  "computer:type": {
+    "completed": "Typedquarterly revenue report2000msresult",
+    "error": "Typingquarterly revenue report",
+    "started": "Typingquarterly revenue report",
+  },
+  "cookies:delete": {
+    "completed": "Deleted cookiehttps://example.com/pricing",
+    "error": "Deleting cookiehttps://example.com/pricing",
+    "started": "Deleting cookiehttps://example.com/pricing",
+  },
+  "cookies:get": {
+    "completed": "Read cookieshttps://example.com/pricing",
+    "error": "Reading cookieshttps://example.com/pricing",
+    "started": "Reading cookieshttps://example.com/pricing",
+  },
+  "cookies:set": {
+    "completed": "Set cookiehttps://example.com/pricing",
+    "error": "Setting cookiehttps://example.com/pricing",
+    "started": "Setting cookiehttps://example.com/pricing",
+  },
+  "credential_login": {
+    "completed": "Saved login",
+    "error": "Saved login failed",
+    "started": "Signing in with a saved login",
+  },
+  "ctx_get": {
+    "completed": "GotSample Key",
+    "error": "Failed to getSample Key",
+    "started": "GettingSample Key",
+  },
+  "data_patterns:get": {
+    "completed": "Saved patternsget",
+    "error": "Pattern action failedget",
+    "started": "Working with saved patternsget",
+  },
+  "data_patterns:list": {
+    "completed": "Saved patternslist",
+    "error": "Pattern action failedlist",
+    "started": "Working with saved patternslist",
+  },
+  "data_patterns:search": {
+    "completed": "Saved patternssearch",
+    "error": "Pattern action failedsearch",
+    "started": "Working with saved patternssearch",
+  },
+  "delete_demo": {
+    "completed": "Deleted demo sample demo_id",
+    "error": "Delete failed sample demo_id",
+    "started": "Deleting demo sample demo_id",
+  },
+  "delete_guidance_item": {
+    "completed": "Deleted guidance item sample id",
+    "error": "Delete failed sample id",
+    "started": "Deleting guidance item sample id",
+  },
+  "describe_demo": {
+    "completed": "Described demo sample demo_id",
+    "error": "Describe failed sample demo_id",
+    "started": "Describing demo sample demo_id",
+  },
+  "desktop_run_command": {
+    "completed": "Ran command quarterly revenue report",
+    "error": "Command failed quarterly revenue report",
+    "started": "Running command quarterly revenue report",
+  },
+  "downloads:cancel": {
+    "completed": "Cancelled downloadhttps://example.com/pricing",
+    "error": "Cancelling downloadhttps://example.com/pricing",
+    "started": "Cancelling downloadhttps://example.com/pricing",
+  },
+  "downloads:confirm": {
+    "completed": "Confirmed downloadhttps://example.com/pricing",
+    "error": "Confirming downloadhttps://example.com/pricing",
+    "started": "Confirming downloadhttps://example.com/pricing",
+  },
+  "downloads:download_url": {
+    "completed": "Started downloadhttps://example.com/pricing",
+    "error": "Starting downloadhttps://example.com/pricing",
+    "started": "Starting downloadhttps://example.com/pricing",
+  },
+  "downloads:list": {
+    "completed": "Listed downloadshttps://example.com/pricing",
+    "error": "Listing downloadshttps://example.com/pricing",
+    "started": "Listing downloadshttps://example.com/pricing",
+  },
+  "drop_file": {
+    "completed": "Dropped file on ref_",
+    "error": "Drop failed on ref_",
+    "started": "Dropping file on ref_12",
+  },
+  "extract_microdata": {
+    "completed": "Extracted microdata",
+    "error": "Microdata extraction failed",
+    "started": "Extracting microdata",
+  },
+  "extract_table": {
+    "completed": "Extracted table rows32000msresult",
+    "error": "Table extraction failed",
+    "started": "Extracting table",
+  },
+  "fetch_url_as_markdown": {
+    "completed": "Fetched https://example.com/pricing words",
+    "error": "Fetch failed https://example.com/pricing",
+    "started": "Fetching https://example.com/pricing",
+  },
+  "find": {
+    "completed": "Found quarterly revenue report matches",
+    "error": "Search failed quarterly revenue report",
+    "started": "Searching for quarterly revenue report",
+  },
+  "find_text_on_page": {
+    "completed": "Found text quarterly revenue report matches",
+    "error": "Find failed quarterly revenue report",
+    "started": "Finding text quarterly revenue report",
+  },
+  "form_input": {
+    "completed": "Filled ref_12sample value",
+    "error": "Failed to fill ref_12sample value",
+    "started": "Filling ref_12sample value",
+  },
+  "get_active_tab": {
+    "completed": "Pricing - Examplehttps://example.com/pricing",
+    "error": "Failed to get active tab Get Active Tab",
+    "started": "Getting active tab Get Active Tab",
+  },
+  "get_computed_style": {
+    "completed": "Read computed style #checkout-submit",
+    "error": "Computed-style read failed #checkout-submit",
+    "started": "Reading computed style #checkout-submit",
+  },
+  "get_element_at_point": {
+    "completed": "Got element at",
+    "error": "Probe failed at",
+    "started": "Probing element at120",
+  },
+  "get_element_details": {
+    "completed": "Inspected element ref_",
+    "error": "Inspect failed ref_",
+    "started": "Inspecting element ref_12",
+  },
+  "get_form_fields": {
+    "completed": "Read form fields fields",
+    "error": "Read failed",
+    "started": "Reading form fields",
+  },
+  "get_guidance_item": {
+    "completed": "Got guidance item sample id",
+    "error": "Failed to get guidance item sample id",
+    "started": "Getting guidance item sample id",
+  },
+  "get_page_links": {
+    "completed": "Got page links links",
+    "error": "Failed to get links",
+    "started": "Getting page links",
+  },
+  "get_page_selection": {
+    "completed": "Read selectionquarterly revenue report",
+    "error": "Selection failed",
+    "started": "Reading selection",
+  },
+  "get_page_text": {
+    "completed": "Extracted article text words",
+    "error": "Text extraction failed",
+    "started": "Extracting article text",
+  },
+  "get_request_body": {
+    "completed": "Request body sample request_id",
+    "error": "Body fetch failed sample request_id",
+    "started": "Fetching request body sample request_id",
+  },
+  "google_email_send": {
+    "completed": "Email to sample to",
+    "error": "Email not sent — sample to",
+    "started": "Waiting for you to review an email to sample to",
+  },
+  "google_workspace:get": {
+    "completed": "Google Workspace Get",
+    "error": "Google Workspace failed Get",
+    "started": "Google Workspace Get",
+  },
+  "google_workspace:list": {
+    "completed": "Google Workspace List",
+    "error": "Google Workspace failed List",
+    "started": "Google Workspace List",
+  },
+  "google_workspace:search": {
+    "completed": "Google Workspace Search",
+    "error": "Google Workspace failed Search",
+    "started": "Google Workspace Search",
+  },
+  "history:get": {
+    "completed": "getquarterly revenue report",
+    "error": "getquarterly revenue report",
+    "started": "getquarterly revenue report",
+  },
+  "history:list": {
+    "completed": "listquarterly revenue report",
+    "error": "listquarterly revenue report",
+    "started": "listquarterly revenue report",
+  },
+  "history:search": {
+    "completed": "Searched historyquarterly revenue report",
+    "error": "Searching historyquarterly revenue report",
+    "started": "Searching historyquarterly revenue report",
+  },
+  "inspect_element": {
+    "completed": "Inspected element #checkout-submit",
+    "error": "Inspect failed #checkout-submit",
+    "started": "Inspecting element #checkout-submit",
+  },
+  "list_chrome_categories": {
+    "completed": "Loaded tools sample category",
+    "error": "Tool load failed sample category",
+    "started": "Loading tools sample category",
+  },
+  "list_demos": {
+    "completed": "Listed demos demos",
+    "error": "Failed to list demos",
+    "started": "Listing demos",
+  },
+  "list_guidance": {
+    "completed": "Listed guidance for example.com items",
+    "error": "Failed to list guidance for example.com",
+    "started": "Listing guidance for example.com",
+  },
+  "list_highlights": {
+    "completed": "Highlights highlights",
+    "error": "Failed to list highlights",
+    "started": "Listing highlights",
+  },
+  "load_chrome_tools": {
+    "completed": "Loaded my sample category browser tools",
+    "error": "Failed to load my sample category browser tools",
+    "started": "Loading my sample category browser tools",
+  },
+  "memory:delete": {
+    "completed": "Deleted memory keysample key",
+    "error": "Deleting memory keysample key",
+    "started": "Deleting memory keysample key",
+  },
+  "memory:get": {
+    "completed": "Read from memorysample key",
+    "error": "Reading from memorysample key",
+    "started": "Reading from memorysample key",
+  },
+  "memory:list": {
+    "completed": "Listed memory keyssample key",
+    "error": "Listing memory keyssample key",
+    "started": "Listing memory keyssample key",
+  },
+  "memory:set": {
+    "completed": "Saved to memorysample key",
+    "error": "Saving to memorysample key",
+    "started": "Saving to memorysample key",
+  },
+  "mutation_watch": {
+    "completed": "Observed changes #checkout-submit events",
+    "error": "Mutation watch failed #checkout-submit",
+    "started": "Watching for changes #checkout-submit",
+  },
+  "navigate": {
+    "completed": "Navigated tohttps://example.com/pricing",
+    "error": "Navigate failedhttps://example.com/pricing",
+    "started": "Navigating tohttps://example.com/pricing",
+  },
+  "query_elements": {
+    "completed": "Found #checkout-submit matches",
+    "error": "Query failed #checkout-submit",
+    "started": "Querying #checkout-submit",
+  },
+  "read_active_page": {
+    "completed": "Read active pagePricing - Example",
+    "error": "Failed to read page",
+    "started": "Reading active page",
+  },
+  "read_console_messages": {
+    "completed": "Read console messages",
+    "error": "Console read failed",
+    "started": "Reading console",
+  },
+  "read_network_requests": {
+    "completed": "Read network requests",
+    "error": "Network read failed",
+    "started": "Reading network",
+  },
+  "read_page": {
+    "completed": "Read page elements",
+    "error": "Failed to read page",
+    "started": "Reading page",
+  },
+  "read_pdf": {
+    "completed": "Read PDF pages",
+    "error": "PDF read failed",
+    "started": "Reading PDF",
+  },
+  "recently_closed:get": {
+    "completed": "get",
+    "error": "Recently-closed failed",
+    "started": "get",
+  },
+  "recently_closed:list": {
+    "completed": "Listed recently closed",
+    "error": "Recently-closed failed",
+    "started": "Listing recently closed",
+  },
+  "recently_closed:search": {
+    "completed": "search",
+    "error": "Recently-closed failed",
+    "started": "search",
+  },
+  "record_demo:get": {
+    "completed": "Demo recordedget",
+    "error": "Recording failedget",
+    "started": "Recording demoget",
+  },
+  "record_demo:list": {
+    "completed": "Demo recordedlist",
+    "error": "Recording failedlist",
+    "started": "Recording demolist",
+  },
+  "record_demo:search": {
+    "completed": "Demo recordedsearch",
+    "error": "Recording failedsearch",
+    "started": "Recording demosearch",
+  },
+  "record_gif:get": {
+    "completed": "GIF recordedget",
+    "error": "GIF recording failedget",
+    "started": "Recording GIFget",
+  },
+  "record_gif:list": {
+    "completed": "GIF recordedlist",
+    "error": "GIF recording failedlist",
+    "started": "Recording GIFlist",
+  },
+  "record_gif:search": {
+    "completed": "GIF recordedsearch",
+    "error": "GIF recording failedsearch",
+    "started": "Recording GIFsearch",
+  },
+  "records:get": {
+    "completed": "Records Get",
+    "error": "Records refused Get",
+    "started": "Records Get",
+  },
+  "records:list": {
+    "completed": "Records List",
+    "error": "Records refused List",
+    "started": "Records List",
+  },
+  "records:search": {
+    "completed": "Records Search",
+    "error": "Records refused Search",
+    "started": "Records Search",
+  },
+  "remember_for_domain": {
+    "completed": "Remembered note for example.com",
+    "error": "Failed to remember example.com",
+    "started": "Remembering note for example.com",
+  },
+  "replay_demo": {
+    "completed": "Replayed demo sample demo_id stepssample steps_executed",
+    "error": "Replay failed sample demo_id",
+    "started": "Replaying demo sample demo_id",
+  },
+  "request_user_takeover": {
+    "completed": "Handed off to youquarterly revenue report",
+    "error": "Takeover failedquarterly revenue report",
+    "started": "Asking you to take overquarterly revenue report",
+  },
+  "resize_window": {
+    "completed": "Resized window",
+    "error": "Resize failed",
+    "started": "Resizing window3",
+  },
+  "save_guidance_note": {
+    "completed": "Saved note for example.comquarterly revenue report",
+    "error": "Failed to save note for example.comquarterly revenue report",
+    "started": "Saving note for example.comquarterly revenue report",
+  },
+  "screenshot_region": {
+    "completed": "Region2000msresult",
+    "error": "Region capture failed",
+    "started": "Capturing region",
+  },
+  "stylesheet:get": {
+    "completed": "get",
+    "error": "Stylesheet failed",
+    "started": "get",
+  },
+  "stylesheet:list": {
+    "completed": "list",
+    "error": "Stylesheet failed",
+    "started": "list",
+  },
+  "stylesheet:search": {
+    "completed": "search",
+    "error": "Stylesheet failed",
+    "started": "search",
+  },
+  "submit_form": {
+    "completed": "Submitted form",
+    "error": "Form submit failed",
+    "started": "Submitting form",
+  },
+  "tab_groups:add": {
+    "completed": "Added tabs to group",
+    "error": "Adding tabs to group",
+    "started": "Adding tabs to group",
+  },
+  "tab_groups:create": {
+    "completed": "Created tab group",
+    "error": "Creating tab group",
+    "started": "Creating tab group",
+  },
+  "tab_groups:list": {
+    "completed": "Listed tab groups",
+    "error": "Listing tab groups",
+    "started": "Listing tab groups",
+  },
+  "tab_groups:remove": {
+    "completed": "Removed tabs from group",
+    "error": "Removing tabs from group",
+    "started": "Removing tabs from group",
+  },
+  "tab_groups:update": {
+    "completed": "Updated tab group",
+    "error": "Updating tab group",
+    "started": "Updating tab group",
+  },
+  "tabs:active": {
+    "completed": "Let me read the active tabhttps://example.com/pricing",
+    "error": "Reading active tabhttps://example.com/pricing",
+    "started": "Reading active tabhttps://example.com/pricing",
+  },
+  "tabs:close": {
+    "completed": "I think we can close this tabhttps://example.com/pricing",
+    "error": "Closing tabhttps://example.com/pricing",
+    "started": "Closing tabhttps://example.com/pricing",
+  },
+  "tabs:create": {
+    "completed": "I'm going to open a new tabhttps://example.com/pricing",
+    "error": "Opening tabhttps://example.com/pricing",
+    "started": "Opening tabhttps://example.com/pricing",
+  },
+  "tabs:duplicate": {
+    "completed": "Let's duplicate this tabhttps://example.com/pricing",
+    "error": "Duplicating tabhttps://example.com/pricing",
+    "started": "Duplicating tabhttps://example.com/pricing",
+  },
+  "tabs:info": {
+    "completed": "I want to know more about this tabhttps://example.com/pricing",
+    "error": "Reading tab infohttps://example.com/pricing",
+    "started": "Reading tab infohttps://example.com/pricing",
+  },
+  "tabs:list": {
+    "completed": "Let me see what tabs you have openhttps://example.com/pricing",
+    "error": "Listing tabshttps://example.com/pricing",
+    "started": "Listing tabshttps://example.com/pricing",
+  },
+  "tabs:move": {
+    "completed": "I'm going to move this tabhttps://example.com/pricing",
+    "error": "Moving tabhttps://example.com/pricing",
+    "started": "Moving tabhttps://example.com/pricing",
+  },
+  "tabs:mute": {
+    "completed": "Let's mute this tabhttps://example.com/pricing",
+    "error": "Muting tabhttps://example.com/pricing",
+    "started": "Muting tabhttps://example.com/pricing",
+  },
+  "tabs:pin": {
+    "completed": "Let's pin this tabhttps://example.com/pricing",
+    "error": "Pinning tabhttps://example.com/pricing",
+    "started": "Pinning tabhttps://example.com/pricing",
+  },
+  "tabs:reload": {
+    "completed": "This tab needs to be reloadedhttps://example.com/pricing",
+    "error": "Reloading tabhttps://example.com/pricing",
+    "started": "Reloading tabhttps://example.com/pricing",
+  },
+  "tabs:switch": {
+    "completed": "Let's switch to that other tabhttps://example.com/pricing",
+    "error": "Switching tabhttps://example.com/pricing",
+    "started": "Switching tabhttps://example.com/pricing",
+  },
+  "tabs:zoom": {
+    "completed": "Let's zoom this tabhttps://example.com/pricing",
+    "error": "Zooming tabhttps://example.com/pricing",
+    "started": "Zooming tabhttps://example.com/pricing",
+  },
+  "take_screenshot": {
+    "completed": "Screenshot2000msresult",
+    "error": "Screenshot failed",
+    "started": "Taking screenshot",
+  },
+  "tasks:get": {
+    "completed": "Task listget",
+    "error": "Tasks failedget",
+    "started": "Updating task listget",
+  },
+  "tasks:list": {
+    "completed": "Task listlist",
+    "error": "Tasks failedlist",
+    "started": "Updating task listlist",
+  },
+  "tasks:search": {
+    "completed": "Task listsearch",
+    "error": "Tasks failedsearch",
+    "started": "Updating task listsearch",
+  },
+  "update_plan": {
+    "completed": "Plan updated steps",
+    "error": "Plan failed steps",
+    "started": "Proposing plan steps",
+  },
+  "upload_file": {
+    "completed": "Uploaded file to ref_12 file(s)",
+    "error": "Upload failed for ref_12 file(s)",
+    "started": "Uploading file to ref_12 file(s)0",
+  },
+  "user": {
+    "completed": "Askedquarterly revenue report",
+    "error": "User prompt failedquarterly revenue report",
+    "started": "Askingquarterly revenue report",
+  },
+  "user_todos:get": {
+    "completed": "Your to-dosget",
+    "error": "To-dos failedget",
+    "started": "Updating your to-dosget",
+  },
+  "user_todos:list": {
+    "completed": "Your to-doslist",
+    "error": "To-dos failedlist",
+    "started": "Updating your to-doslist",
+  },
+  "user_todos:search": {
+    "completed": "Your to-dossearch",
+    "error": "To-dos failedsearch",
+    "started": "Updating your to-dossearch",
+  },
+  "wait_for": {
+    "completed": "Waitedsample target",
+    "error": "Wait timed outsample target",
+    "started": "Waiting forsample target",
+  },
+  "webmcp:call": {
+    "completed": "Called page toolsample tool",
+    "error": "Calling page toolsample tool",
+    "started": "Calling page toolsample tool",
+  },
+  "webmcp:check": {
+    "completed": "Checked WebMCPsample tool",
+    "error": "Checking WebMCPsample tool",
+    "started": "Checking WebMCPsample tool",
+  },
+  "webmcp:list": {
+    "completed": "Listed page toolssample tool",
+    "error": "Listing page toolssample tool",
+    "started": "Listing page toolssample tool",
+  },
+}
+`;
