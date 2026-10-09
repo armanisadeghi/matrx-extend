@@ -202,12 +202,22 @@ try {
     .first()
     .click()
     .catch(() => undefined);
-  await page.getByText('Call the lab about the crown remake').first().waitFor({ timeout: 15_000 }).catch(() => undefined);
+  await page
+    .getByText('Call the lab about the crown remake')
+    .first()
+    .waitFor({ timeout: 15_000 })
+    .catch(() => undefined);
   const panelText = await page.getByText('Call the lab about the crown remake').count();
   check("task panel opens with this conversation's todo", panelText > 0);
   await page.screenshot({ path: join(SHOTS, '2-task-panel.png') });
   // 3. Opening the Files chip shows the extension\'s own picker (the chip is the extension component).
-  await page.getByText('Plan & tasks').locator('xpath=..').getByRole('button').first().click().catch(() => undefined);
+  await page
+    .getByText('Plan & tasks')
+    .locator('xpath=..')
+    .getByRole('button')
+    .first()
+    .click()
+    .catch(() => undefined);
   await filesChip
     .first()
     .click()
