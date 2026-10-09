@@ -27,8 +27,9 @@
   ],
   "source_probe": "The lifecycle now reports only an allowlisted fixed error code and the pre-cleanup phase into the native receipt; arbitrary browser response and approval data remain excluded. It does not change dispatch, decision, reconciliation, or cleanup.",
   "verification": {
-    "focused_tests": "39/39 pass: node --test tests/browser/records-approval-lifecycle.test.mjs tests/browser/records-readonly-native-driver.test.mjs",
+    "focused_tests": "Original 39/39 focused tests passed. After the actual-path follow-up, records-readonly-native-driver.test.mjs passed 25/25 (one new case); the lifecycle test was unchanged.",
     "mutation": "plant.py replaced the diagnostic code with a constant; the new test failed for the expected differing UI-stage outcome and plant.py restored the file byte-identically.",
+    "actual_path_followup": "The driver test now runs the actual acceptance callback with the real lifecycle, then evaluates the acceptance source's receipt finalizer and reads its serialized JSON. A known held-read mismatch yields its fixed code; a private read exception yields unclassified. Both exclude the private message and approval ID. Planting an omitted diagnostic assignment in the actual acceptance callback made this exact test fail, and plant.py restored the source byte-identically.",
     "format": "Biome check passed for the three touched browser files.",
     "compile": "pnpm compile fails on unrelated existing @ai-matrx/chat and @ai-matrx/media missing exports/modules in src/features and src/lib; no touched Records file appears in the type errors."
   },
