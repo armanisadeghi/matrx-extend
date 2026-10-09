@@ -10,7 +10,6 @@ import { STORAGE_KEYS } from '@/config/env';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
 import { requestMicrophoneGrant } from '@/lib/audio/mic-grant';
-import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
@@ -18,8 +17,11 @@ import {
   listMemberOrganizations,
   requireActiveOrganizationId,
 } from '@/lib/org/active-org';
+import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { getSupabase } from '@/lib/supabase/client';
 import type {
+  ChatDeviceToolContext,
+  ChatDeviceToolHandOff,
   ChatDeviceToolInvocation,
   ChatHost,
   ChatOrgPort,
@@ -27,6 +29,10 @@ import type {
 } from '@ai-matrx/chat/host';
 import { createMemoryNavigation } from '@ai-matrx/chat/host';
 import { registerChatUi } from '@ai-matrx/chat/host/ui-slots';
+import type { DeviceToolCallRef } from '@/lib/tools/device-handoff';
+import { browserDomContextSource, isBrowserDeviceRef } from './browser-dom-source';
+import { registerExtensionComposerExtensions } from './composer-extensions';
+import { extensionPageContextSource } from './context-source';
 import { registerExtensionToolRenderers } from './tool-renderers';
 
 /** The panel's last chat address survives a reopen (session storage); a side panel's own URL never moves. */
@@ -82,12 +88,21 @@ function createPanelOrg(): ChatOrgPort & { refresh(): Promise<void> } {
 async function invokeDeviceTool(
   toolName: string,
   args: Record<string, unknown>,
-  context: { conversationId: string; callId: string },
+  context: ChatDeviceToolContext,
 ): Promise<ChatDeviceToolInvocation> {
-  const answer = await send<
-    { callId: string; toolName: string; args: unknown },
-    { ok: boolean; result?: unknown; error?: string }
-  >(CHANNELS.DEVICE_TOOL_INVOKE, { callId: context.callId, toolName, args });
+  // The service worker runs it through the extension's real gate, pinned to the tab the person
+  // sent from (the turn's device reference) with the agent's latched ask/act mode.
+  const answer = await send<DeviceToolCallRef, { ok: boolean; result?: unknown; error?: string }>(
+    CHANNELS.DEVICE_TOOL_INVOKE,
+    {
+      callId: context.callId,
+      toolName,
+      args,
+      conversationId: context.conversationId,
+      permissionMode: context.permissionMode,
+      assignedTabId: isBrowserDeviceRef(context.deviceRef) ? context.deviceRef.tabId : null,
+    },
+  );
   if (!answer.ok && /not registered/.test(answer.error ?? '')) {
     return { handled: false, reason: answer.error ?? 'not a browser tool' };
   }
@@ -99,9 +114,18 @@ async function invokeDeviceTool(
   return { handled: true, ok: true, output };
 }
 
+/**
+ * The panel is closing with delegated browser-tool calls still in flight: the service worker owns
+ * them from here (finishes the run, delivers the result). Fire-and-forget — the page is going away.
+ */
+function handOffDeviceTools(calls: readonly ChatDeviceToolHandOff[]): void {
+  void send(CHANNELS.DEVICE_TOOL_HANDOFF, { calls }).catch(() => undefined);
+}
+
 /** Build the host once the backend address and organization are known. */
 export async function createExtensionChatHost(): Promise<ChatHost> {
   registerExtensionToolRenderers();
+  registerExtensionComposerExtensions();
   // Read-aloud in the package chat: the extension's Cartesia speaker behind media's ReadAloudButton.
   registerChatUi({ SpeakerButton });
   const [baseUrl, org] = await Promise.all([getApiBaseUrl(), Promise.resolve(createPanelOrg())]);
@@ -128,7 +152,8 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
       // An aimatrx.com page opens in a browser tab, never inside the panel.
       openExternal: (href) => void chrome.tabs.create({ url: href }),
     }),
-    deviceTools: { invoke: invokeDeviceTool },
+    deviceTools: { invoke: invokeDeviceTool, handOff: handOffDeviceTools },
+    registry: { contextSources: [browserDomContextSource, extensionPageContextSource] },
     // Chrome cannot prompt inside a side panel: the grant is asked in the mic-grant popup.
     microphone: { requestPermission: () => requestMicrophoneGrant() },
   };
