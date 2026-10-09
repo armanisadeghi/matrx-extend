@@ -611,7 +611,16 @@ start_build() {  # packages the candidate beside the checks; publication still w
 # From PARALLEL_FROM on, every check runs at once beside the package build; the
 # verdicts are read in declared order, so the failure reported is the one a
 # serial run would have reported first.
+# Hosts with a resource permit can run every mandatory gate in the same order
+# without overlapping the unit workers, other checks, and the zip build.
+# Publication still waits for the build verdict below. Default release cadence
+# keeps the parallel path.
 PARALLEL_FROM="unit-tests"
+case "${RELEASE_SERIAL_CHECKS:-0}" in
+    0) ;;
+    1) PARALLEL_FROM="__serial_checks_never_match__" ;;
+    *) hard_stop "RELEASE_SERIAL_CHECKS must be 0 or 1" ;;
+esac
 FAILED_CHECK=""
 run_checks() {
     local row name secs cmd parallel=false waiting=() rows=()
