@@ -1,0 +1,22 @@
+{
+  "date_utc": "2026-10-09T23:37:48Z",
+  "profile": "Arman (armansadeghi.com)",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "version": "0.2.457",
+  "source_sha": "7cf16860846756eb0f50cd6d2595b4d7529dda05",
+  "source_kind": "verified_local_release_receipt",
+  "release_receipt": ".output/release-receipt.json",
+  "loaded_from": ".output/chrome-mv3-dev",
+  "tree_sha256": "706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d",
+  "verification": {
+    "tree_matches_receipt": true,
+    "chrome_reload_message": "Reloaded",
+    "chrome_enabled": true,
+    "chrome_pin_to_toolbar": true,
+    "chrome_loaded_from_matches_stable_path": true,
+    "chrome_version_matches_receipt": true,
+    "resource_journal": "docs/stabilization/resource-journals/dev-chrome-457-reload-20261009.jsonl",
+    "resource_final_decision": "valid"
+  },
+  "limit": "This verifies local extension installation and reload only. Main has later commits, including package and test changes; no product behavior or exact-current-main claim is made."
+}
