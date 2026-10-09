@@ -7,7 +7,7 @@
   "title": "Scrape Save omits naming, delays confirmation, and opens an unusable filing browser",
   "severity": "S2: central capture workflow is confusing and slow; users cannot name the Source at save time",
   "priority": "P1",
-  "state": "fixed",
+  "state": "in-fix",
   "owner": "root",
   "preconditions": [
     "Use the installed development extension in Chrome on a content page with a captured article; sign in and select an organization."
@@ -35,7 +35,9 @@
     "Guarded pnpm compile: scrape-save-compile-1, valid exit 0.",
     "Guarded pnpm exec wxt build --mode development: scrape-save-build-1, valid exit 0; unpacked manifest v0.2.456, SHA256 e97c532f0800794102d247d10332b4d17e85489479cf90a3f082c59006f12541.",
     "Independent source peer found and builder fixed blank-name duplicate rename; final source verdict structurally met, native project scrolling pending.",
-    "Focused Vitest remains unverified: initial 17 pass/2 fail was repaired, but three admitted reruns hung and were stopped under the resource guard."
+    "Focused Vitest remains unverified: initial 17 pass/2 fail was repaired, but three admitted reruns hung and were stopped under the resource guard.",
+    "Native Chrome retest scrape-save-native-1 used unpacked cihd v0.2.456 from .output/chrome-mv3-dev (manifest SHA256 e97c532f0800794102d247d10332b4d17e85489479cf90a3f082c59006f12541) after removing the Store copy; browser permit final decision valid.",
+    "Native retest FAIL: outer Projects required another inner Projects click; 43 candidates then loaded but later rows remained clipped and wheel scrolling did not reach them. Search returned matching projects. Twelve Tabs escaped the open Save dialog to the underlying page; Escape restored focus. No-destination Save showed Saved; its custom title was not independently reopened."
   ],
   "transition_history": [
     {
@@ -61,8 +63,20 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Implementation committed and pushed; compile and development build passed. Awaiting native and test-harness retest."
+    },
+    {
+      "at": "2026-10-09T21:46:17+00:00",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Verified unpacked Chrome retest reproduced clipped, non-scrolling Projects list and modal focus escape."
+    },
+    {
+      "at": "2026-10-09T21:46:17+00:00",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Repair assigned for scroll ownership, immediate one-type candidates, and true modal focus; second native retest required."
     }
   ],
   "closure_requirement": "Fresh peer checks product/source behavior; guarded development build is reloaded in installed Chrome; member/admin real-page save proves custom name, no destination, one and multiple destinations, optional Library, refusal/retry, duplicate rename, responsive confirmation, and scrolling/searching to select a project beyond the first visible rows; surrounding Scrape cases remain green. Guest sign-in flow is rechecked.",
-  "next_action": "Retest exact unpacked build in installed Chrome, including below-fold Project scrolling and selection; resolve Vitest hang, then update inventory T04/T29 and close only after verified pass."
+  "next_action": "Repair confirmed native scrolling and focus defects; rebuild exact unpacked extension, repeat below-fold Project selection and keyboard test, resolve Vitest hang, then update inventory T04/T29."
 }
