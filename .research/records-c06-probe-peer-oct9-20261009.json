@@ -2,6 +2,21 @@
   "task_id": "Records37860757691-C06",
   "reviewed_commit": "6184e5c7379951181331baed1b5359db679d429d",
   "status": "DONE_WITH_CONCERNS",
+  "reverification": {
+    "commit": "68022fa6565e76ecbb475164c46901e22b590043",
+    "verdict_a_source_and_native_outcome": {
+      "source": "PASS",
+      "native_acceptance": "PENDING",
+      "evidence": "The new driver test runs the acceptance callback extracted from the actual source with runOwnedApprovalCreate, then executes the actual receipt-finalizer body extracted from that source and reads the resulting JSON. Both a held approval identity mismatch and a private approval-read exception persist the expected bounded diagnostic; neither private exception text nor the approval ID appears in the receipt. No native rerun occurred."
+    },
+    "verdict_b_quality": {
+      "result": "PASS_FOR_PRIOR_FINDING",
+      "finding": "The earlier missing assertion across callback-to-serialized-receipt wiring is addressed.",
+      "evidence": "Independent run: TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/records-readonly-native-driver.test.mjs — 25/25 pass. The cases assert exact receipt diagnostics, no positive mutation credit, cleanup verification, and absence of private response text and approval ID.",
+      "mutation_relevance": "The recorded mutation removes the callback assignment that transfers the lifecycle diagnostic into report.c06_diagnostic. That mutation targets the newly guarded edge directly: the asserted receipt field would remain null, so this test's deep equality assertion must fail. The fixer report records the mutation as red and byte-identical restoration; this review inspected its relevance but did not independently rerun the plant.",
+      "limits": "This is source-level driver and serialization evidence only. It makes no claim about native browser execution or resolving the original C06 product failure."
+    }
+  },
   "verdict_a_source_and_native_outcome": {
     "source": "PASS",
     "native_acceptance": "PENDING",
