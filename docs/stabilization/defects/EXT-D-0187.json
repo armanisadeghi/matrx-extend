@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0187",
   "feature_id": "EXT-F-1007",
-  "case_ids": [
-    "EXT-F-1007-T04",
-    "EXT-F-1007-T29"
-  ],
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
   "surface": "Scrape > Save Source",
   "auth_mode": "member, admin",
   "title": "Scrape Save omits naming, delays confirmation, and opens a broad post-save filing browser",
