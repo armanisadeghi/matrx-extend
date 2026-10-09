@@ -4,7 +4,7 @@
   "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
   "surface": "Scrape > Save Source",
   "auth_mode": "member, admin",
-  "title": "Scrape Save omits naming, delays confirmation, and opens a broad post-save filing browser",
+  "title": "Scrape Save omits naming, delays confirmation, and opens an unusable filing browser",
   "severity": "S2: central capture workflow is confusing and slow; users cannot name the Source at save time",
   "priority": "P1",
   "state": "in-fix",
@@ -16,12 +16,13 @@
     "Open Scrape, capture the page, click Save.",
     "Observe that no editable Source name or destination choice appears before the write.",
     "After Saved, inspect the automatic filing panel: Library selector, broad eight-type browse list, and a second File action.",
+    "Try to scroll the Projects list to a project beyond the first visible rows; the list does not scroll to it.",
     "Observe the additional wait between the Source landing and the Saved state."
   ],
-  "expected": "A compact save dialog immediately offers a prefilled editable name and a fast optional destination choice; one primary Save lands the named Source with selected associations and shows confirmation promptly. Full browsing and Library loading occur only on request.",
-  "actual": "Save lands with page-derived name and no associations. A post-save panel loads Libraries and a broad association browser; filing needs another call. The UI also waits for an ancillary SEO audit INSERT after landing before showing Saved. Exact backend/database latency is not yet measured.",
+  "expected": "A compact save dialog immediately offers a prefilled editable name and a fast optional destination choice; one primary Save lands the named Source with selected associations and shows confirmation promptly. Project search and scrolling reach every result. Full browsing and Library loading occur only on request.",
+  "actual": "Save lands with page-derived name and no associations. A post-save panel loads Libraries and a broad association browser; filing needs another call, and its Projects list does not scroll to later entries. The UI also waits for an ancillary SEO audit INSERT after landing before showing Saved. Exact backend/database latency is not yet measured.",
   "evidence": [
-    "User-provided Scrape and filing screenshots (2026-10-09, captured in task)",
+    "User-provided Scrape and filing screenshots plus report that the Projects list does not scroll (2026-10-09, captured in task)",
     "src/features/scrape/ScrapeView.tsx",
     "src/features/scrape/FileSourcePanel.tsx",
     "src/hooks/use-scrape.ts",
@@ -51,6 +52,6 @@
       "reason": "Bounded client implementation assigned; native retest required."
     }
   ],
-  "closure_requirement": "Fresh peer checks product/source behavior; guarded development build is reloaded in installed Chrome; member/admin real-page save proves custom name, no destination, one and multiple destinations, optional Library, refusal/retry, duplicate rename, and responsive confirmation; surrounding Scrape cases remain green. Guest sign-in flow is rechecked.",
+  "closure_requirement": "Fresh peer checks product/source behavior; guarded development build is reloaded in installed Chrome; member/admin real-page save proves custom name, no destination, one and multiple destinations, optional Library, refusal/retry, duplicate rename, responsive confirmation, and scrolling/searching to select a project beyond the first visible rows; surrounding Scrape cases remain green. Guest sign-in flow is rechecked.",
   "next_action": "Implement and peer-check compact pre-save flow, then native installed-extension retest and update inventory T04/T29."
 }
