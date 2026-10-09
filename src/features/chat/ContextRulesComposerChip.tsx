@@ -159,7 +159,14 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
   useEffect(() => {
     if (!signedIn || activeTab.identityStatus !== 'ready') return;
     void readPreviewSources(composer, conversationId);
-  }, [signedIn, composer, conversationId, activeTab.id, activeTab.pageKey, activeTab.identityStatus]);
+  }, [
+    signedIn,
+    composer,
+    conversationId,
+    activeTab.id,
+    activeTab.pageKey,
+    activeTab.identityStatus,
+  ]);
 
   const onOpenChange = useCallback(
     (open: boolean) => {
