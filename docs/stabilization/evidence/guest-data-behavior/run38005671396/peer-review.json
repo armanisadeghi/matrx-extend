@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "reviewer": "independent_read_only",
+  "run_id": 38005671396,
+  "behavior_verdict": "pass_for_executed_guest_scope",
+  "quality_verdict": "pass",
+  "artifact": {
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "ci_run_id": 37998294843,
+    "ci_artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+    "workflow_checkout_sha": "8cc7d4f44c9066ef3e752c888418e9f365c48b71"
+  },
+  "verified_behavior": "Signed-out guest opened Data on the controlled three-row catalog, selected two distinct fields through the native picker, saw Cedar chair and $429 in picked previews and two selected selectors, saw no Pattern name or Save pattern, clicked Sign in to save until signing-in state, and emitted zero observed pattern writes before authentication.",
+  "resource_finals": {
+    "package": "valid_exit_0",
+    "browser": "valid_exit_0",
+    "guest": "valid_exit_0"
+  },
+  "limits": "Signed-in save, Store installation, and the cause of the earlier Playwright timeout were not exercised or established.",
+  "sources": [
+    "receipt.json",
+    "data-guest-native-acceptance.sanitized.json",
+    "hosted-package-38005671396-1.jsonl",
+    "hosted-browser-38005671396-1.jsonl",
+    "hosted-guest-38005671396-1.jsonl",
+    "tests/browser/data-guest-native-acceptance.mjs",
+    "tests/browser/data-guest-artifact-contract.mjs"
+  ]
+}
