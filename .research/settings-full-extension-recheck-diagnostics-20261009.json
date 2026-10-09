@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "task": "Diagnose hosted Settings full-extension recheck exceptions",
+  "run": {
+    "workflow_run_id": 37991711422,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37991711422",
+    "acceptance_lane": "B",
+    "acceptance_case": "settings-controls",
+    "development_ci_run_id": 37986090931,
+    "development_artifact_id": 11643292724,
+    "native_result_artifact_id": 11645598031,
+    "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+    "extension_version": "0.2.456",
+    "extension_tree_sha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb",
+    "result": "workflow_failed_during_case_execution"
+  },
+  "resource_validity": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0 },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0 },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "note": "A short CPU-busy interval occurred during startup and recovered before acceptance execution; it was not the terminal cause."
+  },
+  "observations": {
+    "t40": {
+      "status": "fail",
+      "switch_on_visible_and_stored": true,
+      "switch_on_survived_panel_reload": true,
+      "switch_off_visible_and_stored": true,
+      "switch_off_survived_panel_reload": true,
+      "original_off_baseline_restored": true,
+      "downstream_background_capture": "unverified",
+      "full_extension_reload_error": "full_extension_recheck_exception"
+    },
+    "same_generic_recheck_error": ["T28", "T67"],
+    "separate_case_result": "T04 also failed on a rendered-theme mismatch; it is separate from the T40 recheck error."
+  },
+  "diagnosis": {
+    "exact_boundary": "runFullExtensionRecheck() catches an unexpected callback exception in tests/browser/settings-full-extension-rechecks.mjs and previously recorded only the generic full_extension_recheck_exception category.",
+    "what_raw_evidence_proves": "The resource guards passed, T40's visible and persisted switch checks passed, and the full-extension recheck callback threw after the recorded control checks.",
+    "what_raw_evidence_cannot_prove": "The original error name, code, message, stack frame, or throwing operation. The wrapper discarded those details, so the precise T40 throw site cannot be reconstructed from this run.",
+    "classification": "Test-driver diagnostic gap; no T40 downstream product failure is established."
+  },
+  "repair": {
+    "files": [
+      "tests/browser/settings-full-extension-rechecks.mjs",
+      "tests/browser/settings-full-extension-rechecks.test.mjs"
+    ],
+    "behavior": "Unexpected exceptions now preserve only an allowlisted error name/code and the first settings-driver source frame (basename and line/column); message and full stack remain excluded.",
+    "verification": {
+      "command": "node --test tests/browser/settings-full-extension-rechecks.test.mjs",
+      "result": "8 passed",
+      "mutation": "plant.py replaced the diagnostic function call with a constant; the distinct-diagnostics regression failed by name, as expected, and the source was restored byte-identically.",
+      "browser_rerun": "not run"
+    }
+  },
+  "inventory_disposition": "Keep EXT-F-1003-T40 partial; downstream capture remains unverified."
+}

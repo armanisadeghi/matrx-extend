@@ -11,6 +11,36 @@ import {
 
 export const FULL_EXTENSION_RECHECK_IDS = ['T04', 'T10', 'T28', 'T40', 'T67'];
 
+const SAFE_ERROR_NAMES = new Set([
+  'AssertionError',
+  'Error',
+  'RangeError',
+  'TimeoutError',
+  'TypeError',
+]);
+const SAFE_ERROR_CODES = new Set([
+  'ECONNRESET',
+  'EPIPE',
+  'ETIMEDOUT',
+  'ERR_ASSERTION',
+  'ERR_INVALID_STATE',
+  'ERR_TIMED_OUT',
+]);
+
+function safeUnexpectedError(error) {
+  const name = SAFE_ERROR_NAMES.has(error?.name) ? error.name : 'OtherError';
+  const code = SAFE_ERROR_CODES.has(error?.code) ? error.code : 'other';
+  const stack = typeof error?.stack === 'string' ? error.stack.split('\n') : [];
+  let source = null;
+  for (const frame of stack) {
+    const match = frame.match(/\/tests\/browser\/([A-Za-z0-9._-]+\.mjs):(\d+):(\d+)\)?$/);
+    if (!match || !match[1].startsWith('settings-')) continue;
+    source = { file: match[1], line: Number(match[2]), column: Number(match[3]) };
+    break;
+  }
+  return { name, code, source: source ?? { file: 'unavailable', line: null, column: null } };
+}
+
 function safeGuestFailureDiagnostics(error) {
   const safeStage = (stage) =>
     stage === 'not_failed' || GUEST_EXTENSION_RECHECK_FAILURE_STAGES.includes(stage)
@@ -93,7 +123,15 @@ export async function runFullExtensionRecheck(item, execute) {
         error?.safeCategory === 'full_extension_preference_or_restore_failed'
           ? error.safeCategory
           : 'full_extension_recheck_exception';
-      record('full extension reload recheck completed', 'fail', result.error);
+      if (result.error === 'full_extension_recheck_exception')
+        result.exception = safeUnexpectedError(error);
+      record(
+        'full extension reload recheck completed',
+        'fail',
+        result.error === 'full_extension_recheck_exception'
+          ? { category: result.error, ...result.exception }
+          : result.error,
+      );
     }
   }
 

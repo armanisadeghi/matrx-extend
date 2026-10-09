@@ -83,7 +83,48 @@ test('missing or failed full-extension rechecks force the individual case to fai
   assert.equal(failed.fullExtensionReload.status, 'fail');
   assert.equal(failed.status, 'fail');
   assert.equal(failed.fullExtensionReload.error, 'full_extension_recheck_exception');
+  assert.equal(failed.fullExtensionReload.exception.name, 'Error');
+  assert.equal(failed.fullExtensionReload.exception.code, 'other');
+  assert.equal(
+    failed.fullExtensionReload.exception.source.file,
+    'settings-full-extension-rechecks.test.mjs',
+  );
+  assert.ok(failed.fullExtensionReload.exception.source.line > 0);
   assert.equal(JSON.stringify(failed).includes('injected_full_extension_failure'), false);
+});
+
+test('unexpected full-extension exceptions retain distinct safe source diagnostics', async () => {
+  const capture = async (error) => {
+    const item = { id: 'EXT-F-1003-T40', status: 'pass', steps: [], criteria: [] };
+    await runFullExtensionRecheck(item, async () => {
+      throw error;
+    });
+    return item.fullExtensionReload.exception;
+  };
+  const timeout = Object.assign(
+    new TypeError('private URL https://private.invalid/?token=secret'),
+    {
+      code: 'ETIMEDOUT',
+    },
+  );
+  const invalidState = Object.assign(new RangeError('private password'), {
+    code: 'ERR_INVALID_STATE',
+  });
+
+  const first = await capture(timeout);
+  const second = await capture(invalidState);
+  assert.deepEqual(
+    [first.name, first.code, first.source.file],
+    ['TypeError', 'ETIMEDOUT', 'settings-full-extension-rechecks.test.mjs'],
+  );
+  assert.deepEqual(
+    [second.name, second.code, second.source.file],
+    ['RangeError', 'ERR_INVALID_STATE', 'settings-full-extension-rechecks.test.mjs'],
+  );
+  assert.notEqual(first.source.line, second.source.line);
+  assert.equal(JSON.stringify({ first, second }).includes('private.invalid'), false);
+  assert.equal(JSON.stringify({ first, second }).includes('secret'), false);
+  assert.equal(JSON.stringify({ first, second }).includes('password'), false);
 });
 
 function fullRestartFixture({
