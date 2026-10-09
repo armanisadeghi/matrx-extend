@@ -49,6 +49,7 @@
     ["pnpm", "exec", "wxt"],
     ["pnpm", "compile"],
     ["pnpm", "check:matrx-packages"],
+    ["pnpm", "sync:matrx-packages"],
     ["pnpm", "lint"],
     ["pnpm", "exec", "biome", "check", "--diagnostic-level=error", "."],
     [
