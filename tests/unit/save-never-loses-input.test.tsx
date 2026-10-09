@@ -311,6 +311,58 @@ describe('Save never loses input', () => {
     expect(screen.queryByText('Launch plan')).toBeNull();
   });
 
+  it('treats the first organization event as a switch while the initial lookup and old save are pending', async () => {
+    const initialOrganizationId = mocks.organizationId;
+    let resolveOrganization!: (organizationId: string) => void;
+    const pendingOrganization = new Promise<string>((resolve) => {
+      resolveOrganization = resolve;
+    });
+    const organizationRead = vi
+      .spyOn(activeOrganization, 'getActiveOrganizationId')
+      .mockReturnValue(pendingOrganization);
+    const oldSave = deferredApiResponse();
+    mocks.apiPost.mockReturnValueOnce(oldSave.promise);
+    try {
+      render(<ScrapeView />);
+      fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+      fireEvent.change(await screen.findByLabelText('Source name'), {
+        target: { value: 'Harbor Dental intake research' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
+      await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+      expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({
+        name: 'Harbor Dental intake research',
+        organization_id: initialOrganizationId,
+      });
+
+      // A real switch arrives before the initial getter, so it must close the
+      // old draft and fence its pending save instead of acting as hydration.
+      await switchWorkspace(OTHER_ORGANIZATION_ID);
+      expect(screen.queryByRole('dialog', { name: 'Save Source' })).toBeNull();
+      await act(async () => {
+        resolveOrganization(initialOrganizationId);
+        await pendingOrganization;
+        oldSave.resolve(landedResponse);
+      });
+      expect(screen.queryByRole('button', { name: /^Saved$/ })).toBeNull();
+      expect(screen.queryByRole('button', { name: /Open this Source/ })).toBeNull();
+
+      mocks.apiPost.mockResolvedValue(landedResponse);
+      await startSave();
+      await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(2));
+      expect(mocks.apiPost.mock.calls[1]?.[1]).toMatchObject({
+        name: 'Guide',
+        organization_id: OTHER_ORGANIZATION_ID,
+        attach_to: [],
+      });
+      expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
+    } finally {
+      resolveOrganization(initialOrganizationId);
+      oldSave.resolve(landedResponse);
+      organizationRead.mockRestore();
+    }
+  });
+
   it('opens a named Save form without a request, then lands the edited name in one request', async () => {
     mocks.apiPost.mockResolvedValue(landedResponse);
     render(<ScrapeView />);
