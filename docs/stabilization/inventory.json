@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-09T23:20:00+00:00",
+  "updated_at": "2026-10-09T23:34:38+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -20845,7 +20845,7 @@
                 "Project association persistence unverified; precise confirmation latency unmeasured.",
                 "Final focus acceptance on 4126b60f1 blocked by allowed native reload; same-content duplicate, refusal/retry, guest flow and full admin coverage remain unverified."
               ],
-              "detail": "Verified title-persistence substep only, not full T04. Native-3 Saved/open Source succeeded; native-3 Tab escaped the modal. Native-4 valid permit blocked before exact loaded focus-build verification because CUA could not open extension management. Native-2 invalid has no acceptance credit."
+              "detail": "Verified title-persistence substep only, not full T04. Native-3 Saved/open Source succeeded; native-3 Tab escaped the modal. Native-4 valid permit blocked before exact loaded focus-build verification because CUA could not open extension management. Native-2 invalid has no acceptance credit. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects/focus/association remain unverified."
             },
             "admin": {
               "status": "unverified",
@@ -23475,12 +23475,12 @@
                 "Initial candidate fetch failed once and recovered via Retry."
               ],
               "remaining_criteria": [
-                "Outer one-click full-Projects flow is unverified; canonical candidate-body follow-up pending.",
+                "Canonical one-click Projects fix 577af8810 is included in local release v0.2.457; exact-release native one-click browsing remains unverified.",
                 "Selected Project association persistence remains unverified on the independently reopened Source.",
                 "Tab escaped the modal in valid native-3 (retest-fail); focus candidate 4126b60f1 final native retest blocked by allowed CUA reload in native-4.",
                 "File elsewhere, top/footer Save, narrow-panel, multiple destinations, Library, remove and refusal routes remain unverified."
               ],
-              "detail": "Partial selection/navigation only: wheel and Page_Down passed after inner Projects; no one-click flow or stored association pass. Native-3 focus escape retest failed. Native-4 valid permit blocked before loading/verifying focus-fix artifact; final focus and association retests unverified. Native-2 invalid has no acceptance credit."
+              "detail": "Partial selection/navigation only: wheel and Page_Down passed after inner Projects; no one-click flow or stored association pass. Native-3 focus escape retest failed. Native-4 valid permit blocked before loading/verifying focus-fix artifact; final focus and association retests unverified. Native-2 invalid has no acceptance credit. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects/focus/association remain unverified."
             },
             "admin": {
               "status": "unverified",
@@ -23707,7 +23707,7 @@
             "scrape-save-native-3",
             "scrape-save-native-4"
           ],
-          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. One-click Projects follow-up pending; no full T04/T29 pass."
+          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. One-click Projects follow-up pending; no full T04/T29 pass. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects/focus/association remain unverified."
         },
         "admin": {
           "test_status": "unverified",
@@ -23903,6 +23903,18 @@
           "resource_journal": "docs/stabilization/resource-journals/scrape-save-native-4.jsonl",
           "proven": "Local manifest and ScrapeView chunk hashes matched requested focus artifact; permit valid and cleanly stopped.",
           "limits": "CUA blocked extension management; no allowed reload/current loaded artifact verification, so no final focus, association, scrolling or Save-route assertions."
+        },
+        {
+          "run_id": "scrape-save-release-4",
+          "defect_id": "EXT-D-0187",
+          "status": "local-release-valid-native-unverified",
+          "build": "v0.2.457 / 7cf16860846756eb0f50cd6d2595b4d7529dda05",
+          "evidence": ".output/release-receipt.json",
+          "resource_journal": "docs/stabilization/resource-journals/scrape-save-release-4.jsonl",
+          "resource_journal_commit": "652fb00b1",
+          "tree_sha256": "706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d",
+          "proven": "Mandatory release gates passed; 2281 tests across 323 files passed, 5 tests/2 files skipped; Git tag/main and local/Store ZIP bundles pushed.",
+          "limits": "No Web Store submission. New-release native one-click Projects, focus containment, association persistence and remaining Save/File elsewhere/role checks unverified; D187 in-fix and case results remain partial."
         }
       ]
     },
