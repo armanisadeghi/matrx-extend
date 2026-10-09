@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 38002259163,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38002259163",
+    "lane": "A",
+    "conclusion": "failure",
+    "checkout_sha": "18b5531143073cee016135167cf7c91f484bc892"
+  },
+  "acceptance": {
+    "case": "guest-data",
+    "case_id": "EXT-F-2005-T01",
+    "auth_mode": "guest",
+    "scope": "T01",
+    "fixture": "static synthetic /products catalog",
+    "report_status": "stopped_before_native_panel",
+    "stage": "resource_watch",
+    "native_stage": null,
+    "failure_code": "RESOURCE_WATCH_UNSAFE",
+    "failure_detail": "After exact artifact import, guest resource monitoring observed RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY and terminated the child at the safe boundary.",
+    "classification": "hosted_resource_guard_invalidation",
+    "product_behavior": "unverified",
+    "observations": {},
+    "no_side_panel_or_product_action_observed": true,
+    "native_acceptance_report_produced": false
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.456",
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "ci_run_id": 37998294843,
+    "ci_artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b"
+  },
+  "hosted_run_artifact": {
+    "id": 11649563132,
+    "name": "hosted-guest-38002259163-1",
+    "sha256": "sha256:8c2f165d5b86fdc6489767cadcbb6518243e7c5ed20087d8d03e319073b26e56",
+    "expired": false
+  },
+  "resource_guards": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": true,
+      "decision": "invalid",
+      "exit_code": 3
+    }
+  },
+  "scope_boundary": "Product artifact provenance verified exactly; package/browser readiness and admission passed. Guest watcher later stopped the job before CDP/native side-panel QA. This is not evidence for or against Data behavior.",
+  "evidence_files": [
+    "receipt.json",
+    "hosted-package-38002259163-1.jsonl",
+    "hosted-browser-38002259163-1.jsonl",
+    "hosted-guest-38002259163-1.jsonl"
+  ]
+}

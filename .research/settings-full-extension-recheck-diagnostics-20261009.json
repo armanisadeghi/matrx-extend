@@ -265,16 +265,20 @@
     },
     "t04_diagnosis": {
       "expected": "For selected/stored Dark with dark class and systemDark=false, rendered background should match the Dark theme.",
-      "actual": "renderedBackgroundMatches=false while selected=Dark, stored=dark, darkClass=true, systemDark=false.",
+      "actual": "Run 37994579674 recorded renderedBackgroundMatches=false at Dark baseline but omitted computed colors; the comparator was invalid because it used bare var(--background). Corrected run 37999970113 measured equal token/body backgrounds for Dark (rgb(39, 39, 42)), Light/System (rgb(244, 244, 245)), with selected/stored/class values matching each choice.",
       "boundary": "Warm baseline before any T04 theme change or reload; failure prevents theme cycle and full-extension preference check.",
-      "triage": "Test measurement artifact, not a confirmed product regression. The comparator assigned bare var(--background) to a CSS backgroundColor probe, while the exact frozen artifact defines --background as HSL channels (including .dark{--background:240 4% 16%}) and its body rule uses hsl(var(--background)). The bare token is invalid as a CSS color, so the expected probe background resolves transparently and renderedBackgroundMatches can be false even when the body matches the theme. The receipt did not include computed color values, so actual rendered appearance remains unverified until the corrected native probe."
+      "triage": "The prior false signal was a test measurement artifact, not a product regression: its comparator assigned bare var(--background) to a CSS backgroundColor probe, while the frozen artifact defines --background as HSL channels and the body rule uses hsl(var(--background)). Corrected hosted run 37999970113 observed token/body equality for Dark, Light, and System. Warm rendering is verified; extension reload persistence and dark OS preference remain unverified."
     }
   },
   "inventory_disposition": "Keep EXT-F-1003-T40 partial; warm and panel-reload controls plus OFF baseline restoration passed, while background capture traffic, OFF no-traffic behavior, full-extension reload recheck, and member/admin axes remain unverified.",
   "isolated_theme_probe": {
     "acceptance_case": "settings-theme-rendering",
     "driver": "tests/browser/settings-local-controls-acceptance.mjs, restricted to EXT-F-1003-T04",
-    "sequence": ["Dark", "Light", "System"],
+    "sequence": [
+      "Dark",
+      "Light",
+      "System"
+    ],
     "cleanup": "Restore the exact initial selected and stored theme after the sequence, including after a driver error.",
     "observation_fields": [
       "systemDark",
@@ -293,7 +297,7 @@
       "commands": [
         "node --test scripts/hosted-settings-theme-rendering-route.test.mjs tests/browser/settings-guest-preference-batch.test.mjs tests/browser/settings-full-extension-rechecks.test.mjs"
       ],
-      "result": "15 passed",
+      "result": "18 passed",
       "mutation": "Removing the baseline selection during cleanup made the isolated theme probe regression fail with theme_probe_wait_not_observed; source restored and focused tests passed.",
       "hosted_execution": "Run 37996429559 failed before theme interaction because the driver required a visible persisted baseline. It is not a product result; see hosted_run. The receipt was resource-invalid due a CPU-busy interval during the guest acceptance permit.",
       "hosted_run": {
@@ -310,9 +314,25 @@
         "extension_version": "0.2.456",
         "extension_tree_sha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb",
         "resource_validity": {
-          "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
-          "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
-          "acceptance": { "admitted": true, "resource_invalid": true, "exit_code": 3, "decision": "invalid", "reason": "RESOURCE_CPU_BUSY" }
+          "package": {
+            "admitted": true,
+            "resource_invalid": false,
+            "exit_code": 0,
+            "decision": "valid"
+          },
+          "browser": {
+            "admitted": true,
+            "resource_invalid": false,
+            "exit_code": 0,
+            "decision": "valid"
+          },
+          "acceptance": {
+            "admitted": true,
+            "resource_invalid": true,
+            "exit_code": 3,
+            "decision": "invalid",
+            "reason": "RESOURCE_CPU_BUSY"
+          }
         },
         "case": {
           "id": "EXT-F-1003-T04",
@@ -332,19 +352,98 @@
         ]
       },
       "source_repair": {
-        "status": "implemented_peer_pass_pending_hosted_verification",
+        "status": "verified_warm_only_full_reload_unverified",
         "behavior": "Accept a visible implicit baseline when no theme field is persisted; restore an initially absent storage key by removing it, or preserve an existing settings object while deleting only the previously absent theme field.",
         "focused_tests": "6 passed",
         "peer_review": "PASS",
         "mutation": "plant.py removed the absent-theme restoration call; both absent-baseline cases failed with theme_probe_wait_not_observed. A second plant replaced field-only deletion with clearing the entire state; the sibling-preservation test failed on its `keep-me` sentinel. A third plant left a settings key where the original key was absent; the key-absence case failed its storage baseline wait. Each mutation was restored byte-identically."
       },
       "measurement_fix": {
-        "status": "implemented_pending_peer_review",
+        "status": "verified_warm_only_full_reload_unverified",
         "old_expression": "var(--background)",
         "correct_expression": "hsl(var(--background))",
         "basis": "Frozen development artifact 11643292724 CSS sets --background to HSL channels and applies background-color:hsl(var(--background)) to body.",
-        "forcing_test": "Capture the actual observation expression and require hsl(var(--background)); this fails if the old bare token is restored.",
-        "hosted_verification": "not run; actual appearance remains unverified"
+        "forcing_test": "Capture the actual observation expression and require hsl(var(--background)); plant.py restored the old bare token and the assertion failed, then the source was restored byte-identically.",
+        "hosted_verification": "Run 37999970113 observed matching token/body computed colors for warm Dark, Light, and System; full reload persistence remains unverified."
+      },
+      "verified_warm_run": {
+        "workflow_run_id": 37999970113,
+        "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37999970113",
+        "workflow_source_sha": "234c323c7a9dc6a379e9260e2dc6b2edbb874b61",
+        "acceptance_lane": "B",
+        "acceptance_case": "settings-theme-rendering",
+        "runner_label": "macos-15-intel",
+        "development_ci_run_id": 37998294843,
+        "development_artifact_id": 11647758423,
+        "hosted_result_artifact_id": 11649125604,
+        "product_source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+        "extension_version": "0.2.456",
+        "extension_tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+        "native_case_status": "pass",
+        "canonical_inventory_status": "partial",
+        "resource_validity": {
+          "package": {
+            "admitted": true,
+            "resource_invalid": false,
+            "exit_code": 0,
+            "decision": "valid"
+          },
+          "browser": {
+            "admitted": true,
+            "resource_invalid": false,
+            "exit_code": 0,
+            "decision": "valid"
+          },
+          "acceptance": {
+            "admitted": true,
+            "resource_invalid": false,
+            "exit_code": 0,
+            "decision": "valid"
+          }
+        },
+        "theme_observations": {
+          "initial_and_restored_baseline": {
+            "selected": "System",
+            "stored": null,
+            "stored_present": false,
+            "storage_present": false,
+            "system_dark": false,
+            "dark_class": false,
+            "token_background": "rgb(244, 244, 245)",
+            "body_background": "rgb(244, 244, 245)"
+          },
+          "dark": {
+            "selected": "Dark",
+            "stored": "dark",
+            "dark_class": true,
+            "system_dark": false,
+            "token_background": "rgb(39, 39, 42)",
+            "body_background": "rgb(39, 39, 42)"
+          },
+          "light": {
+            "selected": "Light",
+            "stored": "light",
+            "dark_class": false,
+            "system_dark": false,
+            "token_background": "rgb(244, 244, 245)",
+            "body_background": "rgb(244, 244, 245)"
+          },
+          "system": {
+            "selected": "System",
+            "stored": "system",
+            "dark_class": false,
+            "system_dark": false,
+            "token_background": "rgb(244, 244, 245)",
+            "body_background": "rgb(244, 244, 245)"
+          }
+        },
+        "reload_scope": "Warm controls only; no panel-document or full-extension reload was executed. Full-extension persistence is not claimed.",
+        "evidence": [
+          "docs/stabilization/evidence/settings-theme/run37999970113/receipt.sanitized.json",
+          "docs/stabilization/evidence/settings-theme/run37999970113/hosted-package-37999970113-1.jsonl",
+          "docs/stabilization/evidence/settings-theme/run37999970113/hosted-browser-37999970113-1.jsonl",
+          "docs/stabilization/evidence/settings-theme/run37999970113/hosted-guest-37999970113-1.jsonl"
+        ]
       }
     }
   }

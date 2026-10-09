@@ -205,3 +205,30 @@ test('panel-only reload cannot satisfy the required extension replacement bounda
   assert.equal(f.state.visible, 'System');
   assert.equal(f.state.stored, 'system');
 });
+
+test('extension reload transport failures retain the first safe choice and restoration stages', async () => {
+  const f = fixture();
+  let reloadAttempts = 0;
+  let observedError;
+  await assert.rejects(
+    run(f, {
+      reloadExtension: async () => {
+        reloadAttempts += 1;
+        throw new Error('owned_cdp_transport_failed');
+      },
+      safeStages: ['extension_reload', 'restore_extension_reload'],
+      transportFailureClass: () => 'unexpected_close',
+    }),
+    (error) => {
+      observedError = error;
+      return error.message === 'full_extension_preference_or_restore_failed';
+    },
+  );
+  assert.equal(reloadAttempts, 2);
+  assert.equal(observedError.safeFirstChoiceFailureStage, 'choice_extension_reload');
+  assert.equal(observedError.safeRestorationFailureStage, 'restore_extension_reload');
+  assert.equal(observedError.safeFirstChoiceTransportClass, 'unexpected_close');
+  assert.equal(observedError.safeRestorationTransportClass, 'unexpected_close');
+  assert.equal(observedError.safeCleanupFailed, undefined);
+  assert.equal(observedError.message.includes('owned_cdp_transport_failed'), false);
+});

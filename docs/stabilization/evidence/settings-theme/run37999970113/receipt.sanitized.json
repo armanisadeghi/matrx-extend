@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "workflow_run_id": 37999970113,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37999970113",
+  "workflow_source_sha": "234c323c7a9dc6a379e9260e2dc6b2edbb874b61",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "acceptance_case": "settings-theme-rendering",
+  "development_ci_run_id": 37998294843,
+  "development_artifact_id": 11647758423,
+  "product_source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+  "hosted_result_artifact_id": 11649125604,
+  "extension": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publishState": "not_published",
+    "version": "0.2.456",
+    "treeSha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+    "verified": true
+  },
+  "resource_validity": {
+    "hosted-package-37999970113-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-37999970113-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-37999970113-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "native_case": {
+    "id": "EXT-F-1003-T04",
+    "status": "pass",
+    "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+    "observations": [
+      {
+        "phase": "warm",
+        "action": "Original theme selection and storage observed",
+        "observation": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Original theme rendering observed",
+        "observation": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Dark theme and computed appearance observed",
+        "observation": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Dark",
+          "stored": "dark",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": true,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(39, 39, 42)",
+            "body": "rgb(39, 39, 42)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Light theme and computed appearance observed",
+        "observation": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Light",
+          "stored": "light",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "System theme and computed appearance observed",
+        "observation": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": "system",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Original theme selection and storage restored",
+        "observation": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Original theme rendering restored",
+        "observation": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      }
+    ]
+  },
+  "canonical_disposition": {
+    "status": "partial",
+    "passed": "Warm guest Dark, Light, and System selected/stored/class plus computed token/body background match; exact implicit System/no-storage baseline restored.",
+    "unverified": "Full extension reload/reopen persistence; System behavior under systemDark=true; Store/member/admin acceptance.",
+    "note": "The run did not perform any panel-document or full-extension reload. This is a warm rendering result only."
+  },
+  "resource_journals": [
+    "hosted-package-37999970113-1.jsonl",
+    "hosted-browser-37999970113-1.jsonl",
+    "hosted-guest-37999970113-1.jsonl"
+  ]
+}

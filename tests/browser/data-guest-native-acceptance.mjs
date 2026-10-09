@@ -6,9 +6,16 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
-import { clickPickerDone, pickerText } from './data-guest-picker-driver.mjs';
+import { clickPickerDone, clickPickerField, pickerText } from './data-guest-picker-driver.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { activeTabPanelExpression, click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import {
+  activeTabPanelExpression,
+  click,
+  dataPanelDiagnostic,
+  dataPickerControlReady,
+  evaluate,
+  waitFor,
+} from './settings-panel-driver.mjs';
 
 const extensionDir = process.env.MATRX_DATA_EXTENSION_DIR;
 const receiptPath = process.env.MATRX_DATA_RECEIPT;
@@ -37,6 +44,22 @@ const report = {
   limits:
     'Guest native behavior on exact imported development artifact; no signed-in save or Store claim.',
 };
+
+async function capturePickerDiagnostic(panel, artifacts) {
+  const diagnostic = await dataPanelDiagnostic(panel);
+  try {
+    const screenshot = await panel.send('Page.captureScreenshot', { format: 'png' });
+    await writeFile(
+      join(artifacts, 'data-picker-target-failure.png'),
+      Buffer.from(screenshot.data, 'base64'),
+      { mode: 0o600 },
+    );
+    diagnostic.screenshot = 'data-picker-target-failure.png';
+  } catch {
+    diagnostic.screenshot = 'capture_failed';
+  }
+  return diagnostic;
+}
 
 async function dataState(panel) {
   return evaluate(
@@ -85,7 +108,7 @@ try {
     onStage: (value) => {
       report.native_stage = value;
     },
-    exercisePanel: async ({ page, panel, requireResourceHealth, resourceAction }) => {
+    exercisePanel: async ({ page, panel, artifacts, requireResourceHealth, resourceAction }) => {
       report.stage = 'guest_and_fixture';
       await requireResourceHealth();
       const guest = await evaluate(
@@ -109,10 +132,51 @@ try {
         (state) => state.active,
       );
       report.stage = 'picker';
-      await click(panel, 'button-text', 'Pick fields on this page');
+      try {
+        await waitFor(
+          'data_guest_picker_control_rendered',
+          () => dataPanelDiagnostic(panel),
+          dataPickerControlReady,
+        );
+      } catch (error) {
+        report.picker_diagnostic = await capturePickerDiagnostic(panel, artifacts);
+        throw error;
+      }
+      try {
+        await click(panel, 'data-picker-button', 'Pick fields on this page');
+      } catch (error) {
+        if (error?.driverFailure?.code === 'pointer_target_not_unique') {
+          report.picker_diagnostic = await capturePickerDiagnostic(panel, artifacts);
+        }
+        throw error;
+      }
       await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
-      await page.locator('.product-card .product-name').first().click();
-      await page.locator('.product-card .product-price').nth(1).click();
+      try {
+        report.picker_step = 'first_field';
+        report.picker_field_diagnostic = await clickPickerField(
+          page,
+          '.product-card .product-name',
+        );
+        report.picker_step = 'second_field';
+        report.picker_second_field_diagnostic = await clickPickerField(
+          page,
+          '.product-card .product-price',
+          1,
+        );
+      } catch (error) {
+        if (error?.pickerFieldDiagnostic) {
+          if (report.picker_step === 'second_field')
+            report.picker_second_field_diagnostic = error.pickerFieldDiagnostic;
+          else report.picker_field_diagnostic = error.pickerFieldDiagnostic;
+        }
+        try {
+          await page.screenshot({ path: join(artifacts, 'data-picker-field-failure.png') });
+          report.picker_field_screenshot = 'data-picker-field-failure.png';
+        } catch {
+          report.picker_field_screenshot = 'capture_failed';
+        }
+        throw error;
+      }
       const cdp = await page.context().newCDPSession(page);
       try {
         await cdp.send('DOM.enable');
@@ -173,6 +237,21 @@ try {
   const safeMessage = String(error?.message ?? error)
     .replace(/https?:\/\/\S+/g, '[url]')
     .slice(0, 300);
+  if (error?.driverFailure) {
+    const failure = error.driverFailure;
+    report.driver_failure = {
+      code: failure.code ?? null,
+      sample_stage: failure.sampleStage ?? null,
+      matched_target_count: failure.matchedTargetCount ?? null,
+      visible_match_count: failure.visibleMatchCount ?? null,
+      unique_visible_target: failure.uniqueVisibleTarget ?? null,
+      hit_target: failure.hitTarget ?? null,
+      animating: failure.animating ?? null,
+      stable_samples: failure.stableSamples ?? null,
+      position_stable: failure.positionStable ?? null,
+      data_panel: failure.dataPanelDiagnostic ?? null,
+    };
+  }
   process.stderr.write(`DATA_GUEST_ACCEPTANCE_FAILED ${report.stage} ${safeMessage}\n`);
 } finally {
   await mkdir('test-results', { recursive: true });

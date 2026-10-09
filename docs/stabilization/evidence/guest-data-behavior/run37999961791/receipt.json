@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37999961791,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37999961791",
+    "lane": "A",
+    "conclusion": "failure",
+    "checkout_sha": "234c323c7a9dc6a379e9260e2dc6b2edbb874b61"
+  },
+  "acceptance": {
+    "case": "guest-data",
+    "case_id": "EXT-F-2005-T01",
+    "auth_mode": "guest",
+    "scope": "T01",
+    "fixture": "static synthetic /products catalog",
+    "report_status": "fail_before_picker_interaction",
+    "stage": "picker",
+    "native_stage": "exercise_panel",
+    "failure_code": "pointer_target_not_unique",
+    "failure_detail": "The saved run omitted the pointer candidate counts; zero and multiple visible matches remain indistinguishable.",
+    "classification": "acceptance_driver_pointer_target_resolution_failure",
+    "product_behavior": "unverified",
+    "observations": {},
+    "no_picker_action_or_save_request_observed": true
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.456",
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "ci_run_id": 37998294843,
+    "ci_artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b"
+  },
+  "hosted_run_artifact": {
+    "id": 11648619964,
+    "name": "hosted-guest-37999961791-1",
+    "sha256": "sha256:8f037a765547ba0d45365bcd93199824c1b50f2c4d3f6380e2c4c186d571f036",
+    "expired": false
+  },
+  "resource_guards": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "child_failed"
+    }
+  },
+  "scope_boundary": "Workflow checkout and driver source 234c323c; product bytes from exact frozen development CI artifact above. Failure before picker click, selectors, guest save boundary, or product verdict.",
+  "evidence_files": [
+    "data-guest-native-acceptance.sanitized.json",
+    "hosted-package-37999961791-1.jsonl",
+    "hosted-browser-37999961791-1.jsonl",
+    "hosted-guest-37999961791-1.jsonl"
+  ]
+}

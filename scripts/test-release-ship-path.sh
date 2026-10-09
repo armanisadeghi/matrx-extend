@@ -638,6 +638,32 @@ check "gates never saw the evidence paths"             '[[ ! -e "$SANDBOX/inert-
 eval "$(sed -n '/^GATE_INERT_RE=/p; /^gate_tree() {/,/^}/p' release.sh)"
 check "published gate tree is the checked gate tree"   '[[ "$(gate_tree origin/main)" == "$(gate_tree "$(tail -1 "$SANDBOX/checked-shas")")" ]]'
 
+# Resource-guarded hosts serialize the same gates and only start packaging
+# after their verdicts. Failure must still leave remote main/tag untouched.
+echo "release — serial gates preserve publication contract"
+SERIAL_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+SERIAL_CALLS_BEFORE="$(wc -l < "$SANDBOX/pnpm-calls")"
+touch "$SANDBOX/fail-tests"
+set +e
+RELEASE_SERIAL_CHECKS=1 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/serial-failed-out" 2>&1
+SERIAL_FAILED_STATUS=$?
+set -e
+rm "$SANDBOX/fail-tests"
+tail -n "+$((SERIAL_CALLS_BEFORE + 1))" "$SANDBOX/pnpm-calls" > "$SANDBOX/serial-failed-calls"
+check "serial test failure blocks publication" '[[ $SERIAL_FAILED_STATUS -ne 0 && "$SERIAL_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "nothing was pushed" "$SANDBOX/serial-failed-out"'
+check "serial failure never starts the build" '! grep -q "exec wxt zip" "$SANDBOX/serial-failed-calls"'
+
+SERIAL_CALLS_BEFORE="$(wc -l < "$SANDBOX/pnpm-calls")"
+set +e
+RELEASE_SERIAL_CHECKS=1 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/serial-passed-out" 2>&1
+SERIAL_PASSED_STATUS=$?
+set -e
+tail -n "+$((SERIAL_CALLS_BEFORE + 1))" "$SANDBOX/pnpm-calls" > "$SANDBOX/serial-passed-calls"
+git fetch -q --tags origin 2>/dev/null || true
+check "serial release still publishes after all gates" '[[ $SERIAL_PASSED_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/serial-passed-out" && [[ "$SERIAL_BASE" != "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]]'
+check "serial release runs the mandatory checks" 'grep -q "check:matrx-packages" "$SANDBOX/serial-passed-calls" && grep -q " compile" "$SANDBOX/serial-passed-calls" && grep -q " lint" "$SANDBOX/serial-passed-calls" && grep -q "exec vitest run --maxWorkers=4" "$SANDBOX/serial-passed-calls" && grep -q "check:migrations:strict" "$SANDBOX/serial-passed-calls" && grep -q "catalog:tools:drift:strict" "$SANDBOX/serial-passed-calls"'
+check "serial release builds after the last check" 'unit_line=$(grep -n "exec vitest run --maxWorkers=4" "$SANDBOX/serial-passed-calls" | tail -1 | cut -d: -f1); build_line=$(grep -n "exec wxt zip" "$SANDBOX/serial-passed-calls" | head -1 | cut -d: -f1); [[ -n "$unit_line" && -n "$build_line" && $build_line -gt $unit_line ]]'
+
 if [[ $FAILED -ne 0 ]]; then
   echo "--- catch-up output ---"; tail -30 "$SANDBOX/catchup-out" 2>/dev/null
   echo "--- mid-check race output ---"; tail -30 "$SANDBOX/race-during-out" 2>/dev/null

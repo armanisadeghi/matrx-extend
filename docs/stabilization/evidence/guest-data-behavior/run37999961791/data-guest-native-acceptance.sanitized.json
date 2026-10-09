@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "status": "fail",
+  "stage": "picker",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "run_id": 37998294843,
+    "artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+    "version": "0.2.456"
+  },
+  "observations": {},
+  "failure_stage": "picker",
+  "limits": "Guest native behavior on exact imported development artifact; no signed-in save or Store claim."
+}

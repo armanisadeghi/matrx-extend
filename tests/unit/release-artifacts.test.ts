@@ -174,6 +174,9 @@ describe('release.sh ship path', () => {
     delete env.RELEASE_LOG_CAPTURED;
     delete env.RELEASE_LOG_DIR;
     delete env.RELEASE_LOG_FILE;
+    // The sandbox verifies default scheduling, then opts into serial mode in
+    // its dedicated cases. Do not inherit the parent release's scheduling.
+    env.RELEASE_SERIAL_CHECKS = '0';
     // This guard performs several real local Git releases. Under the serial
     // 170+ file release suite it can outlast 120s without any failed check;
     // keep the assertions and give the subprocess its own bounded wall. It takes
