@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-09 22:31 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-09T22:29:18+00:00. 205 features · 769 cases · 1358 controls · 187 linked defect records.
+Generated 2026-10-09 22:47 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-09T22:46:56+00:00. 205 features · 769 cases · 1358 controls · 187 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -472,8 +472,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T03 · admin: Pass. Initialunset did not chooseimplicitly; explicitfixture selected, Actingas and fullreload persistence verified. Nonexistent clear-step corrected from source/UI.
   Evidence / build / date recorded: admin-org-001, docs/stabilization/runs/admin-org-001.json
-- EXT-F-1003-T04 · guest: Partial. Guest native run observed selected/stored Dark and dark class, but renderedBackgroundMatches=false while systemDark=false. The mismatch was present at the warm baseline before this case changed the theme or crossed a reload boundary; full-extension theme recheck stopped at baseline observation. Single-run visual mismatch is a candidate, not a confirmed product defect.
-  Evidence / build / date recorded: 37994579674, ['.research/settings-full-extension-recheck-diagnostics-20261009.json']
+- EXT-F-1003-T04 · guest: Partial. Hosted native guest run 37999970113 passed the isolated warm Dark→Light→System probe with token/body matching at each choice, then restored the original implicit System baseline with storedPresent=false and storagePresent=false. No panel-document or full-extension reload was performed, so the canonical row remains partial. Earlier run 37994579674 renderedBackgroundMatches=false was a measurement artifact: its bare var(--background) probe was invalid for the HSL-channel token; no product mismatch was established.
+  Evidence / build / date recorded: 37999970113, ['.research/settings-full-extension-recheck-diagnostics-20261009.json', 'docs/stabilization/evidence/settings-theme/run37999970113/receipt.sanitized.json', 'docs/stabilization/evidence/settings-theme/run37999970113/hosted-package-37999970113-1.jsonl', 'docs/stabilization/evidence/settings-theme/run37999970113/hosted-browser-37999970113-1.jsonl', 'docs/stabilization/evidence/settings-theme/run37999970113/hosted-guest-37999970113-1.jsonl']
 - EXT-F-1003-T05 · member: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
   Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
 - EXT-F-1003-T06 · admin: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
