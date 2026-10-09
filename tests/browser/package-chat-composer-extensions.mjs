@@ -17,7 +17,7 @@ const REPO = resolve(HERE, '..', '..');
 const WORKSPACE = resolve(REPO, '..');
 const OUT = process.env.WXT_OUT_DIR || '.output';
 const EXTENSION_DIR = join(REPO, OUT, 'chrome-mv3');
-const SHOTS = join(REPO, OUT, 'package-chat-side-panel');
+const SHOTS = join(REPO, OUT, 'package-chat-composer-extensions');
 const ORGANIZATION_ID = '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f';
 
 function readEnvFile(path) {
@@ -202,11 +202,12 @@ try {
     .first()
     .click()
     .catch(() => undefined);
+  await page.getByText('Call the lab about the crown remake').first().waitFor({ timeout: 15_000 }).catch(() => undefined);
   const panelText = await page.getByText('Call the lab about the crown remake').count();
   check("task panel opens with this conversation's todo", panelText > 0);
   await page.screenshot({ path: join(SHOTS, '2-task-panel.png') });
   // 3. Opening the Files chip shows the extension\'s own picker (the chip is the extension component).
-  await page.keyboard.press('Escape');
+  await page.getByText('Plan & tasks').locator('xpath=..').getByRole('button').first().click().catch(() => undefined);
   await filesChip
     .first()
     .click()
