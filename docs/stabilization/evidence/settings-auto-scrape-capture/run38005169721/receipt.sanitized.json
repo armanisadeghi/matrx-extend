@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T40",
+  "role": "guest",
+  "scope": "real hosted native side panel and owned unique-marker page",
+  "status": "fail",
+  "criteria": [
+    {
+      "name": "ON emits one real capture with the page marker",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": true,
+        "visible": true,
+        "calls": [
+          {
+            "kind": "scrape:capture-page",
+            "ok": true,
+            "markerPresent": true
+          }
+        ],
+        "pageLoaded": null,
+        "windowCompleted": null,
+        "managementReloadClicked": null,
+        "oldTargetsRetired": null,
+        "workerReplaced": null,
+        "panelReplaced": null,
+        "replacementTargetChanged": null,
+        "lifecyclePredicatePassed": null
+      }
+    },
+    {
+      "name": "OFF emits no capture after the loaded page settles",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "visible": false,
+        "calls": [],
+        "pageLoaded": true,
+        "windowCompleted": true,
+        "managementReloadClicked": null,
+        "oldTargetsRetired": null,
+        "workerReplaced": null,
+        "panelReplaced": null,
+        "replacementTargetChanged": null,
+        "lifecyclePredicatePassed": null
+      }
+    },
+    {
+      "name": "initial: original preference matches",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "visible": false,
+        "calls": [],
+        "pageLoaded": null,
+        "windowCompleted": null,
+        "managementReloadClicked": null,
+        "oldTargetsRetired": null,
+        "workerReplaced": null,
+        "panelReplaced": null,
+        "replacementTargetChanged": null,
+        "lifecyclePredicatePassed": null
+      }
+    },
+    {
+      "name": "original preference restored before extension reload",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "visible": false,
+        "calls": [],
+        "pageLoaded": null,
+        "windowCompleted": null,
+        "managementReloadClicked": null,
+        "oldTargetsRetired": null,
+        "workerReplaced": null,
+        "panelReplaced": null,
+        "replacementTargetChanged": null,
+        "lifecyclePredicatePassed": null
+      }
+    },
+    {
+      "name": "native capture probe completed",
+      "status": "fail",
+      "evidence": {
+        "storagePresent": null,
+        "settingPresent": null,
+        "stored": null,
+        "visible": null,
+        "calls": [],
+        "pageLoaded": null,
+        "windowCompleted": null,
+        "managementReloadClicked": null,
+        "oldTargetsRetired": null,
+        "workerReplaced": null,
+        "panelReplaced": null,
+        "replacementTargetChanged": null,
+        "lifecyclePredicatePassed": null
+      }
+    }
+  ],
+  "reload_failure": {
+    "category": "full_extension_preference_or_restore_failed",
+    "firstChoiceFailureStage": "choice_control",
+    "restorationFailureStage": "restore_extension_reload",
+    "firstChoiceTransportClass": "none",
+    "restorationTransportClass": "none",
+    "cleanupAlsoFailed": true
+  }
+}
