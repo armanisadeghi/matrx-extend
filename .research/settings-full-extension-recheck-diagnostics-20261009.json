@@ -295,7 +295,49 @@
       ],
       "result": "15 passed",
       "mutation": "Removing the baseline selection during cleanup made the isolated theme probe regression fail with theme_probe_wait_not_observed; source restored and focused tests passed.",
-      "hosted_execution": "not launched; awaiting peer review and a current successful CI development artifact"
+      "hosted_execution": "Run 37996429559 failed before theme interaction because the driver required a visible persisted baseline. It is not a product result; see hosted_run. The receipt was resource-invalid due a CPU-busy interval during the guest acceptance permit.",
+      "hosted_run": {
+        "workflow_run_id": 37996429559,
+        "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37996429559",
+        "workflow_source_sha": "5bb64adcd0ea4b77dcb250791d66a685d9616234",
+        "acceptance_lane": "B",
+        "acceptance_case": "settings-theme-rendering",
+        "runner_label": "macos-15-intel",
+        "development_ci_run_id": 37986090931,
+        "development_artifact_id": 11643292724,
+        "hosted_result_artifact_id": 11647258194,
+        "product_source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+        "extension_version": "0.2.456",
+        "extension_tree_sha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb",
+        "resource_validity": {
+          "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+          "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+          "acceptance": { "admitted": true, "resource_invalid": true, "exit_code": 3, "decision": "invalid", "reason": "RESOURCE_CPU_BUSY" }
+        },
+        "case": {
+          "id": "EXT-F-1003-T04",
+          "status": "unverified",
+          "steps": [],
+          "failure": "theme_probe_requires_visible_persisted_baseline",
+          "observed_controls": "Guest side panel was visible after native launch; no Settings/theme control was read because the probe aborted before observation.",
+          "dark_light_system_observations": "not captured",
+          "baseline_restoration": "not exercised",
+          "full_extension_reload": "not performed",
+          "classification": "Probe fixture assumed the guest profile had already persisted a theme choice. Product behavior was not evaluated; no defect or pass is established."
+        },
+        "resource_journal_artifact_paths": [
+          "hosted-package-37996429559-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-37996429559-1.jsonl",
+          "hosted-browser-37996429559-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-37996429559-1.jsonl",
+          "hosted-guest-37996429559-1/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-37996429559-1.jsonl"
+        ]
+      },
+      "source_repair": {
+        "status": "implemented_peer_pass_pending_hosted_verification",
+        "behavior": "Accept a visible implicit baseline when no theme field is persisted; restore an initially absent storage key by removing it, or preserve an existing settings object while deleting only the previously absent theme field.",
+        "focused_tests": "6 passed",
+        "peer_review": "PASS",
+        "mutation": "plant.py removed the absent-theme restoration call; both absent-baseline cases failed with theme_probe_wait_not_observed. A second plant replaced field-only deletion with clearing the entire state; the sibling-preservation test failed on its `keep-me` sentinel. A third plant left a settings key where the original key was absent; the key-absence case failed its storage baseline wait. Each mutation was restored byte-identically."
+      }
     }
   }
 }

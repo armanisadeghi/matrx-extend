@@ -107,7 +107,12 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
     const triggers = rows.flatMap((row) => [...row.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
     const raw = (await chrome.storage.local.get('matrx.settings.v1'))['matrx.settings.v1'];
     let value = null;
-    try { value = JSON.parse(raw).state?.[${JSON.stringify(preference.key)}] ?? null; } catch {}
+    let storedPresent = false;
+    try {
+      const state = JSON.parse(raw).state;
+      storedPresent = Object.hasOwn(state ?? {}, ${JSON.stringify(preference.key)});
+      value = state?.[${JSON.stringify(preference.key)}] ?? null;
+    } catch {}
     const allowed = ${JSON.stringify(preference.choices.map(([value]) => value))};
     const rendered = (() => {
       const probe = document.createElement('div');
@@ -137,6 +142,8 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
       selected: ${JSON.stringify(preference.choices.map(([, label]) => label))}.includes(triggers[0]?.textContent.trim())
         ? triggers[0].textContent.trim() : null,
       stored: allowed.includes(value) ? value : null,
+      storedPresent,
+      storagePresent: typeof raw === 'string',
       darkClass: document.documentElement.classList.contains('dark'),
       systemDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
       renderedBackgroundMatches: rendered.matches,
@@ -186,17 +193,29 @@ export async function runGuestThemeRenderingProbe(
 ) {
   assert.equal(preference?.key, 'theme', 'theme_probe_requires_theme_preference');
   const initial = await observeGuestPreference(panel, preference, driver);
-  const baselineChoice = preference.choices.find(
+  const persistedBaselineChoice = preference.choices.find(
     ([value, label]) => value === initial?.stored && label === initial?.selected,
   );
-  assert.ok(baselineChoice, 'theme_probe_requires_visible_persisted_baseline');
+  const implicitBaselineChoice =
+    initial?.storedPresent === false
+      ? preference.choices.find(([, label]) => label === initial?.selected)
+      : undefined;
+  const baselineChoice = persistedBaselineChoice ?? implicitBaselineChoice;
+  assert.ok(baselineChoice, 'theme_probe_requires_visible_baseline');
   const [baselineValue, baselineLabel] = baselineChoice;
-  const baselineMatches = preferenceSelectionMatches(initial, baselineValue, baselineLabel);
+  const baselineWasStored = initial.storedPresent === true;
+  const baselineMatches = themeBaselineSelectionMatches(
+    initial,
+    baselineValue,
+    baselineLabel,
+    baselineWasStored,
+    initial.storagePresent,
+  );
   record('Original theme selection and storage observed', initial, baselineMatches);
   record(
     'Original theme rendering observed',
     initial,
-    preferenceMatches(initial, preference, baselineValue, baselineLabel),
+    themeAppearanceMatches(initial, baselineValue),
   );
 
   let primaryError;
@@ -233,21 +252,57 @@ export async function runGuestThemeRenderingProbe(
   try {
     await driver.openSection(panel, preference.section);
     let observed = await observeGuestPreference(panel, preference, driver);
-    if (!preferenceSelectionMatches(observed, baselineValue, baselineLabel)) {
+    if (
+      baselineWasStored &&
+      !themeBaselineSelectionMatches(
+        observed,
+        baselineValue,
+        baselineLabel,
+        true,
+        initial.storagePresent,
+      )
+    ) {
       await driver.click(panel, 'settings-select', preference.label);
       await driver.click(panel, 'option', baselineLabel);
       observed = await driver.waitFor(
         'theme_probe_original_baseline_restored',
         () => observeGuestPreference(panel, preference, driver),
-        (state) => preferenceSelectionMatches(state, baselineValue, baselineLabel),
+        (state) =>
+          themeBaselineSelectionMatches(
+            state,
+            baselineValue,
+            baselineLabel,
+            true,
+            initial.storagePresent,
+          ),
+      );
+    } else if (!baselineWasStored) {
+      await restoreAbsentThemePreference(panel, preference, initial.storagePresent, driver);
+      observed = await driver.waitFor(
+        'theme_probe_original_unpersisted_baseline_restored',
+        () => observeGuestPreference(panel, preference, driver),
+        (state) =>
+          themeBaselineSelectionMatches(
+            state,
+            baselineValue,
+            baselineLabel,
+            false,
+            initial.storagePresent,
+          ),
       );
     }
-    const restored = preferenceSelectionMatches(observed, baselineValue, baselineLabel);
+    const restored = themeBaselineSelectionMatches(
+      observed,
+      baselineValue,
+      baselineLabel,
+      baselineWasStored,
+      initial.storagePresent,
+    );
     record('Original theme selection and storage restored', observed, restored);
     record(
       'Original theme rendering restored',
       observed,
-      preferenceMatches(observed, preference, baselineValue, baselineLabel),
+      themeAppearanceMatches(observed, baselineValue),
     );
     if (!restored) throw new Error('theme_probe_baseline_restore_failed');
   } catch (error) {
@@ -256,6 +311,49 @@ export async function runGuestThemeRenderingProbe(
   }
 
   if (primaryError) throw primaryError;
+}
+
+function themeBaselineSelectionMatches(observed, value, label, stored, storagePresent) {
+  return (
+    observed?.activeSettings === true &&
+    observed?.count === 1 &&
+    observed?.selected === label &&
+    observed?.storedPresent === stored &&
+    observed?.storagePresent === storagePresent &&
+    (stored ? observed?.stored === value : observed?.stored === null)
+  );
+}
+
+function themeAppearanceMatches(observed, value) {
+  const expectedDark = value === 'system' ? observed?.systemDark : value === 'dark';
+  return observed?.darkClass === expectedDark && observed?.renderedBackgroundMatches === true;
+}
+
+async function restoreAbsentThemePreference(panel, preference, storagePresent, driver) {
+  const key = JSON.stringify('matrx.settings.v1');
+  const field = JSON.stringify(preference.key);
+  const originalStoragePresent = JSON.stringify(storagePresent);
+  await driver.evaluate(
+    panel,
+    `(async () => {
+      const originalStoragePresent = ${originalStoragePresent};
+      if (!originalStoragePresent) {
+        await chrome.storage.local.remove(${key});
+        return;
+      }
+      const current = await chrome.storage.local.get(${key});
+      const raw = current[${key}];
+      if (typeof raw !== 'string') {
+        await chrome.storage.local.remove(${key});
+        return;
+      }
+      const parsed = JSON.parse(raw);
+      if (!parsed.state || typeof parsed.state !== 'object')
+        throw new Error('theme_probe_settings_state_missing');
+      delete parsed.state[${field}];
+      await chrome.storage.local.set({ [${key}]: JSON.stringify(parsed) });
+    })()`,
+  );
 }
 
 export function preferenceBaseline(observation, preference) {
