@@ -297,13 +297,23 @@ export function FileSourcePanel({
             </ul>
           )}
           {placeType && (
-            <div className="flex h-48 min-h-0 flex-col overflow-hidden rounded-md border border-border">
+            <section
+              aria-label="Place results"
+              className="h-48 overflow-y-auto overscroll-contain rounded-md border border-border"
+              onKeyDown={(event) => {
+                if (event.key !== 'PageDown' && event.key !== 'PageUp') return;
+                event.preventDefault();
+                event.currentTarget.scrollTop +=
+                  event.currentTarget.clientHeight * (event.key === 'PageDown' ? 1 : -1);
+              }}
+            >
               <UniversalAssociationPicker
                 key={placeType}
                 orgId={organizationId}
                 tokens={
                   placeType === 'all' ? ([...SAVE_TARGET_TOKENS] as EntityTypeToken[]) : [placeType]
                 }
+                emptyQueryMode={placeType === 'all' ? 'recents' : 'candidates'}
                 attachedKeys={attachedKeys}
                 onAttach={async (token, resourceId, title) => {
                   setStaged((prev) =>
@@ -320,7 +330,7 @@ export function FileSourcePanel({
                   return { ok: true };
                 }}
               />
-            </div>
+            </section>
           )}
         </div>
 

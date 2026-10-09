@@ -113,6 +113,8 @@ export function ScrapeView() {
   } | null>(null);
   const [activeOrganizationId, setActiveOrganizationId] = useState<string | null>(null);
   const organizationEpochRef = useRef(0);
+  const activeOrganizationRef = useRef<string | null>(null);
+  const organizationInitializedRef = useRef(false);
   const saveRunRef = useRef(0);
   /** Local confirmation is bound to the organization that received the Save. */
   const [savedSource, setSavedSource] = useState<{
@@ -150,6 +152,15 @@ export function ScrapeView() {
   useEffect(() => {
     const epoch = organizationEpochRef.current;
     const off = onActiveOrganizationChange((organizationId) => {
+      if (!organizationInitializedRef.current) {
+        organizationInitializedRef.current = true;
+        // A storage event is a deliberate switch, even if the initial ladder
+        // read is still pending. Only the read itself hydrates without closing
+        // an open Save draft.
+      } else if (activeOrganizationRef.current === organizationId) {
+        return;
+      }
+      activeOrganizationRef.current = organizationId;
       organizationEpochRef.current += 1;
       setActiveOrganizationId(organizationId);
       // The old Save may still be finishing in its original workspace. Let
@@ -161,11 +172,16 @@ export function ScrapeView() {
     void getActiveOrganizationId()
       .then((organizationId) => {
         if (epoch !== organizationEpochRef.current) return;
+        if (organizationInitializedRef.current) return;
+        organizationInitializedRef.current = true;
+        activeOrganizationRef.current = organizationId;
         setActiveOrganizationId(organizationId);
       })
       .catch(() => {
         // A failed read is unknown, never a license to show a saved claim.
-        if (epoch === organizationEpochRef.current) {
+        if (epoch === organizationEpochRef.current && !organizationInitializedRef.current) {
+          organizationInitializedRef.current = true;
+          activeOrganizationRef.current = null;
           setActiveOrganizationId(null);
         }
       });
@@ -858,21 +874,15 @@ export function ScrapeView() {
         )}
       </div>
       {saveFormOpen && current && (
-        <div className="fixed inset-0 z-40 flex items-end bg-black/20 p-2" role="presentation">
-          <div className="w-full space-y-1">
-            <SaveSourceForm
-              key={`${current.url}:${activeOrganizationId}`}
-              initialName={captureName(current)}
-              organizationId={activeOrganizationId}
-              saving={saving}
-              onSave={(name, attachTo) => void handleSave(name, attachTo)}
-              onClose={() => setSaveFormOpen(false)}
-            />
-            {saveError && (
-              <p className="rounded-md bg-card px-2 py-1 text-xs text-red-600">{saveError}</p>
-            )}
-          </div>
-        </div>
+        <SaveSourceForm
+          key={current.url}
+          initialName={captureName(current)}
+          organizationId={activeOrganizationId}
+          saving={saving}
+          error={saveError}
+          onSave={(name, attachTo) => void handleSave(name, attachTo)}
+          onClose={() => setSaveFormOpen(false)}
+        />
       )}
       {saveError && !saveFormOpen && (
         <div className="px-3 pb-1 text-[11px] text-red-600 dark:text-red-400">{saveError}</div>

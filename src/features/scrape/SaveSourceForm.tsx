@@ -39,18 +39,21 @@ export function SaveSourceForm({
   initialName,
   organizationId,
   saving,
+  error,
   onSave,
   onClose,
 }: {
   initialName: string;
   organizationId: string | null;
   saving: boolean;
+  error?: string | null;
   onSave: (name: string, attachTo: AttachTarget[]) => void;
   onClose: () => void;
 }) {
   const userId = useAuthStore((s) => s.user?.id ?? null);
   const [name, setName] = useState(initialName);
   const nameRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [showPlaces, setShowPlaces] = useState(false);
   const [placeType, setPlaceType] = useState<EntityTypeToken | 'all' | null>(null);
   const [showLibrary, setShowLibrary] = useState(false);
@@ -66,17 +69,13 @@ export function SaveSourceForm({
   useEffect(() => {
     const previousFocus =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    dialogRef.current?.showModal();
     nameRef.current?.focus();
-    return () => previousFocus?.focus();
-  }, []);
-
-  useEffect(() => {
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !saving) onClose();
+    return () => {
+      dialogRef.current?.close();
+      previousFocus?.focus();
     };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => document.removeEventListener('keydown', closeOnEscape);
-  }, [onClose, saving]);
+  }, []);
 
   useEffect(() => {
     if (!showLibrary || !userId) return;
@@ -121,11 +120,14 @@ export function SaveSourceForm({
 
   return (
     <dialog
-      open
-      aria-modal="true"
+      ref={dialogRef}
       aria-label="Save Source"
       data-testid="save-source-form"
-      className="relative m-0 max-h-[85vh] w-full space-y-2 overflow-y-auto rounded-xl border border-border bg-card p-3 text-xs text-foreground shadow-xl"
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!saving) onClose();
+      }}
+      className="fixed inset-x-2 bottom-2 top-auto mx-auto max-h-[85vh] w-[calc(100%-1rem)] space-y-2 overflow-y-auto rounded-xl border border-border bg-card p-3 text-xs text-foreground shadow-xl backdrop:bg-black/20"
     >
       <div className="flex items-center justify-between gap-2">
         <span className="font-semibold">Save Source</span>
@@ -237,13 +239,23 @@ export function SaveSourceForm({
               }),
           }}
         >
-          <div className="flex h-48 min-h-0 flex-col overflow-hidden rounded-md border border-border">
+          <section
+            aria-label="Place results"
+            className="h-48 overflow-y-auto overscroll-contain rounded-md border border-border"
+            onKeyDown={(event) => {
+              if (event.key !== 'PageDown' && event.key !== 'PageUp') return;
+              event.preventDefault();
+              event.currentTarget.scrollTop +=
+                event.currentTarget.clientHeight * (event.key === 'PageDown' ? 1 : -1);
+            }}
+          >
             <UniversalAssociationPicker
               key={placeType}
               orgId={organizationId}
               tokens={
                 placeType === 'all' ? ([...SAVE_TARGET_TOKENS] as EntityTypeToken[]) : [placeType]
               }
+              emptyQueryMode={placeType === 'all' ? 'recents' : 'candidates'}
               attachedKeys={attachedKeys}
               onAttach={async (token, id, title) => {
                 setStaged((prev) =>
@@ -260,7 +272,7 @@ export function SaveSourceForm({
                 return { ok: true };
               }}
             />
-          </div>
+          </section>
         </AssociationsProvider>
       )}
       {showLibrary && (
@@ -286,6 +298,7 @@ export function SaveSourceForm({
           </select>
         </label>
       )}
+      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
       <Button
         type="button"
         size="sm"
