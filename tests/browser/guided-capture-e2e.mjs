@@ -62,22 +62,36 @@ const tok = await fetch(`${x.WXT_SUPABASE_URL}/auth/v1/token?grant_type=password
 if (!tok.ok) fail(`sign-in refused (${tok.status})`);
 const session = await tok.json();
 if (session.user?.email !== 'admin@admin.com') fail('not admin@admin.com');
-const H = { apikey: x.WXT_SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${session.access_token}` };
+const H = {
+  apikey: x.WXT_SUPABASE_PUBLISHABLE_KEY,
+  Authorization: `Bearer ${session.access_token}`,
+};
 const rest = async (schema, q) =>
-  (await fetch(`${x.WXT_SUPABASE_URL}/rest/v1/${q}`, { headers: { ...H, 'Accept-Profile': schema } })).json();
+  (
+    await fetch(`${x.WXT_SUPABASE_URL}/rest/v1/${q}`, {
+      headers: { ...H, 'Accept-Profile': schema },
+    })
+  ).json();
 
 // ── what to open ──────────────────────────────────────────────────────────────
 let brandId = process.env.MATRX_GUIDED_BRAND;
 let profileId = process.env.MATRX_GUIDED_PROFILE;
 let orgId;
 if (!brandId) {
-  const t = (await rest('social', 'tracked_account?select=brand_id,organization_id&brand_id=not.is.null&limit=1'))[0];
+  const t = (
+    await rest(
+      'social',
+      'tracked_account?select=brand_id,organization_id&brand_id=not.is.null&limit=1',
+    )
+  )[0];
   if (!t) fail('no brand with a tracked account for this identity; set MATRX_GUIDED_BRAND');
   brandId = t.brand_id;
   orgId = t.organization_id;
 }
 if (!profileId) {
-  const p = (await rest('social', 'social_profile?select=id,handle&platform=eq.instagram&limit=1'))[0];
+  const p = (
+    await rest('social', 'social_profile?select=id,handle&platform=eq.instagram&limit=1')
+  )[0];
   if (!p) fail('no Instagram profile visible; set MATRX_GUIDED_PROFILE');
   profileId = p.id;
 }
@@ -153,19 +167,31 @@ try {
   await open.click();
   const dialog = app.getByRole('dialog');
   await dialog.getByText(/We'll open Instagram in a new tab/).waitFor({ timeout: 15000 });
-  step('app: explainer before sending', true, (await dialog.locator('p').first().textContent()).slice(0, 90));
+  step(
+    'app: explainer before sending',
+    true,
+    (await dialog.locator('p').first().textContent()).slice(0, 90),
+  );
   await app.screenshot({ path: join(SHOTS, '1-explainer.png') });
 
   const pagePromise = ctx.waitForEvent('page', { timeout: 60000 });
   await dialog.getByRole('button', { name: 'Take me there' }).click();
   const target = await pagePromise;
   await target.waitForLoadState('domcontentloaded');
-  step('extension opened the platform page in a new tab', /instagram\.com/.test(target.url()), target.url());
+  step(
+    'extension opened the platform page in a new tab',
+    /instagram\.com/.test(target.url()),
+    target.url(),
+  );
 
   const guide = target.locator('#matrx-guided-capture');
   await guide.waitFor({ state: 'attached', timeout: 45000 });
   const steps = await guide.locator('ol li').allTextContents();
-  step('page: guide shows the steps', steps.length >= 3 && /Capture/.test(steps.at(-1) ?? ''), JSON.stringify(steps));
+  step(
+    'page: guide shows the steps',
+    steps.length >= 3 && /Capture/.test(steps.at(-1) ?? ''),
+    JSON.stringify(steps),
+  );
   // scroll so more items load; progress text updates by itself
   for (let i = 0; i < 4; i++) {
     await target.mouse.wheel(0, 900);
@@ -175,22 +201,35 @@ try {
   await target.screenshot({ path: join(SHOTS, '2-guide-on-page.png') });
 
   await guide.getByRole('button', { name: 'Capture' }).click();
-  await guide.getByText(/^Captured|Matrx could not|nothing on this page|went wrong/i).first().waitFor({ timeout: 200000 });
+  await guide
+    .getByText(/^Captured|Matrx could not|nothing on this page|went wrong/i)
+    .first()
+    .waitFor({ timeout: 200000 });
   const outcome = (await guide.locator('.msg').first().textContent()) ?? '';
   await target.screenshot({ path: join(SHOTS, '3-after-capture.png') });
   step('page: capture filed', /^Captured/.test(outcome), outcome);
 
   await app.bringToFront();
-  await dialog.getByText(/Done|Saved, not read yet/).first().waitFor({ timeout: 60000 });
+  await dialog
+    .getByText(/Done|Saved, not read yet/)
+    .first()
+    .waitFor({ timeout: 60000 });
   const link = dialog.getByRole('link', { name: 'See what was saved' });
   await link.waitFor({ timeout: 20000 });
-  step('app: job shows Done with the saved results attached', true, await link.getAttribute('href'));
+  step(
+    'app: job shows Done with the saved results attached',
+    true,
+    await link.getAttribute('href'),
+  );
   await app.screenshot({ path: join(SHOTS, '4-app-done.png') });
 } catch (e) {
   console.error(`\n  FAILED: ${e.message}`);
-  for (const p of ctx.pages()) await p.screenshot({ path: join(SHOTS, `fail-${Date.now()}.png`) }).catch(() => {});
+  for (const p of ctx.pages())
+    await p.screenshot({ path: join(SHOTS, `fail-${Date.now()}.png`) }).catch(() => {});
   process.exitCode = 1;
 } finally {
   await ctx.close();
 }
-console.log(`\n  ${results.filter((r) => r.ok).length}/${results.length} steps passed; screenshots in ${SHOTS}`);
+console.log(
+  `\n  ${results.filter((r) => r.ok).length}/${results.length} steps passed; screenshots in ${SHOTS}`,
+);

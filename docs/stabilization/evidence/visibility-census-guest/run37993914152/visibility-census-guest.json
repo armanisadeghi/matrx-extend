@@ -1319,10 +1319,7 @@
     "missing_required_regions": []
   },
   "interception": {
-    "scope": [
-      "sidepanel",
-      "extension_worker"
-    ],
+    "scope": ["sidepanel", "extension_worker"],
     "effect": "HTTP(S) methods other than GET/HEAD/OPTIONS aborted during observation",
     "blocked_request_count": 0,
     "sidepanel": {},
