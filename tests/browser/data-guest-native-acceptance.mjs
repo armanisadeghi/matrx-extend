@@ -6,7 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
-import { clickPickerDone, pickerText } from './data-guest-picker-driver.mjs';
+import { clickPickerDone, clickPickerField, pickerText } from './data-guest-picker-driver.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
   activeTabPanelExpression,
@@ -151,8 +151,32 @@ try {
         throw error;
       }
       await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
-      await page.locator('.product-card .product-name').first().click();
-      await page.locator('.product-card .product-price').nth(1).click();
+      try {
+        report.picker_step = 'first_field';
+        report.picker_field_diagnostic = await clickPickerField(
+          page,
+          '.product-card .product-name',
+        );
+        report.picker_step = 'second_field';
+        report.picker_second_field_diagnostic = await clickPickerField(
+          page,
+          '.product-card .product-price',
+          1,
+        );
+      } catch (error) {
+        if (error?.pickerFieldDiagnostic) {
+          if (report.picker_step === 'second_field')
+            report.picker_second_field_diagnostic = error.pickerFieldDiagnostic;
+          else report.picker_field_diagnostic = error.pickerFieldDiagnostic;
+        }
+        try {
+          await page.screenshot({ path: join(artifacts, 'data-picker-field-failure.png') });
+          report.picker_field_screenshot = 'data-picker-field-failure.png';
+        } catch {
+          report.picker_field_screenshot = 'capture_failed';
+        }
+        throw error;
+      }
       const cdp = await page.context().newCDPSession(page);
       try {
         await cdp.send('DOM.enable');

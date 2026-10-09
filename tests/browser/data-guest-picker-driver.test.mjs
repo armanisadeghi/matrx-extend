@@ -1,6 +1,61 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { clickPickerDone } from './data-guest-picker-driver.mjs';
+import { clickPickerDone, clickPickerField } from './data-guest-picker-driver.mjs';
+
+test('Data guest field click uses a visible owned point when the picker covers its center', async () => {
+  const previous = {
+    document: globalThis.document,
+    innerWidth: globalThis.innerWidth,
+    innerHeight: globalThis.innerHeight,
+  };
+  const target = {
+    getBoundingClientRect: () => ({
+      left: 8,
+      top: 24,
+      right: 592,
+      bottom: 64,
+      width: 584,
+      height: 40,
+    }),
+    contains: () => false,
+  };
+  const blocker = { contains: () => false };
+  const clicks = [];
+  let coverLeft = 260;
+  globalThis.innerWidth = 600;
+  globalThis.innerHeight = 500;
+  globalThis.document = {
+    querySelectorAll: () => [target],
+    querySelector: (selector) => (selector === '#matrx-data-picker-host' ? blocker : null),
+    elementFromPoint: (x) => (x >= coverLeft ? blocker : target),
+  };
+  const page = {
+    locator: () => ({ nth: () => ({ scrollIntoViewIfNeeded: async () => {} }) }),
+    evaluate: async (callback, args) => callback(args),
+    mouse: { click: async (x, y) => clicks.push([x, y]) },
+  };
+  try {
+    const picked = await clickPickerField(page, '.product-name');
+    assert.deepEqual(clicks, [[154, 44]]);
+    assert.equal(picked.center_hit, 'picker_overlay');
+    assert.equal(picked.chosen_hit, 'field');
+    coverLeft = 0;
+    await assert.rejects(clickPickerField(page, '.product-name'), (error) => {
+      assert.equal(error.pickerFieldDiagnostic?.center_hit, 'picker_overlay');
+      assert.deepEqual(error.pickerFieldDiagnostic?.hit_kinds, Array(9).fill('picker_overlay'));
+      return /data_guest_field_hit_target_missing/.test(error.message);
+    });
+    assert.deepEqual(clicks, [[154, 44]]);
+    coverLeft = 600;
+    await clickPickerField(page, '.product-name');
+    assert.deepEqual(clicks, [
+      [154, 44],
+      [300, 44],
+    ]);
+  } finally {
+    Object.assign(globalThis, previous);
+  }
+});
 
 function ownedPage(hitBackendNodeId) {
   const calls = [];
