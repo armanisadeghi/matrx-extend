@@ -45,9 +45,12 @@ on:
         options:
           - guest-chat
           - guest-seo
+          - guest-data
           - guest-scrape
           - guest-scrape-development
           - settings-controls
+          - settings-theme-rendering
+          - settings-auto-scrape-capture
           - settings-persistence
           - settings-persistence-admin
           - settings-persistence-member
@@ -189,7 +192,7 @@ jobs:
           # BEGIN hosted lane admission
           [[ "$ACCEPTANCE_LANE" == A || "$ACCEPTANCE_LANE" == B ]] || { echo 'Unknown hosted acceptance lane.' >&2; exit 1; }
           case "$ACCEPTANCE_CASE" in
-            guest-chat|guest-seo|guest-scrape|guest-scrape-development|settings-controls|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
+            guest-chat|guest-seo|guest-data|guest-scrape|guest-scrape-development|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
           [[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }
@@ -290,7 +293,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == guest-scrape-development ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == guest-seo || "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == visibility-census-guest || "$ACCEPTANCE_CASE" == visibility-census-member || "$ACCEPTANCE_CASE" == visibility-census-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
+          if [[ "$ACCEPTANCE_CASE" == guest-seo || "$ACCEPTANCE_CASE" == guest-data || "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == visibility-census-guest || "$ACCEPTANCE_CASE" == visibility-census-member || "$ACCEPTANCE_CASE" == visibility-census-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == prepare-stale-results || "$ACCEPTANCE_CASE" == showcase-picker-admin || "$ACCEPTANCE_CASE" == showcase-stale-admin || "$ACCEPTANCE_CASE" == showcase-d47-admin || "$ACCEPTANCE_CASE" == showcase-d47-public-admin || "$ACCEPTANCE_CASE" == records-readonly-admin ]]; then
@@ -431,7 +434,9 @@ jobs:
             test-results/guest-chat-store-*.json
             test-results/scrape-guest-native-*.json
             test-results/seo-guest-acceptance.json
+            test-results/data-guest-native-acceptance.json
             test-results/settings-local-controls-acceptance.json
+            test-results/settings-auto-scrape-capture-native.json
             test-results/settings-d87-native-*.json
             test-results/visibility-census-*.json
             test-results/visibility-census-guest.json.guest-account-readiness.png

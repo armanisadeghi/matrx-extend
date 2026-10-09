@@ -6,7 +6,7 @@
  *
  *   - File it in: any registered place (project, task, scope, research topic,
  *     deck, podcast episode, war room, data store) through the same
- *     `UniversalAssociationPicker` the web app uses.
+ *     canonical one-type candidate body, with universal search on demand.
  *   - Add to a Library (media catalog, optional), remembered per person.
  *
  * The write is `POST /sources/{id}/keep` with `attach_to` (the door's edge
@@ -28,6 +28,7 @@ import { useAuthStore } from '@/state/auth';
 import { pushNotice } from '@/state/notices';
 import type { EntityTypeToken } from '@ai-matrx/associations';
 import {
+  AssociationCandidateBody,
   AssociationsProvider,
   UniversalAssociationPicker,
   attachedKey,
@@ -297,30 +298,68 @@ export function FileSourcePanel({
             </ul>
           )}
           {placeType && (
-            <div className="flex h-48 min-h-0 flex-col overflow-hidden rounded-md border border-border">
-              <UniversalAssociationPicker
-                key={placeType}
-                orgId={organizationId}
-                tokens={
-                  placeType === 'all' ? ([...SAVE_TARGET_TOKENS] as EntityTypeToken[]) : [placeType]
-                }
-                attachedKeys={attachedKeys}
-                onAttach={async (token, resourceId, title) => {
-                  setStaged((prev) =>
-                    prev.some((p) => p.token === token && p.id === resourceId)
-                      ? prev
-                      : [...prev, { token, id: resourceId, label: title || token }],
-                  );
-                  return { ok: true };
-                }}
-                onDetach={async (token, resourceId) => {
-                  setStaged((prev) =>
-                    prev.filter((p) => !(p.token === token && p.id === resourceId)),
-                  );
-                  return { ok: true };
-                }}
-              />
-            </div>
+            <section
+              aria-label="Place results"
+              className="h-48 overflow-y-auto overscroll-contain rounded-md border border-border"
+              onKeyDown={(event) => {
+                if (event.key !== 'PageDown' && event.key !== 'PageUp') return;
+                event.preventDefault();
+                event.currentTarget.scrollTop +=
+                  event.currentTarget.clientHeight * (event.key === 'PageDown' ? 1 : -1);
+              }}
+            >
+              {placeType === 'all' ? (
+                <UniversalAssociationPicker
+                  key={placeType}
+                  orgId={organizationId}
+                  tokens={[...SAVE_TARGET_TOKENS] as EntityTypeToken[]}
+                  attachedKeys={attachedKeys}
+                  onAttach={async (token, resourceId, title) => {
+                    setStaged((prev) =>
+                      prev.some((p) => p.token === token && p.id === resourceId)
+                        ? prev
+                        : [...prev, { token, id: resourceId, label: title || token }],
+                    );
+                    return { ok: true };
+                  }}
+                  onDetach={async (token, resourceId) => {
+                    setStaged((prev) =>
+                      prev.filter((p) => !(p.token === token && p.id === resourceId)),
+                    );
+                    return { ok: true };
+                  }}
+                />
+              ) : (
+                <AssociationCandidateBody
+                  key={placeType}
+                  token={placeType}
+                  enabled
+                  orgId={organizationId}
+                  attachedIds={
+                    new Set(
+                      staged.filter((item) => item.token === placeType).map((item) => item.id),
+                    )
+                  }
+                  onAttach={async (resourceId, title) => {
+                    setStaged((prev) =>
+                      prev.some((p) => p.token === placeType && p.id === resourceId)
+                        ? prev
+                        : [
+                            ...prev,
+                            { token: placeType, id: resourceId, label: title || placeType },
+                          ],
+                    );
+                    return { ok: true };
+                  }}
+                  onDetach={async (resourceId) => {
+                    setStaged((prev) =>
+                      prev.filter((p) => !(p.token === placeType && p.id === resourceId)),
+                    );
+                    return { ok: true };
+                  }}
+                />
+              )}
+            </section>
           )}
         </div>
 

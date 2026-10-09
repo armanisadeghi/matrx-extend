@@ -12,6 +12,7 @@ import { useAuthStore } from '@/state/auth';
 import { pushNotice } from '@/state/notices';
 import type { EntityTypeToken } from '@ai-matrx/associations';
 import {
+  AssociationCandidateBody,
   AssociationsProvider,
   UniversalAssociationPicker,
   attachedKey,
@@ -39,18 +40,21 @@ export function SaveSourceForm({
   initialName,
   organizationId,
   saving,
+  error,
   onSave,
   onClose,
 }: {
   initialName: string;
   organizationId: string | null;
   saving: boolean;
+  error?: string | null;
   onSave: (name: string, attachTo: AttachTarget[]) => void;
   onClose: () => void;
 }) {
   const userId = useAuthStore((s) => s.user?.id ?? null);
   const [name, setName] = useState(initialName);
   const nameRef = useRef<HTMLInputElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [showPlaces, setShowPlaces] = useState(false);
   const [placeType, setPlaceType] = useState<EntityTypeToken | 'all' | null>(null);
   const [showLibrary, setShowLibrary] = useState(false);
@@ -66,17 +70,13 @@ export function SaveSourceForm({
   useEffect(() => {
     const previousFocus =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    dialogRef.current?.showModal();
     nameRef.current?.focus();
-    return () => previousFocus?.focus();
-  }, []);
-
-  useEffect(() => {
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !saving) onClose();
+    return () => {
+      dialogRef.current?.close();
+      previousFocus?.focus();
     };
-    document.addEventListener('keydown', closeOnEscape);
-    return () => document.removeEventListener('keydown', closeOnEscape);
-  }, [onClose, saving]);
+  }, []);
 
   useEffect(() => {
     if (!showLibrary || !userId) return;
@@ -121,11 +121,44 @@ export function SaveSourceForm({
 
   return (
     <dialog
-      open
-      aria-modal="true"
+      ref={dialogRef}
       aria-label="Save Source"
       data-testid="save-source-form"
-      className="relative m-0 max-h-[85vh] w-full space-y-2 overflow-y-auto rounded-xl border border-border bg-card p-3 text-xs text-foreground shadow-xl"
+      onKeyDownCapture={(event) => {
+        if (event.key !== 'Tab') return;
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        const controls = Array.from(
+          dialog.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          ),
+        ).filter((control) => {
+          if (control.getAttribute('aria-hidden') === 'true') return false;
+          for (
+            let ancestor: HTMLElement | null = control;
+            ancestor;
+            ancestor = ancestor.parentElement
+          ) {
+            if (ancestor.hidden) return false;
+            const style = window.getComputedStyle(ancestor);
+            if (style.display === 'none' || style.visibility === 'hidden') return false;
+            if (ancestor === dialog) break;
+          }
+          return true;
+        });
+        if (controls.length === 0) return;
+        event.preventDefault();
+        const current = controls.indexOf(document.activeElement as HTMLElement);
+        const next = event.shiftKey
+          ? (current < 0 ? controls.length : current) - 1
+          : (current + 1) % controls.length;
+        controls[(next + controls.length) % controls.length]?.focus();
+      }}
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!saving) onClose();
+      }}
+      className="fixed inset-x-2 bottom-2 top-auto mx-auto max-h-[85vh] w-[calc(100%-1rem)] space-y-2 overflow-y-auto rounded-xl border border-border bg-card p-3 text-xs text-foreground shadow-xl backdrop:bg-black/20"
     >
       <div className="flex items-center justify-between gap-2">
         <span className="font-semibold">Save Source</span>
@@ -237,30 +270,63 @@ export function SaveSourceForm({
               }),
           }}
         >
-          <div className="flex h-48 min-h-0 flex-col overflow-hidden rounded-md border border-border">
-            <UniversalAssociationPicker
-              key={placeType}
-              orgId={organizationId}
-              tokens={
-                placeType === 'all' ? ([...SAVE_TARGET_TOKENS] as EntityTypeToken[]) : [placeType]
-              }
-              attachedKeys={attachedKeys}
-              onAttach={async (token, id, title) => {
-                setStaged((prev) =>
-                  prev.some((item) => item.token === token && item.id === id)
-                    ? prev
-                    : [...prev, { token, id, label: title || token }],
-                );
-                return { ok: true };
-              }}
-              onDetach={async (token, id) => {
-                setStaged((prev) =>
-                  prev.filter((item) => !(item.token === token && item.id === id)),
-                );
-                return { ok: true };
-              }}
-            />
-          </div>
+          <section
+            aria-label="Place results"
+            className="h-48 overflow-y-auto overscroll-contain rounded-md border border-border"
+            onKeyDown={(event) => {
+              if (event.key !== 'PageDown' && event.key !== 'PageUp') return;
+              event.preventDefault();
+              event.currentTarget.scrollTop +=
+                event.currentTarget.clientHeight * (event.key === 'PageDown' ? 1 : -1);
+            }}
+          >
+            {placeType === 'all' ? (
+              <UniversalAssociationPicker
+                key={placeType}
+                orgId={organizationId}
+                tokens={[...SAVE_TARGET_TOKENS] as EntityTypeToken[]}
+                attachedKeys={attachedKeys}
+                onAttach={async (token, id, title) => {
+                  setStaged((prev) =>
+                    prev.some((item) => item.token === token && item.id === id)
+                      ? prev
+                      : [...prev, { token, id, label: title || token }],
+                  );
+                  return { ok: true };
+                }}
+                onDetach={async (token, id) => {
+                  setStaged((prev) =>
+                    prev.filter((item) => !(item.token === token && item.id === id)),
+                  );
+                  return { ok: true };
+                }}
+              />
+            ) : (
+              <AssociationCandidateBody
+                key={placeType}
+                token={placeType}
+                enabled
+                orgId={organizationId}
+                attachedIds={
+                  new Set(staged.filter((item) => item.token === placeType).map((item) => item.id))
+                }
+                onAttach={async (id, title) => {
+                  setStaged((prev) =>
+                    prev.some((item) => item.token === placeType && item.id === id)
+                      ? prev
+                      : [...prev, { token: placeType, id, label: title || placeType }],
+                  );
+                  return { ok: true };
+                }}
+                onDetach={async (id) => {
+                  setStaged((prev) =>
+                    prev.filter((item) => !(item.token === placeType && item.id === id)),
+                  );
+                  return { ok: true };
+                }}
+              />
+            )}
+          </section>
         </AssociationsProvider>
       )}
       {showLibrary && (
@@ -286,6 +352,7 @@ export function SaveSourceForm({
           </select>
         </label>
       )}
+      {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
       <Button
         type="button"
         size="sm"

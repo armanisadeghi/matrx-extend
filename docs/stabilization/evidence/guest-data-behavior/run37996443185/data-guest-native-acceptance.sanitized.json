@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "status": "fail",
+  "stage": "input",
+  "native_stage": null,
+  "artifact": null,
+  "observations": {},
+  "failure_stage": "input",
+  "limits": "Guest native behavior on exact imported development artifact; no signed-in save or Store claim."
+}

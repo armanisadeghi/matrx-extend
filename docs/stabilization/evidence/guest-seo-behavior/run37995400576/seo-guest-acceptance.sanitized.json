@@ -1,0 +1,504 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "partial",
+  "scope": "public-page guest SEO actions in an owned native side panel",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_0_title_and_headings",
+      "status": "pass",
+      "evidence": {
+        "publicTitle": "Example Domain",
+        "titleMatches": true,
+        "headingsPresenceMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+      "status": "pass",
+      "evidence": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_1_title_and_headings",
+      "status": "pass",
+      "evidence": {
+        "publicTitle": "IANA-managed Reserved Domains",
+        "titleMatches": true,
+        "headingsPresenceMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+      "status": "pass",
+      "evidence": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "new_url_replaces_visible_title",
+      "status": "pass",
+      "evidence": {
+        "twoDistinctPublicTitles": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "manual_button_returns_to_current_page",
+      "status": "pass",
+      "evidence": {
+        "currentTitlePreserved": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+      "status": "pass",
+      "evidence": {
+        "textChoice": true,
+        "agentChoice": true,
+        "jsonAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "reload_audits_current_url",
+      "status": "pass",
+      "evidence": {
+        "currentUrl": "[public URL omitted]",
+        "currentTitleMatched": true,
+        "headingsPresenceMatched": true,
+        "reselectedAfterReload": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_role_gate_after_reload",
+      "status": "pass",
+      "evidence": {
+        "textChoice": true,
+        "agentChoice": true,
+        "jsonAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+      "status": "pass",
+      "evidence": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "subtarget": "about_blank_clear_error_without_stale_audit",
+      "status": "pass",
+      "evidence": {
+        "scopeValid": true,
+        "expectedErrorVisible": true,
+        "staleAuditAbsent": true,
+        "copyAuditAbsent": true,
+        "retryOffered": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "subtarget": "public_page_recovers_after_restricted_url",
+      "status": "pass",
+      "evidence": {
+        "publicTitleMatched": true,
+        "headingsPresenceMatched": true,
+        "auditErrorAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "sparse_public_detail_groups",
+      "status": "pass",
+      "evidence": {
+        "descriptionAbsent": true,
+        "canonicalAbsent": true,
+        "groupsMatchPublicDom": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "rich_public_detail_groups_and_canonical_door",
+      "status": "pass",
+      "evidence": {
+        "descriptionMatchesPublicDom": true,
+        "canonicalMatchesPublicDom": true,
+        "groupsMatchPublicDom": true,
+        "outboundAnchorSafe": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "canonical_outbound_opens_expected_public_tab",
+      "status": "pass",
+      "evidence": {
+        "trustedInput": true,
+        "destinationMatchesPublicDom": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtarget": "guest_social_missing_tags_clipboard_before_reaudit",
+      "status": "pass",
+      "evidence": {
+        "copiedTags": 5,
+        "exactClipboardMatch": true,
+        "trustedCopyClick": true,
+        "sourceTitleMatches": true,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true,
+        "feedbackObserved": true,
+        "feedbackFailureAbsent": true,
+        "clipboardChanged": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "guest_reaudit_captures_changed_page_metadata",
+      "status": "pass",
+      "evidence": {
+        "publicTitleChanged": true,
+        "publicDescriptionChanged": true,
+        "oldAuditVisibleBeforeClick": true,
+        "nativeTitleMatchesChangedPublicDom": true,
+        "trustedReauditClick": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtarget": "guest_social_missing_tags_clipboard_after_reaudit",
+      "status": "pass",
+      "evidence": {
+        "copiedTags": 6,
+        "exactClipboardMatch": true,
+        "trustedCopyClick": true,
+        "sourceTitleMatches": true,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true,
+        "feedbackObserved": true,
+        "feedbackFailureAbsent": true,
+        "clipboardChanged": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_link_counts_match_live_dom",
+      "status": "pass",
+      "evidence": {
+        "url": "[public URL omitted]",
+        "internal": 1784,
+        "external": 411
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+      "status": "pass",
+      "evidence": {
+        "url": "[public URL omitted]",
+        "total": 30,
+        "missingAlt": 12
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+      "status": "pass",
+      "evidence": {
+        "publicBodyHasText": true,
+        "displayed": {
+          "words": "10,488",
+          "sentences": "786",
+          "score": "44.48",
+          "summary": "Difficult — college"
+        },
+        "metricValueCorrectness": "unverified"
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_performance_reflects_current_navigation",
+      "status": "pass",
+      "evidence": {
+        "pageResponseStatus": 200,
+        "exposedNavigation": {
+          "type": "navigate",
+          "durationMs": 1108,
+          "transferSizeBytes": 123928,
+          "responseStatus": 200
+        },
+        "displayed": {
+          "status": "200",
+          "navigation": "navigate",
+          "duration": "1,108 ms",
+          "transfer": "121 KB"
+        }
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+      "status": "unverified",
+      "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+    }
+  ],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04-T06,T08",
+      "part": "database save, history, and diff flows"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "broken social preview image and detail controls beyond the bounded next batch; optional hreflang/schema doors remain unverified when their live source data is absent"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "next_manual_detail_batch_observed",
+  "last_safe_observable": {
+    "doorStatus": "unverified"
+  },
+  "current_operation": "build_recheck",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.456",
+      "treeSha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb"
+    },
+    "after": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.456",
+      "treeSha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb"
+    }
+  },
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+    "runId": 37986090931,
+    "runAttempt": 1,
+    "artifactId": 11643292724,
+    "githubArtifactDigest": "sha256:2c7e14f379953dd4434e1d79b0a66f9b68450d3cb2b702a5d1db8ae7a74d2ae3",
+    "version": "0.2.456",
+    "treeSha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb",
+    "source": {
+      "originMain": "f9877047dc195539a295b59714652e8e091be16b",
+      "localHead": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "case_selection": {
+    "scope": "full",
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "excluded_cases": []
+  },
+  "resource_diagnostic_enabled": false,
+  "social_copy_feedback": [
+    {
+      "phase": "before_reaudit",
+      "samples": [
+        {
+          "atMs": 175,
+          "scopeValid": true,
+          "buttonCount": 1,
+          "visible": true,
+          "hasTitleAttr": true,
+          "hasDataTitleAttr": false,
+          "check": false,
+          "failed": false,
+          "idle": true
+        },
+        {
+          "atMs": 278,
+          "scopeValid": true,
+          "buttonCount": 1,
+          "visible": true,
+          "hasTitleAttr": false,
+          "hasDataTitleAttr": true,
+          "check": true,
+          "failed": false,
+          "idle": false
+        },
+        {
+          "atMs": 286,
+          "scopeValid": true,
+          "buttonCount": 1,
+          "visible": true,
+          "hasTitleAttr": false,
+          "hasDataTitleAttr": true,
+          "check": true,
+          "failed": false,
+          "idle": false
+        }
+      ]
+    },
+    {
+      "phase": "after_reaudit",
+      "samples": [
+        {
+          "atMs": 171,
+          "scopeValid": true,
+          "buttonCount": 1,
+          "visible": true,
+          "hasTitleAttr": true,
+          "hasDataTitleAttr": false,
+          "check": true,
+          "failed": false,
+          "idle": false
+        },
+        {
+          "atMs": 209,
+          "scopeValid": true,
+          "buttonCount": 1,
+          "visible": true,
+          "hasTitleAttr": true,
+          "hasDataTitleAttr": false,
+          "check": true,
+          "failed": false,
+          "idle": false
+        }
+      ]
+    }
+  ],
+  "next_detail_public_counts": {
+    "links": {
+      "internal": 1784,
+      "external": 411
+    },
+    "images": {
+      "total": 30,
+      "missingAlt": 12
+    },
+    "bodyHasText": true,
+    "alternateCount": 0,
+    "schemaTypeCount": 3
+  },
+  "next_detail_auto_observed": {
+    "links": {
+      "internal": "1,781",
+      "external": "409",
+      "hint": "2190"
+    },
+    "images": {
+      "total": "28",
+      "missingAlt": "10",
+      "hint": "28"
+    },
+    "performance": {
+      "status": "200",
+      "navigation": "navigate",
+      "duration": null,
+      "transfer": "121 KB"
+    },
+    "exactDataStatus": "unverified"
+  },
+  "next_detail_manual_public": {
+    "before": {
+      "links": {
+        "internal": 1784,
+        "external": 411
+      },
+      "images": {
+        "total": 30,
+        "missingAlt": 12
+      },
+      "bodyHasText": true,
+      "alternateCount": 0,
+      "schemaTypeCount": 3,
+      "navigation": {
+        "type": "navigate",
+        "durationMs": 1108,
+        "transferSizeBytes": 123928,
+        "responseStatus": 200
+      },
+      "responseStatus": 200
+    },
+    "after": {
+      "links": {
+        "internal": 1784,
+        "external": 411
+      },
+      "images": {
+        "total": 30,
+        "missingAlt": 12
+      },
+      "bodyHasText": true,
+      "alternateCount": 0,
+      "schemaTypeCount": 3,
+      "navigation": {
+        "type": "navigate",
+        "durationMs": 1108,
+        "transferSizeBytes": 123928,
+        "responseStatus": 200
+      },
+      "responseStatus": 200
+    }
+  },
+  "next_detail_public_navigation": {
+    "type": "navigate",
+    "durationMs": 1108,
+    "transferSizeBytes": 123928,
+    "responseStatus": 200,
+    "pageResponseStatus": 200
+  },
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "sanitized_for_durable_evidence": true
+}

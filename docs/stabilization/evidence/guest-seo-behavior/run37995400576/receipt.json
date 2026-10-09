@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37995400576,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37995400576",
+    "lane": "A",
+    "conclusion": "success",
+    "checkout_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381"
+  },
+  "acceptance": {
+    "case": "guest-seo",
+    "auth_mode": "guest",
+    "scope": "full",
+    "fixture": "none",
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "excluded_cases": [],
+    "report_status": "partial",
+    "target_passes": 22,
+    "target_unverified": 1,
+    "targets": [
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_0_title_and_headings",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_1_title_and_headings",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "new_url_replaces_visible_title",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "manual_button_returns_to_current_page",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "reload_audits_current_url",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_role_gate_after_reload",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "about_blank_clear_error_without_stale_audit",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "public_page_recovers_after_restricted_url",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "sparse_public_detail_groups",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "rich_public_detail_groups_and_canonical_door",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "canonical_outbound_opens_expected_public_tab",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T14",
+        "subtarget": "guest_social_missing_tags_clipboard_before_reaudit",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "guest_reaudit_captures_changed_page_metadata",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T14",
+        "subtarget": "guest_social_missing_tags_clipboard_after_reaudit",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_link_counts_match_live_dom",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_performance_reflects_current_navigation",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+        "status": "unverified",
+        "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+      }
+    ]
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.456",
+    "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+    "ci_run_id": 37986090931,
+    "ci_artifact_id": 11643292724,
+    "ci_artifact_digest": "sha256:2c7e14f379953dd4434e1d79b0a66f9b68450d3cb2b702a5d1db8ae7a74d2ae3",
+    "tree_sha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_run_artifact": {
+    "id": 11647446358,
+    "name": "hosted-guest-37995400576-1",
+    "sha256": "7e57806032158730f423e600f97e57cda6e2887b1354f396b8fe9f9434583ade",
+    "expired": false
+  },
+  "behavior": {
+    "expected_and_observed": [
+      "T01: a new page URL replaces the visible title; reload audits the current URL — pass.",
+      "T02: manual re-audit returns to the current page and captures changed page metadata — pass.",
+      "T03: about:blank clears the previous error without stale audit; a public page recovers after a restricted URL — pass.",
+      "T07: guest Copy menu offers text and AI, omits JSON before and after reload, and clipboard assertions pass on both controlled pages — pass. Clipboard bytes are not retained.",
+      "T09: page title/headings, sparse and rich detail groups, canonical door destination, live link/image-alt counts, populated/explained readability display, and current-navigation performance presentation — pass.",
+      "T14: guest social missing-tag clipboard checks before and after re-audit — pass."
+    ],
+    "unverified": [
+      "T09 hreflang/schema doors: live public DOM did not expose unique hreflang and openable schema candidates.",
+      "Exact readability calculation: presentation assertion passed, but exactDataStatus remains unverified."
+    ],
+    "observed_performance": {
+      "navigation_type": "navigate",
+      "duration_ms": 1108,
+      "response_status": 200,
+      "transfer_size_bytes": 123928,
+      "displayed_transfer": "121 KB"
+    },
+    "deferred": [
+      {
+        "case": "T01",
+        "part": "one audit per URL and slow-old-result race"
+      },
+      {
+        "case": "T02",
+        "part": "stale advice replacement and failure report after re-audit"
+      },
+      {
+        "case": "T03",
+        "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+      },
+      {
+        "case": "T04-T06,T08",
+        "part": "database save, history, and diff flows"
+      },
+      {
+        "case": "T07",
+        "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+      },
+      {
+        "case": "T09",
+        "part": "broken social preview image and detail controls beyond the bounded next batch; optional hreflang/schema doors remain unverified when their live source data is absent"
+      },
+      {
+        "case": "T10-T13",
+        "part": "recommendations and Chat staging"
+      },
+      {
+        "case": "T14",
+        "part": "social snippet behavior beyond the two controlled public page states"
+      },
+      {
+        "case": "all",
+        "part": "member and admin modes"
+      }
+    ]
+  },
+  "resource_guards": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "valid"
+    }
+  },
+  "evidence_files": [
+    "seo-guest-acceptance.sanitized.json",
+    "hosted-package-37995400576-1.jsonl",
+    "hosted-browser-37995400576-1.jsonl",
+    "hosted-guest-37995400576-1.jsonl"
+  ],
+  "limits": [
+    "This is guest behavior on the exact imported development artifact, not Store acceptance or current-main product acceptance.",
+    "The workflow checked out 54cd2de; the extension bytes came from CI source eb5fc114.",
+    "The overall feature report is partial: the run covered six selected guest cases, one target remains unverified, and the report lists additional deferred work and all member/admin modes.",
+    "No member/admin credentials were supplied; the report records mode=guest without a separate stored-token proof field."
+  ]
+}

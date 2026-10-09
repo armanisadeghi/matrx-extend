@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-09T22:32:23Z",
+  "profile": "Arman (armansadeghi.com)",
+  "ci_artifact": {
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "run_id": 37998294843,
+    "artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b"
+  },
+  "development_extension": {
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.456",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned": true,
+    "reloaded_in_chrome": true
+  },
+  "store_extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "listing_version": "0.2.205",
+    "installed_in_profile": false,
+    "evidence": "The official listing showed Add to Chrome; Chrome's extension search found only the development ID. An earlier observation reported the Store copy installed, so the intervening removal is not attributed."
+  },
+  "browser_resource_journal": "docs/stabilization/resource-journals/dev-chrome-refresh-20261009-7230d.jsonl",
+  "browser_resource_decision": "valid",
+  "scope": "CI provenance and Chrome installation state only; product behavior remains unverified"
+}

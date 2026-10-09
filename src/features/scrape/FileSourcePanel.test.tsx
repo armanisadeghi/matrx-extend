@@ -31,6 +31,24 @@ vi.mock('@/lib/supabase/schemas', () => {
 vi.mock('@ai-matrx/associations/react', () => ({
   AssociationsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   attachedKey: (t: string, id: string) => `${t}:${id}`,
+  AssociationCandidateBody: ({
+    onAttach,
+    token,
+    orgId,
+  }: {
+    onAttach: (id: string, title: string) => Promise<unknown>;
+    token: string;
+    orgId: string;
+  }) => (
+    <button
+      type="button"
+      data-token={token}
+      data-org={orgId}
+      onClick={() => void onAttach('proj-1', 'Launch plan')}
+    >
+      pick Launch plan
+    </button>
+  ),
   UniversalAssociationPicker: ({
     onAttach,
     tokens,
@@ -98,7 +116,7 @@ describe('FileSourcePanel — optional filing after the save lands', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
     // One type is loaded only after that choice, in the Source's org.
     const picker = screen.getByRole('button', { name: 'pick Launch plan' });
-    expect(picker.getAttribute('data-tokens')).toBe('project');
+    expect(picker.getAttribute('data-token')).toBe('project');
     expect(picker.getAttribute('data-org')).toBe(ORG);
   });
 

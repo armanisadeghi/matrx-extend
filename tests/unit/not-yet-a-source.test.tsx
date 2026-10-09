@@ -6,7 +6,7 @@
  * check, a signed-out panel and a page that cannot be a Source never claim
  * either. Real ScrapeView; the scrape hook and recognition are faked.
  */
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const state = vi.hoisted(() => ({
@@ -118,7 +118,7 @@ describe('Scrape panel names a page by whether it is a Source', () => {
     expect(state.captureActiveTab).toHaveBeenCalledWith({ mode: 'fast' });
   });
 
-  it('captured but not saved: the banner action is "Save as a Source", and it saves', () => {
+  it('captured but not saved: the banner opens the form and submits only after confirmation', async () => {
     state.current = soup;
     useScrapeStore.getState().setCurrent(soup as never, 'guide-page');
     render(<ScrapeView />);
@@ -127,6 +127,10 @@ describe('Scrape panel names a page by whether it is a Source', () => {
     expect(inBanner.textContent).toBe('Save as a Source');
     expect(screen.getAllByRole('button', { name: /^Save$/ })).toHaveLength(1);
     fireEvent.click(inBanner);
+    expect(screen.getByRole('dialog', { name: 'Save Source' })).toBeTruthy();
+    expect(state.save).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: 'Save Source' }));
+    await waitFor(() => expect(state.save).toHaveBeenCalledWith({ name: 'Guide', attachTo: [] }));
     expect(state.save).toHaveBeenCalledTimes(1);
   });
 

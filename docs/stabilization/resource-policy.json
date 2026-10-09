@@ -49,6 +49,7 @@
     ["pnpm", "exec", "wxt"],
     ["pnpm", "compile"],
     ["pnpm", "check:matrx-packages"],
+    ["pnpm", "sync:matrx-packages"],
     ["pnpm", "lint"],
     ["pnpm", "exec", "biome", "check", "--diagnostic-level=error", "."],
     [
@@ -146,6 +147,7 @@
     ["bash", "release.sh", "--message", "EXT-D-0014 synchronized stabilization and remote fixes"],
     ["node", "tests/browser/isolated-admin-reset-acceptance.mjs"],
     ["bash", "release.sh", "--message", "chore: synchronized stabilization integration"],
+    ["bash", "release.sh", "--message", "EXT-D-0187 simplify and verify Scrape Save"],
     ["node", "tests/browser/isolated-permission-denial-acceptance.mjs"],
     ["node", "tests/browser/contained-navigation-acceptance.mjs"],
     ["node", "tests/browser/seo-guest-acceptance.mjs"],

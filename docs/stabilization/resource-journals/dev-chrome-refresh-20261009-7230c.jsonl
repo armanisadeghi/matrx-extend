@@ -1,0 +1,3 @@
+{"schema":1,"at":"2026-10-09T22:29:18.190Z","runId":"dev-chrome-refresh-20261009-7230c","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-09T22:29:18.252Z","runId":"dev-chrome-refresh-20261009-7230c","processEvidence":{"matches":[{"pid":45613,"ppid":38259,"processStart":"Fri Oct  9 15:27:16 2026","executable":"node","reason":"script-operand"}],"overflow":0},"code":"RESOURCE_LEGACY_RUNNER_BUSY"}
+{"schema":1,"at":"2026-10-09T22:29:18.255Z","runId":"dev-chrome-refresh-20261009-7230c","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}
