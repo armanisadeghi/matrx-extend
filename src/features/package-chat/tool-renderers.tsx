@@ -6,7 +6,9 @@
  */
 
 import { type ToolTimelineEntry, ToolTimelineRow } from '@/features/chat/ToolTimelineRow';
+import { CONFIGURED_ROW_NAMES } from '@/features/chat/tool-display/row-names';
 import type { ToolLifecycleEntry } from '@ai-matrx/chat/agents/types/request.types';
+import { registerConfiguredToolRenderers } from '@ai-matrx/chat/tool-call-visualization/configured-rows/register';
 import { registerToolRenderer } from '@ai-matrx/chat/tool-call-visualization/registry/registry';
 import type { ToolRendererProps } from '@ai-matrx/chat/tool-call-visualization/types';
 import { Hourglass, Layers } from 'lucide-react';
@@ -54,4 +56,13 @@ export function registerExtensionToolRenderers(): void {
       });
     }
   }
+  // Every other browser tool: the package's one config-driven row, fed this extension's row configs
+  // (loaded the first time a call to one of them is drawn, never with the first screen).
+  registerConfiguredToolRenderers(
+    {
+      names: CONFIGURED_ROW_NAMES,
+      load: async () => (await import('@/features/chat/tool-display/registry')).toolDisplayRegistry,
+    },
+    { namePrefixes: ['matrx-extend:'], stripPrefix: /^matrx-extend:/ },
+  );
 }

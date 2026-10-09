@@ -14,7 +14,7 @@ import { AlertTriangle, Loader2, Moon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { ShimmerText } from '../BreathingOrb';
 import type { ToolTimelineEntry } from '../ToolTimelineRow';
-import { CopyToolButton } from './CopyToolButton';
+import { CopyToolButton } from '@ai-matrx/chat/tool-call-visualization/configured-rows/CopyToolButton';
 
 type Phase = 'started' | 'completed' | 'error';
 

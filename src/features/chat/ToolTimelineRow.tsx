@@ -5,13 +5,13 @@
  */
 
 import { cn } from '@/lib/utils';
-import type { ToolProgressEntry } from '@/state/chat';
+import type { ToolProgressRow } from '@ai-matrx/chat/tool-call-visualization/configured-rows/types';
 import { AlertTriangle, CheckCircle2, Loader2, Shield } from 'lucide-react';
 import { useState } from 'react';
 import { ToolReceiptDialog } from './ToolReceiptDialog';
-import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/ConfigurableToolRow';
-import { CopyToolButton } from './tool-display/CopyToolButton';
-import { ToolProgressView } from './tool-display/ToolProgressView';
+import { ConfiguredToolRow, ToolDisplayBoundary } from '@ai-matrx/chat/tool-call-visualization/configured-rows/ConfiguredToolRow';
+import { CopyToolButton } from '@ai-matrx/chat/tool-call-visualization/configured-rows/CopyToolButton';
+import { ToolProgressView } from '@ai-matrx/chat/tool-call-visualization/configured-rows/ToolProgressView';
 import { toolDisplayRegistry } from './tool-display/registry';
 
 /**
@@ -30,7 +30,7 @@ export interface ToolTimelineEntry {
   output?: unknown;
   message?: string | undefined;
   /** Incremental progress log (long-running tools only; usually absent). */
-  progress?: ToolProgressEntry[] | undefined;
+  progress?: ToolProgressRow[] | undefined;
 }
 
 export function ToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
@@ -47,7 +47,7 @@ export function ToolTimelineRow({ entry }: { entry: ToolTimelineEntry }) {
     }
     return (
       <ToolDisplayBoundary toolName={entry.toolName} fallback={fallback}>
-        <ConfigurableToolRow entry={entry} kind="client" cfg={cfg} />
+        <ConfiguredToolRow entry={entry} kind="client" cfg={cfg} />
       </ToolDisplayBoundary>
     );
   }

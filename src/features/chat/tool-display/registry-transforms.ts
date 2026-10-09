@@ -7,43 +7,10 @@
  * it can't handle (e.g. titleCase only acts on strings) — never throw.
  */
 
-import type { TransformName } from './types';
+import { registerRowTransforms } from '@ai-matrx/chat/tool-call-visualization/configured-rows/transforms';
 
-const titleCaseFn = (v: unknown): unknown => {
-  if (typeof v !== 'string') return v;
-  return v
-    .split(/[_\-\s]+/)
-    .filter(Boolean)
-    .map((p) => (p[0] ? p[0].toUpperCase() + p.slice(1) : p))
-    .join(' ');
-};
-
-export const transforms: Record<TransformName, (v: unknown) => unknown> = {
-  titleCase: titleCaseFn,
-  snakeToTitle: titleCaseFn,
-  kebabToTitle: titleCaseFn,
-  textClean: (v) => (typeof v === 'string' ? v.replace(/\\([_*`])/g, '$1').trim() : v),
-  truncate80: (v) => (typeof v === 'string' && v.length > 80 ? `${v.slice(0, 80)}…` : v),
-  truncate200: (v) => (typeof v === 'string' && v.length > 200 ? `${v.slice(0, 200)}…` : v),
-  lowercase: (v) => (typeof v === 'string' ? v.toLowerCase() : v),
-  uppercase: (v) => (typeof v === 'string' ? v.toUpperCase() : v),
-  /** Object with width/height → "WxH" string. Useful when info.path: 'output'. */
-  formatImageDimensions: (v) => {
-    if (v == null || typeof v !== 'object') return v;
-    const obj = v as Record<string, unknown>;
-    const w = obj.width ?? obj.w;
-    const h = obj.height ?? obj.h;
-    if (typeof w !== 'number' || typeof h !== 'number') return undefined;
-    return `${w}×${h}`;
-  },
-  /* `formatBytes` IS NOT A TRANSFORM ANY MORE (2026-09-12, seventh review).
-   * It was `(v) => formatFileSize(v)` — an object-property PASS-THROUGH, the
-   * same class as the point-free `format: formatFileSize` hand-off: a second
-   * name for a collapsed export, under which the input lane
-   * (`format-input-shape.mjs`) cannot see what reaches `formatFileSize`. It
-   * had zero call sites in this repo — the registry is keyed by a string
-   * union and no `info` entry named it. A field that renders a byte count
-   * calls `formatFileSize` directly. */
+/** The transforms only this host has: browser-tool action verbs and icons. The generic ones ship with the package. */
+const hostTransforms: Record<string, (v: unknown) => unknown> = {
   /**
    * Browser-tools category name → lucide icon name. Each category gets a
    * distinct, recognizable icon (Wrench for core, Cookie for cookies, etc.).
@@ -435,3 +402,5 @@ const USER_TOOL_ICONS: Record<string, string> = {
   secret: 'KeyRound',
   notify: 'Bell',
 };
+
+registerRowTransforms(hostTransforms);

@@ -23,7 +23,7 @@ import { Check, MessageCircleQuestion } from 'lucide-react';
 import { useState } from 'react';
 import { create } from 'zustand';
 import type { ToolTimelineEntry } from '../ToolTimelineRow';
-import { CopyToolButton } from './CopyToolButton';
+import { CopyToolButton } from '@ai-matrx/chat/tool-call-visualization/configured-rows/CopyToolButton';
 
 interface QuestionSpec {
   id: string;

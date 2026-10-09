@@ -30,7 +30,9 @@
 import { BatchToolDisplay } from './BatchToolDisplay';
 import { InteractionAskCard } from './InteractionAskCard';
 import { SleepCountdown } from './SleepCountdown';
-import type { ToolDisplayEntry } from './types';
+import type { ToolDisplayEntry } from '@ai-matrx/chat/tool-call-visualization/configured-rows/types';
+import './registry-transforms';
+import './row-registrations';
 
 export const toolDisplayRegistry: Record<string, ToolDisplayEntry> = {
   // ─── Server-side tools ────────────────────────────────────────────────

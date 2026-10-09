@@ -13,9 +13,9 @@ import type { ServerToolCall } from '@/state/chat';
 import { AlertTriangle, CheckCircle2, ChevronRight, Loader2 } from 'lucide-react';
 import { useState } from 'react';
 import type { ToolTimelineEntry } from './ToolTimelineRow';
-import { ConfigurableToolRow, ToolDisplayBoundary } from './tool-display/ConfigurableToolRow';
-import { CopyToolButton } from './tool-display/CopyToolButton';
-import { ToolProgressView } from './tool-display/ToolProgressView';
+import { ConfiguredToolRow, ToolDisplayBoundary } from '@ai-matrx/chat/tool-call-visualization/configured-rows/ConfiguredToolRow';
+import { CopyToolButton } from '@ai-matrx/chat/tool-call-visualization/configured-rows/CopyToolButton';
+import { ToolProgressView } from '@ai-matrx/chat/tool-call-visualization/configured-rows/ToolProgressView';
 import { toolDisplayRegistry } from './tool-display/registry';
 
 export function ServerToolRow({ tool }: { tool: ServerToolCall }) {
@@ -43,7 +43,7 @@ export function ServerToolRow({ tool }: { tool: ServerToolCall }) {
     }
     return (
       <ToolDisplayBoundary toolName={tool.toolName} fallback={fallback}>
-        <ConfigurableToolRow entry={entry} kind="server" cfg={cfg} />
+        <ConfiguredToolRow entry={entry} kind="server" cfg={cfg} />
       </ToolDisplayBoundary>
     );
   }
