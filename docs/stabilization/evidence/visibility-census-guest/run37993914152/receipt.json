@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "acceptance_case": "visibility-census-guest",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 37993914152,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37993914152",
+    "lane": "A",
+    "conclusion": "failure",
+    "checkout_sha": "a52d27bc2e0be2c261d8f6e352ef7ad3317422d3"
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.456",
+    "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+    "ci_run_id": 37986090931,
+    "ci_artifact_id": 11643292724,
+    "tree_sha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_run_artifact": {
+    "id": 11646024192,
+    "name": "hosted-guest-37993914152-1",
+    "sha256": "f48a3b74dcf165e5b8974782edbd7bbd97d3d8c39e30334f509b193989d33414",
+    "expired": false
+  },
+  "observation": {
+    "classification": "partial_census_incomplete",
+    "role": "guest",
+    "positive_signed_out_proof_before_and_after": true,
+    "native_panel_verified": true,
+    "browser": "Chrome/141.0.7390.37",
+    "navigation": {
+      "total": 8,
+      "mapped": 5,
+      "unmapped": 2,
+      "structural": 1
+    },
+    "visible_surface_controls": {
+      "Chat": { "total": 18, "mapped": 2, "unmapped": 16 },
+      "Scrape": { "total": 3, "mapped": 3, "unmapped": 0 },
+      "Data": { "total": 2, "mapped": 0, "unmapped": 2 },
+      "SEO": { "total": 12, "mapped": 0, "unmapped": 12 }
+    },
+    "settings_sections": { "total": 12, "mapped": 11, "unmapped": 1 },
+    "settings_controls": {
+      "Appearance": { "total": 1, "mapped": 1 },
+      "Chat": { "total": 2, "mapped": 2 },
+      "Privacy": { "total": 4, "mapped": 4 },
+      "Scrape": { "total": 3, "mapped": 3 },
+      "Desktop bridge": { "total": 4, "mapped": 4 },
+      "Data & reset": { "total": 1, "mapped": 1 },
+      "About": { "total": 1, "mapped": 1 }
+    },
+    "navigation_actions_observed": 16,
+    "unmapped_total": 33,
+    "inaccessible_regions": 0,
+    "unsupported_triggers": 0,
+    "blocked_requests": 0,
+    "missing_required_regions": []
+  },
+  "resource_guards": {
+    "package": { "admitted": true, "resource_invalid": false, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "decision": "valid" },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "child_failed",
+      "meaning": "The census process returned its expected incomplete-census exit code 2; the resource guard remained valid."
+    }
+  },
+  "evidence_files": [
+    "visibility-census-guest.json",
+    "hosted-package-37993914152-1.jsonl",
+    "hosted-browser-37993914152-1.jsonl",
+    "hosted-guest-37993914152-1.jsonl"
+  ],
+  "limits": [
+    "This proves guest role visibility and observed control inventory on the exact loaded development artifact; it does not prove the behavior of individual controls.",
+    "The workflow runner and census mapping came from checkout a52d27bc; the extension product bytes came from CI source eb5fc114. Do not describe this as current-main product acceptance.",
+    "The census is incomplete and does not establish member/admin visibility or full guest feature health.",
+    "No product defect was reproduced; the workflow failed because 33 observed elements remained unmapped."
+  ]
+}
