@@ -37351,13 +37351,33 @@
           "results": {
             "guest": {
               "status": "unverified",
-              "run_id": "37999961791",
+              "run_id": "38001402806",
               "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
-              "workflow_source_sha": "234c323c7a9dc6a379e9260e2dc6b2edbb874b61",
+              "workflow_source_sha": "7994463db9e4d3573517d210614c1c661edd724f",
               "development_ci_run_id": 37998294843,
               "development_artifact_id": 11647758423,
-              "hosted_result_artifact_id": 11648619964,
+              "hosted_result_artifact_id": 11649197632,
               "build_version": "0.2.456",
+              "resource_valid": false,
+              "failure_stage": "cdp_connect",
+              "failure_code": "owned_cdp_open_timeout",
+              "evidence": [
+                "docs/stabilization/evidence/guest-data-behavior/run38001402806/receipt.json",
+                "docs/stabilization/evidence/guest-data-behavior/run38001402806/data-guest-native-acceptance.sanitized.json"
+              ],
+              "detail": "Guarded guest run imported exact frozen development artifact 11647758423, but Chromium spawned without opening its owned CDP endpoint (owned_cdp_open_timeout, 15,995 ms). The guest resource journal recorded RESOURCE_CPU_BUSY and finalized resourceInvalid=true. Failure occurred at cdp_connect before native panel QA, so T01 remains unverified."
+            }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "run_id": "37999961791",
+              "status": "unverified",
+              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+              "workflow_source_sha": "234c323c7a9dc6a379e9260e2dc6b2edbb874b61",
+              "ci_run_id": 37998294843,
+              "ci_artifact_id": 11647758423,
+              "hosted_result_artifact_id": 11648619964,
               "resource_valid": true,
               "failure_stage": "picker",
               "failure_code": "pointer_target_not_unique",
@@ -37365,10 +37385,8 @@
                 "docs/stabilization/evidence/guest-data-behavior/run37999961791/receipt.json",
                 "docs/stabilization/evidence/guest-data-behavior/run37999961791/data-guest-native-acceptance.sanitized.json"
               ],
-              "detail": "Native guest run reached Data picker target resolution on exact frozen development artifact 11647758423. The driver receipt failed with a non-unique visible pointer target; its saved diagnostic omitted whether there were zero or multiple candidates. No picker action, selector, sign-in save gate, or pattern-write behavior was verified, so T01 remains unverified."
-            }
-          },
-          "result_history": [
+              "detail": "Native guest run reached Data picker target resolution on exact frozen development artifact 11647758423. The driver receipt failed with a non-unique visible pointer target; its saved diagnostic omitted whether there were zero or multiple candidates. No picker action, selector, sign-in save gate, or pattern-write behavior was verified."
+            },
             {
               "mode": "guest",
               "run_id": "37996443185",
@@ -37550,13 +37568,14 @@
           ],
           "run_ids": [
             "37996443185",
-            "37999961791"
+            "37999961791",
+            "38001402806"
           ],
           "retest_status": "not-run",
           "retest_evidence": {
-            "run_id": "37999961791",
-            "report": "docs/stabilization/evidence/guest-data-behavior/run37999961791/receipt.json",
-            "scope": "Driver pointer-target failure before picker interaction. Resource admission was valid; Data guest behavior and save gate remain unverified."
+            "run_id": "38001402806",
+            "report": "docs/stabilization/evidence/guest-data-behavior/run38001402806/receipt.json",
+            "scope": "Chromium failed to open owned CDP and the guest resource guard was invalidated by CPU_BUSY before panel QA. Data guest behavior and save gate remain unverified."
           }
         },
         "member": {
