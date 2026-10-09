@@ -24,8 +24,7 @@ import { resolveBrowserRuntime } from './browser-runtime.mjs';
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const EXT = join(REPO, '.output', 'chrome-mv3');
 const SHOTS = join(REPO, '.output', 'swipe-file-e2e');
-const POST_URL =
-  process.env.MATRX_SWIPE_POST_URL || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+const POST_URL = process.env.MATRX_SWIPE_POST_URL || 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
 const COLLECTION = process.env.MATRX_SWIPE_COLLECTION || 'Hook examples';
 const fail = (m) => {
   console.error(`\n  REFUSED: ${m}\n`);
@@ -54,23 +53,37 @@ const tok = await fetch(`${x.WXT_SUPABASE_URL}/auth/v1/token?grant_type=password
 });
 if (!tok.ok) fail(`sign-in refused (${tok.status})`);
 const session = await tok.json();
-const H = { apikey: x.WXT_SUPABASE_PUBLISHABLE_KEY, Authorization: `Bearer ${session.access_token}` };
+const H = {
+  apikey: x.WXT_SUPABASE_PUBLISHABLE_KEY,
+  Authorization: `Bearer ${session.access_token}`,
+};
 const mem = await (
   await fetch(`${x.WXT_SUPABASE_URL}/rest/v1/rpc/mbr_for_user`, {
     method: 'POST',
-    headers: { ...H, 'Content-Type': 'application/json', 'Content-Profile': 'public', 'Accept-Profile': 'public' },
+    headers: {
+      ...H,
+      'Content-Type': 'application/json',
+      'Content-Profile': 'public',
+      'Accept-Profile': 'public',
+    },
     body: JSON.stringify({ p_container_type: 'organization' }),
   })
 ).json();
 const ids = [...new Set(mem.map((r) => r.container_id ?? r.containerId).filter(Boolean))];
 const orgs = await (
-  await fetch(`${x.WXT_SUPABASE_URL}/rest/v1/organizations?select=id,name&id=in.(${ids.join(',')})`, {
-    headers: { ...H, 'Accept-Profile': 'iam' },
-  })
+  await fetch(
+    `${x.WXT_SUPABASE_URL}/rest/v1/organizations?select=id,name&id=in.(${ids.join(',')})`,
+    {
+      headers: { ...H, 'Accept-Profile': 'iam' },
+    },
+  )
 ).json();
 const want = process.env.MATRX_LADDER_ORGANIZATION_ID;
 const org = want ? orgs.find((o) => o.id === want) : orgs.length === 1 ? orgs[0] : null;
-if (!org) fail(`name an organization via MATRX_LADDER_ORGANIZATION_ID: ${orgs.map((o) => `${o.id} ${o.name}`).join(', ')}`);
+if (!org)
+  fail(
+    `name an organization via MATRX_LADDER_ORGANIZATION_ID: ${orgs.map((o) => `${o.id} ${o.name}`).join(', ')}`,
+  );
 console.log(`  acting in ${org.name}; post ${POST_URL}`);
 
 const { chromium, executablePath } = await resolveBrowserRuntime();
@@ -95,7 +108,13 @@ try {
         ...(backend ? { 'matrx.backend.urlOverride': backend } : {}),
       });
     },
-    [session.access_token, session.expires_in ?? 3600, session.user, org, process.env.MATRX_SWIPE_BACKEND || ''],
+    [
+      session.access_token,
+      session.expires_in ?? 3600,
+      session.user,
+      org,
+      process.env.MATRX_SWIPE_BACKEND || '',
+    ],
   );
   await setup.close();
 
@@ -109,7 +128,8 @@ try {
   const select = pill.getByLabel('Collection', { exact: true });
   const options = await select.locator('option').allTextContents();
   console.log(`  collections offered: ${JSON.stringify(options)}`);
-  if (process.env.MATRX_SWIPE_EXISTING) await select.selectOption({ label: process.env.MATRX_SWIPE_EXISTING });
+  if (process.env.MATRX_SWIPE_EXISTING)
+    await select.selectOption({ label: process.env.MATRX_SWIPE_EXISTING });
   else {
     await select.selectOption({ label: 'New collection…' });
     await pill.getByLabel('New collection name').fill(COLLECTION);
