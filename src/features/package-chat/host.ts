@@ -7,7 +7,6 @@
  */
 
 import { STORAGE_KEYS } from '@/config/env';
-import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
 import { requestMicrophoneGrant } from '@/lib/audio/mic-grant';
 import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
@@ -29,7 +28,6 @@ import type {
   ChatOrganization,
 } from '@ai-matrx/chat/host';
 import { createMemoryNavigation } from '@ai-matrx/chat/host';
-import { registerChatUi } from '@ai-matrx/chat/host/ui-slots';
 import { browserDomContextSource, isBrowserDeviceRef } from './browser-dom-source';
 import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';
@@ -126,8 +124,6 @@ function handOffDeviceTools(calls: readonly ChatDeviceToolHandOff[]): void {
 export async function createExtensionChatHost(): Promise<ChatHost> {
   registerExtensionToolRenderers();
   registerExtensionComposerExtensions();
-  // Read-aloud in the package chat: the extension's Cartesia speaker behind media's ReadAloudButton.
-  registerChatUi({ SpeakerButton });
   const [baseUrl, org] = await Promise.all([getApiBaseUrl(), Promise.resolve(createPanelOrg())]);
   const [initial] = await Promise.all([readStoredAddress(), org.refresh()]);
   return {
