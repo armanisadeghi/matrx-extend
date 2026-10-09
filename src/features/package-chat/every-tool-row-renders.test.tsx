@@ -168,7 +168,10 @@ describe("every browser-tool row config draws through the package's row", () => 
           // A shimmering label carries its gradient inline, from its own text colour.
           for (const el of container.querySelectorAll<HTMLElement>('[style]')) {
             const style = el.getAttribute('style') ?? '';
-            if (/text-fill-color:\s*transparent/.test(style) && !/gradient\([^)]*currentcolor/i.test(style))
+            if (
+              /text-fill-color:\s*transparent/.test(style) &&
+              !/gradient\([^)]*currentcolor/i.test(style)
+            )
               problems.push(`${key} ${status}: transparent text without an inline gradient`);
           }
           cleanup();
