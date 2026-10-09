@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 /**
  * EVERY browser-tool row config this extension registers into the package chat is drawn through the package's
  * real row component in its three states (running, done, error), with args and results shaped like the real
@@ -10,8 +12,6 @@ import { CONFIGURED_ROW_NAMES } from '@/features/chat/tool-display/row-names';
 import type { ToolLifecycleEntry } from '@ai-matrx/chat/agents/types/request.types';
 import { toolRendererRegistry } from '@ai-matrx/chat/tool-call-visualization/registry/registry';
 import { act, cleanup, render } from '@testing-library/react';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { registerExtensionToolRenderers } from './tool-renderers';
 
@@ -49,7 +49,10 @@ function setPath(root: Record<string, unknown>, parts: string[], leaf: unknown):
 }
 
 /** Args/output built from the paths the config itself reads, so each fixture matches what the row looks up. */
-function payloadsFor(cfgJson: string): { args: Record<string, unknown>; output: Record<string, unknown> } {
+function payloadsFor(cfgJson: string): {
+  args: Record<string, unknown>;
+  output: Record<string, unknown>;
+} {
   const args: Record<string, unknown> = {};
   const output: Record<string, unknown> = {
     success: true,
@@ -149,16 +152,24 @@ describe("every browser-tool row config draws through the package's row", () => 
           const text = (container.textContent ?? '').replace(/\d+ms$/, '').trim();
           snapshot[key]![status] = text;
           if (!text) problems.push(`${key} ${status}: no visible text`);
-          if (container.querySelector('[data-generic-fallback]')) problems.push(`${key} ${status}: generic fallback`);
+          if (container.querySelector('[data-generic-fallback]'))
+            problems.push(`${key} ${status}: generic fallback`);
           for (const el of container.querySelectorAll<HTMLElement>('[style]')) {
-            if (/hsl\(\s*var\(/.test(el.getAttribute('style') ?? '')) problems.push(`${key} ${status}: hsl(var()) style`);
+            if (/hsl\(\s*var\(/.test(el.getAttribute('style') ?? ''))
+              problems.push(`${key} ${status}: hsl(var()) style`);
           }
-          for (const el of container.querySelectorAll<HTMLElement>('.text-transparent')) {
-            const cls = el.className;
-            if (/animate-(text-)?shimmer/.test(cls)) problems.push(`${key} ${status}: host-defined shimmer animation`);
-            if (!/bg-gradient-to-r/.test(cls) || !/from-muted-foreground/.test(cls)) {
-              problems.push(`${key} ${status}: transparent text without a token-class gradient`);
-            }
+          for (const el of container.querySelectorAll<HTMLElement>('[class]')) {
+            if (/animate-(text-)?shimmer/.test(el.className))
+              problems.push(`${key} ${status}: host-defined shimmer animation`);
+            // Transparent text depends on a class the host's stylesheet must contain.
+            if (/(^|\s)text-transparent(\s|$)/.test(el.className))
+              problems.push(`${key} ${status}: class-based transparent text`);
+          }
+          // A shimmering label carries its gradient inline, from its own text colour.
+          for (const el of container.querySelectorAll<HTMLElement>('[style]')) {
+            const style = el.getAttribute('style') ?? '';
+            if (/text-fill-color:\s*transparent/.test(style) && !/gradient\([^)]*currentcolor/i.test(style))
+              problems.push(`${key} ${status}: transparent text without an inline gradient`);
           }
           cleanup();
         }
