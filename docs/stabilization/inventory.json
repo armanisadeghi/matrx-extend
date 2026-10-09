@@ -19514,13 +19514,13 @@
           ],
           "steps": [
             "Open Save on a captured page; verify an editable name and closed destination browser, then cancel without a write. Save a second owned capture without a destination and confirm it remains unfiled.",
-            "Open Save on a new capture, search for two registered places, remove one, optionally choose a Library, then Save. Inspect the stored name and exact associations; repeat with No Library.",
+            "Open Save on a new capture, select Projects, scroll with wheel and keyboard to a project below the first visible rows, and select it; also find it by search. Add a second registered place, remove one, optionally choose a Library, then Save. Inspect the stored name and exact associations; repeat with No Library and through File elsewhere.",
             "Cause a controlled unreachable target refusal during landing; inspect the retained capture and retry with another destination."
           ],
           "expected": [
-            "The compact Save dialog opens without loading destination browsing or Libraries until requested. One landing persists the name and only chosen associations, or saves unfiled. A target refusal claims no completed Save and keeps a recoverable capture."
+            "The compact Save dialog opens without loading destination browsing or Libraries until requested. Every project is reachable by scrolling and search in both Save and File elsewhere. One landing persists the name and only chosen associations, or saves unfiled. A target refusal claims no completed Save and keeps a recoverable capture."
           ],
-          "dimensions": ["cancel", "no-destination", "multi-target", "remove", "library", "no-library", "refusal", "reload"],
+          "dimensions": ["cancel", "no-destination", "project-scroll", "project-search", "multi-target", "remove", "library", "no-library", "refusal", "reload"],
           "results": {
             "member": {
               "status": "unverified",

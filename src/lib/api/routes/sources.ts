@@ -234,6 +234,21 @@ export function editSource(
   return post(`/sources/${encodeURIComponent(processedDocumentId)}/edit`, { portions });
 }
 
+/** Update only Source details after a reused landing; no new content version. */
+export function renameSource(
+  processedDocumentId: string,
+  name: string,
+  expectedActor: { userId: string; organizationId: string },
+): Promise<LandingOutcome> {
+  return post(
+    `/sources/${encodeURIComponent(processedDocumentId)}/edit`,
+    { name },
+    {
+      expectedActor,
+    },
+  );
+}
+
 /** Keep and/or file a Source. */
 export function keepSource(
   processedDocumentId: string,

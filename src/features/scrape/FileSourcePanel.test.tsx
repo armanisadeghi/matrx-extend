@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   keepSource: vi.fn(),
   pushNotice: vi.fn(),
+  libraryRead: vi.fn(),
   libraries: [
     { id: 'lib-2', name: 'Reading list', adapter: 'manual' },
     { id: 'lib-1', name: 'Web clips', adapter: 'web_capture' },
@@ -19,7 +20,10 @@ vi.mock('@/lib/supabase/schemas', () => {
     eq: () => chain,
     is: () => chain,
     order: () => chain,
-    limit: async () => ({ data: mocks.libraries, error: null }),
+    limit: async () => {
+      mocks.libraryRead();
+      return { data: mocks.libraries, error: null };
+    },
   };
   return { mediaDb: () => ({ from: () => chain }) };
 });
@@ -67,6 +71,7 @@ beforeEach(() => {
     },
   });
   mocks.pushNotice.mockReset();
+  mocks.libraryRead.mockReset();
   useAuthStore.setState({ user: { id: USER } as never });
   const memory = new Map<string, string>();
   Object.defineProperty(window, 'localStorage', {
@@ -85,13 +90,15 @@ describe('FileSourcePanel — optional filing after the save lands', () => {
     render(
       <FileSourcePanel processedDocumentId={SOURCE} organizationId={ORG} onClose={() => {}} />,
     );
-    await screen.findByRole('option', { name: 'Web clips' });
+    expect(mocks.libraryRead).not.toHaveBeenCalled();
     expect(screen.queryByRole('button', { name: /^File in/ })).toBeNull();
-    // The picker lists the web app's registered places, in the Source's org.
+    expect(screen.queryByRole('button', { name: 'pick Launch plan' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+    expect(screen.queryByRole('button', { name: 'pick Launch plan' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+    // One type is loaded only after that choice, in the Source's org.
     const picker = screen.getByRole('button', { name: 'pick Launch plan' });
-    expect(picker.getAttribute('data-tokens')).toBe(
-      'project,task,scope,research_topic,fc_set,pc_episode,war_room,data_store',
-    );
+    expect(picker.getAttribute('data-tokens')).toBe('project');
     expect(picker.getAttribute('data-org')).toBe(ORG);
   });
 
@@ -99,7 +106,10 @@ describe('FileSourcePanel — optional filing after the save lands', () => {
     render(
       <FileSourcePanel processedDocumentId={SOURCE} organizationId={ORG} onClose={() => {}} />,
     );
+    fireEvent.click(screen.getByRole('button', { name: 'Add to Library' }));
     await screen.findByRole('option', { name: 'Web clips' });
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
     fireEvent.click(screen.getByRole('button', { name: 'pick Launch plan' }));
     fireEvent.change(screen.getByLabelText('Library'), { target: { value: 'lib-1' } });
     fireEvent.click(screen.getByRole('button', { name: 'File in 2 places' }));
@@ -134,6 +144,8 @@ describe('FileSourcePanel — optional filing after the save lands', () => {
     render(
       <FileSourcePanel processedDocumentId={SOURCE} organizationId={ORG} onClose={() => {}} />,
     );
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
     fireEvent.click(await screen.findByRole('button', { name: 'pick Launch plan' }));
     fireEvent.click(screen.getByRole('button', { name: 'File in 1 place' }));
     expect(await screen.findByText('You cannot file into that project.')).toBeTruthy();

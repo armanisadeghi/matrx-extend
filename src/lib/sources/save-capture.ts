@@ -18,7 +18,12 @@
  */
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
-import { type LandedSource, type LandingRefusal, landSource } from '@/lib/api/routes/sources';
+import {
+  type AttachTarget,
+  type LandedSource,
+  type LandingRefusal,
+  landSource,
+} from '@/lib/api/routes/sources';
 import type { SourceLandingBody } from '@/lib/api/routes/sources';
 import { getCurrentUser } from '@/lib/auth/flow';
 import type { SoupResult } from '@/lib/scrape/pipeline';
@@ -72,7 +77,7 @@ function utf8ToBase64(text: string): string {
   return btoa(binary);
 }
 
-function captureName(soup: SoupResult): string {
+export function captureName(soup: SoupResult): string {
   const title = soup.article.title?.trim() || soup.metadata.title?.trim();
   if (title) return title;
   try {
@@ -108,6 +113,8 @@ export function structuredFromSoup(soup: SoupResult, patternId?: string): Record
 /** Everything the door needs that is known at capture time. Null = nothing to save. */
 export interface CaptureSaveOptions {
   patternId?: string;
+  name?: string;
+  attachTo?: AttachTarget[];
   /**
    * The capture as it came off the page, before local edits — kept as the
    * Source's original. Defaults to `soup` when nothing was edited.
@@ -133,7 +140,7 @@ export function prepareLanding(
     source_kind: 'scrape_parsed_page',
     source_id: null,
     canonical_identity: canonicalUrl(soup.url),
-    name: captureName(soup),
+    name: extra.name?.trim() || captureName(soup),
     mime_type: from === 'article_markdown' ? 'text/markdown' : 'text/plain',
     portions,
     original: {
@@ -147,7 +154,7 @@ export function prepareLanding(
       captured_at: new Date(soup.capturedAt || Date.now()).toISOString(),
       final_url: soup.url || null,
     },
-    attach_to: [],
+    attach_to: extra.attachTo ?? [],
     keep: true,
   };
 }

@@ -18,6 +18,7 @@ import { installWebLocksForTest } from '../helpers/web-locks';
 const mocks = vi.hoisted(() => ({
   apiPost: vi.fn(),
   saveSeoAudit: vi.fn(),
+  requireOrg: vi.fn(),
   organizationId: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f',
 }));
 
@@ -58,9 +59,29 @@ vi.mock('@/lib/supabase/schemas', () => ({
   }),
 }));
 vi.mock('@/lib/api/routes/auth', () => ({
-  requireRequestOrganizationId: vi.fn(async () => mocks.organizationId),
+  requireRequestOrganizationId: mocks.requireOrg,
 }));
 vi.mock('@/lib/supabase/queries', () => ({ saveSeoAudit: mocks.saveSeoAudit }));
+vi.mock('@/lib/sources/associations-store', () => ({ getAssociationsStore: () => ({}) }));
+vi.mock('@ai-matrx/associations/react', () => ({
+  AssociationsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  attachedKey: (token: string, id: string) => `${token}:${id}`,
+  UniversalAssociationPicker: ({
+    onAttach,
+    tokens,
+  }: {
+    onAttach: (token: string, id: string, title: string) => Promise<unknown>;
+    tokens: string[];
+  }) => (
+    <button
+      type="button"
+      data-tokens={tokens.join(',')}
+      onClick={() => void onAttach('project', 'project-1', 'Launch plan')}
+    >
+      Pick Launch plan
+    </button>
+  ),
+}));
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => ({
     url: 'https://docs.example.com/guide',
@@ -110,6 +131,7 @@ import {
   retryUnsavedCapture,
   saveCaptureAsSource,
 } from '@/lib/sources/save-capture';
+import { useAuthStore } from '@/state/auth';
 import { useScrapeStore } from '@/state/scrape';
 
 const soup = {
@@ -142,6 +164,8 @@ const listeners = new Set<Listener>();
 beforeEach(async () => {
   mocks.apiPost.mockReset();
   mocks.saveSeoAudit.mockReset().mockResolvedValue({ id: 'audit-1' });
+  mocks.requireOrg.mockReset().mockImplementation(async () => mocks.organizationId);
+  useAuthStore.setState({ user: { id: '87a6e699-3622-4869-8843-d0867456c0dd' } as never });
   mocks.organizationId = '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f';
   await chrome.storage.local.remove(UNSAVED_CAPTURES_KEY);
   listeners.clear();
@@ -206,6 +230,11 @@ async function switchWorkspace(organizationId: string) {
   });
 }
 
+async function startSave() {
+  fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+  fireEvent.click(await screen.findByRole('button', { name: /^Save Source$/ }));
+}
+
 function deferredApiResponse() {
   let resolve!: (value: unknown) => void;
   const promise = new Promise<unknown>((done) => {
@@ -215,11 +244,118 @@ function deferredApiResponse() {
 }
 
 describe('Save never loses input', () => {
+  it('opens a named Save form without a request, then lands the edited name in one request', async () => {
+    mocks.apiPost.mockResolvedValue(landedResponse);
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    expect(((await screen.findByLabelText('Source name')) as HTMLInputElement).value).toBe('Guide');
+    expect(mocks.apiPost).not.toHaveBeenCalled();
+    expect(screen.queryByRole('button', { name: 'Projects' })).toBeNull();
+    fireEvent.change(screen.getByLabelText('Source name'), { target: { value: 'My research' } });
+    fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+    expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({ name: 'My research', attach_to: [] });
+    expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
+    expect(screen.queryByTestId('file-source-panel')).toBeNull();
+  });
+
+  it('loads only the chosen place type and attaches the selected project in the landing request', async () => {
+    mocks.apiPost.mockResolvedValue(landedResponse);
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await screen.findByLabelText('Source name');
+    expect(screen.queryByRole('button', { name: 'Pick Launch plan' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+    expect(screen.queryByRole('button', { name: 'Pick Launch plan' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+    const picker = screen.getByRole('button', { name: 'Pick Launch plan' });
+    expect(picker.getAttribute('data-tokens')).toBe('project');
+    fireEvent.click(picker);
+    expect(screen.getByText('Launch plan')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+    expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({
+      attach_to: [{ entity_type: 'project', entity_id: 'project-1' }],
+    });
+  });
+
+  it('uses details-only edit for a custom name when landing reuses existing content', async () => {
+    mocks.apiPost
+      .mockResolvedValueOnce({
+        ...landedResponse,
+        data: { ...landedResponse.data, reused_existing: true },
+      })
+      .mockResolvedValueOnce(landedResponse);
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    fireEvent.change(await screen.findByLabelText('Source name'), {
+      target: { value: 'Renamed guide' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(2));
+    expect(mocks.apiPost.mock.calls[0]?.[0]).toBe('/sources/land');
+    expect(mocks.apiPost.mock.calls[1]?.[0]).toBe(
+      '/sources/6b8c38dd-6d68-4824-b664-a380b7611627/edit',
+    );
+    expect(mocks.apiPost.mock.calls[1]?.[1]).toEqual({ name: 'Renamed guide' });
+  });
+
+  it('keeps the captured title when the name field is cleared on a reused landing', async () => {
+    mocks.apiPost.mockResolvedValue({
+      ...landedResponse,
+      data: { ...landedResponse.data, reused_existing: true },
+    });
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    fireEvent.change(await screen.findByLabelText('Source name'), { target: { value: '  ' } });
+    fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+    expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({ name: 'Guide' });
+    expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
+    expect(screen.queryByLabelText('Retry Source name')).toBeNull();
+  });
+
+  it('keeps a reused Source saved and offers a details-only retry when renaming fails', async () => {
+    mocks.apiPost
+      .mockResolvedValueOnce({
+        ...landedResponse,
+        data: { ...landedResponse.data, reused_existing: true },
+      })
+      .mockResolvedValueOnce({ ok: false, status: 503, error: 'Unavailable' })
+      .mockResolvedValueOnce(landedResponse);
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    fireEvent.change(await screen.findByLabelText('Source name'), {
+      target: { value: 'Correct name' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
+    expect(await screen.findByText(/Source saved, but its name could not be updated/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^Saved$/ })).toBeTruthy();
+    expect((screen.getByLabelText('Retry Source name') as HTMLInputElement).value).toBe(
+      'Correct name',
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Retry name' }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(3));
+    expect(mocks.apiPost.mock.calls[2]?.[0]).toMatch(/\/sources\/.*\/edit/);
+    expect(mocks.apiPost.mock.calls[2]?.[1]).toEqual({ name: 'Correct name' });
+    await waitFor(() => expect(screen.queryByLabelText('Retry Source name')).toBeNull());
+  });
+
+  it('keeps the Save form usable without an organization and shows the existing refusal', async () => {
+    mocks.requireOrg.mockRejectedValue(new Error('Choose an organization'));
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    expect(await screen.findByLabelText('Source name')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
+    expect(await screen.findByText(/choose a workspace and retry/i)).toBeTruthy();
+    expect(mocks.apiPost).not.toHaveBeenCalled();
+  });
+
   it('server unreachable → retry card, capture kept, unsaved-edits guard armed; retry lands', async () => {
     mocks.apiPost.mockResolvedValue({ ok: false, status: 0, error: 'Failed to fetch' });
     render(<ScrapeView />);
 
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
 
     // 1. The retry card, with the sentence.
     expect(await screen.findByText(/Not yet a Source — kept on this device/)).toBeTruthy();
@@ -328,7 +464,7 @@ describe('Save never loses input', () => {
   it("Retry for the open page sends the panel's CURRENT capture — edits after the failed save included", async () => {
     mocks.apiPost.mockResolvedValue({ ok: false, status: 0, error: 'Failed to fetch' });
     render(<ScrapeView />);
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     expect(await screen.findByText(/Not yet a Source — kept on this device/)).toBeTruthy();
     // The person keeps editing after the save failed (a real edit renders
     // before the next click, hence act).
@@ -383,7 +519,7 @@ describe('Save never loses input', () => {
       }),
     });
     render(<ScrapeView />);
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     await waitFor(async () => expect(await listUnsavedCaptures()).toHaveLength(1));
     expect((await listUnsavedCaptures())[0]?.lastRefusal.message).toContain(
       'does not say where it is',
@@ -396,7 +532,7 @@ describe('Save never loses input', () => {
     // A save that failed in an earlier session of the panel.
     mocks.apiPost.mockResolvedValue({ ok: false, status: 0, error: 'Failed to fetch' });
     const first = render(<ScrapeView />);
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     expect(await screen.findByText(/Not yet a Source — kept on this device/)).toBeTruthy();
     first.unmount();
     listeners.clear(); // no change event will announce it to the next panel
@@ -430,11 +566,14 @@ describe('Save never loses input', () => {
       },
     });
     render(<ScrapeView />);
-    // Filing is offered AFTER the save lands — never a step before it.
+    // Filing stays optional and opens only if requested.
     expect(screen.queryByTestId('file-source-panel')).toBeNull();
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     expect(await screen.findByText(/opens in the web app/)).toBeTruthy();
+    fireEvent.click(screen.getByText('Save details'));
     expect(screen.getByText('Heads up from the door.')).toBeTruthy();
+    expect(screen.queryByTestId('file-source-panel')).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'File elsewhere' }));
     expect(screen.getByTestId('file-source-panel').textContent).toBe(
       `6b8c38dd-6d68-4824-b664-a380b7611627@${mocks.organizationId}`,
     );
@@ -447,7 +586,7 @@ describe('Save never loses input', () => {
   it('switching workspaces clears the local Saved button and Source link without dropping the capture', async () => {
     mocks.apiPost.mockResolvedValue(landedResponse);
     render(<ScrapeView />);
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
     expect(screen.getByRole('button', { name: /Open this Source/ })).toBeTruthy();
 
@@ -464,7 +603,7 @@ describe('Save never loses input', () => {
     const pending = deferredApiResponse();
     mocks.apiPost.mockReturnValueOnce(pending.promise);
     render(<ScrapeView />);
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
     expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({
       organization_id: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f',
@@ -485,7 +624,7 @@ describe('Save never loses input', () => {
         processed_document_id: 'c8a1cd55-3f22-44d1-bda6-1bb2d2777aae',
       },
     });
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(2));
     expect(mocks.apiPost.mock.calls[1]?.[1]).toMatchObject({
       organization_id: OTHER_ORGANIZATION_ID,
@@ -499,11 +638,11 @@ describe('Save never loses input', () => {
       .mockReturnValueOnce(oldSave.promise)
       .mockResolvedValueOnce({ ok: false, status: 0, error: 'Failed to fetch' });
     render(<ScrapeView />);
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
 
     await switchWorkspace(OTHER_ORGANIZATION_ID);
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(2));
     expect(mocks.apiPost.mock.calls[1]?.[1]).toMatchObject({
       organization_id: OTHER_ORGANIZATION_ID,
@@ -526,7 +665,7 @@ describe('Save never loses input', () => {
       .mockReturnValueOnce(oldSave.promise)
       .mockResolvedValueOnce({ ok: false, status: 0, error: 'Failed to fetch' });
     render(<ScrapeView />);
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
 
     await switchWorkspace(OTHER_ORGANIZATION_ID);
@@ -535,7 +674,7 @@ describe('Save never loses input', () => {
         .getState()
         .editArticleMarkdown('# Guide\n\nB changed the intake checklist.\n\n## Install\n\nRun it.'),
     );
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     await waitFor(async () => expect(await listUnsavedCaptures()).toHaveLength(1));
     const before = (await listUnsavedCaptures())[0];
     expect(before?.organizationId).toBe(OTHER_ORGANIZATION_ID);
@@ -634,7 +773,7 @@ describe('Save never loses input', () => {
       .mockRejectedValueOnce(new Error('Device storage full'));
     render(<ScrapeView />);
     try {
-      fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+      await startSave();
       expect(await screen.findByText(/not sent or saved on this device/)).toBeTruthy();
       expect(screen.getByText(/Keep this panel open/)).toBeTruthy();
       expect(useScrapeStore.getState().edited).toBe(true);
@@ -646,7 +785,7 @@ describe('Save never loses input', () => {
       set.mockRestore();
     }
     mocks.apiPost.mockResolvedValueOnce(landedResponse);
-    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await startSave();
     expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
     expect(
       mocks.apiPost.mock.calls[0]?.[1].portions.map((p: { text: string }) => p.text).join(' '),

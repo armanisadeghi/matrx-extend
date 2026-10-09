@@ -3,6 +3,7 @@ import { CopyButton, CopyMenu } from '@/components/CopyMenu';
 import { MarkdownView } from '@/components/MarkdownView';
 import { DiagnoseCard, DiagnoseLauncher } from '@/features/scrape/DiagnoseCard';
 import { FileSourcePanel } from '@/features/scrape/FileSourcePanel';
+import { SaveSourceForm } from '@/features/scrape/SaveSourceForm';
 import { UnsavedCapturesCard } from '@/features/scrape/UnsavedCapturesCard';
 import { SeoDetails } from '@/features/seo/SeoDetails';
 import {
@@ -13,6 +14,7 @@ import {
 import { usePageRecognition } from '@/hooks/use-page-recognition';
 import { usePageScrollSync } from '@/hooks/use-page-scroll-sync';
 import { useScrape } from '@/hooks/use-scrape';
+import { renameSource } from '@/lib/api/routes/sources';
 import { getActiveOrganizationId, onActiveOrganizationChange } from '@/lib/org/active-org';
 import type { CaptureError, CaptureErrorAction } from '@/lib/scrape/capture-error';
 import { partitionImages } from '@/lib/scrape/classify-images';
@@ -29,6 +31,7 @@ import { articleToMarkdown } from '@/lib/scrape/to-markdown';
 import type { SeoAudit } from '@/lib/seo/audit';
 import { toStoredSignals } from '@/lib/seo/diff';
 import { canonicalUrl } from '@/lib/sources/canonical';
+import { captureName } from '@/lib/sources/save-capture';
 import { sourceWebAppUrl } from '@/lib/sources/web-app-link';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/state/auth';
@@ -101,7 +104,13 @@ export function ScrapeView() {
     isCurrentPageIdentity(capturedPageKey) && capturedPageKey === tab.pageKey;
   const current = captureIsCurrent ? captured : null;
   const [saving, setSaving] = useState(false);
+  const [saveFormOpen, setSaveFormOpen] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [renameRecovery, setRenameRecovery] = useState<{
+    id: string;
+    name: string;
+    organizationId: string;
+  } | null>(null);
   const [activeOrganizationId, setActiveOrganizationId] = useState<string | null>(null);
   const organizationEpochRef = useRef(0);
   const saveRunRef = useRef(0);
@@ -119,7 +128,7 @@ export function ScrapeView() {
     !edited;
   /** URLs the unsaved-retry card owns; for those, its Retry is the one save action. */
   const [unsavedUrls, setUnsavedUrls] = useState<string[]>([]);
-  /** The landed Source whose optional filing is open (after the save, never before it). */
+  /** Optional additional filing is opened only when requested after a save. */
   const [filingFor, setFilingFor] = useState<string | null>(null);
   // Retry must replay the mode the user actually picked — activeMode is
   // cleared in the hook's finally, so the error card's fallback was ALWAYS
@@ -146,6 +155,7 @@ export function ScrapeView() {
       // The old Save may still be finishing in its original workspace. Let
       // this workspace offer Save now; the old completion cannot own its UI.
       setSaving(false);
+      setSaveFormOpen(false);
       setSaveError(null);
     });
     void getActiveOrganizationId()
@@ -206,6 +216,8 @@ export function ScrapeView() {
     // A fresh capture is unsaved by definition — the Saved badge used to
     // persist across re-captures of the same URL.
     setSavedSource(null);
+    setRenameRecovery(null);
+    setSaveFormOpen(false);
     setSaveError(null);
     void captureActiveTab({ mode });
   };
@@ -217,6 +229,8 @@ export function ScrapeView() {
     setEditingArticle(false);
     lastModeRef.current = mode;
     setSavedSource(null);
+    setRenameRecovery(null);
+    setSaveFormOpen(false);
     setSaveError(null);
     void captureActiveTab({ mode });
   };
@@ -224,16 +238,25 @@ export function ScrapeView() {
   // A draft from an earlier document stays on this device, but is never
   // presented as the active page's content or admitted to its Save controls.
 
-  const handleSave = async () => {
+  const openSaveForm = async () => {
+    if (current && captureIsCurrent) setSaveFormOpen(true);
+  };
+
+  const handleSave = async (
+    name: string,
+    attachTo: import('@/lib/api/routes/sources').AttachTarget[],
+  ) => {
     if (!current || !captureIsCurrent) return;
     const run = ++saveRunRef.current;
     const capture = current;
+    const effectiveName = name.trim() || captureName(capture);
     const organizationEpoch = organizationEpochRef.current;
     setSaving(true);
     setSavedSource(null);
     setSaveError(null);
+    setRenameRecovery(null);
     try {
-      const outcome = await save();
+      const outcome = await save({ name: effectiveName, attachTo });
       if (!outcome) return;
       if (
         run !== saveRunRef.current ||
@@ -242,13 +265,44 @@ export function ScrapeView() {
       )
         return;
       if (outcome.status === 'landed') {
+        const notices = outcome.landed.notices.map((notice) => notice.message);
+        // Duplicate landing preserves its existing title. A deliberately edited
+        // title therefore needs the details-only edit endpoint on this path.
+        let renameFailed = false;
+        if (outcome.landed.reused_existing && effectiveName !== captureName(capture)) {
+          const userId = useAuthStore.getState().user?.id;
+          const renamed = userId
+            ? await renameSource(outcome.landed.processed_document_id, effectiveName, {
+                userId,
+                organizationId: outcome.organizationId,
+              })
+            : null;
+          renameFailed = !renamed?.ok;
+        }
+        if (
+          run !== saveRunRef.current ||
+          organizationEpoch !== organizationEpochRef.current ||
+          useScrapeStore.getState().current !== capture ||
+          !isCurrentPageIdentity(capturedPageKey)
+        )
+          return;
+        if (renameFailed) {
+          setSaveError('Source saved, but its name could not be updated.');
+          setRenameRecovery({
+            id: outcome.landed.processed_document_id,
+            name: effectiveName,
+            organizationId: outcome.organizationId,
+          });
+        }
         setSavedSource({
           id: outcome.landed.processed_document_id,
-          notices: outcome.landed.notices.map((n) => n.message),
+          notices,
           organizationId: outcome.organizationId,
           capture,
         });
-        setFilingFor(outcome.landed.processed_document_id);
+        setSaveFormOpen(false);
+      } else if (outcome.status === 'unsaved' && outcome.persisted) {
+        setSaveFormOpen(false);
       } else if (outcome.status === 'unsaved' && outcome.persisted === false) {
         setSaveError(outcome.unsaved.lastRefusal.message);
       } else if (outcome.status === 'empty' && organizationEpoch === organizationEpochRef.current) {
@@ -274,6 +328,29 @@ export function ScrapeView() {
     } finally {
       if (run === saveRunRef.current) setSaving(false);
     }
+  };
+
+  const retryRename = async () => {
+    if (!renameRecovery || !savedSource || renameRecovery.id !== savedSource.id) return;
+    const userId = useAuthStore.getState().user?.id;
+    if (!userId) {
+      setSaveError('Sign in to update this Source name.');
+      return;
+    }
+    setSaving(true);
+    const target = renameRecovery;
+    const epoch = organizationEpochRef.current;
+    const outcome = await renameSource(target.id, target.name.trim(), {
+      userId,
+      organizationId: target.organizationId,
+    });
+    if (epoch !== organizationEpochRef.current || target.organizationId !== activeOrganizationId)
+      return;
+    setSaving(false);
+    if (outcome.ok) {
+      setRenameRecovery(null);
+      setSaveError(null);
+    } else setSaveError('Source saved, but its name could not be updated. Try again.');
   };
 
   // SOURCE-CONVERGENCE §1 rule 6: a web address whose content has not landed is
@@ -343,7 +420,14 @@ export function ScrapeView() {
         )}
         <UnsavedCapturesCard
           onUrlsChange={setUnsavedUrls}
-          currentPage={current ? { url: current.url, save: handleSave } : null}
+          currentPage={
+            current
+              ? {
+                  url: current.url,
+                  save: (row) => handleSave(row.prepared.name, row.prepared.attach_to),
+                }
+              : null
+          }
           onLanded={(url, id, organizationId) => {
             if (current && url === current.url) {
               setSavedSource({ id, notices: [], organizationId, capture: current });
@@ -385,7 +469,7 @@ export function ScrapeView() {
               <button
                 type="button"
                 className="shrink-0 font-medium text-primary underline-offset-2 hover:underline"
-                onClick={() => void handleSave()}
+                onClick={openSaveForm}
               >
                 Save as a Source
               </button>
@@ -763,7 +847,7 @@ export function ScrapeView() {
         </div>
         {current && !cardHoldsPage && (
           <Button
-            onClick={() => void handleSave()}
+            onClick={openSaveForm}
             disabled={saving}
             variant="secondary"
             className="rounded-full"
@@ -773,8 +857,45 @@ export function ScrapeView() {
           </Button>
         )}
       </div>
-      {saveError && (
+      {saveFormOpen && current && (
+        <div className="fixed inset-0 z-40 flex items-end bg-black/20 p-2" role="presentation">
+          <div className="w-full space-y-1">
+            <SaveSourceForm
+              key={`${current.url}:${activeOrganizationId}`}
+              initialName={captureName(current)}
+              organizationId={activeOrganizationId}
+              saving={saving}
+              onSave={(name, attachTo) => void handleSave(name, attachTo)}
+              onClose={() => setSaveFormOpen(false)}
+            />
+            {saveError && (
+              <p className="rounded-md bg-card px-2 py-1 text-xs text-red-600">{saveError}</p>
+            )}
+          </div>
+        </div>
+      )}
+      {saveError && !saveFormOpen && (
         <div className="px-3 pb-1 text-[11px] text-red-600 dark:text-red-400">{saveError}</div>
+      )}
+      {saved && renameRecovery && (
+        <div className="flex items-center gap-1 px-3 pb-1">
+          <input
+            aria-label="Retry Source name"
+            value={renameRecovery.name}
+            onChange={(event) => setRenameRecovery({ ...renameRecovery, name: event.target.value })}
+            disabled={saving}
+            className="h-7 min-w-0 flex-1 rounded-md border border-border bg-background px-2 text-xs"
+          />
+          <Button
+            type="button"
+            size="sm"
+            className="h-7"
+            disabled={saving || !renameRecovery.name.trim()}
+            onClick={() => void retryRename()}
+          >
+            Retry name
+          </Button>
+        </div>
       )}
       {saved && savedSource && (
         <div className="space-y-1 px-3 pb-2 text-[11px] text-muted-foreground">
@@ -785,9 +906,25 @@ export function ScrapeView() {
           >
             <ExternalLink className="size-3" /> Open this Source (opens in the web app)
           </button>
-          {savedSource.notices.map((message) => (
-            <p key={message}>{message}</p>
-          ))}
+          {savedSource.notices.length > 0 && (
+            <details className="rounded-md border border-border px-2 py-1">
+              <summary className="cursor-pointer">Save details</summary>
+              {savedSource.notices.map((message) => (
+                <p key={message} className="mt-1">
+                  {message}
+                </p>
+              ))}
+            </details>
+          )}
+          {filingFor !== savedSource.id && (
+            <button
+              type="button"
+              className="text-primary underline-offset-2 hover:underline"
+              onClick={() => setFilingFor(savedSource.id)}
+            >
+              File elsewhere
+            </button>
+          )}
           {filingFor === savedSource.id && (
             <FileSourcePanel
               processedDocumentId={savedSource.id}

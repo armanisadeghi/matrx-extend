@@ -301,7 +301,13 @@ export function useScrape() {
    * earlier workspace must not silently mark the current draft saved.
    */
   const save = useCallback(
-    async (extra: { patternId?: string } = {}): Promise<SaveOutcome | null> => {
+    async (
+      extra: {
+        patternId?: string;
+        name?: string;
+        attachTo?: import('@/lib/api/routes/sources').AttachTarget[];
+      } = {},
+    ): Promise<SaveOutcome | null> => {
       if (!current || !isCurrentPageIdentity(useScrapeStore.getState().pageKey)) return null;
       // Text and collectors from the (possibly edited) capture; the untouched
       // capture is the original; edited article text wins over the old HTML.
@@ -314,21 +320,24 @@ export function useScrape() {
       // The normalized wbx_seo_audit row powers the SEO tab's "Previously
       // audited" recognition. It is a companion write, not the save itself —
       // but when it fails the person is TOLD, never left believing it happened.
-      const audit = await saveSeoAudit({
+      void saveSeoAudit({
         url: current.url,
         organizationId: outcome.organizationId,
         signals: current.seo,
         flesch_reading_ease: current.seo.flesch_reading_ease,
         word_count: current.seo.word_count,
-      }).catch(() => null);
-      if (!audit) {
-        pushNotice({
-          tone: 'warning',
-          title: 'SEO audit not recorded',
-          message:
-            'The page is now a Source, but its SEO audit was not recorded, so the SEO tab will not show it as previously audited. Open the SEO tab and press Save to record it.',
+      })
+        .catch(() => null)
+        .then((audit) => {
+          if (!audit) {
+            pushNotice({
+              tone: 'warning',
+              title: 'SEO audit not recorded',
+              message:
+                'The page is now a Source, but its SEO audit was not recorded, so the SEO tab will not show it as previously audited. Open the SEO tab and press Save to record it.',
+            });
+          }
         });
-      }
       return outcome;
     },
     [current, original, articleEdited],

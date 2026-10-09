@@ -42,8 +42,8 @@ vi.mock('@/hooks/use-active-tab', () => ({
 }));
 vi.mock('@/lib/chat/active-tab', () => ({ resolveActiveTab: vi.fn(async () => null) }));
 
-import { buildChatContextValues } from '@/lib/chat/context';
 import { ContextRulesComposerChip } from '@/features/chat/ContextRulesComposerChip';
+import { buildChatContextValues } from '@/lib/chat/context';
 import { useAuthStore } from '@/state/auth';
 import { useChatStore } from '@/state/chat';
 import {
