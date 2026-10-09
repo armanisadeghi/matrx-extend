@@ -48,7 +48,7 @@
       "T28",
       "T67"
     ],
-    "separate_case_result": "T04 also failed on a rendered-theme mismatch; it is separate from the T40 recheck error."
+    "separate_case_result": "T04's rendering comparator returned false at baseline; source review found the comparator passed an invalid color expression for the design-system token, so no product rendering mismatch is established."
   },
   "diagnosis": {
     "exact_boundary": "runFullExtensionRecheck() catches an unexpected callback exception in tests/browser/settings-full-extension-rechecks.mjs and previously recorded only the generic full_extension_recheck_exception category.",
@@ -267,7 +267,7 @@
       "expected": "For selected/stored Dark with dark class and systemDark=false, rendered background should match the Dark theme.",
       "actual": "renderedBackgroundMatches=false while selected=Dark, stored=dark, darkClass=true, systemDark=false.",
       "boundary": "Warm baseline before any T04 theme change or reload; failure prevents theme cycle and full-extension preference check.",
-      "triage": "Potential separate rendering defect; not a duplicate of EXT-D-0186 repeated target reuse. One hosted observation only; no defect claim."
+      "triage": "Test measurement artifact, not a confirmed product regression. The comparator assigned bare var(--background) to a CSS backgroundColor probe, while the exact frozen artifact defines --background as HSL channels (including .dark{--background:240 4% 16%}) and its body rule uses hsl(var(--background)). The bare token is invalid as a CSS color, so the expected probe background resolves transparently and renderedBackgroundMatches can be false even when the body matches the theme. The receipt did not include computed color values, so actual rendered appearance remains unverified until the corrected native probe."
     }
   },
   "inventory_disposition": "Keep EXT-F-1003-T40 partial; warm and panel-reload controls plus OFF baseline restoration passed, while background capture traffic, OFF no-traffic behavior, full-extension reload recheck, and member/admin axes remain unverified.",
@@ -337,6 +337,14 @@
         "focused_tests": "6 passed",
         "peer_review": "PASS",
         "mutation": "plant.py removed the absent-theme restoration call; both absent-baseline cases failed with theme_probe_wait_not_observed. A second plant replaced field-only deletion with clearing the entire state; the sibling-preservation test failed on its `keep-me` sentinel. A third plant left a settings key where the original key was absent; the key-absence case failed its storage baseline wait. Each mutation was restored byte-identically."
+      },
+      "measurement_fix": {
+        "status": "implemented_pending_peer_review",
+        "old_expression": "var(--background)",
+        "correct_expression": "hsl(var(--background))",
+        "basis": "Frozen development artifact 11643292724 CSS sets --background to HSL channels and applies background-color:hsl(var(--background)) to body.",
+        "forcing_test": "Capture the actual observation expression and require hsl(var(--background)); this fails if the old bare token is restored.",
+        "hosted_verification": "not run; actual appearance remains unverified"
       }
     }
   }

@@ -4,6 +4,7 @@ import { runInNewContext } from 'node:vm';
 import {
   GUEST_PREFERENCES,
   guestChatDefaultMatches,
+  observeGuestPreference,
   preferenceMatches,
   runGuestThemeRenderingProbe,
 } from './settings-guest-preference-batch.mjs';
@@ -147,6 +148,20 @@ test('guest Settings preference evidence requires matching visible and persisted
         );
     }
   }
+});
+
+test('theme appearance probe resolves the product HSL channel token as a CSS color', async () => {
+  const preference = GUEST_PREFERENCES.find((candidate) => candidate.key === 'theme');
+  let script;
+  await observeGuestPreference({}, preference, {
+    evaluate: async (_panel, expression) => {
+      script = expression;
+      return null;
+    },
+  });
+
+  const backgroundColor = script.match(/probe\.style\.backgroundColor = '([^']+)'/)?.[1];
+  assert.equal(backgroundColor, 'hsl(var(--background))');
 });
 
 test('isolated guest theme probe captures appearance mismatch and restores without reloading extension', async () => {

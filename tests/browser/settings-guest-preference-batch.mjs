@@ -119,7 +119,7 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
       probe.style.position = 'fixed';
       probe.style.visibility = 'hidden';
       probe.style.pointerEvents = 'none';
-      probe.style.backgroundColor = 'var(--background)';
+      probe.style.backgroundColor = 'hsl(var(--background))';
       document.body.appendChild(probe);
       const expected = getComputedStyle(probe).backgroundColor;
       const body = getComputedStyle(document.body).backgroundColor;
