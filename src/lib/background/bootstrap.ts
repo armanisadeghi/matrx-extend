@@ -68,6 +68,7 @@ import {
 } from '@/lib/credentials/capture-candidates';
 import { registerGeneratedPasswordHost } from '@/lib/credentials/generation-host';
 import { registerInlineCredentialSuggestionHost } from '@/lib/credentials/inline-suggestions-host';
+import { registerGuidedCaptureHost } from '@/lib/guided-capture/host';
 import { broadcast, on } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import { matchesAllowedOrigin } from '@/lib/origin-allowlist';
@@ -82,7 +83,6 @@ import {
 } from '@/lib/stream/offscreen-proxy';
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
-import { registerGuidedCaptureHost } from '@/lib/guided-capture/host';
 import { registerSwipeFileHost } from '@/lib/swipe-file/host';
 import { deliverToolResult } from '@/lib/tools/deliver-tool-result';
 import {

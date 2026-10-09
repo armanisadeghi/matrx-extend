@@ -117,7 +117,8 @@ export function mountGuidedOverlay(): void {
       }
       port.postMessage(m);
     } catch {
-      if (job) dispatch({ type: 'failed', sentence: 'Matrx was updated. Reload this page to continue.' });
+      if (job)
+        dispatch({ type: 'failed', sentence: 'Matrx was updated. Reload this page to continue.' });
     }
   }
 

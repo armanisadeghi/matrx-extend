@@ -55,9 +55,7 @@ async function forgetTab(tabId: number): Promise<void> {
   await setOne(GUIDED_TABS_KEY, tabs, 'session');
 }
 
-export type OpenGuidedResult =
-  | { ok: true; tabId: number }
-  | { ok: false; sentence: string };
+export type OpenGuidedResult = { ok: true; tabId: number } | { ok: false; sentence: string };
 
 /**
  * Open the job's page in front of the person and remember the tab.
@@ -121,7 +119,10 @@ export async function fileGuidedCapture(
   try {
     const row = await getHandoff(job.handoffId);
     if (!row) {
-      return { t: 'failed', sentence: 'This capture is no longer in your list. Start it again from the app.' };
+      return {
+        t: 'failed',
+        sentence: 'This capture is no longer in your list. Start it again from the app.',
+      };
     }
     if (row.status === 'captured') {
       return { t: 'failed', sentence: 'This page was already captured.' };
@@ -130,7 +131,8 @@ export async function fileGuidedCapture(
     if (payload.text.trim().length < 40 && payload.itemCount === 0) {
       return {
         t: 'failed',
-        sentence: 'There is nothing on this page to capture yet. Scroll until posts show up, then press Capture again.',
+        sentence:
+          'There is nothing on this page to capture yet. Scroll until posts show up, then press Capture again.',
       };
     }
     const posted = await postCaptureResult(job.handoffId, {
@@ -153,12 +155,17 @@ export async function fileGuidedCapture(
       t: 'filed',
       chars: payload.text.length,
       items: payload.itemCount,
-      notice: posted.data.notices.length ? withLandingNotices('', posted.data.notices).trim() || null : null,
+      notice: posted.data.notices.length
+        ? withLandingNotices('', posted.data.notices).trim() || null
+        : null,
     };
   } catch (err) {
     if (isLadderViolation(err)) return { t: 'failed', sentence: err.userMessage };
     log.error('scrape', 'guided capture failed', { message: (err as Error).message });
-    return { t: 'failed', sentence: 'Something went wrong saving this capture. Press Capture to try again.' };
+    return {
+      t: 'failed',
+      sentence: 'Something went wrong saving this capture. Press Capture to try again.',
+    };
   }
 }
 
@@ -199,7 +206,9 @@ export function registerGuidedCaptureHost(): void {
           if (opener?.id !== undefined) {
             await chrome.tabs.update(opener.id, { active: true }).catch(() => undefined);
             if (opener.windowId !== undefined)
-              await chrome.windows.update(opener.windowId, { focused: true }).catch(() => undefined);
+              await chrome.windows
+                .update(opener.windowId, { focused: true })
+                .catch(() => undefined);
           }
         }
         return;

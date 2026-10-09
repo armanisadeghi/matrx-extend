@@ -109,7 +109,8 @@ export const RECIPES: Readonly<Record<GuidedPlatform, GuidedRecipe>> = {
       'Press Capture',
     ],
     noun: { one: 'post', many: 'posts' },
-    itemLinkSelector: 'a[href*="/posts/"], a[href*="/videos/"], a[href*="/reel/"], a[href*="story_fbid"]',
+    itemLinkSelector:
+      'a[href*="/posts/"], a[href*="/videos/"], a[href*="/reel/"], a[href*="story_fbid"]',
     itemKey: key(/\/(?:posts|videos|reel)\/([^/?#]+)|story_fbid=(\d+)/),
   },
   tiktok: {
@@ -154,11 +155,13 @@ export function recipeForPlatform(platform: string | null | undefined): GuidedRe
 /** Split a row's `what_to_do` into steps ("1. Do this" or one per line). */
 export function parseWhatToDo(text: string | null | undefined): string[] {
   if (!text) return [];
-  return text
-    // The server writes "1. A 2. B 3. C" on one line; also accept one per line.
-    .split(/\r?\n|\s(?=\d+[.)]\s)/)
-    .map((l) => l.replace(/^\s*(?:\d+[.)]|[-*•])\s*/, '').trim())
-    .filter(Boolean);
+  return (
+    text
+      // The server writes "1. A 2. B 3. C" on one line; also accept one per line.
+      .split(/\r?\n|\s(?=\d+[.)]\s)/)
+      .map((l) => l.replace(/^\s*(?:\d+[.)]|[-*•])\s*/, '').trim())
+      .filter(Boolean)
+  );
 }
 
 /**

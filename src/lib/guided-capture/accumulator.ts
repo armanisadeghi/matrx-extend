@@ -56,6 +56,7 @@ export function createAccumulator(recipe: GuidedRecipe): Accumulator {
       return isNew;
     },
     count: () => items.size,
-    images: (max = 200) => [...items.values()].filter((v): v is CapturedImageRef => !!v).slice(0, max),
+    images: (max = 200) =>
+      [...items.values()].filter((v): v is CapturedImageRef => !!v).slice(0, max),
   };
 }

@@ -33,7 +33,6 @@ import { getCurrentUser } from '@/lib/auth/flow';
 import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
 import { CAPTURE_PICKUP_MESSAGE, writeCapturePickup } from '@/lib/capture-ladder/pickup';
 import { countNeedsYou } from '@/lib/capture-ladder/queue';
-import { openGuidedTab } from '@/lib/guided-capture/host';
 import { log } from '@/lib/debug/log';
 import {
   GESTURE_PANEL_ACTIONS,
@@ -41,6 +40,7 @@ import {
   openPanelInGesture,
   settlePanelOpen,
 } from '@/lib/frontend-bridge/panel-gesture';
+import { openGuidedTab } from '@/lib/guided-capture/host';
 import {
   getActiveOrganizationId,
   listMemberOrganizations,

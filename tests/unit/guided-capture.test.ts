@@ -1,9 +1,5 @@
 import { createAccumulator } from '@/lib/guided-capture/accumulator';
-import {
-  INITIAL_GUIDED_STATE,
-  canCapture,
-  reduceGuided,
-} from '@/lib/guided-capture/job';
+import { INITIAL_GUIDED_STATE, canCapture, reduceGuided } from '@/lib/guided-capture/job';
 import {
   GUIDED_PLATFORMS,
   RECIPES,
@@ -22,7 +18,9 @@ describe('guided capture recipes', () => {
 
   it('resolves a recipe from the page address', () => {
     expect(recipeForUrl('https://www.instagram.com/natgeo/')?.platform).toBe('instagram');
-    expect(recipeForUrl('https://www.linkedin.com/in/someone/recent-activity/all/')?.platform).toBe('linkedin');
+    expect(recipeForUrl('https://www.linkedin.com/in/someone/recent-activity/all/')?.platform).toBe(
+      'linkedin',
+    );
     expect(recipeForUrl('https://twitter.com/x')?.platform).toBe('x');
     expect(recipeForUrl('https://x.com/x')?.platform).toBe('x');
     expect(recipeForUrl('https://m.facebook.com/page')?.platform).toBe('facebook');
@@ -87,8 +85,12 @@ describe('guided capture recipes', () => {
     expect(ig.itemKey('https://www.instagram.com/reel/XyZ-9/')).toBe('XyZ-9');
     expect(ig.itemKey('https://www.instagram.com/natgeo/')).toBeNull();
     expect(RECIPES.x.itemKey('https://x.com/a/status/12345')).toBe('12345');
-    expect(RECIPES.linkedin.itemKey('https://www.linkedin.com/feed/update/urn:li:activity:7001/')).toBe('urn:li:activity:7001');
-    expect(RECIPES.linkedin.itemKey('https://www.linkedin.com/posts/acme_hello-123')).toBe('acme_hello-123');
+    expect(
+      RECIPES.linkedin.itemKey('https://www.linkedin.com/feed/update/urn:li:activity:7001/'),
+    ).toBe('urn:li:activity:7001');
+    expect(RECIPES.linkedin.itemKey('https://www.linkedin.com/posts/acme_hello-123')).toBe(
+      'acme_hello-123',
+    );
     expect(RECIPES.tiktok.itemKey('https://www.tiktok.com/@a/video/777')).toBe('777');
   });
 });
@@ -96,8 +98,17 @@ describe('guided capture recipes', () => {
 describe('guided capture accumulator', () => {
   it('counts each item once and keeps its first thumbnail', () => {
     const acc = createAccumulator(RECIPES.instagram);
-    expect(acc.add({ href: 'https://www.instagram.com/p/A1/', imgSrc: 'https://cdn/a1.jpg', width: 300, height: 300 })).toBe(true);
-    expect(acc.add({ href: 'https://www.instagram.com/p/A1/', imgSrc: 'https://cdn/other.jpg' })).toBe(false);
+    expect(
+      acc.add({
+        href: 'https://www.instagram.com/p/A1/',
+        imgSrc: 'https://cdn/a1.jpg',
+        width: 300,
+        height: 300,
+      }),
+    ).toBe(true);
+    expect(
+      acc.add({ href: 'https://www.instagram.com/p/A1/', imgSrc: 'https://cdn/other.jpg' }),
+    ).toBe(false);
     expect(acc.add({ href: 'https://www.instagram.com/p/B2/' })).toBe(true);
     expect(acc.add({ href: 'https://www.instagram.com/natgeo/' })).toBe(false);
     expect(acc.count()).toBe(2);
@@ -118,7 +129,8 @@ describe('guided capture accumulator', () => {
     const acc = createAccumulator(RECIPES.instagram);
     acc.add({ href: 'https://www.instagram.com/p/A1/', imgSrc: 'blob:xyz' });
     expect(acc.images()).toEqual([]);
-    for (let i = 0; i < 5; i++) acc.add({ href: `https://www.instagram.com/p/K${i}/`, imgSrc: `https://cdn/${i}.jpg` });
+    for (let i = 0; i < 5; i++)
+      acc.add({ href: `https://www.instagram.com/p/K${i}/`, imgSrc: `https://cdn/${i}.jpg` });
     expect(acc.images(3)).toHaveLength(3);
   });
 });
