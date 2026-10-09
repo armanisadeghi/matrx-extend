@@ -283,3 +283,5 @@ massaged in host code, never left edited-unpublished. **THE CATCH-UP RULE:** wor
 refresh `@ai-matrx/*` to latest and reconcile per each package's CHANGELOG `Consumer action`s
 before this repo's next release. Both: same policy, § THE SAME-SESSION LAW + § THE CATCH-UP
 RULE.
+
+Cross-repo system-of-record: /Users/armanisadeghi/code/common-docs/policies/ai-model-and-spend-rules.md — read it before picking a model or running work that spends; system-agent links use `https://manage.aimatrx.com/administration/agents/system-agents/agents/<id>/build`.
