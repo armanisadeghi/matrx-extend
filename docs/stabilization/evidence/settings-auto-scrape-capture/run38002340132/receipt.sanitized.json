@@ -1,0 +1,64 @@
+{
+  "workflow_run_id": 38002340132,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38002340132",
+  "workflow_source_sha": "18b5531143073cee016135167cf7c91f484bc892",
+  "acceptance_lane": "B",
+  "acceptance_case": "settings-auto-scrape-capture",
+  "runner_label": "macos-15-intel",
+  "development_ci_run_id": 37998294843,
+  "development_artifact_id": 11647758423,
+  "product_source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+  "extension_version": "0.2.456",
+  "extension_tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+  "hosted_result_artifact_id": 11649983852,
+  "hosted_job_id": 114063119203,
+  "workflow_conclusion": "failure",
+  "native_case": {
+    "case_id": "EXT-F-1003-T40",
+    "role": "guest",
+    "status": "failed_before_capture_probe",
+    "observed": {
+      "auto_scrape_switch_visible": false,
+      "stored_boolean": null
+    },
+    "error": "auto_scrape_ui_storage_disagree: observed false !== null",
+    "failure_site": "tests/browser/settings-auto-scrape-capture-native.mjs:setSwitch",
+    "boundary": "The absent OFF field passed the repaired baseline precondition. The next setSwitch consistency assertion still rejected visible=false and stored=null before installing the traffic observer or navigating to either marker page.",
+    "classification": "A second probe baseline assumption defect. No ON/OFF capture behavior was exercised; no T40 acceptance credit. T40 remains unverified."
+  },
+  "resource_validity": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "resource_journals": {
+    "hosted-browser-38002340132-1.jsonl": {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38002340132/hosted-browser-38002340132-1.jsonl",
+      "sha256": "1bb0fc4de0d191077f413d0a60827def40e52174708e2b80a7c2abc56946b773"
+    },
+    "hosted-guest-38002340132-1.jsonl": {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38002340132/hosted-guest-38002340132-1.jsonl",
+      "sha256": "26120908ac2a1b1c008bc42e3e3d7f079f1cfcf26c9530dc6ae80406a0df04f2"
+    },
+    "hosted-package-38002340132-1.jsonl": {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38002340132/hosted-package-38002340132-1.jsonl",
+      "sha256": "0a3184ec21a2ea60810eabd3a961d846f5ae23bf896d8ab7a09a28ac97424a71"
+    }
+  },
+  "next_repair": "Allow only visible OFF with absent boolean field as a consistent implicit OFF state; retain persisted-boolean requirements for ON/OFF traffic assertions and exact cleanup."
+}

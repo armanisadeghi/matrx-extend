@@ -6,6 +6,8 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
+  autoScrapePreferenceIsConsistent,
+  autoScrapePreferenceMatches,
   captureAutoScrapeBaseline,
   restoreAutoScrapeBaseline,
 } from './settings-auto-scrape-capture-baseline.mjs';
@@ -47,12 +49,13 @@ async function observe(panel) {
 }
 async function setSwitch(panel, expected) {
   const before = await observe(panel);
-  assert.equal(before.visible, before.stored, 'auto_scrape_ui_storage_disagree');
+  assert.ok(autoScrapePreferenceIsConsistent(before), 'auto_scrape_ui_storage_disagree');
+  if (autoScrapePreferenceMatches(before, expected)) return before;
   if (before.visible !== expected) await click(panel, 'switch', 'Auto-scrape on load');
   return waitFor(
     `auto_scrape_${expected}_persisted`,
     () => observe(panel),
-    (state) => state?.visible === expected && state?.stored === expected,
+    (state) => autoScrapePreferenceMatches(state, expected),
   );
 }
 async function installTrafficObserver(panel, marker) {

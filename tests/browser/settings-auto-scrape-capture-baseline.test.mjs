@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
+  autoScrapePreferenceIsConsistent,
+  autoScrapePreferenceMatches,
   captureAutoScrapeBaseline,
   restoreAutoScrapeBaseline,
 } from './settings-auto-scrape-capture-baseline.mjs';
@@ -22,6 +24,21 @@ function storageMock(initial = {}) {
 }
 
 const SETTINGS_KEY = 'matrx.settings.v1';
+
+test('an absent OFF preference is consistent and can be changed to persisted ON', () => {
+  const implicitOff = { visible: false, stored: null, settingPresent: false };
+  assert.equal(autoScrapePreferenceIsConsistent(implicitOff), true);
+  assert.equal(autoScrapePreferenceMatches(implicitOff, false), true);
+  assert.equal(autoScrapePreferenceMatches(implicitOff, true), false);
+  assert.equal(
+    autoScrapePreferenceMatches({ visible: true, stored: true, settingPresent: true }, true),
+    true,
+  );
+  assert.equal(
+    autoScrapePreferenceIsConsistent({ visible: false, stored: true, settingPresent: true }),
+    false,
+  );
+});
 
 test('an absent OFF preference restores exact field absence and preserves sibling settings', async () => {
   const initial = {

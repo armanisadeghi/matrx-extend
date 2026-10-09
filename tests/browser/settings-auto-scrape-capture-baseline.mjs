@@ -51,3 +51,18 @@ export async function restoreAutoScrapeBaseline(storage, baseline) {
 
   await storage.set({ [SETTINGS_KEY]: JSON.stringify(settings) });
 }
+
+export function autoScrapePreferenceIsConsistent(observed) {
+  return (
+    observed?.visible === observed?.stored ||
+    (observed?.visible === false && observed?.stored === null && observed?.settingPresent === false)
+  );
+}
+
+export function autoScrapePreferenceMatches(observed, expected) {
+  return (
+    observed?.visible === expected &&
+    (observed?.stored === expected ||
+      (expected === false && observed?.stored === null && observed?.settingPresent === false))
+  );
+}
