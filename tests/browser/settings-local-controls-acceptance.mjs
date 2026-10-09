@@ -23,8 +23,8 @@ import {
   observeGuestPreference,
   preferenceBaseline,
   preferenceMatches,
-  runGuestThemeRenderingProbe,
   runGuestPreferenceCase,
+  runGuestThemeRenderingProbe,
 } from './settings-guest-preference-batch.mjs';
 import {
   GUEST_PRIVACY_SWITCHES,
