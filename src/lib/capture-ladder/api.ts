@@ -32,6 +32,8 @@ import {
 } from '@/lib/capture-ladder/types';
 
 const BASE = '/capture/handoffs';
+/** The result door lands the page (and any images) before it answers. */
+const RESULT_POST_TIMEOUT_MS = 180_000;
 
 function signedOut(): { ok: false; error: string; status: number } {
   return { ok: false, status: 401, error: 'sign_in_required' };
@@ -153,7 +155,11 @@ export async function postCaptureResult(
   signal?: AbortSignal,
 ): Promise<ApiResult<ResultResponse>> {
   if (!(await getAccessToken())) return signedOut();
-  const res = await apiPost<unknown>(`${BASE}/${id}/result`, body, signal);
+  // Landing a social capture copies its images into the person's private files
+  // before the door answers, which can take well over the 30s default.
+  const res = await apiPost<unknown>(`${BASE}/${id}/result`, body, signal, {
+    timeoutMs: RESULT_POST_TIMEOUT_MS,
+  });
   return res.ok ? { ok: true, data: parseResultResponse(res.data) } : res;
 }
 

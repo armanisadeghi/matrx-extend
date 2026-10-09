@@ -303,10 +303,14 @@ interface RequestOptions {
    * record carries its own). Omitted = the active organization.
    */
   organizationId?: string;
+  /** This call's deadline in ms when its legitimate work outlasts DEFAULT_TIMEOUT_MS. */
+  timeoutMs?: number;
 }
 
 export interface ApiRequestOptions {
   silent?: boolean;
+  /** See RequestOptions.timeoutMs. */
+  timeoutMs?: number;
   /** See RequestOptions.organizationId. */
   organizationId?: string;
   expectedActor?: { userId: string; organizationId: string };
@@ -781,7 +785,7 @@ async function rawRequest<T>(opts: RequestOptions): Promise<ApiResult<T>> {
   const start = performance.now();
   // Caller signal + the default deadline. AbortSignal.any (Chrome 116+)
   // combines them; the bare timeout covers the no-signal common case.
-  const timeoutSignal = AbortSignal.timeout(DEFAULT_TIMEOUT_MS);
+  const timeoutSignal = AbortSignal.timeout(opts.timeoutMs ?? DEFAULT_TIMEOUT_MS);
   const signal = opts.signal
     ? typeof AbortSignal.any === 'function'
       ? AbortSignal.any([opts.signal, timeoutSignal])
@@ -914,6 +918,7 @@ export async function apiPost<T>(
     ...(opts?.expectedActor !== undefined ? { expectedActor: opts.expectedActor } : {}),
     ...(opts?.headers !== undefined ? { headers: opts.headers } : {}),
     ...(opts?.organizationId !== undefined ? { organizationId: opts.organizationId } : {}),
+    ...(opts?.timeoutMs !== undefined ? { timeoutMs: opts.timeoutMs } : {}),
   });
 }
 
