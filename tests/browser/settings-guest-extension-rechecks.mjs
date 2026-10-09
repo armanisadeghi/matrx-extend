@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { safeTransportFailureClass } from './profile-reload-capture.mjs';
+import { captureFailure, safeTransportFailureClass } from './profile-reload-capture.mjs';
 import { click, waitFor } from './settings-panel-driver.mjs';
 
 const nativeDriver = { click, waitFor };
@@ -66,6 +66,7 @@ export async function runGuestChoicesAcrossExtensionRestarts({
   panel: startingPanel,
   section,
   controlLabel,
+  controlKind = 'settings-select',
   choices,
   baseline,
   settings,
@@ -85,20 +86,39 @@ export async function runGuestChoicesAcrossExtensionRestarts({
 }) {
   assert.ok(startingPanel && typeof startingPanel.targetId === 'string');
   assert.ok(baseline && choices.some(([value]) => value === baseline.value));
+  assert.ok(['settings-select', 'switch'].includes(controlKind));
   let activePanel = startingPanel;
   let failureStage = null;
   let failureDetailStage = 'initial_baseline_settings';
   let choiceFailureStage = null;
   let choiceFailureDetailStage = null;
   let choiceTransportClass = null;
+  let choiceFailureCode = null;
   let restoreFailureStage = null;
   let restoreFailureDetailStage = null;
   let restoreTransportClass = null;
+  let restoreFailureCode = null;
   let choiceFailure = false;
   let restoreFailure = false;
 
   const safeDetailStage = (stage) =>
     GUEST_EXTENSION_RECHECK_FAILURE_STAGES.includes(stage) ? stage : 'unavailable';
+  const safeFailureCode = (error) => {
+    const pointerCode = error?.driverFailure?.code;
+    if (
+      [
+        'pointer_initial_evaluation_failed',
+        'pointer_page_sample_failed',
+        'pointer_target_not_unique',
+        'pointer_followup_evaluation_failed',
+        'pointer_stable_hit_not_observed',
+        'pointer_press_dispatch_failed',
+        'pointer_release_dispatch_failed',
+      ].includes(pointerCode)
+    )
+      return pointerCode;
+    return captureFailure(error, () => 'none').failure_code;
+  };
 
   const inspectBaseline = async (stage) => {
     failureDetailStage = 'initial_baseline_settings';
@@ -161,9 +181,9 @@ export async function runGuestChoicesAcrossExtensionRestarts({
       failureDetailStage = 'choice_section';
       await openSection(activePanel, section);
       failureDetailStage = 'choice_control';
-      await driver.click(activePanel, 'settings-select', controlLabel);
+      await driver.click(activePanel, controlKind, controlLabel);
       failureDetailStage = 'choice_option';
-      await driver.click(activePanel, 'option', label);
+      if (controlKind === 'settings-select') await driver.click(activePanel, 'option', label);
       failureDetailStage = 'choice_observation';
       const state = await driver.waitFor(
         `${controlLabel}_${value}_before_extension_reload`,
@@ -175,11 +195,12 @@ export async function runGuestChoicesAcrossExtensionRestarts({
       failureDetailStage = 'choice_extension_reload';
       await restartAndRead(value, label, failureStage);
     }
-  } catch {
+  } catch (error) {
     choiceFailure = true;
     choiceFailureStage = failureStage;
     choiceFailureDetailStage = safeDetailStage(failureDetailStage);
     choiceTransportClass = safeTransportFailureClass(transportFailureClass);
+    choiceFailureCode = safeFailureCode(error);
   }
 
   try {
@@ -214,8 +235,9 @@ export async function runGuestChoicesAcrossExtensionRestarts({
         if (!alternate) throw new Error('settings_full_extension_baseline_alternate_unavailable');
         failureStage = 'restore_choice';
         failureDetailStage = 'restore_alternate_select';
-        await driver.click(activePanel, 'settings-select', controlLabel);
-        await driver.click(activePanel, 'option', alternate[1]);
+        await driver.click(activePanel, controlKind, controlLabel);
+        if (controlKind === 'settings-select')
+          await driver.click(activePanel, 'option', alternate[1]);
         failureDetailStage = 'restore_alternate_observation';
         current = await driver.waitFor(
           `${controlLabel}_alternate_before_baseline_restore`,
@@ -226,8 +248,9 @@ export async function runGuestChoicesAcrossExtensionRestarts({
       if (!matches(current, baseline.value, baseline.label)) {
         failureStage = 'restore_choice';
         failureDetailStage = 'restore_baseline_select';
-        await driver.click(activePanel, 'settings-select', controlLabel);
-        await driver.click(activePanel, 'option', baseline.label);
+        await driver.click(activePanel, controlKind, controlLabel);
+        if (controlKind === 'settings-select')
+          await driver.click(activePanel, 'option', baseline.label);
         failureDetailStage = 'restore_baseline_observation';
         current = await driver.waitFor(
           `${controlLabel}_baseline_before_extension_reload`,
@@ -243,11 +266,12 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     await restartAndRead(baseline.value, baseline.label, failureStage);
     failureDetailStage = 'restore_final_observation';
     record('original preference restored after extension reload', 'pass', await read(activePanel));
-  } catch {
+  } catch (error) {
     restoreFailure = true;
     restoreFailureStage = failureStage;
     restoreFailureDetailStage = safeDetailStage(failureDetailStage);
     restoreTransportClass = safeTransportFailureClass(transportFailureClass);
+    restoreFailureCode = safeFailureCode(error);
   }
 
   if (choiceFailure || restoreFailure) {
@@ -264,6 +288,8 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     error.safeRestorationFailureStage = restoreFailure ? restoreFailureDetailStage : 'not_failed';
     error.safeFirstChoiceTransportClass = choiceFailure ? choiceTransportClass : 'not_applicable';
     error.safeRestorationTransportClass = restoreFailure ? restoreTransportClass : 'not_applicable';
+    error.safeFirstChoiceFailureCode = choiceFailure ? choiceFailureCode : 'not_applicable';
+    error.safeRestorationFailureCode = restoreFailure ? restoreFailureCode : 'not_applicable';
     throw error;
   }
   return activePanel;

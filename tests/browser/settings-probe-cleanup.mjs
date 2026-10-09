@@ -14,6 +14,28 @@ const TRANSPORT_CLASSES = new Set([
   'send_exception',
   'close_failure',
 ]);
+const FAILURE_CODES = new Set([
+  'not_applicable',
+  'unclassified',
+  'pointer_initial_evaluation_failed',
+  'pointer_page_sample_failed',
+  'pointer_target_not_unique',
+  'pointer_followup_evaluation_failed',
+  'pointer_stable_hit_not_observed',
+  'pointer_press_dispatch_failed',
+  'pointer_release_dispatch_failed',
+  'native_extension_management_reload_unavailable',
+  'native_extension_developer_mode_unverified',
+  'native_extension_reload_disabled',
+  'native_extension_current_worker_unverified',
+  'native_extension_current_panel_unverified',
+  'native_extension_old_worker_retired_before_reload',
+  'native_extension_worker_retirement_unverified',
+  'native_extension_replacement_panel_unverified',
+  'native_extension_replacement_open_refused',
+  'native_sidepanel_runtime_context_missing',
+  'owned_cdp_transport_failed',
+]);
 
 export async function preserveFailureDuringCleanup(operation, cleanup) {
   let value;
@@ -54,6 +76,12 @@ export function serializeGuestReloadFailure(error) {
     restorationFailureStage: stage(error.safeRestorationFailureStage),
     firstChoiceTransportClass: transport(error.safeFirstChoiceTransportClass),
     restorationTransportClass: transport(error.safeRestorationTransportClass),
+    firstChoiceFailureCode: FAILURE_CODES.has(error.safeFirstChoiceFailureCode)
+      ? error.safeFirstChoiceFailureCode
+      : 'unavailable',
+    restorationFailureCode: FAILURE_CODES.has(error.safeRestorationFailureCode)
+      ? error.safeRestorationFailureCode
+      : 'unavailable',
     cleanupAlsoFailed: error.safeCleanupFailed === true,
   };
 }
