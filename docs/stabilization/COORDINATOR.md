@@ -4,7 +4,7 @@
 
 ## Next execution batch
 
-Root owns integration. October9 daily guest public-package test37956537631 is owned by daily_guest_oct9, laneB; no final acceptance yet. Correct Store publisher profile reached reauthentication, but selecting the saved credential caused repeated native-control timeouts. Current published/pending versions remain unverified; historical205 is not a fresh dashboard result. Local resource admission now passes with about44GiB available; browser work stopped and the daily guard finalized valid. No Store submission or manual release occurred.
+Root owns integration. October9 daily guest public-package test37956537631 passed opening, same-conversation and post-reload terminal answers on public205 unpacked, with3valid resourcejournals and identical before/after server97ea84e3. Root verified hashes and answer screenshots; actual Store-installed acceptance remains unverified. Correct Store publisher profile reached reauthentication, but selecting the saved credential caused repeated native-control timeouts. Current published/pending versions remain unverified; historical205 is not a fresh dashboard result. Local resource admission now passes with about44GiB available; browser work stopped and the daily guard finalized valid. No Store submission or manual release occurred.
 
 Records: corrected-envelope native37860757691 reached a real held record_write approval, then failed before a confirmed UI decision. The exact owned table was archived, approval withdrawn, no write/decision unknown remains; root removed both temporary secrets and verified absence. Source probe6184e5c7 retains a safe pre-cleanup failure phase/code. Followup68022fa6 adds the actual callback-to-receipt forcing test; independent5040e8b1 accepts the repaired gap and25tests. Native retest remains pending. C06 acceptance remains unverified, D91 in-fix; do not repeat until that review gap and exact hosted gate pass. Reports: .research/records-c06-envelope-retest-20261008.json and .research/records-c06-next-diagnosis-20261009.json.
 
@@ -17,7 +17,7 @@ Use two isolated hosted lanes plus one fixer, rotating independent review throug
 
 ## Current ownership
 
-Active ownership is limited to guest37956537631; Records source-test repair and peer review are terminal; no shared credential secrets are staged. Root owns dashboard evidence, integration and final cleanup. Do not infer product passes from source diagnostics. Prior bounded Scrape/SEO results and their missing cases remain in inventory.
+All owned native jobs, Records source repair and review are terminal; no shared secrets remain; no shared credential secrets are staged. Root owns dashboard evidence, integration and final cleanup. Do not infer product passes from source diagnostics. Prior bounded Scrape/SEO results and their missing cases remain in inventory.
 
 Credentials use private named-key non-evaluating parsing only: never source/eval env files. An earlier setup attempt violated this and emitted a parser source fragment; no native run launched from it, staging was removed, and the actual Records run used corrected parsing. Existing authorized point-of-use sources remain repo .env.production, sibling aidream/.env and gitignored test-results/admin-profile-approved-organization-private.json. Never record values. Shared credential staging belongs exclusively to lane A; remove temporary secrets after terminal and independently verify names absent.
 

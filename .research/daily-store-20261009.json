@@ -24,10 +24,13 @@
     "submission": "none; no verified newer eligible Store package; machine manualrelease restriction honored"
   },
   "guest": {
-    "owned_run": 37956537631,
-    "state": "in_progress; worker owns terminal observation",
-    "public_version": "0.2.205 reported by worker from Google update service",
-    "pre_server_sha": "97ea84e3; post sample pending",
-    "acceptance": "pending; notStoreinstalled"
+    "run": 37956537631,
+    "state": "completed_success_resource_valid",
+    "public_version": "0.2.205",
+    "server_sha": "97ea84e3036a2c0186b467fda60c547f27548572",
+    "server_samples": "same before/after; notcontinuous",
+    "acceptance": "opening/same-conversation/postreload terminal answers; publicCRXunpacked notStoreinstalled",
+    "evidence": ".research/daily-guest-20261009.json",
+    "root_review": "original receipt and3current journal hashes/final decisions verified; all3answer screenshots viewed"
   }
 }
