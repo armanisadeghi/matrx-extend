@@ -458,6 +458,21 @@
    "application/json"
   ]
  },
+ "/agent-messages/hook-mail": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-messages/host-wake": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-messages/wake": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/agent-service/agents": {
   "get": [],
   "post": [
