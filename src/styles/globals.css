@@ -18,7 +18,7 @@
    renders with no blur, no mask and no safe-area padding — silently. This
    app owns no copy of those rules, so nothing is duplicated by importing
    them. */
-@import "@ai-matrx/design-system/tokens.css";
+@import "@ai-matrx/design-system/web-theme.css";
 @import "@ai-matrx/design-system/styles.css";
 
 /* @ai-matrx/tap-target's geometry stylesheet — the rules its tap buttons WEAR.
@@ -45,53 +45,13 @@
 @source "../../node_modules/@ai-matrx";
 @source "../../node_modules/.pnpm/node_modules/@ai-matrx";
 
-@custom-variant dark (&:is(.dark *));
+/* THE THEME IS THE WEB APP'S: `web-theme.css` (above) carries the web app's token values
+   (light + dark), the Tailwind colour/glass/radius/font mapping, tw-animate-css, the typography
+   plugin and the dark variant. This extension declares NO palette of its own, so its base
+   colours are the web app's by construction. Deliberate differences from the web theme:
+   NONE (an override would be declared here, in `:root` / `.dark`, and listed in this comment). */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  /* The readable "ink" tones package components wear (text-primary-ink, …); the
-     values come from @ai-matrx/design-system/tokens.css (HSL triplets). */
-  --color-primary-ink: hsl(var(--primary-ink));
-  --color-info-ink: hsl(var(--info-ink));
-  --color-success-ink: hsl(var(--success-ink));
-  --color-warning-ink: hsl(var(--warning-ink));
-  --color-destructive-ink: hsl(var(--destructive-ink));
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
-  /* Semantic STATUS colours — required by @ai-matrx/design-system's Badge
-     (`success` / `warning` / `info` / `error` variants) and ScoreRing helpers.
-     This app declares no values for them, so they resolve from the package's
-     own `tokens.css` defaults above, which are hsl CHANNEL TRIPLETS (not the
-     oklch full colours this app uses for the base vocabulary) — hence the
-     `hsl(...)` wrapper here and bare `var()` above. Declare `--success` etc.
-     in `:root` / `.dark` below to brand them. */
-  --color-success: hsl(var(--success));
-  --color-success-foreground: hsl(var(--success-foreground));
-  --color-warning: hsl(var(--warning));
-  --color-warning-foreground: hsl(var(--warning-foreground));
-  --color-info: hsl(var(--info));
-
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-
   --animate-spin-slow: spin 3s linear infinite;
   --animate-text-shimmer: text-shimmer 2.4s ease-in-out infinite;
   --animate-dreamy-drift: dreamy-drift 7s ease-in-out infinite;
@@ -115,51 +75,6 @@
   50% {
     background-position: 100% 50%;
   }
-}
-
-:root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --radius: 0.625rem;
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.18 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.18 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
 }
 
 @layer base {
@@ -189,11 +104,11 @@ body,
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--border);
+  background: hsl(var(--border));
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-foreground);
+  background: hsl(var(--muted-foreground));
 }
 
 /* Hide the scrollbar on horizontal tab strips while keeping them scrollable. */

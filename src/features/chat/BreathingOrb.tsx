@@ -103,7 +103,7 @@ export function ShimmerText({
       className={cn(
         'animate-text-shimmer bg-clip-text text-transparent',
         '[background-size:200%_100%]',
-        'bg-[linear-gradient(90deg,var(--muted-foreground)_0%,var(--foreground)_50%,var(--muted-foreground)_100%)]',
+        'bg-[linear-gradient(90deg,hsl(var(--muted-foreground))_0%,hsl(var(--foreground))_50%,hsl(var(--muted-foreground))_100%)]',
         className,
       )}
     >
