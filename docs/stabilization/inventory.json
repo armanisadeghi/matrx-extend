@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-09T22:12:46+00:00",
+  "updated_at": "2026-10-09T22:29:18+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -17286,8 +17286,15 @@
         {
           "id": "EXT-F-1007-T04",
           "title": "Save capture as a Source",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-1007-C04", "EXT-F-1007-C21"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C04",
+            "EXT-F-1007-C21"
+          ],
           "preconditions": [
             "Open Scrape on a controlled page with article text; record signed-in state and device-selected organization."
           ],
@@ -17300,9 +17307,37 @@
             "The chosen name is persisted; Save works without a destination and promptly confirms landing without waiting for the separate SEO audit or opening a filing browser. Refusal retains an honest retry path.",
             "A successful scrape lands as an internal Source in the explicitly selected organization, with no personal visibility option; missing organization never selects a fallback."
           ],
-          "dimensions": ["warm", "valid-input", "backend-available"],
-          "verification_status": "unverified-after-source-change",
-          "prior_results_history": "Prior EXT-F-1007 cell run and defect IDs are retained; this older Save procedure predates Source landing and is not fresh proof."
+          "dimensions": [
+            "warm",
+            "valid-input",
+            "backend-available"
+          ],
+          "verification_status": "partial-native-substeps; final-focus-build-unverified",
+          "prior_results_history": "Prior EXT-F-1007 cell run and defect IDs are retained; this older Save procedure predates Source landing and is not fresh proof.",
+          "linked_defects": [
+            "EXT-D-0187"
+          ],
+          "results": {
+            "member": {
+              "run_id": "scrape-save-native-3",
+              "build_variant": "development 0.2.456; native-2 loaded identity inherited; native-3 did not freshly reload",
+              "verified_at": "2026-10-09T22:21:39+00:00",
+              "evidence": "/tmp/scrape-save-native-3.md; docs/stabilization/resource-journals/scrape-save-native-3.jsonl; /tmp/scrape-save-native-4.md; docs/stabilization/resource-journals/scrape-save-native-4.jsonl",
+              "status": "partial",
+              "verified_substeps": [
+                "Custom name EXT-D-0187 TEST SOURCE — native retest persisted: independently reopened Source detail c798c0e5-7d3e-47b1-a5af-91ef4aaabbd1 displayed that title, Saved, History of computing and Wikipedia URL."
+              ],
+              "remaining_criteria": [
+                "Project association persistence unverified; precise confirmation latency unmeasured.",
+                "Final focus acceptance on 4126b60f1 blocked by allowed native reload; same-content duplicate, refusal/retry, guest flow and full admin coverage remain unverified."
+              ],
+              "detail": "Verified title-persistence substep only, not full T04. Native-3 Saved/open Source succeeded; native-3 Tab escaped the modal. Native-4 valid permit blocked before exact loaded focus-build verification because CUA could not open extension management. Native-2 invalid has no acceptance credit."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "No fresh admin native acceptance for named Save/destination/focus flow; member bounded native-3 observations are not admin proof. Native-4 could not verify loaded focus-fix build."
+            }
+          }
         },
         {
           "id": "EXT-F-1007-T05",
@@ -19562,8 +19597,15 @@
         {
           "id": "EXT-F-1007-T29",
           "title": "Optional Source destination is chosen before landing and can be skipped",
-          "modes": ["member", "admin"],
-          "control_ids": ["EXT-F-1007-C29", "EXT-F-1007-C30", "EXT-F-1007-C31"],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C29",
+            "EXT-F-1007-C30",
+            "EXT-F-1007-C31"
+          ],
           "preconditions": [
             "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
             "Use an owned page, two registered filing targets and a controlled Library in the selected organization; reserve the Source and target records for this test only."
@@ -19576,17 +19618,45 @@
           "expected": [
             "The compact Save dialog opens without loading destination browsing or Libraries until requested. Every project is reachable by scrolling and search in both Save and File elsewhere. One landing persists the name and only chosen associations, or saves unfiled. A target refusal claims no completed Save and keeps a recoverable capture."
           ],
-          "dimensions": ["cancel", "no-destination", "project-scroll", "project-search", "multi-target", "remove", "library", "no-library", "refusal", "reload"],
+          "dimensions": [
+            "cancel",
+            "no-destination",
+            "project-scroll",
+            "project-search",
+            "multi-target",
+            "remove",
+            "library",
+            "no-library",
+            "refusal",
+            "reload"
+          ],
           "results": {
             "member": {
-              "status": "unverified",
-              "detail": "New pre-save procedure awaits receipt-bound native execution."
+              "run_id": "scrape-save-native-3",
+              "build_variant": "development 0.2.456; native-2 loaded identity inherited; native-3 did not freshly reload",
+              "verified_at": "2026-10-09T22:21:39+00:00",
+              "evidence": "/tmp/scrape-save-native-3.md; docs/stabilization/resource-journals/scrape-save-native-3.jsonl; /tmp/scrape-save-native-4.md; docs/stabilization/resource-journals/scrape-save-native-4.jsonl",
+              "status": "partial",
+              "verified_substeps": [
+                "After inner Projects browsing loaded 43 projects, wheel and Page_Down reached and selected the dedicated below-fold Project; selected chip visible.",
+                "Initial candidate fetch failed once and recovered via Retry."
+              ],
+              "remaining_criteria": [
+                "Outer one-click full-Projects flow is unverified; canonical candidate-body follow-up pending.",
+                "Selected Project association persistence remains unverified on the independently reopened Source.",
+                "Tab escaped the modal in valid native-3 (retest-fail); focus candidate 4126b60f1 final native retest blocked by allowed CUA reload in native-4.",
+                "File elsewhere, top/footer Save, narrow-panel, multiple destinations, Library, remove and refusal routes remain unverified."
+              ],
+              "detail": "Partial selection/navigation only: wheel and Page_Down passed after inner Projects; no one-click flow or stored association pass. Native-3 focus escape retest failed. Native-4 valid permit blocked before loading/verifying focus-fix artifact; final focus and association retests unverified. Native-2 invalid has no acceptance credit."
             },
             "admin": {
               "status": "unverified",
-              "detail": "New pre-save procedure awaits receipt-bound native execution."
+              "detail": "No fresh admin native acceptance for named Save/destination/focus flow; member bounded native-3 observations are not admin proof. Native-4 could not verify loaded focus-fix build."
             }
-          }
+          },
+          "linked_defects": [
+            "EXT-D-0187"
+          ]
         },
         {
           "id": "EXT-F-1007-T30",
@@ -19764,9 +19834,11 @@
             "37252919339",
             "37255333525",
             "37258276837",
-            "37263606882"
+            "37263606882",
+            "scrape-save-native-3",
+            "scrape-save-native-4"
           ],
-          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health."
+          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. One-click Projects follow-up pending; no full T04/T29 pass."
         },
         "admin": {
           "test_status": "unverified",
@@ -19794,7 +19866,7 @@
             "source-workspace-008",
             "source-workspace-009"
           ],
-          "retest_status": "not-run"
+          "retest_status": "EXT-D-0187 remains unverified for admin; native-3 bounded member evidence is not admin proof; native-4 loaded-artifact/final focus acceptance blocked."
         }
       },
       "inventory_status": "complete",
@@ -19940,6 +20012,28 @@
           "evidence": ".research/scrape-member-normal-native.json",
           "proven": "Initial native guard refused unsafe CPU/load before member sign-in, width observation or any Scrape case. Root matched6hashes and inspected rawzero-cases receipt and resource attribution.",
           "limits": "No product/mode/width result. All6artifactfiles retained, temporaryauth material removed. No retry."
+        },
+        {
+          "run_id": "scrape-save-native-3",
+          "mode": "member",
+          "build": "0.2.456 (loaded identity inherited from native-2)",
+          "defect_id": "EXT-D-0187",
+          "status": "retest-fail",
+          "evidence": "/tmp/scrape-save-native-3.md",
+          "resource_journal": "docs/stabilization/resource-journals/scrape-save-native-3.jsonl",
+          "proven": "Custom Source title independently reopened; wheel/Page_Down reached and selected below-fold Project after inner browse and fetch Retry.",
+          "limits": "Tab escaped modal. Association persistence, one-click full Projects, full T04/T29 and admin/guest coverage unverified; inherited loaded identity, no fresh reload."
+        },
+        {
+          "run_id": "scrape-save-native-4",
+          "mode": "member",
+          "build": "4126b60f1 local focus artifact; loaded Chrome artifact unverified",
+          "defect_id": "EXT-D-0187",
+          "status": "unverified-blocked",
+          "evidence": "/tmp/scrape-save-native-4.md",
+          "resource_journal": "docs/stabilization/resource-journals/scrape-save-native-4.jsonl",
+          "proven": "Local manifest and ScrapeView chunk hashes matched requested focus artifact; permit valid and cleanly stopped.",
+          "limits": "CUA blocked extension management; no allowed reload/current loaded artifact verification, so no final focus, association, scrolling or Save-route assertions."
         }
       ]
     },
