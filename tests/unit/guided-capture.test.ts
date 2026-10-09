@@ -66,6 +66,12 @@ describe('guided capture recipes', () => {
       'Do B',
       'Press Capture',
     ]);
+    // the server writes the steps on one line
+    expect(parseWhatToDo('1. Sign in if asked. 2. Scroll the grid. 3. Press Capture.')).toEqual([
+      'Sign in if asked.',
+      'Scroll the grid.',
+      'Press Capture.',
+    ]);
     expect(parseWhatToDo('')).toEqual([]);
     expect(parseWhatToDo(null)).toEqual([]);
   });

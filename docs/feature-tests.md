@@ -3657,3 +3657,11 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Share:** Open Share, click Copy public link, and view the copied link signed out. It grants image viewing without sign-in. Confirm clipboard/network failures stay visible. Manage all links: create an optional labelled link with expiration and view limit, copy it, then revoke it and verify anonymous access stops.
 - **Regression:** Switch page during a pending gallery read, refresh, delete/cancel, and leave/re-enter thumbnail viewport. Stale reads never restore deleted cards; viewer bytes remain alive while open and are revoked after leaving both surfaces.
 - **Evidence boundary:** Component/DOM seam checks support the source repair; native authenticated sharing/capture and Store verification require a current artifact and real services.
+
+### Guided capture ("Take me there")
+
+- **What it does:** For a social page our data provider cannot read, the web app opens the page in a new tab with a small Matrx guide on it: the platform's steps, a live count of posts loaded, and a Capture button. Capture files the page and its images through the capture door (rung "human drive"); the app tab then shows the job as Done with the saved results.
+- **Where to test:** Web app, Marketing, a brand, Socials, an account page (Instagram, LinkedIn, X, Facebook or TikTok) with the extension installed and signed in as the same person.
+- **Steps:** Press "Take me there" and read the explainer. Press it again in the dialog. On the new tab scroll the profile; the count rises. Press Capture. Return to the app tab.
+- **Expected:** The guide appears only on that tab (not on other tabs of the same site). After Capture it says "Captured N posts" and offers Back to Matrx; the app dialog shows Done with a link to what was saved. A failure shows one plain sentence and Try again. No extension: the dialog says so with an install link.
+- **Automated:** `node tests/browser/guided-capture-e2e.mjs` (needs `MATRX_PLAYWRIGHT_MODULE`, a running app preview and aidream); unit: `tests/unit/guided-capture.test.ts`.

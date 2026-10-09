@@ -3,7 +3,7 @@
  * Guided capture end to end ("Take me there"), in a real headless Chrome with
  * the built extension, as admin@admin.com:
  *
- *   app tab: account page -> "Capture with my browser" -> "Take me there"
+ *   app tab: account page -> "Take me there"
  *   new tab: the platform page opens WITH the Matrx guide on it
  *   guide:   steps visible, progress counts items as they load, press Capture
  *   app tab: the job shows Done and links to what was saved
@@ -147,9 +147,9 @@ try {
   // the shared dev server compiles routes on first hit; give it room
   await app.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 180000 });
   await app.goto(ACCOUNT_URL, { waitUntil: 'domcontentloaded', timeout: 180000 });
-  const open = app.getByRole('button', { name: 'Capture with my browser' });
+  const open = app.getByRole('button', { name: 'Take me there' });
   await open.waitFor({ timeout: 120000 });
-  step('app: account page shows "Capture with my browser"', true);
+  step('app: account page offers "Take me there"', true);
   await open.click();
   const dialog = app.getByRole('dialog');
   await dialog.getByText(/We'll open Instagram in a new tab/).waitFor({ timeout: 15000 });
