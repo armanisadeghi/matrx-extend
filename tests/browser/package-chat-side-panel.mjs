@@ -177,6 +177,15 @@ try {
       .catch(() => undefined);
     const messages = await messageNodes.count();
     check('a past conversation opens', messages > 0, `${messages} message nodes`);
+    // Read-aloud comes from the package's own default (media tts); never pressed here (TTS costs money).
+    const readAloud = page.locator(
+      '[data-package-chat] [aria-label="Read aloud"], [data-package-chat] [aria-label="Resume"]',
+    );
+    await readAloud
+      .first()
+      .waitFor({ timeout: 15_000 })
+      .catch(() => undefined);
+    check('assistant messages offer read-aloud', (await readAloud.count()) > 0);
     await page.screenshot({ path: join(SHOTS, '3-conversation.png') });
   }
   // Open a past conversation through the panel's own address (independent of the history rows).
