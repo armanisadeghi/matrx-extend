@@ -58,5 +58,75 @@
       "browser_rerun": "not run"
     }
   },
-  "inventory_disposition": "Keep EXT-F-1003-T40 partial; downstream capture remains unverified."
+  "followup_run": {
+    "workflow_run_id": 37993114043,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37993114043",
+    "acceptance_lane": "B",
+    "acceptance_case": "settings-controls",
+    "development_ci_run_id": 37986090931,
+    "development_artifact_id": 11643292724,
+    "hosted_result_artifact_id": 11645888481,
+    "product_source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+    "driver_source_sha": "620d02178cceb82c8d2722cb6ea19a868e0b370c",
+    "extension_version": "0.2.456",
+    "extension_tree_sha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb",
+    "result": "workflow_failed_during_case_execution",
+    "resource_validity": {
+      "package": { "admitted": true, "resource_invalid": false, "exit_code": 0 },
+      "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0 },
+      "acceptance": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 1,
+        "decision": "child_failed"
+      },
+      "note": "Initial short CPU-busy interval recovered before acceptance execution; it was not the terminal cause."
+    },
+    "observations": {
+      "t40": {
+        "switch_on_visible_and_stored": true,
+        "switch_on_survived_panel_reload": true,
+        "switch_off_visible_and_stored": true,
+        "switch_off_survived_panel_reload": true,
+        "original_off_baseline_restored": true,
+        "full_extension_recheck": {
+          "name": "Error",
+          "code": "other",
+          "source": { "file": "settings-panel-driver.mjs", "line": 33, "column": 9 },
+          "stage": "waitFor timeout; the safe receipt did not retain the wait label",
+          "downstream_background_capture": "unverified"
+        }
+      },
+      "t10_recovery": {
+        "first_choice_failure_stage": "choice_settings_reopen",
+        "restoration_failure_stage": "restore_acquire_panel",
+        "transport_classes": ["protocol_error", "protocol_error"]
+      },
+      "other_full_extension_recheck_frames": {
+        "T28": { "file": "settings-panel-driver.mjs", "line": 5, "column": 32 },
+        "T67": { "file": "settings-panel-driver.mjs", "line": 5, "column": 32 }
+      }
+    },
+    "diagnosis": {
+      "exact_t40_throw": "settings-panel-driver.mjs:33 throws Error(<label>_not_observed:<safe diagnostic>) when waitFor exhausts its timeout; the run's allowlisted diagnostic reports Error/code other at that call site. The label is absent, so the specific awaited UI condition is unknown.",
+      "classification": "Test-driver recovery/cascade defect. T10 could not reacquire a replacement Settings panel, but the runner continued T28/T40/T67 checks against the stale active panel; T40's timeout is therefore not evidence of a product defect.",
+      "resource_and_control_evidence": "Package and browser resource journals were admitted and valid; the acceptance journal was admitted and resource-valid with child_failed. T40's warm and panel-reload switch checks and original OFF baseline restoration passed.",
+      "limitations": "No downstream background page-load capture assertion ran. T04 separately had a rendered-theme mismatch. No hosted rerun was performed after the driver repair."
+    },
+    "repair": {
+      "files": [
+        "tests/browser/settings-full-extension-rechecks.mjs",
+        "tests/browser/settings-full-extension-rechecks.test.mjs"
+      ],
+      "behavior": "If T04/T10 restoration cannot reacquire a live panel, stop using that panel and mark remaining full-extension rechecks unverified with previous_panel_recovery_failed instead of producing misleading follow-on failures.",
+      "verification": {
+        "command": "node --test tests/browser/settings-full-extension-rechecks.test.mjs",
+        "result": "9 passed",
+        "forcing_test": "The new regression test verifies T28/T40/T67 runners are not invoked after T10 restore_acquire_panel failure and their outcomes remain unverified.",
+        "mutation": "plant.py reverted the stop-after-recovery condition; the new regression failed because T28 and T40 runners were invoked. The source was restored.",
+        "hosted_rerun": "not run"
+      }
+    }
+  },
+  "inventory_disposition": "Keep EXT-F-1003-T40 partial; visible/persisted controls and baseline restoration passed, but downstream capture remains unverified and no product defect is established."
 }

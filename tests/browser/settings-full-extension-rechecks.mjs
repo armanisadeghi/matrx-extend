@@ -170,7 +170,7 @@ export function enforceFullExtensionRechecks(cases) {
         };
         item.criteria.push({
           name: 'full extension reload recheck required',
-          status: 'fail',
+          status: item.fullExtensionReload?.status === 'unverified' ? 'unverified' : 'fail',
           evidence,
         });
       }
@@ -202,10 +202,11 @@ export async function rerunGuestSettingsAfterExtensionReload({
   transportFailureClass = () => 'unavailable',
 }) {
   let activePanel = panel;
+  let panelRecoveryFailed = false;
   try {
     for (const preference of preferences.filter((item) => ['T04', 'T10'].includes(item.caseId))) {
       const item = cases.find((candidate) => candidate.id.endsWith(preference.caseId));
-      await runFullExtensionRecheck(item, async (record) => {
+      const result = await runFullExtensionRecheck(item, async (record) => {
         const before = await observePreference(activePanel, preference);
         const observed = preferenceBaseline(before, preference);
         const baseline = preExtensionBaselines?.[preference.caseId];
@@ -266,6 +267,38 @@ export async function rerunGuestSettingsAfterExtensionReload({
           throw error;
         }
       });
+      if (result.restorationFailureStage === 'restore_acquire_panel') {
+        panelRecoveryFailed = true;
+        break;
+      }
+    }
+
+    if (panelRecoveryFailed) {
+      for (const id of FULL_EXTENSION_RECHECK_IDS) {
+        const item = cases.find((candidate) => candidate.id.endsWith(id));
+        if (!item || item.fullExtensionReload?.status !== 'missing') continue;
+        const evidence = {
+          status: 'unverified',
+          error: 'previous_panel_recovery_failed',
+        };
+        item.fullExtensionReload = {
+          status: 'unverified',
+          error: evidence.error,
+          criteria: [
+            {
+              name: 'recheck skipped after panel recovery failed',
+              status: 'unverified',
+              evidence,
+            },
+          ],
+        };
+        item.steps.push({
+          phase: 'full_extension_reload',
+          action: 'recheck skipped after panel recovery failed',
+          observation: evidence,
+        });
+      }
+      return activePanel;
     }
 
     for (const [id, runner] of [

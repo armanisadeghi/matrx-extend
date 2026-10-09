@@ -153,7 +153,7 @@ function fullRestartFixture({
       mode: { count: 1, visible: 'Capture', stored: 'capture' },
     },
   };
-  const calls = { reloads: [], options: [], chats: [] };
+  const calls = { reloads: [], options: [], chats: [], caseRunners: [] };
   let settingsCalls = 0;
   let activePanel = { targetId: 'panel-initial-replacement', detach: async () => {} };
   let currentPreference;
@@ -291,10 +291,14 @@ function fullRestartFixture({
           );
         },
         preExtensionBaselines,
-        runSectionsCase: async (_panel, _reload, record) =>
-          record('sections', 'warm', { count: 44 }, true),
-        runAutoScrapeCase: async (_panel, _reload, record) =>
-          record('switch', 'warm', { restored: true }, true),
+        runSectionsCase: async (_panel, _reload, record) => {
+          calls.caseRunners.push('T28');
+          record('sections', 'warm', { count: 44 }, true);
+        },
+        runAutoScrapeCase: async (_panel, _reload, record) => {
+          calls.caseRunners.push('T40');
+          record('switch', 'warm', { restored: true }, true);
+        },
         reloadExtension,
         acquireLivePanel: async () => {
           if (failAcquireLivePanel)
@@ -398,6 +402,27 @@ test('full-extension callbacks retain separate safe choice and restore stages pl
     ),
     'the sanitized failure stage must reach the receipt criterion',
   );
+});
+
+test('later rechecks are unverified and stop using a panel after failed recovery', async () => {
+  const f = fullRestartFixture({
+    failSettingsCalls: [6, 7],
+    failAcquireLivePanel: true,
+    transportClasses: ['protocol_error', 'protocol_error'],
+  });
+  await f.run();
+  const mode = f.reportCases.find((item) => item.id.endsWith('T10'));
+  const sections = f.reportCases.find((item) => item.id.endsWith('T28'));
+  const autoScrape = f.reportCases.find((item) => item.id.endsWith('T40'));
+  const scrapeMode = f.reportCases.find((item) => item.id.endsWith('T67'));
+
+  assert.equal(mode.fullExtensionReload.restorationFailureStage, 'restore_acquire_panel');
+  assert.deepEqual(f.calls.caseRunners, []);
+  for (const item of [sections, autoScrape, scrapeMode]) {
+    assert.equal(item.fullExtensionReload.status, 'unverified');
+    assert.equal(item.fullExtensionReload.error, 'previous_panel_recovery_failed');
+    assert.equal(item.status, 'unverified');
+  }
 });
 
 test('unrecognized transport details collapse to the safe other enum', async () => {
