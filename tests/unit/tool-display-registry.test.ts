@@ -21,8 +21,8 @@
  */
 
 import { toolDisplayRegistry } from '@/features/chat/tool-display/registry';
-import type { ToolDisplayEntry } from '@ai-matrx/chat/tool-call-visualization/configured-rows/types';
 import { CANONICAL_SURFACE } from '@/lib/tools/categories';
+import type { ToolDisplayEntry } from '@ai-matrx/chat/tool-call-visualization/configured-rows/types';
 import { describe, expect, it } from 'vitest';
 
 /**
