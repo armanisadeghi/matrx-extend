@@ -50,6 +50,7 @@ on:
           - guest-scrape-development
           - settings-controls
           - settings-theme-rendering
+          - settings-auto-scrape-capture
           - settings-persistence
           - settings-persistence-admin
           - settings-persistence-member
@@ -191,7 +192,7 @@ jobs:
           # BEGIN hosted lane admission
           [[ "$ACCEPTANCE_LANE" == A || "$ACCEPTANCE_LANE" == B ]] || { echo 'Unknown hosted acceptance lane.' >&2; exit 1; }
           case "$ACCEPTANCE_CASE" in
-            guest-chat|guest-seo|guest-data|guest-scrape|guest-scrape-development|settings-controls|settings-theme-rendering|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
+            guest-chat|guest-seo|guest-data|guest-scrape|guest-scrape-development|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
           [[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }
@@ -435,6 +436,7 @@ jobs:
             test-results/seo-guest-acceptance.json
             test-results/data-guest-native-acceptance.json
             test-results/settings-local-controls-acceptance.json
+            test-results/settings-auto-scrape-capture-native.json
             test-results/settings-d87-native-*.json
             test-results/visibility-census-*.json
             test-results/visibility-census-guest.json.guest-account-readiness.png

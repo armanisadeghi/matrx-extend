@@ -299,6 +299,7 @@ async function run(prepared, artifactMode) {
       'guest-scrape-development',
       'settings-controls',
       'settings-theme-rendering',
+      'settings-auto-scrape-capture',
       'settings-persistence',
       'settings-persistence-admin',
       'settings-persistence-member',
@@ -320,7 +321,11 @@ async function run(prepared, artifactMode) {
       'profile-member',
     ].includes(acceptanceCase),
   );
-  if (acceptanceCase === 'settings-controls' || acceptanceCase === 'settings-theme-rendering')
+  if (
+    ['settings-controls', 'settings-theme-rendering', 'settings-auto-scrape-capture'].includes(
+      acceptanceCase,
+    )
+  )
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
   if (acceptanceCase === 'guest-data')
     assert.equal(kind, 'ci_development_test', 'Guest Data requires CI development receipt');
@@ -549,7 +554,9 @@ async function run(prepared, artifactMode) {
             : {}),
         }
       : {}),
-    ...(acceptanceCase === 'settings-controls' || acceptanceCase === 'settings-theme-rendering'
+    ...(['settings-controls', 'settings-theme-rendering', 'settings-auto-scrape-capture'].includes(
+      acceptanceCase,
+    )
       ? {
           SETTINGS_DEV_EXTENSION_DIR: extensionDir,
           SETTINGS_DEV_BUILD_RECEIPT: relocatedReceipt,
@@ -579,8 +586,14 @@ async function run(prepared, artifactMode) {
       [
         join(
           repo,
-          acceptanceCase === 'settings-controls' || acceptanceCase === 'settings-theme-rendering'
-            ? 'tests/browser/settings-local-controls-acceptance.mjs'
+          [
+            'settings-controls',
+            'settings-theme-rendering',
+            'settings-auto-scrape-capture',
+          ].includes(acceptanceCase)
+            ? acceptanceCase === 'settings-auto-scrape-capture'
+              ? 'tests/browser/settings-auto-scrape-capture-native.mjs'
+              : 'tests/browser/settings-local-controls-acceptance.mjs'
             : acceptanceCase === 'guest-data'
               ? 'tests/browser/data-guest-native-acceptance.mjs'
               : seoRoute

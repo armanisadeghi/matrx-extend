@@ -26,15 +26,24 @@ test('hosted theme probe preserves lane, development-artifact, and Settings-driv
   const driver = readFileSync('tests/browser/settings-local-controls-acceptance.mjs', 'utf8');
 
   assert.match(workflow, /- settings-theme-rendering/);
-  assert.match(workflow, /settings-controls\|settings-theme-rendering\|settings-persistence/);
+  const admissionCases = workflow.match(/case "\$ACCEPTANCE_CASE" in([\s\S]*?)\n\s*\*\)/)?.[1];
+  assert.ok(admissionCases, 'hosted acceptance allowlist must be present');
+  for (const acceptanceCase of [
+    'settings-controls',
+    'settings-theme-rendering',
+    'settings-persistence',
+  ]) {
+    const escapedCase = acceptanceCase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    assert.match(admissionCases, new RegExp(`(?:^|\\|)${escapedCase}(?:\\||\\))`));
+  }
   assert.match(hosted, /'settings-theme-rendering'/);
   assert.match(
     hosted,
-    /acceptanceCase === 'settings-controls' \|\| acceptanceCase === 'settings-theme-rendering'[\s\S]*?ci_development_test/,
+    /\[\s*'settings-controls',\s*'settings-theme-rendering'[\s\S]*?\.includes\(\s*acceptanceCase,\s*\)\s*\)\s*assert\.equal\(kind,\s*'ci_development_test'/,
   );
   assert.match(
     hosted,
-    /acceptanceCase === 'settings-controls' \|\| acceptanceCase === 'settings-theme-rendering'[\s\S]*?settings-local-controls-acceptance\.mjs/,
+    /\[\s*'settings-controls',\s*'settings-theme-rendering'[\s\S]*?\.includes\(\s*acceptanceCase,\s*\)[\s\S]*?settings-local-controls-acceptance\.mjs/,
   );
   assert.match(driver, /MATRX_HOSTED_ACCEPTANCE_CASE === 'settings-theme-rendering'/);
   assert.match(driver, /runGuestThemeRenderingProbe\(panel, theme/);
