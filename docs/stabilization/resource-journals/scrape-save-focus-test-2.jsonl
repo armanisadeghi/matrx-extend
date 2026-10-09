@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-10-09T22:22:47.358Z","runId":"scrape-save-focus-test-2","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-09T22:23:54.544Z","runId":"scrape-save-focus-test-2","mode":"run","policySchema":1,"sample":{"pressureLevel":1,"availableMemoryGiB":12.64,"requiredMemoryGiB":4,"oneMinuteLoad":1.63,"logicalCpus":10,"cpuBusyFraction":0.13142857142857142,"swapUsedMiB":2843.81,"repoFreeGiB":1669.49409866333,"profileFreeGiB":1669.49409866333,"safetyFreeGiB":22.005481719970703,"systemFreeGiB":22.005481719970703},"cpuBusySamples":[0.1,0.11,0.11,0.13,0.12,0.12,0.23],"reasons":[],"swapWindowSeconds":60,"code":"RESOURCE_ADMITTED"}
+{"schema":1,"at":"2026-10-09T22:23:57.060Z","runId":"scrape-save-focus-test-2","childExitCode":0,"childSignal":null,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"at":"2026-10-09T22:23:57.102Z","runId":"scrape-save-focus-test-2","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid","code":"RESOURCE_FINAL_DECISION"}

@@ -123,6 +123,36 @@ export function SaveSourceForm({
       ref={dialogRef}
       aria-label="Save Source"
       data-testid="save-source-form"
+      onKeyDownCapture={(event) => {
+        if (event.key !== 'Tab') return;
+        const dialog = dialogRef.current;
+        if (!dialog) return;
+        const controls = Array.from(
+          dialog.querySelectorAll<HTMLElement>(
+            'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+          ),
+        ).filter((control) => {
+          if (control.getAttribute('aria-hidden') === 'true') return false;
+          for (
+            let ancestor: HTMLElement | null = control;
+            ancestor;
+            ancestor = ancestor.parentElement
+          ) {
+            if (ancestor.hidden) return false;
+            const style = window.getComputedStyle(ancestor);
+            if (style.display === 'none' || style.visibility === 'hidden') return false;
+            if (ancestor === dialog) break;
+          }
+          return true;
+        });
+        if (controls.length === 0) return;
+        event.preventDefault();
+        const current = controls.indexOf(document.activeElement as HTMLElement);
+        const next = event.shiftKey
+          ? (current < 0 ? controls.length : current) - 1
+          : (current + 1) % controls.length;
+        controls[(next + controls.length) % controls.length]?.focus();
+      }}
       onCancel={(event) => {
         event.preventDefault();
         if (!saving) onClose();
