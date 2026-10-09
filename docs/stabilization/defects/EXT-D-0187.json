@@ -7,8 +7,8 @@
   "title": "Scrape Save omits naming, delays confirmation, and opens an unusable filing browser",
   "severity": "S2: central capture workflow is confusing and slow; users cannot name the Source at save time",
   "priority": "P1",
-  "state": "in-fix",
-  "owner": "root/scrape_save_build",
+  "state": "fixed",
+  "owner": "root",
   "preconditions": [
     "Use the installed development extension in Chrome on a content page with a captured article; sign in and select an organization."
   ],
@@ -30,8 +30,13 @@
     "/tmp/scrape-save-trace.md"
   ],
   "cause": "The extension discards name/attach_to inputs already accepted by /sources/land, makes the association picker a separate eager post-save step, and serially awaits an ancillary SEO audit write.",
-  "fix_commits": [],
-  "verification": [],
+  "fix_commits": ["146a7fc38"],
+  "verification": [
+    "Guarded pnpm compile: scrape-save-compile-1, valid exit 0.",
+    "Guarded pnpm exec wxt build --mode development: scrape-save-build-1, valid exit 0; unpacked manifest v0.2.456, SHA256 e97c532f0800794102d247d10332b4d17e85489479cf90a3f082c59006f12541.",
+    "Independent source peer found and builder fixed blank-name duplicate rename; final source verdict structurally met, native project scrolling pending.",
+    "Focused Vitest remains unverified: initial 17 pass/2 fail was repaired, but three admitted reruns hung and were stopped under the resource guard."
+  ],
   "transition_history": [
     {
       "at": "2026-10-09T21:12:23.532774+00:00",
@@ -50,8 +55,14 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Bounded client implementation assigned; native retest required."
+    },
+    {
+      "at": "2026-10-09T21:36:57+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Implementation committed and pushed; compile and development build passed. Awaiting native and test-harness retest."
     }
   ],
   "closure_requirement": "Fresh peer checks product/source behavior; guarded development build is reloaded in installed Chrome; member/admin real-page save proves custom name, no destination, one and multiple destinations, optional Library, refusal/retry, duplicate rename, responsive confirmation, and scrolling/searching to select a project beyond the first visible rows; surrounding Scrape cases remain green. Guest sign-in flow is rechecked.",
-  "next_action": "Implement and peer-check compact pre-save flow, then native installed-extension retest and update inventory T04/T29."
+  "next_action": "Retest exact unpacked build in installed Chrome, including below-fold Project scrolling and selection; resolve Vitest hang, then update inventory T04/T29 and close only after verified pass."
 }
