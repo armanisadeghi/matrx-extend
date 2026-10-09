@@ -8121,6 +8121,11 @@
  "/uxcam/public/status": {
   "get": []
  },
+ "/v1/meet/admission/changed": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/v1/meet/agenda-draft": {
   "post": [
    "application/json"
