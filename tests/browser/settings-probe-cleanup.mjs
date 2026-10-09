@@ -36,6 +36,35 @@ const FAILURE_CODES = new Set([
   'native_sidepanel_runtime_context_missing',
   'owned_cdp_transport_failed',
 ]);
+const RELOAD_PHASES = new Set([
+  'unavailable',
+  'discovery_enabled',
+  'initial_snapshot',
+  'listeners_registered',
+  'pre_click_snapshot',
+  'click_started',
+  'click_resolved',
+  'poll_transition',
+  'target_created',
+  'target_destroyed',
+  'target_info_changed',
+]);
+
+function reloadBoundary(value) {
+  if (!value || typeof value !== 'object') return null;
+  const bool = (field) => (typeof value[field] === 'boolean' ? value[field] : null);
+  return {
+    lastPhase: RELOAD_PHASES.has(value.lastPhase) ? value.lastPhase : 'unavailable',
+    clickStarted: bool('clickStarted'),
+    clickResolved: bool('clickResolved'),
+    preClickOldWorkerPresent: bool('preClickOldWorkerPresent'),
+    oldWorkerAbsent: bool('oldWorkerAbsent'),
+    oldPanelAbsent: bool('oldPanelAbsent'),
+    replacementWorkerPresent: bool('replacementWorkerPresent'),
+    finalPredicate: bool('finalPredicate'),
+    contextExpectedAppeared: bool('contextExpectedAppeared'),
+  };
+}
 
 export async function preserveFailureDuringCleanup(operation, cleanup) {
   let value;
@@ -82,6 +111,8 @@ export function serializeGuestReloadFailure(error) {
     restorationFailureCode: FAILURE_CODES.has(error.safeRestorationFailureCode)
       ? error.safeRestorationFailureCode
       : 'unavailable',
+    firstChoiceReloadBoundary: reloadBoundary(error.safeFirstChoiceReloadBoundary),
+    restorationReloadBoundary: reloadBoundary(error.safeRestorationReloadBoundary),
     cleanupAlsoFailed: error.safeCleanupFailed === true,
   };
 }

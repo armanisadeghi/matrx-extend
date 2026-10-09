@@ -52,6 +52,18 @@ test('reload failure receipt serializes only allowlisted stage and transport dia
     safeRestorationTransportClass: 'unexpected_close',
     safeFirstChoiceFailureCode: 'pointer_target_not_unique',
     safeRestorationFailureCode: 'native_extension_replacement_panel_unverified',
+    safeFirstChoiceReloadBoundary: {
+      lastPhase: 'click_started',
+      clickStarted: true,
+      clickResolved: false,
+      preClickOldWorkerPresent: true,
+      oldWorkerAbsent: false,
+      oldPanelAbsent: false,
+      replacementWorkerPresent: false,
+      finalPredicate: false,
+      contextExpectedAppeared: null,
+      secret: 'private content',
+    },
     safeCleanupFailed: true,
   });
   const receipt = serializeGuestReloadFailure(error);
@@ -63,6 +75,18 @@ test('reload failure receipt serializes only allowlisted stage and transport dia
     restorationTransportClass: 'unexpected_close',
     firstChoiceFailureCode: 'pointer_target_not_unique',
     restorationFailureCode: 'native_extension_replacement_panel_unverified',
+    firstChoiceReloadBoundary: {
+      lastPhase: 'click_started',
+      clickStarted: true,
+      clickResolved: false,
+      preClickOldWorkerPresent: true,
+      oldWorkerAbsent: false,
+      oldPanelAbsent: false,
+      replacementWorkerPresent: false,
+      finalPredicate: false,
+      contextExpectedAppeared: null,
+    },
+    restorationReloadBoundary: null,
     cleanupAlsoFailed: true,
   });
   assert.equal(JSON.stringify(receipt).includes('owned_cdp_transport_failed'), false);
@@ -78,6 +102,7 @@ test('reload failure receipt replaces unrecognized diagnostics with safe default
     safeRestorationTransportClass: 'socket_error',
     safeFirstChoiceFailureCode: 'private-value',
     safeRestorationFailureCode: 'owned_cdp_transport_failed',
+    safeFirstChoiceReloadBoundary: { lastPhase: 'private-value', clickStarted: 'private-value' },
   });
   assert.deepEqual(receipt, {
     category: 'full_extension_preference_or_restore_failed',
@@ -87,6 +112,18 @@ test('reload failure receipt replaces unrecognized diagnostics with safe default
     restorationTransportClass: 'socket_error',
     firstChoiceFailureCode: 'unavailable',
     restorationFailureCode: 'owned_cdp_transport_failed',
+    firstChoiceReloadBoundary: {
+      lastPhase: 'unavailable',
+      clickStarted: null,
+      clickResolved: null,
+      preClickOldWorkerPresent: null,
+      oldWorkerAbsent: null,
+      oldPanelAbsent: null,
+      replacementWorkerPresent: null,
+      finalPredicate: null,
+      contextExpectedAppeared: null,
+    },
+    restorationReloadBoundary: null,
     cleanupAlsoFailed: false,
   });
 });

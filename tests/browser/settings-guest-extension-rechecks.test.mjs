@@ -214,7 +214,21 @@ test('extension reload transport failures retain the first safe choice and resto
     run(f, {
       reloadExtension: async () => {
         reloadAttempts += 1;
-        throw new Error('owned_cdp_transport_failed');
+        const error = new Error('owned_cdp_transport_failed');
+        error.lifecycleEvidence = {
+          old_worker_absent: false,
+          old_panel_absent: false,
+          replacement_worker_present: false,
+          timeline: {
+            pre_click_old_worker_present: true,
+            final_predicate: false,
+            entries: [
+              { at: '2026-10-09T23:53:00.000Z', phase: 'pre_click_snapshot' },
+              { at: '2026-10-09T23:53:01.000Z', phase: 'click_started' },
+            ],
+          },
+        };
+        throw error;
       },
       safeStages: ['extension_reload', 'restore_extension_reload'],
       transportFailureClass: () => 'unexpected_close',
@@ -231,6 +245,21 @@ test('extension reload transport failures retain the first safe choice and resto
   assert.equal(observedError.safeRestorationTransportClass, 'unexpected_close');
   assert.equal(observedError.safeFirstChoiceFailureCode, 'owned_cdp_transport_failed');
   assert.equal(observedError.safeRestorationFailureCode, 'owned_cdp_transport_failed');
+  assert.deepEqual(observedError.safeFirstChoiceReloadBoundary, {
+    lastPhase: 'click_started',
+    clickStarted: true,
+    clickResolved: false,
+    preClickOldWorkerPresent: true,
+    oldWorkerAbsent: false,
+    oldPanelAbsent: false,
+    replacementWorkerPresent: false,
+    finalPredicate: false,
+    contextExpectedAppeared: null,
+  });
+  assert.deepEqual(
+    observedError.safeRestorationReloadBoundary,
+    observedError.safeFirstChoiceReloadBoundary,
+  );
   assert.equal(observedError.safeCleanupFailed, undefined);
   assert.equal(observedError.message.includes('owned_cdp_transport_failed'), false);
 });

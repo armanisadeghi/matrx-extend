@@ -94,10 +94,12 @@ export async function runGuestChoicesAcrossExtensionRestarts({
   let choiceFailureDetailStage = null;
   let choiceTransportClass = null;
   let choiceFailureCode = null;
+  let choiceReloadBoundary = null;
   let restoreFailureStage = null;
   let restoreFailureDetailStage = null;
   let restoreTransportClass = null;
   let restoreFailureCode = null;
+  let restoreReloadBoundary = null;
   let choiceFailure = false;
   let restoreFailure = false;
 
@@ -118,6 +120,22 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     )
       return pointerCode;
     return captureFailure(error, () => 'none').failure_code;
+  };
+  const reloadBoundary = (error) => {
+    const captured = captureFailure(error, () => 'none');
+    const evidence = captured.retirement_evidence;
+    const phases = evidence?.timeline?.entries?.map((entry) => entry.phase) ?? [];
+    return {
+      lastPhase: phases.at(-1) ?? 'unavailable',
+      clickStarted: phases.includes('click_started'),
+      clickResolved: phases.includes('click_resolved'),
+      preClickOldWorkerPresent: evidence?.timeline?.pre_click_old_worker_present ?? null,
+      oldWorkerAbsent: evidence?.old_worker_absent ?? null,
+      oldPanelAbsent: evidence?.old_panel_absent ?? null,
+      replacementWorkerPresent: evidence?.replacement_worker_present ?? null,
+      finalPredicate: evidence?.timeline?.final_predicate ?? null,
+      contextExpectedAppeared: captured.context_boundary?.exact_expected_appeared ?? null,
+    };
   };
 
   const inspectBaseline = async (stage) => {
@@ -201,6 +219,8 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     choiceFailureDetailStage = safeDetailStage(failureDetailStage);
     choiceTransportClass = safeTransportFailureClass(transportFailureClass);
     choiceFailureCode = safeFailureCode(error);
+    if (choiceFailureDetailStage === 'choice_extension_reload')
+      choiceReloadBoundary = reloadBoundary(error);
   }
 
   try {
@@ -272,6 +292,8 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     restoreFailureDetailStage = safeDetailStage(failureDetailStage);
     restoreTransportClass = safeTransportFailureClass(transportFailureClass);
     restoreFailureCode = safeFailureCode(error);
+    if (restoreFailureDetailStage === 'restore_extension_reload')
+      restoreReloadBoundary = reloadBoundary(error);
   }
 
   if (choiceFailure || restoreFailure) {
@@ -290,6 +312,8 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     error.safeRestorationTransportClass = restoreFailure ? restoreTransportClass : 'not_applicable';
     error.safeFirstChoiceFailureCode = choiceFailure ? choiceFailureCode : 'not_applicable';
     error.safeRestorationFailureCode = restoreFailure ? restoreFailureCode : 'not_applicable';
+    error.safeFirstChoiceReloadBoundary = choiceReloadBoundary;
+    error.safeRestorationReloadBoundary = restoreReloadBoundary;
     throw error;
   }
   return activePanel;
