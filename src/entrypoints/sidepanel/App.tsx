@@ -1,4 +1,3 @@
-import { isPackageChatMode } from '@/lib/chat-target';
 import { AuthGate } from '@/components/AuthGate';
 import { NoticeHost } from '@/components/NoticeHost';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
@@ -19,6 +18,7 @@ import { useGuidanceSync } from '@/hooks/use-guidance-sync';
 import { useHighlightBridge } from '@/hooks/use-highlight-bridge';
 import { useParallelEventBridge } from '@/hooks/use-parallel-event-bridge';
 import { getAgentCatalog } from '@/lib/agents/catalog';
+import { isPackageChatMode } from '@/lib/chat-target';
 import { useDebugStore } from '@/lib/debug/log';
 import { on, send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';

@@ -9,7 +9,6 @@
 
 import {
   peekPlatformKnob,
-  platformKnobsVersion,
   resolvePlatformKnob,
   subscribePlatformKnobs,
   warmPlatformKnobs,
@@ -28,10 +27,9 @@ function useSessionKnob(ref: ChatKnobRef): unknown {
     () => peekPlatformKnob(fullKey),
     () => undefined,
   );
-  const version = useSyncExternalStore(subscribePlatformKnobs, platformKnobsVersion, () => 0);
   useEffect(() => {
     if (value === undefined) void warmPlatformKnobs();
-  }, [value, version]);
+  }, [value]);
   return value;
 }
 

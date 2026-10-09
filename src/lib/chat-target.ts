@@ -19,7 +19,8 @@ import { useEffect, useState } from 'react';
  */
 export function isPackageChatMode(): boolean {
   try {
-    if (new URLSearchParams(globalThis.location?.search ?? '').get('chat') === 'package') return true;
+    if (new URLSearchParams(globalThis.location?.search ?? '').get('chat') === 'package')
+      return true;
   } catch {
     // no location (service worker): fall through to the saved choice
   }
