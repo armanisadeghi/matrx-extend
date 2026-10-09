@@ -12,6 +12,7 @@ import { useAuthStore } from '@/state/auth';
 import { pushNotice } from '@/state/notices';
 import type { EntityTypeToken } from '@ai-matrx/associations';
 import {
+  AssociationCandidateBody,
   AssociationsProvider,
   UniversalAssociationPicker,
   attachedKey,
@@ -279,29 +280,52 @@ export function SaveSourceForm({
                 event.currentTarget.clientHeight * (event.key === 'PageDown' ? 1 : -1);
             }}
           >
-            <UniversalAssociationPicker
-              key={placeType}
-              orgId={organizationId}
-              tokens={
-                placeType === 'all' ? ([...SAVE_TARGET_TOKENS] as EntityTypeToken[]) : [placeType]
-              }
-              emptyQueryMode={placeType === 'all' ? 'recents' : 'candidates'}
-              attachedKeys={attachedKeys}
-              onAttach={async (token, id, title) => {
-                setStaged((prev) =>
-                  prev.some((item) => item.token === token && item.id === id)
-                    ? prev
-                    : [...prev, { token, id, label: title || token }],
-                );
-                return { ok: true };
-              }}
-              onDetach={async (token, id) => {
-                setStaged((prev) =>
-                  prev.filter((item) => !(item.token === token && item.id === id)),
-                );
-                return { ok: true };
-              }}
-            />
+            {placeType === 'all' ? (
+              <UniversalAssociationPicker
+                key={placeType}
+                orgId={organizationId}
+                tokens={[...SAVE_TARGET_TOKENS] as EntityTypeToken[]}
+                attachedKeys={attachedKeys}
+                onAttach={async (token, id, title) => {
+                  setStaged((prev) =>
+                    prev.some((item) => item.token === token && item.id === id)
+                      ? prev
+                      : [...prev, { token, id, label: title || token }],
+                  );
+                  return { ok: true };
+                }}
+                onDetach={async (token, id) => {
+                  setStaged((prev) =>
+                    prev.filter((item) => !(item.token === token && item.id === id)),
+                  );
+                  return { ok: true };
+                }}
+              />
+            ) : (
+              <AssociationCandidateBody
+                key={placeType}
+                token={placeType}
+                enabled
+                orgId={organizationId}
+                attachedIds={
+                  new Set(staged.filter((item) => item.token === placeType).map((item) => item.id))
+                }
+                onAttach={async (id, title) => {
+                  setStaged((prev) =>
+                    prev.some((item) => item.token === placeType && item.id === id)
+                      ? prev
+                      : [...prev, { token: placeType, id, label: title || placeType }],
+                  );
+                  return { ok: true };
+                }}
+                onDetach={async (id) => {
+                  setStaged((prev) =>
+                    prev.filter((item) => !(item.token === placeType && item.id === id)),
+                  );
+                  return { ok: true };
+                }}
+              />
+            )}
           </section>
         </AssociationsProvider>
       )}

@@ -66,6 +66,21 @@ vi.mock('@/lib/sources/associations-store', () => ({ getAssociationsStore: () =>
 vi.mock('@ai-matrx/associations/react', () => ({
   AssociationsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   attachedKey: (token: string, id: string) => `${token}:${id}`,
+  AssociationCandidateBody: ({
+    onAttach,
+    token,
+  }: {
+    onAttach: (id: string, title: string) => Promise<unknown>;
+    token: string;
+  }) => (
+    <button
+      type="button"
+      data-token={token}
+      onClick={() => void onAttach('project-1', 'Launch plan')}
+    >
+      Pick Launch plan
+    </button>
+  ),
   UniversalAssociationPicker: ({
     onAttach,
     tokens,
@@ -388,7 +403,7 @@ describe('Save never loses input', () => {
     expect(screen.queryByRole('button', { name: 'Pick Launch plan' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
     const picker = screen.getByRole('button', { name: 'Pick Launch plan' });
-    expect(picker.getAttribute('data-tokens')).toBe('project');
+    expect(picker.getAttribute('data-token')).toBe('project');
     fireEvent.click(picker);
     expect(screen.getByText('Launch plan')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
