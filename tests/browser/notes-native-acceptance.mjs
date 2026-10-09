@@ -13,7 +13,12 @@ import {
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { readMemberCredential } from './notes-member-credential.mjs';
-import { shouldHoldOwnedNotesPatch, verifyNotesSnapshot } from './notes-native-contract.mjs';
+import {
+  ownedNotesFixtureReceipt,
+  requireNotesOrganizationId,
+  shouldHoldOwnedNotesPatch,
+  verifyNotesSnapshot,
+} from './notes-native-contract.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -830,6 +835,12 @@ try {
       stage = 'organization';
       if (ROLE === 'member') await selectMemberOrganizationThroughUi(panel);
       else await selectTestOrganization(panel, config.approved_organization_name);
+      const selectedOrganizationId = requireNotesOrganizationId(
+        await evaluate(
+          panel,
+          "chrome.storage.local.get('matrx.org.active').then(stored => stored['matrx.org.active']?.id ?? null)",
+        ),
+      );
       const transport = armNotesTransport(panel, origin);
       await transport.start();
       try {
@@ -938,15 +949,14 @@ try {
         await writeFile(
           FIXTURE_RECEIPT,
           `${JSON.stringify(
-            {
-              schema_version: 1,
-              status: 'created',
-              note_id: created.createdNoteIds[0],
-              note_title: noteTitle,
+            ownedNotesFixtureReceipt('created', {
+              noteId: created.createdNoteIds[0],
+              noteTitle,
+              organizationId: selectedOrganizationId,
               role: ROLE,
-              source_sha: EXPECTED_SOURCE_SHA,
-              tree_sha256: before.treeSha256,
-            },
+              sourceSha: EXPECTED_SOURCE_SHA,
+              treeSha256: before.treeSha256,
+            }),
             null,
             2,
           )}\n`,
@@ -1217,15 +1227,14 @@ try {
         await writeFile(
           FIXTURE_RECEIPT,
           `${JSON.stringify(
-            {
-              schema_version: 1,
-              status: 'deleted_confirmed',
-              note_id: detailIds[0],
-              note_title: noteTitle,
+            ownedNotesFixtureReceipt('deleted_confirmed', {
+              noteId: detailIds[0],
+              noteTitle,
+              organizationId: selectedOrganizationId,
               role: ROLE,
-              source_sha: EXPECTED_SOURCE_SHA,
-              tree_sha256: before.treeSha256,
-            },
+              sourceSha: EXPECTED_SOURCE_SHA,
+              treeSha256: before.treeSha256,
+            }),
             null,
             2,
           )}\n`,
