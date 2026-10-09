@@ -1,0 +1,29 @@
+{
+  "task_id": "Records37860757691-C06",
+  "reviewed_commit": "6184e5c7379951181331baed1b5359db679d429d",
+  "status": "DONE_WITH_CONCERNS",
+  "verdict_a_source_and_native_outcome": {
+    "source": "PASS",
+    "native_acceptance": "PENDING",
+    "evidence": [
+      "runOwnedApprovalCreate records the failure phase in its catch before entering the finally cleanup; the diagnostic callback is invoked before any decline or table archive.",
+      "recordsC06FailureDiagnostic emits only a phase from a fixed set and either a code from SAFE_FAILURE_CODES or the fixed value unclassified. It never serializes error.message or approval data.",
+      "The native acceptance wires onFailure to report.c06_diagnostic. Its finally block serializes the report to the designated output path, including after the outer catch marks the run unverified.",
+      "No dispatch, approval decision, reconciliation, cleanup, or credit logic changed; the lifecycle callback defaults to a no-op."
+    ],
+    "native_result": "No native rerun was performed, so the newly added diagnostic has not yet identified the original C06 failure. The source receipt path is present; native evidence remains pending."
+  },
+  "verdict_b_quality": {
+    "result": "PARTIAL",
+    "evidence": [
+      "Focused independent run passed 39/39: TMPDIR=/Volumes/Samsung2TB/tmp node --test tests/browser/records-approval-lifecycle.test.mjs tests/browser/records-readonly-native-driver.test.mjs.",
+      "The new lifecycle test forces an authoritative approval identity mismatch and checks the specific safe code at phase held. It also forces an exception containing private response text at decision_unknown and proves the diagnostic JSON excludes that text.",
+      "The allowlist and phase map prevent arbitrary exception text or an unrecognized phase from entering the diagnostic. The diagnostic call precedes cleanup, preserving the original boundary even if cleanup later settles the approval."
+    ],
+    "concerns": [
+      "The added test verifies the lifecycle callback value, but no regression test runs the actual native acceptance callback through its output serialization and asserts that c06_diagnostic survives in the saved receipt on failure. The source wiring is direct and appears correct, but that integration edge is not forced by the new test.",
+      "The test only exercises a known allowlisted approval-read mismatch and a private UI exception. It does not exercise a secret-bearing rejection from dispatch/readApproval or an unexpected phase, though the fixed allowlist and phase set make those paths return safe fixed values by inspection."
+    ],
+    "scope": "No source files were edited. No native dispatch, build, credential access, or product acceptance was performed."
+  }
+}
