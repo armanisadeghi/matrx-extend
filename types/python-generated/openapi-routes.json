@@ -453,6 +453,11 @@
    "application/json"
   ]
  },
+ "/agent-messages": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/agent-service/agents": {
   "get": [],
   "post": [
