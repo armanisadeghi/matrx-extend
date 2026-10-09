@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-09 22:47 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-09T22:46:56+00:00. 205 features · 769 cases · 1358 controls · 187 linked defect records.
+Generated 2026-10-09 23:18 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-09T23:20:00+00:00. 205 features · 769 cases · 1358 controls · 187 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
 Applicable case-by-role slots: **1230** — Pass: 90 · Partial: 92 · Fail: 2 · Unverified: 1045 · N/A: 1.
-Unverified splits into **132 explicitly marked unverified** and **913 with no result record**.
+Unverified splits into **133 explicitly marked unverified** and **912 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -508,8 +508,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: settings-local397-native-20261008, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T06:30:08.992059+00:00, .research/settings-local397-native-20261008.json
 - EXT-F-1003-T37 · guest: Pass. Independent review confirms original guest criteria.
   Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json']
-- EXT-F-1003-T40 · guest: Partial. Guest native run passed warm Auto-scrape On/Off visible+stored checks, both panel reloads, and OFF baseline restoration. Its full-extension recheck was explicitly skipped as unverified after T10 could not reacquire the replacement Settings panel. Background capture traffic with the switch on and no-traffic with it off were not exercised; no capture-behavior pass is established.
-  Evidence / build / date recorded: 37994579674, ['.research/settings-full-extension-recheck-diagnostics-20261009.json']
+- EXT-F-1003-T40 · guest: Partial. Hosted native guest run verified actual warm ON capture and OFF no-traffic behavior on the exact frozen artifact. The original implicit OFF baseline was restored. T40 includes a reload dimension, which this run did not exercise, so canonical status remains partial. Earlier runs 38001190308 and 38002340132 stopped before capture interaction on probe assumptions; their sanitized receipts are retained as evidence.
+  Evidence / build / date recorded: 38003055389, ['docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/receipt.sanitized.json', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-package-38003055389-1.jsonl', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-browser-38003055389-1.jsonl', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-guest-38003055389-1.jsonl', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38001190308/receipt.sanitized.json', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38002340132/receipt.sanitized.json']
 - EXT-F-1003-T43 · guest: Partial.
   Evidence / build / date recorded: 37701201664, ['.research/desktop-remaining-native-20261007.json', '.research/lifecycle-desktop-final-review-20261007.json']
 - EXT-F-1003-T44 · member: Partial.
@@ -1460,6 +1460,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
+- EXT-F-2005-T01 · guest: Unverified. Guarded guest run imported exact frozen development artifact 11647758423, then the guest resource watcher observed RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY and stopped the child at the safe boundary. Final resourceInvalid=true; no CDP/native side-panel session or Data behavior was reached, so T01 remains unverified.
+  Evidence / build / date recorded: 38002259163, ['docs/stabilization/evidence/guest-data-behavior/run38002259163/receipt.json', 'docs/stabilization/evidence/guest-data-behavior/run38002259163/hosted-guest-38002259163-1.jsonl']
 - EXT-F-2005-T03 · admin: Partial. Actualfieldpicker/manualCSSsave/Data+Showcase replay JSON/AI/TSV preserve719594charbookfield identicalhash; Data refreshreplaypasses. D53closed; D54quotes/spreadsheetpaste open; ShowcaseAIURLmissingD55; broaderauth/cancel/failurestatesunverified.
   Evidence / build / date recorded: data-picker-long-native-20260928-01, ['docs/stabilization/reports/data-picker-long-native.json', 'docs/stabilization/reports/showcase-export-guarded-runtime.json']
 

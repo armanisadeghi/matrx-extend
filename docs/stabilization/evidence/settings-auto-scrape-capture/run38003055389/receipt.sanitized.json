@@ -1,0 +1,86 @@
+{
+  "workflow_run_id": 38003055389,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38003055389",
+  "workflow_source_sha": "be0622647c87fedcd2f732e62babd83eaacfd640",
+  "acceptance_lane": "B",
+  "acceptance_case": "settings-auto-scrape-capture",
+  "runner_label": "macos-15-intel",
+  "development_ci_run_id": 37998294843,
+  "development_artifact_id": 11647758423,
+  "product_source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+  "extension_version": "0.2.456",
+  "extension_tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+  "hosted_result_artifact_id": 11650137438,
+  "hosted_job_id": 114065450088,
+  "workflow_conclusion": "success",
+  "native_case": {
+    "case_id": "EXT-F-1003-T40",
+    "role": "guest",
+    "native_subtarget_status": "pass",
+    "canonical_case_status": "partial",
+    "scope": "Real hosted native side panel, owned Harbor Dental pages; warm only.",
+    "on": {
+      "toggle_visible": true,
+      "stored": true,
+      "capture_call_count": 1,
+      "message_kind": "scrape:capture-page",
+      "call_succeeded": true,
+      "url_matches_loaded_page": true,
+      "unique_marker_present": true
+    },
+    "off": {
+      "toggle_visible": false,
+      "stored": false,
+      "followup_page_loaded": true,
+      "observation_window_completed": true,
+      "capture_call_count": 0
+    },
+    "baseline_cleanup": {
+      "toggle_visible": false,
+      "stored": null,
+      "original_absent_theme_field_restored": true,
+      "storage_key_presence_restoration_assertion": "passed"
+    },
+    "unverified": [
+      "Panel or full-extension reload persistence",
+      "Member/admin/Store roles",
+      "Downstream chat/context consumption"
+    ],
+    "interpretation": "Actual guest warm ON capture and OFF no-traffic behavior passed. The case includes a reload dimension, so the canonical status remains partial."
+  },
+  "resource_validity": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "resource_journals": {
+    "hosted-browser-38003055389-1.jsonl": {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-browser-38003055389-1.jsonl",
+      "sha256": "42c04ca6dd35e6ff020932278cba99671e84e2cdc644adde4f7cbb59b005c898"
+    },
+    "hosted-guest-38003055389-1.jsonl": {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-guest-38003055389-1.jsonl",
+      "sha256": "160c054af5796f5c013744416c038af90880fa66c3dbca413c652dbbbf0ef950"
+    },
+    "hosted-package-38003055389-1.jsonl": {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-package-38003055389-1.jsonl",
+      "sha256": "bc87f7c0008fac2ada017a5c61cf7faeb04726ae267fdb7101d37e4288783b5c"
+    }
+  },
+  "excluded_from_report": "Raw extension settings JSON, credentials, screenshots and unsanitized artifact contents."
+}

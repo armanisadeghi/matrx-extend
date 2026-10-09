@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-09T22:46:56+00:00",
+  "updated_at": "2026-10-09T23:20:00+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -8634,15 +8634,31 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37994579674",
-              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "run_id": "38003055389",
+              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+              "workflow_source_sha": "be0622647c87fedcd2f732e62babd83eaacfd640",
+              "development_ci_run_id": 37998294843,
+              "development_artifact_id": 11647758423,
+              "hosted_result_artifact_id": 11650137438,
               "build_version": "0.2.456",
+              "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
               "resource_valid": true,
-              "detail": "Guest native run passed warm Auto-scrape On/Off visible+stored checks, both panel reloads, and OFF baseline restoration. Its full-extension recheck was explicitly skipped as unverified after T10 could not reacquire the replacement Settings panel. Background capture traffic with the switch on and no-traffic with it off were not exercised; no capture-behavior pass is established.",
-              "evidence": [
-                ".research/settings-full-extension-recheck-diagnostics-20261009.json"
+              "passed_subtargets": [
+                "Warm guest ON emitted one successful scrape:capture-page call for the loaded Harbor Dental intake URL with the unique page marker present.",
+                "Warm guest OFF loaded the Harbor Dental follow-up page and completed the observation window with zero capture calls.",
+                "Cleanup restored visible OFF and the original absent scrapeAutoOnLoad field; key-presence equality was asserted."
               ],
-              "scope": "Hosted lane B run 37994579674; exact frozen development artifact 11643292724, source eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b, v0.2.456; macos-15-intel guest. Member/admin and downstream page-load capture not tested."
+              "unverified": "Panel/full-extension reload persistence; member/admin/Store roles; downstream chat/context consumption.",
+              "detail": "Hosted native guest run verified actual warm ON capture and OFF no-traffic behavior on the exact frozen artifact. The original implicit OFF baseline was restored. T40 includes a reload dimension, which this run did not exercise, so canonical status remains partial. Earlier runs 38001190308 and 38002340132 stopped before capture interaction on probe assumptions; their sanitized receipts are retained as evidence.",
+              "evidence": [
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-package-38003055389-1.jsonl",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-browser-38003055389-1.jsonl",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-guest-38003055389-1.jsonl",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38001190308/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38002340132/receipt.sanitized.json"
+              ],
+              "scope": "Hosted lane B run 38003055389 on macos-15-intel, signed-out guest; exact frozen CI development artifact 11647758423 (CI run 37998294843), source 7230bb7669582179898fc187e05f1b939562a89e, v0.2.456. Warm capture only; reload and other roles remain unverified."
             }
           },
           "linked_defects": [
