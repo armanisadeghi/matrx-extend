@@ -3,6 +3,46 @@ import assert from 'node:assert/strict';
 import { open, readFile, rename } from 'node:fs/promises';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const SAFE_FAILURE_CODES = new Set([
+  'records_approval_read_wrong_id',
+  'records_approval_read_wrong_org',
+  'records_approval_read_wrong_subject',
+  'records_approval_read_wrong_principal',
+  'records_approval_read_wrong_conversation',
+  'records_approval_read_wrong_origin',
+  'records_approval_read_wrong_kind',
+  'records_approval_read_wrong_rows',
+  'records_approval_state_unknown',
+  'records_approval_not_pending',
+  'records_approval_ui_not_confirmed',
+  'records_c06_approvals_route_missing',
+  'records_c06_web_principal_mismatch',
+  'records_c06_web_email_mismatch',
+  'records_c06_authenticated_read_door_unobserved',
+  'records_c06_approval_read_failed',
+  'records_c06_approval_read_empty',
+  'records_c06_approval_row_not_unique',
+  'records_c06_agent_badge_missing',
+  'records_c06_owned_table_headline_missing',
+]);
+
+export function recordsC06FailureDiagnostic(error, phase) {
+  const code = [...SAFE_FAILURE_CODES].find(
+    (known) => error?.message === known || error?.message?.startsWith(`${known}\n`),
+  );
+  return {
+    phase: [
+      'dispatch_unknown',
+      'held',
+      'decision_unknown',
+      'approved',
+      'readback_verified',
+    ].includes(phase)
+      ? phase
+      : 'other',
+    code: code ?? 'unclassified',
+  };
+}
 
 async function save(path, state) {
   const temporary = `${path}.tmp`;
@@ -118,6 +158,7 @@ export async function runOwnedApprovalCreate({
   readRecord,
   cleanupTable,
   conversationId,
+  onFailure = () => {},
 }) {
   assert.match(conversationId, UUID, 'records_approval_conversation_id_invalid');
   const state = {
@@ -190,6 +231,7 @@ export async function runOwnedApprovalCreate({
     await save(journalPath, state);
   } catch (error) {
     bodyError = error;
+    onFailure(recordsC06FailureDiagnostic(error, state.phase));
     // Only a known pending hold before any approve click can be safely declined.
     if (state.approval_id && !state.approval_decision_unknown) {
       try {

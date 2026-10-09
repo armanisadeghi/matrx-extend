@@ -166,6 +166,29 @@ test('foreign approval, pending after click, wrong UI receipt and wrong readback
   }
 });
 
+test('C06 diagnostic identifies the failed boundary without echoing approval data', async () => {
+  const diagnostics = [];
+  const read = await scenario({
+    readApproval: async () => ({ ...approval('pending'), requested_by: rowId }),
+    onFailure: (value) => diagnostics.push(value),
+  });
+  await assert.rejects(
+    runOwnedApprovalCreate(read.adapters),
+    /records_approval_read_wrong_principal/,
+  );
+  assert.deepEqual(diagnostics, [{ phase: 'held', code: 'records_approval_read_wrong_principal' }]);
+
+  const ui = await scenario({
+    approveInUi: async () => {
+      throw new Error('private browser response');
+    },
+    onFailure: (value) => diagnostics.push(value),
+  });
+  await assert.rejects(runOwnedApprovalCreate(ui.adapters), /private browser response/);
+  assert.deepEqual(diagnostics[1], { phase: 'decision_unknown', code: 'unclassified' });
+  assert.equal(JSON.stringify(diagnostics).includes('private browser response'), false);
+});
+
 test('wrong UI decision RPC row ID refuses credit despite matching approval and Tools readback', async () => {
   const s = await scenario({
     approveInUi: async () => ({ ...approveClick(), appliedRecordId: owner.tableId }),
