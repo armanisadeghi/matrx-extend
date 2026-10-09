@@ -56,13 +56,14 @@ describe('saveToSwipeFile', () => {
     expect(m.addPostToCollection).not.toHaveBeenCalled();
   });
 
-  it('surfaces the provider fallback notice', async () => {
+  it('shows a backup notice without exposing provider details', async () => {
     m.ingestPost.mockResolvedValue(
-      post({ provider: 'backup', fallback_reason: 'primary timed out' }),
+      post({ provider: 'private-vendor', fallback_reason: 'primary timed out' }),
     );
     const o = await saveToSwipeFile({ url: URL_OK, collectionId: 'c1' }, () => {});
-    expect(o).toMatchObject({ status: 'saved' });
-    expect((o as { notice: string }).notice).toContain('primary timed out');
+    expect(o).toMatchObject({ status: 'saved', notice: 'Fetched from a backup source' });
+    expect((o as { notice: string }).notice).not.toContain('private-vendor');
+    expect((o as { notice: string }).notice).not.toContain('primary timed out');
   });
 
   it('creates a new collection after the post is fetched', async () => {
