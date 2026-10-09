@@ -293,6 +293,7 @@ async function run(prepared, artifactMode) {
     [
       'guest-chat',
       'guest-seo',
+      'guest-data',
       'guest-scrape',
       'guest-scrape-development',
       'settings-controls',
@@ -319,6 +320,8 @@ async function run(prepared, artifactMode) {
   );
   if (acceptanceCase === 'settings-controls')
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
+  if (acceptanceCase === 'guest-data')
+    assert.equal(kind, 'ci_development_test', 'Guest Data requires CI development receipt');
   if (acceptanceCase.startsWith('settings-persistence'))
     assert.equal(
       kind,
@@ -515,6 +518,15 @@ async function run(prepared, artifactMode) {
           SETTINGS_DEV_BUILD_RECEIPT: relocatedReceipt,
         }
       : {}),
+    ...(acceptanceCase === 'guest-data'
+      ? {
+          MATRX_DATA_EXTENSION_DIR: extensionDir,
+          MATRX_DATA_RECEIPT: relocatedReceipt,
+          MATRX_DATA_CI_SOURCE_SHA: prepared.sourceSha,
+          MATRX_DATA_CI_RUN_ID: String(prepared.runId),
+          MATRX_DATA_CI_ARTIFACT_ID: String(prepared.artifactId),
+        }
+      : {}),
     ...(kind === 'ci_development_test'
       ? { MATRX_GUEST_CHAT_DEV_RECEIPT: relocatedReceipt }
       : { MATRX_GUEST_CHAT_RELEASE_RECEIPT: relocatedReceipt }),
@@ -531,25 +543,27 @@ async function run(prepared, artifactMode) {
           repo,
           acceptanceCase === 'settings-controls'
             ? 'tests/browser/settings-local-controls-acceptance.mjs'
-            : seoRoute
-              ? seoRoute.driver
-              : scrapeRoute
-                ? scrapeRoute.driver
-                : acceptanceCase.startsWith('visibility-census-')
-                  ? 'tests/browser/takeover-visible-census.mjs'
-                  : acceptanceCase.startsWith('desktop-settings-')
-                    ? 'tests/browser/settings-desktop-native-acceptance.mjs'
-                    : acceptanceCase === 'audit-key-admin'
-                      ? 'tests/browser/audit-key-native-acceptance.mjs'
-                      : acceptanceCase.startsWith('settings-persistence')
-                        ? 'tests/browser/settings-d87-native-acceptance.mjs'
-                        : showcaseRoute
-                          ? showcaseRoute.driver
-                          : acceptanceCase === 'prepare-stale-results'
-                            ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
-                            : acceptanceCase === 'member-chat'
-                              ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                              : 'tests/browser/guest-chat-store-acceptance.mjs',
+            : acceptanceCase === 'guest-data'
+              ? 'tests/browser/data-guest-native-acceptance.mjs'
+              : seoRoute
+                ? seoRoute.driver
+                : scrapeRoute
+                  ? scrapeRoute.driver
+                  : acceptanceCase.startsWith('visibility-census-')
+                    ? 'tests/browser/takeover-visible-census.mjs'
+                    : acceptanceCase.startsWith('desktop-settings-')
+                      ? 'tests/browser/settings-desktop-native-acceptance.mjs'
+                      : acceptanceCase === 'audit-key-admin'
+                        ? 'tests/browser/audit-key-native-acceptance.mjs'
+                        : acceptanceCase.startsWith('settings-persistence')
+                          ? 'tests/browser/settings-d87-native-acceptance.mjs'
+                          : showcaseRoute
+                            ? showcaseRoute.driver
+                            : acceptanceCase === 'prepare-stale-results'
+                              ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
+                              : acceptanceCase === 'member-chat'
+                                ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                                : 'tests/browser/guest-chat-store-acceptance.mjs',
         ),
       ],
       {

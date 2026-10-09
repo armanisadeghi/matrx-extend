@@ -30498,7 +30498,7 @@
             "Signed-out profile; controlled ordinary webpage with two distinct repeated field values; no saved session."
           ],
           "steps": [
-            "Open Data; enter picker; select two elements and exit; verify fields appear. Enter a pattern name and click save; then use sign-in action."
+            "Open Data on a controlled repeated-field page; enter the picker, select two distinct fields, and finish. Verify both selectors appear. As a guest, verify Pattern name and Save pattern are absent, while Sign in to save is shown; use that sign-in action and verify no pattern write occurred before authentication."
           ],
           "expected": [
             "Page field selection/extraction is reachable to guest; pattern save is withheld and directs to auth; no pattern is written before auth."
