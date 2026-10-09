@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "task": "daily public no-login Chat regression check",
+  "case_id": "EXT-F-2013-T10",
+  "lane": "B_public_no_login_guest_chat",
+  "observed_at_utc": "2026-10-09T16:12:28Z",
+  "run": {
+    "id": 37956537631,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/37956537631",
+    "job_id": 113908368438,
+    "workflow": "hosted-guest-acceptance.yml",
+    "event": "workflow_dispatch",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "workflow_checkout_sha": "6e70d388297e53dc6d94492cb4bbf50cbfa296b3",
+    "started_at_utc": "2026-10-09T16:05:19Z",
+    "completed_at_utc": "2026-10-09T16:12:28Z",
+    "conclusion": "success",
+    "artifact_id": 11627929265,
+    "artifact_name": "hosted-guest-37956537631-1",
+    "artifact_zip_sha256": "9ca557b24b57eca51c1935d8a7d5cd396d01182bd0853c967089768314df6a61"
+  },
+  "preflight": {
+    "lane_b_idle_before_dispatch": true,
+    "active_or_queued_lane_b_runs_observed": 0,
+    "lane_guard_check": "node scripts/test-hosted-acceptance-lanes.mjs",
+    "lane_guard_result": "pass; 2 tests passed, 0 failed",
+    "target_source": "Google public Chrome Web Store update service",
+    "target_version_observed_before_dispatch": "0.2.205",
+    "target_crx_sha256_observed_before_dispatch": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23"
+  },
+  "verdict": {
+    "overall": "pass",
+    "resource_validity": "valid",
+    "case_scope": "One fresh signed-out guest profile: opening answer, same-conversation follow-up, and post-panel-reload new-conversation follow-up.",
+    "behavior": "All three real guest requests returned HTTP 200 and each reached terminal_answer. The opening answer contained the unpredictable public-fixture code and ordered page stages. The same-conversation follow-up preserved conversation identity and contained its fixture code. After full panel reload, a distinct new conversation reached terminal_answer with its fixture code and heading.",
+    "guest_state": "Fresh profile, signed out, no token/profile/organization. Chat was visible. The controlled public fixture was not reinstalled before either first send or after reload.",
+    "failure_stage": null,
+    "failure_code": null
+  },
+  "backend": {
+    "endpoint": "https://server.app.matrxserver.com/health/version",
+    "method": "GET with User-Agent matrx-deployed-schema-guard/1.0 and Accept application/json",
+    "before_observation": "Immediately before workflow dispatch",
+    "before_git_sha": "97ea84e3036a2c0186b467fda60c547f27548572",
+    "before_server_reported_built_at": "2026-10-09T15:10:08Z",
+    "after_observation": "After workflow completion",
+    "after_git_sha": "97ea84e3036a2c0186b467fda60c547f27548572",
+    "after_server_reported_built_at": "2026-10-09T15:10:08Z",
+    "stable_during_run": true,
+    "sampling_limit": "Point-in-time samples before and after the run, not continuous monitoring. built_at is server-supplied metadata."
+  },
+  "artifact": {
+    "requested_source": "Google public Chrome Web Store update service",
+    "requested_version": "0.2.205",
+    "verified_downloaded_manifest_version": "0.2.205",
+    "verified_extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "receipt_kind": "published_store_crx_unpacked",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "artifact_unchanged_during_acceptance": true,
+    "identity_adaptation": "The downloaded public CRX was loaded as an unpacked copy with the matching public manifest identity; the CRX bytes were not modified.",
+    "browser": "Playwright Chromium 141.0.7390.37 on macos-15 ARM64",
+    "workflow_checkout_sha": "6e70d388297e53dc6d94492cb4bbf50cbfa296b3"
+  },
+  "guest_chat": {
+    "opening": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "f81262138a48ae87",
+      "answer_contains_unpredictable_page_code": true,
+      "answer_names_page_stages": true,
+      "answer_stages_in_order": true
+    },
+    "same_conversation_followup": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": false,
+      "conversation_fingerprint": "f81262138a48ae87",
+      "conversation_identity_verified": true,
+      "answer_contains_page_code": true
+    },
+    "post_reload_new_conversation": {
+      "terminal_verdict": "terminal_answer",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "409514d9d408140e",
+      "conversation_is_distinct": true,
+      "answer_contains_unpredictable_page_code": true,
+      "answer_names_fixture_heading": true
+    }
+  },
+  "resources": {
+    "journals": {
+      "hosted-package-37956537631-1": {
+        "path": "raw/hosted-package-37956537631-1.jsonl",
+        "admitted": true,
+        "child_exit_code": 0,
+        "decision": "valid",
+        "resource_invalid": false,
+        "sha256": "c93ca47e415dadb48fe230f9a80250da6ecfaab77b245fbc00f4c577ad6d44c6"
+      },
+      "hosted-browser-37956537631-1": {
+        "path": "raw/hosted-browser-37956537631-1.jsonl",
+        "admitted": true,
+        "child_exit_code": 0,
+        "decision": "valid",
+        "resource_invalid": false,
+        "sha256": "58c77421a0aaced444892d0024ca1dcba668950d0c9c3448d6b676d10bc2fa0e"
+      },
+      "hosted-guest-37956537631-1": {
+        "path": "raw/hosted-guest-37956537631-1.jsonl",
+        "admitted": true,
+        "child_exit_code": 0,
+        "decision": "valid",
+        "resource_invalid": false,
+        "sha256": "575e6b3b009249a721da699f3faaa0d2326c5026da4d7d66a09ea15243662d08"
+      }
+    },
+    "stale_journals_in_artifact_excluded_from_verdict": [37105304739, 37724762467]
+  },
+  "evidence": {
+    "raw_directory": ".research/daily-guest-20261009/raw/",
+    "result_receipt": "raw/matrx-extend/matrx-extend/test-results/guest-chat-store-5fc4b397-94e2-4d35-b954-6a611bd1bcec.json",
+    "result_receipt_sha256": "2cfddbd9487b3d4a1cfb715a6d3717a9f5ef5ee04472a6e94ddf56994b17bf50",
+    "screenshots": [
+      "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-P6x0Xr/guest-chat-real-answer.png",
+      "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-P6x0Xr/guest-chat-same-conversation-followup.png",
+      "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-P6x0Xr/guest-chat-real-followup-answer.png",
+      "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-P6x0Xr/native-side-panel.png",
+      "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-P6x0Xr/normal-target-after-open.png"
+    ],
+    "reviewed_for_private_content": "All five screenshots show the signed-out panel and controlled public fixture only; no credentials or private account data were observed.",
+    "native_vs_store_installed_limit": "This is native headed Chromium behavior using an unpacked adaptation of the downloaded public Store CRX. It does not prove installation through Chrome Web Store UI or behavior of an installed Store copy.",
+    "independent_peer_review": "Not performed in this task; no child agents were authorized.",
+    "scope_limit": "One resource-valid run on this artifact/backend pair does not establish broad service health or overall product health.",
+    "screenshot_sha256": {
+      "guest-chat-real-answer.png": "9aa68bb173df9ea8d2dabe6c9da1ce326d0d952118df36709def14a2403477c2",
+      "guest-chat-same-conversation-followup.png": "d515f65297a34ee22818747c2463c03b6188d728412e8ff8c5d72a027c7c190c",
+      "guest-chat-real-followup-answer.png": "da98bbdca79191e5e5f1c71ae69f60527a0174f72980db8c0301a6784fdb0cb5",
+      "native-side-panel.png": "25a538f9a2e74a332e3f517da1152582efd5da890b49c6624755c97e129e0e11",
+      "normal-target-after-open.png": "f4af16553f5e732b1cc4a69842d1955a0c7dbea7a9e12ea9bdc80109d4e6e772"
+    }
+  }
+}
