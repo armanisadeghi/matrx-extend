@@ -1614,6 +1614,11 @@
  "/coding-sessions/hosted/runtime": {
   "get": []
  },
+ "/coding-sessions/own-plan/claude_code/cloud-send": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/coding-sessions/own-plan/{provider}": {
   "get": []
  },
@@ -7419,6 +7424,9 @@
  "/social/capabilities": {
   "get": []
  },
+ "/social/cloud-capture/readiness": {
+  "get": []
+ },
  "/social/collections": {
   "post": [
    "application/json"
@@ -7440,7 +7448,21 @@
    "application/json"
   ]
  },
+ "/social/costs": {
+  "get": []
+ },
  "/social/credits": {
+  "get": []
+ },
+ "/social/gated-captures": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social/gated-captures/{job_id}/cloud": {
+  "post": [
+   "application/json"
+  ],
   "get": []
  },
  "/social/ingest/post": {
@@ -7467,8 +7489,14 @@
  "/social/posts/{post_id}/media/{file_id}": {
   "get": []
  },
+ "/social/posts/{post_id}/thumbnail": {
+  "get": []
+ },
  "/social/posts/{post_id}/transcript": {
   "post": []
+ },
+ "/social/profiles/{profile_id}/avatar": {
+  "get": []
  },
  "/social/profiles/{profile_id}/refresh": {
   "post": [
