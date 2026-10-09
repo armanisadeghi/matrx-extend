@@ -59,6 +59,7 @@ const report = {
   negative_mutations: [],
   positive_reads: [],
   positive_mutations: [],
+  c06_diagnostic: null,
   approval_cleanup: null,
   fixture_cleanup: null,
   fixture_diagnostics: [],
@@ -1001,6 +1002,9 @@ try {
                 assert.equal(organizationId, approved.id, 'records_c06_cleanup_wrong_org');
                 assert.equal(principalId, auth.profileId, 'records_c06_cleanup_wrong_principal');
                 return cleanupOwnedTable(ownedTableId);
+              },
+              onFailure: (diagnostic) => {
+                report.c06_diagnostic = diagnostic;
               },
             });
             assert.equal(completed.approved_and_read_back, true, 'records_c06_completion_missing');

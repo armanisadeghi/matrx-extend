@@ -1,0 +1,38 @@
+{
+  "task_id": "Records37860757691-C06",
+  "status": "source_boundary_narrowed_native_cause_unverified",
+  "source_run": 37860757691,
+  "source_sha": "3e33093f4e8b9f9a3a5ce9dcdaf4a48aba9a5479",
+  "evidence": {
+    "receipt": ".research/records-c06-envelope-retest-20261008.json",
+    "raw_receipt": "/Volumes/Samsung2TB/tmp/records37860757691/hosted-guest-37860757691-1/_temp/records-readonly-native-37860757691-1.json",
+    "raw_approval_journal": "/Volumes/Samsung2TB/tmp/records37860757691/hosted-guest-37860757691-1/_temp/records-readonly-native-37860757691-1.json.c06-approval-journal.json",
+    "observed": "C02/C03/C04/C05/C08 positive reads completed and were visible. The record_write completion was HTTP 200, success=true, action=record_write. The C06 journal retained an approval ID, pending_write_unknown=false, approval_decision_unknown=false, and final withdrawn after exact owned-table archive; no positive mutation credit or UI decision was recorded.",
+    "boundary": "The hold was created before the failure. The lifecycle failed before a confirmed approval decision; cleanup withdrew the pending approval. Existing safe receipt reports only records_fixture_positive_reads / records_fixture_unexpected_error, so the original assertion is unknowable from this artifact.",
+    "cleanup": "Root verified table archived, approval withdrawn, no unknown decision/write, and both designated temporary secret names absent."
+  },
+  "ranked_hypotheses": [
+    {
+      "cause": "The authoritative work_approval_read row differs from one of approvalMatches' expected identity or change fields.",
+      "prediction": "A rerun's safe C06 diagnostic reports phase=held and a records_approval_read_wrong_* code before any decision."
+    },
+    {
+      "cause": "The first approval read fails or returns no object.",
+      "prediction": "A rerun reports phase=held with records_c06_approval_read_failed or records_c06_approval_read_empty."
+    },
+    {
+      "cause": "The pending approval is read correctly but the first-party approvals UI cannot find or match its row.",
+      "prediction": "A rerun reports phase=decision_unknown with a UI row or headline code, or unclassified if Playwright times out."
+    }
+  ],
+  "source_probe": "The lifecycle now reports only an allowlisted fixed error code and the pre-cleanup phase into the native receipt; arbitrary browser response and approval data remain excluded. It does not change dispatch, decision, reconciliation, or cleanup.",
+  "verification": {
+    "focused_tests": "Original 39/39 focused tests passed. After the actual-path follow-up, records-readonly-native-driver.test.mjs passed 25/25 (one new case); the lifecycle test was unchanged.",
+    "mutation": "plant.py replaced the diagnostic code with a constant; the new test failed for the expected differing UI-stage outcome and plant.py restored the file byte-identically.",
+    "actual_path_followup": "The driver test now runs the actual acceptance callback with the real lifecycle, then evaluates the acceptance source's receipt finalizer and reads its serialized JSON. A known held-read mismatch yields its fixed code; a private read exception yields unclassified. Both exclude the private message and approval ID. Planting an omitted diagnostic assignment in the actual acceptance callback made this exact test fail, and plant.py restored the source byte-identically.",
+    "format": "Biome check passed for the three touched browser files.",
+    "compile": "pnpm compile fails on unrelated existing @ai-matrx/chat and @ai-matrx/media missing exports/modules in src/features and src/lib; no touched Records file appears in the type errors."
+  },
+  "limitations": "No new native dispatch, approval decision, API mutation, or release was performed. C06 product acceptance remains unverified. The old artifact cannot prove the exact failing assertion.",
+  "next_action": "Release owner can use an authorized guarded native rerun with the new source probe, inspect c06_diagnostic plus the approval journal, then fix only the confirmed boundary and independently retest."
+}

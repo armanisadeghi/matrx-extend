@@ -32,15 +32,21 @@ const tree = ts.createSourceFile(
   ts.ScriptKind.JS,
 );
 let callback;
+let receiptFinalizer;
 function visit(node) {
   if (ts.isPropertyAssignment(node) && node.name.getText(tree) === 'exercisePanel') {
     assert.equal(callback, undefined, 'one Records driver callback required');
     callback = node.initializer.getText(tree);
   }
+  if (ts.isTryStatement(node) && node.finallyBlock?.getText(tree).includes('writeFile(output,')) {
+    assert.equal(receiptFinalizer, undefined, 'one Records receipt finalizer required');
+    receiptFinalizer = node.finallyBlock.getText(tree);
+  }
   ts.forEachChild(node, visit);
 }
 visit(tree);
 assert.ok(callback);
+assert.ok(receiptFinalizer);
 const sha = (value) => createHash('sha256').update(value).digest('hex');
 
 test('fixture first failure remains the receipt classification when cleanup also fails', () => {
@@ -1226,6 +1232,66 @@ test('actual callback and real lifecycle settle a lost approve response after ow
     assert.deepEqual(scenario.report.positive_mutations, []);
   } finally {
     await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('actual C06 failure callback persists only safe diagnostics in the native receipt', async () => {
+  for (const [readApproval, expected, failure] of [
+    [
+      async () => ({
+        approval_id: c06ApprovalId,
+        subject_id: fixtureTableId,
+        requested_by: fixtureRowId,
+        conversation_id: testConversationId,
+        origin: 'agent',
+        change: { kind: 'record_add', rows: [{ name: `${fixtureTableName}-approval-row` }] },
+        state: 'pending',
+      }),
+      { phase: 'held', code: 'records_approval_read_wrong_principal' },
+      /records_approval_read_wrong_principal/,
+    ],
+    [
+      async () => {
+        throw new Error('private approval response');
+      },
+      { phase: 'held', code: 'unclassified' },
+      /private approval response/,
+    ],
+  ]) {
+    const directory = await mkdtemp(join(tmpdir(), 'records-c06-safe-receipt-'));
+    try {
+      const outputPath = join(directory, 'native.json');
+      const scenario = runDriver({
+        profileId: 'b326b48b-3e0d-4b1d-903e-a9f6b0635682',
+        outputPath,
+        approvalLifecycle: runOwnedApprovalCreate,
+        approvalSession: async () => ({
+          readApproval,
+          decideInUi: async () => {
+            throw new Error('unexpected decision');
+          },
+          close: async () => {},
+        }),
+      });
+      await assert.rejects(scenario.run(), failure);
+      const finalize = new Function(
+        'report',
+        'output',
+        'readFile',
+        'writeFile',
+        'recordsApprovalCleanupVerdict',
+        `return async () => ${receiptFinalizer};`,
+      )(scenario.report, outputPath, readFile, writeFile, recordsApprovalCleanupVerdict);
+      await finalize();
+      const receipt = JSON.parse(await readFile(outputPath, 'utf8'));
+      assert.deepEqual(receipt.c06_diagnostic, expected);
+      assert.deepEqual(receipt.positive_mutations, []);
+      assert.equal(receipt.approval_cleanup.table_cleanup_verified, true);
+      assert.equal(JSON.stringify(receipt).includes('private approval response'), false);
+      assert.equal(JSON.stringify(receipt).includes(c06ApprovalId), false);
+    } finally {
+      await rm(directory, { recursive: true, force: true });
+    }
   }
 });
 
