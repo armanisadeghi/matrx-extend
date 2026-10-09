@@ -37,13 +37,13 @@
 @import "@ai-matrx/agents/catalog/styles.css";
 
 /* Tailwind must scan the packages' BUILT output — the semantic utility classes
-   their components wear exist only if these are sources. */
-@source "../../node_modules/@ai-matrx/design-system/dist";
-@source "../../node_modules/@ai-matrx/agents/dist";
-@source "../../node_modules/@ai-matrx/associations/dist";
-@source "../../node_modules/@ai-matrx/chat/dist";
-@source "../../node_modules/@ai-matrx/media/dist";
-@source "../../node_modules/.pnpm/@ai-matrx+rich-content@*/node_modules/@ai-matrx/rich-content/dist";
+   their components wear exist only if these are sources: the two directories holding every
+   installed @ai-matrx package: direct deps (node_modules/@ai-matrx) and transitive
+   ones (pnpm keeps those only under .pnpm/node_modules). A hand list silently
+   missed what the package chat pulls in (canvas, icons, rich-editor, diff, print,
+   records-ui, …); globs through .pnpm/<name>@<ver> are not scanned by Tailwind. */
+@source "../../node_modules/@ai-matrx";
+@source "../../node_modules/.pnpm/node_modules/@ai-matrx";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -63,6 +63,13 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
+  /* The readable "ink" tones package components wear (text-primary-ink, …); the
+     values come from @ai-matrx/design-system/tokens.css (HSL triplets). */
+  --color-primary-ink: hsl(var(--primary-ink));
+  --color-info-ink: hsl(var(--info-ink));
+  --color-success-ink: hsl(var(--success-ink));
+  --color-warning-ink: hsl(var(--warning-ink));
+  --color-destructive-ink: hsl(var(--destructive-ink));
   --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
