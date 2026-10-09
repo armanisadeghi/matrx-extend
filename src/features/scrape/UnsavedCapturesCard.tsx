@@ -30,7 +30,7 @@ export function UnsavedCapturesCard({
    * capture — edits made after the failed save included — which replaces the
    * queued content on the way (never lose input). Other pages retry what was queued.
    */
-  currentPage?: { url: string; save: () => Promise<void> } | null;
+  currentPage?: { url: string; save: (row: UnsavedCapture) => Promise<void> } | null;
 }) {
   const [rows, setRows] = useState<UnsavedCapture[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
@@ -61,7 +61,7 @@ export function UnsavedCapturesCard({
       setRetryError(null);
       try {
         if (currentPage && canonicalUrl(currentPage.url) === canonicalUrl(row.url)) {
-          await currentPage.save();
+          await currentPage.save(row);
         } else {
           const outcome = await retryUnsavedCapture(row.id);
           if (outcome.status === 'landed')

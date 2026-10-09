@@ -1,8 +1,8 @@
 /**
- * Optional filing after a Save lands — the web app's Save panel
- * (matrx-frontend `features/sources/SaveSourcePanel.tsx`), brought to the
- * extension. The page is ALREADY a Source when this appears: nothing here
- * blocks or precedes the save, and closing it files nothing.
+ * Optional additional filing, opened explicitly from a Saved Source.
+ * The first Save already accepts a name and places through /sources/land.
+ * This panel keeps the later add-place path available without reopening the
+ * broad picker or reading Libraries until the user chooses either control.
  *
  *   - File it in: any registered place (project, task, scope, research topic,
  *     deck, podcast episode, war room, data store) through the same
@@ -51,11 +51,11 @@ function localStore(): Storage | null {
 }
 
 /** The person's media-catalog Libraries (the ones they made), web-capture first. */
-function useMyLibraries(userId: string | null) {
+function useMyLibraries(userId: string | null, enabled: boolean) {
   const [libraries, setLibraries] = useState<LibraryOption[]>([]);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    if (!userId) return undefined;
+    if (!userId || !enabled) return undefined;
     let cancelled = false;
     void (async () => {
       const { data, error: readError } = await mediaDb()
@@ -79,7 +79,7 @@ function useMyLibraries(userId: string | null) {
     return () => {
       cancelled = true;
     };
-  }, [userId]);
+  }, [userId, enabled]);
   return { libraries, error };
 }
 
@@ -96,17 +96,33 @@ export function FileSourcePanel({
   onClose: () => void;
 }) {
   const userId = useAuthStore((s) => s.user?.id ?? null);
-  const { libraries, error: librariesError } = useMyLibraries(userId);
+  const [showLibrary, setShowLibrary] = useState(false);
+  const [showPlaces, setShowPlaces] = useState(false);
+  const [placeType, setPlaceType] = useState<EntityTypeToken | 'all' | null>(null);
+  const { libraries, error: librariesError } = useMyLibraries(userId, showLibrary);
   const [staged, setStaged] = useState<StagedTarget[]>([]);
-  const [libraryId, setLibraryId] = useState<string | null>(() =>
-    readRememberedLibrary(localStore(), userId),
-  );
+  const [libraryId, setLibraryId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ tone: 'ok' | 'error'; lines: string[] } | null>(null);
   const store = useMemo(() => getAssociationsStore(), []);
 
   const attachTo = buildAttachTargets(staged, libraryId);
   const attachedKeys = new Set(staged.map((t) => attachedKey(t.token, t.id)));
+  const placeLabels: Record<(typeof SAVE_TARGET_TOKENS)[number], string> = {
+    project: 'Projects',
+    task: 'Tasks',
+    scope: 'Scopes',
+    research_topic: 'Research topics',
+    fc_set: 'Flashcard decks',
+    pc_episode: 'Podcast episodes',
+    war_room: 'War rooms',
+    data_store: 'Data stores',
+  };
+
+  const openLibrary = () => {
+    setLibraryId(readRememberedLibrary(localStore(), userId));
+    setShowLibrary(true);
+  };
 
   const chooseLibrary = (value: string) => {
     const next = value === NO_LIBRARY ? null : value;
@@ -163,7 +179,7 @@ export function FileSourcePanel({
       >
         <div className="flex items-center justify-between gap-2">
           <span className="flex items-center gap-1 font-medium">
-            <FolderPlus className="size-3.5" /> File it somewhere (optional)
+            <FolderPlus className="size-3.5" /> File elsewhere
           </span>
           <button
             type="button"
@@ -175,32 +191,88 @@ export function FileSourcePanel({
           </button>
         </div>
 
-        <label className="block space-y-1">
-          <span className="text-muted-foreground">Add to a Library (media catalog)</span>
-          {librariesError ? (
-            <span className="block text-red-600 dark:text-red-400">{librariesError}</span>
-          ) : (
-            <select
-              aria-label="Library"
-              className="h-7 w-full rounded-md border border-border bg-background px-1.5"
-              value={libraryId ?? NO_LIBRARY}
-              onChange={(e) => chooseLibrary(e.target.value)}
+        <div className="flex flex-wrap gap-1.5">
+          {!showPlaces && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="h-7 rounded-full text-xs"
+              onClick={() => setShowPlaces(true)}
             >
-              <option value={NO_LIBRARY}>No Library</option>
-              {libraries.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.name}
-                </option>
-              ))}
-              {libraryId && !libraries.some((l) => l.id === libraryId) && libraries.length > 0 && (
-                <option value={libraryId}>A Library you chose earlier (no longer listed)</option>
-              )}
-            </select>
+              Choose a place
+            </Button>
           )}
-        </label>
+          {!showLibrary && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="h-7 rounded-full text-xs"
+              onClick={openLibrary}
+            >
+              Add to Library
+            </Button>
+          )}
+        </div>
+        {showLibrary && (
+          <label htmlFor="file-source-library" className="block space-y-1">
+            <span className="text-muted-foreground">Add to a Library (media catalog)</span>
+            {librariesError ? (
+              <span className="block text-red-600 dark:text-red-400">{librariesError}</span>
+            ) : (
+              <select
+                id="file-source-library"
+                aria-label="Library"
+                className="h-7 w-full rounded-md border border-border bg-background px-1.5"
+                value={libraryId ?? NO_LIBRARY}
+                onChange={(e) => chooseLibrary(e.target.value)}
+              >
+                <option value={NO_LIBRARY}>No Library</option>
+                {libraries.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                  </option>
+                ))}
+                {libraryId &&
+                  !libraries.some((l) => l.id === libraryId) &&
+                  libraries.length > 0 && (
+                    <option value={libraryId}>
+                      A Library you chose earlier (no longer listed)
+                    </option>
+                  )}
+              </select>
+            )}
+          </label>
+        )}
 
         <div className="space-y-1">
-          <span className="text-muted-foreground">File it in</span>
+          {showPlaces && (
+            <>
+              <span className="text-muted-foreground">Place type</span>
+              <div className="flex max-h-20 flex-wrap gap-1 overflow-y-auto">
+                {SAVE_TARGET_TOKENS.map((token) => (
+                  <button
+                    key={token}
+                    type="button"
+                    aria-pressed={placeType === token}
+                    onClick={() => setPlaceType(token)}
+                    className="rounded-full border border-border px-2 py-0.5 aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+                  >
+                    {placeLabels[token]}
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  aria-pressed={placeType === 'all'}
+                  onClick={() => setPlaceType('all')}
+                  className="rounded-full border border-border px-2 py-0.5 aria-pressed:bg-primary aria-pressed:text-primary-foreground"
+                >
+                  Search all
+                </button>
+              </div>
+            </>
+          )}
           {staged.length > 0 && (
             <ul className="flex flex-wrap gap-1">
               {staged.map((t) => (
@@ -224,27 +296,32 @@ export function FileSourcePanel({
               ))}
             </ul>
           )}
-          <div className="max-h-64 overflow-y-auto rounded-md">
-            <UniversalAssociationPicker
-              orgId={organizationId}
-              tokens={[...SAVE_TARGET_TOKENS] as EntityTypeToken[]}
-              attachedKeys={attachedKeys}
-              onAttach={async (token, resourceId, title) => {
-                setStaged((prev) =>
-                  prev.some((p) => p.token === token && p.id === resourceId)
-                    ? prev
-                    : [...prev, { token, id: resourceId, label: title || token }],
-                );
-                return { ok: true };
-              }}
-              onDetach={async (token, resourceId) => {
-                setStaged((prev) =>
-                  prev.filter((p) => !(p.token === token && p.id === resourceId)),
-                );
-                return { ok: true };
-              }}
-            />
-          </div>
+          {placeType && (
+            <div className="flex h-48 min-h-0 flex-col overflow-hidden rounded-md border border-border">
+              <UniversalAssociationPicker
+                key={placeType}
+                orgId={organizationId}
+                tokens={
+                  placeType === 'all' ? ([...SAVE_TARGET_TOKENS] as EntityTypeToken[]) : [placeType]
+                }
+                attachedKeys={attachedKeys}
+                onAttach={async (token, resourceId, title) => {
+                  setStaged((prev) =>
+                    prev.some((p) => p.token === token && p.id === resourceId)
+                      ? prev
+                      : [...prev, { token, id: resourceId, label: title || token }],
+                  );
+                  return { ok: true };
+                }}
+                onDetach={async (token, resourceId) => {
+                  setStaged((prev) =>
+                    prev.filter((p) => !(p.token === token && p.id === resourceId)),
+                  );
+                  return { ok: true };
+                }}
+              />
+            </div>
+          )}
         </div>
 
         {attachTo.length > 0 && (
