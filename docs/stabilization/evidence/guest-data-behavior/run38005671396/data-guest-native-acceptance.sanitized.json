@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "run_id": 37998294843,
+    "artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+    "version": "0.2.456"
+  },
+  "observations": {
+    "guest": true,
+    "controlled_rows": 3,
+    "two_distinct_picker_previews": true,
+    "two_selected_fields": true,
+    "pattern_name_absent": true,
+    "save_pattern_absent": true,
+    "sign_in_to_save_present": true,
+    "sign_in_action_used": true,
+    "pattern_write_requests_before_auth": 0
+  },
+  "failure_stage": null,
+  "limits": "Guest native behavior on exact imported development artifact; no signed-in save or Store claim.",
+  "picker_step": "second_field",
+  "picker_field_diagnostic": {
+    "target_count": 3,
+    "target_rect": {
+      "x": 8,
+      "y": 79.875,
+      "width": 805,
+      "height": 28
+    },
+    "viewport": {
+      "width": 821,
+      "height": 787
+    },
+    "center_hit": "field",
+    "hit_kinds": [
+      "field",
+      "field",
+      "picker_overlay",
+      "field",
+      "field",
+      "picker_overlay",
+      "field",
+      "field",
+      "picker_overlay"
+    ],
+    "chosen_hit": "field"
+  },
+  "picker_second_field_diagnostic": {
+    "target_count": 3,
+    "target_rect": {
+      "x": 8,
+      "y": 213.59375,
+      "width": 805,
+      "height": 18
+    },
+    "viewport": {
+      "width": 821,
+      "height": 787
+    },
+    "center_hit": "field",
+    "hit_kinds": ["field", "field", "field", "field", "field", "field", "field", "field", "field"],
+    "chosen_hit": "field"
+  }
+}
