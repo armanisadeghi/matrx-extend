@@ -121,14 +121,14 @@
   },
   "evidence": {
     "raw_directory": ".research/daily-guest-20261009/raw/",
-    "result_receipt": "raw/matrx-extend/matrx-extend/test-results/guest-chat-store-5fc4b397-94e2-4d35-b954-6a611bd1bcec.json",
+    "result_receipt": "raw/guest-chat-store-5fc4b397-94e2-4d35-b954-6a611bd1bcec.json",
     "result_receipt_sha256": "2cfddbd9487b3d4a1cfb715a6d3717a9f5ef5ee04472a6e94ddf56994b17bf50",
     "screenshots": [
-      "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-P6x0Xr/guest-chat-real-answer.png",
-      "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-P6x0Xr/guest-chat-same-conversation-followup.png",
-      "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-P6x0Xr/guest-chat-real-followup-answer.png",
-      "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-P6x0Xr/native-side-panel.png",
-      "raw/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-P6x0Xr/normal-target-after-open.png"
+      "raw/guest-chat-real-answer.png",
+      "raw/guest-chat-same-conversation-followup.png",
+      "raw/guest-chat-real-followup-answer.png",
+      "raw/native-side-panel.png",
+      "raw/normal-target-after-open.png"
     ],
     "reviewed_for_private_content": "All five screenshots show the signed-out panel and controlled public fixture only; no credentials or private account data were observed.",
     "native_vs_store_installed_limit": "This is native headed Chromium behavior using an unpacked adaptation of the downloaded public Store CRX. It does not prove installation through Chrome Web Store UI or behavior of an installed Store copy.",
