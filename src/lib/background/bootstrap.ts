@@ -82,6 +82,7 @@ import {
 } from '@/lib/stream/offscreen-proxy';
 import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
+import { registerSwipeFileHost } from '@/lib/swipe-file/host';
 import { deliverToolResult } from '@/lib/tools/deliver-tool-result';
 import {
   type DeviceHandOffCall,
@@ -151,6 +152,7 @@ export function bootstrapBackground(): void {
   //        cache; sidepanel/offscreen mint + consume through these channels
   //        (src/lib/broker/). Tokens are memory-only, never persisted.
   registerBrokerHandlers();
+  registerSwipeFileHost();
   // "Save this login?" host — raw value-bearing listener + value-free bus handlers.
   registerCredentialCaptureHost();
   registerInlineCredentialSuggestionHost();

@@ -34,11 +34,14 @@ import {
   openPanel,
   panelOpenRemedy,
 } from '@/lib/panel/adapter';
+import { saveFromMenu } from '@/lib/swipe-file/host';
+import { swipeTargetFromUrl } from '@/lib/swipe-file/urls';
 
 const MENU_ID_ASK_SELECTION = 'matrx.menu.ask-selection';
 const MENU_ID_OPEN_PANEL = 'matrx.menu.open-panel';
 const MENU_ID_CAPTURE_PROSPECT = 'matrx.menu.capture-prospect';
 const MENU_ID_CAPTURE_STUDY_SET = 'matrx.menu.capture-study-set';
+const MENU_ID_SWIPE_SAVE = 'matrx.menu.swipe-save';
 
 /**
  * The drafted instruction behind "Save this site as a prospect". Deliberately
@@ -73,6 +76,19 @@ export function setupContextMenus(): void {
   }
 
   chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+    if (info.menuItemId === MENU_ID_SWIPE_SAVE) {
+      // A right-clicked link wins over the page: "save that post" from a feed.
+      const url = swipeTargetFromUrl(info.linkUrl)?.url ?? swipeTargetFromUrl(tab?.url)?.url;
+      if (url) await saveFromMenu(url);
+      else
+        await chrome.notifications?.create(`matrx-swipe-${Date.now()}`, {
+          type: 'basic',
+          iconUrl: chrome.runtime.getURL('icon-128.png'),
+          title: 'Swipe file',
+          message: 'Not saved: this is not a post or ad Matrx can save.',
+        });
+      return;
+    }
     // Refuse unowned/empty events before spending Firefox's browser gesture.
     // For owned actions, native open is invoked before the durable write so
     // Chromium and Firefox retain their respective user-gesture custody.
@@ -131,6 +147,11 @@ function registerMenus(): void {
       // Only where it applies — the flashcard incumbents. Any other page still
       // captures via chat ("save this page as a study set").
       documentUrlPatterns: ['*://*.quizlet.com/*', '*://*.knowt.com/*', '*://*.cram.com/*'],
+    });
+    chrome.contextMenus.create({
+      id: MENU_ID_SWIPE_SAVE,
+      title: 'Save to swipe file',
+      contexts: ['page', 'link'],
     });
     chrome.contextMenus.create({
       id: MENU_ID_OPEN_PANEL,

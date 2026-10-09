@@ -89,6 +89,12 @@ export const TABLE_SCHEMA = {
   // it under RLS (Saved captures tab, recognition) and writes only the row's
   // soft delete. Creating or editing one always goes through the door.
   processed_documents: 'docproc',
+  // social — Social Intelligence swipe file. READ-ONLY here: collections and
+  // membership are read under RLS; every write goes through aidream `/social/*`
+  // (src/lib/api/routes/social.ts). Membership is a `platform.associations` row
+  // (source = social_swipe_collection, target = social_post).
+  swipe_collection: 'social',
+  associations: 'platform',
   // misc
   user_form_profile: 'users',
   // users.integration_connections — safe Google connection metadata only. The
@@ -174,6 +180,9 @@ export const toolDb = () => getSupabase().schema('tool');
 
 /** `platform` — scoped feature-knob resolution and other platform primitives. */
 export const platformDb = () => getSupabase().schema('platform');
+
+/** `social` — Social Intelligence (swipe_collection). READ-ONLY from this client. */
+export const socialDb = () => getSupabase().schema('social');
 
 /** `ai` — model registry. NOTE: `ai.model` was split; use `model_definition`. */
 export const aiDb = () => getSupabase().schema('ai');
