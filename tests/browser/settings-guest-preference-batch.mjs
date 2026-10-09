@@ -41,13 +41,19 @@ export const GUEST_PREFERENCES = [
 
 export function preferenceMatches(observed, preference, value, label) {
   return (
-    observed?.activeSettings === true &&
-    observed?.count === 1 &&
-    observed?.selected === label &&
-    observed?.stored === value &&
+    preferenceSelectionMatches(observed, value, label) &&
     (preference.key !== 'theme' ||
       (observed?.darkClass === (value === 'system' ? observed?.systemDark : value === 'dark') &&
         observed?.renderedBackgroundMatches === true))
+  );
+}
+
+export function preferenceSelectionMatches(observed, value, label) {
+  return (
+    observed?.activeSettings === true &&
+    observed?.count === 1 &&
+    observed?.selected === label &&
+    observed?.stored === value
   );
 }
 
@@ -103,6 +109,29 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
     let value = null;
     try { value = JSON.parse(raw).state?.[${JSON.stringify(preference.key)}] ?? null; } catch {}
     const allowed = ${JSON.stringify(preference.choices.map(([value]) => value))};
+    const rendered = (() => {
+      const probe = document.createElement('div');
+      probe.style.position = 'fixed';
+      probe.style.visibility = 'hidden';
+      probe.style.pointerEvents = 'none';
+      probe.style.backgroundColor = 'var(--background)';
+      document.body.appendChild(probe);
+      const expected = getComputedStyle(probe).backgroundColor;
+      const body = getComputedStyle(document.body).backgroundColor;
+      const root = document.querySelector('#root');
+      const activePanel = document.querySelector('[role="tabpanel"][data-state="active"]');
+      const backgrounds = {
+        token: expected,
+        body,
+        root: root ? getComputedStyle(root).backgroundColor : null,
+        activePanel: activePanel ? getComputedStyle(activePanel).backgroundColor : null,
+      };
+      probe.remove();
+      return {
+        matches: Boolean(expected && expected !== 'rgba(0, 0, 0, 0)' && body === expected),
+        backgrounds,
+      };
+    })();
     return { activeSettings: pane?.matches('[role="tabpanel"][data-state="active"]') === true,
       count: triggers.length,
       selected: ${JSON.stringify(preference.choices.map(([, label]) => label))}.includes(triggers[0]?.textContent.trim())
@@ -110,18 +139,8 @@ export async function observeGuestPreference(panel, preference, driver = nativeD
       stored: allowed.includes(value) ? value : null,
       darkClass: document.documentElement.classList.contains('dark'),
       systemDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
-      renderedBackgroundMatches: (() => {
-        const probe = document.createElement('div');
-        probe.style.position = 'fixed';
-        probe.style.visibility = 'hidden';
-        probe.style.pointerEvents = 'none';
-        probe.style.backgroundColor = 'var(--background)';
-        document.body.appendChild(probe);
-        const expected = getComputedStyle(probe).backgroundColor;
-        const rendered = getComputedStyle(document.body).backgroundColor;
-        probe.remove();
-        return Boolean(expected && expected !== 'rgba(0, 0, 0, 0)' && rendered === expected);
-      })() };
+      renderedBackgroundMatches: rendered.matches,
+      renderedBackgrounds: rendered.backgrounds };
   })()`,
   );
 }
@@ -157,6 +176,86 @@ export async function runGuestPreferenceCase(
     );
     await afterReload({ panel, preference, value, label, observation: reloaded });
   }
+}
+
+export async function runGuestThemeRenderingProbe(
+  panel,
+  preference,
+  record,
+  driver = nativeDriver,
+) {
+  assert.equal(preference?.key, 'theme', 'theme_probe_requires_theme_preference');
+  const initial = await observeGuestPreference(panel, preference, driver);
+  const baselineChoice = preference.choices.find(
+    ([value, label]) => value === initial?.stored && label === initial?.selected,
+  );
+  assert.ok(baselineChoice, 'theme_probe_requires_visible_persisted_baseline');
+  const [baselineValue, baselineLabel] = baselineChoice;
+  const baselineMatches = preferenceSelectionMatches(initial, baselineValue, baselineLabel);
+  record('Original theme selection and storage observed', initial, baselineMatches);
+  record(
+    'Original theme rendering observed',
+    initial,
+    preferenceMatches(initial, preference, baselineValue, baselineLabel),
+  );
+
+  let primaryError;
+  try {
+    await driver.openSection(panel, preference.section);
+    for (const [value, label] of [
+      ['dark', 'Dark'],
+      ['light', 'Light'],
+      ['system', 'System'],
+    ]) {
+      assert.ok(
+        preference.choices.some(
+          ([choiceValue, choiceLabel]) => choiceValue === value && choiceLabel === label,
+        ),
+        'theme_probe_choice_missing_from_canonical_preference',
+      );
+      await driver.click(panel, 'settings-select', preference.label);
+      await driver.click(panel, 'option', label);
+      const observed = await driver.waitFor(
+        `theme_probe_${value}_selection_and_storage`,
+        () => observeGuestPreference(panel, preference, driver),
+        (state) => preferenceSelectionMatches(state, value, label),
+      );
+      record(
+        `${label} theme and computed appearance observed`,
+        observed,
+        preferenceMatches(observed, preference, value, label),
+      );
+    }
+  } catch (error) {
+    primaryError = error;
+  }
+
+  try {
+    await driver.openSection(panel, preference.section);
+    let observed = await observeGuestPreference(panel, preference, driver);
+    if (!preferenceSelectionMatches(observed, baselineValue, baselineLabel)) {
+      await driver.click(panel, 'settings-select', preference.label);
+      await driver.click(panel, 'option', baselineLabel);
+      observed = await driver.waitFor(
+        'theme_probe_original_baseline_restored',
+        () => observeGuestPreference(panel, preference, driver),
+        (state) => preferenceSelectionMatches(state, baselineValue, baselineLabel),
+      );
+    }
+    const restored = preferenceSelectionMatches(observed, baselineValue, baselineLabel);
+    record('Original theme selection and storage restored', observed, restored);
+    record(
+      'Original theme rendering restored',
+      observed,
+      preferenceMatches(observed, preference, baselineValue, baselineLabel),
+    );
+    if (!restored) throw new Error('theme_probe_baseline_restore_failed');
+  } catch (error) {
+    record('Original theme selection and storage restored', { status: 'failed' }, false);
+    if (!primaryError) primaryError = error;
+  }
+
+  if (primaryError) throw primaryError;
 }
 
 export function preferenceBaseline(observation, preference) {

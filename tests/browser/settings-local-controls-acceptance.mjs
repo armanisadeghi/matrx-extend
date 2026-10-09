@@ -23,6 +23,7 @@ import {
   observeGuestPreference,
   preferenceBaseline,
   preferenceMatches,
+  runGuestThemeRenderingProbe,
   runGuestPreferenceCase,
 } from './settings-guest-preference-batch.mjs';
 import {
@@ -82,6 +83,9 @@ const IDS = [
   'T76',
   'T92',
 ].map((id) => `EXT-F-1003-${id}`);
+const THEME_RENDERING_PROBE =
+  process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'settings-theme-rendering';
+const CASE_IDS = THEME_RENDERING_PROBE ? ['EXT-F-1003-T04'] : IDS;
 const report = {
   schema_version: 1,
   scope: 'real isolated Chrome-for-Testing native side panel; signed-out guest',
@@ -91,7 +95,7 @@ const report = {
     'Extension receipt and tree hash verified',
     'Guest panel settled before interaction',
   ],
-  cases: IDS.map((id) => ({
+  cases: CASE_IDS.map((id) => ({
     id,
     role: 'guest',
     ...((id.endsWith('T92') || id.endsWith('T63')) && { scope: 'guest-negative-access-only' }),
@@ -562,7 +566,7 @@ try {
       treeSha256: receipt.treeSha256,
     };
   }
-  observedPort = await startObservedDeadPort();
+  if (!THEME_RENDERING_PROBE) observedPort = await startObservedDeadPort();
   const result = await runNativeSidepanelQa({
     ...(DEV_BUILD_RECEIPT !== undefined && {
       extensionDir: DEV_EXTENSION_DIR,
@@ -577,6 +581,17 @@ try {
       transportFailureClass,
     }) => {
       await settings(panel);
+      if (THEME_RENDERING_PROBE) {
+        await runCase(byId('T04'), async () => {
+          const c = byId('T04');
+          const theme = GUEST_PREFERENCES.find((preference) => preference.caseId === 'T04');
+          await runGuestThemeRenderingProbe(panel, theme, (action, observation, passed) => {
+            c.steps.push({ phase: 'warm', action, observation });
+            criterion(c, action, passed ? 'pass' : 'fail', observation);
+          });
+        });
+        return;
+      }
       for (const preference of GUEST_PREFERENCES) {
         await runCase(byId(preference.caseId), async () => {
           const c = byId(preference.caseId);
@@ -1167,7 +1182,7 @@ try {
     if (c.criteria.length === 0) criterion(c, 'setup completed', 'unverified', report.setup_error);
 } finally {
   await observedPort?.close();
-  enforceFullExtensionRechecks(report.cases);
+  if (!THEME_RENDERING_PROBE) enforceFullExtensionRechecks(report.cases);
   for (const c of report.cases) {
     c.build = report.build;
     c.preconditions = report.preconditions;
