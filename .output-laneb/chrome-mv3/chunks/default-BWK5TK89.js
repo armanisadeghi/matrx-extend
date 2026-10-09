@@ -1,2 +1,0 @@
-function e(e){return!e||typeof e!=`object`?``:`position`in e||`type`in e?n(e.position):`start`in e||`end`in e?n(e):`line`in e||`column`in e?t(e):``}function t(e){return r(e&&e.line)+`:`+r(e&&e.column)}function n(e){return t(e&&e.start)+`-`+t(e&&e.end)}function r(e){return e&&typeof e==`number`?e:1}function i(){}function a(){}export{a as n,e as r,i as t};
-//# sourceMappingURL=default-BWK5TK89.js.map

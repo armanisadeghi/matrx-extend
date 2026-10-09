@@ -1,2 +1,0 @@
-var e=class extends Error{constructor(e){super(`@ai-matrx/media/files-engine: "${e}" was used before configureFilesHost(...) ran. Call configureFilesHost({ db, server, store }) once at startup, before the store is created.`),this.name=`FilesHostNotConfiguredError`}},t=Symbol.for(`ai-matrx.media.files-host`);function n(e){globalThis[t]=e}function r(){return!!globalThis[t]}function i(n){let r=globalThis[t];if(!r)throw new e(n);return r}export{i as n,r,n as t};
-//# sourceMappingURL=configure-BW5RooOI.js.map

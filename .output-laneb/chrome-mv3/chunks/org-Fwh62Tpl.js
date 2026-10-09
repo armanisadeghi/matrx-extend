@@ -1,2 +1,0 @@
-import{n as e}from"./configure-BW5RooOI.js";import{n as t,t as n}from"./store-C5DF-2mL.js";async function r(r={}){let i=e(`ensureOrganizationContext`);if(i.ensureOrganizationContext)return i.ensureOrganizationContext(r);if(r.organizationId)return r.organizationId;let a=t(n()?.getState());if(a)return a;throw Error(`@ai-matrx/media/files-engine: this write needs an organization and none is selected — choose one, then retry.`)}export{r as ensureOrganizationContext};
-//# sourceMappingURL=org-Fwh62Tpl.js.map

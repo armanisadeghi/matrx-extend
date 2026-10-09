@@ -1,2 +1,0 @@
-import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{a as t,m as n,t as r}from"./instance-user-input.slice-Bl61gmO4.js";var i=e({clearComposerIfUnsubmitted:()=>a});function a(e,i){return(a,o)=>{let s=i?.via??`clear`,c=o().instanceUserInput.byConversationId[e];c&&n(c)||a(s===`persist`?t(e):r(e))}}export{i as n,a as t};
-//# sourceMappingURL=clear-composer.thunk-z7Ani_Np.js.map

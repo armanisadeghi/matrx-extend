@@ -1,2 +1,0 @@
-import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`list-minus`,size:24,node:[[`path`,{d:`M16 5H3`,key:`m91uny`}],[`path`,{d:`M11 12H3`,key:`51ecnj`}],[`path`,{d:`M16 19H3`,key:`zzsher`}],[`path`,{d:`M21 12h-6`,key:`bt1uis`}]]};t.node;var n=e(t);export{t as __iconData,n as default};
-//# sourceMappingURL=list-minus-CqoCiW1n.js.map

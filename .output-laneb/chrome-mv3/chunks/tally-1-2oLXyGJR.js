@@ -1,2 +1,0 @@
-import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`tally-1`,size:24,node:[[`path`,{d:`M4 4v16`,key:`6qkkli`}]]};t.node;var n=e(t);export{t as __iconData,n as default};
-//# sourceMappingURL=tally-1-2oLXyGJR.js.map

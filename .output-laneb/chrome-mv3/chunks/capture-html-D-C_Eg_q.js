@@ -1,2 +1,0 @@
-import{t as e}from"./log-D-_UD5n9.js";async function t(t){let n=performance.now();try{let r=(await chrome.scripting.executeScript({target:{tabId:t},func:()=>document.documentElement.outerHTML}))?.[0]?.result??``,i=Math.round(performance.now()-n);return e.success(`scrape`,`getOuterHtml tab=${t} ${r.length} chars (${i}ms)`),r}catch(n){throw e.error(`scrape`,`getOuterHtml tab=${t} failed`,n),n}}export{t};
-//# sourceMappingURL=capture-html-D-C_Eg_q.js.map

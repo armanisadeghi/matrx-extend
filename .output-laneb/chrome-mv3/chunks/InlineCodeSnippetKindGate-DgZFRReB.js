@@ -1,2 +1,0 @@
-import{Za as e}from"./globals-CkYqf0Y5.js";import{d as t}from"./app-bindings-ClV48216.js";var n=e();function r({value:e}){return(0,n.jsx)(t,{component:`InlineCodeSnippet`,data:e,children:null})}export{r as default};
-//# sourceMappingURL=InlineCodeSnippetKindGate-DgZFRReB.js.map

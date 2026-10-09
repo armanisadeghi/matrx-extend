@@ -1,2 +1,0 @@
-var e=new Set;function t(t){return!e.has(t)&&(e.add(t),!0)}function n(t){e.delete(t)}function r(e){return e?.submissionPhase===`pending`&&e.text===e.lastSubmittedText}var i=new Map;function a(e){if(i.has(e))return null;let t=Symbol(e);return i.set(e,t),t}function o(e,t){t&&i.get(e)===t&&i.delete(e)}function s(e){return i.has(e)}function c(t){return e.has(t)||i.has(t)}export{c as a,s as i,t as n,o,r,n as s,a as t};
-//# sourceMappingURL=submit-claims-XXzldj7j.js.map

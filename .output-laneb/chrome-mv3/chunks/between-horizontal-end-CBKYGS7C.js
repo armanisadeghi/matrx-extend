@@ -1,2 +1,0 @@
-import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`between-horizontal-end`,size:24,node:[[`rect`,{width:`13`,height:`7`,x:`3`,y:`3`,rx:`1`,key:`11xb64`}],[`path`,{d:`m22 15-3-3 3-3`,key:`26chmm`}],[`rect`,{width:`13`,height:`7`,x:`3`,y:`14`,rx:`1`,key:`k6ky7n`}]],aliases:[`between-horizonal-end`]};t.node;var n=e(t);export{t as __iconData,n as default};
-//# sourceMappingURL=between-horizontal-end-CBKYGS7C.js.map

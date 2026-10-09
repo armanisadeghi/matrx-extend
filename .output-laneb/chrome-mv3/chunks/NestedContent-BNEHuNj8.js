@@ -1,2 +1,0 @@
-import{Za as e}from"./globals-CkYqf0Y5.js";import{a as t,n,t as r}from"./registry-BRjup-le.js";var i=e();function a({source:e}){let a=t(`NestedContent`);return a?(0,i.jsx)(a,{source:e}):(n(`NestedContent`,`nested content shows as plain text`),(0,i.jsx)(`div`,{...r,className:`whitespace-pre-wrap`,children:e}))}export{a as NestedRichContent};
-//# sourceMappingURL=NestedContent-BNEHuNj8.js.map

@@ -1,2 +1,0 @@
-function e(e){return!!e&&typeof e==`object`&&e.type===`text`}function t(t,n){let r={type:`text`,text:n};return Array.isArray(t)?[r,...t.filter(t=>!e(t))]:[r]}export{t};
-//# sourceMappingURL=content-blocks.util-ErFw1lBM.js.map

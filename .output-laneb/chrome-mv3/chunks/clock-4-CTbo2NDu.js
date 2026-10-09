@@ -1,2 +1,0 @@
-import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`clock-4`,size:24,node:[[`circle`,{cx:`12`,cy:`12`,r:`10`,key:`1mglay`}],[`path`,{d:`M12 6v6l4 2`,key:`mmk7yg`}]]};t.node;var n=e(t);export{t as __iconData,n as default};
-//# sourceMappingURL=clock-4-CTbo2NDu.js.map

@@ -1,2 +1,0 @@
-import{ht as e,kt as t}from"./preload-helper-BS7-PSjQ.js";import{Za as n}from"./globals-CkYqf0Y5.js";var r=t(e(),1),i=n(),a=r.createContext(null);function o({handle:e,children:t}){return(0,i.jsx)(a.Provider,{value:e,children:t})}var s=()=>r.useContext(a);export{s as n,o as t};
-//# sourceMappingURL=react-surface-BOzZGval.js.map

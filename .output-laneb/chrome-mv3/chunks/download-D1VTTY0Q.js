@@ -1,2 +1,0 @@
-import{Dt as e}from"./preload-helper-BS7-PSjQ.js";var t=e({downloadFile:()=>n,downloadUrl:()=>r});function n(e,t,n){let r=new Blob([t],{type:n}),a=URL.createObjectURL(r);i(a,e),setTimeout(()=>URL.revokeObjectURL(a),1e3)}function r(e,t,n={}){i(e,t,n.newTab)}function i(e,t,n=!1){let r=document.createElement(`a`);r.href=e,r.download=t,n&&(r.target=`_blank`,r.rel=`noopener noreferrer`),document.body.appendChild(r),r.click(),document.body.removeChild(r)}export{r as n,t as r,n as t};
-//# sourceMappingURL=download-D1VTTY0Q.js.map

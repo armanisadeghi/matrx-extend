@@ -1,2 +1,0 @@
-import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`square-split-horizontal`,size:24,node:[[`path`,{d:`M12 2v20`,key:`t6zp3m`}],[`path`,{d:`M16 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3`,key:`saxlbk`}],[`path`,{d:`M8 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3`,key:`m1vog4`}]],aliases:[`split-square-horizontal`]};r.node;var i=t(r);export{n,i as t};
-//# sourceMappingURL=square-split-horizontal-DNmqGz39.js.map

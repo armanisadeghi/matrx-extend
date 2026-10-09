@@ -1,2 +1,0 @@
-import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`slice`,size:24,node:[[`path`,{d:`M11 16.586V19a1 1 0 0 1-1 1H2L18.37 3.63a1 1 0 1 1 3 3l-9.663 9.663a1 1 0 0 1-1.414 0L8 14`,key:`1sllp5`}]]};t.node;var n=e(t);export{t as __iconData,n as default};
-//# sourceMappingURL=slice-iSyv1ib4.js.map

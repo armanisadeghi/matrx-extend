@@ -1,2 +1,0 @@
-import{Za as e}from"./globals-CkYqf0Y5.js";import{f as t,n,t as r}from"./KindValueNode-CbzlB2bk.js";var i=e(),a=({value:e,density:a=`inline`,className:o})=>{let s=t(e);return s.kind===`kindInstance`?(0,i.jsx)(`div`,{className:o,children:(0,i.jsx)(r,{value:e,slug:s.slug,density:a})}):(0,i.jsx)(n,{value:e,density:a,className:o})};export{a as t};
-//# sourceMappingURL=ToolResultValue-CIWNkQs3.js.map

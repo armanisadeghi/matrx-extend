@@ -1,1 +1,0 @@
-export{Ht as __iconData,Vt as default}from"./PackageChatView-D-0YAJe6.js";

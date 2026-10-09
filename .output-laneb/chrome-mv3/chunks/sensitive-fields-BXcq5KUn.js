@@ -1,2 +1,0 @@
-var e=`data-matrx-sensitive`,t=new Map;function n(e,n){let r=[...t.get(e)??[]];for(let e of n){let t=e.trim();t&&!r.includes(t)&&r.push(t)}t.set(e,r.slice(-16))}function r(e){return e==null?[]:(t.get(e)??[]).slice()}function i(e){t.delete(e)}typeof chrome<`u`&&chrome.tabs?.onRemoved?.addListener&&chrome.tabs.onRemoved.addListener(e=>{t.delete(e)});export{r as i,i as n,n as r,e as t};
-//# sourceMappingURL=sensitive-fields-BXcq5KUn.js.map

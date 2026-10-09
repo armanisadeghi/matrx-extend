@@ -1,2 +1,0 @@
-import{t as e}from"./createLucideIcon-B1WwSIHv.js";var t={name:`cylinder`,size:24,node:[[`ellipse`,{cx:`12`,cy:`5`,rx:`9`,ry:`3`,key:`msslwz`}],[`path`,{d:`M3 5v14a9 3 0 0 0 18 0V5`,key:`aqi0yr`}]]};t.node;var n=e(t);export{t as __iconData,n as default};
-//# sourceMappingURL=cylinder-CsI17czl.js.map

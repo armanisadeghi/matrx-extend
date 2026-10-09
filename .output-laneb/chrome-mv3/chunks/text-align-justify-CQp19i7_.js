@@ -1,2 +1,0 @@
-import{Dt as e}from"./preload-helper-BS7-PSjQ.js";import{t}from"./createLucideIcon-B1WwSIHv.js";var n=e({__iconData:()=>r,default:()=>i}),r={name:`text-align-justify`,size:24,node:[[`path`,{d:`M3 5h18`,key:`1u36vt`}],[`path`,{d:`M3 12h18`,key:`1i2n21`}],[`path`,{d:`M3 19h18`,key:`awlh7x`}]],aliases:[`align-justify`]};r.node;var i=t(r);export{n,i as t};
-//# sourceMappingURL=text-align-justify-CQp19i7_.js.map

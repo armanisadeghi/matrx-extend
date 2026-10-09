@@ -1,2 +1,0 @@
-import{Za as e}from"./globals-CkYqf0Y5.js";import{Cr as t,kr as n}from"./ui-slots-DrX2oZR5.js";import{t as r}from"./GenericBody-BnJ9bMvS.js";import{r as i}from"./react-Dji-nzu7.js";var a=e();function o(e){let o=n({blockType:t,source:e.item.raw})?.remark;return o?.kind===`edit`&&!o.projection?(0,a.jsx)(`div`,{className:`h-full min-h-0 overflow-y-auto p-4`,children:(0,a.jsx)(i,{view:`inline`,original:o.before,modified:o.after})}):(0,a.jsx)(r,{...e})}export{o as RemarkBody};
-//# sourceMappingURL=RemarkBody-B9QmvyyS.js.map

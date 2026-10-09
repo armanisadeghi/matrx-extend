@@ -1,2 +1,0 @@
-import{a as e}from"./redux-toolkit.modern-DAdVgyat.js";import{i as t}from"./conversation-focus.slice-CRDZVsXu.js";import{a as n,i as r}from"./surfaces.slice-c-WO9PkJ.js";var i=e(`surfaces/requestNavigation`,async({surfaceKey:e,conversationId:i,reason:a},{dispatch:o,getState:s})=>{let c=r(e)(s());c&&(c.kind===`page`||c.customNavigation?o(n({surfaceKey:e,conversationId:i,reason:a})):o(t({surfaceKey:e,conversationId:i})))});export{i as requestSurfaceNavigation};
-//# sourceMappingURL=request-surface-navigation.thunk--1BUruAY.js.map

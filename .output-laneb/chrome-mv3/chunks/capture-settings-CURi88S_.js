@@ -1,2 +1,0 @@
-import{i as e}from"./env-D2lwKofn.js";var t=e.CAPTURE_NEVER_ORIGINS;function n(e){return Array.isArray(e)?e.filter(e=>typeof e==`string`&&e.length>0):[]}async function r(){try{return n((await chrome.storage.local.get([t]))[t])}catch{return[]}}async function i(e){let n=await r();n.includes(e)&&await chrome.storage.local.set({[t]:n.filter(t=>t!==e)})}export{r as readNeverCaptureOrigins,i as removeNeverCaptureOrigin};
-//# sourceMappingURL=capture-settings-CURi88S_.js.map
