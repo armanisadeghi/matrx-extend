@@ -109,7 +109,7 @@ try {
         (state) => state.active,
       );
       report.stage = 'picker';
-      await click(panel, 'button-text', 'Pick fields on this page');
+      await click(panel, 'data-picker-button', 'Pick fields on this page');
       await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
       await page.locator('.product-card .product-name').first().click();
       await page.locator('.product-card .product-price').nth(1).click();
@@ -173,6 +173,20 @@ try {
   const safeMessage = String(error?.message ?? error)
     .replace(/https?:\/\/\S+/g, '[url]')
     .slice(0, 300);
+  if (error?.driverFailure) {
+    const failure = error.driverFailure;
+    report.driver_failure = {
+      code: failure.code ?? null,
+      sample_stage: failure.sampleStage ?? null,
+      matched_target_count: failure.matchedTargetCount ?? null,
+      visible_match_count: failure.visibleMatchCount ?? null,
+      unique_visible_target: failure.uniqueVisibleTarget ?? null,
+      hit_target: failure.hitTarget ?? null,
+      animating: failure.animating ?? null,
+      stable_samples: failure.stableSamples ?? null,
+      position_stable: failure.positionStable ?? null,
+    };
+  }
   process.stderr.write(`DATA_GUEST_ACCEPTANCE_FAILED ${report.stage} ${safeMessage}\n`);
 } finally {
   await mkdir('test-results', { recursive: true });

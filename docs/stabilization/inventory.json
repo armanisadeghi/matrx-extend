@@ -37347,6 +37347,41 @@
             "guest",
             "active-tab",
             "auth"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "37999961791",
+              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+              "workflow_source_sha": "234c323c7a9dc6a379e9260e2dc6b2edbb874b61",
+              "development_ci_run_id": 37998294843,
+              "development_artifact_id": 11647758423,
+              "hosted_result_artifact_id": 11648619964,
+              "build_version": "0.2.456",
+              "resource_valid": true,
+              "failure_stage": "picker",
+              "failure_code": "pointer_target_not_unique",
+              "evidence": [
+                "docs/stabilization/evidence/guest-data-behavior/run37999961791/receipt.json",
+                "docs/stabilization/evidence/guest-data-behavior/run37999961791/data-guest-native-acceptance.sanitized.json"
+              ],
+              "detail": "Native guest run reached Data picker target resolution on exact frozen development artifact 11647758423. The driver receipt failed with a non-unique visible pointer target; its saved diagnostic omitted whether there were zero or multiple candidates. No picker action, selector, sign-in save gate, or pattern-write behavior was verified, so T01 remains unverified."
+            }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "run_id": "37996443185",
+              "status": "unverified",
+              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+              "ci_run_id": 37986090931,
+              "ci_artifact_id": 11643292724,
+              "evidence": [
+                "docs/stabilization/evidence/guest-data-behavior/run37996443185/receipt.json",
+                "docs/stabilization/evidence/guest-data-behavior/run37996443185/data-guest-native-acceptance.sanitized.json"
+              ],
+              "detail": "Earlier harness failure at input: the driver expected the CI receipt kind in place of the imported local_dev_unpacked receipt. It failed before browser startup and supplied no product verdict."
+            }
           ]
         },
         {
@@ -37513,8 +37548,16 @@
             "EXT-D-0053",
             "EXT-D-0054"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "37996443185",
+            "37999961791"
+          ],
+          "retest_status": "not-run",
+          "retest_evidence": {
+            "run_id": "37999961791",
+            "report": "docs/stabilization/evidence/guest-data-behavior/run37999961791/receipt.json",
+            "scope": "Driver pointer-target failure before picker interaction. Resource admission was valid; Data guest behavior and save gate remain unverified."
+          }
         },
         "member": {
           "test_status": "unverified",

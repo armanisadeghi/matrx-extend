@@ -320,6 +320,11 @@ export async function click(panel, kind, label, onPhase = undefined) {
     }
     else if (kind === 'button-text') candidates = [...document.querySelectorAll('button')]
       .filter((el) => el.textContent.trim() === label);
+    else if (kind === 'data-picker-button') {
+      const pane = ${activeTabPanelExpression('Data')};
+      candidates = [...(pane?.querySelectorAll('button') ?? [])]
+        .filter((el) => el.textContent.trim() === label);
+    }
     else if (kind === 'tool-row') {
       const pane = ${activeTabPanelExpression('Tools')};
       toolsPanelActive = Boolean(pane);
