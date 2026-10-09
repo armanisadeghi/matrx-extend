@@ -170,7 +170,7 @@ export async function fileGuidedCapture(
 }
 
 export function registerGuidedCaptureHost(): void {
-  chrome.tabs.onRemoved.addListener((tabId) => {
+  chrome.tabs?.onRemoved?.addListener((tabId) => {
     void forgetTab(tabId);
   });
   chrome.runtime.onConnect.addListener((port) => {
