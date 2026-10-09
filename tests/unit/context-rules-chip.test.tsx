@@ -29,8 +29,20 @@ vi.mock('@/hooks/use-chat-stream', () => ({
   resolveAttachedGoogleFileIds: () => null,
 }));
 vi.mock('@/lib/chat/context', () => ({ buildChatContextValues: vi.fn(async () => ({})) }));
+vi.mock('@/hooks/use-active-tab', () => ({
+  useActiveTab: () => ({
+    id: 7,
+    url: 'https://example.com/pricing',
+    title: 'Pricing',
+    documentId: 'd1',
+    identityStatus: 'ready',
+    identityError: null,
+    pageKey: 'k1',
+  }),
+}));
 vi.mock('@/lib/chat/active-tab', () => ({ resolveActiveTab: vi.fn(async () => null) }));
 
+import { buildChatContextValues } from '@/lib/chat/context';
 import { ContextRulesComposerChip } from '@/features/chat/ContextRulesComposerChip';
 import { useAuthStore } from '@/state/auth';
 import { useChatStore } from '@/state/chat';
@@ -120,6 +132,22 @@ describe('ContextRulesComposerChip', () => {
     // The compact face counts included values; sizes are in the popover table.
     expect(face.textContent).toBe('1');
     expect(face.getAttribute('data-mismatch')).toBeNull();
+  });
+
+  it('counts the page it is on before the chip is ever opened or anything is sent', async () => {
+    // The break (2026-10-09): the face read 0 on every web page until the chip was opened.
+    vi.mocked(buildChatContextValues).mockResolvedValueOnce({
+      page_brief: { title: 'Pricing' },
+      tab_state: { id: 7 },
+    });
+    useContextRulesStore.setState({
+      lastSentRowsByComposer: {},
+      previewSourcesByComposer: {},
+      loaded: true,
+    });
+    useAuthStore.setState({ user: { id: 'user-1' } } as never);
+    render(<ContextRulesComposerChip composer="chat" />);
+    expect(await screen.findByRole('button', { name: '2 included' })).toBeTruthy();
   });
 
   it('turns amber when the receipt disagrees with what was sent', () => {

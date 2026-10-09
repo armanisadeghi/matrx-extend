@@ -17,6 +17,7 @@
  *   was built from; any difference turns the chip amber.
  */
 
+import { useActiveTab } from '@/hooks/use-active-tab';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import {
   resolveAttachedGoogleFileIds,
@@ -150,6 +151,15 @@ export function ContextRulesComposerChip({ composer }: { composer: ContextCompos
     ];
   }, [rows, lastSentRows, receiptEntry]);
   const mismatches = receiptEntry?.mismatches ?? [];
+
+  // The face counts what the next turn carries, so the page is read as soon as the panel shows
+  // and again whenever the person lands on another page; not only when the chip is opened
+  // (before that the face read 0 on every page). Same builder a send runs.
+  const activeTab = useActiveTab();
+  useEffect(() => {
+    if (!signedIn || activeTab.identityStatus !== 'ready') return;
+    void readPreviewSources(composer, conversationId);
+  }, [signedIn, composer, conversationId, activeTab.id, activeTab.pageKey, activeTab.identityStatus]);
 
   const onOpenChange = useCallback(
     (open: boolean) => {

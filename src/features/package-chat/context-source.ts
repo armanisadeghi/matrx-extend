@@ -18,6 +18,20 @@ import type { ChatContextSource } from '@ai-matrx/chat/host';
 
 export const extensionPageContextSource: ChatContextSource = {
   id: 'matrx-extend:page-context',
+  // The composer's context chip re-reads this source when the person lands on another tab or
+  // the page finishes loading, so its count follows the page (not only the last send).
+  subscribe(onChange) {
+    const onActivated = () => onChange();
+    const onUpdated = (_id: number, info: Pick<chrome.tabs.TabChangeInfo, 'status'>) => {
+      if (info.status === 'complete') onChange();
+    };
+    chrome.tabs.onActivated.addListener(onActivated);
+    chrome.tabs.onUpdated.addListener(onUpdated);
+    return () => {
+      chrome.tabs.onActivated.removeListener(onActivated);
+      chrome.tabs.onUpdated.removeListener(onUpdated);
+    };
+  },
   async contribute({ conversationId }) {
     try {
       const user = useAuthStore.getState().user;

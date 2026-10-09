@@ -81,8 +81,7 @@ export async function saveToSwipeFile(
     postId: post.post_id,
     collectionId,
     title: post.title || post.caption?.slice(0, 80) || target.label,
-    notice: fb
-      ? `Fetched through a fallback provider (${post.trace?.provider ?? 'backup'}): ${fb}`
-      : null,
+    // Vendors and their reasons are our business, not the person's (Arman, 2026-10-09).
+    notice: fb ? 'Fetched from a backup source' : null,
   };
 }
