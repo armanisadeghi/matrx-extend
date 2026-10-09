@@ -16,19 +16,16 @@ import { useAuthStore } from '@/state/auth';
  *
  * Lazy: importing this module touches nothing.
  */
-import type { AssociationsDataSource } from '@ai-matrx/associations';
 import { type AssociationsStore, createAssociationsStore } from '@ai-matrx/associations/core';
-
-const dataSource: AssociationsDataSource = {
-  rpc: (fn, args) => getSupabase().rpc(fn, args),
-};
 
 let store: AssociationsStore | null = null;
 
 export function getAssociationsStore(): AssociationsStore {
   if (!store) {
     store = createAssociationsStore({
-      dataSource,
+      // The client itself: since @ai-matrx/associations 0.14.0 the package calls through
+      // @ai-matrx/data's doors (`schema('public').rpc(...)`) and pages its own edge lists.
+      dataSource: getSupabase(),
       identity: {
         requireUserId: () => {
           const id = useAuthStore.getState().user?.id;
