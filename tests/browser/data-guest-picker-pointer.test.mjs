@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Window } from 'happy-dom';
-import { click } from './settings-panel-driver.mjs';
+import { click, dataPanelDiagnostic, dataPickerControlReady } from './settings-panel-driver.mjs';
 
 function makePanel() {
   const window = new Window({ url: 'https://catalog.test/products' });
@@ -54,6 +54,23 @@ function makeMissingPickerPanel() {
   };
 }
 
+function makeSuspenseFallbackPanel() {
+  const window = new Window({ url: 'https://catalog.test/products' });
+  window.document.body.innerHTML = `
+    <button role="tab" title="Data" data-state="active" aria-controls="data-pane"></button>
+    <div id="data-pane" role="tabpanel" data-state="active"><div class="animate-spin"></div></div>`;
+  return {
+    window,
+    panel: {
+      async send(method, args) {
+        if (method === 'Runtime.evaluate')
+          return { result: { value: window.eval(args.expression) } };
+        return {};
+      },
+    },
+  };
+}
+
 test('Data picker pointer resolution is scoped to the active Data panel', async () => {
   const { panel, events, window } = makePanel();
   try {
@@ -92,7 +109,7 @@ test('zero picker matches preserve the safe active Data panel state', async () =
           pane_id: 'data-pane',
           pane_active: true,
           button_count: 1,
-          buttons: [{ label: 'Picking on page…', disabled: true }],
+          buttons: [{ label: 'Picking on page…', disabled: true, visible: false }],
           picker_prompt_present: false,
           guest_explanation_present: true,
         });
@@ -101,5 +118,22 @@ test('zero picker matches preserve the safe active Data panel state', async () =
     );
   } finally {
     window.happyDOM.abort();
+  }
+});
+
+test('Data tab readiness waits for the lazy picker control instead of its active Suspense pane', async () => {
+  const fallback = makeSuspenseFallbackPanel();
+  const loaded = makePanel();
+  try {
+    const fallbackState = await dataPanelDiagnostic(fallback.panel);
+    assert.equal(fallbackState.pane_active, true);
+    assert.equal(fallbackState.button_count, 0);
+    assert.equal(dataPickerControlReady(fallbackState), false);
+
+    const loadedState = await dataPanelDiagnostic(loaded.panel);
+    assert.equal(dataPickerControlReady(loadedState), true);
+  } finally {
+    fallback.window.happyDOM.abort();
+    loaded.window.happyDOM.abort();
   }
 });

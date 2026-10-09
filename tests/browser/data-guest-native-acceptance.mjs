@@ -12,6 +12,7 @@ import {
   activeTabPanelExpression,
   click,
   dataPanelDiagnostic,
+  dataPickerControlReady,
   evaluate,
   waitFor,
 } from './settings-panel-driver.mjs';
@@ -43,6 +44,22 @@ const report = {
   limits:
     'Guest native behavior on exact imported development artifact; no signed-in save or Store claim.',
 };
+
+async function capturePickerDiagnostic(panel, artifacts) {
+  const diagnostic = await dataPanelDiagnostic(panel);
+  try {
+    const screenshot = await panel.send('Page.captureScreenshot', { format: 'png' });
+    await writeFile(
+      join(artifacts, 'data-picker-target-failure.png'),
+      Buffer.from(screenshot.data, 'base64'),
+      { mode: 0o600 },
+    );
+    diagnostic.screenshot = 'data-picker-target-failure.png';
+  } catch {
+    diagnostic.screenshot = 'capture_failed';
+  }
+  return diagnostic;
+}
 
 async function dataState(panel) {
   return evaluate(
@@ -116,21 +133,20 @@ try {
       );
       report.stage = 'picker';
       try {
+        await waitFor(
+          'data_guest_picker_control_rendered',
+          () => dataPanelDiagnostic(panel),
+          dataPickerControlReady,
+        );
+      } catch (error) {
+        report.picker_diagnostic = await capturePickerDiagnostic(panel, artifacts);
+        throw error;
+      }
+      try {
         await click(panel, 'data-picker-button', 'Pick fields on this page');
       } catch (error) {
         if (error?.driverFailure?.code === 'pointer_target_not_unique') {
-          report.picker_diagnostic = await dataPanelDiagnostic(panel);
-          try {
-            const screenshot = await panel.send('Page.captureScreenshot', { format: 'png' });
-            await writeFile(
-              join(artifacts, 'data-picker-target-failure.png'),
-              Buffer.from(screenshot.data, 'base64'),
-              { mode: 0o600 },
-            );
-            report.picker_diagnostic.screenshot = 'data-picker-target-failure.png';
-          } catch {
-            report.picker_diagnostic.screenshot = 'capture_failed';
-          }
+          report.picker_diagnostic = await capturePickerDiagnostic(panel, artifacts);
         }
         throw error;
       }

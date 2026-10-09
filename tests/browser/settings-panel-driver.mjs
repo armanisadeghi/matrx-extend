@@ -276,6 +276,12 @@ export function dataPanelDiagnosticExpression() {
       buttons: buttons.map((button) => ({
         label: knownLabels.has(button.textContent.trim()) ? button.textContent.trim() : 'other',
         disabled: button.disabled,
+        visible: (() => {
+          const style = getComputedStyle(button);
+          const rect = button.getBoundingClientRect();
+          return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
+            style.display !== 'none' && !button.closest('[inert]');
+        })(),
       })),
       picker_prompt_present: (pane?.textContent ?? '').includes('Pick fields on this page'),
       guest_explanation_present: (pane?.textContent ?? '').includes('Field selection works as a guest.'),
@@ -285,6 +291,15 @@ export function dataPanelDiagnosticExpression() {
 
 export async function dataPanelDiagnostic(panel) {
   return evaluate(panel, dataPanelDiagnosticExpression());
+}
+
+export function dataPickerControlReady(state) {
+  return (
+    state?.pane_active === true &&
+    state.buttons?.some(
+      (button) => button.label === 'Pick fields on this page' && button.visible === true,
+    ) === true
+  );
 }
 
 // EXT-D-0177: the outer Tools tab becomes active before its lazy Catalog can mount.
