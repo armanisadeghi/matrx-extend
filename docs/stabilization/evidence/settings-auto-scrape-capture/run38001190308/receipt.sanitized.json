@@ -1,0 +1,65 @@
+{
+  "workflow_run_id": 38001190308,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38001190308",
+  "workflow_source_sha": "f8a15030ca014720c5cae55bb233b764c0116318",
+  "acceptance_lane": "B",
+  "acceptance_case": "settings-auto-scrape-capture",
+  "runner_label": "macos-15-intel",
+  "development_ci_run_id": 37998294843,
+  "development_artifact_id": 11647758423,
+  "product_source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+  "extension_version": "0.2.456",
+  "extension_tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+  "hosted_result_artifact_id": 11649618105,
+  "hosted_job_id": 114059384660,
+  "workflow_conclusion": "failure",
+  "native_case": {
+    "case_id": "EXT-F-1003-T40",
+    "role": "guest",
+    "status": "failed_before_product_interaction",
+    "last_observed": {
+      "settings_surface_opened": true,
+      "auto_scrape_switch_visible": false,
+      "stored_boolean": null
+    },
+    "error": "auto_scrape_original_off_storage_required: observed storage value null; expected false",
+    "failure_site": "tests/browser/settings-auto-scrape-capture-native.mjs:130",
+    "boundary": "The precondition failed after observing the OFF UI and before installing the capture observer, navigating to the owned marker page, toggling ON, waiting for capture traffic, or measuring OFF no-traffic.",
+    "classification": "Probe baseline assumption defect. No ON/OFF capture behavior was exercised; no product acceptance credit. T40 remains unverified."
+  },
+  "resource_validity": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "resource_journals": {
+    "hosted-browser-38001190308-1.jsonl": {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38001190308/hosted-browser-38001190308-1.jsonl",
+      "sha256": "dfd53475bea8f5ba4c56a456d2d0ea2f3eb257f49851a38de0f1604cc650045b"
+    },
+    "hosted-guest-38001190308-1.jsonl": {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38001190308/hosted-guest-38001190308-1.jsonl",
+      "sha256": "a8591bdf696c68741cb2d01f085815dcfd8037a447cb799727b5c0f9bec572a4"
+    },
+    "hosted-package-38001190308-1.jsonl": {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38001190308/hosted-package-38001190308-1.jsonl",
+      "sha256": "fd026cd4856710413386a60a5bf63e42453a9ee23f4b956d5bb117698ba72b69"
+    }
+  },
+  "driver_repair": "Accept implicit default OFF when scrapeAutoOnLoad is absent, and restore the original field/key presence while preserving sibling settings. Preserve existing ON capture and OFF no-traffic assertions."
+}

@@ -5,6 +5,10 @@ import { join, resolve } from 'node:path';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import {
+  captureAutoScrapeBaseline,
+  restoreAutoScrapeBaseline,
+} from './settings-auto-scrape-capture-baseline.mjs';
 import { assertCaptureOff, assertCaptureOn } from './settings-auto-scrape-capture-contract.mjs';
 import {
   click,
@@ -20,18 +24,15 @@ const EXTENSION_DIR = resolve(
   process.env.SETTINGS_DEV_EXTENSION_DIR ?? join(REPO, '.output/chrome-mv3-dev'),
 );
 const RECEIPT_PATH = process.env.SETTINGS_DEV_BUILD_RECEIPT;
-const STORAGE_KEY = 'matrx.settings.v1';
 const MARKER_ON = 'Harbor Dental intake hours October 2026';
 const MARKER_OFF = 'Harbor Dental followup hours November 2026';
 const PAGE_ON = '/harbor-dental-intake';
 const PAGE_OFF = '/harbor-dental-followup';
 const observationExpression = `(async () => {
-  const raw = (await chrome.storage.local.get(${JSON.stringify(STORAGE_KEY)}))[${JSON.stringify(STORAGE_KEY)}];
-  let stored = null;
-  try { stored = JSON.parse(raw).state.scrapeAutoOnLoad; } catch {}
+  const baseline = await (${captureAutoScrapeBaseline.toString()})(chrome.storage.local);
   const toggle = [...document.querySelectorAll('[role="switch"][aria-label="Auto-scrape on load"]')];
-  return { visible: toggle.length === 1 ? toggle[0].getAttribute('aria-checked') === 'true' : null,
-    stored: typeof stored === 'boolean' ? stored : null,
+  return { ...baseline,
+    visible: toggle.length === 1 ? toggle[0].getAttribute('aria-checked') === 'true' : null,
     calls: globalThis.__t40CaptureCalls ?? [] };
 })()`;
 
@@ -127,7 +128,11 @@ try {
       await settings(panel);
       const baseline = await observe(panel);
       assert.equal(baseline.visible, false, 'auto_scrape_original_off_baseline_required');
-      assert.equal(baseline.stored, false, 'auto_scrape_original_off_storage_required');
+      assert.ok(
+        baseline.stored === false ||
+          (baseline.stored === null && baseline.settingPresent === false),
+        'auto_scrape_original_off_storage_required',
+      );
       let observerInstalled = false;
       try {
         await installTrafficObserver(panel, MARKER_ON);
@@ -167,9 +172,23 @@ try {
         record('OFF emits no capture after the loaded page settles', 'pass', off);
       } finally {
         await setSwitch(panel, false);
+        await evaluate(
+          panel,
+          `(${restoreAutoScrapeBaseline.toString()})(chrome.storage.local, ${JSON.stringify(baseline)})`,
+        );
         const restored = await observe(panel);
         assert.equal(restored.visible, false, 'auto_scrape_restore_ui_failed');
-        assert.equal(restored.stored, false, 'auto_scrape_restore_storage_failed');
+        assert.equal(restored.stored, baseline.stored, 'auto_scrape_restore_storage_failed');
+        assert.equal(
+          restored.storagePresent,
+          baseline.storagePresent,
+          'auto_scrape_restore_key_presence_failed',
+        );
+        assert.equal(
+          restored.settingPresent,
+          baseline.settingPresent,
+          'auto_scrape_restore_field_presence_failed',
+        );
         record('Original OFF baseline restored in UI and chrome.storage', 'pass', {
           visible: restored.visible,
           stored: restored.stored,
