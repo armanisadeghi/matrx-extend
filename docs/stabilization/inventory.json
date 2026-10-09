@@ -5478,9 +5478,7 @@
               "build_version": "0.2.414",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "at": "2026-10-08T23:25:29Z",
-              "evidence": [
-                ".research/settings-per-choice-binding-native-20261008.json"
-              ],
+              "evidence": [".research/settings-per-choice-binding-native-20261008.json"],
               "detail": "Existing warm/panel Act/Ask and new-chat inheritance results remain bounded partial evidence. Full-extension recheck ended with generic exception before per-choice restart results; no new acceptance or cause inferred."
             }
           ],
@@ -7320,9 +7318,7 @@
               "build_version": "0.2.414",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "at": "2026-10-08T23:25:29Z",
-              "evidence": [
-                ".research/settings-per-choice-binding-native-20261008.json"
-              ],
+              "evidence": [".research/settings-per-choice-binding-native-20261008.json"],
               "detail": "Existing warm/panel toggle and baseline restoration remain bounded partial evidence. Full-extension recheck ended with generic exception; automatic page-load/background capture remains unverified."
             }
           ]
@@ -9140,9 +9136,7 @@
               "build_version": "0.2.414",
               "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
               "at": "2026-10-08T23:25:29Z",
-              "evidence": [
-                ".research/settings-per-choice-binding-native-20261008.json"
-              ],
+              "evidence": [".research/settings-per-choice-binding-native-20261008.json"],
               "detail": "Existing warm/panel choices and restoration remain bounded partial evidence. Full-extension recheck ended with generic exception before per-choice results; downstream capture and cause remain unverified."
             }
           ]
@@ -65453,6 +65447,18 @@
                 ".research/records-c06-source-peer-20261008.json"
               ],
               "detail": "C02/C03/C04/C05/C08 positives and malformed refusals were visible, but C06 lifecycle journal creation was not reached: failure occurred during pre-journal setup after C08. No C06 write, approval, or product behavior is inferred. Fixture journal is verified archived; pending-write-unknown=false; temporary secret names and private staging were verified absent. Source correction47eb9cd6 reads conversation_id from the backend completion result envelope; root verified the backend source and independently reran68 focused tests. Native remains unverified; next separately admitted native verification."
+            },
+            {
+              "run_id": "37860757691",
+              "mode": "admin",
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "build_version": "0.2.414",
+              "evidence": [
+                ".research/records-c06-envelope-retest-20261008.json",
+                ".research/records-c06-next-diagnosis-20261009.json"
+              ],
+              "detail": "Real record_write produced held approval; no confirmed UI decision. Owned table archived, approval withdrawn; no unresolved write/decision and temporary secrets removed. Safe diagnostic source prepared; exact failing boundary and live C06 remain unverified."
             }
           ],
           "results": {
