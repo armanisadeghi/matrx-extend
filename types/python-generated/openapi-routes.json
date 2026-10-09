@@ -8131,6 +8131,11 @@
    "application/json"
   ]
  },
+ "/v1/meet/agent/captions": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/v1/meet/agent/start": {
   "post": [
    "application/json"
