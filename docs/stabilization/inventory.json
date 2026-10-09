@@ -8661,6 +8661,29 @@
               "scope": "Hosted lane B run 38003055389 on macos-15-intel, signed-out guest; exact frozen CI development artifact 11647758423 (CI run 37998294843), source 7230bb7669582179898fc187e05f1b939562a89e, v0.2.456. Warm capture only; reload and other roles remain unverified."
             }
           },
+          "result_history": [
+            {
+              "mode": "guest",
+              "status": "unverified",
+              "run_id": "38006058872",
+              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+              "workflow_source_sha": "f88405d22982d31ab9f52ab36cf5ff0c681d6010",
+              "development_ci_run_id": 37998294843,
+              "development_artifact_id": 11647758423,
+              "hosted_result_artifact_id": 11651925876,
+              "build_version": "0.2.456",
+              "resource_valid": true,
+              "failure_stage": "choice_extension_reload",
+              "restoration_failure_stage": "restore_acquire_panel",
+              "detail": "The repaired native switch click changed the visible and stored preference to ON. The first Chrome extension reload then failed before lifecycle replacement was verified (failure code unclassified, transport none). Recovery could not acquire a live panel (owned CDP transport failure, protocol_error), and cleanup also failed. The run gives no post-reload product verdict; canonical T40 remains partial from earlier warm ON/OFF proof.",
+              "evidence": [
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/hosted-package-38006058872-1.jsonl",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/hosted-browser-38006058872-1.jsonl",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/hosted-guest-38006058872-1.jsonl"
+              ]
+            }
+          ],
           "linked_defects": [
             "EXT-D-0087"
           ],
