@@ -372,6 +372,7 @@ export async function verifyImportedNativeEvidence(extensionDir, localReceiptPat
     runAttempt: status.runAttempt,
     artifactId: status.artifactId,
     githubArtifactDigest: status.githubArtifactDigest,
+    version,
     treeSha256: status.treeSha256,
     source,
   };

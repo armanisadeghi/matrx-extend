@@ -16519,7 +16519,7 @@
         {
           "id": "EXT-F-1007-C04",
           "label": "Save capture as a Source",
-          "action": "Land the current capture through the Sources endpoint; show confirmation/notices on success and retain refusal or unreachable captures in the device-local Unsaved queue for retry.",
+          "action": "Open a compact Save dialog with a prefilled editable name and optional destinations; land these choices through the Sources endpoint and retain refused captures for retry.",
           "source_anchor": "src/lib/sources/save-capture.ts:232",
           "source_delta": "Changed from direct saved-capture persistence; historical run evidence is retained but does not verify this behavior."
         },
@@ -16659,20 +16659,20 @@
         },
         {
           "id": "EXT-F-1007-C29",
-          "label": "Close optional Source filing without filing",
-          "action": "After landing a Source, close the optional filing panel without any attachment write.",
+          "label": "Close Save Source without saving",
+          "action": "Dismiss the pre-save dialog without sending a Source write; keep the capture available.",
           "source_anchor": "src/features/scrape/FileSourcePanel.tsx"
         },
         {
           "id": "EXT-F-1007-C30",
-          "label": "File landed Source in registered places",
-          "action": "Select and remove multiple registered target chips, then submit filing after landing.",
+          "label": "Choose Source destinations before saving",
+          "action": "Open destination search on demand, select or remove registered places, then include the choices in the Source landing.",
           "source_anchor": "src/features/scrape/FileSourcePanel.tsx"
         },
         {
           "id": "EXT-F-1007-C31",
           "label": "Choose optional media Library for Source",
-          "action": "Choose a Library or No Library and verify remembered choice and filing outcome.",
+          "action": "Open the optional Library selector on demand; choose a Library or No Library and verify the landing association.",
           "source_anchor": "src/features/scrape/FileSourcePanel.tsx"
         },
         {
@@ -17236,12 +17236,12 @@
             "Open Scrape on a controlled page with article text; record signed-in state and device-selected organization."
           ],
           "steps": [
-            "Save the populated capture.",
-            "Observe the Source landing result and any notices.",
-            "Open the Source in the web app."
+            "Open Save, edit the prefilled name, then save the populated capture without a destination.",
+            "Observe when Saved appears; confirm the chosen name on the server, including a same-content duplicate.",
+            "Open the Source in the web app; repeat with a guest and a controlled refusal."
           ],
           "expected": [
-            "A confirmed landing is shown as saved and opens the corresponding Source; refusal remains an honest, recoverable outcome.",
+            "The chosen name is persisted; Save works without a destination and promptly confirms landing without waiting for the separate SEO audit or opening a filing browser. Refusal retains an honest retry path.",
             "A successful scrape lands as an internal Source in the explicitly selected organization, with no personal visibility option; missing organization never selects a fallback."
           ],
           "dimensions": ["warm", "valid-input", "backend-available"],
@@ -19505,7 +19505,7 @@
         },
         {
           "id": "EXT-F-1007-T29",
-          "title": "Optional filing follows Source landing and can be skipped",
+          "title": "Optional Source destination is chosen before landing and can be skipped",
           "modes": ["member", "admin"],
           "control_ids": ["EXT-F-1007-C29", "EXT-F-1007-C30", "EXT-F-1007-C31"],
           "preconditions": [
@@ -19513,22 +19513,22 @@
             "Use an owned page, two registered filing targets and a controlled Library in the selected organization; reserve the Source and target records for this test only."
           ],
           "steps": [
-            "Capture and save the page; confirm the Source landed before the filing panel appears. Close filing and reload the Source to confirm no target or Library was attached.",
-            "Reopen filing on a new owned Source; select two targets, remove one, choose a Library, and submit. Inspect the success/failure notice and server-backed Source associations; then repeat with No Library.",
-            "Cause a controlled filing refusal after a successful landing and inspect the Source and filing remedy."
+            "Open Save on a captured page; verify an editable name and closed destination browser, then cancel without a write. Save a second owned capture without a destination and confirm it remains unfiled.",
+            "Open Save on a new capture, search for two registered places, remove one, optionally choose a Library, then Save. Inspect the stored name and exact associations; repeat with No Library.",
+            "Cause a controlled unreachable target refusal during landing; inspect the retained capture and retry with another destination."
           ],
           "expected": [
-            "Closing filing leaves a landed Source without attachments. Selecting targets and an optional Library files only the chosen associations. Filing refusal is visible and does not undo landing or claim unmade associations."
+            "The compact Save dialog opens without loading destination browsing or Libraries until requested. One landing persists the name and only chosen associations, or saves unfiled. A target refusal claims no completed Save and keeps a recoverable capture."
           ],
-          "dimensions": ["close", "multi-target", "remove", "library", "no-library", "refusal"],
+          "dimensions": ["cancel", "no-destination", "multi-target", "remove", "library", "no-library", "refusal", "reload"],
           "results": {
             "member": {
               "status": "unverified",
-              "detail": "Current-source procedure awaits receipt-bound native execution."
+              "detail": "New pre-save procedure awaits receipt-bound native execution."
             },
             "admin": {
               "status": "unverified",
-              "detail": "Current-source procedure awaits receipt-bound native execution."
+              "detail": "New pre-save procedure awaits receipt-bound native execution."
             }
           }
         },
@@ -19697,7 +19697,8 @@
             "EXT-D-0133",
             "EXT-D-0137",
             "EXT-D-0138",
-            "EXT-D-0139"
+            "EXT-D-0139",
+            "EXT-D-0187"
           ],
           "run_ids": [
             "incoming-sources-001",
@@ -19725,7 +19726,8 @@
             "EXT-D-0132",
             "EXT-D-0135",
             "EXT-D-0138",
-            "EXT-D-0139"
+            "EXT-D-0139",
+            "EXT-D-0187"
           ],
           "run_ids": [
             "incoming-sources-001",

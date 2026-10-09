@@ -52,6 +52,21 @@ artifact directory; local build/release commands below do not override the works
 prohibition on agents running manual builds or releases.
 
 `chrome://extensions` → enable Developer Mode → "Load unpacked" → select `.output/chrome-mv3-dev/`.
+In the `arman@armansadeghi.com` Chrome profile, keep the Store extension installed
+beside the unpacked copy and pin both from their extension Details pages. Confirm
+the unpacked ID is `cihdmkcdjjckfhjpgoedmgfpoljebaml`, its **Loaded from** path is
+the stable folder above, and its displayed version matches the promoted receipt.
+
+To put an already-imported and verified main-push CI development build at that stable
+path on this Mac, run `node scripts/promote-ci-dev-artifact.mjs
+test-results/ci-artifacts/<source-sha>/<run-id>-<attempt>/chrome-mv3`. The command
+rechecks the imported evidence and complete tree, replaces the unpacked directory,
+and writes `test-results/ci-dev-promotion-receipt.json` with the exact source SHA,
+version, and tree hash. Repeating it for the same artifact is safe. This is a
+local development install, with no Store publication claim. After promotion,
+reload the extension in Chrome and confirm **Loaded from** and version there.
+Use this path after each main sync that has a verified imported CI artifact;
+do not run a manual build or release to refresh this Mac's unpacked copy.
 
 `pnpm dev` uses that directory for temporary HMR output. A successful `release.sh`
 replaces the complete trees in both `.output/chrome-mv3-dev/` and

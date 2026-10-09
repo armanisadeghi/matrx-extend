@@ -1,0 +1,56 @@
+{
+  "id": "EXT-D-0187",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "surface": "Scrape > Save Source",
+  "auth_mode": "member, admin",
+  "title": "Scrape Save omits naming, delays confirmation, and opens a broad post-save filing browser",
+  "severity": "S2: central capture workflow is confusing and slow; users cannot name the Source at save time",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "root/scrape_save_build",
+  "preconditions": [
+    "Use the installed development extension in Chrome on a content page with a captured article; sign in and select an organization."
+  ],
+  "reproduction": [
+    "Open Scrape, capture the page, click Save.",
+    "Observe that no editable Source name or destination choice appears before the write.",
+    "After Saved, inspect the automatic filing panel: Library selector, broad eight-type browse list, and a second File action.",
+    "Observe the additional wait between the Source landing and the Saved state."
+  ],
+  "expected": "A compact save dialog immediately offers a prefilled editable name and a fast optional destination choice; one primary Save lands the named Source with selected associations and shows confirmation promptly. Full browsing and Library loading occur only on request.",
+  "actual": "Save lands with page-derived name and no associations. A post-save panel loads Libraries and a broad association browser; filing needs another call. The UI also waits for an ancillary SEO audit INSERT after landing before showing Saved. Exact backend/database latency is not yet measured.",
+  "evidence": [
+    "User-provided Scrape and filing screenshots (2026-10-09, captured in task)",
+    "src/features/scrape/ScrapeView.tsx",
+    "src/features/scrape/FileSourcePanel.tsx",
+    "src/hooks/use-scrape.ts",
+    "src/lib/sources/save-capture.ts",
+    "/tmp/scrape-save-trace.md"
+  ],
+  "cause": "The extension discards name/attach_to inputs already accepted by /sources/land, makes the association picker a separate eager post-save step, and serially awaits an ancillary SEO audit write.",
+  "fix_commits": [],
+  "verification": [],
+  "transition_history": [
+    {
+      "at": "2026-10-09T21:12:23.532774+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "User reported and supplied screenshots of confusing, delayed save."
+    },
+    {
+      "at": "2026-10-09T21:12:23.532774+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source trace reproduces absent name/destination and serial audit/picker loading."
+    },
+    {
+      "at": "2026-10-09T21:12:23.532774+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Bounded client implementation assigned; native retest required."
+    }
+  ],
+  "closure_requirement": "Fresh peer checks product/source behavior; guarded development build is reloaded in installed Chrome; member/admin real-page save proves custom name, no destination, one and multiple destinations, optional Library, refusal/retry, duplicate rename, and responsive confirmation; surrounding Scrape cases remain green. Guest sign-in flow is rechecked.",
+  "next_action": "Implement and peer-check compact pre-save flow, then native installed-extension retest and update inventory T04/T29."
+}
