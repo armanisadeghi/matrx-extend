@@ -1521,12 +1521,17 @@ export async function runDeviceToolCall(p: DeviceToolCallPayload): Promise<Webmc
   };
   return new Promise<WebmcpCallResponse>((resolve) => {
     const sink: DeviceCallSink = (outcome) =>
-      resolve(outcome.ok ? { ok: true, result: outcome.result } : { ok: false, error: outcome.error });
+      resolve(
+        outcome.ok ? { ok: true, result: outcome.result } : { ok: false, error: outcome.error },
+      );
     handleCall(handler, p.args, ctx, meta, { sink }).then(
       // Every path above answers the sink first; this only fires if one ever does not.
       () => resolve({ ok: false, error: `tool '${p.toolName}' finished without an answer` }),
       (err: unknown) =>
-        resolve({ ok: false, error: `Tool dispatch crashed: ${(err as Error)?.message ?? String(err)}` }),
+        resolve({
+          ok: false,
+          error: `Tool dispatch crashed: ${(err as Error)?.message ?? String(err)}`,
+        }),
     );
   });
 }

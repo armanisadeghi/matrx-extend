@@ -1,18 +1,22 @@
+import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
+import { highlightsContextValue } from '@/lib/chat/attached-context';
+import { useGoogleFilesStore } from '@/state/google-files';
+import { useHighlightStore } from '@/state/highlights';
 /**
  * The extension's registrations on the package chat's composer extensions
  * (`@ai-matrx/chat/host/composer-extensions`): the highlight and Google-file attachment sources and
  * the task-panel companion. Real stores, real package registry — only the highlight DB read is a
  * double. The payload must be the SAME context keys the extension's own send path builds.
  */
-import { collectAttachmentSourceContext, listConversationCompanions, resetComposerExtensionsForTests } from '@ai-matrx/chat/host/composer-extensions';
-import { useGoogleFilesStore } from '@/state/google-files';
-import { useHighlightStore } from '@/state/highlights';
+import {
+  collectAttachmentSourceContext,
+  listConversationCompanions,
+  resetComposerExtensionsForTests,
+} from '@ai-matrx/chat/host/composer-extensions';
 import { act } from 'react';
 import { createRoot } from 'react-dom/client';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { highlightsContextValue } from '@/lib/chat/attached-context';
 import { registerExtensionComposerExtensions } from './composer-extensions';
-import { HighlightAttachmentChip } from '@/features/chat/HighlightAttachmentChip';
 
 vi.mock('@/lib/highlights/queries', () => ({
   getHighlightsByIds: async (ids: string[]) =>
@@ -43,15 +47,21 @@ describe('extension composer extensions', () => {
     expect(await collectAttachmentSourceContext(CONV)).toBeNull();
   });
 
-  it('puts attached highlights and Google files on the turn as the extension\'s own context keys', async () => {
+  it("puts attached highlights and Google files on the turn as the extension's own context keys", async () => {
     await register();
     useHighlightStore.setState({ attachedIds: ['h1'] });
     useGoogleFilesStore.setState({ attachedIds: ['drive-file-7'] });
     const context = await collectAttachmentSourceContext(CONV);
     expect(context?.__google_files).toEqual(['drive-file-7']);
-    const highlights = context?.highlights as { count: number; items: Array<{ id: string; text: string }> };
+    const highlights = context?.highlights as {
+      count: number;
+      items: Array<{ id: string; text: string }>;
+    };
     expect(highlights.count).toBe(1);
-    expect(highlights.items[0]).toMatchObject({ id: 'h1', text: 'Crowns need a two-week lab turnaround' });
+    expect(highlights.items[0]).toMatchObject({
+      id: 'h1',
+      text: 'Crowns need a two-week lab turnaround',
+    });
     // The same builder the extension's send path uses.
     expect(highlights).toEqual(highlightsContextValue(highlights.items as never));
   });

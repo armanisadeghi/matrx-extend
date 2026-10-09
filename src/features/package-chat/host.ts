@@ -10,6 +10,7 @@ import { STORAGE_KEYS } from '@/config/env';
 import { SpeakerButton } from '@/features/chat/SpeakerButton';
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
 import { requestMicrophoneGrant } from '@/lib/audio/mic-grant';
+import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
 import {
@@ -17,8 +18,8 @@ import {
   listMemberOrganizations,
   requireActiveOrganizationId,
 } from '@/lib/org/active-org';
-import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { getSupabase } from '@/lib/supabase/client';
+import type { DeviceToolCallRef } from '@/lib/tools/device-handoff';
 import type {
   ChatDeviceToolContext,
   ChatDeviceToolHandOff,
@@ -29,7 +30,6 @@ import type {
 } from '@ai-matrx/chat/host';
 import { createMemoryNavigation } from '@ai-matrx/chat/host';
 import { registerChatUi } from '@ai-matrx/chat/host/ui-slots';
-import type { DeviceToolCallRef } from '@/lib/tools/device-handoff';
 import { browserDomContextSource, isBrowserDeviceRef } from './browser-dom-source';
 import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';

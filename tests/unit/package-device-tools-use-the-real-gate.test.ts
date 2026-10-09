@@ -30,23 +30,33 @@ vi.mock('@/lib/messaging/native', () => ({
     const list = deps.listeners.get(channel) ?? [];
     list.push(fn);
     deps.listeners.set(channel, list);
-    return () => deps.listeners.set(channel, (deps.listeners.get(channel) ?? []).filter((f) => f !== fn));
+    return () =>
+      deps.listeners.set(
+        channel,
+        (deps.listeners.get(channel) ?? []).filter((f) => f !== fn),
+      );
   },
 }));
 vi.mock('@/lib/audit/log', () => ({ appendReceipt: vi.fn(), recordAuditFailure: vi.fn() }));
 vi.mock('@/lib/audit/receipt', () => ({ PENDING_OUTPUT: {}, buildReceipt: vi.fn() }));
-vi.mock('@/state/pilot', () => ({ getPilotSessionSnapshotAsync: async () => ({ active: false, groupId: null }) }));
+vi.mock('@/state/pilot', () => ({
+  getPilotSessionSnapshotAsync: async () => ({ active: false, groupId: null }),
+}));
 vi.mock('@/lib/tools/dispatch-persist', async (orig) => {
   const real = await orig<Record<string, unknown>>();
   const stubbed: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(real)) stubbed[k] = typeof v === 'function' ? vi.fn(async () => undefined) : v;
+  for (const [k, v] of Object.entries(real))
+    stubbed[k] = typeof v === 'function' ? vi.fn(async () => undefined) : v;
   return stubbed;
 });
 
 const CONV = 'b0c2a8e4-7a51-4d7e-9c41-3f0b1f2a6c10';
 const argsSchema = z.object({ action: z.enum(['read', 'action', 'privileged', 'ask-user']) });
 
-function call(action: string, opts: { mode?: 'ask' | 'act'; tab?: number | null; id?: string } = {}) {
+function call(
+  action: string,
+  opts: { mode?: 'ask' | 'act'; tab?: number | null; id?: string } = {},
+) {
   return runDeviceToolCall({
     callId: opts.id ?? `call-${action}`,
     toolName: 'test_dynamic_tier',
@@ -60,7 +70,8 @@ function call(action: string, opts: { mode?: 'ask' | 'act'; tab?: number | null;
 const flush = () => new Promise((r) => setTimeout(r, 0));
 
 function respond(callId: string, decision: 'allow' | 'deny') {
-  for (const fn of [...(deps.listeners.get('tool:confirm-response') ?? [])]) fn({ callId, decision });
+  for (const fn of [...(deps.listeners.get('tool:confirm-response') ?? [])])
+    fn({ callId, decision });
 }
 
 function confirmRequests() {
@@ -132,7 +143,10 @@ describe('package device tools run through the real gate', () => {
         query: vi.fn(async () => [{ id: 23 }]),
       },
     });
-    deps.run.mockImplementation(async (_args, ctx) => ({ ok: true, tabId: await getAssignedTabId(ctx) }));
+    deps.run.mockImplementation(async (_args, ctx) => ({
+      ok: true,
+      tabId: await getAssignedTabId(ctx),
+    }));
     expect(await call('read', { tab: 17 })).toEqual({ ok: true, result: { ok: true, tabId: 17 } });
     vi.unstubAllGlobals();
   });
