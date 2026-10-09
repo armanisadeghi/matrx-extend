@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-09T21:12:00Z",
+  "profile": "Arman (armansadeghi.com)",
+  "ci_artifact": {
+    "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+    "run_id": 37986090931,
+    "artifact_id": 11643292724,
+    "tree_sha256": "b0c77d4bcc21c37febd13606dc5c3f1d1ba50106ddd7540e891457f8881571cb"
+  },
+  "development_extension": {
+    "id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.456",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned": true,
+    "sidepanel_opened": true,
+    "sidepanel_url": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html",
+    "auth_mode": "guest"
+  },
+  "store_extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205",
+    "enabled": true,
+    "pinned": true,
+    "sidepanel_opened": true
+  },
+  "browser_resource_journal": "docs/stabilization/resource-journals/chrome-dev-install-20261009.jsonl",
+  "browser_resource_decision": "valid",
+  "scope": "installation and sidepanel opening only; feature behavior and sign-in in the development extension remain unverified"
+}
