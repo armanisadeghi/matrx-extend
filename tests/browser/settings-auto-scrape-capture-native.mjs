@@ -20,6 +20,10 @@ import {
   waitFor,
   waitForReplacementSettingsTab,
 } from './settings-panel-driver.mjs';
+import {
+  preserveFailureDuringCleanup,
+  serializeGuestReloadFailure,
+} from './settings-probe-cleanup.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const OUTPUT = join(REPO, 'test-results/settings-auto-scrape-capture-native.json');
@@ -129,7 +133,13 @@ try {
       [PAGE_ON]: `<html><title>Harbor Dental intake</title><article><h1>${MARKER_ON}</h1><p>Appointments begin at eight in the morning.</p></article></html>`,
       [PAGE_OFF]: `<html><title>Harbor Dental followup</title><article><h1>${MARKER_OFF}</h1><p>Appointments begin at nine in the morning.</p></article></html>`,
     },
-    exercisePanel: async ({ page, panel, reloadExtension, acquireLivePanel }) => {
+    exercisePanel: async ({
+      page,
+      panel,
+      reloadExtension,
+      acquireLivePanel,
+      transportFailureClass,
+    }) => {
       let activePanel = panel;
       await settings(activePanel);
       const baseline = await observe(activePanel);
@@ -140,134 +150,151 @@ try {
         'auto_scrape_original_off_storage_required',
       );
       let observerInstalled = false;
-      try {
-        await installTrafficObserver(activePanel, MARKER_ON);
-        observerInstalled = true;
-        await page.goto(new URL(PAGE_ON, page.url()).href);
-        await page.waitForLoadState('load');
-        await setSwitch(activePanel, true);
-        const on = await waitFor(
-          'auto_scrape_on_capture_result',
-          async () => ({
+      await preserveFailureDuringCleanup(
+        async () => {
+          await installTrafficObserver(activePanel, MARKER_ON);
+          observerInstalled = true;
+          await page.goto(new URL(PAGE_ON, page.url()).href);
+          await page.waitForLoadState('load');
+          await setSwitch(activePanel, true);
+          const on = await waitFor(
+            'auto_scrape_on_capture_result',
+            async () => ({
+              ...(await observe(activePanel)),
+              pageUrl: page.url(),
+            }),
+            (state) => state.calls.length > 0 && state.calls.every((call) => call.ok && call.url),
+            12000,
+          );
+          assertCaptureOn(on, MARKER_ON);
+          record('ON emits one real capture with the page marker', 'pass', on);
+          await setSwitch(activePanel, false);
+          await evaluate(activePanel, 'globalThis.__t40CaptureCalls = []; true');
+          await page.goto(new URL(PAGE_OFF, page.url()).href);
+          await page.waitForLoadState('load');
+          const offStart = Date.now();
+          await waitFor(
+            'auto_scrape_off_observation_window',
+            () => Date.now() - offStart,
+            (elapsed) => elapsed >= 3000,
+            4000,
+          );
+          const off = {
             ...(await observe(activePanel)),
+            pageLoaded: true,
+            windowCompleted: true,
             pageUrl: page.url(),
-          }),
-          (state) => state.calls.length > 0 && state.calls.every((call) => call.ok && call.url),
-          12000,
-        );
-        assertCaptureOn(on, MARKER_ON);
-        record('ON emits one real capture with the page marker', 'pass', on);
-        await setSwitch(activePanel, false);
-        await evaluate(activePanel, 'globalThis.__t40CaptureCalls = []; true');
-        await page.goto(new URL(PAGE_OFF, page.url()).href);
-        await page.waitForLoadState('load');
-        const offStart = Date.now();
-        await waitFor(
-          'auto_scrape_off_observation_window',
-          () => Date.now() - offStart,
-          (elapsed) => elapsed >= 3000,
-          4000,
-        );
-        const off = {
-          ...(await observe(panel)),
-          pageLoaded: true,
-          windowCompleted: true,
-          pageUrl: page.url(),
-        };
-        assertCaptureOff(off);
-        record('OFF emits no capture after the loaded page settles', 'pass', off);
+          };
+          assertCaptureOff(off);
+          record('OFF emits no capture after the loaded page settles', 'pass', off);
 
-        activePanel = await runGuestChoicesAcrossExtensionRestarts({
-          panel: activePanel,
-          section: 'Scrape',
-          controlLabel: 'Auto-scrape on load',
-          choices: [
-            [false, 'Off'],
-            [true, 'On'],
-          ],
-          baseline: { value: false, label: 'Off' },
-          settings,
-          openSection,
-          read: observe,
-          matches: autoScrapePreferenceMatches,
-          reloadExtension,
-          acquireLivePanel,
-          onPanelChanged: (target) => {
-            activePanel = target;
-          },
-          record,
-          afterReload: async ({ panel: target, value }) => {
-            const marker = value ? MARKER_ON : MARKER_OFF;
-            const path = value ? PAGE_ON : PAGE_OFF;
-            await installTrafficObserver(target, marker);
-            await evaluate(target, 'globalThis.__t40CaptureCalls = []; true');
-            await page.goto(new URL(path, page.url()).href);
-            await page.waitForLoadState('load');
-            if (value) {
-              const reloadedOn = await waitFor(
-                'auto_scrape_reloaded_on_capture_result',
-                async () => ({
+          activePanel = await runGuestChoicesAcrossExtensionRestarts({
+            panel: activePanel,
+            section: 'Scrape',
+            controlLabel: 'Auto-scrape on load',
+            choices: [
+              [false, 'Off'],
+              [true, 'On'],
+            ],
+            baseline: { value: false, label: 'Off' },
+            settings,
+            openSection,
+            read: observe,
+            matches: autoScrapePreferenceMatches,
+            reloadExtension,
+            acquireLivePanel,
+            transportFailureClass,
+            safeStages: ['extension_reload', 'restore_panel', 'restore_extension_reload'],
+            onPanelChanged: (target) => {
+              activePanel = target;
+            },
+            record,
+            afterReload: async ({ panel: target, value }) => {
+              const marker = value ? MARKER_ON : MARKER_OFF;
+              const path = value ? PAGE_ON : PAGE_OFF;
+              await installTrafficObserver(target, marker);
+              await evaluate(target, 'globalThis.__t40CaptureCalls = []; true');
+              await page.goto(new URL(path, page.url()).href);
+              await page.waitForLoadState('load');
+              if (value) {
+                const reloadedOn = await waitFor(
+                  'auto_scrape_reloaded_on_capture_result',
+                  async () => ({
+                    ...(await observe(target)),
+                    pageUrl: page.url(),
+                  }),
+                  (state) =>
+                    state.calls.length > 0 && state.calls.every((call) => call.ok && call.url),
+                  12000,
+                );
+                assertCaptureOn(reloadedOn, MARKER_ON);
+                record(
+                  'ON survives full extension reload and emits one real capture',
+                  'pass',
+                  reloadedOn,
+                );
+              } else {
+                const offStart = Date.now();
+                await waitFor(
+                  'auto_scrape_reloaded_off_observation_window',
+                  () => Date.now() - offStart,
+                  (elapsed) => elapsed >= RELOAD_OFF_MS,
+                  RELOAD_OFF_MS + 1000,
+                );
+                const reloadedOff = {
                   ...(await observe(target)),
+                  pageLoaded: true,
+                  windowCompleted: true,
                   pageUrl: page.url(),
-                }),
-                (state) =>
-                  state.calls.length > 0 && state.calls.every((call) => call.ok && call.url),
-                12000,
-              );
-              assertCaptureOn(reloadedOn, MARKER_ON);
-              record(
-                'ON survives full extension reload and emits one real capture',
-                'pass',
-                reloadedOn,
-              );
-            } else {
-              const offStart = Date.now();
-              await waitFor(
-                'auto_scrape_reloaded_off_observation_window',
-                () => Date.now() - offStart,
-                (elapsed) => elapsed >= RELOAD_OFF_MS,
-                RELOAD_OFF_MS + 1000,
-              );
-              const reloadedOff = {
-                ...(await observe(target)),
-                pageLoaded: true,
-                windowCompleted: true,
-                pageUrl: page.url(),
-              };
-              assertCaptureOff(reloadedOff);
-              record(
-                'OFF survives full extension reload with zero capture calls',
-                'pass',
-                reloadedOff,
-              );
+                };
+                assertCaptureOff(reloadedOff);
+                record(
+                  'OFF survives full extension reload with zero capture calls',
+                  'pass',
+                  reloadedOff,
+                );
+              }
+            },
+          });
+        },
+        async () => {
+          let cleanupFailed = false;
+          try {
+            await setSwitch(activePanel, false);
+            await evaluate(
+              activePanel,
+              `(${restoreAutoScrapeBaseline.toString()})(chrome.storage.local, ${JSON.stringify(baseline)})`,
+            );
+            const restored = await observe(activePanel);
+            assert.equal(restored.visible, false, 'auto_scrape_restore_ui_failed');
+            assert.equal(restored.stored, baseline.stored, 'auto_scrape_restore_storage_failed');
+            assert.equal(
+              restored.storagePresent,
+              baseline.storagePresent,
+              'auto_scrape_restore_key_presence_failed',
+            );
+            assert.equal(
+              restored.settingPresent,
+              baseline.settingPresent,
+              'auto_scrape_restore_field_presence_failed',
+            );
+            record('Original OFF baseline restored in UI and chrome.storage', 'pass', {
+              visible: restored.visible,
+              stored: restored.stored,
+            });
+          } catch {
+            cleanupFailed = true;
+          }
+          if (observerInstalled) {
+            try {
+              await removeTrafficObserver(activePanel);
+            } catch {
+              cleanupFailed = true;
             }
-          },
-        });
-      } finally {
-        await setSwitch(activePanel, false);
-        await evaluate(
-          activePanel,
-          `(${restoreAutoScrapeBaseline.toString()})(chrome.storage.local, ${JSON.stringify(baseline)})`,
-        );
-        const restored = await observe(activePanel);
-        assert.equal(restored.visible, false, 'auto_scrape_restore_ui_failed');
-        assert.equal(restored.stored, baseline.stored, 'auto_scrape_restore_storage_failed');
-        assert.equal(
-          restored.storagePresent,
-          baseline.storagePresent,
-          'auto_scrape_restore_key_presence_failed',
-        );
-        assert.equal(
-          restored.settingPresent,
-          baseline.settingPresent,
-          'auto_scrape_restore_field_presence_failed',
-        );
-        record('Original OFF baseline restored in UI and chrome.storage', 'pass', {
-          visible: restored.visible,
-          stored: restored.stored,
-        });
-        if (observerInstalled) await removeTrafficObserver(activePanel);
-      }
+          }
+          if (cleanupFailed) throw new Error('settings_probe_cleanup_failed');
+        },
+      );
     },
   });
   assert.equal(result.verified, true);
@@ -275,8 +302,15 @@ try {
   report.artifacts = result.artifacts;
   report.status = 'pass';
 } catch (error) {
-  report.error = String(error?.message ?? error);
-  record('native capture probe completed', 'fail', report.error);
+  const reloadFailure = serializeGuestReloadFailure(error);
+  if (reloadFailure) {
+    report.error = reloadFailure.category;
+    report.reload_failure = reloadFailure;
+    record('native capture probe completed', 'fail', report.reload_failure);
+  } else {
+    report.error = String(error?.message ?? error);
+    record('native capture probe completed', 'fail', report.error);
+  }
   report.status = 'fail';
   process.exitCode = 1;
 } finally {

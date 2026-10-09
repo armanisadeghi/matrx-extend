@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "run_id": 38003965942,
+  "acceptance_case": "settings-auto-scrape-capture",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "workflow_head_sha": "a5e581527a21381742ad0e5fa6273cc60b4a38aa",
+  "development_artifact": {
+    "run_id": 37998294843,
+    "artifact_id": 11647758423,
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "version": "0.2.456",
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b"
+  },
+  "resource_decisions": {
+    "package": "valid",
+    "browser": "valid",
+    "acceptance": "invalid"
+  },
+  "status": "resource_invalid_no_reload_verdict",
+  "error": "owned_cdp_transport_failed",
+  "reload_failure": "The failure report stopped before any extension replacement lifecycle criterion; the first failing callback is not available in this run receipt. Cleanup may have replaced the original failure.",
+  "criteria": [
+    {
+      "name": "ON emits one real capture with the page marker",
+      "status": "pass",
+      "evidence": {
+        "visible": true,
+        "stored": true,
+        "settingPresent": true,
+        "storagePresent": true,
+        "calls": [
+          {
+            "kind": "scrape:capture-page",
+            "ok": true,
+            "markerPresent": true
+          }
+        ],
+        "pagePath": "/harbor-dental-intake"
+      }
+    },
+    {
+      "name": "OFF emits no capture after the loaded page settles",
+      "status": "pass",
+      "evidence": {
+        "visible": false,
+        "stored": false,
+        "settingPresent": true,
+        "storagePresent": true,
+        "calls": [],
+        "pageLoaded": true,
+        "windowCompleted": true,
+        "pagePath": "/harbor-dental-followup"
+      }
+    },
+    {
+      "name": "initial: original preference matches",
+      "status": "pass",
+      "evidence": {
+        "visible": false,
+        "stored": false,
+        "settingPresent": true,
+        "storagePresent": true,
+        "calls": []
+      }
+    },
+    {
+      "name": "original preference restored before extension reload",
+      "status": "pass",
+      "evidence": {
+        "visible": false,
+        "stored": false,
+        "settingPresent": true,
+        "storagePresent": true,
+        "calls": []
+      }
+    },
+    {
+      "name": "native capture probe completed",
+      "status": "fail",
+      "evidence": "owned_cdp_transport_failed"
+    }
+  ],
+  "scope_limits": [
+    "Warm ON/OFF observations are real product evidence, but this resource-invalid run is not canonical T40 credit.",
+    "No full-extension reload persistence result.",
+    "Guest only; no member, admin, Store, or downstream chat/context claim."
+  ],
+  "resource_journals": [
+    "hosted-package-38003965942-1.jsonl",
+    "hosted-browser-38003965942-1.jsonl",
+    "hosted-guest-38003965942-1.jsonl"
+  ]
+}
