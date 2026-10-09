@@ -12,6 +12,7 @@ import {
   restoreAutoScrapeBaseline,
 } from './settings-auto-scrape-capture-baseline.mjs';
 import { assertCaptureOff, assertCaptureOn } from './settings-auto-scrape-capture-contract.mjs';
+import { runGuestChoicesAcrossExtensionRestarts } from './settings-guest-extension-rechecks.mjs';
 import {
   click,
   evaluate,
@@ -30,6 +31,7 @@ const MARKER_ON = 'Harbor Dental intake hours October 2026';
 const MARKER_OFF = 'Harbor Dental followup hours November 2026';
 const PAGE_ON = '/harbor-dental-intake';
 const PAGE_OFF = '/harbor-dental-followup';
+const RELOAD_OFF_MS = 3000;
 const observationExpression = `(async () => {
   const baseline = await (${captureAutoScrapeBaseline.toString()})(chrome.storage.local);
   const toggle = [...document.querySelectorAll('[role="switch"][aria-label="Auto-scrape on load"]')];
@@ -127,9 +129,10 @@ try {
       [PAGE_ON]: `<html><title>Harbor Dental intake</title><article><h1>${MARKER_ON}</h1><p>Appointments begin at eight in the morning.</p></article></html>`,
       [PAGE_OFF]: `<html><title>Harbor Dental followup</title><article><h1>${MARKER_OFF}</h1><p>Appointments begin at nine in the morning.</p></article></html>`,
     },
-    exercisePanel: async ({ page, panel }) => {
-      await settings(panel);
-      const baseline = await observe(panel);
+    exercisePanel: async ({ page, panel, reloadExtension, acquireLivePanel }) => {
+      let activePanel = panel;
+      await settings(activePanel);
+      const baseline = await observe(activePanel);
       assert.equal(baseline.visible, false, 'auto_scrape_original_off_baseline_required');
       assert.ok(
         baseline.stored === false ||
@@ -138,15 +141,15 @@ try {
       );
       let observerInstalled = false;
       try {
-        await installTrafficObserver(panel, MARKER_ON);
+        await installTrafficObserver(activePanel, MARKER_ON);
         observerInstalled = true;
         await page.goto(new URL(PAGE_ON, page.url()).href);
         await page.waitForLoadState('load');
-        await setSwitch(panel, true);
+        await setSwitch(activePanel, true);
         const on = await waitFor(
           'auto_scrape_on_capture_result',
           async () => ({
-            ...(await observe(panel)),
+            ...(await observe(activePanel)),
             pageUrl: page.url(),
           }),
           (state) => state.calls.length > 0 && state.calls.every((call) => call.ok && call.url),
@@ -154,8 +157,8 @@ try {
         );
         assertCaptureOn(on, MARKER_ON);
         record('ON emits one real capture with the page marker', 'pass', on);
-        await setSwitch(panel, false);
-        await evaluate(panel, 'globalThis.__t40CaptureCalls = []; true');
+        await setSwitch(activePanel, false);
+        await evaluate(activePanel, 'globalThis.__t40CaptureCalls = []; true');
         await page.goto(new URL(PAGE_OFF, page.url()).href);
         await page.waitForLoadState('load');
         const offStart = Date.now();
@@ -173,13 +176,80 @@ try {
         };
         assertCaptureOff(off);
         record('OFF emits no capture after the loaded page settles', 'pass', off);
+
+        activePanel = await runGuestChoicesAcrossExtensionRestarts({
+          panel: activePanel,
+          section: 'Scrape',
+          controlLabel: 'Auto-scrape on load',
+          choices: [
+            [false, 'Off'],
+            [true, 'On'],
+          ],
+          baseline: { value: false, label: 'Off' },
+          settings,
+          openSection,
+          read: observe,
+          matches: autoScrapePreferenceMatches,
+          reloadExtension,
+          acquireLivePanel,
+          onPanelChanged: (target) => {
+            activePanel = target;
+          },
+          record,
+          afterReload: async ({ panel: target, value }) => {
+            const marker = value ? MARKER_ON : MARKER_OFF;
+            const path = value ? PAGE_ON : PAGE_OFF;
+            await installTrafficObserver(target, marker);
+            await evaluate(target, 'globalThis.__t40CaptureCalls = []; true');
+            await page.goto(new URL(path, page.url()).href);
+            await page.waitForLoadState('load');
+            if (value) {
+              const reloadedOn = await waitFor(
+                'auto_scrape_reloaded_on_capture_result',
+                async () => ({
+                  ...(await observe(target)),
+                  pageUrl: page.url(),
+                }),
+                (state) =>
+                  state.calls.length > 0 && state.calls.every((call) => call.ok && call.url),
+                12000,
+              );
+              assertCaptureOn(reloadedOn, MARKER_ON);
+              record(
+                'ON survives full extension reload and emits one real capture',
+                'pass',
+                reloadedOn,
+              );
+            } else {
+              const offStart = Date.now();
+              await waitFor(
+                'auto_scrape_reloaded_off_observation_window',
+                () => Date.now() - offStart,
+                (elapsed) => elapsed >= RELOAD_OFF_MS,
+                RELOAD_OFF_MS + 1000,
+              );
+              const reloadedOff = {
+                ...(await observe(target)),
+                pageLoaded: true,
+                windowCompleted: true,
+                pageUrl: page.url(),
+              };
+              assertCaptureOff(reloadedOff);
+              record(
+                'OFF survives full extension reload with zero capture calls',
+                'pass',
+                reloadedOff,
+              );
+            }
+          },
+        });
       } finally {
-        await setSwitch(panel, false);
+        await setSwitch(activePanel, false);
         await evaluate(
-          panel,
+          activePanel,
           `(${restoreAutoScrapeBaseline.toString()})(chrome.storage.local, ${JSON.stringify(baseline)})`,
         );
-        const restored = await observe(panel);
+        const restored = await observe(activePanel);
         assert.equal(restored.visible, false, 'auto_scrape_restore_ui_failed');
         assert.equal(restored.stored, baseline.stored, 'auto_scrape_restore_storage_failed');
         assert.equal(
@@ -196,7 +266,7 @@ try {
           visible: restored.visible,
           stored: restored.stored,
         });
-        if (observerInstalled) await removeTrafficObserver(panel);
+        if (observerInstalled) await removeTrafficObserver(activePanel);
       }
     },
   });
