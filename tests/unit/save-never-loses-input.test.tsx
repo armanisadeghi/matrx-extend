@@ -123,6 +123,7 @@ vi.mock('@/features/scrape/FileSourcePanel', () => ({
 }));
 
 import { ScrapeView } from '@/features/scrape/ScrapeView';
+import * as activeOrganization from '@/lib/org/active-org';
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import {
   UNSAVED_CAPTURES_KEY,
@@ -244,6 +245,72 @@ function deferredApiResponse() {
 }
 
 describe('Save never loses input', () => {
+  it.each(['Harbor Dental intake research', 'Harbor Dental insurance guidance'])(
+    'preserves the open draft %s when the initial organization lookup finishes',
+    async (draftName) => {
+      // Initial organization hydration must not remount an already edited form.
+      let resolveOrganization!: (organizationId: string) => void;
+      const pendingOrganization = new Promise<string>((resolve) => {
+        resolveOrganization = resolve;
+      });
+      const organizationRead = vi
+        .spyOn(activeOrganization, 'getActiveOrganizationId')
+        .mockReturnValue(pendingOrganization);
+      mocks.apiPost.mockResolvedValue(landedResponse);
+      try {
+        render(<ScrapeView />);
+        fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+        await screen.findByRole('dialog', { name: 'Save Source' });
+        fireEvent.change(screen.getByLabelText('Source name'), {
+          target: { value: draftName },
+        });
+        expect(mocks.apiPost).not.toHaveBeenCalled();
+
+        await act(async () => {
+          resolveOrganization(mocks.organizationId);
+          await pendingOrganization;
+        });
+
+        expect((screen.getByLabelText('Source name') as HTMLInputElement).value).toBe(draftName);
+        fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Pick Launch plan' }));
+        fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
+        await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+        expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({
+          name: draftName,
+          organization_id: mocks.organizationId,
+          attach_to: [{ entity_type: 'project', entity_id: 'project-1' }],
+        });
+      } finally {
+        resolveOrganization(mocks.organizationId);
+        organizationRead.mockRestore();
+      }
+    },
+  );
+
+  it('closes the open draft and clears its places when the person switches organizations', async () => {
+    await act(async () => {
+      render(<ScrapeView />);
+    });
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    fireEvent.change(await screen.findByLabelText('Source name'), {
+      target: { value: 'Harbor Dental intake research' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Pick Launch plan' }));
+    expect(screen.getByText('Launch plan')).toBeTruthy();
+
+    await switchWorkspace(OTHER_ORGANIZATION_ID);
+
+    expect(screen.queryByRole('dialog', { name: 'Save Source' })).toBeNull();
+    expect(mocks.apiPost).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    expect((screen.getByLabelText('Source name') as HTMLInputElement).value).toBe('Guide');
+    expect(screen.queryByText('Launch plan')).toBeNull();
+  });
+
   it('opens a named Save form without a request, then lands the edited name in one request', async () => {
     mocks.apiPost.mockResolvedValue(landedResponse);
     render(<ScrapeView />);
