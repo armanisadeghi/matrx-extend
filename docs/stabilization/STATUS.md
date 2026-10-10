@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-09 23:37 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-09T23:34:38+00:00. 205 features · 769 cases · 1358 controls · 187 linked defect records.
+Generated 2026-10-09 23:49 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-09T23:49:58+00:00. 205 features · 769 cases · 1358 controls · 187 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 90 · Partial: 92 · Fail: 2 · Unverified: 1045 · N/A: 1.
-Unverified splits into **133 explicitly marked unverified** and **912 with no result record**.
+Applicable case-by-role slots: **1230** — Pass: 91 · Partial: 92 · Fail: 2 · Unverified: 1044 · N/A: 1.
+Unverified splits into **132 explicitly marked unverified** and **912 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -38,7 +38,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
 | [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 10, n/a 0 | 0 |
 | [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
-| [Data side-panel](#data-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 9, n/a 0 | 1 |
+| [Data side-panel](#data-side-panel) | 1 | 1 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 0, unverified 8, n/a 0 | 1 |
 | [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 3 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 3 |
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
@@ -1452,7 +1452,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-2005-T01 Guest extraction and sign-in save gate | Unverified | N/A | N/A | EXT-F-2005-C14, EXT-F-2005-C15, EXT-F-2005-C16, EXT-F-2005-C03, EXT-F-2005-C12, EXT-F-2005-C13 |
+| EXT-F-2005-T01 Guest extraction and sign-in save gate | Pass | N/A | N/A | EXT-F-2005-C14, EXT-F-2005-C15, EXT-F-2005-C16, EXT-F-2005-C03, EXT-F-2005-C12, EXT-F-2005-C13 |
 | EXT-F-2005-T02 Matched pattern run, copy variants, and retry | N/A | Unverified | Unverified | EXT-F-2005-C01, EXT-F-2005-C02, EXT-F-2005-C17, EXT-F-2005-C04, EXT-F-2005-C05, EXT-F-2005-C06 |
 | EXT-F-2005-T03 Manual field pattern lifecycle and extracted rows | N/A | Unverified | Partial | EXT-F-2005-C14, EXT-F-2005-C15, EXT-F-2005-C03, EXT-F-2005-C12, EXT-F-2005-C11, EXT-F-2005-C07, EXT-F-2005-C08, EXT-F-2005-C09, EXT-F-2005-C10 |
 | EXT-F-2005-T04 Non-matching page and active-tab boundary | N/A | Unverified | Unverified | EXT-F-2005-C02, EXT-F-2005-C07 |
@@ -1460,8 +1460,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
-- EXT-F-2005-T01 · guest: Unverified. Guarded guest run imported exact frozen development artifact 11647758423, then the guest resource watcher observed RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY and stopped the child at the safe boundary. Final resourceInvalid=true; no CDP/native side-panel session or Data behavior was reached, so T01 remains unverified.
-  Evidence / build / date recorded: 38002259163, ['docs/stabilization/evidence/guest-data-behavior/run38002259163/receipt.json', 'docs/stabilization/evidence/guest-data-behavior/run38002259163/hosted-guest-38002259163-1.jsonl']
+- EXT-F-2005-T01 · guest: Pass. Guarded native guest run selected two distinct fields on the controlled /products page, saw both picker previews and selected selectors, found Pattern name and Save pattern absent, used Sign in to save, and observed zero pattern writes before authentication. All three resource guards finalized valid. Earlier Playwright click timeout cause remains unknown; signed-in save and Store behavior were outside T01.
+  Evidence / build / date recorded: 38005671396, ['docs/stabilization/evidence/guest-data-behavior/run38005671396/receipt.json', 'docs/stabilization/evidence/guest-data-behavior/run38005671396/data-guest-native-acceptance.sanitized.json', 'docs/stabilization/evidence/guest-data-behavior/run38005671396/hosted-guest-38005671396-1.jsonl']
 - EXT-F-2005-T03 · admin: Partial. Actualfieldpicker/manualCSSsave/Data+Showcase replay JSON/AI/TSV preserve719594charbookfield identicalhash; Data refreshreplaypasses. D53closed; D54quotes/spreadsheetpaste open; ShowcaseAIURLmissingD55; broaderauth/cancel/failurestatesunverified.
   Evidence / build / date recorded: data-picker-long-native-20260928-01, ['docs/stabilization/reports/data-picker-long-native.json', 'docs/stabilization/reports/showcase-export-guarded-runtime.json']
 

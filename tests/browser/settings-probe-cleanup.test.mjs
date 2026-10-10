@@ -50,6 +50,21 @@ test('reload failure receipt serializes only allowlisted stage and transport dia
     safeRestorationFailureStage: 'restore_extension_reload',
     safeFirstChoiceTransportClass: 'unexpected_close',
     safeRestorationTransportClass: 'unexpected_close',
+    safeFirstChoiceFailureCode: 'pointer_target_not_unique',
+    safeRestorationFailureCode: 'native_extension_replacement_panel_unverified',
+    safeFirstChoiceReloadBoundary: {
+      lastCapturedPhase: 'click_started',
+      timelineTruncated: true,
+      clickStarted: true,
+      clickResolved: false,
+      preClickOldWorkerPresent: true,
+      oldWorkerAbsent: false,
+      oldPanelAbsent: false,
+      replacementWorkerPresent: false,
+      finalPredicate: false,
+      contextExpectedAppeared: null,
+      secret: 'private content',
+    },
     safeCleanupFailed: true,
   });
   const receipt = serializeGuestReloadFailure(error);
@@ -59,6 +74,21 @@ test('reload failure receipt serializes only allowlisted stage and transport dia
     restorationFailureStage: 'restore_extension_reload',
     firstChoiceTransportClass: 'unexpected_close',
     restorationTransportClass: 'unexpected_close',
+    firstChoiceFailureCode: 'pointer_target_not_unique',
+    restorationFailureCode: 'native_extension_replacement_panel_unverified',
+    firstChoiceReloadBoundary: {
+      lastCapturedPhase: 'click_started',
+      timelineTruncated: true,
+      clickStarted: true,
+      clickResolved: false,
+      preClickOldWorkerPresent: true,
+      oldWorkerAbsent: false,
+      oldPanelAbsent: false,
+      replacementWorkerPresent: false,
+      finalPredicate: false,
+      contextExpectedAppeared: null,
+    },
+    restorationReloadBoundary: null,
     cleanupAlsoFailed: true,
   });
   assert.equal(JSON.stringify(receipt).includes('owned_cdp_transport_failed'), false);
@@ -72,6 +102,13 @@ test('reload failure receipt replaces unrecognized diagnostics with safe default
     safeRestorationFailureStage: 'restore_extension_reload',
     safeFirstChoiceTransportClass: 'private-value',
     safeRestorationTransportClass: 'socket_error',
+    safeFirstChoiceFailureCode: 'private-value',
+    safeRestorationFailureCode: 'owned_cdp_transport_failed',
+    safeFirstChoiceReloadBoundary: {
+      lastCapturedPhase: 'private-value',
+      timelineTruncated: 'private-value',
+      clickStarted: 'private-value',
+    },
   });
   assert.deepEqual(receipt, {
     category: 'full_extension_preference_or_restore_failed',
@@ -79,6 +116,21 @@ test('reload failure receipt replaces unrecognized diagnostics with safe default
     restorationFailureStage: 'restore_extension_reload',
     firstChoiceTransportClass: 'unavailable',
     restorationTransportClass: 'socket_error',
+    firstChoiceFailureCode: 'unavailable',
+    restorationFailureCode: 'owned_cdp_transport_failed',
+    firstChoiceReloadBoundary: {
+      lastCapturedPhase: 'unavailable',
+      timelineTruncated: null,
+      clickStarted: null,
+      clickResolved: null,
+      preClickOldWorkerPresent: null,
+      oldWorkerAbsent: null,
+      oldPanelAbsent: null,
+      replacementWorkerPresent: null,
+      finalPredicate: null,
+      contextExpectedAppeared: null,
+    },
+    restorationReloadBoundary: null,
     cleanupAlsoFailed: false,
   });
 });

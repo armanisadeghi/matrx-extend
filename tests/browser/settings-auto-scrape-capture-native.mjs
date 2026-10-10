@@ -192,6 +192,7 @@ try {
             panel: activePanel,
             section: 'Scrape',
             controlLabel: 'Auto-scrape on load',
+            controlKind: 'switch',
             choices: [
               [false, 'Off'],
               [true, 'On'],

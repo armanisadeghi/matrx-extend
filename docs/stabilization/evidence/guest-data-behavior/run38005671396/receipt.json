@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 38005671396,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38005671396",
+    "lane": "A",
+    "conclusion": "success",
+    "checkout_sha": "8cc7d4f44c9066ef3e752c888418e9f365c48b71"
+  },
+  "acceptance": {
+    "case": "guest-data",
+    "case_id": "EXT-F-2005-T01",
+    "auth_mode": "guest",
+    "scope": "T01",
+    "fixture": "static synthetic /products catalog",
+    "report_status": "pass",
+    "stage": "complete",
+    "native_stage": "exercise_panel",
+    "product_behavior": "pass",
+    "observations": {
+      "guest": true,
+      "controlled_rows": 3,
+      "two_distinct_picker_previews": true,
+      "two_selected_fields": true,
+      "pattern_name_absent": true,
+      "save_pattern_absent": true,
+      "sign_in_to_save_present": true,
+      "sign_in_action_used": true,
+      "pattern_write_requests_before_auth": 0
+    },
+    "picker_field_diagnostic": {
+      "target_count": 3,
+      "target_rect": {
+        "x": 8,
+        "y": 79.875,
+        "width": 805,
+        "height": 28
+      },
+      "viewport": {
+        "width": 821,
+        "height": 787
+      },
+      "center_hit": "field",
+      "hit_kinds": [
+        "field",
+        "field",
+        "picker_overlay",
+        "field",
+        "field",
+        "picker_overlay",
+        "field",
+        "field",
+        "picker_overlay"
+      ],
+      "chosen_hit": "field"
+    },
+    "picker_second_field_diagnostic": {
+      "target_count": 3,
+      "target_rect": {
+        "x": 8,
+        "y": 213.59375,
+        "width": 805,
+        "height": 18
+      },
+      "viewport": {
+        "width": 821,
+        "height": 787
+      },
+      "center_hit": "field",
+      "hit_kinds": [
+        "field",
+        "field",
+        "field",
+        "field",
+        "field",
+        "field",
+        "field",
+        "field",
+        "field"
+      ],
+      "chosen_hit": "field"
+    }
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.456",
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "ci_run_id": 37998294843,
+    "ci_artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b"
+  },
+  "hosted_run_artifact": {
+    "id": 11651780573,
+    "name": "hosted-guest-38005671396-1",
+    "sha256": "sha256:27bc117622a8e83459b4ac4f77b95a09f53712b58abfec3625dee00d94d922ad",
+    "expired": false
+  },
+  "resource_guards": {
+    "package": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    }
+  },
+  "scope_boundary": "Controlled guest Data picker and save gate passed on the exact imported development artifact. Signed-in save, Store installation, and the earlier Playwright timeout cause remain unverified.",
+  "evidence_files": [
+    "data-guest-native-acceptance.sanitized.json",
+    "hosted-package-38005671396-1.jsonl",
+    "hosted-browser-38005671396-1.jsonl",
+    "hosted-guest-38005671396-1.jsonl"
+  ]
+}

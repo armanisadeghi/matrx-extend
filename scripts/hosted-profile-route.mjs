@@ -46,6 +46,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
   if (
     [
       'member-chat',
+      'member-data',
       'settings-persistence-member',
       'desktop-settings-member',
       'visibility-census-member',
@@ -54,7 +55,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
     scrapeMode === 'member'
   ) {
     assert.ok(env.MATRX_HOSTED_MEMBER_LINK_JSON, 'hosted_member_link_secret_required');
-    if (scrapeMode === 'member')
+    if (scrapeMode === 'member' || acceptanceCase === 'member-data')
       requireSettingsCredential('member', env.MATRX_HOSTED_MEMBER_LINK_JSON);
   }
   if (

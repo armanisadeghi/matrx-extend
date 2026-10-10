@@ -214,7 +214,25 @@ test('extension reload transport failures retain the first safe choice and resto
     run(f, {
       reloadExtension: async () => {
         reloadAttempts += 1;
-        throw new Error('owned_cdp_transport_failed');
+        const error = new Error('owned_cdp_transport_failed');
+        error.lifecycleEvidence = {
+          old_worker_absent: false,
+          old_panel_absent: false,
+          replacement_worker_present: false,
+          timeline: {
+            pre_click_old_worker_present: true,
+            final_predicate: false,
+            dropped_entries: 5,
+            entries: [
+              ...Array.from({ length: 79 }, () => ({
+                at: '2026-10-09T23:53:00.000Z',
+                phase: 'pre_click_snapshot',
+              })),
+              { at: '2026-10-09T23:53:01.000Z', phase: 'click_started' },
+            ],
+          },
+        };
+        throw error;
       },
       safeStages: ['extension_reload', 'restore_extension_reload'],
       transportFailureClass: () => 'unexpected_close',
@@ -229,6 +247,149 @@ test('extension reload transport failures retain the first safe choice and resto
   assert.equal(observedError.safeRestorationFailureStage, 'restore_extension_reload');
   assert.equal(observedError.safeFirstChoiceTransportClass, 'unexpected_close');
   assert.equal(observedError.safeRestorationTransportClass, 'unexpected_close');
+  assert.equal(observedError.safeFirstChoiceFailureCode, 'owned_cdp_transport_failed');
+  assert.equal(observedError.safeRestorationFailureCode, 'owned_cdp_transport_failed');
+  assert.deepEqual(observedError.safeFirstChoiceReloadBoundary, {
+    lastCapturedPhase: 'click_started',
+    timelineTruncated: true,
+    clickStarted: true,
+    clickResolved: false,
+    preClickOldWorkerPresent: true,
+    oldWorkerAbsent: false,
+    oldPanelAbsent: false,
+    replacementWorkerPresent: false,
+    finalPredicate: false,
+    contextExpectedAppeared: null,
+  });
+  assert.deepEqual(
+    observedError.safeRestorationReloadBoundary,
+    observedError.safeFirstChoiceReloadBoundary,
+  );
   assert.equal(observedError.safeCleanupFailed, undefined);
   assert.equal(observedError.message.includes('owned_cdp_transport_failed'), false);
+});
+
+test('reload boundary reports unknown truncation when lifecycle evidence is absent', async () => {
+  const f = fixture();
+  let observedError;
+  await assert.rejects(
+    run(f, {
+      reloadExtension: async () => {
+        throw new Error('private native transport detail');
+      },
+      safeStages: ['extension_reload', 'restore_extension_reload'],
+    }),
+    (error) => {
+      observedError = error;
+      return error.message === 'full_extension_preference_or_restore_failed';
+    },
+  );
+  assert.equal(observedError.safeFirstChoiceReloadBoundary.lastCapturedPhase, 'unavailable');
+  assert.equal(observedError.safeFirstChoiceReloadBoundary.timelineTruncated, null);
+  assert.equal(observedError.safeRestorationReloadBoundary.timelineTruncated, null);
+});
+
+test('a failed native switch target reports its bounded pointer code before any preference write', async () => {
+  const f = fixture();
+  const records = [];
+  let caught;
+  await assert.rejects(
+    run(f, {
+      controlKind: 'switch',
+      safeStages: ['choice_select', 'restore_extension_reload'],
+      record: (...entry) => records.push(entry),
+      driver: {
+        async click() {
+          const error = new Error('private page content must not escape');
+          error.driverFailure = { code: 'pointer_target_not_unique' };
+          throw error;
+        },
+        async waitFor(_name, read, accept) {
+          const value = await read();
+          assert.equal(accept(value), true);
+          return value;
+        },
+      },
+    }),
+    (error) => {
+      caught = error;
+      return error.message === 'full_extension_preference_or_restore_failed';
+    },
+  );
+  assert.equal(
+    records.some(([name]) => name.includes('changes visible')),
+    false,
+  );
+  assert.equal(f.state.stored, 'system');
+  assert.equal(caught.safeFirstChoiceFailureStage, 'choice_control');
+  assert.equal(caught.safeFirstChoiceFailureCode, 'pointer_target_not_unique');
+  assert.equal(caught.message.includes('private page content'), false);
+});
+
+test('switch choices use native switch clicks and restore either baseline across extension reloads', async () => {
+  for (const baseline of [false, true]) {
+    let stored = baseline;
+    let visible = baseline;
+    let panel = { targetId: 'panel-0' };
+    let reloads = 0;
+    const clicks = [];
+    const records = [];
+    const read = async () => ({ active: true, visible, stored });
+    const result = await runGuestChoicesAcrossExtensionRestarts({
+      panel,
+      section: 'Scrape',
+      controlLabel: 'Auto-scrape on load',
+      controlKind: 'switch',
+      choices: [
+        [false, 'Off'],
+        [true, 'On'],
+      ],
+      baseline: { value: baseline, label: baseline ? 'On' : 'Off' },
+      settings: async () => {},
+      openSection: async () => {},
+      read,
+      matches: (state, value) =>
+        state.active === true && state.visible === value && state.stored === value,
+      reloadExtension: async () => {
+        reloads += 1;
+        panel = { targetId: `panel-${reloads}`, detach: async () => {} };
+        visible = stored;
+        return {
+          panel,
+          management_reload_clicked: true,
+          old_targets_retired: true,
+          worker_replaced: true,
+          panel_replaced: true,
+          retirement_evidence: { timeline: { final_predicate: true } },
+        };
+      },
+      record: (...entry) => records.push(entry),
+      driver: {
+        async click(_panel, kind, label) {
+          clicks.push([kind, label]);
+          if (kind !== 'switch' || label !== 'Auto-scrape on load')
+            throw new Error('wrong_native_switch_action');
+          visible = !visible;
+          stored = visible;
+        },
+        async waitFor(_name, observe, accept) {
+          const state = await observe();
+          assert.equal(accept(state), true);
+          return state;
+        },
+      },
+    });
+    assert.equal(result.targetId, 'panel-2');
+    assert.deepEqual(clicks, [
+      ['switch', 'Auto-scrape on load'],
+      ['switch', 'Auto-scrape on load'],
+    ]);
+    assert.equal(reloads, 2);
+    assert.equal(stored, baseline);
+    assert.equal(visible, baseline);
+    assert.equal(
+      records.filter(([name]) => name.endsWith('survives full extension reload')).length,
+      2,
+    );
+  }
 });

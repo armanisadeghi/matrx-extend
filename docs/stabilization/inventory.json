@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-09T23:34:38+00:00",
+  "updated_at": "2026-10-09T23:49:58+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -8661,6 +8661,29 @@
               "scope": "Hosted lane B run 38003055389 on macos-15-intel, signed-out guest; exact frozen CI development artifact 11647758423 (CI run 37998294843), source 7230bb7669582179898fc187e05f1b939562a89e, v0.2.456. Warm capture only; reload and other roles remain unverified."
             }
           },
+          "result_history": [
+            {
+              "mode": "guest",
+              "status": "unverified",
+              "run_id": "38006058872",
+              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+              "workflow_source_sha": "f88405d22982d31ab9f52ab36cf5ff0c681d6010",
+              "development_ci_run_id": 37998294843,
+              "development_artifact_id": 11647758423,
+              "hosted_result_artifact_id": 11651925876,
+              "build_version": "0.2.456",
+              "resource_valid": true,
+              "failure_stage": "choice_extension_reload",
+              "restoration_failure_stage": "restore_acquire_panel",
+              "detail": "The repaired native switch click changed the visible and stored preference to ON. The first Chrome extension reload then failed before lifecycle replacement was verified (failure code unclassified, transport none). Recovery could not acquire a live panel (owned CDP transport failure, protocol_error), and cleanup also failed. The run gives no post-reload product verdict; canonical T40 remains partial from earlier warm ON/OFF proof.",
+              "evidence": [
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/hosted-package-38006058872-1.jsonl",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/hosted-browser-38006058872-1.jsonl",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/hosted-guest-38006058872-1.jsonl"
+              ]
+            }
+          ],
           "linked_defects": [
             "EXT-D-0087"
           ],
@@ -37378,6 +37401,26 @@
           ],
           "results": {
             "guest": {
+              "status": "pass",
+              "run_id": "38005671396",
+              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+              "workflow_source_sha": "8cc7d4f44c9066ef3e752c888418e9f365c48b71",
+              "development_ci_run_id": 37998294843,
+              "development_artifact_id": 11647758423,
+              "hosted_result_artifact_id": 11651780573,
+              "build_version": "0.2.456",
+              "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-data-behavior/run38005671396/receipt.json",
+                "docs/stabilization/evidence/guest-data-behavior/run38005671396/data-guest-native-acceptance.sanitized.json",
+                "docs/stabilization/evidence/guest-data-behavior/run38005671396/hosted-guest-38005671396-1.jsonl"
+              ],
+              "detail": "Guarded native guest run selected two distinct fields on the controlled /products page, saw both picker previews and selected selectors, found Pattern name and Save pattern absent, used Sign in to save, and observed zero pattern writes before authentication. All three resource guards finalized valid. Earlier Playwright click timeout cause remains unknown; signed-in save and Store behavior were outside T01."
+            }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
               "status": "unverified",
               "run_id": "38002259163",
               "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
@@ -37394,9 +37437,7 @@
                 "docs/stabilization/evidence/guest-data-behavior/run38002259163/hosted-guest-38002259163-1.jsonl"
               ],
               "detail": "Guarded guest run imported exact frozen development artifact 11647758423, then the guest resource watcher observed RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY and stopped the child at the safe boundary. Final resourceInvalid=true; no CDP/native side-panel session or Data behavior was reached, so T01 remains unverified."
-            }
-          },
-          "result_history": [
+            },
             {
               "mode": "guest",
               "run_id": "38001402806",

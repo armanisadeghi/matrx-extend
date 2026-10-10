@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "scope": "Independent read-only review of guest Settings T40 hosted B failure and bounded reload diagnostics",
+  "behavior_verdict": "pass_for_diagnostic_readiness_only",
+  "quality_verdict": "pass",
+  "hosted_failure": {
+    "run_id": "38006058872",
+    "evidence": "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/receipt.sanitized.json",
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "ci_run_id": 37998294843,
+    "ci_artifact_id": 11647758423,
+    "bounded_result": "Warm ON marker capture, OFF no capture, initial OFF, and visible/stored ON switch passed. The first extension reload stopped at choice_extension_reload before lifecycle replacement was verified; recovery failed to acquire a live panel, and cleanup failed. No post-reload product verdict.",
+    "resource_journals": "The package and browser finals were valid with exit 0; guest final was resource-valid child_failed exit 1."
+  },
+  "diagnostic_commits": ["bef06760a", "3568a4b0c", "1309c48d3"],
+  "diagnostic_result": "Reload-stage failures now carry only captured lifecycle phase and boolean evidence through a strict receipt allowlist. The last retained event is named lastCapturedPhase; timelineTruncated identifies dropped events and is null when no timeline exists. The patch does not relax the required worker/panel replacement predicate or change the product.",
+  "verification": "Independent focused Settings reload tests 23/23 passed; Biome check passed for all four changed helper/test files. Tests cover a retained 80-entry timeline with dropped events, absent lifecycle evidence, and removal of unknown/private fields.",
+  "limit": "This is readiness for one further guarded B diagnostic run, not T40 acceptance or a root-cause claim for the earlier reload failure."
+}

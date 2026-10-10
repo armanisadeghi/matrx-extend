@@ -89,6 +89,7 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
       acceptanceCase.endsWith('-admin') ||
       acceptanceCase.endsWith('-member') ||
       acceptanceCase === 'member-chat' ||
+      acceptanceCase === 'member-data' ||
       acceptanceCase === 'prepare-stale-results' ||
       acceptanceCase.startsWith('showcase-');
     assert.equal(check('B', acceptanceCase).status === 0, !usesSharedFixture, acceptanceCase);

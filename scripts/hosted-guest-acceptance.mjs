@@ -295,6 +295,7 @@ async function run(prepared, artifactMode) {
       'guest-chat',
       'guest-seo',
       'guest-data',
+      'member-data',
       'guest-scrape',
       'guest-scrape-development',
       'settings-controls',
@@ -327,10 +328,10 @@ async function run(prepared, artifactMode) {
     )
   )
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
-  if (acceptanceCase === 'guest-data')
-    assert.equal(kind, 'ci_development_test', 'Guest Data requires CI development receipt');
+  if (acceptanceCase === 'guest-data' || acceptanceCase === 'member-data')
+    assert.equal(kind, 'ci_development_test', 'Data acceptance requires CI development receipt');
   const guestDataCiReceiptPath =
-    acceptanceCase === 'guest-data'
+    acceptanceCase === 'guest-data' || acceptanceCase === 'member-data'
       ? join(
           dirname(relocatedReceipt),
           `guest-data-ci-receipt-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}.json`,
@@ -435,6 +436,7 @@ async function run(prepared, artifactMode) {
   let adminCredentialsCreated = false;
   if (
     acceptanceCase === 'member-chat' ||
+    acceptanceCase === 'member-data' ||
     (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
     acceptanceCase === 'desktop-settings-member' ||
@@ -528,6 +530,7 @@ async function run(prepared, artifactMode) {
         }
       : {}),
     ...(acceptanceCase === 'member-chat' ||
+    acceptanceCase === 'member-data' ||
     (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
     acceptanceCase === 'desktop-settings-member' ||
@@ -562,7 +565,7 @@ async function run(prepared, artifactMode) {
           SETTINGS_DEV_BUILD_RECEIPT: relocatedReceipt,
         }
       : {}),
-    ...(acceptanceCase === 'guest-data'
+    ...(acceptanceCase === 'guest-data' || acceptanceCase === 'member-data'
       ? {
           MATRX_DATA_EXTENSION_DIR: extensionDir,
           MATRX_DATA_RECEIPT: relocatedReceipt,
@@ -596,25 +599,27 @@ async function run(prepared, artifactMode) {
               : 'tests/browser/settings-local-controls-acceptance.mjs'
             : acceptanceCase === 'guest-data'
               ? 'tests/browser/data-guest-native-acceptance.mjs'
-              : seoRoute
-                ? seoRoute.driver
-                : scrapeRoute
-                  ? scrapeRoute.driver
-                  : acceptanceCase.startsWith('visibility-census-')
-                    ? 'tests/browser/takeover-visible-census.mjs'
-                    : acceptanceCase.startsWith('desktop-settings-')
-                      ? 'tests/browser/settings-desktop-native-acceptance.mjs'
-                      : acceptanceCase === 'audit-key-admin'
-                        ? 'tests/browser/audit-key-native-acceptance.mjs'
-                        : acceptanceCase.startsWith('settings-persistence')
-                          ? 'tests/browser/settings-d87-native-acceptance.mjs'
-                          : showcaseRoute
-                            ? showcaseRoute.driver
-                            : acceptanceCase === 'prepare-stale-results'
-                              ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
-                              : acceptanceCase === 'member-chat'
-                                ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                                : 'tests/browser/guest-chat-store-acceptance.mjs',
+              : acceptanceCase === 'member-data'
+                ? 'tests/browser/data-member-native-acceptance.mjs'
+                : seoRoute
+                  ? seoRoute.driver
+                  : scrapeRoute
+                    ? scrapeRoute.driver
+                    : acceptanceCase.startsWith('visibility-census-')
+                      ? 'tests/browser/takeover-visible-census.mjs'
+                      : acceptanceCase.startsWith('desktop-settings-')
+                        ? 'tests/browser/settings-desktop-native-acceptance.mjs'
+                        : acceptanceCase === 'audit-key-admin'
+                          ? 'tests/browser/audit-key-native-acceptance.mjs'
+                          : acceptanceCase.startsWith('settings-persistence')
+                            ? 'tests/browser/settings-d87-native-acceptance.mjs'
+                            : showcaseRoute
+                              ? showcaseRoute.driver
+                              : acceptanceCase === 'prepare-stale-results'
+                                ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
+                                : acceptanceCase === 'member-chat'
+                                  ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                                  : 'tests/browser/guest-chat-store-acceptance.mjs',
         ),
       ],
       {
@@ -635,6 +640,7 @@ async function run(prepared, artifactMode) {
   } finally {
     if (
       acceptanceCase === 'member-chat' ||
+      acceptanceCase === 'member-data' ||
       (scrapeRoute && scrapeSelection.mode === 'member') ||
       acceptanceCase === 'settings-persistence-member' ||
       acceptanceCase === 'desktop-settings-member'

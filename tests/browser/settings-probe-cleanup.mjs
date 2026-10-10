@@ -14,6 +14,60 @@ const TRANSPORT_CLASSES = new Set([
   'send_exception',
   'close_failure',
 ]);
+const FAILURE_CODES = new Set([
+  'not_applicable',
+  'unclassified',
+  'pointer_initial_evaluation_failed',
+  'pointer_page_sample_failed',
+  'pointer_target_not_unique',
+  'pointer_followup_evaluation_failed',
+  'pointer_stable_hit_not_observed',
+  'pointer_press_dispatch_failed',
+  'pointer_release_dispatch_failed',
+  'native_extension_management_reload_unavailable',
+  'native_extension_developer_mode_unverified',
+  'native_extension_reload_disabled',
+  'native_extension_current_worker_unverified',
+  'native_extension_current_panel_unverified',
+  'native_extension_old_worker_retired_before_reload',
+  'native_extension_worker_retirement_unverified',
+  'native_extension_replacement_panel_unverified',
+  'native_extension_replacement_open_refused',
+  'native_sidepanel_runtime_context_missing',
+  'owned_cdp_transport_failed',
+]);
+const RELOAD_PHASES = new Set([
+  'unavailable',
+  'discovery_enabled',
+  'initial_snapshot',
+  'listeners_registered',
+  'pre_click_snapshot',
+  'click_started',
+  'click_resolved',
+  'poll_transition',
+  'target_created',
+  'target_destroyed',
+  'target_info_changed',
+]);
+
+function reloadBoundary(value) {
+  if (!value || typeof value !== 'object') return null;
+  const bool = (field) => (typeof value[field] === 'boolean' ? value[field] : null);
+  return {
+    lastCapturedPhase: RELOAD_PHASES.has(value.lastCapturedPhase)
+      ? value.lastCapturedPhase
+      : 'unavailable',
+    timelineTruncated: bool('timelineTruncated'),
+    clickStarted: bool('clickStarted'),
+    clickResolved: bool('clickResolved'),
+    preClickOldWorkerPresent: bool('preClickOldWorkerPresent'),
+    oldWorkerAbsent: bool('oldWorkerAbsent'),
+    oldPanelAbsent: bool('oldPanelAbsent'),
+    replacementWorkerPresent: bool('replacementWorkerPresent'),
+    finalPredicate: bool('finalPredicate'),
+    contextExpectedAppeared: bool('contextExpectedAppeared'),
+  };
+}
 
 export async function preserveFailureDuringCleanup(operation, cleanup) {
   let value;
@@ -54,6 +108,14 @@ export function serializeGuestReloadFailure(error) {
     restorationFailureStage: stage(error.safeRestorationFailureStage),
     firstChoiceTransportClass: transport(error.safeFirstChoiceTransportClass),
     restorationTransportClass: transport(error.safeRestorationTransportClass),
+    firstChoiceFailureCode: FAILURE_CODES.has(error.safeFirstChoiceFailureCode)
+      ? error.safeFirstChoiceFailureCode
+      : 'unavailable',
+    restorationFailureCode: FAILURE_CODES.has(error.safeRestorationFailureCode)
+      ? error.safeRestorationFailureCode
+      : 'unavailable',
+    firstChoiceReloadBoundary: reloadBoundary(error.safeFirstChoiceReloadBoundary),
+    restorationReloadBoundary: reloadBoundary(error.safeRestorationReloadBoundary),
     cleanupAlsoFailed: error.safeCleanupFailed === true,
   };
 }

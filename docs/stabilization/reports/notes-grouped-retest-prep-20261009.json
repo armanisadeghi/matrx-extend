@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "lane": "Notes grouped D61/D62/D63/D67/D68 member and admin retest preparation",
+  "status": "PREPARED_NOT_DISPATCHED",
+  "source_evidence": [
+    "docs/stabilization/defects/EXT-D-0061.json",
+    "docs/stabilization/defects/EXT-D-0062.json",
+    "docs/stabilization/defects/EXT-D-0063.json",
+    "docs/stabilization/defects/EXT-D-0067.json",
+    "docs/stabilization/defects/EXT-D-0068.json",
+    "docs/stabilization/reports/notes-queue-review.json",
+    "docs/stabilization/runs/notes-member-native-20261002-01.json",
+    "docs/stabilization/reports/notes-member-readiness-20261002.json"
+  ],
+  "prior_truth": "An exact 0.2.139 admin native run covered the scoped defects. The member attempt stopped before Notes behavior on invalid credentials; member product behavior remains unverified.",
+  "artifact_contract": "Choose one successful CI development artifact after the driver commit f018289b5. Import it with scripts/current-test-artifact.mjs and record the immutable source SHA, CI run and artifact IDs, receipt path, manifest version, and tree digest. NOTES_EXPECTED_SOURCE_SHA must equal the artifact's source SHA. The driver verifies CI provenance, source-version identity, and tree bytes before and after the native run. Use the same frozen product artifact for both roles; record each workflow checkout separately.",
+  "resource_gate": "Wait for the active Settings B and Data member hosted browser jobs to release their resource permits. Reserve one Notes native/browser lane at a time. Obtain independent peer PASS on driver and plan before dispatch. No third concurrent hosted browser run.",
+  "role_proof": {
+    "admin": "Real web login, extension login, and approved organization selection in a fresh profile; do not print credentials.",
+    "member": "Use a current mode-0600 private credential file or authorized headed entry, then require matching web/extension identity, the configured reviewer fingerprint, a fresh organization selection, and the existing empty admin.admins check. A non-admin check alone does not prove a particular organization IAM role. Stop at login failure without a product verdict."
+  },
+  "grouped_flow": [
+    "D61: inject a notes list GET failure; verify an explicit list error instead of an empty state, then use real Retry to recover.",
+    "D62: inject a preflight failed notes POST; verify an honest uncertain-result notice, Refresh notes, and Retry creating note; capture exactly one successful created UUID before any detail/edit/delete fault.",
+    "D63: hold only the captured note's PATCH after draft A; enter draft B while A is in flight; release A, observe a subsequent save, reload/reopen, and verify B persisted.",
+    "D67: inject a failed owned detail GET and a successful zero-row detail result in separate openings; verify distinct terminal states with Retry and Back, then use a real detail GET to recover.",
+    "D68: inject owned delete transport failure and zero-affected-row response; verify the editor and latest draft remain with visible retry. Confirm real deletion while owned autosave is pending, then reload and verify exact ID absent with no post-delete autosave."
+  ],
+  "adjacent_scope": {
+    "covered": "D61 retry recovery, D62 refresh before retry, D63 trailing save and reload persistence, D67 error versus missing-row distinction and real recovery, D68 transport versus zero-row failures and pending-autosave deletion.",
+    "not_yet_covered": "D67 background refresh error over an already-open draft, D68 confirmation Cancel, D68 unknown affected-row count, D62 ambiguous committed insert with lost response, and an initially empty account are not established by this driver. Do not promote those criteria from this grouped run."
+  },
+  "owned_fixture_cleanup": "Each role uses a separate fresh browser profile and a random note title. After exactly one successful create response, the runner writes an ignored mode-0600 receipt with the note UUID and organization context. Success path deletes only that owned UUID and verifies absence after reload. If a run stops after creation, retain the receipt, require an exact-ID detail GET in the same organization before manual UI cleanup, and never delete by title scan or broad query. If creation response cannot identify exactly one UUID, stop before edits or delete; reconcile any uncertain row separately.",
+  "claim_boundary": "Report only assertions actually executed against the frozen artifact, by role and defect. Source tests and prior admin runs cannot substitute for a current member run or full EXT-F-2006/EXT-F-2007 acceptance. Preserve raw private receipts and sanitized journal/evidence paths."
+}

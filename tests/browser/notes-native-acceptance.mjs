@@ -6,10 +6,19 @@ import { lstat, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
-import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
+import {
+  requireLocalDevReceipt,
+  sourcePackageVersion,
+} from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { readMemberCredential } from './notes-member-credential.mjs';
+import {
+  ownedNotesFixtureReceipt,
+  requireNotesOrganizationId,
+  shouldHoldOwnedNotesPatch,
+  verifyNotesSnapshot,
+} from './notes-native-contract.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -53,14 +62,14 @@ async function identity() {
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
   const extensionDir = receipt.extensionDir;
   requireLocalDevReceipt(receipt, extensionDir);
-  const [manifest, pkg] = await Promise.all([
-    readFile(join(extensionDir, 'manifest.json'), 'utf8').then(JSON.parse),
-    readFile(join(REPO, 'package.json'), 'utf8').then(JSON.parse),
-  ]);
-  if (receipt.version !== pkg.version || manifest.version !== pkg.version || !manifest.key)
-    fail('build_version_mismatch');
-  if (hashReleaseTree(extensionDir) !== receipt.treeSha256) fail('build_hash_mismatch');
   if (!/^[a-f0-9]{40}$/.test(EXPECTED_SOURCE_SHA ?? '')) fail('expected_source_sha_required');
+  const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
+  verifyNotesSnapshot({
+    receipt,
+    manifest,
+    treeSha256: hashReleaseTree(extensionDir),
+    sourceVersion: sourcePackageVersion(EXPECTED_SOURCE_SHA),
+  });
   return {
     kind: receipt.kind,
     version: receipt.version,
@@ -600,9 +609,12 @@ function armNotesTransport(panel, origin) {
                 ? 'fail_delete'
                 : deleting && deleteMode === 'zero_delete'
                   ? 'zero_delete'
-                  : (autosaving || (!ownedNoteId && inScope && request.method === 'PATCH')) &&
-                      mode === 'hold_patch' &&
-                      !pendingPatch
+                  : shouldHoldOwnedNotesPatch(
+                        { inScope, method: request.method, id, deleting },
+                        ownedNoteId,
+                        mode,
+                        pendingPatch,
+                      )
                     ? 'hold_patch'
                     : 'pass';
     const tracked = trackedRequestForPause(requests, event);
@@ -660,7 +672,8 @@ function armNotesTransport(panel, origin) {
       deleteMode = next;
     },
     setOwnedNoteId: (id) => {
-      if (!/^[0-9a-f-]{36}$/i.test(id) || !detailIds.includes(id)) fail('owned_note_id_unproven');
+      if (!UUID.test(id ?? '') || (!createdNoteIds.includes(id) && !detailIds.includes(id)))
+        fail('owned_note_id_unproven');
       ownedNoteId = id;
     },
     state: () => ({
@@ -822,6 +835,12 @@ try {
       stage = 'organization';
       if (ROLE === 'member') await selectMemberOrganizationThroughUi(panel);
       else await selectTestOrganization(panel, config.approved_organization_name);
+      const selectedOrganizationId = requireNotesOrganizationId(
+        await evaluate(
+          panel,
+          "chrome.storage.local.get('matrx.org.active').then(stored => stored['matrx.org.active']?.id ?? null)",
+        ),
+      );
       const transport = armNotesTransport(panel, origin);
       await transport.start();
       try {
@@ -926,18 +945,18 @@ try {
           (s) => s.createdNoteIds.length === 1 && !s.interceptionFailed,
           30_000,
         );
+        transport.setOwnedNoteId(created.createdNoteIds[0]);
         await writeFile(
           FIXTURE_RECEIPT,
           `${JSON.stringify(
-            {
-              schema_version: 1,
-              status: 'created',
-              note_id: created.createdNoteIds[0],
-              note_title: noteTitle,
+            ownedNotesFixtureReceipt('created', {
+              noteId: created.createdNoteIds[0],
+              noteTitle,
+              organizationId: selectedOrganizationId,
               role: ROLE,
-              source_sha: EXPECTED_SOURCE_SHA,
-              tree_sha256: before.treeSha256,
-            },
+              sourceSha: EXPECTED_SOURCE_SHA,
+              treeSha256: before.treeSha256,
+            }),
             null,
             2,
           )}\n`,
@@ -1208,15 +1227,14 @@ try {
         await writeFile(
           FIXTURE_RECEIPT,
           `${JSON.stringify(
-            {
-              schema_version: 1,
-              status: 'deleted_confirmed',
-              note_id: detailIds[0],
-              note_title: noteTitle,
+            ownedNotesFixtureReceipt('deleted_confirmed', {
+              noteId: detailIds[0],
+              noteTitle,
+              organizationId: selectedOrganizationId,
               role: ROLE,
-              source_sha: EXPECTED_SOURCE_SHA,
-              tree_sha256: before.treeSha256,
-            },
+              sourceSha: EXPECTED_SOURCE_SHA,
+              treeSha256: before.treeSha256,
+            }),
             null,
             2,
           )}\n`,
