@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38074383561,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38074383561",
+  "hosted_artifact_id": 11678467481,
+  "hosted_artifact_name": "hosted-guest-38074383561-1",
+  "hosted_artifact_sha256": "54b5c62558dba3674ece1b896ede762ae34b86a252175d890b73fdea949466ec",
+  "workflow_source_sha": "7267b6a13363f86617ce0b16571985be68985dcc",
+  "lane": "B",
+  "case": "guest-data",
+  "runner": "macos-15-intel / x86_64",
+  "auth_mode": "guest",
+  "width_mode": "narrow",
+  "release_run_id": 38073804235,
+  "release_artifact_id": 11678161949,
+  "release_artifact_name": "matrx-extend-v0.2.473",
+  "release_artifact_sha256": "602febf4fa40ec3171ae22824259e45900d543b8353c1352cc87d661a43f1c2b",
+  "version": "0.2.473",
+  "source_sha": "5061d886fbff8b294a7c16a92b8938ddc0c42796",
+  "release_tree_sha256": "d831b21b100c9c50dfeaadf3be74ce0a810d2e57388816adea8023286715b32a",
+  "store_zip_sha256": "764ca9401dcc997148ed0f6437948153a21593b8cdc886958ce7f115083c8b59",
+  "adapted_loaded_tree_sha256": "aacea433df30f695010eb09d9dc5034836ddedd740e780ac836d1c4c2f6c6491",
+  "artifact_loading": "native_store_zip_candidate_key_adapted; loaded unpacked after temporary extension-key adaptation",
+  "evidence": [
+    "native-report.sanitized.json",
+    "resource-finals.sanitized.json",
+    "screenshots/native-side-panel.png",
+    "screenshots/normal-target-after-open.png",
+    "resource-journals/hosted-package-38074383561-1.jsonl",
+    "resource-journals/hosted-browser-38074383561-1.jsonl",
+    "resource-journals/hosted-guest-38074383561-1.jsonl"
+  ]
+}

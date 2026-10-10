@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-2005",
+  "scope": "Guarded hosted guest Data acceptance on v0.2.473 release Store ZIP candidate; bounded EXT-F-2005-T01.",
+  "acceptance_run_id": 38074383561,
+  "acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38074383561",
+  "workflow_source_sha": "7267b6a13363f86617ce0b16571985be68985dcc",
+  "release_run_id": 38073804235,
+  "release_artifact_id": 11678161949,
+  "release_artifact_name": "matrx-extend-v0.2.473",
+  "source_sha": "5061d886fbff8b294a7c16a92b8938ddc0c42796",
+  "release_tree_sha256": "d831b21b100c9c50dfeaadf3be74ce0a810d2e57388816adea8023286715b32a",
+  "store_zip_sha256": "764ca9401dcc997148ed0f6437948153a21593b8cdc886958ce7f115083c8b59",
+  "artifact_loading": "Candidate-key adapted and loaded unpacked; not a Store-installed copy.",
+  "native_status": "pass_bounded",
+  "case_results": {
+    "EXT-F-2005-T01": {
+      "guest": "pass_bounded",
+      "observations": [
+        "Empty picker cancel preserved selection and made zero pattern writes.",
+        "Two distinct previews and two selected fields were observed.",
+        "Guest name/save controls were absent; Sign in to save was present and used.",
+        "No pattern write request occurred before authentication."
+      ]
+    }
+  },
+  "resource_finals": "Package, browser, and guest decisions valid; admitted, resourceInvalid=false, exitCode=0.",
+  "review": "docs/stabilization/reports/peer-review-guest-data-run38074383561.json",
+  "evidence": "docs/stabilization/evidence/guest-data-v0473/run38074383561/",
+  "comparison": "Reconfirms the same bounded T01 behavior as exact v0.2.471 run 38072894998; does not add full Data coverage.",
+  "limits": [
+    "No signed-in save or persistence, other Data cases, or member/admin behavior was tested.",
+    "Screenshots show setup, not the picker assertions.",
+    "Candidate-key adaptation and unpacked loading do not prove Store-installed behavior."
+  ]
+}

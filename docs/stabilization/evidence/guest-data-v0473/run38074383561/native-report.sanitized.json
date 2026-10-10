@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "feature_case": "EXT-F-2005-T01 guest Data picker preview/selection and save gate",
+  "hosted_run_id": 38074383561,
+  "native_status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "version": "0.2.473",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "source_sha": "5061d886fbff8b294a7c16a92b8938ddc0c42796",
+    "adapted_loaded_tree_sha256": "aacea433df30f695010eb09d9dc5034836ddedd740e780ac836d1c4c2f6c6491",
+    "store_zip_sha256": "764ca9401dcc997148ed0f6437948153a21593b8cdc886958ce7f115083c8b59"
+  },
+  "guest_behavior": {
+    "empty_picker_cancel_dismissed": true,
+    "cancel_preserved_selected_fields": true,
+    "pattern_writes_during_cancel": 0,
+    "controlled_rows": 3,
+    "two_distinct_previews": true,
+    "two_fields_selected": true,
+    "pattern_name_control_absent": true,
+    "save_pattern_control_absent": true,
+    "sign_in_to_save_present": true,
+    "sign_in_action_used": true,
+    "pattern_write_requests_before_auth": 0
+  },
+  "result": "Bounded guest picker/preview/selection and unauthenticated save-gate behavior passed.",
+  "limits": [
+    "No signed-in pattern save or persistence was tested.",
+    "No member/admin Data behavior was tested.",
+    "The native Store ZIP was candidate-key adapted and loaded unpacked; this is not a Chrome Web Store installed-copy result.",
+    "Screenshots corroborate the guest profile and controlled page setup but do not show Data picker interaction; native assertions are the behavior evidence."
+  ],
+  "screenshots": ["screenshots/native-side-panel.png", "screenshots/normal-target-after-open.png"]
+}

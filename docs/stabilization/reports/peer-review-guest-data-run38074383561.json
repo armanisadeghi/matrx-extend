@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_data_evidence_review",
+  "reviewer": "guest_data_run38074383561_review",
+  "run": {
+    "hosted_run_id": 38074383561,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38074383561",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_conclusion": "success",
+    "workflow_source_sha": "7267b6a13363f86617ce0b16571985be68985dcc",
+    "lane": "B",
+    "runner": "macos-15-intel / x86_64",
+    "case": "guest-data",
+    "auth_mode": "guest",
+    "width_mode": "narrow"
+  },
+  "verdict_a_product_behavior": {
+    "verdict": "PASS_BOUNDED_EXT-F-2005-T01_RECONFIRMATION",
+    "observations": {
+      "cancel_empty_picker": "Dismissed; selected fields remained unchanged; zero pattern writes.",
+      "picker_selection": "Three controlled rows; two distinct previews and two fields selected.",
+      "guest_save_gate": "Pattern name and Save pattern controls absent; Sign in to save present and used; zero pattern write requests before authentication."
+    },
+    "actual_product_failures": [],
+    "coverage_limit": "This is the same bounded guest T01 behavior class already observed on v0.2.471 run 38072894998, refreshed against v0.2.473. It adds no full Data feature coverage, signed-in persistence, or member/admin coverage."
+  },
+  "verdict_b_evidence_quality": {
+    "verdict": "PASS_WITH_LIMITS",
+    "findings": [],
+    "provenance": "Hosted run input/log selects release run 38073804235. Downloaded release receipt identifies v0.2.473 source 5061d886fbff8b294a7c16a92b8938ddc0c42796, release tree d831b21b100c9c50dfeaadf3be74ce0a810d2e57388816adea8023286715b32a, and Store ZIP SHA-256 764ca9401dcc997148ed0f6437948153a21593b8cdc886958ce7f115083c8b59. Release artifact ZIP digest matches GitHub metadata; native report independently matches version/source/Store ZIP digest and marks candidate-key adaptation.",
+    "resource_finals": "The matching package, browser, and guest journals each end admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Unrelated older journals in the uploaded artifact were excluded.",
+    "screenshots": "Reviewed native-side-panel and normal-target screenshots. They corroborate a guest profile and controlled page setup, but do not show the Data interaction; the native assertion report is the product-behavior evidence.",
+    "limits": [
+      "The Store ZIP was candidate-key adapted and loaded unpacked; no Store-installed behavior is claimed.",
+      "No browser or heavy job was started during review."
+    ]
+  },
+  "comparison": {
+    "prior_run": "Hosted guest Data run 38072894998 on v0.2.471 already passed the same bounded EXT-F-2005-T01 picker, preview, selection, and unauthenticated save-gate assertions.",
+    "tracker_or_defect_change": "No transition is warranted from this reconfirmation; full guest Data remains unverified beyond T01 and no defect was observed."
+  },
+  "evidence_directory": "docs/stabilization/evidence/guest-data-v0473/run38074383561/"
+}
