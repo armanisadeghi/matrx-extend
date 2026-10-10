@@ -41,7 +41,7 @@ const report = {
   cleanup: null,
   failure_stage: null,
   limits:
-    'Exact imported CI development artifact, real member sign-in, one custom-named Source with one disposable owned Project association, independent reads, and cleanup; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.',
+    'Exact imported CI development artifact, real member sign-in, one custom-named Source with one disposable owned Project association, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.',
 };
 
 function safeFailureCode(error) {
@@ -215,6 +215,84 @@ async function trustedTab(panel, shiftKey = false) {
     code: 'Tab',
     modifiers,
   });
+}
+
+async function reopenSavedSourceUi(panel, expected, evidence) {
+  await click(panel, 'title', 'Saved captures');
+  await waitFor(
+    'scrape_save_saved_captures_ready',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+      const pane = ${activeTabPanelExpression('Saved captures')};
+      return { search_count: pane?.querySelectorAll('input[placeholder="Search title or URL"]').length ?? 0 };
+    })()`,
+      ),
+    (state) => state?.search_count === 1,
+  );
+  await trustedType(
+    panel,
+    '[role="tabpanel"][data-state="active"] input[placeholder="Search title or URL"]',
+    expected.name,
+  );
+  const candidate = await waitFor(
+    'scrape_save_reopen_owned_source_ready',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+      const pane = ${activeTabPanelExpression('Saved captures')};
+      const buttons = [...(pane?.querySelectorAll('article > button') ?? [])]
+        .filter((button) => button.firstElementChild?.textContent?.trim() === ${JSON.stringify(expected.name)});
+      const node = buttons.length === 1 ? buttons[0] : null;
+      node?.scrollIntoView({ block: 'center' });
+      const rect = node?.getBoundingClientRect();
+      return { count: buttons.length, x: rect ? rect.left + rect.width / 2 : null,
+        y: rect ? rect.top + rect.height / 2 : null, visible: !!rect && rect.width > 0 && rect.height > 0 };
+    })()`,
+      ),
+    (state) => state?.count === 1 && state.visible === true,
+  );
+  for (const type of ['mousePressed', 'mouseReleased']) {
+    await panel.send('Input.dispatchMouseEvent', {
+      type,
+      x: candidate.x,
+      y: candidate.y,
+      button: 'left',
+      clickCount: 1,
+    });
+  }
+  const detail = await waitFor(
+    'scrape_save_reopened_content_verified',
+    async () => {
+      const state = await evaluate(
+        panel,
+        `(() => {
+        const pane = ${activeTabPanelExpression('Saved captures')};
+        const header = pane?.querySelector('header');
+        const article = pane?.querySelector('[role="tabpanel"][data-state="active"]');
+        return {
+          detail_open: [...(header?.querySelectorAll('button') ?? [])].some((button) => button.textContent.trim() === 'Back to saved captures'),
+          name_matches: header?.querySelector('.font-semibold')?.textContent.trim() === ${JSON.stringify(expected.name)},
+          url_matches: [...(header?.querySelectorAll('div') ?? [])].some((node) => node.textContent.trim() === ${JSON.stringify(expected.url)}),
+          captured_heading_matches: article?.textContent.includes(${JSON.stringify(expected.heading)}) === true,
+          captured_marker_matches: article?.textContent.includes(${JSON.stringify(expected.marker)}) === true,
+        };
+      })()`,
+      );
+      evidence.reopen_ui = state;
+      return state;
+    },
+    (state) =>
+      state?.detail_open &&
+      state.name_matches &&
+      state.url_matches &&
+      state.captured_heading_matches &&
+      state.captured_marker_matches,
+  );
+  assert.equal(detail.detail_open, true, 'scrape_save_ui_reopen_missing');
+  evidence.saved_source_reopened_in_ui = true;
 }
 
 async function dialogState(panel) {
@@ -687,6 +765,21 @@ try {
           'scrape_save_edge_organization_mismatch',
         );
         report.observations.selected_project_edge_persisted = true;
+
+        report.stage = 'source_ui_reopen';
+        await resourceAction(() =>
+          reopenSavedSourceUi(
+            panel,
+            {
+              name: sourceName,
+              url: sourceUrl,
+              heading: captureTitle,
+              marker:
+                'Review the appointment details, collect the required forms, and confirm the time before arriving.',
+            },
+            report.observations,
+          ),
+        );
       } catch (error) {
         primaryError = error;
       } finally {
