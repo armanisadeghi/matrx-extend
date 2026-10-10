@@ -1,0 +1,1318 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "status": "partial",
+  "artifact": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "channel": "store",
+    "version": "0.2.471",
+    "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+    "run_id": null,
+    "artifact_id": null
+  },
+  "guest_account_observed": true,
+  "width_mode": "narrow",
+  "browser_version": "Chrome/141.0.7390.37",
+  "stage": "post_reload_deep_capture",
+  "native_stage": "exercise_panel",
+  "failure": null,
+  "cases": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "passed",
+      "evidence": {
+        "initial_empty": true,
+        "initial_url": "http://localhost:49200/intake",
+        "navigation_url": "http://localhost:49200/referrals",
+        "previous_content_cleared": true,
+        "reload_origin_url": "http://localhost:49200/",
+        "previous_content_cleared_before_reload": true,
+        "reload_normal_page_url": "http://localhost:49200/referrals",
+        "reload_title": "Harbor Dental referral hours",
+        "reload_capture_enabled": true,
+        "extension_reload_empty": true
+      },
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "partial",
+      "evidence": {
+        "url": "http://localhost:49200/intake",
+        "busy_disabled": true,
+        "article_title": "Harbor Dental intake guide",
+        "lazy_content_absent": true,
+        "result_tabs": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+        "extension_reload_empty": true,
+        "full_extension_reload_and_post_reload_fast_capture": true
+      },
+      "remaining": [
+        "member/admin modes remain unverified by this receipt.",
+        "Normal-width verification remains unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "status": "partial",
+      "evidence": {
+        "tabs_selected": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+        "matching_content": {
+          "article": true,
+          "images": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 3,
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+            "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+          },
+          "video": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+          },
+          "links": true,
+          "seo": true,
+          "schema": true,
+          "images_empty": {
+            "pane": "Images",
+            "state": "empty",
+            "count": 0,
+            "paths": [],
+            "alt": [],
+            "natural_sizes": []
+          },
+          "video_empty": {
+            "pane": "Video",
+            "state": "empty",
+            "count": 0,
+            "paths": []
+          },
+          "links_empty": {
+            "pane": "Links",
+            "state": "empty",
+            "count": 0,
+            "add_control_visible": true,
+            "export": {
+              "export_format": "full_capture_ai_markdown",
+              "bytes_compared": 1152,
+              "identity_unchanged": true,
+              "exported_payload_unchanged": true
+            }
+          },
+          "article_empty": {
+            "pane": "Article",
+            "state": "empty",
+            "fallback_visible": true,
+            "pane_unchanged": true,
+            "export": {
+              "export_format": "full_capture_ai_markdown",
+              "bytes_compared": 1058,
+              "identity_unchanged": true,
+              "exported_payload_unchanged": true
+            }
+          }
+        },
+        "capture_invariance": {
+          "warm": {
+            "panes_compared": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+            "unchanged": true,
+            "export": {
+              "export_format": "full_capture_ai_markdown",
+              "bytes_compared": 4106,
+              "identity_unchanged": true,
+              "exported_payload_unchanged": true
+            }
+          },
+          "reload": {
+            "panes_compared": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+            "unchanged": true,
+            "export": {
+              "export_format": "full_capture_ai_markdown",
+              "bytes_compared": 4106,
+              "identity_unchanged": true,
+              "exported_payload_unchanged": true
+            }
+          }
+        },
+        "extension_reload_empty": true,
+        "post_reload_populated_panes": {
+          "article": true,
+          "links": true,
+          "seo": true,
+          "schema": true,
+          "images": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 3,
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+            "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+          },
+          "video": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+          }
+        },
+        "post_reload_empty_panes": {
+          "images": {
+            "pane": "Images",
+            "state": "empty",
+            "count": 0,
+            "paths": [],
+            "alt": [],
+            "natural_sizes": []
+          },
+          "video": {
+            "pane": "Video",
+            "state": "empty",
+            "count": 0,
+            "paths": []
+          },
+          "links": {
+            "pane": "Links",
+            "state": "empty",
+            "count": 0,
+            "add_control_visible": true,
+            "export": {
+              "export_format": "full_capture_ai_markdown",
+              "bytes_compared": 1152,
+              "identity_unchanged": true,
+              "exported_payload_unchanged": true
+            }
+          },
+          "article": {
+            "pane": "Article",
+            "state": "empty",
+            "fallback_visible": true,
+            "pane_unchanged": true,
+            "export": {
+              "export_format": "full_capture_ai_markdown",
+              "bytes_compared": 1058,
+              "identity_unchanged": true,
+              "exported_payload_unchanged": true
+            }
+          }
+        }
+      },
+      "remaining": [
+        "member/admin modes remain unverified by this receipt.",
+        "Normal-width verification remains unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T10",
+      "status": "passed",
+      "evidence": {
+        "warm": {
+          "before": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 3,
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+            "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+          },
+          "removals": [
+            {
+              "pane": "Images",
+              "state": "matching_content",
+              "count": 2,
+              "paths": ["/intake.svg", "/clinic-icon.svg"],
+              "alt": ["New patient intake desk", "Clinic icon"],
+              "natural_sizes": [[640, 480], [32, 32]]
+            },
+            {
+              "pane": "Images",
+              "state": "matching_content",
+              "count": 1,
+              "paths": ["/intake.svg"],
+              "alt": ["New patient intake desk"],
+              "natural_sizes": [[640, 480]]
+            },
+            {
+              "pane": "Images",
+              "state": "empty",
+              "count": 0,
+              "paths": [],
+              "alt": [],
+              "natural_sizes": []
+            }
+          ],
+          "added": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 1,
+            "paths": ["/followup-card.svg"],
+            "alt": ["Follow-up card"],
+            "natural_sizes": [[96, 96]]
+          }
+        },
+        "reload": {
+          "before": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 3,
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+            "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+          },
+          "removals": [
+            {
+              "pane": "Images",
+              "state": "matching_content",
+              "count": 2,
+              "paths": ["/intake.svg", "/clinic-icon.svg"],
+              "alt": ["New patient intake desk", "Clinic icon"],
+              "natural_sizes": [[640, 480], [32, 32]]
+            },
+            {
+              "pane": "Images",
+              "state": "matching_content",
+              "count": 1,
+              "paths": ["/intake.svg"],
+              "alt": ["New patient intake desk"],
+              "natural_sizes": [[640, 480]]
+            },
+            {
+              "pane": "Images",
+              "state": "empty",
+              "count": 0,
+              "paths": [],
+              "alt": [],
+              "natural_sizes": []
+            }
+          ],
+          "added": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 1,
+            "paths": ["/followup-card.svg"],
+            "alt": ["Follow-up card"],
+            "natural_sizes": [[96, 96]]
+          }
+        }
+      },
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T11",
+      "status": "passed",
+      "evidence": {
+        "warm": {
+          "blank_rejected": true,
+          "valid_added": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 1,
+            "paths": ["/followup-card.svg"],
+            "alt": ["Follow-up card"],
+            "natural_sizes": [[96, 96]]
+          },
+          "cancel_cleared": true
+        },
+        "reload": {
+          "blank_rejected": true,
+          "valid_added": {
+            "pane": "Images",
+            "state": "matching_content",
+            "count": 1,
+            "paths": ["/followup-card.svg"],
+            "alt": ["Follow-up card"],
+            "natural_sizes": [[96, 96]]
+          },
+          "cancel_cleared": true
+        }
+      },
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T12",
+      "status": "passed",
+      "evidence": {
+        "warm": {
+          "before": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+          },
+          "removed": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 1,
+            "paths": ["/referral-walkthrough.mp4"]
+          },
+          "added": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/referral-walkthrough.mp4", "/consultation.mp4"]
+          },
+          "links": {
+            "opened_url": "http://localhost:49200/intake-walkthrough.mp4",
+            "copy_feedback": "copied",
+            "clipboard_equal": true,
+            "clipboard_read": {
+              "ok": false,
+              "code": "NotAllowedError",
+              "focused": true,
+              "visible": true
+            },
+            "clipboard_observation": {
+              "clipboardObservationStage": "read",
+              "clipboardObservationPermissionRestored": true,
+              "clipboardReadPermissionForObservation": true
+            },
+            "limitations": [],
+            "failures": [],
+            "clipboard_read_after_grant": {
+              "ok": true,
+              "same": true,
+              "focused": true,
+              "visible": true
+            }
+          }
+        },
+        "reload": {
+          "before": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+          },
+          "removed": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 1,
+            "paths": ["/referral-walkthrough.mp4"]
+          },
+          "added": {
+            "pane": "Video",
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/referral-walkthrough.mp4", "/consultation.mp4"]
+          },
+          "links": {
+            "opened_url": "http://localhost:49200/intake-walkthrough.mp4",
+            "copy_feedback": "copied",
+            "clipboard_equal": true,
+            "clipboard_read": {
+              "ok": false,
+              "code": "NotAllowedError",
+              "focused": true,
+              "visible": true
+            },
+            "clipboard_observation": {
+              "clipboardObservationStage": "read",
+              "clipboardObservationPermissionRestored": true,
+              "clipboardReadPermissionForObservation": true
+            },
+            "limitations": [],
+            "failures": [],
+            "clipboard_read_after_grant": {
+              "ok": true,
+              "same": true,
+              "focused": true,
+              "visible": true
+            }
+          }
+        }
+      },
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T13",
+      "status": "partial",
+      "evidence": {
+        "warm": {
+          "phase": "warm",
+          "before": {
+            "count": 2,
+            "paths": ["/forms", "/appointments"],
+            "texts": ["Patient forms", "Appointments"]
+          },
+          "actions": {
+            "opened_url": "http://localhost:49200/forms",
+            "copy_feedback": "copied",
+            "clipboard_equal": true,
+            "clipboard_read": {
+              "ok": false,
+              "code": "NotAllowedError",
+              "focused": true,
+              "visible": true
+            },
+            "clipboard_observation": {
+              "clipboardObservationStage": "read",
+              "clipboardObservationPermissionRestored": true,
+              "clipboardReadPermissionForObservation": true
+            },
+            "limitations": [],
+            "failures": [],
+            "clipboard_read_after_grant": {
+              "ok": true,
+              "same": true,
+              "focused": true,
+              "visible": true
+            }
+          },
+          "removed": {
+            "count": 1,
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
+          },
+          "blankRejected": {
+            "count": 1,
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
+          },
+          "added": {
+            "count": 2,
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
+          },
+          "cancelled": {
+            "count": 2,
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
+          }
+        },
+        "reload": {
+          "phase": "reload",
+          "before": {
+            "count": 2,
+            "paths": ["/forms", "/appointments"],
+            "texts": ["Patient forms", "Appointments"]
+          },
+          "actions": {
+            "opened_url": "http://localhost:49200/forms",
+            "copy_feedback": "copied",
+            "clipboard_equal": true,
+            "clipboard_read": {
+              "ok": false,
+              "code": "NotAllowedError",
+              "focused": true,
+              "visible": true
+            },
+            "clipboard_observation": {
+              "clipboardObservationStage": "read",
+              "clipboardObservationPermissionRestored": true,
+              "clipboardReadPermissionForObservation": true
+            },
+            "limitations": [],
+            "failures": [],
+            "clipboard_read_after_grant": {
+              "ok": true,
+              "same": true,
+              "focused": true,
+              "visible": true
+            }
+          },
+          "removed": {
+            "count": 1,
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
+          },
+          "blankRejected": {
+            "count": 1,
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
+          },
+          "added": {
+            "count": 2,
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
+          },
+          "cancelled": {
+            "count": 2,
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
+          }
+        }
+      },
+      "remaining": ["member/admin modes remain unverified by this receipt."]
+    },
+    {
+      "id": "EXT-F-1007-T02",
+      "status": "partial",
+      "evidence": {
+        "url": "http://localhost:49200/intake",
+        "progress_text": "Scrolling…",
+        "lazy_content_in_browser": true,
+        "lazy_content_in_capture": true,
+        "extension_reload_empty": true,
+        "post_reload_deep": {
+          "lazy_started_absent": true,
+          "lazy_content_in_browser": true,
+          "lazy_content_in_capture": true,
+          "progress_text": "Scrolling…",
+          "screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-jEfoXU/scrape-reload-deep-article.png"
+        }
+      },
+      "remaining": ["Deep failure retry mode remains unverified."]
+    },
+    {
+      "id": "EXT-F-1007-T07",
+      "status": "passed",
+      "evidence": {
+        "warm": {
+          "start": {
+            "selected": true,
+            "scrollerCount": 1,
+            "top": 0,
+            "max": 1558,
+            "on": false,
+            "off": true,
+            "pageY": 0
+          },
+          "followed": {
+            "selected": true,
+            "scrollerCount": 1,
+            "top": 376,
+            "max": 1558,
+            "on": true,
+            "off": false,
+            "pageY": 650
+          },
+          "armed": {
+            "selected": true,
+            "scrollerCount": 1,
+            "top": 376,
+            "max": 1558,
+            "on": false,
+            "off": true,
+            "pageY": 650
+          },
+          "stopped": {
+            "selected": true,
+            "scrollerCount": 1,
+            "top": 376,
+            "max": 1558,
+            "on": false,
+            "off": true,
+            "pageY": 0
+          },
+          "passed": true
+        },
+        "reload": {
+          "start": {
+            "selected": true,
+            "scrollerCount": 1,
+            "top": 0,
+            "max": 1464,
+            "on": false,
+            "off": true,
+            "pageY": 0
+          },
+          "followed": {
+            "selected": true,
+            "scrollerCount": 1,
+            "top": 354,
+            "max": 1464,
+            "on": true,
+            "off": false,
+            "pageY": 650
+          },
+          "armed": {
+            "selected": true,
+            "scrollerCount": 1,
+            "top": 354,
+            "max": 1464,
+            "on": false,
+            "off": true,
+            "pageY": 650
+          },
+          "stopped": {
+            "selected": true,
+            "scrollerCount": 1,
+            "top": 354,
+            "max": 1464,
+            "on": false,
+            "off": true,
+            "pageY": 0
+          },
+          "passed": true
+        }
+      },
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T09",
+      "status": "passed",
+      "evidence": {
+        "warm": [
+          {
+            "title": "Copy capture",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy capture",
+            "option": "Plain text",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy capture",
+            "option": "Page URL",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy capture",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy article",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy article",
+            "option": "Plain text",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy article",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy images",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy images",
+            "option": "URLs (one per line)",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy images",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy videos",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy videos",
+            "option": "URLs (one per line)",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy videos",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy links",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy links",
+            "option": "URLs (one per line)",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy links",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy SEO audit",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy SEO audit",
+            "option": "Plain text",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy SEO audit",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy schema",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy schema",
+            "option": "JSON",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy schema",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          }
+        ],
+        "after_navigation": [
+          {
+            "title": "Copy capture",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy capture",
+            "option": "Plain text",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy capture",
+            "option": "Page URL",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy capture",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy article",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy article",
+            "option": "Plain text",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy article",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy images",
+            "state": "empty",
+            "sectionCorrect": true
+          },
+          {
+            "title": "Copy videos",
+            "state": "empty",
+            "sectionCorrect": true
+          },
+          {
+            "title": "Copy links",
+            "state": "empty",
+            "sectionCorrect": true
+          },
+          {
+            "title": "Copy SEO audit",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy SEO audit",
+            "option": "Plain text",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy SEO audit",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy schema",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy schema",
+            "option": "JSON",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy schema",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          }
+        ],
+        "reload": [
+          {
+            "title": "Copy capture",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy capture",
+            "option": "Plain text",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy capture",
+            "option": "Page URL",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy capture",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy article",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy article",
+            "option": "Plain text",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy article",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy images",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy images",
+            "option": "URLs (one per line)",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy images",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy videos",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy videos",
+            "option": "URLs (one per line)",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy videos",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy links",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy links",
+            "option": "URLs (one per line)",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy links",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy SEO audit",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy SEO audit",
+            "option": "Plain text",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy SEO audit",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy schema",
+            "option": "Markdown",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy schema",
+            "option": "JSON",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          },
+          {
+            "title": "Copy schema",
+            "option": "For AI agent",
+            "menuCorrect": true,
+            "copied": {
+              "read": true,
+              "sentinelReplaced": true,
+              "formatCorrect": true
+            },
+            "permissionRestored": true
+          }
+        ]
+      },
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T14",
+      "status": "partial",
+      "evidence": {
+        "restricted_url": "chrome://settings/",
+        "no_recovery_actions": true,
+        "dismissed": true
+      },
+      "remaining": [
+        "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+      ]
+    }
+  ],
+  "limits": [
+    "Guest mode only; member/admin behavior not tested.",
+    "Narrow side panel only; normal width and physical resize were not tested.",
+    "T01 and T02 recovery/retry branches remain incomplete.",
+    "This run used temporary candidate-key adaptation and unpacked loading; it does not establish Store-installed behavior."
+  ]
+}

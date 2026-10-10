@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "scope": "Guarded hosted native guest Scrape acceptance on the exact v0.2.471 Store ZIP candidate; narrow width, guest role.",
+  "acceptance_run_id": 38074083116,
+  "acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38074083116",
+  "workflow_source_sha": "3caca76307626719cf6b13610390289dc32a280e",
+  "release_run_id": 38071981003,
+  "release_artifact_id": 11676918768,
+  "release_artifact_name": "matrx-extend-v0.2.471",
+  "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+  "tree_sha256": "a86844610bc4d3009bbb537ca0971f8b173109d8129dd616cbca5d08405410ac",
+  "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+  "artifact_loading": "Candidate-key adapted and loaded unpacked; not a Store-installed copy.",
+  "native_result": "partial",
+  "resource_finals": "All three resource journals are valid: admitted, resourceInvalid=false, and child exit 0.",
+  "case_results": {
+    "EXT-F-1007-T20": "pass",
+    "EXT-F-1007-T01": "partial",
+    "EXT-F-1007-T08": "partial",
+    "EXT-F-1007-T10": "pass",
+    "EXT-F-1007-T11": "pass",
+    "EXT-F-1007-T12": "pass",
+    "EXT-F-1007-T13": "partial overall; guest substeps passed",
+    "EXT-F-1007-T02": "partial",
+    "EXT-F-1007-T07": "pass",
+    "EXT-F-1007-T09": "pass",
+    "EXT-F-1007-T14": "partial"
+  },
+  "review": "docs/stabilization/reports/peer-review-guest-scrape-run38074083116.json",
+  "evidence": "docs/stabilization/evidence/guest-scrape-hosted/run38074083116/",
+  "comparison": "Prior bounded exact-v0.2.469 T08 result 38070816110 already covered the same T08 behavior subset. No new case status or defect transition is warranted.",
+  "limits": [
+    "No actual unexpected user-visible failure was observed.",
+    "Member/admin, normal width, physical resize, SEO/Schema empty panes, and natural recoverable error branches remain unverified as listed in the independent review.",
+    "Later v0.2.473 package refresh means this is not exact-latest acceptance."
+  ]
+}

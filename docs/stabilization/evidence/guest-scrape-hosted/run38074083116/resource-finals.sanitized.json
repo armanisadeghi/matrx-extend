@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "run_id": 38074083116,
+  "finals": {
+    "hosted-package-38074083116-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "hosted-browser-38074083116-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "hosted-guest-38074083116-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    }
+  }
+}
