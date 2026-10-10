@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "run_id": 38075919471,
+  "case_id": "member-chat",
+  "status": "invalid-resource",
+  "version": "0.2.474",
+  "release_run_id": 38075458740,
+  "runner_label": "macos-15-intel",
+  "terminal_member_report_present": false,
+  "resource_final": {
+    "schema": 1,
+    "at": "2026-10-10T18:35:28.142Z",
+    "runId": "hosted-guest-38075919471-1",
+    "admitted": true,
+    "resourceInvalid": true,
+    "exitCode": 3,
+    "decision": "invalid",
+    "code": "RESOURCE_FINAL_DECISION"
+  },
+  "unsafe_events": [
+    {
+      "schema": 1,
+      "at": "2026-10-10T18:35:11.027Z",
+      "runId": "hosted-guest-38075919471-1",
+      "reasons": ["RESOURCE_CPU_BUSY"],
+      "sample": {
+        "pressureLevel": 1,
+        "availableMemoryGiB": 12.6,
+        "requiredMemoryGiB": 4,
+        "oneMinuteLoad": 1.67,
+        "logicalCpus": 4,
+        "cpuBusyFraction": 0.82,
+        "swapUsedMiB": 0,
+        "repoFreeGiB": 109.1953010559082,
+        "profileFreeGiB": 109.1953010559082,
+        "safetyFreeGiB": 109.1953010559082,
+        "systemFreeGiB": 109.1953010559082
+      },
+      "code": "RESOURCE_CPU_PENDING"
+    },
+    {
+      "schema": 1,
+      "at": "2026-10-10T18:35:26.312Z",
+      "runId": "hosted-guest-38075919471-1",
+      "reasons": ["RESOURCE_MEASUREMENT_FAILED:RESOURCE_MEASUREMENT_INVALID:cpu-busy"],
+      "code": "RESOURCE_WATCH_UNSAFE"
+    },
+    {
+      "schema": 1,
+      "at": "2026-10-10T18:35:26.515Z",
+      "runId": "hosted-guest-38075919471-1",
+      "reasons": ["RESOURCE_MEASUREMENT_FAILED:RESOURCE_MEASUREMENT_INVALID:cpu-busy"],
+      "code": "RESOURCE_STOP_AT_SAFE_BOUNDARY"
+    }
+  ],
+  "credential_cleanup": {
+    "temporary_github_secret_absent": true,
+    "local_single_use_link_file_absent": true
+  },
+  "limitation": "No product verdict or member acceptance credit. Next attempt changes host to macos-15 with guard unchanged."
+}

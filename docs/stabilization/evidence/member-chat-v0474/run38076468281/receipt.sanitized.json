@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned Chrome-for-Testing profile; real non-admin login; native signed-in Chat",
+  "status": "pass",
+  "build": {
+    "version": "0.2.474",
+    "tree_sha256": "f416ac56eb5159c8720bee8e3e9a28177d91d99c777f38f68b7b1ead91bf2d78",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "account": {
+    "reviewer_fingerprint": "3d6137db6c081c07",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "observed_role_category": "absent",
+    "canonical_extension_admin_check": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "returned_rows": 0
+    },
+    "sign_out_visible": true,
+    "default_organization_selected": true,
+    "organization_picker_available": true,
+    "storage_shape": {
+      "accessTokenPresent": true,
+      "profilePresent": true,
+      "activeOrganizationPresent": false
+    }
+  },
+  "authentication_method": "existing_user_magic_link",
+  "chat": {
+    "visible": true,
+    "question_fingerprint": "3461006324ce0420",
+    "accepted": true,
+    "completed_real_answer": true,
+    "completed_reply_count": 1,
+    "answer_names_capture_understand_use": true,
+    "demo_route": "https://www.aimatrx.com/matrx-extend-demo"
+  },
+  "screenshots": {
+    "before": "reviewer-chat-before.png",
+    "action": "reviewer-chat-action.png",
+    "result": "reviewer-chat-result.png",
+    "store_candidate_640x400": "reviewer-chat-store-640x400.png"
+  },
+  "failure_stage": null,
+  "failure_code": null,
+  "chat_transport": {
+    "start_count": 1,
+    "organization_header_fingerprint": "72a808b858386268",
+    "organization_header_matches_approved": false,
+    "actual_permission_mode": "ask",
+    "mode_matches": false,
+    "conversation_fingerprint": "aa82df62c20be020",
+    "response_matches_request_conversation": true,
+    "backend_request_fingerprint": "3a0e9fe7692ab4fc",
+    "start_http_status": 200,
+    "start_endpoint_door": "mandate",
+    "start_target_kind": "mandate_key",
+    "successful_create_tab_result_posted": false,
+    "result_http_status": null,
+    "result_post_count": 0,
+    "create_tab_result_count": 0,
+    "create_tab_error_count": 0,
+    "call_fingerprint": null
+  }
+}
