@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T05:48:54Z",
+  "updated_at": "2026-10-10T07:49:16Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -9037,22 +9037,83 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37701201664",
-              "source_sha": "eb4182d3032ccef6a9317fcc34d5274a01deac39",
-              "build_version": "0.2.392",
+              "run_id": "38034890248",
+              "source_sha": "22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c",
+              "build_version": "0.2.458",
+              "build_tree_sha256": "db4aecd3a87d865bb97288f9e61b7d71a7045e6b71c51e58cb51d22a7e1e57a2",
+              "ci_run_id": "38032654367",
+              "artifact_id": "11663251990",
+              "workflow_checkout_sha": "6b286a60787da646a9e35c01eb378f9191ed7e60",
               "evidence": [
-                ".research/desktop-remaining-native-20261007.json",
-                ".research/lifecycle-desktop-final-review-20261007.json"
+                "docs/stabilization/evidence/desktop-settings-hosted/run38034890248/receipt.sanitized.json",
+                "docs/stabilization/evidence/desktop-settings-hosted/run38034890248/native-report.sanitized.json",
+                "docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-package-38034890248-1.jsonl",
+                "docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-browser-38034890248-1.jsonl",
+                "docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-guest-38034890248-1.jsonl"
               ],
-              "verified_substeps": [
-                "Owned HTTP fixture Forget Cancel preserved the controlled pair code.",
-                "Injected storage.remove refusal kept the controlled pairing and exposed an error.",
-                "Retry removed the browser pairing."
+              "bounded_subtarget_evidence": [
+                {
+                  "subtarget": "guest_port_baseline_saved",
+                  "status": "pass",
+                  "detail": "baseline port saved through trusted UI"
+                },
+                {
+                  "subtarget": "guest_port_refusal_preserves_prior_and_retry",
+                  "status": "pass",
+                  "detail": "port refusal preserves prior value and offers retry"
+                },
+                {
+                  "subtarget": "guest_port_retry_survives_panel_reload",
+                  "status": "pass",
+                  "detail": "port retry survives panel reload"
+                },
+                {
+                  "subtarget": "guest_overlapping_port_submissions_latest_persists",
+                  "status": "pass",
+                  "detail": "overlapping port submissions persist latest after reload"
+                },
+                {
+                  "subtarget": "guest_delayed_port_read_preserves_edit_and_write_order",
+                  "status": "pass",
+                  "detail": "delayed initial read preserves edited port and precedes write"
+                },
+                {
+                  "subtarget": "guest_pair_refusal_keeps_input_and_retry",
+                  "status": "pass",
+                  "detail": "pair refusal keeps input and visible retry"
+                },
+                {
+                  "subtarget": "guest_pair_retry_persists_synthetic_value",
+                  "status": "pass",
+                  "detail": "pair retry persisted synthetic value"
+                },
+                {
+                  "subtarget": "guest_overlapping_pair_submissions_latest_persists",
+                  "status": "pass",
+                  "detail": "overlapping pair submissions persist latest after reload"
+                },
+                {
+                  "subtarget": "guest_pair_code_removal_refusal_and_retry",
+                  "status": "unverified",
+                  "detail": "pair-code removal refusal and retry"
+                },
+                {
+                  "subtarget": "guest_reset_refusal_preserves_confirmation_and_values",
+                  "status": "pass",
+                  "detail": "reset refusal keeps confirmation and saved value"
+                },
+                {
+                  "subtarget": "guest_reset_retry_clears_values_and_signs_out",
+                  "status": "pass",
+                  "detail": "reset retry clears prior local/session values and signs out after reload"
+                }
               ],
               "remaining_criteria": [
-                "This HTTP fixture does not prove current live transport, real engine pairing acceptance, or a healthy desktop-engine connection."
+                "Pair-code removal refusal and retry was unverified because HTTP transport and product confirmation were unavailable in this guest profile.",
+                "Storage fault injection does not establish a healthy desktop-engine connection."
               ],
-              "release_scope": "Frozen development artifact; Settings Page.reload, not full extension Reload or Store."
+              "resource_valid": true,
+              "release_scope": "Bounded guest native Desktop Settings observations on frozen unpublished development artifact only; 10 of 11 report controls passed. The pair-code removal refusal/retry remains unverified. No full Settings, healthy engine, current-main, member/admin, or Store claim."
             }
           },
           "result_history": [
@@ -9099,6 +9160,28 @@
                 ],
                 "observed_at": "2026-10-07T22:43:08.259405+00:00",
                 "release_scope": "Frozen CI development artifact only; no Store/current-main/healthy-engine claim."
+              }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37701201664",
+                "source_sha": "eb4182d3032ccef6a9317fcc34d5274a01deac39",
+                "build_version": "0.2.392",
+                "evidence": [
+                  ".research/desktop-remaining-native-20261007.json",
+                  ".research/lifecycle-desktop-final-review-20261007.json"
+                ],
+                "verified_substeps": [
+                  "Owned HTTP fixture Forget Cancel preserved the controlled pair code.",
+                  "Injected storage.remove refusal kept the controlled pairing and exposed an error.",
+                  "Retry removed the browser pairing."
+                ],
+                "remaining_criteria": [
+                  "This HTTP fixture does not prove current live transport, real engine pairing acceptance, or a healthy desktop-engine connection."
+                ],
+                "release_scope": "Frozen development artifact; Settings Page.reload, not full extension Reload or Store."
               }
             }
           ]
@@ -26521,12 +26604,13 @@
                 "sparse_public_detail_groups",
                 "rich_public_detail_groups_and_canonical_door",
                 "canonical_outbound_opens_expected_public_tab",
-                "guest_broken_social_preview_shows_failure_fallback"
+                "guest_broken_social_preview_shows_failure_fallback",
+                "guest_manual_readability_matches_two_known_texts"
               ],
               "unverified_dimensions": [
                 "hreflang/schema doors: this live public DOM had no unique openable candidates",
                 "remaining detail controls",
-                "exact readability calculation",
+                "readability calculation beyond the two known-text fixtures",
                 "volatile public-detail and optional metadata-fixture phases excluded by this controlled run"
               ],
               "run_id": "38016503649",
@@ -26538,9 +26622,14 @@
                 ".research/seo-controlled-followon-38016503649-peer.json",
                 ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json",
                 "docs/stabilization/evidence/guest-seo-behavior/run38024829250/receipt.json",
-                "docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json"
+                "docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json",
+                "docs/stabilization/evidence/seo-readability-hosted/run38034766398/receipt.sanitized.json",
+                "docs/stabilization/evidence/seo-readability-hosted/run38034766398/native-report.sanitized.json",
+                "docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-package-38034766398-1.jsonl",
+                "docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-browser-38034766398-1.jsonl",
+                "docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-guest-38034766398-1.jsonl"
               ],
-              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred. Supplemental bounded result: Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim.",
+              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred. Supplemental bounded result: Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim. Supplemental bounded readability result: hosted run 38034766398 independently reviewed PASS for only guest EXT-F-1008-T09 guest_manual_readability_matches_two_known_texts; exact known-text scores and bands matched, both fixture DOM restorations and original-page re-audit matched. Frozen unpublished development artifact source 22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c (CI 38032654367, artifact 11663251990); workflow checkout 6b286a60787da646a9e35c01eb378f9191ed7e60. Three resource finals valid. Only these two known texts are established; general readability behavior, remaining T09, other cases, current-main, member/admin and Store remain unverified.",
               "bounded_subtarget_evidence": [
                 {
                   "subtarget": "guest_broken_social_preview_shows_failure_fallback",
@@ -26554,6 +26643,27 @@
                     "docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json"
                   ],
                   "detail": "Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim."
+                },
+                {
+                  "subtarget": "guest_manual_readability_matches_two_known_texts",
+                  "status": "pass",
+                  "new_acceptance_credit": true,
+                  "resource_valid": true,
+                  "run_id": "38034766398",
+                  "source_sha": "22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c",
+                  "driver_source_sha": "6b286a60787da646a9e35c01eb378f9191ed7e60",
+                  "build_version": "0.2.458",
+                  "ci_run_id": "38032654367",
+                  "artifact_id": "11663251990",
+                  "artifact_tree_sha256": "db4aecd3a87d865bb97288f9e61b7d71a7045e6b71c51e58cb51d22a7e1e57a2",
+                  "evidence": [
+                    "docs/stabilization/evidence/seo-readability-hosted/run38034766398/receipt.sanitized.json",
+                    "docs/stabilization/evidence/seo-readability-hosted/run38034766398/native-report.sanitized.json",
+                    "docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-package-38034766398-1.jsonl",
+                    "docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-browser-38034766398-1.jsonl",
+                    "docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-guest-38034766398-1.jsonl"
+                  ],
+                  "detail": "Independent evidence review PASS for only this guest subtarget. Roof-maintenance displayed 11 words, 2 sentences, 85.89, Easy \u2014 6th grade; winter-repairs displayed 6 words, 2 sentences, 6.39, Extremely difficult \u2014 professional. Both matched the fixed oracle. The original page was re-audited and its readability matched the initial reading; both exact DOM restorations succeeded. Package/browser/guest resource finals are valid. T09 and the SEO feature remain partial; only the two known texts are established, with no current-main, member/admin or Store claim."
                 }
               ]
             }
