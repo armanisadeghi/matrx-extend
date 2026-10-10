@@ -236,6 +236,7 @@ jobs:
           DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
         run: |
           # BEGIN hosted lane admission
+          SCRAPE_SCOPE="${SCRAPE_SCOPE:-full}"
           [[ "$ACCEPTANCE_LANE" == A || "$ACCEPTANCE_LANE" == B ]] || { echo 'Unknown hosted acceptance lane.' >&2; exit 1; }
           case "$ACCEPTANCE_CASE" in
             guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-error-recovery-guest|scrape-save-member|tab-groups-member|native-ai-member-probe|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
