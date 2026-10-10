@@ -182,6 +182,7 @@ test('workflow admits member Data with member auth while preserving guest and D1
     workflow,
     'Require exactly one artifact provenance mode',
   );
+  const isArm64 = process.arch === 'arm64';
   const shared = {
     ACCEPTANCE_LANE: 'A',
     SEO_CASE_SCOPE: 'full',
@@ -195,8 +196,8 @@ test('workflow admits member Data with member auth while preserving guest and D1
     SCRAPE_DIAGNOSTIC_CPU_RATE: '',
     SCRAPE_WIDTH_MODE: 'narrow',
     SCRAPE_NORMAL_WIDTH_PX: '',
-    RUNNER_LABEL: 'macos-15',
-    RUNNER_ARCH: 'ARM64',
+    RUNNER_LABEL: isArm64 ? 'macos-15' : 'macos-15-intel',
+    RUNNER_ARCH: isArm64 ? 'ARM64' : 'X64',
   };
 
   for (const [acceptanceCase, authMode, laneStatus, provenanceStatus] of [
