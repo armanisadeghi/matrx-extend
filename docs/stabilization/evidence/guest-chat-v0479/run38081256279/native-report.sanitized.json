@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.479",
+    "tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "server_version_before": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "71d98c981c77672de0fb2a7b172962c1f21787dd"
+  },
+  "server_version_after": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "71d98c981c77672de0fb2a7b172962c1f21787dd"
+  },
+  "failure_stage": "owned_profile",
+  "failure_code": "owned_cdp_endpoint_timeout",
+  "stage_progress": ["owned_profile"],
+  "guest_ai_requests": [],
+  "server_version_stable": true
+}

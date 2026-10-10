@@ -1,0 +1,150 @@
+{
+  "schema_version": 1,
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation",
+  "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+  "status": "pass",
+  "build": {
+    "version": "0.2.479",
+    "tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_unchanged": true
+  },
+  "server_version_before": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "71d98c981c77672de0fb2a7b172962c1f21787dd"
+  },
+  "server_version_after": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "71d98c981c77672de0fb2a7b172962c1f21787dd"
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "fixture_reinstalled_before_first_send": false,
+    "session_absent_after_reload": true,
+    "fixture_reinstalled_after_reload": false
+  },
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "c5e7f7235a7f4b8d",
+    "opening_code_fingerprint": "deb02cdc402088f8",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": true,
+    "same_conversation_followup_completed": true,
+    "same_conversation_followup_reply_count": 3,
+    "same_conversation_followup_contains_page_code": true,
+    "same_conversation_identity_verified": true,
+    "followup_question_fingerprint": "be2d5336e111bd21",
+    "followup_code_fingerprint": "3f43a1575423775a",
+    "followup_reply_count": 2,
+    "followup_contains_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true
+  },
+  "reply_observations": [
+    {
+      "turn": "opening",
+      "terminal_verdict": "terminal_answer",
+      "screenshot_visible_content": ["Capture", "Understand", "Use"],
+      "native_assertions": [
+        "answer contains the unpredictable page code",
+        "answer names Capture, Understand, Use in order",
+        "no refusal, login paywall or error"
+      ],
+      "limitation": "The screenshot does not visibly expose the page code; the native assertion records only the match result and fingerprint."
+    },
+    {
+      "turn": "same_conversation_followup",
+      "terminal_verdict": "terminal_answer",
+      "screenshot_visible_content": "Clipped response identifies the Matrx guest Chat grounding fixture and says the page H1 'Research brief: product discovery' follows the codes.",
+      "native_assertions": [
+        "answer contains the second unpredictable page code",
+        "same conversation identity as opening request"
+      ]
+    },
+    {
+      "turn": "post_reload_new_conversation",
+      "terminal_verdict": "terminal_answer",
+      "screenshot_visible_content": "Clipped response says the opening check code appears before the follow-up code.",
+      "native_assertions": [
+        "answer contains the post-reload page code",
+        "answer names the fixture heading",
+        "new conversation identity after reload"
+      ]
+    }
+  ],
+  "opening_turn_verdict": "terminal_answer",
+  "same_conversation_turn_verdict": "terminal_answer",
+  "followup_turn_verdict": "terminal_answer",
+  "guest_ai_requests": [
+    {
+      "attempt": "opening",
+      "status": 200,
+      "conversation_fingerprint": "2d723a0b6b4e31b3",
+      "is_new": true
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "status": 200,
+      "conversation_fingerprint": "2d723a0b6b4e31b3",
+      "is_new": false
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "status": 200,
+      "conversation_fingerprint": "62d61f7e141c65ff",
+      "is_new": true
+    }
+  ],
+  "guest_ai_transport_proven": true,
+  "grounding": {
+    "opening": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": true
+    },
+    "same_conversation_followup": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": true
+    },
+    "post_reload": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": true
+    }
+  },
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "owned_article_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_values_chip_open",
+    "guest_question",
+    "real_guest_answer",
+    "same_conversation_followup_question",
+    "real_same_conversation_followup_answer",
+    "real_panel_reload",
+    "guest_followup_composer",
+    "guest_followup_question",
+    "real_guest_followup_answer",
+    "artifact_unchanged"
+  ],
+  "failure_stage": null,
+  "failure_code": null,
+  "server_version_stable": true
+}

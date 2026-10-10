@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "hosted_acceptance_run_id": 38081256279,
+  "hosted_acceptance_artifact_id": 11679879886,
+  "hosted_acceptance_artifact_name": "hosted-guest-38081256279-1",
+  "acceptance_lane": "B",
+  "acceptance_case": "guest-chat",
+  "hosted_workflow_conclusion": "failure",
+  "release_run_id": 38080281242,
+  "release_artifact_id": 11680078743,
+  "release_artifact_sha256": "c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+  "version": "0.2.479",
+  "release_source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "release_store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+  "runtime_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+  "runtime_receipt_kind": "native_store_zip_candidate_key_adapted",
+  "diagnosis": "Infrastructure/startup failure before product interaction. The exact same release artifact passed the controlled retry in run 38081808099.",
+  "source_tree_run_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e"
+}

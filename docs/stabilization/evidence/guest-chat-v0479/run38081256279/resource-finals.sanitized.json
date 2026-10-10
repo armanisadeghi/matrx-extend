@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "hosted_acceptance_run_id": 38081256279,
+  "product_resource_verdict": "guest final invalid; product test did not reach extension UI",
+  "finals_observed_in_workflow_log": [
+    {
+      "stage": "package_and_pinned_driver",
+      "resource_run_id": "hosted-package-38081256279-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal_file_in_artifact": false
+    },
+    {
+      "stage": "full_chromium",
+      "resource_run_id": "hosted-browser-38081256279-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal_file_in_artifact": false
+    },
+    {
+      "stage": "guest_acceptance",
+      "resource_run_id": "hosted-guest-38081256279-1",
+      "decision": "invalid",
+      "resource_invalid": true,
+      "child_exit_code": 1,
+      "final_exit_code": 3,
+      "journal_file_in_artifact": false
+    }
+  ],
+  "startup_diagnostic": {
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "elapsed_ms": 8057,
+    "endpoint_wait_elapsed_ms": 8039,
+    "endpoint_polls": 184,
+    "longest_profile_file_read_ms": 59,
+    "chrome_spawn_observed": true,
+    "launch_failed": false,
+    "stderr_or_crash_or_permission_flags": false
+  },
+  "host_process_attribution_at_failure": [
+    { "process": "MTLCompilerServi", "cpu_percent": 52.8 },
+    { "process": "WindowServer", "cpu_percent": 41.7 },
+    { "process": "duetexpertd", "cpu_percent": 39.6 },
+    { "process": "MENotificationAg", "cpu_percent": 38.4 },
+    { "process": "com.apple.quickl", "cpu_percent": 38.4 }
+  ],
+  "contention_interpretation": "Possible host contention; causal link is unproven. Earlier package admission was healthy, but no completed CPU/memory journal was uploaded for this failed artifact.",
+  "cleanup": {
+    "runner_ephemeral": true,
+    "explicit_native_cleanup_failure": null
+  }
+}
