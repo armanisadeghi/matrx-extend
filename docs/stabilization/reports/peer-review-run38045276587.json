@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_acceptance_evidence_review",
+  "reviewer_task": "/root/tracker_peer",
+  "reviewed_at": "2026-10-10T10:43:20Z",
+  "verdict": "bounded_pass",
+  "run": {
+    "run_id": 38045276587,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38045276587",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_source_sha": "eb69d25f20f66dc3f421cd2cf1f55da0327af5a7",
+    "lane": "B",
+    "case": "guest-seo",
+    "scope": "full across selected six guest SEO cases",
+    "conclusion": "success"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "version": "0.2.459",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "eligible_store": false
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11667158719,
+    "name": "hosted-guest-38045276587-1",
+    "digest": "sha256:8646d5b2ccdaf724313687a6347150684d115452809bf66710848d62208ba3f3",
+    "expired": false
+  },
+  "target_review": {
+    "target_count": 25,
+    "pass_count": 24,
+    "unverified_count": 1,
+    "prior_run_id": 38041517954,
+    "prior_unique_targets": 19,
+    "exact_duplicate_targets": 19,
+    "new_targets": [
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_link_counts_match_live_dom",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_performance_reflects_current_navigation",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_readability_matches_two_known_texts",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+        "status": "unverified",
+        "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+      }
+    ],
+    "comparison": "All 19 targets from controlled run 38041517954 are exact case_id/subtarget matches in this run; the six listed targets are the only additions."
+  },
+  "evidence": [
+    {
+      "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
+      "sha256": "5378d238318d72f2ac398f52679ac2a3e1baefb037b657237c753307ce98df04"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
+      "sha256": "ccd4805b5e22fa14767196ea9ea1b39b3ad5497894c847d0060ebf64bcda0a43"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
+      "sha256": "4ceabcf67e24b4de6e10b494ab4dc7576f8be75d3977aa9ce65617fd5414aeb0"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json",
+      "sha256": "d4b847e41058f41e58c363a5e9b839a85e8ebba0a2b0fa1a7d2dc2e2ef318a62"
+    }
+  ],
+  "resource_review": {
+    "source": "Exact RESOURCE_ADMITTED and RESOURCE_FINAL_DECISION events independently checked in the GitHub run job log and matched to resource-finals.sanitized.json.",
+    "phases": [
+      {
+        "phase": "package",
+        "admission_at": "2026-10-10T10:34:52.453Z",
+        "final_at": "2026-10-10T10:34:54.522Z",
+        "run_id": "hosted-package-38045276587-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "phase": "browser",
+        "admission_at": "2026-10-10T10:36:48.913Z",
+        "final_at": "2026-10-10T10:36:54.436Z",
+        "run_id": "hosted-browser-38045276587-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "phase": "guest",
+        "admission_at": "2026-10-10T10:38:45.588Z",
+        "final_at": "2026-10-10T10:39:26.776Z",
+        "run_id": "hosted-guest-38045276587-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    ],
+    "journal_limit": "The hosted artifact omitted full journal files. These safe admitted/final events support resource-valid classification, but full-journal hashes and process-level attribution are unavailable."
+  },
+  "limits": [
+    "The six targets are bounded observations within guest cases T01, T02, T03, T07, T09, and T14; five new targets pass and one remains unverified.",
+    "The 19 repeated targets are duplicate observations and receive no additional credit.",
+    "Deferred case dimensions, member/admin modes, current-main runtime, Store behavior, and broader SEO surface remain unverified.",
+    "No full case, feature, or product-health claim follows from this run."
+  ],
+  "privacy_review": "The reviewed sanitized bundle contains public-page observations and bounded artifact identity; no credentials, private paths, screenshots, or process-attribution data are included."
+}

@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38045479599,
+  "status": "unverified",
+  "auth_mode": "member",
+  "authentication_before_reload": {
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_identity_verified": true,
+    "organization_selected": true,
+    "organization_resolution": "load_ladder"
+  },
+  "observations_before_reload": {
+    "picker_field_clicks_landed": true,
+    "two_distinct_previews": true,
+    "pattern_write_requests": 1,
+    "pattern_write_status": 201,
+    "request_body_organization_matched_selected": true,
+    "saved_row_lookup_verified": true,
+    "saved_pattern_refreshed": true,
+    "saved_pattern_run_before_reload": true,
+    "clipboard_before_reload": {
+      "tsv_matches_fixture": true,
+      "json_matches_fixture": true,
+      "ai_contains_all_fixture_rows": true,
+      "native_copy_feedback_observed": true,
+      "clipboard_readback": true
+    },
+    "cancel_cleared_unsaved_selection": true
+  },
+  "reload_sender_document": {
+    "refresh_requested": true,
+    "refresh_completed": true,
+    "new_document_observed": true,
+    "same_url_observed": true
+  },
+  "replacement_panel": {
+    "old_targets_retired": true,
+    "worker_replaced": true,
+    "panel_replaced": true,
+    "adopted": true,
+    "open_diagnostic_ingress": true,
+    "open_handler_invoked": true,
+    "chrome_open_settlement": "resolved",
+    "send_response_observation": "unobservable_without_instrumented_build"
+  },
+  "post_reload_failure": {
+    "stage": "extension_reload_reopen_data",
+    "code": "pointer_target_not_unique",
+    "target_stage": "visibility_filter",
+    "matched_target_count": 0,
+    "visible_target_count": 0,
+    "data_tab_counts": {
+      "matching_tab_count": 0,
+      "visible_tab_count": 0,
+      "active_tab_count": 0,
+      "active_data_pane_count": 0
+    },
+    "post_reload_data_state_observed": false,
+    "screenshot_observation": "The native side-panel screenshot showed guest sign-in affordances after pre-reload member identity had been verified; authentication persistence was not independently resolved."
+  },
+  "cleanup": {
+    "verified": true,
+    "deleted_rows": 1,
+    "exact_owned_name_organization_lookup": true,
+    "raw_fixture_identifiers_omitted": true
+  },
+  "interpretation": "Diagnostic-only sender-document refresh run. The replacement worker received the open request and Chrome open settled, but send-response observation was unavailable without an instrumented build. The native driver found zero visible Data targets before it could observe reloaded saved-pattern state. No T03 lifecycle credit or product root cause is assigned."
+}

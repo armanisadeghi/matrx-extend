@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38045479599,
+  "case_id": "EXT-F-2005-T03",
+  "status": "acknowledged_identity_checked_only",
+  "auth_mode": "member",
+  "exact_owned_name_organization_lookup": true,
+  "deleted_rows": 1,
+  "raw_ids_and_organization_value_omitted": true,
+  "scope": "Only this run’s unique member Data pattern fixture was targeted. The native delete response was acknowledged and passed row-count, row-ID, and organization identity checks; post-delete absence was not verified because no separate post-delete active-row readback was recorded.",
+  "post_action_readback_verified": false
+}

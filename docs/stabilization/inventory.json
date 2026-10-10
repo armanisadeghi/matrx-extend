@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T10:36:40Z",
+  "updated_at": "2026-10-10T10:53:18Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -26060,6 +26060,24 @@
                 ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
               "detail": "Re-observed distinct-title URL navigation and target reload/reselection on the controlled guest profile; one-audit-per-URL and the slow stale-result race remain unverified."
+            },
+            {
+              "at": "2026-10-10T10:44:37Z",
+              "run_id": "38045276587",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "build_version": "0.2.459",
+              "workflow_source_sha": "eb69d25f20f66dc3f421cd2cf1f55da0327af5a7",
+              "product_artifact": "development v0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+              "evidence": [
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
+                "docs/stabilization/reports/peer-review-run38045276587.json"
+              ],
+              "detail": "This selected case was re-exercised in full SEO run 38045276587, but its targets were exact duplicates of controlled run 38041517954 and receive no additional acceptance credit. Case remains partial."
             }
           ],
           "revalidation_history": [
@@ -26502,6 +26520,24 @@
                 ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
               "detail": "Re-observed Manual return to the current page and trusted Re-audit after changing public title/description; native title matched the changed DOM. Direct displayed-description parity, stale-advice replacement, running state, failure reporting and reload remain unverified."
+            },
+            {
+              "at": "2026-10-10T10:44:37Z",
+              "run_id": "38045276587",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "build_version": "0.2.459",
+              "workflow_source_sha": "eb69d25f20f66dc3f421cd2cf1f55da0327af5a7",
+              "product_artifact": "development v0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+              "evidence": [
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
+                "docs/stabilization/reports/peer-review-run38045276587.json"
+              ],
+              "detail": "This selected case was re-exercised in full SEO run 38045276587, but its targets were exact duplicates of controlled run 38041517954 and receive no additional acceptance credit. Case remains partial."
             }
           ],
           "revalidation_history": [
@@ -26861,6 +26897,24 @@
                 ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
               "detail": "Re-observed the controlled about:blank error state and recovery to a public page; unreachable HTTP(S), other restricted schemes and reload behavior remain unverified."
+            },
+            {
+              "at": "2026-10-10T10:44:37Z",
+              "run_id": "38045276587",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "build_version": "0.2.459",
+              "workflow_source_sha": "eb69d25f20f66dc3f421cd2cf1f55da0327af5a7",
+              "product_artifact": "development v0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+              "evidence": [
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
+                "docs/stabilization/reports/peer-review-run38045276587.json"
+              ],
+              "detail": "This selected case was re-exercised in full SEO run 38045276587, but its targets were exact duplicates of controlled run 38041517954 and receive no additional acceptance credit. Case remains partial."
             }
           ],
           "revalidation_history": [
@@ -27339,6 +27393,24 @@
                 ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
               "detail": "Re-observed guest menu role gates and exact Text/AI clipboard readback before and after target reload; member/admin access and complete displayed-audit-field parity remain unverified."
+            },
+            {
+              "at": "2026-10-10T10:44:37Z",
+              "run_id": "38045276587",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "build_version": "0.2.459",
+              "workflow_source_sha": "eb69d25f20f66dc3f421cd2cf1f55da0327af5a7",
+              "product_artifact": "development v0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+              "evidence": [
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
+                "docs/stabilization/reports/peer-review-run38045276587.json"
+              ],
+              "detail": "This selected case was re-exercised in full SEO run 38045276587, but its targets were exact duplicates of controlled run 38041517954 and receive no additional acceptance credit. Case remains partial."
             }
           ],
           "revalidation_history": [
@@ -27507,9 +27579,35 @@
                     "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json"
                   ],
                   "scope": "Reviewed controlled guest subtargets only; existing deferred dimensions remain open. No full SEO/current-main/Store/member/admin claim."
+                },
+                {
+                  "run_id": 38045276587,
+                  "status": "bounded-partial",
+                  "resource_valid": true,
+                  "workflow_source_sha": "eb69d25f20f66dc3f421cd2cf1f55da0327af5a7",
+                  "product_artifact": "development v0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                  "new_passed_subtargets": [
+                    "guest_manual_image_alt_counts_match_live_dom",
+                    "guest_manual_link_counts_match_live_dom",
+                    "guest_manual_performance_reflects_current_navigation",
+                    "guest_manual_readability_display_is_populated_and_explained",
+                    "guest_manual_readability_matches_two_known_texts"
+                  ],
+                  "new_unverified_subtargets": [
+                    "guest_manual_hreflang_and_schema_doors_match_page"
+                  ],
+                  "duplicate_targets_from_run_38041517954": 19,
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
+                    "docs/stabilization/reports/peer-review-run38045276587.json"
+                  ],
+                  "independent_review": "docs/stabilization/reports/peer-review-run38045276587.json",
+                  "limits": "Only five new bounded T09 subtargets pass; hreflang/schema door remains unverified. Nineteen exact duplicate targets receive no new credit. Full journals absent; resource classification uses six peer-checked safe GitHub events. No case/feature, other-role, current-main, or Store pass."
                 }
               ],
-              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass."
+              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Full resource journals were absent, with peer verification based on six safe GitHub admission/final events."
             }
           },
           "result_history": [
@@ -28137,6 +28235,35 @@
                 "docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json"
               ],
               "detail": "Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim."
+            },
+            {
+              "at": "2026-10-10T10:44:37Z",
+              "run_id": "38045276587",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.459",
+              "workflow_source_sha": "eb69d25f20f66dc3f421cd2cf1f55da0327af5a7",
+              "product_artifact": "development v0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+              "evidence": [
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
+                "docs/stabilization/reports/peer-review-run38045276587.json"
+              ],
+              "detail": "Five new bounded T09 targets passed; one new hreflang/schema-door target remains unverified. The batch contained 19 exact duplicates of prior controlled run 38041517954; duplicates receive no new credit. Six guest cases and feature remain partial. Full resource journals were absent; peer independently checked six safe admission/final GitHub resource events.",
+              "bounded_new_passed_subtargets": [
+                "guest_manual_image_alt_counts_match_live_dom",
+                "guest_manual_link_counts_match_live_dom",
+                "guest_manual_performance_reflects_current_navigation",
+                "guest_manual_readability_display_is_populated_and_explained",
+                "guest_manual_readability_matches_two_known_texts"
+              ],
+              "bounded_new_unverified_subtargets": [
+                "guest_manual_hreflang_and_schema_doors_match_page"
+              ],
+              "batch_duplicate_target_count": 19
             }
           ],
           "revalidation_history": [
@@ -28418,6 +28545,24 @@
                 ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
               "detail": "Re-observed trusted social-copy clipboard readback matching five missing tags before and six after Re-audit; other social states, absent-button behavior, reload, member and admin remain unverified."
+            },
+            {
+              "at": "2026-10-10T10:44:37Z",
+              "run_id": "38045276587",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": false,
+              "resource_valid": true,
+              "build_version": "0.2.459",
+              "workflow_source_sha": "eb69d25f20f66dc3f421cd2cf1f55da0327af5a7",
+              "product_artifact": "development v0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+              "evidence": [
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
+                "docs/stabilization/reports/peer-review-run38045276587.json"
+              ],
+              "detail": "This selected case was re-exercised in full SEO run 38045276587, but its targets were exact duplicates of controlled run 38041517954 and receive no additional acceptance credit. Case remains partial."
             }
           ],
           "results": {
@@ -28632,9 +28777,10 @@
             "37804374798",
             "37995400576",
             "38016503649",
-            "38041517954"
+            "38041517954",
+            "38045276587"
           ],
-          "retest_status": "Partial surface. Reviewed frozen129 controlled guest run38041517954 passes 19 named subtargets across T01/T02/T03/T07/T09/T14; all deferred criteria remain open. Earlier known-text readability evidence retains its own frozen-artifact provenance. No full SEO/current-main/Store/member/admin promotion."
+          "retest_status": "Partial surface. Reviewed frozen129 controlled guest run38041517954 passes 19 named subtargets across T01/T02/T03/T07/T09/T14; all deferred criteria remain open. Earlier known-text readability evidence retains its own frozen-artifact provenance. No full SEO/current-main/Store/member/admin promotion. Reviewed run 38045276587 adds five new passing guest T09 targets and one unverified hreflang/schema-door target; its 19 repeated targets are duplicates of 38041517954. No duplicate credit; all six guest SEO cases and feature remain partial. Frozen v0.2.459, not current-main or Store. Full journals absent; peer checked six safe resource events."
         },
         "member": {
           "test_status": "unverified",
@@ -39904,7 +40050,7 @@
                 "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-browser-38023539449-1.jsonl",
                 "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-guest-38023539449-1.jsonl"
               ],
-              "detail": "The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified. A later diagnostic-only run (38028339414) repeated the pre-reload member observations but adds no T03 lifecycle credit; replacement-worker instrumentation saw no message ingress, while handler execution and Chrome open settlement remain unobserved. Its native cleanup was unverified; a separately verified exact run-owned soft-delete left one tombstone and zero active rows. T03 remains Partial."
+              "detail": "The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified. A later diagnostic-only run (38028339414) repeated the pre-reload member observations but adds no T03 lifecycle credit; replacement-worker instrumentation saw no message ingress, while handler execution and Chrome open settlement remain unobserved. Its native cleanup was unverified; a separately verified exact run-owned soft-delete left one tombstone and zero active rows. T03 remains Partial. Later diagnostic-only hosted run 38045479599 verified sender refresh/replacement ingress/open settlement, then stopped at `pointer_target_not_unique` in visibility_filter with zero visible Data targets. It adds zero T03 lifecycle credit and proves no product defect; post-reload pattern state/send response were unavailable. Cleanup lacked post-delete active-row readback; secret and local private files were absent after cleanup."
             },
             "admin": {
               "status": "partial",
@@ -40005,6 +40151,37 @@
                 "docs/stabilization/evidence/member-data-behavior/run38028339414/hosted-guest-38028339414-1.jsonl"
               ],
               "detail": "Diagnostic-only member run repeated the previously observed authentication/org, picker, save, run, clipboard and cancel behavior. Reload retired the old worker/panel and created an activated replacement worker but no replacement panel. The fixture reports send invoked/returned but callback not entered; CDP observed no replacement-worker message ingress and no handler invocation, while Chrome open settlement was unobserved. No product root cause is established. The native cleanup was unverified; exact run-owned name/org/owner soft-delete and fresh readback verified one tombstone and zero active rows. Resource finals were valid for package and browser; guest child exited 1 with resourceInvalid=false after transient CPU pressure recovered. No new T03 lifecycle acceptance credit; admin, Store and full reload persistence remain open."
+            },
+            {
+              "at": "2026-10-10T10:53:18Z",
+              "mode": "member",
+              "run_id": "38045479599",
+              "status": "diagnostic-only",
+              "diagnostic_only": true,
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+              "workflow_source_sha": "181c66f471499e705c817d5a4f82fdc7e39139f1",
+              "development_ci_run_id": 38036029832,
+              "development_artifact_id": 11664077690,
+              "evidence": [
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/receipt.sanitized.json",
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/native-report.sanitized.json",
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/cleanup.sanitized.json",
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-package-38045479599-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-browser-38045479599-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-guest-38045479599-1.jsonl",
+                "docs/stabilization/reports/peer-review-run38045479599.json"
+              ],
+              "independent_review": "docs/stabilization/reports/peer-review-run38045479599.json",
+              "detail": "Member identity and organization were verified before reload; sender document refreshed, replacement ingress/open handler ran, and Chrome open settled. Visibility filter then failed with pointer_target_not_unique and zero visible Data targets; post-reload saved-pattern state and send response were unavailable. Diagnostic only: zero T03 lifecycle credit and no proven product defect. Guest sign-in screenshot does not prove auth loss. Cleanup was acknowledged and identity-checked but no post-delete active-row readback was recorded; remote secret is absent and local private files were absent after delayed follow-up cleanup.",
+              "acceptance_outcome": "child_failed",
+              "acceptance_exit_code": 1,
+              "resource_invalid": false,
+              "failure_stage": "extension_reload_reopen_data/visibility_filter",
+              "failure_code": "pointer_target_not_unique",
+              "matched_target_count": 0,
+              "visible_target_count": 0
             }
           ]
         },
@@ -40109,8 +40286,10 @@
             "EXT-D-0053",
             "EXT-D-0054"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "38045479599"
+          ],
+          "retest_status": "Run 38045479599 was diagnostic-only and earns zero T03 lifecycle credit: after sender refresh and replacement open settlement, visibility_filter found zero visible Data targets (`pointer_target_not_unique`). T03 member and feature member remain unverified for reload lifecycle; no product defect is proven. Cleanup had no post-delete active-row readback."
         },
         "admin": {
           "test_status": "unverified",

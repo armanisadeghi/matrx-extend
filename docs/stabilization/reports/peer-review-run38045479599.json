@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_acceptance_evidence_review",
+  "reviewer_task": "/root/tracker_peer",
+  "reviewed_at": "2026-10-10T10:52:17Z",
+  "verdict": "bounded_pass",
+  "run": {
+    "run_id": 38045479599,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38045479599",
+    "workflow": "hosted-guest-acceptance.yml",
+    "workflow_source_sha": "181c66f471499e705c817d5a4f82fdc7e39139f1",
+    "dispatch_ref": "main",
+    "lane": "A",
+    "conclusion": "failure",
+    "acceptance_case": "member-data",
+    "case_id": "EXT-F-2005-T03"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "version": "0.2.459",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "artifact_sha256": "388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7"
+  },
+  "evidence": [
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/receipt.sanitized.json",
+      "sha256": "fd40dfdfe8d716801686531c477244669444582709a5a284742956996b71c2eb"
+    },
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/native-report.sanitized.json",
+      "sha256": "dadb49aea5adf2773291c1a3cdd64e68674fceeed7ddc44f07514f73af89d0fa"
+    },
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/cleanup.sanitized.json",
+      "sha256": "445d731f96c25548f84963b5b72e433c883daba8de72f8ebd79f1b22e5af6c9d"
+    },
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-package-38045479599-1.jsonl",
+      "sha256": "8094d97c0dd757d4a88838c9ab6be5dcce8598ae3da515796ab39ed6057468e5"
+    },
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-browser-38045479599-1.jsonl",
+      "sha256": "0626018d6f8112bfea89fbb47dd4d89684f477cafb4bb5e594298b78758c2fa7"
+    },
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-guest-38045479599-1.jsonl",
+      "sha256": "f406562f216c33fb199e714ff7dbf3ca0ba4537372c185a89e0e573739ca65fe"
+    }
+  ],
+  "resource_finals": {
+    "hosted-package-38045479599-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38045479599-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38045479599-1": "child_failed; admitted=true; resourceInvalid=false; exitCode=1",
+    "resource_invalid_any": false
+  },
+  "verified_assertions": [
+    "The hosted run is bound to main at the receipt's workflow SHA and to the frozen CI development artifact; GitHub reports the selected acceptance case failed.",
+    "Native observations record the sender document refresh, replacement worker and panel, open diagnostic ingress and handler invocation, and Chrome open settlement as resolved.",
+    "After reload, the native driver stopped at pointer_target_not_unique in visibility_filter with zero matched and visible Data targets; post-reload saved-pattern state and send-response observation were unavailable.",
+    "The screenshot showing guest sign-in affordances does not independently establish that member authentication was lost after reload.",
+    "Cleanup records an acknowledged deletion with row-count, row-ID, and organization identity checks; it explicitly records no post-delete active-row readback.",
+    "The receipt discloses delayed local private link/identity-file cleanup after the watcher exited on a reserved zsh status variable; it records local files absent after follow-up and the remote secret deleted and verified absent at workflow terminal. Credential values are absent from repo evidence."
+  ],
+  "limitations": [
+    "This diagnostic run earns zero T03 lifecycle acceptance credit; the evidence does not observe reloaded saved-pattern persistence.",
+    "No reproducible product defect or product root cause is proven by this run; the zero-target visibility failure may be in the native driver or product flow and remains unresolved.",
+    "Cleanup acknowledgment and identity checks do not prove post-delete absence.",
+    "Admin, Store, current-main product behavior, and full T03 remain open."
+  ]
+}
