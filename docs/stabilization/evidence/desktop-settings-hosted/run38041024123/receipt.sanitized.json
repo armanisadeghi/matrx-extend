@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38041024123,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38041024123",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "949ad7a1cbd35f4810ec5f427b9d624251fc66ac",
+  "run_attempt": 1,
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "acceptance_case": "desktop-settings-guest",
+  "selected_case": "remaining",
+  "inventory_case": "EXT-F-1003-T43",
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "source_ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11666126363,
+    "name": "hosted-guest-38041024123-1",
+    "digest": "sha256:0670257572554c684c905707a0e0714621b1e0229b4c5a7f23bc3e7ade4fbc30",
+    "expired": false
+  },
+  "workflow_conclusion": "success",
+  "native_report_status": "pass",
+  "failure_stage": null,
+  "failure_code": null,
+  "passed_case_count": 7,
+  "classification": "The bounded native guest run passed seven named Desktop Settings cases covering port input bounds/filtering/blank clear, Forget cancel/refusal/retry, and reset cancel/refusal/retry.",
+  "acceptance_credit": "bounded guest Desktop Settings remaining controls only",
+  "full_t43_verified": false,
+  "inventory_updated": false,
+  "resource_finals": {
+    "hosted-package-38041024123-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38041024123-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38041024123-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "evidence_hashes": {
+    "native-report.sanitized.json": "5cfaf7f4bf99e31193319dff466d45fdfdcfd8bf1a89e74ab55b6b37e5b7c272",
+    "resource-journals/hosted-package-38041024123-1.jsonl": "2f26ebda3a0106a547ed005392e5311c632ab7e4694f205f7fc20829578981f2",
+    "resource-journals/hosted-browser-38041024123-1.jsonl": "bc9f7a5b482e3e5226a9101b60604d502519e8e9caeb8a544729309f7460eb4f",
+    "resource-journals/hosted-guest-38041024123-1.jsonl": "6782a05200e977b03fbcfe8354e74076338c9f625b62d9367267182a6b74a70b"
+  },
+  "limits": [
+    "Acceptance is limited to the seven named guest controls on the exact frozen development artifact; this is not full Desktop Settings or full T43 acceptance.",
+    "Storage fault injection does not establish a healthy desktop-engine connection.",
+    "Pair-code clear requires an HTTP transport and is not inferred from a stored synthetic code.",
+    "This does not establish member/admin, current-main product or actual Store acceptance.",
+    "No account or organization identifier, page URL, DOM content, raw storage values, raw error text, screenshot or credential is included."
+  ],
+  "sanitization": {
+    "native_report_reduced_to_fixed_safe_allowlist": true,
+    "resource_journals_copied_with": "scripts/copy-hosted-resource-journal.mjs",
+    "process_attribution_and_opened_paths_removed": true,
+    "screenshots_and_other_private_artifacts_excluded": true,
+    "credentials_or_auth_material_present": false
+  },
+  "independent_review": "pending"
+}

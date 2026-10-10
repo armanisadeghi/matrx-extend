@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
+  "scope": "bounded native guest Desktop Settings controls in an owned disposable profile",
+  "case": "remaining",
+  "inventory_case": "EXT-F-1003-T43",
+  "role": "guest",
+  "status": "pass",
+  "build": {
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "acceptance_case": "desktop-settings-guest",
+  "failure_stage": null,
+  "failure_code": null,
+  "passed_case_count": 7,
+  "total_case_count": 7,
+  "cases": [
+    {
+      "name": "port bounds, filtered input, and blank clear persist across reload",
+      "status": "pass",
+      "observation": {
+        "lower_bound": 1,
+        "upper_bound": 65535,
+        "invalid_values_rejected": true,
+        "nondigit_filtered": true,
+        "blank_cleared": true
+      }
+    },
+    {
+      "name": "HTTP fixture Forget cancel retains owned pair code",
+      "status": "pass",
+      "observation": {
+        "pairing_preserved": true
+      }
+    },
+    {
+      "name": "HTTP fixture Forget refusal preserves owned pair code",
+      "status": "pass",
+      "observation": {
+        "pairing_preserved": true,
+        "error_visible": true
+      }
+    },
+    {
+      "name": "HTTP fixture Forget retry removes owned browser pairing",
+      "status": "pass",
+      "observation": {
+        "pairing_removed": true,
+        "engine_connection_unverified": true
+      }
+    },
+    {
+      "name": "reset Cancel preserves complete local and session census",
+      "status": "pass",
+      "observation": {
+        "local_count": 6,
+        "session_count": 1
+      }
+    },
+    {
+      "name": "reset refusal keeps confirmation and saved value",
+      "status": "pass",
+      "observation": {
+        "error_visible": true,
+        "retry_available": true,
+        "prior_local_count": 6,
+        "prior_session_count": 1,
+        "prior_values_preserved": true
+      }
+    },
+    {
+      "name": "reset retry clears prior local/session values and signs out after reload",
+      "status": "pass",
+      "observation": {
+        "signed_out": true,
+        "local": {
+          "before": 6,
+          "missing": 1,
+          "identical": 1,
+          "allowedFresh": 4,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session": {
+          "before": 1,
+          "missing": 1,
+          "identical": 0,
+          "allowedFresh": 0,
+          "unexplained": 0,
+          "unexplainedKeys": []
+        },
+        "session_fixture_removed": true
+      }
+    }
+  ],
+  "observed": "Seven bounded native guest Desktop Settings cases passed: port bounds/input filtering/blank clear; Forget cancel, refusal and retry; and reset cancel, refusal and retry including the safe storage census.",
+  "limits": [
+    "This is limited to the seven named guest controls on the exact frozen development artifact; it does not establish full Desktop Settings or full T43 acceptance.",
+    "Storage fault injection does not establish a healthy desktop-engine connection.",
+    "Pair-code clear requires an HTTP transport and is not inferred from a stored synthetic code.",
+    "This does not establish member/admin, current-main product or actual Store acceptance.",
+    "No account or organization identifier, page URL, DOM content, raw storage values, raw error text, screenshot or credential is included."
+  ]
+}
