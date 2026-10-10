@@ -1,9 +1,6 @@
 {
   "schema_version": 1,
-  "defects": [
-    "EXT-D-0084",
-    "EXT-D-0086"
-  ],
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
   "scope": "native side-panel storage behavior in an owned disposable profile",
   "case": "full",
   "role": "guest",

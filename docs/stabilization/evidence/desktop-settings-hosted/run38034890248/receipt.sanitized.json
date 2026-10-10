@@ -8,10 +8,7 @@
   "runner_label": "macos-15-intel",
   "acceptance_case": "desktop-settings-guest",
   "selected_case": "full",
-  "defect_ids": [
-    "EXT-D-0084",
-    "EXT-D-0086"
-  ],
+  "defect_ids": ["EXT-D-0084", "EXT-D-0086"],
   "product_artifact": {
     "kind": "ci_development_test",
     "source_sha": "22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c",
