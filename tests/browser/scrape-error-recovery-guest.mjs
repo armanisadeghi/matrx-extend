@@ -8,8 +8,10 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertGuestScrapeRecoveryEvidence } from './scrape-error-recovery-guest-oracle.mjs';
 import { updateHostAccessIfExpected } from './scrape-host-access-transition.mjs';
 import {
+  observeRecoveryPreflight,
   runAfterEffectiveHostDenial,
   waitForRecoveryOutcome,
+  withRecoveryHostAccessCleanup,
 } from './scrape-recovery-failure-diagnostic.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -235,7 +237,13 @@ async function run() {
       onStage: (stage) => {
         report.native_stage = stage;
       },
-      exercisePanel: async ({ page, panel, requireResourceHealth, resourceAction }) => {
+      exercisePanel: async ({
+        page,
+        panel,
+        requireResourceHealth,
+        resourceAction,
+        transportFailureClass,
+      }) => {
         const extensionId = await evaluate(panel, 'chrome.runtime.id');
         assert.match(extensionId ?? '', /^[a-p]{32}$/, 'scrape_recovery_extension_id_missing');
         const url = new URL(page.url());
@@ -289,7 +297,7 @@ async function run() {
           };
         };
         let restorationError;
-        try {
+        const exerciseDenialAndRecovery = async () => {
           const deny = await resourceAction(() =>
             setHostAccess(
               page,
@@ -310,14 +318,28 @@ async function run() {
             () => performance.getEntriesByType('navigation')[0]?.type ?? null,
           );
           assert.equal(reloadType, 'reload', 'scrape_recovery_denied_page_reload_missing');
+          let originTransitionCompleted = false;
           await resourceAction(() => forceActiveTabGrantRevocation(page, url));
+          originTransitionCompleted = true;
           await resourceAction(() => page.reload({ waitUntil: 'domcontentloaded' }));
           await resourceAction(() => page.bringToFront());
-          let state = await recoveryState(panel);
+          const preflight = (operation, read) =>
+            observeRecoveryPreflight(
+              {
+                operation,
+                originTransitionCompleted,
+                transportFailureClass,
+                onFailure: (value) => {
+                  report.failure_diagnostic = value;
+                },
+              },
+              read,
+            );
+          let state = await preflight('panel_readiness', () => recoveryState(panel));
           assert.equal(state.ready, true, 'scrape_recovery_panel_lost_after_fixture_reload');
           assert.equal(state.deepTitles.length, 1, 'scrape_recovery_deep_control_not_unique');
           const denialStart = await runAfterEffectiveHostDenial(
-            () => probeEffectiveHostAccess(panel),
+            () => preflight('effective_host_access', () => probeEffectiveHostAccess(panel)),
             () => resourceAction(() => click(panel, 'title', state.deepTitles[0])),
           );
           const effectiveAccess = denialStart.access;
@@ -418,7 +440,8 @@ async function run() {
             error_cleared: !state.error,
           };
           await requireResourceHealth();
-        } finally {
+        };
+        const cleanupHostAccess = async () => {
           try {
             await restoreHostAccess();
           } catch (error) {
@@ -430,7 +453,8 @@ async function run() {
             report.cleanup_failure_code = safeFailureCode(error);
             restorationError = error;
           }
-        }
+        };
+        await withRecoveryHostAccessCleanup(exerciseDenialAndRecovery, cleanupHostAccess);
         if (restorationError) throw restorationError;
       },
     });
