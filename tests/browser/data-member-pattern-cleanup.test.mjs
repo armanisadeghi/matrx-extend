@@ -2,11 +2,27 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   buildDataPatternDeleteUrl,
+  matchesSelectedMemberOrganization,
+  requireExpectedMemberOrganizationId,
   verifyDataPatternDeleteResult,
 } from './data-member-pattern-cleanup.mjs';
 
 const patternId = '123e4567-e89b-42d3-a456-426614174000';
 const organizationId = '123e4567-e89b-42d3-a456-426614174001';
+const otherOrganizationId = '123e4567-e89b-42d3-a456-426614174002';
+
+test('member Data write must match independently verified organization UUID', () => {
+  assert.equal(
+    requireExpectedMemberOrganizationId({ organization_id: organizationId }),
+    organizationId,
+  );
+  assert.equal(matchesSelectedMemberOrganization(organizationId, organizationId), true);
+  assert.equal(matchesSelectedMemberOrganization(otherOrganizationId, organizationId), false);
+  assert.throws(
+    () => requireExpectedMemberOrganizationId({ organization_id: 'invalid' }),
+    /data_member_expected_organization_missing/,
+  );
+});
 
 test('cleanup URL scopes deletion and representation to the observed row and organization', () => {
   const url = new URL(

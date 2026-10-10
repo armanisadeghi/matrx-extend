@@ -3,6 +3,7 @@
 import { createHash } from 'node:crypto';
 import { readFile, stat, writeFile } from 'node:fs/promises';
 import { createClient } from '@supabase/supabase-js';
+import { requireExpectedMemberOrganizationId } from './data-member-pattern-cleanup.mjs';
 
 const IDENTITY_FILE = process.env.MATRX_REVIEWER_IDENTITY_FILE;
 const ADMIN_ENV_FILE = process.env.MATRX_ADMIN_ENV_FILE;
@@ -79,11 +80,14 @@ async function main() {
     .eq('status', 'active');
   if (membershipError || memberships?.length !== 1)
     throw new Error('reviewer_organization_membership_unverified');
+  const organizationId = requireExpectedMemberOrganizationId({
+    organization_id: memberships[0].container_id,
+  });
   const { data: organization, error: organizationError } = await admin
     .schema('iam')
     .from('organizations')
     .select('name')
-    .eq('id', memberships[0].container_id)
+    .eq('id', organizationId)
     .single();
   if (organizationError || organization?.name !== "Matrx's Org")
     throw new Error('reviewer_test_organization_unverified');
@@ -105,7 +109,7 @@ async function main() {
   link.searchParams.set('redirectTo', '/dashboard');
   await writeFile(
     LINK_FILE,
-    `${JSON.stringify({ email: identity.email, action_link: link.href })}\n`,
+    `${JSON.stringify({ email: identity.email, action_link: link.href, organization_id: organizationId })}\n`,
     {
       mode: 0o600,
       flag: 'wx',

@@ -10,6 +10,7 @@ import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
 import { clickPickerDone, clickPickerField, pickerText } from './data-guest-picker-driver.mjs';
 import {
   buildDataPatternDeleteUrl,
+  matchesSelectedMemberOrganization,
   verifyDataPatternDeleteResult,
 } from './data-member-pattern-cleanup.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -78,7 +79,7 @@ async function dataState(panel, name) {
   );
 }
 
-function observePatternWrites(panel) {
+function observePatternWrites(panel, expectedOrganizationId) {
   const writes = new Map();
   const origin = new URL(process.env.WXT_SUPABASE_URL).origin;
   const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
@@ -129,6 +130,10 @@ function observePatternWrites(panel) {
         failed,
         patternIdPresent: UUID.test(patternId ?? ''),
         organizationContextPresent: UUID.test(organizationId ?? ''),
+        organizationMatchesSelected: matchesSelectedMemberOrganization(
+          organizationId,
+          expectedOrganizationId,
+        ),
       })),
     deleteTarget: () => {
       const target = [...writes.values()].find(
@@ -238,6 +243,7 @@ try {
         panel,
         repo: REPO,
         memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+        allowLadderOrganization: true,
         onStage: (value) => {
           report.auth_stage = value;
         },
@@ -262,6 +268,17 @@ try {
         },
         'data_member_auth_identity_unverified',
       );
+      assert.ok(
+        ['load_ladder', 'device_choice'].includes(identity.organization_resolution),
+        'data_member_organization_resolution_unverified',
+      );
+      report.authentication.organization_resolution = identity.organization_resolution;
+      assert.match(
+        identity.organizationId ?? '',
+        UUID,
+        'data_member_expected_organization_unverified',
+      );
+      report.authentication.selected_organization_id_verified = true;
       await activatePanel();
       await resourceAction(() => page.goto(`${new URL(page.url()).origin}/products`));
       assert.equal(
@@ -315,7 +332,7 @@ try {
       );
       assert.equal(named.nameMatches, true, 'data_member_pattern_name_not_set');
       await panel.send('Network.enable');
-      const observer = observePatternWrites(panel);
+      const observer = observePatternWrites(panel, identity.organizationId);
       let primaryError;
       let cleanupError;
       let saveAttempted = false;
@@ -335,6 +352,13 @@ try {
         report.observations.pattern_write_requests = writes.length;
         report.observations.pattern_write_status = writes[0].status;
         report.observations.organization_context_sent = writes[0].organizationContextPresent;
+        report.observations.organization_context_matched_selected =
+          writes[0].organizationMatchesSelected;
+        assert.equal(
+          writes[0].organizationMatchesSelected,
+          true,
+          'data_member_save_organization_mismatch',
+        );
         const saved = await waitFor(
           'data_member_pattern_refreshed',
           () => dataState(panel, patternName),

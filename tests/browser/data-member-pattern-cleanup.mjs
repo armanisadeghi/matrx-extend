@@ -1,5 +1,16 @@
 import assert from 'node:assert/strict';
 
+export function requireExpectedMemberOrganizationId(secret) {
+  const id = secret?.organization_id;
+  assert.match(id ?? '', UUID, 'data_member_expected_organization_missing');
+  return id;
+}
+
+export function matchesSelectedMemberOrganization(observedId, expectedId) {
+  assert.match(expectedId ?? '', UUID, 'data_member_expected_organization_missing');
+  return UUID.test(observedId ?? '') && observedId === expectedId;
+}
+
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 export function buildDataPatternDeleteUrl(origin, patternId, organizationId) {
