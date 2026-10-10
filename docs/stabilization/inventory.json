@@ -8665,6 +8665,27 @@
             {
               "mode": "guest",
               "status": "unverified",
+              "run_id": "38007298161",
+              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+              "workflow_source_sha": "d9bd66a3957dfc246afc5f76cc4ee68e7d6998a5",
+              "development_ci_run_id": 37998294843,
+              "development_artifact_id": 11647758423,
+              "hosted_result_artifact_id": 11652445172,
+              "build_version": "0.2.456",
+              "resource_valid": true,
+              "failure_stage": "choice_extension_reload",
+              "restoration_failure_stage": "restore_acquire_panel",
+              "detail": "The native switch changed visible and stored preference to ON. During the first reload, the management click resolved and lifecycle evidence reached its full old-worker/old-panel retirement and replacement-worker predicate with no timeline truncation. The reload helper still threw before returning a replacement panel: failure code unclassified, transport none, no context verdict. Recovery then could not acquire a live panel (owned CDP protocol error), and cleanup failed. No post-reload setting observation exists; canonical T40 remains partial from the earlier warm ON/OFF proof. Diagnose the helper interval after lifecycle acceptance and before context verification; do not repeat the same hosted case without a causal repair or new safe diagnostic.",
+              "evidence": [
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38007298161/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38007298161/hosted-package-38007298161-1.jsonl",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38007298161/hosted-browser-38007298161-1.jsonl",
+                "docs/stabilization/evidence/settings-auto-scrape-capture/run38007298161/hosted-guest-38007298161-1.jsonl"
+              ]
+            },
+            {
+              "mode": "guest",
+              "status": "unverified",
               "run_id": "38006058872",
               "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
               "workflow_source_sha": "f88405d22982d31ab9f52ab36cf5ff0c681d6010",
