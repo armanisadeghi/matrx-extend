@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "run_id": "38016707554",
+  "attempt": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38016707554",
+  "workflow_checkout_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+  "case": "scrape-save-member",
+  "lane": "A",
+  "result": "harness_failure_before_ui",
+  "acceptance_credit": false,
+  "artifact_under_test": {
+    "kind": "ci_development_test",
+    "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+    "ci_run_id": 38014587032,
+    "ci_artifact_id": 11655990379,
+    "tree_sha256": "1626416af2bc5f9656474c4f6bdedd28c8898c3322cd305d33a8450c9196d880"
+  },
+  "source_boundary": "This run exercises only the frozen 987a3e08d artifact. The workflow checkout was 0d6e69aa7. Later Save Source product commits da2e314b0 and 21f07fb92 were not present in either source and remain unverified by this run; no current-main health is claimed.",
+  "failure": {
+    "stage": "inputs",
+    "native_stage": null,
+    "error_code": "native_acceptance_error",
+    "cause": "The D187 driver required the imported artifact source SHA to equal GITHUB_SHA. The frozen artifact is source 987a3e08d while GITHUB_SHA identifies the workflow checkout 0d6e69aa7. Artifact provenance itself was imported and tree-verified; the driver stopped before invoking the native side-panel harness."
+  },
+  "resource_journals": [
+    {
+      "path": "docs/stabilization/resource-journals/hosted-package-38016707554-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-browser-38016707554-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-guest-38016707554-1.jsonl",
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1
+    }
+  ],
+  "fixture_boundary": "Authentication credential preflight passed, but the driver failed before real member sign-in or its first Source lookup. The Save Source driver makes no Source query or write before the native harness callback; no Save UI, Source, association, or cleanup operation was reached. The run report records cleanup as null. No product behavior or cleanup verification is inferred.",
+  "private_credential_handling": "The temporary link value is not recorded. Root confirmed the one-time local file and temporary repository secret were removed after the run.",
+  "sanitized_driver_report": "docs/stabilization/evidence/scrape-save-hosted-38016707554/scrape-save-native-acceptance.json",
+  "hosted_upload_artifact_id": 11656138939,
+  "product_acceptance": "No behavior verdict; EXT-D-0187 remains in-fix. Repair the source-binding assertion and rerun against a green exact-current artifact containing the latest Save Source product commits, with a freshly staged one-time member link."
+}

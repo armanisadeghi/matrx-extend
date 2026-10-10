@@ -272,7 +272,6 @@ try {
   assert.match(ciSourceSha ?? '', /^[a-f0-9]{40}$/, 'scrape_save_ci_source_required');
   assert.match(ciRunId ?? '', /^[1-9][0-9]*$/, 'scrape_save_ci_run_required');
   assert.match(ciArtifactId ?? '', /^[1-9][0-9]*$/, 'scrape_save_ci_artifact_required');
-  assert.equal(ciSourceSha, process.env.GITHUB_SHA, 'scrape_save_exact_source_sha_mismatch');
   assert.equal(ciReceipt.sourceSha, ciSourceSha, 'scrape_save_ci_source_mismatch');
   assert.equal(ciReceipt.runId, Number(ciRunId), 'scrape_save_ci_run_mismatch');
   assert.equal(ciReceipt.artifactId, Number(ciArtifactId), 'scrape_save_ci_artifact_mismatch');
@@ -281,6 +280,13 @@ try {
   assert.equal(hashReleaseTree(extensionDir), receipt.treeSha256, 'scrape_save_tree_hash_mismatch');
   const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
   assert.equal(manifest.version, receipt.version, 'scrape_save_version_mismatch');
+  // The selected CI artifact may predate the harness checkout. Bind it to its receipt.
+  assert.match(
+    process.env.GITHUB_SHA ?? '',
+    /^[a-f0-9]{40}$/,
+    'scrape_save_harness_checkout_sha_required',
+  );
+  report.harness_checkout_sha = process.env.GITHUB_SHA;
   report.artifact = {
     kind: 'ci_development_test',
     eligible_store: false,

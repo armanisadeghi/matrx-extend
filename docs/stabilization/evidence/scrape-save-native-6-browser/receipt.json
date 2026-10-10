@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "run_id": "scrape-save-native-6-browser",
+  "defect_id": "EXT-D-0187",
+  "status": "partial-native-substeps",
+  "build": {
+    "version": "0.2.457",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "source_sha": "af13274c35ee16e28014e90b1e50c73ad433d348",
+    "tree_sha256": "50de2d01ab290dcf8623a2749a56c3a9e799a9afd434ee8556191bfdb0db295e",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "chrome_version": null,
+    "reloaded": true,
+    "promotion_run_id": 38015304181,
+    "artifact_id": 11656536010,
+    "main_sha_at_promotion": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b"
+  },
+  "mode": "admin",
+  "resource_journal": "docs/stabilization/resource-journals/scrape-save-native-6-browser.jsonl",
+  "resource_decision": "valid; admitted=true; resourceInvalid=false; exitCode=0; clean stop at 2026-10-10T02:29:40.252Z",
+  "verified_substeps": [
+    "Settings → About showed runtime version 0.2.457 and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml.",
+    "On a fresh captured page, Save Source displayed an editable Name field and the full captured URL as non-input text.",
+    "Choose a place followed by one click on Projects opened the results list directly. The project rows were text-only without leading icons; scrolling visibly changed the displayed project rows and scrollbar position.",
+    "Keyboard focus: Tab from project search focused the matching dedicated project row; Space selected it. Shift+Tab from Name reached Close; a second Shift+Tab wrapped to Save Source; Tab wrapped to Close.",
+    "Saved Source 39378ff2-1a20-4999-9f53-d9735bc04bbc as EXT-D-0187 Native Save 6 2026-10-10 to Project 4484ab9c-bb04-4adc-a894-df2e9f18960f.",
+    "Reopened the Source in the web app and observed Saved state, matching name, full URL, Example Domain heading, and captured content.",
+    "Refreshed the dedicated Project page; its Sources drawer listed the new Source and 3 attached Sources. This confirms the persisted Source-to-Project association."
+  ],
+  "unverified_or_out_of_scope": [
+    "Duplicate-save behavior, no-destination save, refusal/retry, additional place types/Library, guest/member role, and other organizations were not tested.",
+    "Later shared-main cleanup commits da2e314b0 and 21f07fb92 were not present in the imported artifact and were not retested.",
+    "Chrome version was not independently verified during this run."
+  ],
+  "source": {
+    "id": "39378ff2-1a20-4999-9f53-d9735bc04bbc",
+    "name": "EXT-D-0187 Native Save 6 2026-10-10",
+    "url": "https://example.com/?matrx-ext-d-0187-native-6=20261010T0250Z"
+  },
+  "project": {
+    "id": "4484ab9c-bb04-4adc-a894-df2e9f18960f",
+    "name": "EXT-D-0187 TEST PROJECT — native retest"
+  },
+  "product_acceptance": "confirmed substeps only; EXT-D-0187 remains in-fix",
+  "cleanup": "No cleanup performed; the dedicated test Source was authorized to remain."
+}
