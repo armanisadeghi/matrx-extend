@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "review_type": "independent_read_only_peer",
+  "case_id": "EXT-F-2005-T03",
+  "run_id": 38013032792,
+  "run_checkout_sha": "a8839d016bcdd9de7d71923dbb72ff961852c61f",
+  "artifact": {
+    "source_sha": "4deeed72072dab2769d3dd7b098a8319575f7333",
+    "ci_run_id": 38012499715,
+    "artifact_id": 11655625816,
+    "tree_sha256": "24569fe30d5d972867822a6dbbeefbbcd88832e81d3145bf329aa88ce0dc2e07",
+    "version": "0.2.457"
+  },
+  "evidence": [
+    "test-results/member-data-followon-run38013032792/matrx-extend/matrx-extend/test-results/data-member-native-acceptance.json",
+    "test-results/member-data-followon-run38013032792/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-38013032792-1.jsonl",
+    "test-results/member-data-followon-run38013032792/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-38013032792-1.jsonl",
+    "test-results/member-data-followon-run38013032792/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-38013032792-1.jsonl",
+    "tests/browser/data-member-native-acceptance.mjs at a8839d016",
+    "src/features/data/DataView.tsx and src/lib/data-pattern/modes/manual-css.ts at a8839d016"
+  ],
+  "resource_decisions": {
+    "package": "valid, exit 0, resourceInvalid false",
+    "browser": "valid, exit 0, resourceInvalid false",
+    "guest": "child_failed, exit 1, resourceInvalid false"
+  },
+  "verdict": "Driver three-row expectation invalid; product replay outcome unverified. Do not classify the failed assertion as a product defect or a T03 pass.",
+  "cause": "At the run checkout the driver expected three extracted rows. DataView saves the picked manual_css pattern with list_root_selector null. The manual-css runner then uses one document root and each scalar field's first matching element, so the expected extracted result is one row. The failed wait recorded no actual extracted row count or product error state.",
+  "bounded_observations": {
+    "non_admin_sign_in_and_selected_organization": true,
+    "two_picker_previews": true,
+    "one_pattern_post_http_201": true,
+    "post_body_organization_matched_selected": true,
+    "scoped_saved_row_lookup": true,
+    "saved_pattern_visible_after_ui_refresh": true,
+    "run_replay_rows": "unobserved",
+    "clipboard_cancel_and_extension_reload": "not reached"
+  },
+  "cleanup": "The DELETE response returned one row with the exact owned pattern and selected organization identity; the run did not record an independent post-delete zero-row GET.",
+  "credential_cleanup": "Name-only GitHub secret metadata check found the temporary reviewer magic-link secret absent; the local ephemeral link file was absent. No credential values were read or included.",
+  "post_run_driver_corrections": "Commit 6ac777e5a changed the expected replay row count to one and added bounded extraction diagnostics. Its remaining three-row TSV assertion was corrected in c00b313a6; 900a031ed added a focused first-match manual-css runner test. These source checks do not prove the native replay or clipboard behavior.",
+  "next_driver_boundary": "Peer-check the corrected one-row run and TSV assertions, then repeat native replay and copy under a fresh guarded hosted run. Preserve bounded extraction diagnostics.",
+  "remaining_native_checks": [
+    "Observe and verify the actual saved-pattern replay row and values before and after extension reload.",
+    "Verify TSV, JSON, and AI-agent clipboard output against the actual one-row result.",
+    "Verify unsaved picker cancellation, reload survival, and independent post-delete zero-row state."
+  ]
+}
