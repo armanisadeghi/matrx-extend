@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "auth_mode": "guest",
+  "status": "fail",
+  "stage": "capture",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "df3b1ba5fa5f90e0cf1465e76895c5e6fe2b3738",
+    "run_id": 38067890039,
+    "artifact_id": 11676207504,
+    "version": "0.2.469",
+    "tree_sha256": "adbcffa8b24b20676f09ae056542f76afc596aa64dddae2aa59dd320f082498d"
+  },
+  "observations": null,
+  "failure_code": "scrape_empty_capture_ready_not_observed",
+  "limits": "One owned localhost guest page; only T08 no-signal SEO and empty Schema panes. No broader T08, role, width, Store, or current-main claim.",
+  "browser_version": "Chrome/141.0.7390.37"
+}

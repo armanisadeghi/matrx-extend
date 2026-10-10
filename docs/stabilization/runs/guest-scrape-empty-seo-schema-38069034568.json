@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T08",
+  "status": "unverified",
+  "lane": "B",
+  "runner": "hosted guest-scrape-development / macos-15",
+  "acceptance_run_id": 38069034568,
+  "source_sha": "df3b1ba5fa5f90e0cf1465e76895c5e6fe2b3738",
+  "ci_run_id": 38067890039,
+  "artifact_id": 11676207504,
+  "artifact_kind": "ci_development_test",
+  "version": "0.2.469",
+  "tree_sha256": "adbcffa8b24b20676f09ae056542f76afc596aa64dddae2aa59dd320f082498d",
+  "fixture": "owned localhost title-only page, empty body, no SEO metadata, links, images, headings, or JSON-LD",
+  "expected": "Scrape opens, Capture opens the article view, SEO reports the title and absent description, Schema is valid and empty, and pane navigation leaves capture export identity and digest unchanged.",
+  "actual": "Fixture assertions passed. After the runner's trusted click on the uniquely titled Scrape tab, readiness polling did not observe Scrape active plus the Capture control. Screenshot shows the guest Chat start pane. Capture, SEO, Schema, and export checks were not reached.",
+  "failure_code": "scrape_empty_capture_ready_not_observed",
+  "resource_finals": {
+    "package": { "decision": "valid", "resourceInvalid": false, "exitCode": 0 },
+    "browser": { "decision": "valid", "resourceInvalid": false, "exitCode": 0 },
+    "acceptance": { "decision": "child_failed", "resourceInvalid": false, "exitCode": 1 }
+  },
+  "evidence_dir": "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38069034568",
+  "limits": [
+    "T08 remains unverified",
+    "navigation precondition only; no SEO/Schema verdict",
+    "no full Scrape, Store, or current-main claim"
+  ]
+}
