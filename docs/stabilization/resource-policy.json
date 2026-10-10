@@ -148,6 +148,7 @@
     ["node", "tests/browser/isolated-admin-reset-acceptance.mjs"],
     ["bash", "release.sh", "--message", "chore: synchronized stabilization integration"],
     ["bash", "release.sh", "--message", "EXT-D-0187 simplify and verify Scrape Save"],
+    ["bash", "release.sh", "--message", "EXT-D-0187 show captured URL and simplify place picker"],
     ["node", "tests/browser/isolated-permission-denial-acceptance.mjs"],
     ["node", "tests/browser/contained-navigation-acceptance.mjs"],
     ["node", "tests/browser/seo-guest-acceptance.mjs"],
