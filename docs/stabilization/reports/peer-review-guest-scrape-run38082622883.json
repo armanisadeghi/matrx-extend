@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_exact_artifact_guest_scrape_review",
+  "reviewer": "member_secret_restore",
+  "reviewed_evidence_commit": "78f215e52fb14b959eee7e42459dd76bdd56d679",
+  "run_id": 38082622883,
+  "product_verdict": "PASS_BOUNDED_GUEST_CAPTURE_EXPORT_PARTIAL_OVERALL",
+  "evidence_verdict": "PASS_WITH_SCOPE_LIMITS",
+  "verification": [
+    "Independently downloaded hosted artifact 11680584038; native report overall partial, no native or driver failure; guest access token/profile absent before and after reload.",
+    "Exact native v0.2.479 source 47a9b1c9c8e966bcbf4bb27a07542a795420c80e and adapted runtime 267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0 agree with release 38080281242 receipt and independently reconstructed exact Store ZIP adaptation.",
+    "Viewed fast/deep/post-reload Article screenshots and expected chrome://settings capture refusal. All five durable screenshot files byte-match downloaded originals.",
+    "All three recorded resource journal hashes and admitted/valid/resourceInvalid=false/exitCode=0 finals match raw downloaded journals.",
+    "Real native fast Capture and Scroll & capture produce source-specific article text, populated Article/Images/Video/Links/SEO/Schema panes, and deep lazy content.",
+    "Copy/export native assertions prove actual clipboard readback, sentinel replacement, correct formats and restored observation permission for 22 formats warm, 22 after reload and 13 after navigation; 3 empty media/link controls after navigation are separately observed.",
+    "Full extension reload retires old targets, reopens panel, retains guest state and supports fast/deep recapture; post-reload boundary confirms trusted discard confirmation and visible matching article."
+  ],
+  "case_results": {
+    "EXT-F-1007-T20": "PASS: initial empty state, stale-content clearing across navigation and extension reload, then recapture on the new page.",
+    "EXT-F-1007-T01": "PARTIAL: guest fast Capture and post-extension-reload recapture passed; member/admin and normal width are unverified.",
+    "EXT-F-1007-T08": "PARTIAL: all six tabs selected and matching populated content observed; empty Images/Video/Links/Article and warm/reload capture/export invariance passed. Member/admin and normal width unverified; this run does not demonstrate the full T08 inventory.",
+    "EXT-F-1007-T10": "PASS for guest subtarget: image removal/addition passed warm and after extension reload.",
+    "EXT-F-1007-T11": "PASS for guest subtarget: blank URL rejection, valid image add, and cancel passed warm and after reload.",
+    "EXT-F-1007-T12": "PASS for guest subtarget: video remove/add/open/copy passed warm and after reload.",
+    "EXT-F-1007-T13": "PARTIAL overall: guest link actions passed warm and after reload; member/admin unverified.",
+    "EXT-F-1007-T02": "PARTIAL: lazy content appeared in the browser and capture, including after extension reload; deep failure/retry remains unverified.",
+    "EXT-F-1007-T07": "PASS for guest subtarget: article scroll synchronization passed warm and after reload.",
+    "EXT-F-1007-T09": "PASS for guest subtarget: capture export/copy actions passed for the exercised formats.",
+    "EXT-F-1007-T14": "PARTIAL: expected chrome://settings denial notice and dismissal were observed; natural recoverable Reload page/Try again branches remain unverified."
+  },
+  "limits": [
+    "Owned localhost Harbor Dental fixture is a representative real page; named Store reviewer demo and arbitrary internet sites were not exercised.",
+    "Native result remains partial; no full T08 inventory or full Scrape-feature claim.",
+    "Guest-only 360px native default width; member/admin, normal width and physical resize unverified.",
+    "SEO/Schema empty states, natural recoverable retry and deep-failure retry unverified.",
+    "Candidate-key-adapted unpacked artifact, not Store-installed copy.",
+    "Native report has no deployed server SHA or separate cleanup attestation; do not infer these.",
+    "Exact v0.2.479 only; newer package/main changes receive no acceptance transfer."
+  ],
+  "release_gate_assessment": {
+    "bounded_exact_v479_reviewer_flows": "Guest Chat, non-admin Chat, controlled guest SEO and guest Scrape each now have valid bounded evidence; no observed product failure in those exercised flows.",
+    "readiness_boundary": "Release integrity/risk gate is separately PASS. These bounded results do not prove full product health, Store dashboard readiness, or execution of previously unproven XML/Tile branches. Newer lock metadata alone is not a product failure or an automatic reason to reject immutable v479."
+  },
+  "checked_files": [
+    "docs/stabilization/runs/guest-scrape-v0479-run38082622883.json",
+    "docs/stabilization/evidence/guest-scrape-hosted/run38082622883/"
+  ]
+}
