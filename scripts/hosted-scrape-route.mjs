@@ -1,6 +1,16 @@
 import assert from 'node:assert/strict';
 
-export function requireHostedScrapeRoute(acceptanceCase, mode, prepared) {
+export function requireHostedScrapeRoute(acceptanceCase, mode, prepared, authMode = undefined) {
+  if (acceptanceCase === 'scrape-error-recovery-guest') {
+    assert.equal(mode, 'development', 'scrape_recovery_development_mode_required');
+    assert.equal(prepared?.kind, 'ci_development_test', 'scrape_recovery_ci_receipt_required');
+    assert.equal(prepared?.eligibleStore, false, 'scrape_recovery_development_store_refused');
+    assert.equal(authMode, 'guest', 'scrape_recovery_guest_auth_required');
+    return {
+      driver: 'tests/browser/scrape-error-recovery-guest.mjs',
+      channel: 'development',
+    };
+  }
   if (acceptanceCase === 'scrape-save-member') {
     assert.equal(mode, 'development', 'scrape_save_development_mode_required');
     assert.equal(prepared?.kind, 'ci_development_test', 'scrape_save_development_receipt_required');
