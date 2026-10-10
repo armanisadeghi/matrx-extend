@@ -10,14 +10,36 @@ const ALL_TABS = Object.keys(SIDEPANEL_TAB_AUDIENCE) as SidepanelTab[];
 
 describe('sidepanel visibility', () => {
   it('keeps the launch configuration exhaustive and explicit', () => {
-    // 21 since the Capture tab landed (d2564c3). This number is a tripwire,
-    // not a fact to be kept in sync silently: adding a tab to the panel has to
-    // be a deliberate act somebody signs. It sat at 20 with 21 tabs live, so
-    // the whole suite was red for every lane that ran it.
-    expect(ALL_TABS).toHaveLength(22);
+    // Every tab has an explicit release audience; adding one changes this roster deliberately.
+    expect(ALL_TABS).toEqual([
+      'chat',
+      'pilot',
+      'tasks',
+      'agenda',
+      'lists',
+      'scrape',
+      'saved-captures',
+      'swipe-file',
+      'capture',
+      'data',
+      'highlight',
+      'guidance',
+      'seo',
+      'notes',
+      'files',
+      'screenshots',
+      'vault',
+      'tools',
+      'settings',
+      'profile',
+      'showcase',
+      'broker',
+      'debug',
+    ]);
     expect(SIDEPANEL_TAB_AUDIENCE.chat).toBe('everyone');
     expect(SIDEPANEL_TAB_AUDIENCE.profile).toBe('signed-in');
     expect(SIDEPANEL_TAB_AUDIENCE['saved-captures']).toBe('signed-in');
+    expect(SIDEPANEL_TAB_AUDIENCE['swipe-file']).toBe('signed-in');
     expect(SIDEPANEL_TAB_AUDIENCE.debug).toBe('admin');
   });
 
@@ -37,6 +59,7 @@ describe('sidepanel visibility', () => {
     expect(visible).not.toContain('broker');
     expect(visible).not.toContain('debug');
     expect(visible).toContain('vault');
+    expect(visible).toContain('swipe-file');
   });
 
   it('shows admins every configured tab', () => {
