@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T13",
+  "mode": "guest",
+  "driver_status": "partial",
+  "case_status": "partial",
+  "guest_slice_verdict": "pass",
+  "case_scope": "Guest link actions only, exercised warm and after full extension reload. The workflow ran the full guest Scrape driver because the hosted route has no per-case selector; other cases receive no credit from this focused review.",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.458",
+    "source_sha": "d77e461b0f7289ca19122522e153515b807e932a",
+    "tree_sha256": "db4aecd3a87d865bb97288f9e61b7d71a7045e6b71c51e58cb51d22a7e1e57a2",
+    "run_id": 38031871330,
+    "artifact_id": 11662856372
+  },
+  "runtime": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "browser_version": "Chrome/141.0.7390.37",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "width_mode": "narrow",
+    "guest_account_observed": true,
+    "guest_auth_storage": {
+      "hasAccessToken": false,
+      "hasUserProfile": false
+    }
+  },
+  "extension_reload": {
+    "management_reload_clicked": true,
+    "old_targets_retired": true,
+    "worker_replaced": true,
+    "panel_replaced": true,
+    "observed_at": "2026-10-10T07:09:06.691Z"
+  },
+  "warm": {
+    "phase": "warm",
+    "before": {
+      "count": 2,
+      "paths": [
+        "/forms",
+        "/appointments"
+      ],
+      "texts": [
+        "Patient forms",
+        "Appointments"
+      ]
+    },
+    "link_actions": {
+      "opened_path": "/forms",
+      "copy_feedback": "copied",
+      "clipboard_equal": true,
+      "clipboard_read_before_observation_grant": {
+        "ok": false,
+        "code": "NotAllowedError",
+        "focused": true,
+        "visible": true
+      },
+      "clipboard_observation": {
+        "clipboardObservationStage": "read",
+        "clipboardObservationPermissionRestored": true,
+        "clipboardReadPermissionForObservation": true
+      },
+      "clipboard_read_after_grant": {
+        "ok": true,
+        "same": true,
+        "focused": true,
+        "visible": true
+      },
+      "failures": [],
+      "limitations": []
+    },
+    "removed": {
+      "count": 1,
+      "paths": [
+        "/appointments"
+      ],
+      "texts": [
+        "Appointments"
+      ]
+    },
+    "blank_url_rejected": {
+      "count": 1,
+      "paths": [
+        "/appointments"
+      ],
+      "texts": [
+        "Appointments"
+      ]
+    },
+    "added": {
+      "count": 2,
+      "paths": [
+        "/appointments",
+        "/referrals"
+      ],
+      "texts": [
+        "Appointments",
+        "Referral hours"
+      ]
+    },
+    "cancelled": {
+      "count": 2,
+      "paths": [
+        "/appointments",
+        "/referrals"
+      ],
+      "texts": [
+        "Appointments",
+        "Referral hours"
+      ]
+    }
+  },
+  "reload": {
+    "phase": "reload",
+    "before": {
+      "count": 2,
+      "paths": [
+        "/forms",
+        "/appointments"
+      ],
+      "texts": [
+        "Patient forms",
+        "Appointments"
+      ]
+    },
+    "link_actions": {
+      "opened_path": "/forms",
+      "copy_feedback": "copied",
+      "clipboard_equal": true,
+      "clipboard_read_before_observation_grant": {
+        "ok": false,
+        "code": "NotAllowedError",
+        "focused": true,
+        "visible": true
+      },
+      "clipboard_observation": {
+        "clipboardObservationStage": "read",
+        "clipboardObservationPermissionRestored": true,
+        "clipboardReadPermissionForObservation": true
+      },
+      "clipboard_read_after_grant": {
+        "ok": true,
+        "same": true,
+        "focused": true,
+        "visible": true
+      },
+      "failures": [],
+      "limitations": []
+    },
+    "removed": {
+      "count": 1,
+      "paths": [
+        "/appointments"
+      ],
+      "texts": [
+        "Appointments"
+      ]
+    },
+    "blank_url_rejected": {
+      "count": 1,
+      "paths": [
+        "/appointments"
+      ],
+      "texts": [
+        "Appointments"
+      ]
+    },
+    "added": {
+      "count": 2,
+      "paths": [
+        "/appointments",
+        "/referrals"
+      ],
+      "texts": [
+        "Appointments",
+        "Referral hours"
+      ]
+    },
+    "cancelled": {
+      "count": 2,
+      "paths": [
+        "/appointments",
+        "/referrals"
+      ],
+      "texts": [
+        "Appointments",
+        "Referral hours"
+      ]
+    }
+  },
+  "remaining_dimensions": [
+    "member/admin modes remain unverified by this receipt."
+  ],
+  "interpretation": "Guest link open/copy/remove/add/cancel and blank-URL rejection all matched expected native observations in warm and reloaded phases. Overall T13 remains partial because member/admin modes are unverified. Driver-level result is partial; no broader EXT-F-1007 or Store claim.",
+  "failure": null,
+  "cleanup_boundary": "Driver completed normally with exit code 0. The native harness finally block awaits owned fixture-server close, stops its owned browser child, and removes its temporary profile. The native report has no separate cleanup readback; no shared credential or database fixture was used."
+}
