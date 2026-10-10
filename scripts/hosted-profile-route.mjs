@@ -40,9 +40,12 @@ export function hostedProfileRoute(acceptanceCase, prepared, outputDir, runId) {
 
 export function requireHostedAcceptanceCredential(acceptanceCase, env) {
   assert.ok(acceptanceCase, 'hosted_acceptance_case_required');
-  const scrapeMode = acceptanceCase.startsWith('guest-scrape')
-    ? (env.MATRX_SCRAPE_AUTH_MODE ?? 'guest')
-    : null;
+  const scrapeMode =
+    acceptanceCase === 'scrape-save-member'
+      ? 'member'
+      : acceptanceCase.startsWith('guest-scrape')
+        ? (env.MATRX_SCRAPE_AUTH_MODE ?? 'guest')
+        : null;
   if (
     [
       'member-chat',

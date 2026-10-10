@@ -298,6 +298,7 @@ async function run(prepared, artifactMode) {
       'member-data',
       'guest-scrape',
       'guest-scrape-development',
+      'scrape-save-member',
       'settings-controls',
       'settings-theme-rendering',
       'settings-auto-scrape-capture',
@@ -328,7 +329,11 @@ async function run(prepared, artifactMode) {
     )
   )
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
-  if (acceptanceCase === 'guest-data' || acceptanceCase === 'member-data')
+  if (
+    acceptanceCase === 'guest-data' ||
+    acceptanceCase === 'member-data' ||
+    acceptanceCase === 'scrape-save-member'
+  )
     assert.equal(kind, 'ci_development_test', 'Data acceptance requires CI development receipt');
   const guestDataCiReceiptPath =
     acceptanceCase === 'guest-data' || acceptanceCase === 'member-data'
@@ -346,6 +351,41 @@ async function run(prepared, artifactMode) {
     const evidence = prepared.ciEvidence;
     await writeFile(
       guestDataCiReceiptPath,
+      `${JSON.stringify(
+        {
+          schema_version: evidence.schema_version,
+          kind: evidence.kind,
+          eligibleStore: evidence.eligibleStore,
+          publish_state: evidence.publish_state,
+          sourceSha: evidence.sourceSha,
+          runId: evidence.runId,
+          artifactId: evidence.artifactId,
+          githubArtifactDigest: evidence.githubArtifactDigest,
+          version: evidence.version,
+          treeSha256: evidence.treeSha256,
+        },
+        null,
+        2,
+      )}\n`,
+      { mode: 0o600, flag: 'wx' },
+    );
+  }
+  const scrapeSaveCiReceiptPath =
+    acceptanceCase === 'scrape-save-member'
+      ? join(
+          dirname(relocatedReceipt),
+          `scrape-save-ci-receipt-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}.json`,
+        )
+      : null;
+  if (scrapeSaveCiReceiptPath) {
+    assert.equal(
+      prepared.ciEvidence?.kind,
+      'ci_development_test',
+      'scrape_save_ci_receipt_required',
+    );
+    const evidence = prepared.ciEvidence;
+    await writeFile(
+      scrapeSaveCiReceiptPath,
       `${JSON.stringify(
         {
           schema_version: evidence.schema_version,
@@ -404,6 +444,8 @@ async function run(prepared, artifactMode) {
     process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC ?? '0',
   );
   const scrapeSelection = scrapeRoute ? scrapeNativeSelection(process.env) : null;
+  if (acceptanceCase === 'scrape-save-member')
+    assert.equal(scrapeSelection?.mode, 'member', 'scrape_save_member_auth_mode_required');
   if (
     acceptanceCase === 'prepare-stale-results' ||
     acceptanceCase.startsWith('showcase-') ||
@@ -433,21 +475,14 @@ async function run(prepared, artifactMode) {
   );
   const needsApprovedAdminOrganization =
     Boolean(showcaseRoute) || (scrapeRoute && scrapeSelection.mode === 'admin');
-  let adminCredentialsCreated = false;
-  if (
+  const needsMemberLink =
     acceptanceCase === 'member-chat' ||
     acceptanceCase === 'member-data' ||
     (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
     acceptanceCase === 'desktop-settings-member' ||
-    acceptanceCase === 'visibility-census-member'
-  ) {
-    assert.ok(process.env.MATRX_HOSTED_MEMBER_LINK_JSON, 'member link secret required');
-    await writeFile(memberLinkPath, process.env.MATRX_HOSTED_MEMBER_LINK_JSON, {
-      mode: 0o600,
-      flag: 'wx',
-    });
-  }
+    acceptanceCase === 'visibility-census-member';
+  let adminCredentialsCreated = false;
   if (
     acceptanceCase === 'prepare-stale-results' ||
     showcaseRoute ||
@@ -493,6 +528,7 @@ async function run(prepared, artifactMode) {
           MATRX_SCRAPE_CI_SOURCE_SHA: prepared.sourceSha,
           MATRX_SCRAPE_CI_RUN_ID: String(prepared.runId),
           MATRX_SCRAPE_CI_ARTIFACT_ID: String(prepared.artifactId),
+          ...(scrapeSaveCiReceiptPath ? { MATRX_SCRAPE_CI_RECEIPT: scrapeSaveCiReceiptPath } : {}),
         }
       : {}),
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
@@ -583,6 +619,18 @@ async function run(prepared, artifactMode) {
   childEnv.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON = undefined;
   childEnv.MATRX_HOSTED_PROFILE_ORGANIZATION_JSON = undefined;
   childEnv.MATRX_REVIEWER_CREDENTIALS_FILE = undefined;
+  if (needsMemberLink) {
+    assert.ok(process.env.MATRX_HOSTED_MEMBER_LINK_JSON, 'member link secret required');
+    try {
+      await writeFile(memberLinkPath, process.env.MATRX_HOSTED_MEMBER_LINK_JSON, {
+        mode: 0o600,
+        flag: 'wx',
+      });
+    } catch (error) {
+      await unlink(memberLinkPath).catch(() => {});
+      throw error;
+    }
+  }
   try {
     const child = spawn(
       process.execPath,
@@ -696,7 +744,10 @@ if (phase === 'preflight') {
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
     process.env.MATRX_HOSTED_DESKTOP_SETTINGS_CASE,
   );
-  if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('guest-scrape'))
+  if (
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('guest-scrape') ||
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'scrape-save-member'
+  )
     scrapeNativeSelection(process.env);
   requireHostedAcceptanceCredential(process.env.MATRX_HOSTED_ACCEPTANCE_CASE, process.env);
   console.log('HOSTED_CREDENTIAL_PREFLIGHT_READY');

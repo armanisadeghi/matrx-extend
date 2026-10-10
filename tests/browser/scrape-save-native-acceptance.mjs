@@ -1,0 +1,622 @@
+#!/usr/bin/env node
+/** Real member Save Source dialog, project edge, and exact owned-row cleanup. */
+import assert from 'node:assert/strict';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { signInSettings } from './settings-native-auth-driver.mjs';
+import { activeTabPanelExpression, click, evaluate, waitFor } from './settings-panel-driver.mjs';
+
+const REPO = resolve(fileURLToPath(new URL('../..', import.meta.url)));
+const extensionDir = process.env.MATRX_SCRAPE_EXTENSION_DIR;
+const receiptPath = process.env.MATRX_SCRAPE_RECEIPT;
+const supabaseUrl = new URL(process.env.WXT_SUPABASE_URL ?? '');
+const publishableKey = process.env.WXT_SUPABASE_PUBLISHABLE_KEY;
+const runId = process.env.GITHUB_RUN_ID;
+const runAttempt = process.env.GITHUB_RUN_ATTEMPT;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const captureTitle = `Northline source intake ${runId}-${runAttempt}`;
+const sourceName = `Northline source acceptance ${runId}-${runAttempt}`;
+const fixture = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${captureTitle}</title>
+<meta name="description" content="A controlled member Save Source acceptance page"></head><body>
+<main><article><h1>${captureTitle}</h1><p>This controlled article has enough real text to become a Source. It describes the intake process, preparation steps, and the information a reader should keep available before an appointment.</p>
+<h2>Preparation</h2><p>Review the appointment details, collect the required forms, and confirm the time before arriving. These instructions are part of the saved article body.</p>
+<h2>Follow up</h2><p>Keep the confirmation with the visit notes so the next person can find the same source and its related project.</p></article></main></body></html>`;
+const report = {
+  schema_version: 1,
+  feature_id: 'EXT-F-1007',
+  defect_id: 'EXT-D-0187',
+  case_ids: ['EXT-F-1007-T04', 'EXT-F-1007-T29'],
+  auth_mode: 'member',
+  status: 'unverified',
+  stage: 'inputs',
+  native_stage: null,
+  artifact: null,
+  authentication: null,
+  observations: {},
+  cleanup: null,
+  failure_stage: null,
+  limits:
+    'Exact imported CI development artifact, real member sign-in, one custom-named Source with one existing Project association, independent reads, and cleanup; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.',
+};
+
+function safeFailureCode(error) {
+  const candidate = String(error?.message ?? 'native_acceptance_error').split(':', 1)[0];
+  return /^[a-z][a-z0-9_-]{1,100}$/.test(candidate) ? candidate : 'native_acceptance_error';
+}
+
+function restUrl(schema, table, filters = {}) {
+  const url = new URL(`/rest/v1/${table}`, supabaseUrl.origin);
+  for (const [key, value] of Object.entries(filters)) url.searchParams.set(key, value);
+  return { url: url.href, schema };
+}
+
+async function panelRest(panel, request) {
+  return evaluate(
+    panel,
+    `(async () => {
+      const token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken'];
+      if (typeof token !== 'string' || !token) return { status: 0, rows: null };
+      const response = await fetch(${JSON.stringify(request.url)}, {
+        method: ${JSON.stringify(request.method ?? 'GET')},
+        headers: {
+          apikey: ${JSON.stringify(publishableKey)},
+          Authorization: 'Bearer ' + token,
+          'X-Organization-Id': ${JSON.stringify(request.organizationId)},
+          'Accept-Profile': ${JSON.stringify(request.schema)},
+          ...((${JSON.stringify(request.method ?? 'GET')}) !== 'GET' ? {
+            'Content-Profile': ${JSON.stringify(request.schema)},
+            'Content-Type': 'application/json',
+            Prefer: 'return=minimal'
+          } : {})
+        },
+        ...((${JSON.stringify(request.body ?? null)}) !== null ? { body: JSON.stringify(${JSON.stringify(request.body ?? null)}) } : {}),
+        cache: 'no-store'
+      });
+      if (response.status === 204 || response.status === 205) return { status: response.status, rows: null };
+      const text = await response.text();
+      let rows = null;
+      try { rows = text ? JSON.parse(text) : null; } catch { rows = null; }
+      return { status: response.status, rows: Array.isArray(rows) ? rows : rows };
+    })()`,
+  );
+}
+
+async function querySources(panel, identity, organizationId, name = sourceName) {
+  const filters = {
+    select: 'id,name,organization_id,canonical_identity,origin_client,created_at,deleted_at',
+    organization_id: `eq.${organizationId}`,
+    canonical_identity: `eq.${identity}`,
+    origin_client: 'eq.extension',
+    deleted_at: 'is.null',
+    limit: '3',
+  };
+  if (name) filters.name = `eq.${name}`;
+  const request = restUrl('docproc', 'processed_documents', filters);
+  return panelRest(panel, { ...request, organizationId });
+}
+
+async function queryProject(panel, projectName, organizationId) {
+  const request = restUrl('projects', 'projects', {
+    select: 'id,name,organization_id,deleted_at',
+    organization_id: `eq.${organizationId}`,
+    name: `eq.${projectName}`,
+    deleted_at: 'is.null',
+    limit: '3',
+  });
+  return panelRest(panel, { ...request, organizationId });
+}
+
+async function associationRpc(panel, name, organizationId, body) {
+  const url = new URL(`/rest/v1/rpc/${name}`, supabaseUrl.origin).href;
+  return evaluate(
+    panel,
+    `(async () => {
+      const token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken'];
+      if (typeof token !== 'string' || !token) return { status: 0, value: null };
+      const response = await fetch(${JSON.stringify(url)}, {
+        method: 'POST',
+        headers: {
+          apikey: ${JSON.stringify(publishableKey)},
+          Authorization: 'Bearer ' + token,
+          'X-Organization-Id': ${JSON.stringify(organizationId)},
+          'Content-Type': 'application/json',
+          'Content-Profile': 'public',
+          'Accept-Profile': 'public'
+        },
+        body: JSON.stringify(${JSON.stringify(body)}),
+        cache: 'no-store'
+      });
+      const text = await response.text();
+      let value = null;
+      try { value = text ? JSON.parse(text) : null; } catch { value = null; }
+      return { status: response.status, value };
+    })()`,
+  );
+}
+
+async function trustedType(panel, selector, text) {
+  const point = await evaluate(
+    panel,
+    `(() => {
+      const nodes = [...document.querySelectorAll(${JSON.stringify(selector)})];
+      const visible = nodes.filter((node) => {
+        const rect = node.getBoundingClientRect(), style = getComputedStyle(node);
+        return rect.width > 0 && rect.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+      });
+      if (visible.length !== 1) return { count: visible.length };
+      const rect = visible[0].getBoundingClientRect();
+      return { count: 1, x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, value: visible[0].value ?? null };
+    })()`,
+  );
+  assert.equal(point?.count, 1, 'scrape_save_input_not_unique');
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mousePressed',
+    x: point.x,
+    y: point.y,
+    button: 'left',
+    clickCount: 1,
+  });
+  await panel.send('Input.dispatchMouseEvent', {
+    type: 'mouseReleased',
+    x: point.x,
+    y: point.y,
+    button: 'left',
+    clickCount: 1,
+  });
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyDown',
+    key: 'A',
+    code: 'KeyA',
+    modifiers: 4,
+  });
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'A',
+    code: 'KeyA',
+    modifiers: 4,
+  });
+  await panel.send('Input.insertText', { text });
+}
+
+async function trustedTab(panel, shiftKey = false) {
+  const modifiers = shiftKey ? 8 : 0;
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyDown',
+    key: 'Tab',
+    code: 'Tab',
+    modifiers,
+  });
+  await panel.send('Input.dispatchKeyEvent', {
+    type: 'keyUp',
+    key: 'Tab',
+    code: 'Tab',
+    modifiers,
+  });
+}
+
+async function dialogState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      const dialog = document.querySelector('[data-testid="save-source-form"]');
+      const pane = ${activeTabPanelExpression('Scrape')};
+      const chips = dialog?.querySelector(':scope > ul');
+      return {
+        open: dialog?.open === true,
+        name: dialog?.querySelector('input[aria-label="Source name"]')?.value ?? null,
+        focusedName: dialog?.querySelector('input[aria-label="Source name"]') === document.activeElement,
+        focusInside: Boolean(dialog && document.activeElement instanceof HTMLElement && dialog.contains(document.activeElement)),
+        saveButtonCount: dialog ? [...dialog.querySelectorAll('button')].filter((button) => button.textContent.trim() === 'Save Source').length : 0,
+        targetChipCount: chips?.querySelectorAll(':scope > li').length ?? 0,
+        targetLabel: chips?.querySelector(':scope > li span')?.textContent?.trim() ?? null,
+        savedButton: [...(pane?.querySelectorAll('button') ?? [])].some((button) => button.textContent.trim() === 'Saved')
+      };
+    })()`,
+  );
+}
+
+function verifySourceRows(result, identity, organizationId, expectedName) {
+  assert.equal(result?.status, 200, 'scrape_save_source_lookup_http_failed');
+  assert.ok(Array.isArray(result.rows), 'scrape_save_source_lookup_body_invalid');
+  assert.equal(result.rows.length, 1, 'scrape_save_source_row_count_mismatch');
+  const row = result.rows[0];
+  assert.equal(row.canonical_identity, identity, 'scrape_save_source_identity_mismatch');
+  assert.equal(row.organization_id, organizationId, 'scrape_save_source_organization_mismatch');
+  assert.equal(row.name, expectedName, 'scrape_save_custom_name_mismatch');
+  assert.equal(row.origin_client, 'extension', 'scrape_save_origin_mismatch');
+  assert.equal(row.deleted_at, null, 'scrape_save_source_not_active');
+  assert.match(row.id ?? '', UUID, 'scrape_save_source_id_invalid');
+  return row;
+}
+
+try {
+  assert.ok(extensionDir && receiptPath, 'scrape_save_artifact_inputs_missing');
+  assert.match(runId ?? '', /^[1-9][0-9]*$/, 'scrape_save_run_id_missing');
+  assert.match(runAttempt ?? '', /^[1-9][0-9]*$/, 'scrape_save_run_attempt_missing');
+  assert.equal(
+    process.env.MATRX_SCRAPE_ARTIFACT_CHANNEL,
+    'development',
+    'scrape_save_dev_channel_required',
+  );
+  assert.equal(
+    process.env.MATRX_SCRAPE_AUTH_MODE,
+    'member',
+    'scrape_save_member_auth_mode_required',
+  );
+  assert.equal(
+    supabaseUrl.origin,
+    'https://db.matrxserver.com',
+    'scrape_save_database_origin_refused',
+  );
+  assert.match(
+    publishableKey ?? '',
+    /^sb_publishable_[A-Za-z0-9_-]+$/,
+    'scrape_save_publishable_key_missing',
+  );
+  const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
+  const ciReceiptPath = process.env.MATRX_SCRAPE_CI_RECEIPT;
+  assert.ok(ciReceiptPath, 'scrape_save_ci_receipt_path_required');
+  const ciReceipt = JSON.parse(await readFile(ciReceiptPath, 'utf8'));
+  const ciSourceSha = process.env.MATRX_SCRAPE_CI_SOURCE_SHA;
+  const ciRunId = process.env.MATRX_SCRAPE_CI_RUN_ID;
+  const ciArtifactId = process.env.MATRX_SCRAPE_CI_ARTIFACT_ID;
+  assert.equal(receipt.kind, 'local_dev_unpacked', 'scrape_save_local_dev_receipt_required');
+  assert.equal(receipt.publish_state, 'not_published', 'scrape_save_unpublished_receipt_required');
+  assert.equal(ciReceipt?.schema_version, 1, 'scrape_save_ci_receipt_invalid');
+  assert.equal(ciReceipt?.kind, 'ci_development_test', 'scrape_save_ci_receipt_required');
+  assert.equal(ciReceipt?.eligibleStore, false, 'scrape_save_store_eligibility_refused');
+  assert.equal(ciReceipt?.publish_state, 'not_published', 'scrape_save_published_artifact_refused');
+  assert.match(ciSourceSha ?? '', /^[a-f0-9]{40}$/, 'scrape_save_ci_source_required');
+  assert.match(ciRunId ?? '', /^[1-9][0-9]*$/, 'scrape_save_ci_run_required');
+  assert.match(ciArtifactId ?? '', /^[1-9][0-9]*$/, 'scrape_save_ci_artifact_required');
+  assert.equal(ciSourceSha, process.env.GITHUB_SHA, 'scrape_save_exact_source_sha_mismatch');
+  assert.equal(ciReceipt.sourceSha, ciSourceSha, 'scrape_save_ci_source_mismatch');
+  assert.equal(ciReceipt.runId, Number(ciRunId), 'scrape_save_ci_run_mismatch');
+  assert.equal(ciReceipt.artifactId, Number(ciArtifactId), 'scrape_save_ci_artifact_mismatch');
+  assert.equal(ciReceipt.treeSha256, receipt.treeSha256, 'scrape_save_ci_tree_mismatch');
+  assert.equal(ciReceipt.version, receipt.version, 'scrape_save_ci_version_mismatch');
+  assert.equal(hashReleaseTree(extensionDir), receipt.treeSha256, 'scrape_save_tree_hash_mismatch');
+  const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
+  assert.equal(manifest.version, receipt.version, 'scrape_save_version_mismatch');
+  report.artifact = {
+    kind: 'ci_development_test',
+    eligible_store: false,
+    source_sha: ciSourceSha,
+    run_id: Number(ciRunId),
+    artifact_id: Number(ciArtifactId),
+    tree_sha256: receipt.treeSha256,
+    version: receipt.version,
+  };
+
+  await runNativeSidepanelQa({
+    headed: true,
+    extensionDir,
+    localDevReceiptPath: receiptPath,
+    expectedRelease: receipt,
+    artifactRoot: join(process.env.RUNNER_TEMP ?? '/tmp', 'guest-acceptance'),
+    ownedPages: { '/source-acceptance': fixture },
+    onStage: (value) => {
+      report.native_stage = value;
+    },
+    exercisePanel: async (native) => {
+      const { page, requireResourceHealth, resourceAction } = native;
+      const { panel } = native;
+      let primaryError;
+      let cleanupError;
+      let sourceId = null;
+      let projectId = null;
+      let selectedOrganizationId = null;
+      const url = new URL(page.url());
+      url.pathname = '/source-acceptance';
+      url.searchParams.set('run', `${runId}-${runAttempt}`);
+      const sourceUrl = url.href;
+      const identityUrl = new URL(sourceUrl);
+      identityUrl.hash = '';
+      const canonicalIdentity = identityUrl.href;
+
+      const cleanup = async () => {
+        if (!selectedOrganizationId) return { verified: true, no_write_possible: true };
+        const remaining = await querySources(
+          panel,
+          canonicalIdentity,
+          selectedOrganizationId,
+          null,
+        ).catch(() => null);
+        const rows = Array.isArray(remaining?.rows) ? remaining.rows : [];
+        const matching = rows.filter(
+          (row) =>
+            row?.organization_id === selectedOrganizationId &&
+            row?.canonical_identity === canonicalIdentity &&
+            row?.origin_client === 'extension' &&
+            UUID.test(row?.id ?? ''),
+        );
+        if (matching.length === 0)
+          return {
+            verified: remaining?.status === 200,
+            no_active_run_row: remaining?.status === 200,
+          };
+        assert.equal(matching.length, 1, 'scrape_save_cleanup_row_ambiguous');
+        sourceId = matching[0].id;
+        const detached = await associationRpc(
+          panel,
+          'assoc_remove_for_entity',
+          selectedOrganizationId,
+          {
+            p_type: 'processed_document',
+            p_id: sourceId,
+          },
+        );
+        assert.ok([200, 204].includes(detached.status), 'scrape_save_association_cleanup_failed');
+        const deleteRequest = restUrl('docproc', 'processed_documents', {
+          id: `eq.${sourceId}`,
+          organization_id: `eq.${selectedOrganizationId}`,
+          canonical_identity: `eq.${canonicalIdentity}`,
+          origin_client: 'eq.extension',
+          deleted_at: 'is.null',
+        });
+        const deleted = await panelRest(panel, {
+          ...deleteRequest,
+          organizationId: selectedOrganizationId,
+          method: 'PATCH',
+          body: { deleted_at: new Date().toISOString() },
+        });
+        assert.ok([204, 205].includes(deleted.status), 'scrape_save_source_soft_delete_failed');
+        const after = await querySources(panel, canonicalIdentity, selectedOrganizationId, null);
+        assert.equal(after.status, 200, 'scrape_save_cleanup_lookup_failed');
+        assert.deepEqual(after.rows, [], 'scrape_save_active_row_residue');
+        const edges = await associationRpc(panel, 'assoc_for_entity', selectedOrganizationId, {
+          p_type: 'processed_document',
+          p_id: sourceId,
+        });
+        assert.equal(edges.status, 200, 'scrape_save_association_cleanup_read_failed');
+        assert.deepEqual(edges.value, [], 'scrape_save_association_residue');
+        return {
+          verified: true,
+          run_owned_source_soft_deleted: true,
+          source_associations_removed: true,
+        };
+      };
+
+      try {
+        report.stage = 'member_auth';
+        await requireResourceHealth();
+        const identity = await resourceAction(() =>
+          signInSettings({
+            mode: 'member',
+            page,
+            panel,
+            repo: REPO,
+            memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+            allowLadderOrganization: true,
+          }),
+        );
+        selectedOrganizationId = identity.organizationId;
+        assert.equal(identity.web_signed_in, true, 'scrape_save_member_web_signin_missing');
+        assert.equal(
+          identity.extension_signed_in,
+          true,
+          'scrape_save_member_extension_signin_missing',
+        );
+        assert.equal(identity.admin_role, false, 'scrape_save_member_role_unverified');
+        assert.equal(
+          identity.canonical_nonadmin_check?.returned_rows,
+          0,
+          'scrape_save_member_canonical_role_check_unverified',
+        );
+        assert.equal(
+          identity.organization_selected,
+          true,
+          'scrape_save_member_organization_missing',
+        );
+        assert.match(selectedOrganizationId ?? '', UUID, 'scrape_save_member_organization_invalid');
+        report.authentication = {
+          mode: 'member',
+          web_signed_in: true,
+          extension_signed_in: true,
+          non_admin_role_verified: true,
+          selected_organization_verified: true,
+          organization_resolution: identity.organization_resolution,
+        };
+
+        report.stage = 'owned_fixture';
+        await resourceAction(() => page.goto(sourceUrl));
+        assert.equal(
+          await page.locator('main article h1').textContent(),
+          captureTitle,
+          'scrape_save_fixture_not_loaded',
+        );
+        const absent = await querySources(panel, canonicalIdentity, selectedOrganizationId, null);
+        assert.equal(absent.status, 200, 'scrape_save_precondition_lookup_failed');
+        assert.deepEqual(absent.rows, [], 'scrape_save_fixture_identity_already_exists');
+
+        report.stage = 'capture';
+        await resourceAction(() => click(panel, 'title', 'Scrape'));
+        const empty = await waitFor(
+          'scrape_save_empty_state',
+          () =>
+            evaluate(
+              panel,
+              `(() => { const root = ${activeTabPanelExpression('Scrape')}; return root?.textContent?.includes('Capture this page to extract content.') === true; })()`,
+            ),
+          (value) => value === true,
+        );
+        assert.equal(empty, true, 'scrape_save_initial_state_missing');
+        await resourceAction(() =>
+          click(panel, 'title', 'Capture the page exactly as it is right now'),
+        );
+        await waitFor(
+          'scrape_save_capture_ready',
+          () =>
+            evaluate(
+              panel,
+              `(() => { const root = ${activeTabPanelExpression('Scrape')}; return { title: root?.querySelector('.truncate.text-sm.font-medium')?.textContent?.trim() ?? null, save: [...(root?.querySelectorAll('button') ?? [])].some((button) => button.textContent.trim() === 'Save') }; })()`,
+            ),
+          (state) => state?.title === captureTitle && state.save,
+          30000,
+        );
+
+        report.stage = 'save_dialog';
+        await resourceAction(() => click(panel, 'button-text', 'Save'));
+        const dialog = await waitFor(
+          'scrape_save_dialog_open',
+          () => dialogState(panel),
+          (state) => state?.open === true,
+        );
+        assert.equal(dialog.name, captureTitle, 'scrape_save_prefilled_name_mismatch');
+        assert.equal(dialog.focusedName, true, 'scrape_save_initial_focus_missing');
+        assert.equal(dialog.targetChipCount, 0, 'scrape_save_unexpected_initial_destination');
+        assert.equal(dialog.saveButtonCount, 1, 'scrape_save_primary_action_not_unique');
+        await trustedType(
+          panel,
+          '[data-testid="save-source-form"] input[aria-label="Source name"]',
+          sourceName,
+        );
+        const typed = await waitFor(
+          'scrape_save_custom_name_entered',
+          () => dialogState(panel),
+          (state) => state?.name === sourceName,
+        );
+        assert.equal(typed.name, sourceName, 'scrape_save_custom_name_not_entered');
+        await trustedTab(panel);
+        const tabbed = await dialogState(panel);
+        assert.equal(tabbed.focusInside, true, 'scrape_save_tab_escaped_dialog');
+        await trustedTab(panel, true);
+        const reverseTabbed = await dialogState(panel);
+        assert.equal(reverseTabbed.focusInside, true, 'scrape_save_shift_tab_escaped_dialog');
+        report.observations = {
+          dialog_opened_from_captured_article: true,
+          prefilled_name_visible: true,
+          input_focused_on_open: true,
+          no_destination_selected_by_default: true,
+          custom_name_entered_by_trusted_keyboard: true,
+          tab_and_shift_tab_contained: true,
+        };
+
+        report.stage = 'project_association_choice';
+        await resourceAction(() => click(panel, 'button-text', 'Choose a place'));
+        await resourceAction(() => click(panel, 'button-text', 'Projects'));
+        const candidate = await waitFor(
+          'scrape_save_project_candidate_ready',
+          () =>
+            evaluate(
+              panel,
+              `(() => { const root = document.querySelector('[data-testid="save-source-form"] [aria-label="Place results"]'); const input = root?.querySelector('input[placeholder="Search projects…"]'); const buttons = [...(root?.querySelectorAll('li > button') ?? [])].filter((button) => { const text = button.querySelector('span.flex-1')?.textContent?.trim(); return Boolean(text) && !button.className.includes('bg-accent/40'); }); return { input_count: input ? 1 : 0, labels: buttons.slice(0, 5).map((button) => button.querySelector('span.flex-1')?.textContent?.trim() ?? '') }; })()`,
+            ),
+          (state) => state?.input_count === 1 && state.labels?.length > 0,
+          30000,
+        );
+        const projectName = candidate.labels[0];
+        assert.ok(projectName, 'scrape_save_project_candidate_name_missing');
+        await resourceAction(() => click(panel, 'button-text', projectName));
+        const selected = await waitFor(
+          'scrape_save_project_staged',
+          () => dialogState(panel),
+          (state) => state?.targetChipCount === 1 && state.targetLabel === projectName,
+        );
+        assert.equal(selected.targetLabel, projectName, 'scrape_save_project_not_staged');
+        const projects = await queryProject(panel, projectName, selectedOrganizationId);
+        assert.equal(projects.status, 200, 'scrape_save_project_lookup_failed');
+        assert.ok(Array.isArray(projects.rows), 'scrape_save_project_lookup_body_invalid');
+        assert.equal(projects.rows.length, 1, 'scrape_save_project_candidate_not_unique');
+        assert.equal(projects.rows[0].name, projectName, 'scrape_save_project_name_mismatch');
+        assert.equal(
+          projects.rows[0].organization_id,
+          selectedOrganizationId,
+          'scrape_save_project_organization_mismatch',
+        );
+        projectId = projects.rows[0].id;
+        assert.match(projectId ?? '', UUID, 'scrape_save_project_id_invalid');
+        report.observations.project_selected_in_save_dialog = true;
+        report.observations.project_matches_selected_organization = true;
+
+        report.stage = 'save_submit';
+        const openBeforeSave = await dialogState(panel);
+        assert.equal(openBeforeSave.open, true, 'scrape_save_dialog_closed_before_submit');
+        await resourceAction(() => click(panel, 'button-text', 'Save Source'));
+        const afterSave = await waitFor(
+          'scrape_save_confirmation_visible',
+          () => dialogState(panel),
+          (state) => state?.open === false && state.savedButton === true,
+          30000,
+        );
+        assert.equal(afterSave.savedButton, true, 'scrape_save_confirmation_missing');
+        report.observations.dialog_closed_after_save = true;
+        report.observations.saved_confirmation_visible = true;
+
+        report.stage = 'source_independent_read';
+        const saved = await waitFor(
+          'scrape_save_source_row_observed',
+          () => querySources(panel, canonicalIdentity, selectedOrganizationId, null),
+          (value) => value?.status === 200 && value.rows?.length === 1,
+          30000,
+          (value) => ({
+            status: value?.status ?? null,
+            row_count: Array.isArray(value?.rows) ? value.rows.length : null,
+          }),
+        );
+        const row = verifySourceRows(saved, canonicalIdentity, selectedOrganizationId, sourceName);
+        sourceId = row.id;
+        report.observations.source_row_read_from_service = true;
+        report.observations.custom_name_persisted = true;
+        report.observations.organization_scope_persisted = true;
+        report.observations.source_id = sourceId;
+        report.observations.project_id = projectId;
+
+        report.stage = 'association_independent_read';
+        const edgeResult = await associationRpc(panel, 'assoc_for_entity', selectedOrganizationId, {
+          p_type: 'processed_document',
+          p_id: sourceId,
+        });
+        assert.equal(edgeResult.status, 200, 'scrape_save_association_lookup_failed');
+        assert.ok(Array.isArray(edgeResult.value), 'scrape_save_association_lookup_body_invalid');
+        const edge = edgeResult.value.find(
+          (item) => item.other_id === projectId && item.other_type === 'project',
+        );
+        assert.ok(edge, 'scrape_save_selected_project_edge_missing');
+        assert.equal(
+          edge.organization_id,
+          selectedOrganizationId,
+          'scrape_save_edge_organization_mismatch',
+        );
+        report.observations.selected_project_edge_persisted = true;
+      } catch (error) {
+        primaryError = error;
+      } finally {
+        if (selectedOrganizationId) {
+          try {
+            report.cleanup = await resourceAction(cleanup);
+          } catch (error) {
+            cleanupError = error;
+            report.cleanup = { verified: false, error_code: safeFailureCode(error) };
+          }
+        } else report.cleanup = { verified: true, no_write_possible: true };
+      }
+      if (primaryError) throw primaryError;
+      if (cleanupError) throw new Error('scrape_save_cleanup_failed');
+      assert.equal(report.cleanup?.verified, true, 'scrape_save_cleanup_unverified');
+      report.observations.cleanup_verified = true;
+    },
+  });
+  report.status = 'pass';
+  report.stage = 'complete';
+} catch (error) {
+  report.status = 'fail';
+  report.failure_stage = report.stage;
+  report.error_code = safeFailureCode(error);
+  process.exitCode = 1;
+  process.stderr.write(
+    `SCRAPE_SAVE_NATIVE_ACCEPTANCE_FAILED ${report.stage} ${report.error_code}\n`,
+  );
+} finally {
+  await mkdir('test-results', { recursive: true });
+  await writeFile(
+    'test-results/scrape-save-native-acceptance.json',
+    `${JSON.stringify(report, null, 2)}\n`,
+    {
+      mode: 0o600,
+    },
+  );
+}
