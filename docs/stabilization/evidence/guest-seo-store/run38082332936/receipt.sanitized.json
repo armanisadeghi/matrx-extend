@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "hosted_run": {
+    "run_id": 38082332936,
+    "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38082332936",
+    "workflow_source_sha": "3d5d143901d91e7c87d514464637c8af441baf80",
+    "case": "guest-seo",
+    "scope": "controlled",
+    "lane": "A guest authentication",
+    "runner": "macos-15-intel x64",
+    "conclusion": "success"
+  },
+  "release_artifact": {
+    "run_id": 38080281242,
+    "artifact_id": 11680078743,
+    "name": "matrx-extend-v0.2.479",
+    "version": "0.2.479",
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "tag_resolves_to_source": true,
+    "artifact_api_digest": "sha256:c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+    "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "publisher_receipt_tree_sha256": "c1f031c444892d84422ffa4e4c6c4edbbaf49ca9b93ef64304c69c0fd3c292e8",
+    "runtime_adaptation": "Store ZIP selected; only manifest.key added from matching-version local ZIP",
+    "runtime_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "runtime_tree_matches_native_before_and_after": true
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11680962344,
+    "name": "hosted-guest-38082332936-1",
+    "digest": "sha256:3174e52126a6322d7142c361434132be7b8d87957c410a94e7ba464c1dcd7af5",
+    "download_sha256": "3174e52126a6322d7142c361434132be7b8d87957c410a94e7ba464c1dcd7af5",
+    "digest_independently_verified": true
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "status": "partial",
+    "target_count": 19,
+    "status_counts": {
+      "pass": 19,
+      "unverified": 0,
+      "fail": 0
+    },
+    "runtime_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "runtime_tree_unchanged": true,
+    "imported_artifact_field": "null; exact release selection is independently supported by workflow run input/preflight log and reconstructed adapted tree"
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "all_three_valid": true,
+    "prior_attempt": {
+      "run_id": 38081844032,
+      "decision": "resource-invalid",
+      "acceptance_credit": "zero"
+    }
+  },
+  "screenshots": {
+    "files": ["screenshots/native-side-panel.png", "screenshots/normal-target-after-open.png"],
+    "sha256": {
+      "native-side-panel.png": "c5c2895937ccbe6c55e55f9d5d53fae341164c49aac0c1264858f18f5534e1c2",
+      "normal-target-after-open.png": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5"
+    },
+    "inspected": true,
+    "observation": "Native screenshot shows the guest Chat landing; the page screenshot shows a generic research-brief page. Neither shows the SEO pane/result."
+  },
+  "sanitization": "Only the three current run resource journals were retained; stale journals bundled by the workflow were excluded. No raw native report, credentials, account details, raw runner paths, or full public-page metadata were copied."
+}
