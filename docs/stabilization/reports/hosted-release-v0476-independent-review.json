@@ -1,0 +1,75 @@
+{
+  "schema": "matrx-extend.hosted-release-independent-review.v1",
+  "reviewedAt": "2026-10-10",
+  "status": "PASS_WITH_BOUNDED_LIMITATIONS",
+  "release": {
+    "version": "0.2.476",
+    "runId": "38077256885",
+    "runUrl": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38077256885",
+    "workflowHeadSha": "6e2a383eef7bdf7775045aaa4a0410e7f85103bc",
+    "artifactId": "11678519586",
+    "artifactName": "matrx-extend-v0.2.476",
+    "artifactApiSha256": "3e1277f1df8692fa252fadcb3ba5a600c386ca00fdb7b958d0189103ba20dde8",
+    "artifactDigestVerified": true,
+    "tag": "v0.2.476",
+    "sourceSha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "tagResolvesToSourceSha": true,
+    "receiptPublishState": "pushed",
+    "storeZipSha256": "584642d2f27a867f33dd37db7d798112648b03b91b25117367c1e8bb54c881bc",
+    "localZipSha256": "1d8c4e9b4ed2a1f5b9a8185967a14ba4a6b6bd8d88ab866069d785ce758aea69",
+    "receiptTreeSha256": "f0ba0265a00d8252de8f937fb47e5049a3a4f4acd559f4ad697d7852245679fc",
+    "treeHashIndependentlyRecomputedFromLocalZip": true,
+    "storeZipRetainedAt": "/private/tmp/matrx-release-review-38077256885/.output/matrx-extend-0.2.476-store.zip"
+  },
+  "verdicts": {
+    "A_productAcceptance": "NOT_EXERCISED_BY_THIS_REVIEW",
+    "B_releaseIntegrity": "PASS",
+    "storeMateriality": "ROUTINE_UPDATE"
+  },
+  "gates": {
+    "workflowConclusion": "success",
+    "allRequiredReleaseContractSteps": "success",
+    "typecheck": "exit 0",
+    "lint": "exit 0; pre-existing warnings remain",
+    "unitTests": "335 files passed, 2 skipped; 2363 tests passed, 5 skipped",
+    "schemaRouting": "exit 0",
+    "migrations": "exit 0",
+    "toolDatabaseDrift": "exit 0",
+    "remainingRequiredGuards": "package-twins, db-doors, canonical-pickers, archived-items and self-test, org-default-ban and self-test, swallowed-refusals all exit 0",
+    "storePackageValidation": "passed; no development key or toolbar popup",
+    "storeApprovalRisk": "passed; published policy projection matches and independent emitted-JavaScript scan found zero forbidden runtime tokens",
+    "nonBlockingWarning": "6 mandate-reference findings; scanner report says NOT SUBMITTED because its database credentials were unavailable. This advisory result does not establish a fleet-board submission."
+  },
+  "packageRefresh": {
+    "workflowRefreshStep": "success",
+    "latestPackageGate": "exit 0; 21 packages, one version each, using commit-time currency and 120-second grace",
+    "changedSinceV0474": {
+      "agents": "0.59.49 -> 0.59.50",
+      "alchemy": "0.23.23 -> 0.23.24",
+      "designSystem": "0.86.83 -> 0.86.84",
+      "recordsUi": "0.115.25 -> 0.115.26"
+    },
+    "consumerAction": "Changed package changelogs describe metadata-only republish and no consumer action.",
+    "freshnessLimitation": "Gate retained chat 0.8.28 while 0.8.29 published 2026-10-10T18:56:00.781Z, within 120 seconds of candidate commit time 2026-10-10T18:57:03Z. Gate-compliant under existing policy; this is not an absolute latest-at-review claim."
+  },
+  "storePolicyReview": {
+    "baselineVersion": "0.2.205",
+    "baselineSource": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "manifestPolicyFieldsMatch": true,
+    "developmentKeyAbsent": true,
+    "toolbarPopupAbsent": true,
+    "explicitCspAbsent": true,
+    "forbiddenRuntimeTokenHits": 0,
+    "semanticClassification": "Routine within the existing page-aware capture, understanding and requested-action purpose; no new permission, Store content-script reach, user-data category, payment/account requirement, or remote-code path was found. Public Chat/Scrape/Data/SEO/Settings remain everyone. The Store entrypoint filter excludes swipe-pill and guided-capture injected controls; requested signed-in capture/sharing remains within existing website-content/user-activity disclosures.",
+    "comparisonWithV0474": "No src/ or wxt.config.ts differences; runtime changes are shared-package lockfile refresh, with package.json version bump and evidence/docs changes.",
+    "acceptanceBoundary": "Unchanged manifest and passing release tests do not prove runtime health. Exact v0.2.476 browser acceptance remains owned by the coordinator; earlier v0.2.474 acceptance is not automatically transferable."
+  },
+  "evidence": {
+    "downloadedArtifact": "Exact Actions artifact archive SHA-256 independently matched API digest; both ZIP SHA-256 values independently matched the receipt.",
+    "tree": "Local ZIP extracted privately; scripts/sync-unpacked-release.mjs hashReleaseTree recomputed receipt tree hash.",
+    "manifest": "Store ZIP manifest policy projection independently compared with approved baseline; emitted JavaScript scanned for all five prohibited runtime tokens.",
+    "gates": "Exact artifact tmp/release-logs/latest.log inspected for named exit codes and final unit-test totals.",
+    "source": "Fetched immutable v0.2.476 tag resolves to receipt source; source diff against published baseline and v0.2.474 reviewed."
+  },
+  "openQuestions": []
+}
