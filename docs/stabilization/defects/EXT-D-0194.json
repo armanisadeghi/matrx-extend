@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0194",
   "feature_id": "EXT-F-1007",
-  "case_ids": [
-    "EXT-F-1007-T01"
-  ],
+  "case_ids": ["EXT-F-1007-T01"],
   "surface": "Hosted guest Scrape acceptance artifact preflight",
   "auth_mode": "guest; infrastructure-only, zero product behavior credit",
   "title": "Scrape driver compares relocated receipt kind to wrapper package classification",
@@ -11,9 +9,7 @@
   "priority": "P1: restore exact v0.2.469 guest Scrape acceptance",
   "state": "closed",
   "owner": "root",
-  "preconditions": [
-    "Select exact v0.2.469 release Store ZIP for hosted guest-scrape acceptance."
-  ],
+  "preconditions": ["Select exact v0.2.469 release Store ZIP for hosted guest-scrape acceptance."],
   "reproduction": [
     "Hosted run 38069924138 fails in inputs before browser launch.",
     "Run the new release importer/preflight guard against baseline driver: canonical native_store_zip_candidate_key_adapted receipt is rejected as not published_store_zip_adapted."

@@ -39,14 +39,7 @@
         "busy_disabled": true,
         "article_title": "Harbor Dental intake guide",
         "lazy_content_absent": true,
-        "result_tabs": [
-          "Article",
-          "Images",
-          "Video",
-          "Links",
-          "SEO",
-          "Schema"
-        ],
+        "result_tabs": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
         "extension_reload_empty": true,
         "full_extension_reload_and_post_reload_fast_capture": true
       },
@@ -59,53 +52,22 @@
       "id": "EXT-F-1007-T08",
       "status": "partial",
       "evidence": {
-        "tabs_selected": [
-          "Article",
-          "Images",
-          "Video",
-          "Links",
-          "SEO",
-          "Schema"
-        ],
+        "tabs_selected": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
         "matching_content": {
           "article": true,
           "images": {
             "pane": "Images",
             "state": "matching_content",
             "count": 3,
-            "paths": [
-              "/intake.svg",
-              "/appointment-card.svg",
-              "/clinic-icon.svg"
-            ],
-            "alt": [
-              "New patient intake desk",
-              "Appointment card",
-              "Clinic icon"
-            ],
-            "natural_sizes": [
-              [
-                640,
-                480
-              ],
-              [
-                96,
-                96
-              ],
-              [
-                32,
-                32
-              ]
-            ]
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+            "natural_sizes": [[640, 480], [96, 96], [32, 32]]
           },
           "video": {
             "pane": "Video",
             "state": "matching_content",
             "count": 2,
-            "paths": [
-              "/intake-walkthrough.mp4",
-              "/referral-walkthrough.mp4"
-            ]
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
           },
           "links": true,
           "seo": true,
@@ -151,14 +113,7 @@
         },
         "capture_invariance": {
           "warm": {
-            "panes_compared": [
-              "Article",
-              "Images",
-              "Video",
-              "Links",
-              "SEO",
-              "Schema"
-            ],
+            "panes_compared": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
             "unchanged": true,
             "export": {
               "export_format": "full_capture_ai_markdown",
@@ -168,14 +123,7 @@
             }
           },
           "reload": {
-            "panes_compared": [
-              "Article",
-              "Images",
-              "Video",
-              "Links",
-              "SEO",
-              "Schema"
-            ],
+            "panes_compared": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
             "unchanged": true,
             "export": {
               "export_format": "full_capture_ai_markdown",
@@ -195,39 +143,15 @@
             "pane": "Images",
             "state": "matching_content",
             "count": 3,
-            "paths": [
-              "/intake.svg",
-              "/appointment-card.svg",
-              "/clinic-icon.svg"
-            ],
-            "alt": [
-              "New patient intake desk",
-              "Appointment card",
-              "Clinic icon"
-            ],
-            "natural_sizes": [
-              [
-                640,
-                480
-              ],
-              [
-                96,
-                96
-              ],
-              [
-                32,
-                32
-              ]
-            ]
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+            "natural_sizes": [[640, 480], [96, 96], [32, 32]]
           },
           "video": {
             "pane": "Video",
             "state": "matching_content",
             "count": 2,
-            "paths": [
-              "/intake-walkthrough.mp4",
-              "/referral-walkthrough.mp4"
-            ]
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
           }
         },
         "post_reload_empty_panes": {
@@ -285,71 +209,26 @@
             "pane": "Images",
             "state": "matching_content",
             "count": 3,
-            "paths": [
-              "/intake.svg",
-              "/appointment-card.svg",
-              "/clinic-icon.svg"
-            ],
-            "alt": [
-              "New patient intake desk",
-              "Appointment card",
-              "Clinic icon"
-            ],
-            "natural_sizes": [
-              [
-                640,
-                480
-              ],
-              [
-                96,
-                96
-              ],
-              [
-                32,
-                32
-              ]
-            ]
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+            "natural_sizes": [[640, 480], [96, 96], [32, 32]]
           },
           "removals": [
             {
               "pane": "Images",
               "state": "matching_content",
               "count": 2,
-              "paths": [
-                "/intake.svg",
-                "/clinic-icon.svg"
-              ],
-              "alt": [
-                "New patient intake desk",
-                "Clinic icon"
-              ],
-              "natural_sizes": [
-                [
-                  640,
-                  480
-                ],
-                [
-                  32,
-                  32
-                ]
-              ]
+              "paths": ["/intake.svg", "/clinic-icon.svg"],
+              "alt": ["New patient intake desk", "Clinic icon"],
+              "natural_sizes": [[640, 480], [32, 32]]
             },
             {
               "pane": "Images",
               "state": "matching_content",
               "count": 1,
-              "paths": [
-                "/intake.svg"
-              ],
-              "alt": [
-                "New patient intake desk"
-              ],
-              "natural_sizes": [
-                [
-                  640,
-                  480
-                ]
-              ]
+              "paths": ["/intake.svg"],
+              "alt": ["New patient intake desk"],
+              "natural_sizes": [[640, 480]]
             },
             {
               "pane": "Images",
@@ -364,18 +243,9 @@
             "pane": "Images",
             "state": "matching_content",
             "count": 1,
-            "paths": [
-              "/followup-card.svg"
-            ],
-            "alt": [
-              "Follow-up card"
-            ],
-            "natural_sizes": [
-              [
-                96,
-                96
-              ]
-            ]
+            "paths": ["/followup-card.svg"],
+            "alt": ["Follow-up card"],
+            "natural_sizes": [[96, 96]]
           }
         },
         "reload": {
@@ -383,71 +253,26 @@
             "pane": "Images",
             "state": "matching_content",
             "count": 3,
-            "paths": [
-              "/intake.svg",
-              "/appointment-card.svg",
-              "/clinic-icon.svg"
-            ],
-            "alt": [
-              "New patient intake desk",
-              "Appointment card",
-              "Clinic icon"
-            ],
-            "natural_sizes": [
-              [
-                640,
-                480
-              ],
-              [
-                96,
-                96
-              ],
-              [
-                32,
-                32
-              ]
-            ]
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+            "natural_sizes": [[640, 480], [96, 96], [32, 32]]
           },
           "removals": [
             {
               "pane": "Images",
               "state": "matching_content",
               "count": 2,
-              "paths": [
-                "/intake.svg",
-                "/clinic-icon.svg"
-              ],
-              "alt": [
-                "New patient intake desk",
-                "Clinic icon"
-              ],
-              "natural_sizes": [
-                [
-                  640,
-                  480
-                ],
-                [
-                  32,
-                  32
-                ]
-              ]
+              "paths": ["/intake.svg", "/clinic-icon.svg"],
+              "alt": ["New patient intake desk", "Clinic icon"],
+              "natural_sizes": [[640, 480], [32, 32]]
             },
             {
               "pane": "Images",
               "state": "matching_content",
               "count": 1,
-              "paths": [
-                "/intake.svg"
-              ],
-              "alt": [
-                "New patient intake desk"
-              ],
-              "natural_sizes": [
-                [
-                  640,
-                  480
-                ]
-              ]
+              "paths": ["/intake.svg"],
+              "alt": ["New patient intake desk"],
+              "natural_sizes": [[640, 480]]
             },
             {
               "pane": "Images",
@@ -462,18 +287,9 @@
             "pane": "Images",
             "state": "matching_content",
             "count": 1,
-            "paths": [
-              "/followup-card.svg"
-            ],
-            "alt": [
-              "Follow-up card"
-            ],
-            "natural_sizes": [
-              [
-                96,
-                96
-              ]
-            ]
+            "paths": ["/followup-card.svg"],
+            "alt": ["Follow-up card"],
+            "natural_sizes": [[96, 96]]
           }
         }
       },
@@ -489,18 +305,9 @@
             "pane": "Images",
             "state": "matching_content",
             "count": 1,
-            "paths": [
-              "/followup-card.svg"
-            ],
-            "alt": [
-              "Follow-up card"
-            ],
-            "natural_sizes": [
-              [
-                96,
-                96
-              ]
-            ]
+            "paths": ["/followup-card.svg"],
+            "alt": ["Follow-up card"],
+            "natural_sizes": [[96, 96]]
           },
           "cancel_cleared": true
         },
@@ -510,18 +317,9 @@
             "pane": "Images",
             "state": "matching_content",
             "count": 1,
-            "paths": [
-              "/followup-card.svg"
-            ],
-            "alt": [
-              "Follow-up card"
-            ],
-            "natural_sizes": [
-              [
-                96,
-                96
-              ]
-            ]
+            "paths": ["/followup-card.svg"],
+            "alt": ["Follow-up card"],
+            "natural_sizes": [[96, 96]]
           },
           "cancel_cleared": true
         }
@@ -537,27 +335,19 @@
             "pane": "Video",
             "state": "matching_content",
             "count": 2,
-            "paths": [
-              "/intake-walkthrough.mp4",
-              "/referral-walkthrough.mp4"
-            ]
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
           },
           "removed": {
             "pane": "Video",
             "state": "matching_content",
             "count": 1,
-            "paths": [
-              "/referral-walkthrough.mp4"
-            ]
+            "paths": ["/referral-walkthrough.mp4"]
           },
           "added": {
             "pane": "Video",
             "state": "matching_content",
             "count": 2,
-            "paths": [
-              "/referral-walkthrough.mp4",
-              "/consultation.mp4"
-            ]
+            "paths": ["/referral-walkthrough.mp4", "/consultation.mp4"]
           },
           "links": {
             "opened_url": "http://localhost:49194/intake-walkthrough.mp4",
@@ -589,27 +379,19 @@
             "pane": "Video",
             "state": "matching_content",
             "count": 2,
-            "paths": [
-              "/intake-walkthrough.mp4",
-              "/referral-walkthrough.mp4"
-            ]
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
           },
           "removed": {
             "pane": "Video",
             "state": "matching_content",
             "count": 1,
-            "paths": [
-              "/referral-walkthrough.mp4"
-            ]
+            "paths": ["/referral-walkthrough.mp4"]
           },
           "added": {
             "pane": "Video",
             "state": "matching_content",
             "count": 2,
-            "paths": [
-              "/referral-walkthrough.mp4",
-              "/consultation.mp4"
-            ]
+            "paths": ["/referral-walkthrough.mp4", "/consultation.mp4"]
           },
           "links": {
             "opened_url": "http://localhost:49194/intake-walkthrough.mp4",
@@ -647,14 +429,8 @@
           "phase": "warm",
           "before": {
             "count": 2,
-            "paths": [
-              "/forms",
-              "/appointments"
-            ],
-            "texts": [
-              "Patient forms",
-              "Appointments"
-            ]
+            "paths": ["/forms", "/appointments"],
+            "texts": ["Patient forms", "Appointments"]
           },
           "actions": {
             "opened_url": "http://localhost:49194/forms",
@@ -682,57 +458,31 @@
           },
           "removed": {
             "count": 1,
-            "paths": [
-              "/appointments"
-            ],
-            "texts": [
-              "Appointments"
-            ]
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
           },
           "blankRejected": {
             "count": 1,
-            "paths": [
-              "/appointments"
-            ],
-            "texts": [
-              "Appointments"
-            ]
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
           },
           "added": {
             "count": 2,
-            "paths": [
-              "/appointments",
-              "/referrals"
-            ],
-            "texts": [
-              "Appointments",
-              "Referral hours"
-            ]
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
           },
           "cancelled": {
             "count": 2,
-            "paths": [
-              "/appointments",
-              "/referrals"
-            ],
-            "texts": [
-              "Appointments",
-              "Referral hours"
-            ]
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
           }
         },
         "reload": {
           "phase": "reload",
           "before": {
             "count": 2,
-            "paths": [
-              "/forms",
-              "/appointments"
-            ],
-            "texts": [
-              "Patient forms",
-              "Appointments"
-            ]
+            "paths": ["/forms", "/appointments"],
+            "texts": ["Patient forms", "Appointments"]
           },
           "actions": {
             "opened_url": "http://localhost:49194/forms",
@@ -760,49 +510,27 @@
           },
           "removed": {
             "count": 1,
-            "paths": [
-              "/appointments"
-            ],
-            "texts": [
-              "Appointments"
-            ]
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
           },
           "blankRejected": {
             "count": 1,
-            "paths": [
-              "/appointments"
-            ],
-            "texts": [
-              "Appointments"
-            ]
+            "paths": ["/appointments"],
+            "texts": ["Appointments"]
           },
           "added": {
             "count": 2,
-            "paths": [
-              "/appointments",
-              "/referrals"
-            ],
-            "texts": [
-              "Appointments",
-              "Referral hours"
-            ]
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
           },
           "cancelled": {
             "count": 2,
-            "paths": [
-              "/appointments",
-              "/referrals"
-            ],
-            "texts": [
-              "Appointments",
-              "Referral hours"
-            ]
+            "paths": ["/appointments", "/referrals"],
+            "texts": ["Appointments", "Referral hours"]
           }
         }
       },
-      "remaining": [
-        "member/admin modes remain unverified by this receipt."
-      ]
+      "remaining": ["member/admin modes remain unverified by this receipt."]
     },
     {
       "id": "EXT-F-1007-T02",
@@ -821,9 +549,7 @@
           "screenshot": "[artifact screenshot]"
         }
       },
-      "remaining": [
-        "Deep failure retry mode remains unverified."
-      ]
+      "remaining": ["Deep failure retry mode remains unverified."]
     },
     {
       "id": "EXT-F-1007-T07",
@@ -3448,11 +3174,7 @@
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg",
-          "/appointment-card.svg",
-          "/clinic-icon.svg"
-        ],
+        "imagePaths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
         "imageCount": "3",
         "panePresent": true
       },
@@ -3505,20 +3227,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg",
-          "/appointment-card.svg",
-          "/clinic-icon.svg"
-        ],
+        "imagePaths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
         "imageCount": "3",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg",
-          "/clinic-icon.svg"
-        ],
+        "imagePaths": ["/intake.svg", "/clinic-icon.svg"],
         "imageCount": "2",
         "panePresent": true
       },
@@ -3565,18 +3280,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg",
-          "/clinic-icon.svg"
-        ],
+        "imagePaths": ["/intake.svg", "/clinic-icon.svg"],
         "imageCount": "2",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg"
-        ],
+        "imagePaths": ["/intake.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -3623,9 +3333,7 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg"
-        ],
+        "imagePaths": ["/intake.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -3946,9 +3654,7 @@
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -3995,17 +3701,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -4052,17 +3754,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -4081,17 +3779,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -4138,17 +3832,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -4195,9 +3885,7 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -5661,11 +5349,7 @@
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg",
-          "/appointment-card.svg",
-          "/clinic-icon.svg"
-        ],
+        "imagePaths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
         "imageCount": "3",
         "panePresent": true
       },
@@ -5718,20 +5402,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg",
-          "/appointment-card.svg",
-          "/clinic-icon.svg"
-        ],
+        "imagePaths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
         "imageCount": "3",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg",
-          "/clinic-icon.svg"
-        ],
+        "imagePaths": ["/intake.svg", "/clinic-icon.svg"],
         "imageCount": "2",
         "panePresent": true
       },
@@ -5778,18 +5455,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg",
-          "/clinic-icon.svg"
-        ],
+        "imagePaths": ["/intake.svg", "/clinic-icon.svg"],
         "imageCount": "2",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg"
-        ],
+        "imagePaths": ["/intake.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -5836,9 +5508,7 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/intake.svg"
-        ],
+        "imagePaths": ["/intake.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -6159,9 +5829,7 @@
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -6208,17 +5876,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -6265,17 +5929,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -6294,17 +5954,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -6351,17 +6007,13 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
       "post": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -6408,9 +6060,7 @@
       },
       "pre": {
         "selected": "Images",
-        "imagePaths": [
-          "/followup-card.svg"
-        ],
+        "imagePaths": ["/followup-card.svg"],
         "imageCount": "1",
         "panePresent": true
       },
@@ -10015,71 +9665,26 @@
           "pane": "Images",
           "state": "matching_content",
           "count": 3,
-          "paths": [
-            "/intake.svg",
-            "/appointment-card.svg",
-            "/clinic-icon.svg"
-          ],
-          "alt": [
-            "New patient intake desk",
-            "Appointment card",
-            "Clinic icon"
-          ],
-          "natural_sizes": [
-            [
-              640,
-              480
-            ],
-            [
-              96,
-              96
-            ],
-            [
-              32,
-              32
-            ]
-          ]
+          "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+          "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+          "natural_sizes": [[640, 480], [96, 96], [32, 32]]
         },
         "removals": [
           {
             "pane": "Images",
             "state": "matching_content",
             "count": 2,
-            "paths": [
-              "/intake.svg",
-              "/clinic-icon.svg"
-            ],
-            "alt": [
-              "New patient intake desk",
-              "Clinic icon"
-            ],
-            "natural_sizes": [
-              [
-                640,
-                480
-              ],
-              [
-                32,
-                32
-              ]
-            ]
+            "paths": ["/intake.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Clinic icon"],
+            "natural_sizes": [[640, 480], [32, 32]]
           },
           {
             "pane": "Images",
             "state": "matching_content",
             "count": 1,
-            "paths": [
-              "/intake.svg"
-            ],
-            "alt": [
-              "New patient intake desk"
-            ],
-            "natural_sizes": [
-              [
-                640,
-                480
-              ]
-            ]
+            "paths": ["/intake.svg"],
+            "alt": ["New patient intake desk"],
+            "natural_sizes": [[640, 480]]
           },
           {
             "pane": "Images",
@@ -10094,18 +9699,9 @@
           "pane": "Images",
           "state": "matching_content",
           "count": 1,
-          "paths": [
-            "/followup-card.svg"
-          ],
-          "alt": [
-            "Follow-up card"
-          ],
-          "natural_sizes": [
-            [
-              96,
-              96
-            ]
-          ]
+          "paths": ["/followup-card.svg"],
+          "alt": ["Follow-up card"],
+          "natural_sizes": [[96, 96]]
         }
       },
       "videos": {
@@ -10113,27 +9709,19 @@
           "pane": "Video",
           "state": "matching_content",
           "count": 2,
-          "paths": [
-            "/intake-walkthrough.mp4",
-            "/referral-walkthrough.mp4"
-          ]
+          "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
         },
         "removed": {
           "pane": "Video",
           "state": "matching_content",
           "count": 1,
-          "paths": [
-            "/referral-walkthrough.mp4"
-          ]
+          "paths": ["/referral-walkthrough.mp4"]
         },
         "added": {
           "pane": "Video",
           "state": "matching_content",
           "count": 2,
-          "paths": [
-            "/referral-walkthrough.mp4",
-            "/consultation.mp4"
-          ]
+          "paths": ["/referral-walkthrough.mp4", "/consultation.mp4"]
         },
         "links": {
           "opened_url": "http://localhost:49194/intake-walkthrough.mp4",
@@ -10168,71 +9756,26 @@
           "pane": "Images",
           "state": "matching_content",
           "count": 3,
-          "paths": [
-            "/intake.svg",
-            "/appointment-card.svg",
-            "/clinic-icon.svg"
-          ],
-          "alt": [
-            "New patient intake desk",
-            "Appointment card",
-            "Clinic icon"
-          ],
-          "natural_sizes": [
-            [
-              640,
-              480
-            ],
-            [
-              96,
-              96
-            ],
-            [
-              32,
-              32
-            ]
-          ]
+          "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+          "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+          "natural_sizes": [[640, 480], [96, 96], [32, 32]]
         },
         "removals": [
           {
             "pane": "Images",
             "state": "matching_content",
             "count": 2,
-            "paths": [
-              "/intake.svg",
-              "/clinic-icon.svg"
-            ],
-            "alt": [
-              "New patient intake desk",
-              "Clinic icon"
-            ],
-            "natural_sizes": [
-              [
-                640,
-                480
-              ],
-              [
-                32,
-                32
-              ]
-            ]
+            "paths": ["/intake.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Clinic icon"],
+            "natural_sizes": [[640, 480], [32, 32]]
           },
           {
             "pane": "Images",
             "state": "matching_content",
             "count": 1,
-            "paths": [
-              "/intake.svg"
-            ],
-            "alt": [
-              "New patient intake desk"
-            ],
-            "natural_sizes": [
-              [
-                640,
-                480
-              ]
-            ]
+            "paths": ["/intake.svg"],
+            "alt": ["New patient intake desk"],
+            "natural_sizes": [[640, 480]]
           },
           {
             "pane": "Images",
@@ -10247,18 +9790,9 @@
           "pane": "Images",
           "state": "matching_content",
           "count": 1,
-          "paths": [
-            "/followup-card.svg"
-          ],
-          "alt": [
-            "Follow-up card"
-          ],
-          "natural_sizes": [
-            [
-              96,
-              96
-            ]
-          ]
+          "paths": ["/followup-card.svg"],
+          "alt": ["Follow-up card"],
+          "natural_sizes": [[96, 96]]
         }
       },
       "videos": {
@@ -10266,27 +9800,19 @@
           "pane": "Video",
           "state": "matching_content",
           "count": 2,
-          "paths": [
-            "/intake-walkthrough.mp4",
-            "/referral-walkthrough.mp4"
-          ]
+          "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
         },
         "removed": {
           "pane": "Video",
           "state": "matching_content",
           "count": 1,
-          "paths": [
-            "/referral-walkthrough.mp4"
-          ]
+          "paths": ["/referral-walkthrough.mp4"]
         },
         "added": {
           "pane": "Video",
           "state": "matching_content",
           "count": 2,
-          "paths": [
-            "/referral-walkthrough.mp4",
-            "/consultation.mp4"
-          ]
+          "paths": ["/referral-walkthrough.mp4", "/consultation.mp4"]
         },
         "links": {
           "opened_url": "http://localhost:49194/intake-walkthrough.mp4",
@@ -10320,14 +9846,8 @@
       "phase": "warm",
       "before": {
         "count": 2,
-        "paths": [
-          "/forms",
-          "/appointments"
-        ],
-        "texts": [
-          "Patient forms",
-          "Appointments"
-        ]
+        "paths": ["/forms", "/appointments"],
+        "texts": ["Patient forms", "Appointments"]
       },
       "actions": {
         "opened_url": "http://localhost:49194/forms",
@@ -10355,57 +9875,31 @@
       },
       "removed": {
         "count": 1,
-        "paths": [
-          "/appointments"
-        ],
-        "texts": [
-          "Appointments"
-        ]
+        "paths": ["/appointments"],
+        "texts": ["Appointments"]
       },
       "blankRejected": {
         "count": 1,
-        "paths": [
-          "/appointments"
-        ],
-        "texts": [
-          "Appointments"
-        ]
+        "paths": ["/appointments"],
+        "texts": ["Appointments"]
       },
       "added": {
         "count": 2,
-        "paths": [
-          "/appointments",
-          "/referrals"
-        ],
-        "texts": [
-          "Appointments",
-          "Referral hours"
-        ]
+        "paths": ["/appointments", "/referrals"],
+        "texts": ["Appointments", "Referral hours"]
       },
       "cancelled": {
         "count": 2,
-        "paths": [
-          "/appointments",
-          "/referrals"
-        ],
-        "texts": [
-          "Appointments",
-          "Referral hours"
-        ]
+        "paths": ["/appointments", "/referrals"],
+        "texts": ["Appointments", "Referral hours"]
       }
     },
     "reload": {
       "phase": "reload",
       "before": {
         "count": 2,
-        "paths": [
-          "/forms",
-          "/appointments"
-        ],
-        "texts": [
-          "Patient forms",
-          "Appointments"
-        ]
+        "paths": ["/forms", "/appointments"],
+        "texts": ["Patient forms", "Appointments"]
       },
       "actions": {
         "opened_url": "http://localhost:49194/forms",
@@ -10433,43 +9927,23 @@
       },
       "removed": {
         "count": 1,
-        "paths": [
-          "/appointments"
-        ],
-        "texts": [
-          "Appointments"
-        ]
+        "paths": ["/appointments"],
+        "texts": ["Appointments"]
       },
       "blankRejected": {
         "count": 1,
-        "paths": [
-          "/appointments"
-        ],
-        "texts": [
-          "Appointments"
-        ]
+        "paths": ["/appointments"],
+        "texts": ["Appointments"]
       },
       "added": {
         "count": 2,
-        "paths": [
-          "/appointments",
-          "/referrals"
-        ],
-        "texts": [
-          "Appointments",
-          "Referral hours"
-        ]
+        "paths": ["/appointments", "/referrals"],
+        "texts": ["Appointments", "Referral hours"]
       },
       "cancelled": {
         "count": 2,
-        "paths": [
-          "/appointments",
-          "/referrals"
-        ],
-        "texts": [
-          "Appointments",
-          "Referral hours"
-        ]
+        "paths": ["/appointments", "/referrals"],
+        "texts": ["Appointments", "Referral hours"]
       }
     }
   },
@@ -10499,39 +9973,15 @@
       "pane": "Images",
       "state": "matching_content",
       "count": 3,
-      "paths": [
-        "/intake.svg",
-        "/appointment-card.svg",
-        "/clinic-icon.svg"
-      ],
-      "alt": [
-        "New patient intake desk",
-        "Appointment card",
-        "Clinic icon"
-      ],
-      "natural_sizes": [
-        [
-          640,
-          480
-        ],
-        [
-          96,
-          96
-        ],
-        [
-          32,
-          32
-        ]
-      ]
+      "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+      "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+      "natural_sizes": [[640, 480], [96, 96], [32, 32]]
     },
     "video": {
       "pane": "Video",
       "state": "matching_content",
       "count": 2,
-      "paths": [
-        "/intake-walkthrough.mp4",
-        "/referral-walkthrough.mp4"
-      ]
+      "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
     }
   },
   "post_reload_capture_boundary": {
