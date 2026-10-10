@@ -48,6 +48,35 @@ describe('hosted resource journal evidence copy', () => {
     expect(copied).not.toContain('89.5');
   });
 
+  it.each(['\n', '\r\n', ''])('omits only opened-event path with line ending %j', (ending) => {
+    const opened = event('RESOURCE_JOURNAL_OPENED', {
+      path: '/owned-runner/resource.pending.jsonl',
+    });
+    const finalLine = `  ${final()}  `;
+    const separator = ending || '\n';
+    const copied = sanitizeHostedResourceJournal(
+      `${opened}${separator}${finalLine}${ending}`,
+      runId,
+    );
+    expect(copied).toBe(`${event('RESOURCE_JOURNAL_OPENED')}${separator}${finalLine}${ending}`);
+    expect(copied).not.toContain('/owned-runner/');
+  });
+
+  it('retains an already sanitized opened event byte-for-byte', () => {
+    const opened = `  ${event('RESOURCE_JOURNAL_OPENED')}  \r\n`;
+    expect(sanitizeHostedResourceJournal(`${opened}${final()}`, runId)).toBe(`${opened}${final()}`);
+  });
+
+  it('refuses unknown opened-event fields before removing its path', () => {
+    const opened = event('RESOURCE_JOURNAL_OPENED', {
+      path: '/owned-runner/resource.pending.jsonl',
+      unexpectedDiagnostic: 'do-not-copy',
+    });
+    expect(() => sanitizeHostedResourceJournal(`${opened}\n${final()}`, runId)).toThrow(
+      'JOURNAL_EVENT_FIELD_UNSUPPORTED',
+    );
+  });
+
   it.each([
     ['valid', { admitted: true, resourceInvalid: false, exitCode: 0, decision: 'valid' }],
     ['refused', { admitted: false, resourceInvalid: false, exitCode: 2, decision: 'refused' }],
@@ -155,21 +184,23 @@ describe('hosted resource journal evidence copy', () => {
     const directory = await mkdtemp(join(tmpdir(), 'resource-journal-copy-'));
     const sourcePath = join(directory, 'source.jsonl');
     const outputPath = join(directory, 'shared.jsonl');
-    const source = `${event('RESOURCE_ADMITTED', { mode: 'run' })}\n${final()}\n`;
+    const source = `${event('RESOURCE_JOURNAL_OPENED', { path: sourcePath })}\n${event('RESOURCE_ADMITTED', { mode: 'run' })}\n${final()}\n`;
+    const expected = `${event('RESOURCE_JOURNAL_OPENED')}\n${event('RESOURCE_ADMITTED', { mode: 'run' })}\n${final()}\n`;
     try {
       await writeFile(sourcePath, source, { mode: 0o600 });
       await expect(
         copyHostedResourceJournal({ runId, sourcePath, outputPath: sourcePath }),
       ).rejects.toMatchObject({ code: 'SOURCE_OUTPUT_SAME' });
 
-      await copyHostedResourceJournal({ runId, sourcePath, outputPath });
-      expect(await readFile(outputPath, 'utf8')).toBe(source);
+      expect(await copyHostedResourceJournal({ runId, sourcePath, outputPath })).toBe(outputPath);
+      expect(await readFile(outputPath, 'utf8')).toBe(expected);
+      expect(await readFile(sourcePath, 'utf8')).toBe(source);
       expect((await stat(outputPath)).mode & 0o777).toBe(0o600);
 
       await expect(
         copyHostedResourceJournal({ runId, sourcePath, outputPath }),
       ).rejects.toMatchObject({ code: 'EEXIST' });
-      expect(await readFile(outputPath, 'utf8')).toBe(source);
+      expect(await readFile(outputPath, 'utf8')).toBe(expected);
     } finally {
       await rm(directory, { recursive: true, force: true });
     }

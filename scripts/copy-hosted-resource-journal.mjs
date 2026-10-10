@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/** Copy supported hosted journal events after removing process attribution.
+/** Copy supported hosted journal events without process attribution or opened-event paths.
  * Unknown events/fields are refused so diagnostic payloads stay in the private source artifact.
  */
 import { open, readFile, realpath } from 'node:fs/promises';
@@ -106,7 +106,7 @@ function validKnownValues(event) {
   return true;
 }
 
-/** Remove only process-attribution rows, keeping every other source line byte-for-byte. */
+/** Remove process-attribution rows and opened-event paths; preserve all other source lines. */
 export function sanitizeHostedResourceJournal(source, runId) {
   if (typeof source !== 'string' || !source) refuse('SOURCE_CONTENT_INVALID');
   if (typeof runId !== 'string' || !/^[A-Za-z0-9_.-]+$/.test(runId)) refuse('RUN_ID_INVALID');
@@ -153,7 +153,11 @@ export function sanitizeHostedResourceJournal(source, runId) {
       finalRecordIndex = records.length - 1;
       if (!validFinalDecision(event)) refuse('JOURNAL_FINAL_DECISION_INVALID');
     }
-    if (event.code !== 'RESOURCE_PROCESS_ATTRIBUTION') kept.push(chunk);
+    if (event.code === 'RESOURCE_PROCESS_ATTRIBUTION') continue;
+    if (event.code === 'RESOURCE_JOURNAL_OPENED' && Object.hasOwn(event, 'path')) {
+      const { path: _path, ...sanitized } = event;
+      kept.push(`${JSON.stringify(sanitized)}${chunk.slice(line.length)}`);
+    } else kept.push(chunk);
   }
 
   if (finalCount === 0) refuse('JOURNAL_FINAL_DECISION_MISSING');
