@@ -1,0 +1,23 @@
+{
+  "run_id": 38071765806,
+  "step": "Exercise the selected Chrome side-panel case",
+  "status": "failure",
+  "error": {
+    "name": "AssertionError",
+    "code": "ERR_ASSERTION",
+    "file": "scripts/hosted-guest-acceptance.mjs",
+    "line": 327,
+    "message": "Settings controls requires CI development receipt",
+    "actual": "published_release",
+    "expected": "ci_development_test"
+  },
+  "workflow_inputs": {
+    "acceptance_case": "settings-controls",
+    "acceptance_lane": "A",
+    "release_run_id": "38067449240",
+    "development_run_id": "",
+    "development_artifact_id": "",
+    "published_store_crx": false
+  },
+  "interpretation": "The harness rejected artifact provenance before Settings controls ran; the Settings result is unmeasured."
+}

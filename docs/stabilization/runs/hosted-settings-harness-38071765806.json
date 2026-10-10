@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "run_id": 38071765806,
+  "workflow": "hosted-guest-acceptance.yml",
+  "acceptance_case": "settings-controls",
+  "classification": "pre_product_harness_fixture_selection_failure",
+  "settings_case_result": "unmeasured",
+  "candidate": {
+    "version": "0.2.469",
+    "release_run_id": 38067449240,
+    "release_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "tag": "v0.2.469"
+  },
+  "hosted_workflow_source": {
+    "sha": "4e875dd4e8299a6fcfc3c1ddfbf13e85309e9ce9",
+    "branch": "main"
+  },
+  "fixture_selection": {
+    "acceptance_lane": "A",
+    "release_run_id": "38067449240",
+    "development_run_id": "",
+    "development_artifact_id": "",
+    "published_store_crx": false,
+    "observed_receipt_kind": "published_release",
+    "required_receipt_kind": "ci_development_test",
+    "assertion": "Settings controls requires CI development receipt"
+  },
+  "failure_boundary": {
+    "file": "scripts/hosted-guest-acceptance.mjs",
+    "line": 327,
+    "product_browser_interaction_reached": false,
+    "product_defect": false,
+    "reason": "The hosted driver rejected the selected published-release receipt before executing any Settings control."
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1,
+      "decision": "child_failed",
+      "childExitCode": 1
+    }
+  },
+  "artifact": {
+    "name": "hosted-guest-38071765806-1",
+    "artifact_id": 11677271032,
+    "sha256": "afd1a27d03d910f949fbe094883dd0349efa69a8f4dcf714ba5140a20f2ea5f9",
+    "expired": false
+  },
+  "next_action": "Rerun settings-controls against the exact candidate with the successful CI development run and its artifact ID selected."
+}
