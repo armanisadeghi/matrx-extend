@@ -106,7 +106,10 @@ test('member Settings acceptance admits the verified load-ladder organization', 
     'reload readiness must distinguish a ladder result from a device choice',
   );
   assert.match(reloadIdentityCheck[1], /observeMemberLogicalOrganizationGet\(/);
-  assert.match(reloadIdentityCheck[1], /await refreshMemberLogicalOrganizationGet\(panel, observer\)/);
+  assert.match(
+    reloadIdentityCheck[1],
+    /await refreshMemberLogicalOrganizationGet\(panel, observer\)/,
+  );
   assert.match(reloadIdentityCheck[1], /await observer\.verify\(\)/);
   const authDriver = await readFile(
     new URL('./settings-native-auth-driver.mjs', import.meta.url),
