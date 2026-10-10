@@ -96,6 +96,11 @@ done
 FIXTURE_REGISTRY="http://127.0.0.1:$(<"$SANDBOX/fixture-registry-port")"
 cat > "$SANDBOX/bin/node" <<STUB
 #!/usr/bin/env bash
+if [[ "\$1" == */scripts/await-matrx-latest.mjs && -f "$SANDBOX/budget-timeout-elapsed" ]]; then
+  # Bash SECONDS is whole seconds; force this one fixture past its first tick
+  # so the assertion tests a reduced remaining budget, not scheduler timing.
+  sleep 2
+fi
 case "\$1" in
   scripts/check-store-package.mjs|scripts/check-cws-release-risk.mjs)
     echo "\$1" >> "$SANDBOX/node-gates"
@@ -610,10 +615,11 @@ check "catch-up timeout is explicit and blocks publication" '[[ $TIMEOUT_STATUS 
 # update before it runs.
 perl -pi -e 's/^SHIP_RACE_BUDGET_SECS=3600$/SHIP_RACE_BUDGET_SECS=60/' release.sh
 touch "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update"
+touch "$SANDBOX/budget-timeout-elapsed"
 rm -f "$SANDBOX/update-timeout-limit" "$SANDBOX/update-timeout-args"
 BUDGET_TIMEOUT_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 BUDGET_TIMEOUT_STATUS=0; run_release catchup-budget-timeout-out || BUDGET_TIMEOUT_STATUS=$?
-rm -f "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update"
+rm -f "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update" "$SANDBOX/budget-timeout-elapsed"
 git checkout -q -- release.sh
 check "catch-up timeout honors remaining race budget" '[[ $BUDGET_TIMEOUT_STATUS -ne 0 && "$(cat "$SANDBOX/update-timeout-limit")" -gt 0 && "$(cat "$SANDBOX/update-timeout-limit")" -lt 60 && "$BUDGET_TIMEOUT_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "^$(cat "$SANDBOX/update-timeout-limit") pnpm update -r @ai-matrx/\\* --latest$" "$SANDBOX/update-timeout-args" && grep -q "direct @ai-matrx update timed out after $(cat "$SANDBOX/update-timeout-limit")s" "$SANDBOX/catchup-budget-timeout-out"'
 # An install that lags a lockfile which is already current is not a stop: the
