@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "kind": "local_chrome_development_installation_observation",
+  "observed_at": "2026-10-10T17:47:00Z",
+  "chrome_profile": "Arman (armansadeghi.com)",
+  "development": {
+    "version": "0.2.471",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "enabled": true,
+    "pinned_to_toolbar": true,
+    "chrome_reload_confirmed": true,
+    "source_sha": "c81477c80ec4c516c16a4280c7970c060cb840d3",
+    "promotion_main_sha": "aa9b05c2650bdd1543f0d89d44e3e7a52111cea3",
+    "compatibility": "runtime-equivalent",
+    "tree_sha256": "ab8f31d116557a89b52da3a7c1ea08a838c2bacfd1f2b457c88f9fb573236ce6",
+    "ci_run_id": 38072429709,
+    "ci_artifact_id": 11677346776
+  },
+  "store": {
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "source": "Chrome Web Store",
+    "enabled": true,
+    "pinned_to_toolbar": true
+  },
+  "evidence": "The CI development artifact importer verified provenance and tree hash, the promoter installed it at the stable unpacked path, and Chrome's extension detail page showed Reloaded, version 0.2.471, the development ID, loaded-from path, and Pin to toolbar on. The Store extension detail page separately showed version 0.2.205, Store source, and Pin to toolbar on.",
+  "limits": "This verifies installation identity, version, pin and reload only. It is not a product behavior pass, a Store submission, or proof that later main changes are installed."
+}
