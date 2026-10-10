@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T11:24:03Z",
+  "updated_at": "2026-10-10T11:41:07Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -13416,9 +13416,10 @@
           "run_ids": [
             "settings-mounted-member-full6-20261003-01",
             "38046648854",
-            "desktop-settings-member-20261003-independent01"
+            "desktop-settings-member-20261003-independent01",
+            "38048431986"
           ],
-          "retest_status": "Latest bounded member attempt 38046648854 failed member organization storage resolution before authenticated identity verification or any Settings case, and its acceptance resource final is invalid. Zero product credit; member Settings remains unverified. See reports/peer-review-run38046648854.json."
+          "retest_status": "Latest member run 38048431986 verified member authentication/non-admin identity and load-ladder organization, then opened Settings; settings_ready failed with d87_rendered_identity_not_observed before any persistence case. All resource finals are valid, but the child failed and this attempt earns zero product credit. Cause remains unresolved between harness/oracle observation and product behavior; member Settings remains unverified. Inspect/instrument the post-open rendered-identity boundary before another bounded run. See reports/peer-review-run38048431986.json."
         },
         "admin": {
           "test_status": "unverified",
@@ -13624,6 +13625,34 @@
           "report": "docs/stabilization/reports/peer-review-run38046648854.json",
           "proven": "Hosted workflow and frozen product artifact identity/digests match GitHub metadata; package and browser resource journals end valid.",
           "limits": "Acceptance journal ends resourceInvalid=true after CPU-busy pending and child exit 1. Member organization storage resolution failed before member identity verification. Zero product credit; no Settings behavior verdict. Cleanup of the local one-time link is executor-reported only."
+        },
+        {
+          "run_id": 38048431986,
+          "mode": "member",
+          "build": "0.2.463",
+          "status": "zero-credit-unresolved-settings-ready-baseline",
+          "native_status": "member auth/non-admin/load-ladder organization and rendered identity passed at authentication; Settings opened, but settings_ready failed d87_rendered_identity_not_observed; zero persistence cases ran",
+          "workflow_source_sha": "ea24c3de3ed633688666b127291b9cb531e4425d",
+          "source_sha": "618d7be90ef1cdabef9680d26c4dbf35fcf664bf",
+          "development_ci_run_id": 38047809278,
+          "development_artifact_id": 11667953458,
+          "development_artifact_sha256": "6ec18442e36d3fafdce3ffd1e0263dec85a7866ebc4a15d41eabf958bb82dbc0",
+          "hosted_result_artifact_id": 11668956646,
+          "hosted_result_artifact_sha256": "2f8e69116e2217e637eaac375085be1e5b08921c4b277050630e0093a1941a6c",
+          "resource_valid": true,
+          "new_acceptance_credit": false,
+          "report": "docs/stabilization/reports/peer-review-run38048431986.json",
+          "evidence": [
+            "docs/stabilization/evidence/settings-controls-member/run38048431986/receipt.sanitized.json",
+            "docs/stabilization/evidence/settings-controls-member/run38048431986/native-report.sanitized.json",
+            "docs/stabilization/evidence/settings-controls-member/run38048431986/cleanup.sanitized.json",
+            "docs/stabilization/evidence/settings-controls-member/run38048431986/hosted-package-38048431986-1.jsonl",
+            "docs/stabilization/evidence/settings-controls-member/run38048431986/hosted-browser-38048431986-1.jsonl",
+            "docs/stabilization/evidence/settings-controls-member/run38048431986/hosted-guest-38048431986-1.jsonl",
+            "docs/stabilization/reports/peer-review-run38048431986.json"
+          ],
+          "proven": "GitHub-bound workflow/frozen artifact provenance; real member identity, non-admin role, load-ladder organization and first-party rendered identity matched before Settings readiness; Settings was active and available at failure.",
+          "limits": "Zero Settings persistence/retry/reload cases observed. Failure cause is unresolved between settings_ready harness/oracle observation and product behavior; no defect is proven or closed. Member feature-role cell remains unverified; no admin/guest/Store/current-main/full Settings credit."
         }
       ],
       "source_audit_sha": "6f4e9d0211315949f50a3d11b35dfa732822abec"

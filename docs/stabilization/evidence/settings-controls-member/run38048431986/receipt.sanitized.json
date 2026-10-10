@@ -1,0 +1,111 @@
+{
+  "acceptance_started_at_utc": "2026-10-10T11:31:31Z",
+  "case_id": "settings-persistence-member",
+  "completed_at_utc": "2026-10-10T11:33:47Z",
+  "dispatch_ref": "main",
+  "evidence_sha256": {
+    "cleanup.sanitized.json": "19ad34476806308609f8e9a03b35e590df418de1f70059986cb5727924c78449",
+    "hosted-browser-38048431986-1.jsonl": "7722e9dba94033a9cae184c8dd60c55612a6ccdc3fce76a88b1eacb93dd26d9e",
+    "hosted-guest-38048431986-1.jsonl": "c7c4549c301e7252c636b96351316af9dcc000452e2024550bfbdc7310b111ac",
+    "hosted-package-38048431986-1.jsonl": "616ac9247f710b68ef25fccd90a6fa82647d22eddda8c9fb16a8ab56134024dc",
+    "native-report.sanitized.json": "95cf45090dbd0b83100abd40d55f5482efac2ca8c0dfcaad7fcb87362891b135"
+  },
+  "feature_scope": "EXT-D-0087 Settings theme persistence; bounded member acceptance attempt",
+  "hosted_result_artifact": {
+    "artifact_id": 11668956646,
+    "digest": "sha256:2f8e69116e2217e637eaac375085be1e5b08921c4b277050630e0093a1941a6c",
+    "digest_verified": true,
+    "expired": false,
+    "name": "hosted-guest-38048431986-1",
+    "size_bytes": 91776
+  },
+  "hosted_run_id": 38048431986,
+  "lane": "A",
+  "limits": "No theme change, controlled rejection, retry, persistence readback, reload, admin, guest, Store, or current-main Settings behavior was observed.",
+  "native_result": {
+    "canonical_nonadmin_check": {
+      "http_status": 200,
+      "matched_current_extension_user": true,
+      "returned_rows": 0
+    },
+    "cases_observed": 0,
+    "failure_code": "d87_rendered_identity_not_observed",
+    "failure_operation": "settings_ready",
+    "failure_stage": "baseline",
+    "interpretation": "Resource-valid child failure after real member identity and non-admin checks succeeded. No Settings persistence/retry/reload case ran. The later rendered-identity assertion failed after opening Settings; whether this is harness/oracle timing or product behavior remains unresolved. Zero product behavior credit pending independent review.",
+    "member_authentication_verified": true,
+    "member_org_resolution": "load_ladder",
+    "rendered_identity_during_authentication": {
+      "profile_matches_first_party": true,
+      "rendered_email_matches_first_party": true,
+      "rendered_role_matches_mode": true,
+      "selected_organization_matches_stored_uuid_and_name": true
+    },
+    "settings_observation_at_failure": {
+      "error": false,
+      "guest": false,
+      "retry": false,
+      "settingsActive": true,
+      "settingsAvailable": true,
+      "storedTheme": null,
+      "theme": "System"
+    },
+    "status": "fail"
+  },
+  "product_artifact": {
+    "artifact_digest": "sha256:6ec18442e36d3fafdce3ffd1e0263dec85a7866ebc4a15d41eabf958bb82dbc0",
+    "artifact_digest_verified": true,
+    "artifact_id": 11667953458,
+    "ci_run_attempt": 1,
+    "ci_run_id": 38047809278,
+    "eligible_store": false,
+    "kind": "ci_development_test",
+    "provenance_verified_by": "scripts/current-test-artifact.mjs import + verifyImportedNativeEvidence",
+    "source_sha": "618d7be90ef1cdabef9680d26c4dbf35fcf664bf",
+    "tree_sha256": "9fcc321582ac45107187a05d9b3182514c721fce42b0fd647fe4c01d718fdc22",
+    "version": "0.2.463"
+  },
+  "resources": {
+    "acceptance": {
+      "admitted": true,
+      "decision": "child_failed",
+      "exitCode": 1,
+      "resourceInvalid": false
+    },
+    "browser": {
+      "admitted": true,
+      "decision": "valid",
+      "exitCode": 0,
+      "resourceInvalid": false
+    },
+    "overall_resource_invalid": false,
+    "package": {
+      "admitted": true,
+      "decision": "valid",
+      "exitCode": 0,
+      "resourceInvalid": false
+    }
+  },
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38048431986",
+  "runner": {
+    "architecture": "ARM64",
+    "label": "macos-15",
+    "machine": "arm64"
+  },
+  "schema_version": 1,
+  "source_relationship": {
+    "claim": "Result is bounded to the frozen 0.2.463 artifact built from 618d7be90; it does not establish current-main runtime acceptance.",
+    "frozen_artifact_is_current_main": false,
+    "intervening_paths": [
+      "docs/TOOLS.generated.md",
+      "package.json",
+      "pnpm-lock.yaml",
+      "types/tool-catalog.json",
+      "types/tool-catalog.md"
+    ],
+    "latest_main_at_dispatch_sha": "ea24c3de3ed633688666b127291b9cb531e4425d",
+    "settings_test_workflow_source_changed_since_artifact": false
+  },
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "ea24c3de3ed633688666b127291b9cb531e4425d"
+}

@@ -1,0 +1,49 @@
+{
+  "auth_mode": "member",
+  "authentication": {
+    "account_fingerprint": "3d6137db6c081c07",
+    "admin_role": false,
+    "canonical_nonadmin_check": {
+      "http_status": 200,
+      "matched_current_extension_user": true,
+      "returned_rows": 0
+    },
+    "extension_signed_in": true,
+    "mode": "member",
+    "organization_resolution": "load_ladder",
+    "organization_selected": true,
+    "rendered_identity": {
+      "profile_matches_first_party": true,
+      "rendered_email_matches_first_party": true,
+      "rendered_role_matches_mode": true,
+      "selected_organization_matches_stored_uuid_and_name": true
+    },
+    "web_signed_in": true
+  },
+  "build": {
+    "artifact_id": 11667953458,
+    "receipt_kind": "local_dev_unpacked",
+    "source_sha": "618d7be90ef1cdabef9680d26c4dbf35fcf664bf",
+    "tree_sha256": "9fcc321582ac45107187a05d9b3182514c721fce42b0fd647fe4c01d718fdc22",
+    "version": "0.2.463"
+  },
+  "cases": [],
+  "defect": "EXT-D-0087",
+  "failure_code": "d87_rendered_identity_not_observed",
+  "failure_observation": {
+    "error": false,
+    "guest": false,
+    "retry": false,
+    "settingsActive": true,
+    "settingsAvailable": true,
+    "storedTheme": null,
+    "theme": "System"
+  },
+  "failure_operation": "settings_ready",
+  "failure_stage": "baseline",
+  "pointer_boundary": null,
+  "reload_auth_checks": [],
+  "schema_version": 1,
+  "scope": "receipt-bound owned Chrome-for-Testing native Settings panel; member",
+  "status": "fail"
+}

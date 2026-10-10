@@ -1,0 +1,21 @@
+{
+  "case_id": "settings-persistence-member",
+  "credential_values_persisted": false,
+  "hosted_run_id": 38048431986,
+  "local_one_time_link": {
+    "absence_check_method": "Exact known path existence check.",
+    "deleted_after_secret_upload": true,
+    "file_name": "reviewer-magic-link-private.json",
+    "mode_at_staging": "0600",
+    "terminal_absent": true
+  },
+  "repo_secret": {
+    "absence_check_method": "GitHub CLI secret-name listing filtered to the exact name; count retained only.",
+    "deleted_after_workflow_terminal": true,
+    "secret_name": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+    "terminal_absence_count": 0
+  },
+  "schema_version": 1,
+  "status": "verified_terminal_cleanup",
+  "verified_at_utc": "2026-10-10T11:35:18Z"
+}
