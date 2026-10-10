@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "reviewed_at": "2026-10-10",
+  "run_id": 38076468281,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38076468281",
+  "workflow_source_sha": "e8f67d84bd69c5209ce4b693191530b4fad181c1",
+  "case_id": "member-chat",
+  "runner": "macos-15 / ARM64",
+  "verdicts": {
+    "bounded_product": "PASS_MEMBER_CHAT_V0.2.474",
+    "evidence_quality": "PASS_WITH_LIMITATIONS"
+  },
+  "artifact": {
+    "release_run_id": 38075458740,
+    "release_artifact_id": 11677569836,
+    "version": "0.2.474",
+    "source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+    "tag_matches_source": true,
+    "store_zip_sha256": "93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02",
+    "hosted_runtime_tree_sha256": "f416ac56eb5159c8720bee8e3e9a28177d91d99c777f38f68b7b1ead91bf2d78",
+    "store_artifact_reimport_recomputed": true,
+    "reimport_modified_paths": ["manifest.json"],
+    "evidence_artifact_id": 11679171799,
+    "evidence_artifact_sha256": "aaa3da64da8dd18aaddcd8fb0bcca1e3e33049509ad9fc32a71c603427ac8d98",
+    "evidence_artifact_digest_independently_verified": true
+  },
+  "observations": {
+    "identity": "Existing-user magic-link login; web and extension signed in. The canonical admin check matched the current extension user, returned HTTP 200, and returned zero admin rows.",
+    "chat": "One real assistant answer completed in the signed-in native panel and named the three requested workflow stages. The action and result screenshots are in hosted artifact 11679171799.",
+    "transport": {
+      "start_count": 1,
+      "organization_header_present_as_fingerprint": true,
+      "http_status": 200,
+      "response_matches_request_conversation": true,
+      "backend_request_identity_present_as_fingerprint": true
+    },
+    "resource_finals": {
+      "package": "valid; admitted, exit 0, resourceInvalid false",
+      "browser": "valid; admitted, exit 0, resourceInvalid false",
+      "acceptance": "valid; admitted, exit 0, resourceInvalid false"
+    },
+    "credential_cleanup": {
+      "temporary_github_secret_name": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+      "temporary_github_secret_present_after_run": false,
+      "check": "GitHub repository secret metadata queried by name only; no value read.",
+      "local_single_use_link_filename": "member-magic-link-private.json",
+      "local_copy_present_in_downloaded_evidence": false,
+      "cleanup_code": "Acceptance driver unlinks the member link file in its finally block."
+    }
+  },
+  "non_failure_flags": {
+    "organization_header_matches_approved": false,
+    "mode_matches": false,
+    "explanation": "Both fields are unevaluated defaults in the standard member-chat path. approvedOrganization is initialized only for the opt-in UNINTERRUPTED approval path; member-chat calls the passive observer with expected mode null. That standard path asserts a nonempty organization-header fingerprint, HTTP 200, conversation correlation, and backend-request identity. The false values are not failed comparisons.",
+    "code_evidence": "tests/browser/reviewer-chat-store-acceptance.mjs: member-chat bypasses exerciseApproval unless UNINTERRUPTED is true; the standard path calls observeAuthenticatedTransport(native, null, null) and asserts only header presence, HTTP 200, conversation match, and request identity."
+  },
+  "limitations": [
+    "The run proves a nonempty organization header was accepted, but it does not establish that the header matched a separately approved organization ID.",
+    "No permission-mode comparison or ask/act behavior was tested.",
+    "No tool action, Store-installed package, Settings, or full-surface acceptance is claimed."
+  ],
+  "independent_checks": {
+    "artifact_digest": "GitHub Actions artifact API digest matched an independent download SHA-256.",
+    "release_source": "v0.2.474 resolves locally to the recorded release source SHA; release artifact receipt binds the Store ZIP to that source.",
+    "runtime_tree": "scripts/hosted-release-artifact.mjs reimported the exact Store ZIP and reproduced the hosted runtime tree SHA with only manifest.json adapted.",
+    "screenshot": "Inspected reviewer-chat-action.png and reviewer-chat-result.png from the hosted evidence artifact; the prompt and rendered assistant reply are visible in the extension panel.",
+    "resource_and_cleanup": "Three sanitized journals each contain a valid RESOURCE_FINAL_DECISION; exact temporary secret absence was checked through name-only metadata and the expected local filename is absent from the downloaded evidence."
+  }
+}
