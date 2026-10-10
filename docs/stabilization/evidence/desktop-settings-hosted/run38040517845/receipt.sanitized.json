@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38040517845,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38040517845",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "e3fa18b8780031f61a7efa779d1220dc2af69301",
+  "run_attempt": 1,
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "acceptance_case": "desktop-settings-guest",
+  "selected_case": "pair-forget",
+  "inventory_case": "EXT-F-1003-T43",
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "source_ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11666145573,
+    "name": "hosted-guest-38040517845-1",
+    "digest": "sha256:206be079d5a4ebd8b334a7773f5df04d68d492ebd17a6cc0537ba52e69ce1432",
+    "expired": false
+  },
+  "workflow_conclusion": "success",
+  "native_report_status": "pass",
+  "failure_stage": null,
+  "failure_code": null,
+  "passed_case_count": 3,
+  "classification": "The bounded guest Pair/Forget native run passed all three named cases: Cancel preserved the owned pairing, an injected storage-removal refusal preserved it and displayed retry, and the restored retry removed the pairing storage key. The fixture Pair click completed trusted press/release; the initial Forget readiness was one matched and one visible control.",
+  "acceptance_credit": "bounded guest Forget cancel, storage-removal refusal and retry only",
+  "full_t43_verified": false,
+  "inventory_updated": false,
+  "resource_finals": {
+    "hosted-package-38040517845-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38040517845-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38040517845-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "evidence_hashes": {
+    "native-report.sanitized.json": "0df6f6801f6a20023a622b0cf220481cb6aa93862148ed42be075cae4d6863db",
+    "resource-journals/hosted-package-38040517845-1.jsonl": "60f682cdf38096fe2e35a17e1bb9584a68e597fced7a3a8a45482b020e1af3d3",
+    "resource-journals/hosted-browser-38040517845-1.jsonl": "9637ce078610755c4e670dde014507569076891961a75306bea969607369bed5",
+    "resource-journals/hosted-guest-38040517845-1.jsonl": "85068bfcc32853fc838cea5ff416d2dc801ee05d4b12e4f4882e7b3020983086"
+  },
+  "limits": [
+    "Acceptance is limited to the three named guest Forget cases on the exact frozen development artifact; this is not a full T43 or Desktop Settings pass.",
+    "Invalid pair-code behavior and pairing persistence after warm reload remain unverified.",
+    "The storage-removal refusal was deliberately injected in the disposable profile; no healthy desktop-engine connection is established.",
+    "This does not establish member/admin, current-main product or actual Store acceptance.",
+    "No account, page URL, DOM content, pair value, raw error text or screenshot is included."
+  ],
+  "sanitization": {
+    "native_report_reduced_to_fixed_safe_allowlist": true,
+    "resource_journals_copied_with": "scripts/copy-hosted-resource-journal.mjs",
+    "process_attribution_and_opened_paths_removed": true,
+    "screenshots_and_other_private_artifacts_excluded": true,
+    "credentials_or_auth_material_present": false
+  },
+  "independent_review": "pending"
+}

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "status": "fail",
+  "failure_stage": "authentication",
+  "failure_operation": "member_extension_signin",
+  "failure_code": "d87_assertion_failed",
+  "case_count": 0,
+  "authentication_observed": false,
+  "failure_observation": {
+    "settingsAvailable": true,
+    "settingsActive": true,
+    "theme": "System",
+    "storedTheme": null,
+    "error": false,
+    "retry": false,
+    "guest": false
+  },
+  "interpretation": "The member Settings driver failed during extension sign-in before any D87 persistence case ran. This is not a persistence product verdict."
+}

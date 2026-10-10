@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "case_id": "settings-persistence-member",
+  "hosted_run_id": 38040544722,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38040544722",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "c33b9f7e32c9a9b44a90bc788253077888a27c37",
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "workflow_conclusion": "failure",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38036029832,
+    "development_artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "compatibility_note": "Frozen CI development artifact; this is not a current-main product claim."
+  },
+  "inputs": {
+    "acceptance_case": "settings-persistence-member",
+    "scrape_auth_mode": "guest"
+  },
+  "native_report": {
+    "status": "fail",
+    "failure_stage": "authentication",
+    "failure_operation": "member_extension_signin",
+    "failure_code": "d87_assertion_failed",
+    "cases_observed": 0,
+    "authentication_observed": false,
+    "interpretation": "Member extension sign-in did not produce an authenticated identity; no Settings persistence cases ran."
+  },
+  "resource": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid"
+    },
+    "sanitization": "RESOURCE_PROCESS_ATTRIBUTION rows omitted from copied journal; all other supported events, including final decision, retained."
+  },
+  "credential_handling": {
+    "temporary_secret_name_absent_at_terminal": true,
+    "local_one_time_link_absent_at_terminal": true,
+    "credential_values_persisted": false
+  },
+  "evidence_files": [
+    {
+      "path": "native-report.sanitized.json",
+      "sha256": "e567b5dbe148f5f7c4a469d9accd98356468608e62a4db5db15d36112b32cd06"
+    },
+    {
+      "path": "hosted-package-38040544722-1.jsonl",
+      "sha256": "daed4596372f27bffdd7112974298a77fec8873fb057f5b7b1b1b838641f5aad"
+    },
+    {
+      "path": "hosted-browser-38040544722-1.jsonl",
+      "sha256": "0588f7b33ca56aadeba21ba23dd91a7ed501ef77d748d1ba11edbf3f2b462d5c"
+    },
+    {
+      "path": "hosted-guest-38040544722-1.jsonl",
+      "sha256": "7746112a4122f23eeba87987a283abce23759be982fcf7bc731bb923d48caafa"
+    }
+  ],
+  "verdict": "member_auth_failure_resource_invalid_no_product_verdict",
+  "limitations": "No Settings persistence case or product interaction was completed; this run earns no acceptance credit.",
+  "hosted_result_artifact": {
+    "artifact_id": 11666125559,
+    "name": "hosted-guest-38040544722-1",
+    "digest": "sha256:c41a820de30752286a353686e5f05b374c47ac9ec6af21c523499ccfcf450421",
+    "expired": false
+  }
+}
