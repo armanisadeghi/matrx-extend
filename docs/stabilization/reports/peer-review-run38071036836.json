@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_data_evidence_review",
+  "reviewer": "data_retest_review",
+  "verdict": "PASS_BOUNDED_GUEST_NATIVE_OBSERVATION",
+  "run": {
+    "hosted_run_id": 38071036836,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38071036836",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "conclusion": "success",
+    "workflow_source_sha": "03d342c345ba332f59771e8b87183d1e49231190",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "case": "guest-data"
+  },
+  "provenance": {
+    "hosted_result_artifact_id": 11676907580,
+    "hosted_result_artifact_name": "hosted-guest-38071036836-1",
+    "hosted_result_artifact_digest": "sha256:382fc851848869e97928a8b0f5dc7d5761848332b8496ddef394bc26a338e651",
+    "hosted_result_artifact_expired": false,
+    "release_run_id": 38067449240,
+    "release_artifact_id": 11675900444,
+    "release_artifact_name": "matrx-extend-v0.2.469",
+    "version": "0.2.469",
+    "source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904"
+  },
+  "observations": {
+    "guest_auth_state_confirmed": true,
+    "controlled_product_rows": 3,
+    "empty_picker_cancel_dismissed": true,
+    "selection_unchanged_on_cancel": true,
+    "non_get_wbx_pattern_writes_during_cancel": 0,
+    "distinct_field_previews": 2,
+    "two_fields_selected": true,
+    "guest_save_gate_present": true,
+    "pattern_name_and_save_controls_absent": true,
+    "sign_in_action_used": true,
+    "non_get_wbx_pattern_writes_before_auth": 0,
+    "native_assertion_report_status": "pass",
+    "screenshot_review": {
+      "files": ["native-side-panel.png", "normal-target-after-open.png"],
+      "shows_data_ui": false,
+      "note": "Screenshots show generic guest side panel and target page; native assertions provide the Data behavior evidence."
+    }
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" }
+  },
+  "credit_limits": {
+    "EXT_F_2005_T01": "PASS for the bounded guest picker, two-field preview/selection, and unauthenticated save gate on exact Store artifact v0.2.469.",
+    "full_guest_data_acceptance": "Not claimed; other controls/cases, signed-in persistence, and broader dimensions remain open.",
+    "member_admin_or_published_store_install": "No credit.",
+    "D193": "Exact-release Data routing and native acceptance passed. Keep defect fixed pending the paired guest SEO retest meeting its stated closure criterion; SEO run 38070400935 is partial."
+  },
+  "verification": {
+    "artifact": "Downloaded and inspected hosted result artifact 11676907580.",
+    "resource_finals": "Confirmed all three valid decisions in hosted workflow log; resource journals were not included in this artifact.",
+    "tests": "Not run; this was a read-only evidence review."
+  },
+  "checked_files": [
+    "docs/stabilization/defects/EXT-D-0193.json",
+    "docs/stabilization/runs/guest-data-v0469-run38070287633.json",
+    "docs/stabilization/runs/guest-seo-v0469-38070400935.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38071036836/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38071036836/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38071036836/resource-finals.sanitized.json"
+  ],
+  "limitations": [
+    "This independently reviewed run proves bounded guest Data T01 behavior only; full Guest Data remains unverified.",
+    "The hosted artifact omitted resource journals; the three valid resource finals were confirmed from workflow logs.",
+    "Screenshots do not display the Data interaction; behavior credit comes from the native assertion report.",
+    "The paired guest SEO run 38070400935 remains partial, so D193 is fixed but not closed under its stated closure requirement."
+  ]
+}

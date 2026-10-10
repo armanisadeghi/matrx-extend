@@ -40674,13 +40674,14 @@
             "38001402806",
             "38002259163",
             "38049410816",
-            "38050967096"
+            "38050967096",
+            "38071036836"
           ],
-          "retest_status": "Independently reviewed run 38050967096 passes the bounded guest C16 empty-picker Cancel behavior and re-observes the T01 two-field picker/save gate on exact v0.2.464. The guest Data feature cell remains unverified because other controls/cases, signed-in persistence, and broader dimensions remain open; the earlier zero-credit precondition attempt 38049410816 is retained in the run history.",
+          "retest_status": "Independently reviewed hosted run 38071036836 passes bounded guest EXT-F-2005-T01 picker, two-field preview/selection, and save-gate behavior on exact Store v0.2.469. Earlier run 38050967096 supports bounded C16 empty-picker Cancel. The guest Data feature cell remains unverified because other controls/cases, signed-in persistence, and broader dimensions remain open. D193 stays fixed pending completion of the paired SEO retest; run 38070400935 is partial.",
           "retest_evidence": {
-            "run_id": "38050967096",
-            "report": "docs/stabilization/reports/peer-review-run38050967096.json",
-            "scope": "Independent PASS for bounded EXT-F-2005-C16 and the existing guest T01 path; no full Guest Data, authenticated persistence, member/admin, or Store credit."
+            "run_id": "38071036836",
+            "report": "docs/stabilization/reports/peer-review-run38071036836.json",
+            "scope": "Independent PASS for bounded guest EXT-F-2005-T01 on exact Store v0.2.469; no full Guest Data, authenticated persistence, member/admin, or published Store-install credit."
           }
         },
         "member": {

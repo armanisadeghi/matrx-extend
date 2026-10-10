@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "run_id": 38071036836,
+  "scope": "Guarded hosted native guest Data acceptance, bounded EXT-F-2005-T01 retest on exact v0.2.469 Store artifact.",
+  "mode": "guest",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "03d342c345ba332f59771e8b87183d1e49231190",
+  "workflow_lane": "A",
+  "runner": {
+    "label": "macos-15",
+    "architecture": "ARM64",
+    "machine": "arm64"
+  },
+  "started_at": "2026-10-10T17:16:07Z",
+  "finished_at": "2026-10-10T17:23:08Z",
+  "outcome": "pass_bounded",
+  "build": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "release_run_id": 38067449240,
+    "artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "version": "0.2.469",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0"
+  },
+  "hosted_result_artifact": {
+    "id": 11676907580,
+    "name": "hosted-guest-38071036836-1",
+    "digest": "sha256:382fc851848869e97928a8b0f5dc7d5761848332b8496ddef394bc26a338e651",
+    "expired": false
+  },
+  "case_results": {
+    "EXT-F-2005-T01": {
+      "guest": "pass_bounded",
+      "observations": [
+        "Empty picker opened and dismissed without selection; selected-field state stayed unchanged and no pattern write occurred.",
+        "Two distinct native picker previews were observed and two fields were selected.",
+        "Guest save gate was present; pattern name and Save pattern controls were absent.",
+        "Sign in to save action was used; zero non-GET /wbx_pattern requests occurred before authentication."
+      ],
+      "resource_valid": true,
+      "independent_review": "docs/stabilization/reports/peer-review-run38071036836.json"
+    }
+  },
+  "resource_admission": {
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "acceptance": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-data-v0469/run38071036836/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38071036836/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38071036836/resource-finals.sanitized.json",
+    "docs/stabilization/reports/peer-review-run38071036836.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38071036836"
+  ],
+  "limits": [
+    "Only bounded guest T01 picker, preview/selection, and save-gate behavior is credited; full Guest Data remains unverified.",
+    "No signed-in save, server persistence, other Data controls/cases, member/admin behavior, or published Store installation was exercised.",
+    "D193 remains fixed pending the paired guest SEO retest; run 38070400935 is partial and does not yet meet the stated closure criterion."
+  ]
+}
