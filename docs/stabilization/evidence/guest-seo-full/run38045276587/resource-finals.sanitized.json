@@ -1,0 +1,74 @@
+{
+  "source": "Selected safe fields from exact RESOURCE_ADMITTED and RESOURCE_FINAL_DECISION events in the hosted GitHub job log; full journal files were absent from the uploaded artifact.",
+  "phases": [
+    {
+      "phase": "package",
+      "admission": {
+        "at": "2026-10-10T10:34:52.453Z",
+        "admitted": true,
+        "reasons": [],
+        "available_memory_gib": 6.02,
+        "required_memory_gib": 4,
+        "cpu_busy_fraction": 0.07857142857142858,
+        "one_minute_load": 10.25,
+        "logical_cpus": 3,
+        "swap_used_mib": 0,
+        "repository_free_gib": 43.22923278808594
+      },
+      "final": {
+        "at": "2026-10-10T10:34:54.522Z",
+        "run_id": "hosted-package-38045276587-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    },
+    {
+      "phase": "browser",
+      "admission": {
+        "at": "2026-10-10T10:36:48.913Z",
+        "admitted": true,
+        "reasons": [],
+        "available_memory_gib": 5.95,
+        "required_memory_gib": 4,
+        "cpu_busy_fraction": 0.044285714285714296,
+        "one_minute_load": 2.23,
+        "logical_cpus": 3,
+        "swap_used_mib": 0,
+        "repository_free_gib": 43.19361114501953
+      },
+      "final": {
+        "at": "2026-10-10T10:36:54.436Z",
+        "run_id": "hosted-browser-38045276587-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    },
+    {
+      "phase": "guest",
+      "admission": {
+        "at": "2026-10-10T10:38:45.588Z",
+        "admitted": true,
+        "reasons": [],
+        "available_memory_gib": 5.88,
+        "required_memory_gib": 4,
+        "cpu_busy_fraction": 0.22999999999999998,
+        "one_minute_load": 1.18,
+        "logical_cpus": 3,
+        "swap_used_mib": 0,
+        "repository_free_gib": 43.55342483520508
+      },
+      "final": {
+        "at": "2026-10-10T10:39:26.776Z",
+        "run_id": "hosted-guest-38045276587-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    }
+  ]
+}

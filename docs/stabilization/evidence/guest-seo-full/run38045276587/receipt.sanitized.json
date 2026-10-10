@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "verdict": "bounded_partial",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38045276587,
+    "run_attempt": 1,
+    "workflow_head_sha": "eb69d25f20f66dc3f421cd2cf1f55da0327af5a7",
+    "case": "guest-seo",
+    "lane": "B",
+    "runner_label": "macos-15",
+    "runner_image": "macos-15-arm64",
+    "scope": "full",
+    "metadata_fixture": "none",
+    "job_conclusion": "success",
+    "started_at": "2026-10-10T10:32:58Z",
+    "finished_at": "2026-10-10T10:39:39Z",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38045276587"
+  },
+  "development_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "ci_run_attempt": 1,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459",
+    "imported_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11667158719,
+    "name": "hosted-guest-38045276587-1",
+    "digest": "sha256:8646d5b2ccdaf724313687a6347150684d115452809bf66710848d62208ba3f3",
+    "expired": false
+  },
+  "native_report": {
+    "source_artifact_path": "test-results/seo-guest-acceptance.json",
+    "sanitized_path": "native-report.sanitized.json",
+    "sha256": "1757aba5bf2497f1637b8d3dd4aeda1762e15c084f6e9ebaf91b873ee61b644a",
+    "status": "partial",
+    "target_count": 25,
+    "target_status_counts": {
+      "pass": 24,
+      "unverified": 1
+    },
+    "selected_cases": [
+      "T01",
+      "T02",
+      "T03",
+      "T07",
+      "T09",
+      "T14"
+    ],
+    "unverified_reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "sha256": "4ceabcf67e24b4de6e10b494ab4dc7576f8be75d3977aa9ce65617fd5414aeb0",
+    "all_three_phases_valid": true,
+    "journal_upload_limitation": "Selected safe fields from exact RESOURCE_ADMITTED and RESOURCE_FINAL_DECISION events in the hosted GitHub job log; full journal files were absent from the uploaded artifact."
+  },
+  "limitations": [
+    "This bounded full-scope run covers six registered guest SEO cases; the native report has deferred dimensions and does not close the feature or other auth modes.",
+    "Prior controlled run38041517954 is a duplicate observation of its 19 bounded targets; this run adds six more target checks and confirms the broader full-scope batch, while the earlier run remains separately credited.",
+    "Prior Intel run38042618630 remains infrastructure-invalid from high CPU load before product execution and receives zero product credit.",
+    "The hosted artifact omitted the three resource-journal files. The exact safe admission/final events are retained from GitHub job logs; full-journal hashes and process-level evidence are unavailable."
+  ],
+  "sanitization": "Native report retains only case/subtarget verdicts, bounded assertions and counts, public-page observations, safe build identity, and deferred criteria. Credentials, private paths, unrestricted page text, screenshots, and process attribution are excluded."
+}
