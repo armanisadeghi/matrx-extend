@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_guest_seo_controlled_run",
+  "run_id": 38082332936,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38082332936",
+  "workflow_head_sha": "3d5d143901d91e7c87d514464637c8af441baf80",
+  "workflow_conclusion": "success",
+  "version": "0.2.479",
+  "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "release_run_id": 38080281242,
+  "release_artifact_id": 11680078743,
+  "scope": "controlled signed-out guest SEO reviewer path in native side panel",
+  "native_batch_status": "partial",
+  "product_verdict": "PASS_BOUNDED: 19/19 selected controlled subtargets passed; not full SEO acceptance",
+  "provenance": {
+    "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "release_artifact_api_digest": "sha256:c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+    "release_tag_resolves_to_source": true,
+    "runtime_adapted_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "runtime_tree_unchanged_before_after": true,
+    "adaptation": "Only manifest.key added from matching-version local ZIP; independently reconstructed using prepareHostedReleaseArtifact and hashReleaseTree."
+  },
+  "reviewer_path": {
+    "authentication": "Guest/signed out; lane A was used for capacity isolation, not member authentication.",
+    "representative_public_pages": [
+      "https://example.org/",
+      "https://www.iana.org/domains/reserved"
+    ],
+    "visible_audit_assertion": "The unique main SEO tab was selected; its pane was active, linked and visible; audit settled without error; displayed title matched the live document and Headings-group presence matched the page DOM.",
+    "explicit_store_demo_page": "Not used; this is representative public-page coverage, not the named Store reviewer demo."
+  },
+  "assertions": {
+    "count": 19,
+    "all_selected_pass": true,
+    "covered": [
+      "T01 URL switch, reload/current URL audit",
+      "T02 manual re-audit after controlled title/description change",
+      "T03 about:blank restricted-page state and recovery to public page",
+      "T07 guest Summary/AI clipboard choices and actual clipboard readback; JSON absent",
+      "T09 title/headings and sparse/rich details, canonical link safety and destination, broken social-image fallback",
+      "T14 missing social-tag clipboard output and feedback before/after re-audit"
+    ],
+    "resource_finals": "package, browser and acceptance admitted and valid; resourceInvalid=false; exitCode=0"
+  },
+  "limits": [
+    "Run remains partial by scope.",
+    "T09 optional owned metadata fixture and public hreflang/structured-data doors were excluded.",
+    "Automatic link/image/readability/performance metric correctness is unverified; these 19 targets do not establish full metric health.",
+    "Member/admin role behavior, persistence/history, recommendations/Chat staging, and the remaining deferred SEO cases remain unverified.",
+    "Screenshots do not show the SEO result; visible audit claims rest on the native DOM assertion report.",
+    "Prior exact-v479 attempt 38081844032 was stopped as resource-invalid and earns zero credit; this successful retry is independent."
+  ],
+  "evidence_folder": "docs/stabilization/evidence/guest-seo-store/run38082332936",
+  "peer_review": "pending member_secret_restore review after evidence push",
+  "hosted_result_artifact": {
+    "id": 11680962344,
+    "name": "hosted-guest-38082332936-1",
+    "digest": "sha256:3174e52126a6322d7142c361434132be7b8d87957c410a94e7ba464c1dcd7af5",
+    "digest_verified": true
+  },
+  "assertion_reconciliation": "The raw native receipt has an explicit passing reload_audits_current_url target although a generic deferred string still mentions reload. Credit is limited to the explicit target; other reload cases remain unverified."
+}

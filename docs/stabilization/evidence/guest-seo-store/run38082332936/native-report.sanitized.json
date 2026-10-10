@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "scope": "controlled public-page guest SEO actions in native side panel",
+  "status": "partial",
+  "case_selection": {
+    "scope": "controlled",
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "excluded_cases": ["T09 volatile public detail", "T09 optional metadata fixture"]
+  },
+  "target_count": 19,
+  "status_counts": {
+    "pass": 19,
+    "unverified": 0,
+    "fail": 0
+  },
+  "visible_audit": {
+    "representative_pages": ["example.org", "www.iana.org/domains/reserved"],
+    "main_seo_tab_selected": true,
+    "active_linked_pane": true,
+    "audit_settled": true,
+    "document_title_match": true,
+    "heading_group_presence_matches_live_dom": true,
+    "screenshot_shows_seo_result": false
+  },
+  "public_social_controlled_state": {
+    "reaudit_reflected_changed_title_and_description": true,
+    "missing_social_tag_clipboard_feedback_observed_before_and_after_reaudit": true,
+    "broken_preview_image_returned_404": true,
+    "explanatory_fallback_visible": true,
+    "fixture_restored": true
+  },
+  "controls": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_0_title_and_headings",
+      "status": "pass",
+      "assertions": {
+        "titleMatches": true,
+        "headingsPresenceMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+      "status": "pass",
+      "assertions": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_1_title_and_headings",
+      "status": "pass",
+      "assertions": {
+        "titleMatches": true,
+        "headingsPresenceMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+      "status": "pass",
+      "assertions": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "new_url_replaces_visible_title",
+      "status": "pass",
+      "assertions": {
+        "twoDistinctPublicTitles": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "manual_button_returns_to_current_page",
+      "status": "pass",
+      "assertions": {
+        "currentTitlePreserved": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+      "status": "pass",
+      "assertions": {
+        "textChoice": true,
+        "agentChoice": true,
+        "jsonAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "reload_audits_current_url",
+      "status": "pass",
+      "assertions": {
+        "currentTitleMatched": true,
+        "headingsPresenceMatched": true,
+        "reselectedAfterReload": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_role_gate_after_reload",
+      "status": "pass",
+      "assertions": {
+        "textChoice": true,
+        "agentChoice": true,
+        "jsonAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+      "status": "pass",
+      "assertions": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "subtarget": "about_blank_clear_error_without_stale_audit",
+      "status": "pass",
+      "assertions": {
+        "scopeValid": true,
+        "expectedErrorVisible": true,
+        "staleAuditAbsent": true,
+        "copyAuditAbsent": true,
+        "retryOffered": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "subtarget": "public_page_recovers_after_restricted_url",
+      "status": "pass",
+      "assertions": {
+        "publicTitleMatched": true,
+        "headingsPresenceMatched": true,
+        "auditErrorAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "sparse_public_detail_groups",
+      "status": "pass",
+      "assertions": {
+        "descriptionAbsent": true,
+        "canonicalAbsent": true,
+        "groupsMatchPublicDom": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "rich_public_detail_groups_and_canonical_door",
+      "status": "pass",
+      "assertions": {
+        "descriptionMatchesPublicDom": true,
+        "canonicalMatchesPublicDom": true,
+        "groupsMatchPublicDom": true,
+        "outboundAnchorSafe": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "canonical_outbound_opens_expected_public_tab",
+      "status": "pass",
+      "assertions": {
+        "trustedInput": true,
+        "destinationMatchesPublicDom": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtarget": "guest_social_missing_tags_clipboard_before_reaudit",
+      "status": "pass",
+      "assertions": {
+        "exactClipboardMatch": true,
+        "trustedCopyClick": true,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true,
+        "feedbackObserved": true,
+        "feedbackFailureAbsent": true,
+        "clipboardChanged": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "guest_reaudit_captures_changed_page_metadata",
+      "status": "pass",
+      "assertions": {
+        "publicTitleChanged": true,
+        "publicDescriptionChanged": true,
+        "oldAuditVisibleBeforeClick": true,
+        "nativeTitleMatchesChangedPublicDom": true,
+        "trustedReauditClick": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtarget": "guest_social_missing_tags_clipboard_after_reaudit",
+      "status": "pass",
+      "assertions": {
+        "exactClipboardMatch": true,
+        "trustedCopyClick": true,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true,
+        "feedbackObserved": true,
+        "feedbackFailureAbsent": true,
+        "clipboardChanged": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_broken_social_preview_shows_failure_fallback",
+      "status": "pass",
+      "assertions": {
+        "attemptedImageReturned404": true,
+        "auditTitleMatchesChangedPage": true,
+        "explanatoryFallbackVisible": true,
+        "noImageFallbackAbsent": true,
+        "titleAndImageMetadataRestored": true
+      }
+    }
+  ],
+  "limits": [
+    "Controlled scope only; this is partial case coverage, not full SEO health.",
+    "T09 optional metadata fixture and public hreflang/structured-data doors were excluded.",
+    "Link/image/readability/performance automatic metric correctness is not established by these 19 targets.",
+    "Member/admin roles, persistence/history, recommendations/Chat staging, and other deferred SEO flows remain unverified.",
+    "Screenshots show guest startup and the normal page but not the SEO result; behavior evidence is the native assertion receipt."
+  ],
+  "assertion_reconciliation": "The native receipt explicitly passes reload_audits_current_url even though its generic deferred list still mentions a reload dimension; this review credits only the exact reload target and leaves other reload scenarios unverified."
+}
