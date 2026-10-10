@@ -488,7 +488,7 @@ describe('Save never loses input', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
     expect(await screen.findByText(/Source saved, but its name could not be updated/)).toBeTruthy();
-    expect(screen.getByRole('button', { name: /^Saved$/ })).toBeTruthy();
+    expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
     expect((screen.getByLabelText('Retry Source name') as HTMLInputElement).value).toBe(
       'Correct name',
     );
