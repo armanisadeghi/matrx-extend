@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38038588271,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38038588271",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "091dd7f982cf46fea4c6a56e7f7a5ae8db289556",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "acceptance_case": "desktop-settings-guest",
+  "selected_case": "pair-forget",
+  "inventory_case": "EXT-F-1003-T43",
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "source_ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11664539759,
+    "name": "hosted-guest-38038588271-1",
+    "digest": "sha256:a55131f7afd08c551903e7f6cb22f0ed675d2652973285cd9fc44aebc51bf289"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "fail",
+  "failure_stage": "desktop_pair_forget_cancel",
+  "failure_code": "pointer_target_not_unique",
+  "classification": "The native report records one matched and visible Forget control, then pointer_target_not_unique in the cancel stage with zero passed cases. Frozen workflow source awaits the initial Forget click and pair dialog before clicking Cancel through the generic dialog kind, which is scoped to Clear local data. The initial-click diagnostic wrapper recorded no failure. This localizes the selector mismatch to Cancel; Cancel target counts were not serialized.",
+  "acceptance_credit": "none",
+  "resource_finals": {
+    "hosted-package-38038588271-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38038588271-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38038588271-1.jsonl": "child_failed; admitted=true; resourceInvalid=false; exitCode=1"
+  },
+  "evidence_hashes": {
+    "native-report.sanitized.json": "cdb52ac6dab18e5f95c2599c58595a42fe8bdba6b01758ea2cde009619a7b955",
+    "resource-journals/hosted-package-38038588271-1.jsonl": "daf1a6d269a422d79abf1e6aa81440adf6e6954868c04720f811fb9ef19bc901",
+    "resource-journals/hosted-browser-38038588271-1.jsonl": "656bd8ce777cf5f6dd9a206dd3c9e28adbfa9257f6dc929d2502a53c25c8d13c",
+    "resource-journals/hosted-guest-38038588271-1.jsonl": "c76d2c2c00602b8c3a29dc5eddb85787f3987eeeec4d461766a7365c3ca3f327"
+  },
+  "sanitization": {
+    "native_report_reduced_to_fixed_safe_allowlist": true,
+    "resource_journals_copied_with": "scripts/copy-hosted-resource-journal.mjs",
+    "process_attribution_and_opened_paths_removed": true,
+    "screenshots_and_other_private_artifacts_excluded": true,
+    "credentials_or_auth_material_present": false
+  },
+  "independent_review": "pending"
+}

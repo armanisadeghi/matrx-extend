@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
+  "scope": "bounded guest T43 Pair/Forget readiness and Cancel selector diagnostic",
+  "case": "pair-forget",
+  "inventory_case": "EXT-F-1003-T43",
+  "role": "guest",
+  "status": "fail",
+  "build": {
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "acceptance_case": "desktop-settings-guest",
+  "failure_stage": "desktop_pair_forget_cancel",
+  "failure_code": "pointer_target_not_unique",
+  "passed_case_count": 0,
+  "diagnostics": {
+    "desktop_pair_forget_control_readiness": {
+      "settingsActive": true,
+      "pairAvailable": true,
+      "matchedCount": 1,
+      "visibleCount": 1
+    },
+    "initial_forget_pointer_failure_present": false
+  },
+  "observed": "The native report records one matched and visible Forget control, then pointer_target_not_unique in the cancel stage with zero passed cases. Frozen workflow source awaits the initial Forget click and pair dialog before clicking Cancel through the generic dialog kind, which is scoped to Clear local data. The initial-click diagnostic wrapper recorded no failure. This localizes the selector mismatch to Cancel; Cancel target counts were not serialized.",
+  "limits": [
+    "No T43 Pair/Forget acceptance credit; zero passed cases.",
+    "Cancel, storage-removal refusal and retry outcomes remain unverified.",
+    "Cancel selector diagnosis uses frozen source ordering; the report did not serialize Cancel-time target counts.",
+    "This does not establish a healthy desktop-engine connection.",
+    "The report contains no account, page URL, DOM content, pair code, raw error text or screenshot."
+  ]
+}
