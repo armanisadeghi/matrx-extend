@@ -33,3 +33,22 @@ export function requireHostedScrapeRoute(acceptanceCase, mode, prepared, authMod
   }
   return null;
 }
+
+export function hostedScrapeSaveDestination(acceptanceCase, value = 'project') {
+  assert.equal(acceptanceCase, 'scrape-save-member', 'scrape_save_destination_case_refused');
+  assert.ok(value === 'project' || value === 'none', 'scrape_save_destination_invalid');
+  return value;
+}
+
+export function verifyHostedScrapeSaveAssociations(mode, edges, projectId, organizationId) {
+  assert.ok(Array.isArray(edges), 'scrape_save_association_lookup_body_invalid');
+  if (mode === 'none') {
+    assert.equal(edges.length, 0, 'scrape_save_unselected_association_persisted');
+    return 'none';
+  }
+  assert.equal(mode, 'project', 'scrape_save_destination_invalid');
+  const edge = edges.find((item) => item.other_id === projectId && item.other_type === 'project');
+  assert.ok(edge, 'scrape_save_selected_project_edge_missing');
+  assert.equal(edge.organization_id, organizationId, 'scrape_save_edge_organization_mismatch');
+  return 'project';
+}

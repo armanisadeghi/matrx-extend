@@ -5,6 +5,7 @@ import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { verifyHostedScrapeSaveAssociations } from '../../scripts/hosted-scrape-route.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { cleanupProjectFixture, projectFixtureRequest } from './scrape-save-project-fixture.mjs';
@@ -18,6 +19,7 @@ const supabaseUrl = new URL(process.env.WXT_SUPABASE_URL ?? '');
 const publishableKey = process.env.WXT_SUPABASE_PUBLISHABLE_KEY;
 const runId = process.env.GITHUB_RUN_ID;
 const runAttempt = process.env.GITHUB_RUN_ATTEMPT;
+const destinationMode = process.env.MATRX_SCRAPE_SAVE_DESTINATION ?? 'project';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const captureTitle = `Northline source intake ${runId}-${runAttempt}`;
 const captureHeading = `Preparing a Northline appointment ${runId}-${runAttempt}`;
@@ -33,6 +35,7 @@ const report = {
   defect_id: 'EXT-D-0187',
   case_ids: ['EXT-F-1007-T04', 'EXT-F-1007-T29'],
   auth_mode: 'member',
+  destination_mode: destinationMode,
   status: 'unverified',
   stage: 'inputs',
   native_stage: null,
@@ -41,8 +44,7 @@ const report = {
   observations: {},
   cleanup: null,
   failure_stage: null,
-  limits:
-    'Exact imported CI development artifact, real member sign-in, one custom-named Source with one disposable owned Project association, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.',
+  limits: `Exact imported CI development artifact, real member sign-in, one custom-named Source saved with ${destinationMode === 'project' ? 'one disposable owned Project association' : 'no destination'}, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.`,
 };
 
 function safeFailureCode(error) {
@@ -457,6 +459,7 @@ try {
     'development',
     'scrape_save_dev_channel_required',
   );
+  assert.ok(['project', 'none'].includes(destinationMode), 'scrape_save_destination_invalid');
   assert.equal(
     process.env.MATRX_SCRAPE_AUTH_MODE,
     'member',
@@ -644,51 +647,56 @@ try {
           organization_resolution: identity.organization_resolution,
         };
 
-        report.stage = 'owned_project_fixture';
-        projectFixture = {
-          id: randomUUID(),
-          organizationId: selectedOrganizationId,
-          ownerId: identity.profileId,
-          name: `Northline acceptance project ${runId}-${runAttempt}`,
-        };
-        const projectRequest = projectFixtureRequest(projectFixture, 'POST');
-        const createdProject = await panelRest(panel, {
-          ...restUrl('projects', 'projects'),
-          ...projectRequest,
-        });
-        assert.equal(createdProject.status, 201, 'scrape_save_project_fixture_create_failed');
-        const fixtureLookup = projectFixtureRequest(projectFixture);
-        const fixtureReadback = await panelRest(panel, {
-          ...restUrl('projects', 'projects', fixtureLookup.filters),
-          ...fixtureLookup,
-        });
-        assert.equal(fixtureReadback.status, 200, 'scrape_save_project_fixture_readback_failed');
-        assert.equal(
-          fixtureReadback.rows?.length,
-          1,
-          'scrape_save_project_fixture_owner_unverified',
-        );
-        assert.equal(
-          fixtureReadback.rows[0].id,
-          projectFixture.id,
-          'scrape_save_project_fixture_id_mismatch',
-        );
-        assert.equal(
-          fixtureReadback.rows[0].organization_id,
-          projectFixture.organizationId,
-          'scrape_save_project_fixture_org_mismatch',
-        );
-        assert.equal(
-          fixtureReadback.rows[0].created_by,
-          projectFixture.ownerId,
-          'scrape_save_project_fixture_actor_mismatch',
-        );
-        assert.equal(
-          fixtureReadback.rows[0].name,
-          projectFixture.name,
-          'scrape_save_project_fixture_name_mismatch',
-        );
-        report.observations.owned_project_fixture_created = true;
+        if (destinationMode === 'project') {
+          report.stage = 'owned_project_fixture';
+          projectFixture = {
+            id: randomUUID(),
+            organizationId: selectedOrganizationId,
+            ownerId: identity.profileId,
+            name: `Northline acceptance project ${runId}-${runAttempt}`,
+          };
+          const projectRequest = projectFixtureRequest(projectFixture, 'POST');
+          const createdProject = await panelRest(panel, {
+            ...restUrl('projects', 'projects'),
+            ...projectRequest,
+          });
+          assert.equal(createdProject.status, 201, 'scrape_save_project_fixture_create_failed');
+          const fixtureLookup = projectFixtureRequest(projectFixture);
+          const fixtureReadback = await panelRest(panel, {
+            ...restUrl('projects', 'projects', fixtureLookup.filters),
+            ...fixtureLookup,
+          });
+          assert.equal(fixtureReadback.status, 200, 'scrape_save_project_fixture_readback_failed');
+          assert.equal(
+            fixtureReadback.rows?.length,
+            1,
+            'scrape_save_project_fixture_owner_unverified',
+          );
+          assert.equal(
+            fixtureReadback.rows[0].id,
+            projectFixture.id,
+            'scrape_save_project_fixture_id_mismatch',
+          );
+          assert.equal(
+            fixtureReadback.rows[0].organization_id,
+            projectFixture.organizationId,
+            'scrape_save_project_fixture_org_mismatch',
+          );
+          assert.equal(
+            fixtureReadback.rows[0].created_by,
+            projectFixture.ownerId,
+            'scrape_save_project_fixture_actor_mismatch',
+          );
+          assert.equal(
+            fixtureReadback.rows[0].name,
+            projectFixture.name,
+            'scrape_save_project_fixture_name_mismatch',
+          );
+          report.observations.owned_project_fixture_created = true;
+        } else {
+          assert.equal(destinationMode, 'none', 'scrape_save_destination_invalid');
+          report.observations.owned_project_fixture_created = false;
+        }
 
         report.stage = 'owned_fixture';
         await resourceAction(() => page.goto(sourceUrl));
@@ -782,71 +790,84 @@ try {
           tab_and_shift_tab_contained: true,
         };
 
-        report.stage = 'project_association_choice';
-        await resourceAction(() => click(panel, 'button-text', 'Choose a place'));
-        await resourceAction(() => click(panel, 'button-text', 'Projects'));
-        const candidate = await waitFor(
-          'scrape_save_project_candidate_ready',
-          async () => {
-            const state = await evaluate(
-              panel,
-              `(() => {
-                const root = document.querySelector('[data-testid="save-source-form"] [aria-label="Place results"]');
-                const inputs = root?.querySelectorAll('input[aria-label="Search Projects"]') ?? [];
-                const buttons = [...(root?.querySelectorAll('li > button') ?? [])];
-                const available = buttons.filter((button) => button.getAttribute('aria-pressed') === 'false'
-                  && Boolean(button.querySelector('span.flex-1')?.textContent?.trim()));
-                return { input_count: inputs.length, candidate_count: buttons.length,
-                  loading: root?.textContent?.includes('Loading…') === true,
-                  load_error: root?.textContent?.includes('Could not load places.') === true,
-                  empty: root?.textContent?.includes('No places found.') === true,
-                  labels: available.map((button) => button.querySelector('span.flex-1').textContent.trim()) };
-              })()`,
-            );
-            report.observations.project_picker = {
-              search_input_count: state?.input_count ?? null,
-              candidate_count: state?.candidate_count ?? null,
-              unselected_candidate_count: state?.labels?.length ?? null,
-              loading: state?.loading === true,
-              load_error: state?.load_error === true,
-              empty: state?.empty === true,
-            };
-            return state;
-          },
-          (state) =>
-            state?.input_count === 1 &&
-            state.labels?.filter((label) => label === projectFixture.name).length === 1,
-          30000,
-        );
-        const projectName = projectFixture.name;
-        assert.ok(candidate.labels.includes(projectName), 'scrape_save_owned_project_not_visible');
-        assert.ok(projectName, 'scrape_save_project_candidate_name_missing');
-        await resourceAction(() => click(panel, 'button-text', projectName));
-        const selected = await waitFor(
-          'scrape_save_project_staged',
-          () => dialogState(panel),
-          (state) => state?.targetChipCount === 1 && state.targetLabel === projectName,
-        );
-        assert.equal(selected.targetLabel, projectName, 'scrape_save_project_not_staged');
-        const projects = await queryProject(panel, projectName, selectedOrganizationId);
-        assert.equal(projects.status, 200, 'scrape_save_project_lookup_failed');
-        assert.ok(Array.isArray(projects.rows), 'scrape_save_project_lookup_body_invalid');
-        assert.equal(projects.rows.length, 1, 'scrape_save_project_candidate_not_unique');
-        assert.equal(projects.rows[0].name, projectName, 'scrape_save_project_name_mismatch');
-        assert.equal(
-          projects.rows[0].organization_id,
-          selectedOrganizationId,
-          'scrape_save_project_organization_mismatch',
-        );
-        assert.equal(
-          projects.rows[0].id,
-          projectFixture.id,
-          'scrape_save_owned_project_id_mismatch',
-        );
-        projectId = projects.rows[0].id;
-        assert.match(projectId ?? '', UUID, 'scrape_save_project_id_invalid');
-        report.observations.project_selected_in_save_dialog = true;
-        report.observations.project_matches_selected_organization = true;
+        if (destinationMode === 'project') {
+          report.stage = 'project_association_choice';
+          await resourceAction(() => click(panel, 'button-text', 'Choose a place'));
+          await resourceAction(() => click(panel, 'button-text', 'Projects'));
+          const candidate = await waitFor(
+            'scrape_save_project_candidate_ready',
+            async () => {
+              const state = await evaluate(
+                panel,
+                `(() => {
+                  const root = document.querySelector('[data-testid="save-source-form"] [aria-label="Place results"]');
+                  const inputs = root?.querySelectorAll('input[aria-label="Search Projects"]') ?? [];
+                  const buttons = [...(root?.querySelectorAll('li > button') ?? [])];
+                  const available = buttons.filter((button) => button.getAttribute('aria-pressed') === 'false'
+                    && Boolean(button.querySelector('span.flex-1')?.textContent?.trim()));
+                  return { input_count: inputs.length, candidate_count: buttons.length,
+                    loading: root?.textContent?.includes('Loading…') === true,
+                    load_error: root?.textContent?.includes('Could not load places.') === true,
+                    empty: root?.textContent?.includes('No places found.') === true,
+                    labels: available.map((button) => button.querySelector('span.flex-1').textContent.trim()) };
+                })()`,
+              );
+              report.observations.project_picker = {
+                search_input_count: state?.input_count ?? null,
+                candidate_count: state?.candidate_count ?? null,
+                unselected_candidate_count: state?.labels?.length ?? null,
+                loading: state?.loading === true,
+                load_error: state?.load_error === true,
+                empty: state?.empty === true,
+              };
+              return state;
+            },
+            (state) =>
+              state?.input_count === 1 &&
+              state.labels?.filter((label) => label === projectFixture.name).length === 1,
+            30000,
+          );
+          const projectName = projectFixture.name;
+          assert.ok(
+            candidate.labels.includes(projectName),
+            'scrape_save_owned_project_not_visible',
+          );
+          assert.ok(projectName, 'scrape_save_project_candidate_name_missing');
+          await resourceAction(() => click(panel, 'button-text', projectName));
+          const selected = await waitFor(
+            'scrape_save_project_staged',
+            () => dialogState(panel),
+            (state) => state?.targetChipCount === 1 && state.targetLabel === projectName,
+          );
+          assert.equal(selected.targetLabel, projectName, 'scrape_save_project_not_staged');
+          const projects = await queryProject(panel, projectName, selectedOrganizationId);
+          assert.equal(projects.status, 200, 'scrape_save_project_lookup_failed');
+          assert.ok(Array.isArray(projects.rows), 'scrape_save_project_lookup_body_invalid');
+          assert.equal(projects.rows.length, 1, 'scrape_save_project_candidate_not_unique');
+          assert.equal(projects.rows[0].name, projectName, 'scrape_save_project_name_mismatch');
+          assert.equal(
+            projects.rows[0].organization_id,
+            selectedOrganizationId,
+            'scrape_save_project_organization_mismatch',
+          );
+          assert.equal(
+            projects.rows[0].id,
+            projectFixture.id,
+            'scrape_save_owned_project_id_mismatch',
+          );
+          projectId = projects.rows[0].id;
+          assert.match(projectId ?? '', UUID, 'scrape_save_project_id_invalid');
+          report.observations.project_selected_in_save_dialog = true;
+          report.observations.project_matches_selected_organization = true;
+        } else {
+          report.observations.no_destination_retained_before_save =
+            (await dialogState(panel)).targetChipCount === 0;
+          assert.equal(
+            report.observations.no_destination_retained_before_save,
+            true,
+            'scrape_save_unexpected_destination',
+          );
+        }
 
         report.stage = 'save_submit';
         const openBeforeSave = await dialogState(panel);
@@ -889,16 +910,17 @@ try {
         });
         assert.equal(edgeResult.status, 200, 'scrape_save_association_lookup_failed');
         assert.ok(Array.isArray(edgeResult.value), 'scrape_save_association_lookup_body_invalid');
-        const edge = edgeResult.value.find(
-          (item) => item.other_id === projectId && item.other_type === 'project',
-        );
-        assert.ok(edge, 'scrape_save_selected_project_edge_missing');
-        assert.equal(
-          edge.organization_id,
+        verifyHostedScrapeSaveAssociations(
+          destinationMode,
+          edgeResult.value,
+          projectId,
           selectedOrganizationId,
-          'scrape_save_edge_organization_mismatch',
         );
-        report.observations.selected_project_edge_persisted = true;
+        if (destinationMode === 'project') {
+          report.observations.selected_project_edge_persisted = true;
+        } else {
+          report.observations.no_destination_associations_persisted = true;
+        }
 
         report.stage = 'source_ui_reopen';
         await resourceAction(() =>

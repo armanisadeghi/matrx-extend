@@ -73,6 +73,7 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
         ACCEPTANCE_LANE: lane,
         ACCEPTANCE_CASE: acceptanceCase,
         SCRAPE_AUTH_MODE: scrapeAuth,
+        SCRAPE_SAVE_DESTINATION: 'project',
         DESKTOP_SETTINGS_CASE: 'full',
         SEO_CASE_SCOPE: seoCaseScope,
         SEO_METADATA_FIXTURE: seoFixture,

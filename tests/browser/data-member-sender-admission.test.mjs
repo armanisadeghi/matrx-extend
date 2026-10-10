@@ -24,6 +24,7 @@ test('workflow sender diagnostic permits only Member Data and retains ordinary r
         ACCEPTANCE_CASE: acceptanceCase,
         RELOAD_SENDER_DOCUMENT_DIAGNOSTIC: enabled,
         SCRAPE_AUTH_MODE: acceptanceCase === 'member-data' ? 'member' : 'guest',
+        SCRAPE_SAVE_DESTINATION: 'project',
         DESKTOP_SETTINGS_CASE: 'full',
         SEO_CASE_SCOPE: 'full',
         SEO_METADATA_FIXTURE: 'none',

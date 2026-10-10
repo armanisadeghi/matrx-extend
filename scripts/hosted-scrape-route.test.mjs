@@ -5,7 +5,11 @@ import { test } from 'node:test';
 import { scrapeNativeSelection } from '../tests/browser/scrape-native-selection.mjs';
 import { hostedAcceptanceRoute } from './hosted-acceptance-route.mjs';
 import { requireHostedAcceptanceCredential } from './hosted-profile-route.mjs';
-import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
+import {
+  hostedScrapeSaveDestination,
+  requireHostedScrapeRoute,
+  verifyHostedScrapeSaveAssociations,
+} from './hosted-scrape-route.mjs';
 
 const development = { kind: 'ci_development_test', eligibleStore: false };
 const store = { kind: 'published_store_zip_adapted' };
@@ -121,6 +125,37 @@ test('D187 Save Source requires the exact unpublished CI development artifact', 
         }),
       }),
     /d87_member_fingerprint_mismatch/,
+  );
+});
+
+test('D187 destination mode admits only the explicit project and no-destination cases', () => {
+  assert.equal(hostedScrapeSaveDestination('scrape-save-member', 'project'), 'project');
+  assert.equal(hostedScrapeSaveDestination('scrape-save-member', 'none'), 'none');
+  assert.throws(
+    () => hostedScrapeSaveDestination('scrape-save-member', 'library'),
+    /scrape_save_destination_invalid/,
+  );
+  assert.throws(
+    () => hostedScrapeSaveDestination('guest-chat', 'none'),
+    /scrape_save_destination_case_refused/,
+  );
+  assert.equal(verifyHostedScrapeSaveAssociations('none', [], null, 'org'), 'none');
+  assert.throws(
+    () => verifyHostedScrapeSaveAssociations('none', [{ other_type: 'project' }], null, 'org'),
+    /scrape_save_unselected_association_persisted/,
+  );
+  assert.equal(
+    verifyHostedScrapeSaveAssociations(
+      'project',
+      [{ other_type: 'project', other_id: 'project-id', organization_id: 'org' }],
+      'project-id',
+      'org',
+    ),
+    'project',
+  );
+  assert.throws(
+    () => verifyHostedScrapeSaveAssociations('project', [], 'project-id', 'org'),
+    /scrape_save_selected_project_edge_missing/,
   );
 });
 
@@ -250,6 +285,7 @@ test('workflow admits member Data with member auth while preserving guest and D1
     SCRAPE_DIAGNOSTIC_CPU_RATE: '',
     SCRAPE_WIDTH_MODE: 'narrow',
     SCRAPE_NORMAL_WIDTH_PX: '',
+    SCRAPE_SAVE_DESTINATION: 'project',
     RUNNER_LABEL: isArm64 ? 'macos-15' : 'macos-15-intel',
     RUNNER_ARCH: isArm64 ? 'ARM64' : 'X64',
   };
@@ -283,4 +319,30 @@ test('workflow admits member Data with member auth while preserving guest and D1
       );
     }
   }
+  assert.equal(
+    runWorkflowStep(laneAdmission, {
+      ...shared,
+      ACCEPTANCE_CASE: 'scrape-save-member',
+      SCRAPE_AUTH_MODE: 'member',
+      SCRAPE_SAVE_DESTINATION: 'none',
+    }).status,
+    0,
+  );
+  assert.notEqual(
+    runWorkflowStep(laneAdmission, {
+      ...shared,
+      ACCEPTANCE_CASE: 'scrape-save-member',
+      SCRAPE_AUTH_MODE: 'member',
+      SCRAPE_SAVE_DESTINATION: 'library',
+    }).status,
+    0,
+  );
+  assert.notEqual(
+    runWorkflowStep(laneAdmission, {
+      ...shared,
+      ACCEPTANCE_CASE: 'guest-chat',
+      SCRAPE_SAVE_DESTINATION: 'none',
+    }).status,
+    0,
+  );
 });
