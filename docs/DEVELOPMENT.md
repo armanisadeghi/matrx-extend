@@ -53,7 +53,9 @@ prohibition on agents running manual builds or releases.
 
 `chrome://extensions` → enable Developer Mode → "Load unpacked" → select `.output/chrome-mv3-dev/`.
 In the `arman@armansadeghi.com` Chrome profile, keep the Store extension installed
-beside the unpacked copy and pin both from their extension Details pages. Confirm
+beside the unpacked copy. If it is absent, install the official Store item
+`hnfolienncfklkgmdjjmhhegglimlamg` in that same profile. Pin both from Chrome's
+Extensions toolbar menu so their separate icons are available for quick testing. Confirm
 the unpacked ID is `cihdmkcdjjckfhjpgoedmgfpoljebaml`, its **Loaded from** path is
 the stable folder above, and its displayed version matches the promoted receipt.
 
