@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": 38069633380,
+  "status": "bounded_pass",
+  "case_id": "member-chat",
+  "observed_at": "2026-10-10T17:02:57Z",
+  "workflow_source_sha": "3fa0578b605b9e7d165195435b522bc91e8cda76",
+  "artifact": {
+    "release_run_id": 38067449240,
+    "artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "version": "0.2.469",
+    "product_source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "digest": "sha256:b8a7ecf06718b690cbededd69a18843baf241f52b1e1f709b35354342e7bfdc6",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0"
+  },
+  "backend_source_sha": "d5aa71b24ae58cb84e19d80c8e916466ad5d0588",
+  "verification": {
+    "auth": "Existing-user magic-link login; signed-in web and extension; canonical admin check matched the extension user and returned HTTP 200 with zero rows.",
+    "chat": "One terminal real assistant answer observed.",
+    "transport": {
+      "start_count": 1,
+      "organization_header_present": true,
+      "start_http_status": 200,
+      "response_matches_request_conversation": true,
+      "backend_request_identity_present": true
+    }
+  },
+  "resource_finals": {
+    "package": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": { "resource_invalid": false, "exit_code": 0, "decision": "valid" }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/member-chat-v0469/run38069633380/receipt.sanitized.json",
+    "docs/stabilization/evidence/member-chat-v0469/run38069633380/hosted-package.jsonl",
+    "docs/stabilization/evidence/member-chat-v0469/run38069633380/hosted-browser.jsonl",
+    "docs/stabilization/evidence/member-chat-v0469/run38069633380/hosted-guest.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38069633380"
+  ],
+  "limitations": [
+    "The specific organization identity is not independently verified: the receipt retains only the header fingerprint. The approved-organization comparison is not evaluated by this standard member-chat runner path.",
+    "This is bounded release-artifact member Chat evidence, not Settings, Store-install, or full-surface coverage."
+  ],
+  "credential_cleanup": {
+    "temporary_github_secret_absent": true,
+    "local_single_use_link_file_absent": true
+  }
+}

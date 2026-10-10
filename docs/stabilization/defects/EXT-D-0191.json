@@ -7,7 +7,7 @@
   "title": "Member Chat acceptance incorrectly requires a persisted device organization override",
   "severity": "S2: valid first-login member cannot reach Chat acceptance",
   "priority": "P1: restore exact-release member acceptance",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root",
   "preconditions": [
     "Exact v0.2.469 hosted candidate with a real non-admin signed in.",
@@ -29,14 +29,16 @@
     "docs/stabilization/resource-journals/d191-member-org-focused-ready.jsonl",
     "docs/stabilization/reports/d191-source-guard-red-proof.json"
   ],
-  "fix_commit": null,
+  "fix_commit": "0343aa572",
   "verification": [
     "Source execution guard failed before repair at selected organization must persist as a valid object; passes after repair for both absent and present device overrides.",
     "Source transport-verdict guard rejects missing/duplicate starts, absent organization header fingerprint, rejected HTTP status, mismatched conversation and absent backend request identity.",
     "Durable reproducible RED proof: docs/stabilization/reports/d191-source-guard-red-proof.json embeds the exact scratch runner, invocation, exit 1 outputs and ERR_ASSERTION failures for old-device-gate and no-op transport-verdict. The runner verifies shared harness and source guard hashes remain unchanged; both mutants rejected. Zero browser/product behavior credit.",
     "Biome check and node --check pass for the edited JavaScript.",
     "Fresh hosted browser retest and independent peer review remain pending; source guards provide zero product behavior credit.",
-    "Resource-valid focused run d191-member-org-focused-ready passed 14/14 source/observer guards with RESOURCE_FINAL_DECISION valid."
+    "Resource-valid focused run d191-member-org-focused-ready passed 14/14 source/observer guards with RESOURCE_FINAL_DECISION valid.",
+    "Fresh exact-v0.2.469 hosted non-admin Chat run 38069633380 completed a real answer with one organization-bearing HTTP 200 start and correlated response; all resource finals valid.",
+    "Independent release-gate peer reviewed run 38069633380 and exact Store ZIP provenance: bounded member-chat PASS. The specific organization identity and selected permission-mode alignment remain outside this bounded claim."
   ],
   "closure_requirement": "Independent review and fresh exact-release hosted non-admin Chat acceptance must observe the real outbound organization-bearing request, server acceptance and completed answer. No product behavior credit from local source guards.",
   "transition_history": [
@@ -63,6 +65,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Focused source guard passes after failing before fix; independent review and hosted retest pending. Infrastructure-only; zero product behavior credit."
+    },
+    {
+      "at": "2026-10-10T17:07:00Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Fresh exact-release non-admin Chat run 38069633380 reached a completed answer and accepted correlated organization-bearing server request under valid resource finals."
+    },
+    {
+      "at": "2026-10-10T17:07:00Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent peer verified the original harness reproduction no longer blocks Chat; bounded release-gate behavior passed."
     }
   ]
 }

@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "run_id": 38069633380,
+  "case_id": "member-chat",
+  "lane": "A",
+  "workflow_source_sha": "3fa0578b605b9e7d165195435b522bc91e8cda76",
+  "release_artifact": {
+    "release_run_id": 38067449240,
+    "release_workflow_head_sha": "f8a23b43450eca6f41e5a76c97cc66ba4e9a7922",
+    "product_source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "version": "0.2.469",
+    "artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "artifact_digest": "sha256:b8a7ecf06718b690cbededd69a18843baf241f52b1e1f709b35354342e7bfdc6",
+    "unpacked_tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "backend_source_sha": "d5aa71b24ae58cb84e19d80c8e916466ad5d0588",
+  "scope": "Fresh hosted Chrome-for-Testing profile; existing-user magic-link authentication; real signed-in non-admin member Chat",
+  "result": {
+    "status": "pass",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "canonical_extension_admin_check": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "returned_rows": 0
+    },
+    "organization_selected": true,
+    "chat_visible": true,
+    "terminal_real_assistant_answer": true,
+    "completed_reply_count": 1,
+    "answer_names_capture_understand_use": true,
+    "chat_start_count": 1,
+    "organization_header_present": true,
+    "chat_start_http_status": 200,
+    "response_matches_request_conversation": true,
+    "backend_request_identity_present": true,
+    "route": "mandate",
+    "target_kind": "mandate_key"
+  },
+  "resource_finals": {
+    "hosted-package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_absent": true,
+    "local_single_use_link_file_absent": true,
+    "credential_values_recorded": false
+  },
+  "limitations": [
+    "The runner records only a hash for the organization header and does not expose the identifier; this bounded case proves a populated header and HTTP 200 acceptance, not the specific organization identity.",
+    "The approved-organization hash comparison is specific to the separate admin approval mode and is not evaluated in this standard member-chat mode.",
+    "This is one bounded release-artifact member-chat acceptance, not broad Settings, Store-install, or full extension coverage."
+  ],
+  "screenshots": {
+    "hosted_run_artifact": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38069633380",
+    "result_screenshot_available": true
+  },
+  "product_credit": "bounded pass for member-chat only"
+}
