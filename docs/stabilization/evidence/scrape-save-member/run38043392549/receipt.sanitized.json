@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "verdict": "unverified_pre_product_cdp_failure",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38043392549,
+    "run_attempt": 1,
+    "workflow_head_sha": "94d7a1489509adbf6804960f492fe7eae07cacac",
+    "event": "workflow_dispatch",
+    "case": "scrape-save-member",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "runner_name": "GitHub Actions 1000102201",
+    "conclusion": "failure",
+    "started_at": "2026-10-10T10:00:29Z",
+    "finished_at": "2026-10-10T10:09:09Z",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38043392549"
+  },
+  "development_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "ci_run_attempt": 1,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11667200837,
+    "name": "hosted-guest-38043392549-1",
+    "digest": "sha256:47c0cf1e45af3463d327166e77d13de821e7358bfba8e332b829df5b71ae5a02",
+    "expired": false
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "sha256": "fe5ad6b652f6ecc5c250f69f6f39e553bd802c80d4c91cf80f7b7e1cdab6132a",
+    "status": "unverified",
+    "stage": "inputs",
+    "native_stage": "cdp_connect",
+    "error_code": "owned_cdp_endpoint_timeout",
+    "destination_mode": "none",
+    "authentication_started": false,
+    "save_action_started": false
+  },
+  "resource_finals": {
+    "hosted-package-38043392549-1.jsonl": {
+      "path": "resource-journals/hosted-package-38043392549-1.jsonl",
+      "sha256": "161448554c020a8df22a8c4e4ca1d5276bdacaffe2a5fac267c09835101a894d",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38043392549-1.jsonl": {
+      "path": "resource-journals/hosted-browser-38043392549-1.jsonl",
+      "sha256": "c5a5f977afafd96baacdfec3c0fa0caf24ebfc8ae33d48bcc292b1b5496c994a",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38043392549-1.jsonl": {
+      "path": "resource-journals/hosted-guest-38043392549-1.jsonl",
+      "sha256": "34ed313b533576c65e4d8cafcfcfd4c0a8900d5eb857dba2f4ae5cea64443f30",
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid"
+    }
+  },
+  "secret_cleanup": {
+    "repository_secret_absent": true,
+    "private_one_time_link_file_absent": true
+  },
+  "diagnostic_limit": "The owned Chrome DevTools endpoint timed out before authentication or product interaction. Package and browser phases were resource-valid. The guest phase ended with CPU recovery pending (RESOURCE_CPU_BUSY), child exit 1, and invalid resource final exit 3. This run does not exercise no-destination saving and earns no product pass/fail or defect verdict.",
+  "sanitization": "Native result is reduced to fixed stage/code, booleans, selected case and artifact identity. Resource journals were copied through scripts/copy-hosted-resource-journal.mjs, excluding process attribution and private paths. No credentials, one-time URL, screenshots, page content or raw logs are included."
+}

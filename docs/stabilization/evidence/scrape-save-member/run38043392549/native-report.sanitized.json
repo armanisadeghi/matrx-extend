@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "auth_mode": "member",
+  "destination_mode": "none",
+  "status": "unverified",
+  "stage": "inputs",
+  "failure_stage": "inputs",
+  "native_stage": "cdp_connect",
+  "error_code": "owned_cdp_endpoint_timeout",
+  "observations_recorded": false,
+  "authentication_started": false,
+  "save_action_started": false,
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "limits": "Native CDP endpoint connection timed out in the input stage before authentication, capture, or Save Source interaction. This run does not verify no-destination behavior and earns no product pass/fail or defect verdict."
+}
