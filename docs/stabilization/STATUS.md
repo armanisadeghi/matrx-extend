@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-10 05:53 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-10T05:48:54Z. 205 features · 769 cases · 1358 controls · 187 linked defect records.
+Generated 2026-10-10 07:49 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-10T07:49:16Z. 205 features · 769 cases · 1358 controls · 187 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 94 · Partial: 90 · Fail: 2 · Unverified: 1043 · N/A: 1.
+Applicable case-by-role slots: **1230** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1043 · N/A: 1.
 Unverified splits into **132 explicitly marked unverified** and **911 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -24,7 +24,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 8 pass · 5 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 8, partial 15, fail 0, unverified 68, n/a 0 | 10 |
+| [Scrape](#scrape) | 1 | 9 pass · 4 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 9, partial 14, fail 0, unverified 68, n/a 0 | 10 |
 | [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 36, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -511,7 +511,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 - EXT-F-1003-T40 · guest: Pass. Independent review approves a bounded guest T40 pass on the exact frozen 0.2.458 development artifact. Warm and post-full-extension-reload ON/OFF capture behavior passed. The report's `initial` criterion is after warm OFF; original pre-probe baseline values were captured separately and key/field equality was asserted during cleanup, though that baseline was not serialized. No current-main, Store, member/admin, or broader feature claim.
   Evidence / build / date recorded: 38020947337, ['docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/receipt.json', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/native-report.sanitized.json', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-package-38020947337-1.jsonl', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-browser-38020947337-1.jsonl', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-guest-38020947337-1.jsonl']
 - EXT-F-1003-T43 · guest: Partial.
-  Evidence / build / date recorded: 37701201664, ['.research/desktop-remaining-native-20261007.json', '.research/lifecycle-desktop-final-review-20261007.json']
+  Evidence / build / date recorded: 38034890248, ['docs/stabilization/evidence/desktop-settings-hosted/run38034890248/receipt.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/native-report.sanitized.json', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-package-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-browser-38034890248-1.jsonl', 'docs/stabilization/evidence/desktop-settings-hosted/run38034890248/resource-journals/hosted-guest-38034890248-1.jsonl']
 - EXT-F-1003-T44 · member: Partial.
   Evidence / build / date recorded: desktop-settings-member-20261003-independent01, ['.research/desktop-settings-independent-native.json', '.research/desktop-settings-guard-proof.json', '.research/settings-forget-reset-final.json']
 - EXT-F-1003-T45 · admin: Partial.
@@ -849,7 +849,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1007-T10 Remove image | Pass | Partial | Unverified | EXT-F-1007-C10 |
 | EXT-F-1007-T11 Add image URL validation | Pass | Partial | Unverified | EXT-F-1007-C11 |
 | EXT-F-1007-T12 Video actions | Pass | Partial | Unverified | EXT-F-1007-C12 |
-| EXT-F-1007-T13 Link actions | Partial | Partial | Unverified | EXT-F-1007-C13 |
+| EXT-F-1007-T13 Link actions | Pass | Partial | Unverified | EXT-F-1007-C13 |
 | EXT-F-1007-T14 Capture error recovery | Partial | Unverified | Unverified | EXT-F-1007-C14 |
 | EXT-F-1007-T15 Admin capture diagnostics gate | Unverified | Unverified | Unverified | EXT-F-1007-C15 |
 | EXT-F-1007-T16 Diagnose Missing/Unwanted picker | Unverified | Unverified | Unverified | EXT-F-1007-C16 |
@@ -908,8 +908,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 38021736744, ['docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json', 'docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl']
 - EXT-F-1007-T12 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload; verify native link and clipboard outcomes. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T13 · guest: Partial. Guest link actions passed warm and after full extension reload; signed-in modes remain unverified.
-  Evidence / build / date recorded: 38021736744, ['docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json', 'docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl']
+- EXT-F-1007-T13 · guest: Pass. T13 guest subtarget passed warm and after reload with zero action failures; overall T13 remains partial for member/admin modes. The full guest Scrape driver result was partial; this update grants only the T13 guest cell.
+  Evidence / build / date recorded: 38032960562, 2026-10-10T07:09:45Z, ['docs/stabilization/evidence/guest-scrape-hosted/run38032960562/receipt.sanitized.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38032960562/native-report.sanitized.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38032960562/resource-journals/hosted-package-38032960562-1.jsonl', 'docs/stabilization/evidence/guest-scrape-hosted/run38032960562/resource-journals/hosted-browser-38032960562-1.jsonl', 'docs/stabilization/evidence/guest-scrape-hosted/run38032960562/resource-journals/hosted-guest-38032960562-1.jsonl']
 - EXT-F-1007-T13 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload; guest/admin modes remain unverified by this receipt. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T14 · guest: Partial. A restricted-URL dismissal was observed, but no natural recoverable error occurred to exercise Reload page, Try again, or deep-mode retry.
@@ -962,7 +962,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 - EXT-F-1008-T07 · guest: Partial.
   Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json']
 - EXT-F-1008-T09 · guest: Partial.
-  Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json', 'docs/stabilization/evidence/guest-seo-behavior/run38024829250/receipt.json', 'docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json']
+  Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json', 'docs/stabilization/evidence/guest-seo-behavior/run38024829250/receipt.json', 'docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json', 'docs/stabilization/evidence/seo-readability-hosted/run38034766398/receipt.sanitized.json', 'docs/stabilization/evidence/seo-readability-hosted/run38034766398/native-report.sanitized.json', 'docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-package-38034766398-1.jsonl', 'docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-browser-38034766398-1.jsonl', 'docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-guest-38034766398-1.jsonl']
 - EXT-F-1008-T14 · guest: Partial.
   Evidence / build / date recorded: 38016503649, ['.research/seo-controlled-followon-38016503649.json', '.research/seo-controlled-followon-38016503649-peer.json', '.research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json']
 

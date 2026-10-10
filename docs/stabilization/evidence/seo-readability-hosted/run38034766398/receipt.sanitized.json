@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1008-T09",
+  "verdict": "bounded_partial",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38034766398,
+    "run_attempt": 1,
+    "workflow_head_sha": "6b286a60787da646a9e35c01eb378f9191ed7e60",
+    "lane": "B",
+    "case": "guest-seo",
+    "scope": "readability",
+    "runner_label": "macos-15",
+    "runner_architecture": "ARM64",
+    "job_conclusion": "success",
+    "finished_at": "2026-10-10T07:38:53Z"
+  },
+  "development_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c",
+    "ci_run_id": 38032654367,
+    "ci_run_attempt": 1,
+    "artifact_id": 11663251990,
+    "artifact_digest": "sha256:92951918374737bd740d202cad9dfa37beda965ed67af6cf472c73867fb46c3e",
+    "tree_sha256": "db4aecd3a87d865bb97288f9e61b7d71a7045e6b71c51e58cb51d22a7e1e57a2",
+    "version": "0.2.458",
+    "source_state_at_import": {
+      "origin_main": "04f3698230cbee0223ffb92f4f69a5da3a7ffd2f",
+      "local_head": "6b286a60787da646a9e35c01eb378f9191ed7e60",
+      "tracked_dirty": false,
+      "untracked_runner_inputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11664205568,
+    "name": "hosted-guest-38034766398-1",
+    "digest": "sha256:98cd5340cc851e30e0b7b49f308d972da07726bc7d2cce24039791587e9f669f"
+  },
+  "resource_finals": {
+    "hosted-package-38034766398-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "resource-journals/hosted-package-38034766398-1.jsonl",
+      "sha256": "90f1c34888c611768d25eae5eb05ae7be2961929a501ae19dc7e4c0e140e2a14"
+    },
+    "hosted-browser-38034766398-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "resource-journals/hosted-browser-38034766398-1.jsonl",
+      "sha256": "d579bb20a487d6b7f559c233c8afc57ba808ee4a53c6c207e0b1601d521c0c3e"
+    },
+    "hosted-guest-38034766398-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "resource-journals/hosted-guest-38034766398-1.jsonl",
+      "sha256": "9e182e9ab14caed862f5da3a1843b72e996a2517f96b4976d4c732f0ddc6446d"
+    }
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "status": "partial",
+    "overall_result": "bounded_partial",
+    "target_status": "pass",
+    "target_subtarget": "guest_manual_readability_matches_two_known_texts",
+    "restoration_confirmed": true
+  },
+  "sanitization": "Report was reduced to the selected T09 known-text result, original-page re-audit/restoration, artifact identity, and resource decisions. Unrelated page metadata and operational paths were omitted. Resource journals were copied through the supported sanitizer; no process-attribution rows or secret-bearing values are retained.",
+  "independent_review": "PASS for only guest EXT-F-1008-T09 guest_manual_readability_matches_two_known_texts. The reviewer independently matched both exact displayed readings against the expected values, verified original-page re-audit/restoration, and matched all three sanitized journal hashes and valid finals. No full T09/SEO, current-main, member/admin, or Store credit."
+}

@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38034890248,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38034890248",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "6b286a60787da646a9e35c01eb378f9191ed7e60",
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "acceptance_case": "desktop-settings-guest",
+  "selected_case": "full",
+  "defect_ids": [
+    "EXT-D-0084",
+    "EXT-D-0086"
+  ],
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c",
+    "source_ci_run_id": 38032654367,
+    "artifact_id": 11663251990,
+    "artifact_digest": "sha256:92951918374737bd740d202cad9dfa37beda965ed67af6cf472c73867fb46c3e",
+    "tree_sha256": "db4aecd3a87d865bb97288f9e61b7d71a7045e6b71c51e58cb51d22a7e1e57a2",
+    "version": "0.2.458",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11664200889,
+    "name": "hosted-guest-38034890248-1",
+    "digest": "sha256:e2bf071c0ce5fb24bc448afd7ae9f926ffb62a262883fd3e16d89973c275452c"
+  },
+  "workflow_conclusion": "success",
+  "native_report_status": "partial",
+  "pass_count": 10,
+  "unverified_count": 1,
+  "resource_valid_acceptance": true,
+  "resource_finals": {
+    "hosted-package-38034890248-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38034890248-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38034890248-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "observed": {
+    "cases": [
+      {
+        "name": "baseline port saved through trusted UI",
+        "status": "pass",
+        "observation": {
+          "persisted": true
+        },
+        "observation_field_count": 1
+      },
+      {
+        "name": "port refusal preserves prior value and offers retry",
+        "status": "pass",
+        "observation": {
+          "prior_saved": true,
+          "error_visible": true
+        },
+        "observation_field_count": 2
+      },
+      {
+        "name": "port retry survives panel reload",
+        "status": "pass",
+        "observation": {
+          "persisted": true
+        },
+        "observation_field_count": 1
+      },
+      {
+        "name": "overlapping port submissions persist latest after reload",
+        "status": "pass",
+        "observation": {
+          "ordered": true,
+          "persisted": true
+        },
+        "observation_field_count": 2
+      },
+      {
+        "name": "delayed initial read preserves edited port and precedes write",
+        "status": "pass",
+        "observation": {
+          "edit_preserved": true,
+          "write_ordered": true,
+          "persisted": true
+        },
+        "observation_field_count": 3
+      },
+      {
+        "name": "pair refusal keeps input and visible retry",
+        "status": "pass",
+        "observation": {
+          "error_visible": true,
+          "prior_value_preserved": true
+        },
+        "observation_field_count": 2
+      },
+      {
+        "name": "pair retry persisted synthetic value",
+        "status": "pass",
+        "observation": {
+          "persisted": true
+        },
+        "observation_field_count": 1
+      },
+      {
+        "name": "overlapping pair submissions persist latest after reload",
+        "status": "pass",
+        "observation": {
+          "ordered": true,
+          "persisted": true
+        },
+        "observation_field_count": 2
+      },
+      {
+        "name": "pair-code removal refusal and retry",
+        "status": "unverified",
+        "reason": "HTTP transport and product confirmation are unavailable in this profile"
+      },
+      {
+        "name": "reset refusal keeps confirmation and saved value",
+        "status": "pass",
+        "observation": {
+          "error_visible": true,
+          "retry_available": true,
+          "prior_values_preserved": true
+        },
+        "observation_field_count": 5
+      },
+      {
+        "name": "reset retry clears prior local/session values and signs out after reload",
+        "status": "pass",
+        "observation": {
+          "signed_out": true,
+          "session_fixture_removed": true
+        },
+        "observation_field_count": 4
+      }
+    ],
+    "reset_census": {
+      "local": {
+        "before": 7,
+        "missing": 2,
+        "identical": 1,
+        "allowedFresh": 4,
+        "unexplained": 0,
+        "unexplainedKeys": []
+      },
+      "session": {
+        "before": 1,
+        "missing": 1,
+        "identical": 0,
+        "allowedFresh": 0,
+        "unexplained": 0,
+        "unexplainedKeys": []
+      },
+      "session_fixture_present": false
+    }
+  },
+  "scope_limit": {
+    "unverified_case": [
+      {
+        "name": "pair-code removal refusal and retry",
+        "reason": "HTTP transport and product confirmation are unavailable in this profile"
+      }
+    ],
+    "engine_connection": "Storage fault injection does not establish healthy desktop-engine connectivity.",
+    "pair_code_clear": "Pair-code clear requires HTTP transport; no product confirmation is inferred from a stored synthetic code.",
+    "interpretation": "Full guest route resulted in a partial report: 10 cases passed and 1 case remains unverified; no complete Desktop Settings pass is claimed."
+  },
+  "evidence_hashes": {
+    "native-report.sanitized.json": "eaddeee82f58504402613f3bbe9ea41e78b5e3499bd5c883213a16d6f9aceba4",
+    "resource-journals/hosted-package-38034890248-1.jsonl": "cd9fba011fae1b73e4ffefd31c11d0de8a2eec68d75272a75b20678dfe8e2128",
+    "resource-journals/hosted-browser-38034890248-1.jsonl": "9790411e4ff20216f8be638f7b7dd2971c60bdf1d2b0afd55783563766179686",
+    "resource-journals/hosted-guest-38034890248-1.jsonl": "0c40f7520471699edfd381f13ba93538e31121938df35df81c5756cf6df902c7"
+  },
+  "sanitization": {
+    "stale_journals_from_other_run_ids_excluded": true,
+    "runner_artifact_path_removed": true,
+    "report_fields_allowlisted": true,
+    "process_attribution_and_opened_paths_removed_by_shared_sanitizer": true,
+    "credentials_or_auth_material_present": false
+  }
+}
