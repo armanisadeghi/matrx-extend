@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38021955570,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38021955570",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "dcc00a95d4038d71c021f92b6a5e3432c2c07cd4",
+  "lane": "A",
+  "acceptance_case": "member-data",
+  "runner_label": "macos-15",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38019685913,
+    "development_artifact_id": 11657971729,
+    "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+    "version": "0.2.458",
+    "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "fail",
+  "failure_stage": "extension_reload",
+  "failure_code": "native_acceptance_error",
+  "bounded_observations": {
+    "member_auth_and_non_admin_identity_verified": true,
+    "selected_organization_verified": true,
+    "two_picker_previews_observed": true,
+    "save_post_status": 201,
+    "request_body_organization_matches_selected": true,
+    "saved_row_exact_name_and_organization_lookup": true,
+    "saved_pattern_refreshed": true,
+    "saved_pattern_run_before_reload": true,
+    "tsv_json_ai_clipboard_matched_fixture_before_reload": true,
+    "cancel_cleared_unsaved_selection": true
+  },
+  "unverified": [
+    "reload lifecycle and saved-pattern persistence",
+    "post-reload run and clipboard modes",
+    "admin and Store behavior"
+  ],
+  "failure_classification": "Reload stage stopped with generic native_acceptance_error in the sanitized report and safe workflow logs. The exact underlying reload exception is not captured; no product failure is assigned.",
+  "cleanup": {
+    "native_report_verified": false,
+    "native_report_error": "native_acceptance_error",
+    "post_run_exact_row_soft_delete_verified": true,
+    "active_residual_count": 0,
+    "credential_secret_removed_and_verified": true,
+    "local_one_time_link_removed_and_verified": true,
+    "details_file": "post-run-cleanup.sanitized.json"
+  },
+  "resource_journals": {
+    "package_final": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "browser_final": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "guest_final": "child_failed; admitted=true; resourceInvalid=false; exitCode=1",
+    "all_resource_invalid_flags_false": true
+  },
+  "scope_note": "This bounded attempt adds pre-reload member Save, saved-pattern run, clipboard and Cancel observations only. T03 remains Partial; no full lifecycle pass, Store/admin/current-main claim.",
+  "evidence_files": {
+    "native_report": {
+      "path": "native-report.sanitized.json",
+      "sha256": "b7a7f5457479b51caecf927ea096d2695dd85d53b5b4e14afe5fa7fa3c881b6f"
+    },
+    "post_run_cleanup": {
+      "path": "post-run-cleanup.sanitized.json",
+      "sha256": "d5c4040281dde6d9bf99180fba16ae73c07a64794634e43c19194531911db0a4"
+    },
+    "resource_journals": [
+      {
+        "path": "resource-journals/hosted-package-38021955570-1.jsonl",
+        "sha256": "a5b199ce755f94afbce538d4112b344347bda7a2b00c531d8cb54089dddcc09c"
+      },
+      {
+        "path": "resource-journals/hosted-browser-38021955570-1.jsonl",
+        "sha256": "23d462d537fe0bffed0d2c1e92e28d352eb52b991ff594fce0c600e721f28abe"
+      },
+      {
+        "path": "resource-journals/hosted-guest-38021955570-1.jsonl",
+        "sha256": "b8cef5fb9d0befb91776b85b75f071e880bc1b525fb59ae8eea0c9447686c2b3"
+      }
+    ]
+  }
+}
