@@ -88,8 +88,6 @@ export function promoteVerifiedCiDevArtifact({ sourceDir, evidence, repoRoot = R
     evidence.sourceSha !== match[1] ||
     evidence.runId !== Number(match[2]) ||
     evidence.runAttempt !== Number(match[3]) ||
-    evidence.source?.originMain !== evidence.sourceSha ||
-    evidence.source?.localHead !== evidence.sourceSha ||
     !/^[a-f0-9]{64}$/.test(evidence.treeSha256 ?? '') ||
     !/^\d+\.\d+\.\d+$/.test(evidence.version ?? '')
   )
@@ -102,6 +100,11 @@ export function promoteVerifiedCiDevArtifact({ sourceDir, evidence, repoRoot = R
   if (manifest.manifest_version !== 3 || manifest.version !== evidence.version)
     throw new Error('ci_dev_manifest_refused');
   const compatibility = sourceCompatibility(root, evidence.sourceSha);
+  if (
+    evidence.source?.originMain !== compatibility.mainSha ||
+    evidence.source?.localHead !== compatibility.mainSha
+  )
+    throw new Error('ci_dev_evidence_refused');
   const observedAt = new Date().toISOString();
   assertCurrentMain(root, compatibility.mainSha);
   const promotion = promoteUnpackedReleaseToMany({
