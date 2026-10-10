@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "auth_mode": "member",
+  "status": "fail",
+  "stage": "save_pattern",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+    "run_id": 38014587032,
+    "artifact_id": 11655990379,
+    "tree_sha256": "1626416af2bc5f9656474c4f6bdedd28c8898c3322cd305d33a8450c9196d880",
+    "version": "0.2.457"
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_identity_verified": true,
+    "canonical_nonadmin_check_passed": true,
+    "organization_selected": true,
+    "organization_resolution": "load_ladder",
+    "selected_organization_id_verified": true
+  },
+  "observations": {
+    "picker_field_clicks_landed": true,
+    "two_distinct_previews": true,
+    "save_pattern_visible": true,
+    "pattern_name_visible": true,
+    "pattern_write_requests": 1,
+    "pattern_write_status": 201,
+    "pattern_response_body_capture": "body_id_valid",
+    "saved_row_lookup_verified": true,
+    "request_body_organization_present": true,
+    "request_body_organization_matched_selected": true,
+    "saved_pattern_refreshed": true,
+    "pattern_write_observation": [
+      {
+        "status": 201,
+        "failed": false,
+        "patternIdPresent": true,
+        "bodyCapture": "body_id_valid",
+        "requestBodyCapture": "request_body_valid",
+        "requestOrganizationPresent": true,
+        "requestNameMatches": true,
+        "requestOrganizationMatchesSelected": true,
+        "headerOrganizationPresent": false
+      }
+    ]
+  },
+  "cleanup": {
+    "verified": true,
+    "deleted_rows": 1,
+    "exact_owned_name_organization_lookup": true
+  },
+  "failure_stage": "save_pattern",
+  "limits": "Native member picker, save, run, clipboard, cancel and extension-reload behavior on the exact imported development artifact; no admin or Store claim.",
+  "auth_stage": "member_extension_signin",
+  "error_code": "native_acceptance_error"
+}
