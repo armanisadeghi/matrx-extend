@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "hosted_run": {
+    "run_id": 38071754089,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38071754089",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_head_sha": "4e875dd4e8299a6fcfc3c1ddfbf13e85309e9ce9",
+    "conclusion": "success",
+    "lane": "B",
+    "case": "guest-seo",
+    "scope": "metadata",
+    "finished_at": "2026-10-10T17:33:47Z"
+  },
+  "release_artifact": {
+    "release_run_id": 38067449240,
+    "release_artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "version": "0.2.469",
+    "source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11677725113,
+    "name": "hosted-guest-38071754089-1",
+    "digest": "sha256:da81bc7e525cc0a2be0fff4e0b29534ec3133183e07fb05deed28c4921ce8aff",
+    "expired": false
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "status": "partial",
+    "selected_target": "EXT-F-1008-T09/guest_owned_hreflang_article_doors_match_fixture_dom",
+    "target_status": "pass"
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "all_three_valid": true
+  },
+  "screenshot_review": {
+    "included": false,
+    "reviewed_files": ["native-side-panel.png", "normal-target-after-open.png"],
+    "observation": "Generic guest panel and target page only; screenshots do not display the SEO result."
+  },
+  "scope_limit": "Only one owned-fixture T09 metadata-door target passed. The native report remains partial for this scope and full SEO remains partial with a separate unverified public-DOM door and unverified readability metric correctness.",
+  "sanitization": "No credentials, account data, extension ID, raw logs, process attribution, private runner paths, page URL/content, or screenshots retained."
+}

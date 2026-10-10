@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "run_id": 38071754089,
+  "observed_at": "2026-10-10T17:33:47Z",
+  "case_id": "guest-seo",
+  "scope": "metadata",
+  "lane": "B",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "4e875dd4e8299a6fcfc3c1ddfbf13e85309e9ce9",
+  "outcome": {
+    "status": "partial",
+    "workflow_conclusion": "success",
+    "native_subtargets": {
+      "pass": 1,
+      "unverified": 0,
+      "selected": 1
+    },
+    "passed_target": "EXT-F-1008-T09/guest_owned_hreflang_article_doors_match_fixture_dom",
+    "full_seo_status": "partial",
+    "full_seo_reference_run": 38070400935,
+    "metricValueCorrectness": "unverified"
+  },
+  "artifact": {
+    "release_run_id": 38067449240,
+    "artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "version": "0.2.469",
+    "product_source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0"
+  },
+  "hosted_result_artifact": {
+    "id": 11677725113,
+    "name": "hosted-guest-38071754089-1",
+    "digest": "sha256:da81bc7e525cc0a2be0fff4e0b29534ec3133183e07fb05deed28c4921ce8aff",
+    "expired": false
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" }
+  },
+  "screenshot_review": {
+    "reviewed": true,
+    "limit": "Generic guest side-panel and target-page screenshots do not show SEO output; bounded credit comes from native assertions."
+  },
+  "limitations": [
+    "Only the owned-fixture T09 metadata-door target was selected and passed.",
+    "The full SEO run 38070400935 remains partial (24 pass, 1 unverified); readability metric-value correctness remains unverified.",
+    "Other SEO cases and dimensions, current-main behavior, member/admin behavior, and published Store installation are not inferred."
+  ],
+  "evidence": [
+    "docs/stabilization/evidence/guest-seo-store/run38071754089/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38071754089/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38071754089/resource-finals.sanitized.json",
+    "docs/stabilization/reports/peer-review-run38071754089.json"
+  ]
+}

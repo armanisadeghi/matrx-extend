@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-controls-harness-38071765806",
+  "classification": "pre_product_harness_fixture_selection_failure",
+  "run_record": "docs/stabilization/runs/hosted-settings-harness-38071765806.json",
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-hosted/run38071765806/provenance-failure.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38071765806/resource-finals.json"
+  ],
+  "finding": "Run 38071765806 selected the published v0.2.469 release artifact (receipt kind published_release), but the settings-controls driver requires a CI development receipt. It stopped at the provenance assertion before interacting with Settings.",
+  "settings_case_result": "unmeasured",
+  "product_defect_created": false,
+  "resource_result": "All three resource guards admitted the workload with resourceInvalid=false. Package and browser finalized valid; guest finalized child_failed because the provenance assertion exited 1. No resource-invalid final was recorded.",
+  "next_action": "Repeat the hosted Settings controls case with the required successful CI development run and exact artifact ID selected for the v0.2.469 candidate."
+}

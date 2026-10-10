@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38071754089,
+  "resource_finals": {
+    "package": {
+      "run_id": "hosted-package-38071754089-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "run_id": "hosted-browser-38071754089-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "run_id": "hosted-guest-38071754089-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "source": "Three RESOURCE_FINAL_DECISION records in the hosted workflow log."
+}

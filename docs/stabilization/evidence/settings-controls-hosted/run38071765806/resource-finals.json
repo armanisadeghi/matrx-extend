@@ -1,0 +1,29 @@
+{
+  "hosted-package-38071765806-1": {
+    "schema": 1,
+    "runId": "hosted-package-38071765806-1",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION"
+  },
+  "hosted-browser-38071765806-1": {
+    "schema": 1,
+    "runId": "hosted-browser-38071765806-1",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "decision": "valid",
+    "code": "RESOURCE_FINAL_DECISION"
+  },
+  "hosted-guest-38071765806-1": {
+    "schema": 1,
+    "runId": "hosted-guest-38071765806-1",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 1,
+    "decision": "child_failed",
+    "code": "RESOURCE_FINAL_DECISION"
+  }
+}
