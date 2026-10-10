@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "feature": "Guest Chat page-grounding and conversation lifecycle",
+  "scope": "Guarded hosted native guest Chat acceptance on v0.2.474 release Store ZIP candidate.",
+  "acceptance_run_id": 38075886804,
+  "acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38075886804",
+  "workflow_source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+  "release_run_id": 38075458740,
+  "release_artifact_id": 11677569836,
+  "release_artifact_name": "matrx-extend-v0.2.474",
+  "source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+  "release_tree_sha256": "240e3b80794f06c4e4b608cfe706d9950f0eb62cd4ab605f29be640916a2ec4a",
+  "store_zip_sha256": "93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02",
+  "artifact_loading": "Candidate-key adapted and loaded unpacked; not a Store-installed copy.",
+  "native_status": "pass_bounded",
+  "server_sha_before": "13957f36f2cf07120fe59d7db6ebf0601cc1ec7d",
+  "server_sha_after": "13957f36f2cf07120fe59d7db6ebf0601cc1ec7d",
+  "required_flow": {
+    "initial_grounded_terminal_answer": "pass",
+    "same_conversation_followup": "pass",
+    "post_reload_new_conversation": "pass",
+    "all_three_transport_requests_http_200": true,
+    "is_new_sequence": [true, false, true],
+    "server_sha_stable": true
+  },
+  "resource_finals": "Package, browser, and guest decisions valid; admitted, resourceInvalid=false, exitCode=0.",
+  "review": "docs/stabilization/reports/peer-review-guest-chat-run38075886804.json",
+  "evidence": "docs/stabilization/evidence/guest-chat-v0474/run38075886804/",
+  "limits": [
+    "The observer attaches after panel load and cannot prove network events before attachment.",
+    "Candidate-key adaptation and unpacked loading do not establish Chrome Web Store installed-copy behavior."
+  ]
+}

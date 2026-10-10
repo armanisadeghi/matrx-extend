@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "feature": "Guest Chat page-grounding and conversation lifecycle",
+  "hosted_run_id": 38075886804,
+  "native_status": "pass",
+  "build": {
+    "version": "0.2.474",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "adapted_loaded_tree_sha256": "f416ac56eb5159c8720bee8e3e9a28177d91d99c777f38f68b7b1ead91bf2d78",
+    "artifact_unchanged": true
+  },
+  "server": {
+    "before": {
+      "reachable": true,
+      "status": 200,
+      "git_sha": "13957f36f2cf07120fe59d7db6ebf0601cc1ec7d"
+    },
+    "after": {
+      "reachable": true,
+      "status": 200,
+      "git_sha": "13957f36f2cf07120fe59d7db6ebf0601cc1ec7d"
+    },
+    "stable": true
+  },
+  "guest": {
+    "fresh_profile": true,
+    "chat_visible": true,
+    "chat_visible_after_reload": true,
+    "prior_session_absent_after_reload": true,
+    "fixture_not_reinstalled_between_turns": true
+  },
+  "initial_grounded_terminal_reply": {
+    "terminal": true,
+    "completed_replies": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "completed_page_text_tool_observed": true,
+    "completed_tool_result_matches_fixture_and_contains_codes_heading": true
+  },
+  "same_conversation_followup": {
+    "terminal": true,
+    "completed": true,
+    "identity_verified": true,
+    "answer_contains_fixture_code": true,
+    "completed_read_page_result_matches_fixture": true
+  },
+  "post_reload_new_conversation": {
+    "terminal": true,
+    "completed": true,
+    "answer_contains_unpredictable_page_code_and_heading": true,
+    "session_absent_after_reload": true,
+    "fixture_not_reinstalled": true,
+    "completed_tool_results_match_fixture": true
+  },
+  "transport": {
+    "observer_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+    "transport_proven": true,
+    "requests": [
+      {
+        "attempt": "opening",
+        "http_status": 200,
+        "is_new": true
+      },
+      {
+        "attempt": "same_conversation_followup",
+        "http_status": 200,
+        "is_new": false
+      },
+      {
+        "attempt": "post_reload_new_conversation",
+        "http_status": 200,
+        "is_new": true
+      }
+    ],
+    "expected_is_new_sequence": [true, false, true]
+  },
+  "diagnostic_note": "The native field failure_observation is the same-conversation follow-up snapshot. Its answerMatchesPublicStages=false describes that follow-up answer; the opening turn has separate passing stage predicates and screenshot evidence. The scoped opening and follow-up predicates all pass, with no failure stage or visible error.",
+  "limitations": [
+    "The observer attaches after panel load and cannot establish requests before attachment.",
+    "The native Store ZIP was candidate-key adapted and loaded unpacked; this does not prove a Chrome Web Store installed-copy flow."
+  ],
+  "screenshots": [
+    "screenshots/guest-chat-real-answer.png",
+    "screenshots/guest-chat-same-conversation-followup.png",
+    "screenshots/guest-chat-real-followup-answer.png"
+  ]
+}

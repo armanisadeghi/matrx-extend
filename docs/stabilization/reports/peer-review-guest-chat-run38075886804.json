@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_chat_evidence_review",
+  "reviewer": "guest_chat_run38075886804_review",
+  "run": {
+    "hosted_run_id": 38075886804,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38075886804",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_conclusion": "success",
+    "workflow_source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+    "lane": "B",
+    "runner": "macos-15-intel / x86_64",
+    "case": "guest-chat",
+    "auth_mode": "guest"
+  },
+  "verdict_a_product_behavior": {
+    "verdict": "PASS_BOUNDED_GUEST_CHAT_FLOW",
+    "required_observations": {
+      "initial_grounded_terminal_reply": "PASS: the first request was is_new=true; completed get_page_text output matched the owned page fixture and contained its unpredictable codes and heading; the terminal answer included the unpredictable page code and the three named stages in order, with no paywall or error.",
+      "same_conversation_followup": "PASS: the second request was is_new=false on the same observed conversation; the completed read_page result matched the fixture and the terminal answer included its code.",
+      "post_reload_new_conversation": "PASS: after panel reload the guest had no existing session, the third request was is_new=true, the fixture was not reinstalled, and the terminal answer named the fixture heading and unpredictable code.",
+      "server_deployment_stability": "PASS: server version endpoint returned HTTP 200 with SHA 13957f36f2cf07120fe59d7db6ebf0601cc1ec7d both before and after."
+    },
+    "transport": "All three observed guest AI requests returned HTTP 200; is_new sequence was [true, false, true].",
+    "screenshots_reviewed": [
+      "screenshots/guest-chat-real-answer.png",
+      "screenshots/guest-chat-same-conversation-followup.png",
+      "screenshots/guest-chat-real-followup-answer.png"
+    ],
+    "unexpected_user_visible_failures": [],
+    "scope_limits": [
+      "Only the bounded fresh-guest, page-grounded conversation flow is covered.",
+      "The observer attaches after panel load and cannot prove network requests before attachment."
+    ]
+  },
+  "verdict_b_evidence_quality": {
+    "verdict": "PASS_WITH_DOCUMENTED_LIMITS",
+    "findings": [],
+    "provenance": "Hosted inputs/logs select successful release run 38075458740. Downloaded v0.2.474 receipt identifies source 302ab93672e29a3aa5bc3e047feb2c551513bafc, release tree 240e3b80794f06c4e4b608cfe706d9950f0eb62cd4ab605f29be640916a2ec4a, and Store ZIP SHA-256 93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02. Release artifact ZIP SHA matches GitHub metadata; the native report matches version/source/Store ZIP digest, reports the loaded adapted tree, and marks artifact_unchanged=true.",
+    "resource_finals": "The package, browser, and guest journals for this run each end admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Unrelated run journals in the upload were excluded.",
+    "diagnostic_field_adjudication": "The report's failure_observation is a same-conversation follow-up snapshot; answerMatchesPublicStages=false is expected for that follow-up rubric. The first turn has its own passing grounding, terminal-answer, and stage-order assertions. No failure stage/code, alert, refusal, or interruption is present.",
+    "limitations": [
+      "The source Store ZIP was candidate-key adapted and loaded unpacked; this is not a Chrome Web Store installed-copy result.",
+      "The CDP observer attaches after panel load and cannot establish events before attachment.",
+      "No browser or heavy job was started during review."
+    ]
+  },
+  "evidence_directory": "docs/stabilization/evidence/guest-chat-v0474/run38075886804/"
+}
