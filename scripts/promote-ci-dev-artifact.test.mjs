@@ -333,6 +333,7 @@ for (const path of [
   'docs/stabilization/inventory.json',
   'docs/stabilization/defects/EXT-D-0187.json',
   'docs/stabilization/reports/hosted-review.json',
+  'docs/stabilization/runs/guest-scrape-38069924138.json',
   'docs/stabilization/evidence/settings-controls/receipt.sanitized.json',
   'docs/stabilization/evidence/settings-controls/screenshot.png',
 ]) {
@@ -373,6 +374,9 @@ for (const path of [
   'scripts/promote-ci-dev-artifact.test.mjs',
   'docs/stabilization/resource-policy.json',
   'docs/stabilization/evidence/runtime.js',
+  'docs/stabilization/runs/runtime.js',
+  'docs/stabilization/runs/nested/receipt.json',
+  'tests/browser/acceptance.mjs',
 ]) {
   test(`refuses build or operational input history at ${path} even if later restored`, () => {
     const f = fixture();
@@ -403,6 +407,8 @@ for (const [path, tracked, staged] of [
   ['src/new-runtime.js', false, false],
   ['src/panel.js', true, true],
   ['tests/browser/pending.mjs', false, false],
+  ['.github/workflows/pending.yml', false, true],
+  ['docs/stabilization/runs/runtime.js', false, false],
 ]) {
   test(`refuses pending code ${path} (tracked=${tracked}, staged=${staged}) without modifying it`, () => {
     const f = fixture();
@@ -446,3 +452,34 @@ test('allows untracked safe stabilization evidence without claiming it is bundle
     rmSync(f.root, { recursive: true, force: true });
   }
 });
+
+for (const state of ['untracked', 'staged', 'tracked']) {
+  test(`allows ${state} sanitized run JSON while preserving imported bytes and pending record`, () => {
+    const f = fixture();
+    try {
+      const path = 'docs/stabilization/runs/guest-scrape-38069924138.json';
+      if (state === 'tracked') {
+        const head = commit(f.root, path, '{"status":"unverified"}');
+        git(f.root, 'update-ref', 'refs/remotes/origin/main', head);
+        f.evidence.source = { ...f.evidence.source, originMain: head, localHead: head };
+      }
+      mkdirSync(join(f.root, path, '..'), { recursive: true });
+      const record = '{"status":"fail","product_credit":0}';
+      writeFileSync(join(f.root, path), record);
+      if (state === 'staged') git(f.root, 'add', '--', path);
+      const result = promoteVerifiedCiDevArtifact({
+        sourceDir: f.source,
+        evidence: f.evidence,
+        repoRoot: f.root,
+      });
+      assert.equal(hashReleaseTree(f.destination), f.evidence.treeSha256);
+      assert.equal(readFileSync(join(f.root, path), 'utf8'), record);
+      assert.equal(
+        result.compatibility,
+        state === 'tracked' ? 'runtime-equivalent' : 'exact-source',
+      );
+    } finally {
+      rmSync(f.root, { recursive: true, force: true });
+    }
+  });
+}

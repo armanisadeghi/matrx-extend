@@ -13,7 +13,7 @@ const IMPORTED = /^test-results\/ci-artifacts\/([a-f0-9]{40})\/([1-9]\d*)-([1-9]
 // by src/ or wxt.config.ts. Keep operational policy and executable files excluded.
 // Changes to this promoter or its tests require a new successful CI artifact.
 const RUNTIME_EQUIVALENT_PATH =
-  /^docs\/stabilization\/(?:resource-journals\/[^/]+\.jsonl|[^/]+\.(?:md|html|txt)|inventory\.json|(?:defects|reports|evidence)\/(?:[^/]+\/)*[^/]+\.(?:json|jsonl|md|html|txt|log|png|jpg|jpeg|webp))$/;
+  /^docs\/stabilization\/(?:runs\/[^/]+\.json|resource-journals\/[^/]+\.jsonl|[^/]+\.(?:md|html|txt)|inventory\.json|(?:defects|reports|evidence)\/(?:[^/]+\/)*[^/]+\.(?:json|jsonl|md|html|txt|log|png|jpg|jpeg|webp))$/;
 
 function git(root, ...args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();

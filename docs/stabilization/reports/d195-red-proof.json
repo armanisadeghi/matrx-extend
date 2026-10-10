@@ -1,0 +1,29 @@
+{
+  "defect_id": "EXT-D-0195",
+  "product_behavior_credit": 0,
+  "baseline_source": "03d342c345ba332f59771e8b87183d1e49231190",
+  "baseline_blob": "d59ae08812fa509a36dae91475b6ccf24fc0051a",
+  "repaired_blob": "88340bf3765a2affb286cebba22113d15bc90c06",
+  "red": {
+    "preparation": "Copied baseline promoter into scratch; rewrote its external relative imports to original absolute module URLs. Copied final tests into same scratch. Shared checkout never weakened.",
+    "command": "node --test /var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/d195-baseline-fm7jqccj/promote-ci-dev-artifact.test.mjs",
+    "exit_status": 1,
+    "result": "42 tests; 38 pass; 4 fail",
+    "failed_behaviors": [
+      "Committed runs JSON refused ci_dev_runtime_source_changed.",
+      "Untracked runs JSON refused ci_dev_pending_runtime_source.",
+      "Staged runs JSON refused ci_dev_pending_runtime_source.",
+      "Tracked pending runs JSON refused ci_dev_runtime_source_changed."
+    ]
+  },
+  "green": {
+    "command": "node --test scripts/promote-ci-dev-artifact.test.mjs",
+    "exit_status": 0,
+    "result": "42 tests; 42 pass; 0 fail"
+  },
+  "forcing_outputs": [
+    "Real scratch Git histories and staged/unstaged paths drive the real promoter. Destination hash matches imported CI bytes and pending record content is preserved.",
+    "Source, tests, workflows, operational inputs, runs JavaScript and nested runs JSON remain rejected with destination bytes unchanged."
+  ],
+  "limits": "No browser or real pinned installation performed. Source tests provide no product behavior credit."
+}

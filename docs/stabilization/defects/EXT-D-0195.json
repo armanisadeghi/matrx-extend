@@ -1,0 +1,52 @@
+{
+  "id": "EXT-D-0195",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "surface": "Verified CI development artifact promotion",
+  "auth_mode": "all modes; infrastructure-only, zero product behavior credit",
+  "title": "Sanitized run records unnecessarily prevent runtime-equivalent CI development promotion",
+  "severity": "S3: safe run records block pinned unpacked synchronization or require unnecessary CI rebuilds",
+  "priority": "P1: maintain current verified unpacked artifact after main synchronization",
+  "state": "fixed",
+  "owner": "root",
+  "preconditions": [
+    "A verified CI development artifact is an ancestor of synchronized main.",
+    "Only sanitized direct-child docs/stabilization/runs/*.json records differ or are pending."
+  ],
+  "reproduction": [
+    "Run final promoter tests against baseline promoter in scratch: committed, untracked, staged and tracked-pending runs JSON are rejected."
+  ],
+  "expected": "Direct-child runs JSON receives the existing documentation-only equivalence treatment while imported runtime bytes and pending record content are preserved.",
+  "actual": "The equivalence allowlist covers reports, evidence and resource journals but omits sanitized runs JSON.",
+  "cause": "RUNTIME_EQUIVALENT_PATH has no direct-child runs JSON alternative.",
+  "evidence": ["docs/stabilization/reports/d195-red-proof.json"],
+  "fix_commit": null,
+  "verification": [
+    "Baseline final suite: 38/42 pass; four runs-record acceptance cases fail. Repaired suite: 42/42 pass.",
+    "Only runs/[^/]+.json added to equivalence pattern. Source, tests, workflows, runs JavaScript and nested runs JSON remain refused.",
+    "Focused Node syntax, Biome and diff checks pass. Independent peer reran 42/42 and reviewed exact-main, ancestry, receipt, tree, and negative-path guards: PASS. No browser or real pinned promotion; zero product credit."
+  ],
+  "closure_requirement": "Independent source review, then guarded real verified-CI promotion after main synchronization must preserve imported runtime hash and accept only sanitized direct-child runs JSON differences. Record promotion proof before retest-pass and closed.",
+  "transition_history": [
+    {
+      "from": null,
+      "to": "open",
+      "reason": "Sanitized run JSON blocks runtime-equivalent promotion."
+    },
+    {
+      "from": "open",
+      "to": "triaged",
+      "reason": "Run records are omitted from the existing documentation-only path allowlist."
+    },
+    {
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow direct-child JSON allowance and four failing-then-passing promotion cases prepared; peer and real promotion pending."
+    },
+    {
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent peer verified narrow path exception and 42/42 focused tests; real current-main promotion remains pending."
+    }
+  ]
+}
