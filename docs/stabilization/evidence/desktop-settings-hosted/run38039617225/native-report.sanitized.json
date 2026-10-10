@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
+  "scope": "bounded guest T43 Pair fixture pointer refusal",
+  "case": "pair-forget",
+  "inventory_case": "EXT-F-1003-T43",
+  "role": "guest",
+  "status": "fail",
+  "build": {
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "acceptance_case": "desktop-settings-guest",
+  "failure_stage": "desktop_pair_forget_fixture",
+  "failure_code": "pointer_stable_hit_not_observed",
+  "passed_case_count": 0,
+  "total_case_count": 0,
+  "diagnostics_present": false,
+  "observed": "The native report failed with pointer_stable_hit_not_observed at desktop_pair_forget_fixture, with zero cases and no diagnostics. Frozen workflow source has one shared pointer-driver action in this fixture stage: the Pair button click. The report does not retain the hit, animation, position or disabled-state evidence needed to establish the cause. Later Forget and dialog actions were not reached.",
+  "limits": [
+    "No T43 Pair/Forget acceptance credit; zero passed cases.",
+    "This failure occurs before Cancel; it establishes no pass or failure verdict for the reviewed pair-dialog selector repair.",
+    "Fixture-stage source ordering localizes the shared pointer refusal to Pair, but the report did not serialize pointer diagnostics; occlusion, animation, movement and disabled-state causes remain unproven.",
+    "Pair fixture completion, Forget cancel, storage-removal refusal and retry outcomes remain unverified.",
+    "This does not establish a healthy desktop-engine connection, current-main product acceptance or actual Store acceptance.",
+    "No account, page URL, DOM content, pair value, raw error text or screenshot is included."
+  ]
+}

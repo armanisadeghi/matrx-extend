@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
+  "scope": "bounded guest T43 Forget cancel, storage-removal refusal and retry",
+  "case": "pair-forget",
+  "inventory_case": "EXT-F-1003-T43",
+  "role": "guest",
+  "status": "pass",
+  "build": {
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "acceptance_case": "desktop-settings-guest",
+  "failure_stage": null,
+  "failure_code": null,
+  "passed_case_count": 3,
+  "total_case_count": 3,
+  "cases": [
+    {
+      "name": "Forget cancel preserves the owned guest pairing",
+      "status": "pass",
+      "observation": {
+        "stored_pair_preserved": true
+      }
+    },
+    {
+      "name": "Forget refusal preserves pairing and shows retry",
+      "status": "pass",
+      "observation": {
+        "stored_pair_preserved": true,
+        "error_visible": true
+      }
+    },
+    {
+      "name": "Forget retry removes the owned pairing from browser storage",
+      "status": "pass",
+      "observation": {
+        "storage_key_absent": true
+      }
+    }
+  ],
+  "diagnostics": {
+    "desktop_pair_fixture": {
+      "readiness": {
+        "settingsActive": true,
+        "pairAvailable": true,
+        "pairInputPresent": true,
+        "pairKeyPresent": false
+      },
+      "inputPhases": {
+        "targetSelected": true,
+        "pressAttempted": true,
+        "pressReturned": true,
+        "releaseAttempted": true,
+        "releaseReturned": true
+      }
+    },
+    "desktop_pair_forget_control_readiness": {
+      "settingsActive": true,
+      "pairAvailable": true,
+      "matchedCount": 1,
+      "visibleCount": 1
+    }
+  },
+  "observed": "The bounded guest Pair/Forget native run passed all three named cases: Cancel preserved the owned pairing, an injected storage-removal refusal preserved it and displayed retry, and the restored retry removed the pairing storage key. The fixture Pair click completed trusted press/release; the initial Forget readiness was one matched and one visible control.",
+  "limits": [
+    "Acceptance is limited to the three named guest Forget cases on the exact frozen development artifact; this is not a full T43 or Desktop Settings pass.",
+    "Invalid pair-code behavior and pairing persistence after warm reload remain unverified.",
+    "The storage-removal refusal was deliberately injected in the disposable profile; no healthy desktop-engine connection is established.",
+    "This does not establish member/admin, current-main product or actual Store acceptance.",
+    "No account, page URL, DOM content, pair value, raw error text or screenshot is included."
+  ]
+}
