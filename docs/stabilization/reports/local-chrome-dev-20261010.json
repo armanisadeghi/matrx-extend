@@ -1,21 +1,21 @@
 {
   "schema_version": 1,
   "kind": "local_chrome_development_installation_observation",
-  "observed_at": "2026-10-10T17:47:00Z",
+  "observed_at": "2026-10-10T18:18:00Z",
   "chrome_profile": "Arman (armansadeghi.com)",
   "development": {
-    "version": "0.2.471",
+    "version": "0.2.473",
     "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
     "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
     "enabled": true,
     "pinned_to_toolbar": true,
     "chrome_reload_confirmed": true,
-    "source_sha": "c81477c80ec4c516c16a4280c7970c060cb840d3",
-    "promotion_main_sha": "aa9b05c2650bdd1543f0d89d44e3e7a52111cea3",
+    "source_sha": "ada1e9cc2e66faca20923ce9be251d708b79da84",
+    "promotion_main_sha": "0a1090e955ae4b814baa4bab779164621600ea90",
     "compatibility": "runtime-equivalent",
-    "tree_sha256": "ab8f31d116557a89b52da3a7c1ea08a838c2bacfd1f2b457c88f9fb573236ce6",
-    "ci_run_id": 38072429709,
-    "ci_artifact_id": 11677346776
+    "tree_sha256": "a2af68f942c539649a67a268ec7708e519521c04436953f3532caf6a826ac269",
+    "ci_run_id": 38074465790,
+    "ci_artifact_id": 11677708705
   },
   "store": {
     "version": "0.2.205",
@@ -24,6 +24,6 @@
     "enabled": true,
     "pinned_to_toolbar": true
   },
-  "evidence": "The CI development artifact importer verified provenance and tree hash, the promoter installed it at the stable unpacked path, and Chrome's extension detail page showed Reloaded, version 0.2.471, the development ID, loaded-from path, and Pin to toolbar on. The Store extension detail page separately showed version 0.2.205, Store source, and Pin to toolbar on.",
+  "evidence": "The exact-main CI development artifact importer verified provenance and tree hash, the promoter installed it at the stable unpacked path, and Chrome's extension detail page showed Reloaded, version 0.2.473, the development ID, loaded-from path, and Pin to toolbar on. The Store extension detail page separately showed version 0.2.205, Store source, and Pin to toolbar on. Intervening main commit 0a1090e was evidence-only.",
   "limits": "This verifies installation identity, version, pin and reload only. It is not a product behavior pass, a Store submission, or proof that later main changes are installed."
 }
