@@ -145,6 +145,17 @@ try {
   check('side panel renders the package chat', (await root.count()) > 0);
   const composer = page.locator('[data-package-chat] textarea').first();
   await composer.waitFor({ timeout: 45_000 }).catch(() => undefined);
+  // The composer mounts read-only for ~1s while the chat boots; "ready" means editable, not attached.
+  await page
+    .waitForFunction(
+      () => {
+        const t = document.querySelector('[data-package-chat] textarea');
+        return Boolean(t && !t.disabled && !t.readOnly);
+      },
+      undefined,
+      { timeout: 45_000 },
+    )
+    .catch(() => undefined);
   check('composer is ready', await composer.isEditable().catch(() => false));
   const banner = await page.getByText(/Could not (restore|verify) your saved sign-in/).count();
   check('extension sign-in restored (no sign-in failure banner)', banner === 0);
@@ -212,7 +223,15 @@ try {
       .locator('[data-package-chat]')
       .waitFor({ timeout: 45_000 })
       .catch(() => undefined);
-    await page.waitForTimeout(8000);
+    // The newest assistant reply can be a one-liner, so wait for its message nodes rather than a length.
+    await page
+      .locator(
+        '[data-package-chat] [data-message-id], [data-package-chat] [data-role="user"], [data-package-chat] [data-role="assistant"]',
+      )
+      .first()
+      .waitFor({ timeout: 45_000 })
+      .catch(() => undefined);
+    await page.waitForTimeout(3000);
     const text = (
       await page
         .locator('[data-package-chat]')
@@ -221,7 +240,7 @@ try {
     ).trim();
     check(
       'a past conversation opens by address',
-      text.length > 200,
+      text.length > 50,
       `${text.length} chars rendered`,
     );
     const roomStandIns = await page
