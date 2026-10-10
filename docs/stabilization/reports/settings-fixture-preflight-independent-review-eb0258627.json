@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_settings_fixture_preflight_review",
+  "commit_reviewed": "eb0258627f5e031a9d0d949f2de0cf7e4c84b278",
+  "status": "PASS_BOUNDED_PREFLIGHT_PATCH",
+  "findings": [],
+  "verified": [
+    "All three Settings cases reject release, Store CRX, incomplete or absent CI development selection before release download and measured package/browser admission.",
+    "A complete CI development run/artifact pair reaches the existing provenance route; downstream numeric/exclusive-mode and real CI receipt checks remain enforced.",
+    "The added regression is wired into CI and executes the actual YAML shell rather than duplicating its implementation."
+  ],
+  "test_evidence": {
+    "executable_shell_permutations": 15,
+    "focused_tests_passed": 42,
+    "focused_command": "node --test scripts/hosted-profile-route.test.mjs scripts/hosted-scrape-route.test.mjs scripts/hosted-settings-fixture-preflight.test.mjs scripts/hosted-showcase-route.test.mjs scripts/hosted-tab-groups-route.test.mjs",
+    "independently_rerun": true
+  },
+  "limitations": [
+    "The new test proves provenance-mode admission, not remote artifact freshness or fixture matching; those remain the existing importer and CI-development receipt checks.",
+    "This patch review is not a live Settings product acceptance."
+  ]
+}
