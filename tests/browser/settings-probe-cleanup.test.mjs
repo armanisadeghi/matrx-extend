@@ -53,7 +53,8 @@ test('reload failure receipt serializes only allowlisted stage and transport dia
     safeFirstChoiceFailureCode: 'pointer_target_not_unique',
     safeRestorationFailureCode: 'native_extension_replacement_panel_unverified',
     safeFirstChoiceReloadBoundary: {
-      lastPhase: 'click_started',
+      lastCapturedPhase: 'click_started',
+      timelineTruncated: true,
       clickStarted: true,
       clickResolved: false,
       preClickOldWorkerPresent: true,
@@ -76,7 +77,8 @@ test('reload failure receipt serializes only allowlisted stage and transport dia
     firstChoiceFailureCode: 'pointer_target_not_unique',
     restorationFailureCode: 'native_extension_replacement_panel_unverified',
     firstChoiceReloadBoundary: {
-      lastPhase: 'click_started',
+      lastCapturedPhase: 'click_started',
+      timelineTruncated: true,
       clickStarted: true,
       clickResolved: false,
       preClickOldWorkerPresent: true,
@@ -102,7 +104,11 @@ test('reload failure receipt replaces unrecognized diagnostics with safe default
     safeRestorationTransportClass: 'socket_error',
     safeFirstChoiceFailureCode: 'private-value',
     safeRestorationFailureCode: 'owned_cdp_transport_failed',
-    safeFirstChoiceReloadBoundary: { lastPhase: 'private-value', clickStarted: 'private-value' },
+    safeFirstChoiceReloadBoundary: {
+      lastCapturedPhase: 'private-value',
+      timelineTruncated: 'private-value',
+      clickStarted: 'private-value',
+    },
   });
   assert.deepEqual(receipt, {
     category: 'full_extension_preference_or_restore_failed',
@@ -113,7 +119,8 @@ test('reload failure receipt replaces unrecognized diagnostics with safe default
     firstChoiceFailureCode: 'unavailable',
     restorationFailureCode: 'owned_cdp_transport_failed',
     firstChoiceReloadBoundary: {
-      lastPhase: 'unavailable',
+      lastCapturedPhase: 'unavailable',
+      timelineTruncated: null,
       clickStarted: null,
       clickResolved: null,
       preClickOldWorkerPresent: null,

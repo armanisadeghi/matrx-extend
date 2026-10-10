@@ -54,7 +54,10 @@ function reloadBoundary(value) {
   if (!value || typeof value !== 'object') return null;
   const bool = (field) => (typeof value[field] === 'boolean' ? value[field] : null);
   return {
-    lastPhase: RELOAD_PHASES.has(value.lastPhase) ? value.lastPhase : 'unavailable',
+    lastCapturedPhase: RELOAD_PHASES.has(value.lastCapturedPhase)
+      ? value.lastCapturedPhase
+      : 'unavailable',
+    timelineTruncated: bool('timelineTruncated'),
     clickStarted: bool('clickStarted'),
     clickResolved: bool('clickResolved'),
     preClickOldWorkerPresent: bool('preClickOldWorkerPresent'),

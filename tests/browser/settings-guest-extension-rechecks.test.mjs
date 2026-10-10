@@ -222,8 +222,12 @@ test('extension reload transport failures retain the first safe choice and resto
           timeline: {
             pre_click_old_worker_present: true,
             final_predicate: false,
+            dropped_entries: 5,
             entries: [
-              { at: '2026-10-09T23:53:00.000Z', phase: 'pre_click_snapshot' },
+              ...Array.from({ length: 79 }, () => ({
+                at: '2026-10-09T23:53:00.000Z',
+                phase: 'pre_click_snapshot',
+              })),
               { at: '2026-10-09T23:53:01.000Z', phase: 'click_started' },
             ],
           },
@@ -246,7 +250,8 @@ test('extension reload transport failures retain the first safe choice and resto
   assert.equal(observedError.safeFirstChoiceFailureCode, 'owned_cdp_transport_failed');
   assert.equal(observedError.safeRestorationFailureCode, 'owned_cdp_transport_failed');
   assert.deepEqual(observedError.safeFirstChoiceReloadBoundary, {
-    lastPhase: 'click_started',
+    lastCapturedPhase: 'click_started',
+    timelineTruncated: true,
     clickStarted: true,
     clickResolved: false,
     preClickOldWorkerPresent: true,
