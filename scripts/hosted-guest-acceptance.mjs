@@ -436,7 +436,12 @@ async function run(prepared, artifactMode) {
       'published_store_zip_adapted',
       'Guest Chat release requires exact Store ZIP payload',
     );
-  const scrapeRoute = requireHostedScrapeRoute(acceptanceCase, artifactMode, prepared);
+  const scrapeRoute = requireHostedScrapeRoute(
+    acceptanceCase,
+    artifactMode,
+    prepared,
+    process.env.MATRX_SCRAPE_AUTH_MODE,
+  );
   const tabGroupsRoute =
     acceptanceCase === 'tab-groups-member'
       ? hostedTabGroupsRoute(acceptanceCase, {
@@ -455,6 +460,10 @@ async function run(prepared, artifactMode) {
     process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC ?? '0',
   );
   const scrapeSelection = scrapeRoute ? scrapeNativeSelection(process.env) : null;
+  if (acceptanceCase === 'scrape-error-recovery-guest') {
+    assert.equal(scrapeSelection?.mode, 'guest', 'scrape_recovery_guest_auth_required');
+    assert.equal(scrapeSelection?.widthMode, 'narrow', 'scrape_recovery_narrow_width_required');
+  }
   if (acceptanceCase === 'scrape-save-member')
     assert.equal(scrapeSelection?.mode, 'member', 'scrape_save_member_auth_mode_required');
   if (
@@ -755,6 +764,7 @@ if (phase === 'preflight') {
   );
   if (
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('guest-scrape') ||
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'scrape-error-recovery-guest' ||
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'scrape-save-member'
   )
     scrapeNativeSelection(process.env);

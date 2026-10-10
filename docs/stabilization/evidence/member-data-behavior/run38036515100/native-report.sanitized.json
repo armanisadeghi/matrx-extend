@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38036515100,
+  "status": "unverified",
+  "stage": "extension_reload",
+  "failure_code": "native_acceptance_error",
+  "auth_mode": "member",
+  "authentication": {
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_identity_verified": true,
+    "selected_organization_verified": true,
+    "organization_value_omitted": true
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "frozen_product_artifact": true
+  },
+  "observations_before_reload": {
+    "picker_field_clicks_landed": true,
+    "two_distinct_previews": true,
+    "one_save_request": true,
+    "save_http_status": 201,
+    "response_id_valid": true,
+    "request_body_organization_matched_selected": true,
+    "exact_saved_row_lookup_and_refresh": true,
+    "saved_pattern_run": true,
+    "clipboard_tsv_json_ai_match_fixture": true,
+    "native_copy_feedback_and_clipboard_readback": true,
+    "cancel_cleared_unsaved_selection": true,
+    "request_header_organization_observed": false
+  },
+  "reload_diagnostic": {
+    "old_worker_retired": true,
+    "old_panel_destroyed": true,
+    "replacement_worker_created_and_activated": true,
+    "replacement_panel_created": false,
+    "open_panel_request": {
+      "reply_observed": false,
+      "category": "reply_not_observed",
+      "fixture_availability": "ready",
+      "click_received": true,
+      "send_invoked": true,
+      "send_call_returned": true,
+      "callback_entered": false,
+      "callback_has_reply": false,
+      "callback_last_error": false,
+      "send_threw": false
+    },
+    "instrumented_open_panel_diagnostic": {
+      "ingress": false,
+      "open_handler_invoked": false,
+      "chrome_api_settlement": "unobserved",
+      "send_response_observable_without_instrumented_build": false
+    }
+  },
+  "native_cleanup": {
+    "verified": false,
+    "error": "native_acceptance_error"
+  },
+  "interpretation": "This diagnostic did not observe message ingress at the replacement worker. Handler execution and Chrome API settlement remain unknown; no product root cause or T03 lifecycle credit is established.",
+  "sanitization": "Omitted target identifiers, timestamped target timeline, filesystem paths, screenshots, and process-attribution fields; retained only bounded stage outcomes and booleans."
+}

@@ -214,6 +214,8 @@ function pointerFailure(code, location) {
     matchedTargetCount: Number.isInteger(location?.matchedCount) ? location.matchedCount : null,
     visibleMatchCount: Number.isInteger(location?.count) ? location.count : null,
     uniqueVisibleTarget: location?.count === 1,
+    settingsPanelActive:
+      typeof location?.settingsPanelActive === 'boolean' ? location.settingsPanelActive : null,
     toolsPanelActive:
       typeof location?.toolsPanelActive === 'boolean' ? location.toolsPanelActive : null,
     toolsViewState: location?.toolsViewState ?? null,
@@ -376,6 +378,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
         style.display !== 'none' && !el.closest('[inert]');
     };
     let candidates;
+    let settingsPanelActive = null;
     let toolsPanelActive = null;
     let toolsViewState = null, toolsCatalogRowCount = null;
     let toolsCatalogSearchEmpty = null, toolsCatalogFiltersDefault = null;
@@ -413,8 +416,12 @@ export async function click(panel, kind, label, onPhase = undefined) {
       candidates = [...(chatPanel?.querySelectorAll('button[aria-label]') ?? [])]
         .filter((el) => /^[0-9]+ included$/.test(el.getAttribute('aria-label') ?? ''));
     }
-    else if (kind === 'settings-button') candidates = [...(${activeTabPanelExpression('Settings')}?.querySelectorAll('button') ?? [])]
-      .filter((el) => el.textContent.trim() === label);
+    else if (kind === 'settings-button') {
+      const pane = ${activeTabPanelExpression('Settings')};
+      settingsPanelActive = Boolean(pane);
+      candidates = [...(pane?.querySelectorAll('button') ?? [])]
+        .filter((el) => el.textContent.trim() === label);
+    }
     else if (kind === 'settings-ask-again') candidates = [...(${activeTabPanelExpression('Settings')}?.querySelectorAll('li') ?? [])]
       .filter((row) => row.querySelector('span')?.textContent.trim() === label)
       .flatMap((row) => [...row.querySelectorAll('button')])
@@ -570,7 +577,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
     sampleFailureStage = 'visibility_filter';
     const matchedCount = candidates.length;
     candidates = candidates.filter(visible);
-    if (candidates.length !== 1) return { count: candidates.length, matchedCount, sampleFailureStage,
+    if (candidates.length !== 1) return { count: candidates.length, matchedCount, sampleFailureStage, settingsPanelActive,
       toolsPanelActive, toolsViewState, toolsCatalogRowCount,
       toolsCatalogSearchEmpty, toolsCatalogFiltersDefault, dataPanelDiagnostic, dataTabTargetDiagnostic };
     const target = candidates[0];
@@ -767,7 +774,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
         break;
       }
     }
-    return { count: 1, matchedCount, toolsPanelActive, x, y, hitTarget, animating,
+    return { count: 1, matchedCount, toolsPanelActive, settingsPanelActive, x, y, hitTarget, animating,
       viewport: { width: innerWidth, height: innerHeight },
       pointerDiagnostic, dataTabTargetDiagnostic };
     } catch {

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Window } from 'happy-dom';
+import { clickDesktopPairForget } from './settings-desktop-pointer-diagnostics.mjs';
 import {
   click,
   desktopPairForgetControlReady,
@@ -123,6 +124,88 @@ test('two visible guest Forget controls are not ready and strict pointer selecti
       return true;
     });
     assert.deepEqual(events, []);
+  } finally {
+    window.happyDOM.abort();
+  }
+});
+
+// Break guarded here: discarding the safe pointer error erases whether a
+// once-ready Forget control vanished, duplicated, or lost its active pane.
+for (const [transition, active, count] of [
+  ['removed', true, 0],
+  ['duplicated', true, 2],
+  ['pane-inactive', false, 0],
+]) {
+  test(`Forget failure report preserves ready-to-${transition} cardinality without clicking`, async () => {
+    const { panel, events, window } = makePanel(1);
+    try {
+      const summary = await settingsActionSummary(panel, 'Forget pair code');
+      const readiness = {
+        settingsActive: summary.settingsActive,
+        pairAvailable: true,
+        forgetButtonMatchedCount: summary.matchedCount,
+        forgetButtonVisibleCount: summary.visibleCount,
+        pairInput: 'private-pair-value',
+      };
+      const pane = window.document.getElementById('settings-pane');
+      if (transition === 'removed') pane.querySelector('button').remove();
+      if (transition === 'duplicated') {
+        const original = pane.querySelector('button');
+        const duplicate = original.cloneNode(true);
+        duplicate.getBoundingClientRect = original.getBoundingClientRect;
+        pane.append(duplicate);
+      }
+      if (transition === 'pane-inactive') pane.setAttribute('data-state', 'inactive');
+      const report = { diagnostics: { existing: true } };
+      await assert.rejects(clickDesktopPairForget(panel, report, readiness), (error) => {
+        assert.equal(error.driverFailure?.code, 'pointer_target_not_unique');
+        return true;
+      });
+      assert.deepEqual(report.diagnostics, {
+        existing: true,
+        desktop_pair_forget_control_readiness: {
+          settingsActive: true,
+          pairAvailable: true,
+          matchedCount: 1,
+          visibleCount: 1,
+        },
+        desktop_pair_forget_pointer_failure: {
+          code: 'pointer_target_not_unique',
+          sampleStage: 'visibility_filter',
+          matchedTargetCount: count,
+          visibleMatchCount: count,
+          uniqueVisibleTarget: false,
+          settingsPanelActive: active,
+        },
+      });
+      assert.deepEqual(events, []);
+    } finally {
+      window.happyDOM.abort();
+    }
+  });
+}
+
+test('stable unique Forget records successful readiness while dispatching the trusted click', async () => {
+  const { panel, events, window } = makePanel(1);
+  try {
+    const report = {};
+    await clickDesktopPairForget(panel, report, {
+      settingsActive: true,
+      pairAvailable: true,
+      forgetButtonMatchedCount: 1,
+      forgetButtonVisibleCount: 1,
+    });
+    assert.deepEqual(report, {
+      diagnostics: {
+        desktop_pair_forget_control_readiness: {
+          settingsActive: true,
+          pairAvailable: true,
+          matchedCount: 1,
+          visibleCount: 1,
+        },
+      },
+    });
+    assert.deepEqual(events, ['mousePressed', 'mouseReleased']);
   } finally {
     window.happyDOM.abort();
   }

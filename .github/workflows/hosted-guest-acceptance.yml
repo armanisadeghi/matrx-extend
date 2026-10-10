@@ -49,6 +49,7 @@ on:
           - member-data
           - guest-scrape
           - guest-scrape-development
+          - scrape-error-recovery-guest
           - scrape-save-member
           - tab-groups-member
           - settings-controls
@@ -203,12 +204,15 @@ jobs:
           # BEGIN hosted lane admission
           [[ "$ACCEPTANCE_LANE" == A || "$ACCEPTANCE_LANE" == B ]] || { echo 'Unknown hosted acceptance lane.' >&2; exit 1; }
           case "$ACCEPTANCE_CASE" in
-            guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-save-member|tab-groups-member|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
+            guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-error-recovery-guest|scrape-save-member|tab-groups-member|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
           [[ "${RELOAD_SENDER_DOCUMENT_DIAGNOSTIC:-0}" != 1 || "$ACCEPTANCE_CASE" == member-data ]] || { echo 'Sender document diagnostic requires member-data.' >&2; exit 1; }
           if [[ "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'D187 Save Source requires member auth.' >&2; exit 1; }
+          fi
+          if [[ "$ACCEPTANCE_CASE" == scrape-error-recovery-guest ]]; then
+            [[ "$SCRAPE_AUTH_MODE" == guest && "$ACCEPTANCE_LANE" == B ]] || { echo 'Scrape error recovery requires guest auth on lane B.' >&2; exit 1; }
           fi
           if [[ "$ACCEPTANCE_CASE" == tab-groups-member ]]; then
             [[ "$ACCEPTANCE_LANE" == A ]] || { echo 'Tab groups member acceptance requires lane A.' >&2; exit 1; }
@@ -238,7 +242,7 @@ jobs:
               *-admin|*-member|member-chat|member-data|prepare-stale-results|showcase-*)
                 echo 'Shared member/admin fixture requires lane A.' >&2; exit 1 ;;
             esac
-            if [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
+            if [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == scrape-error-recovery-guest || "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
               [[ "$SCRAPE_AUTH_MODE" == guest ]] || { echo 'Authenticated scrape requires lane A.' >&2; exit 1; }
             fi
           fi
@@ -317,7 +321,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == member-chat || "$ACCEPTANCE_CASE" == guest-scrape ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == scrape-save-member || "$ACCEPTANCE_CASE" == tab-groups-member ]]; then
+          if [[ "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == scrape-error-recovery-guest || "$ACCEPTANCE_CASE" == scrape-save-member || "$ACCEPTANCE_CASE" == tab-groups-member ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == guest-seo || "$ACCEPTANCE_CASE" == guest-data || "$ACCEPTANCE_CASE" == member-data || "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == visibility-census-guest || "$ACCEPTANCE_CASE" == visibility-census-member || "$ACCEPTANCE_CASE" == visibility-census-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
@@ -463,6 +467,7 @@ jobs:
             test-results/guest-chat-store-*.json
             test-results/scrape-guest-native-*.json
             test-results/scrape-save-native-acceptance.json
+            test-results/scrape-error-recovery-guest-native.json
             test-results/tab-groups-member-native-acceptance.json
             test-results/seo-guest-acceptance.json
             test-results/data-guest-native-acceptance.json

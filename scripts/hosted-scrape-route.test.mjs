@@ -97,6 +97,27 @@ test('D187 Save Source requires the exact unpublished CI development artifact', 
   );
 });
 
+test('guest T14 recovery is development-artifact and guest-only', async () => {
+  assert.deepEqual(
+    requireHostedScrapeRoute('scrape-error-recovery-guest', 'development', development, 'guest'),
+    {
+      driver: 'tests/browser/scrape-error-recovery-guest.mjs',
+      channel: 'development',
+    },
+  );
+  for (const [mode, prepared, authMode] of [
+    ['release', development, 'guest'],
+    ['development', store, 'guest'],
+    ['development', { ...development, eligibleStore: true }, 'guest'],
+    ['development', development, 'member'],
+    ['development', development, undefined],
+  ]) {
+    assert.throws(() =>
+      requireHostedScrapeRoute('scrape-error-recovery-guest', mode, prepared, authMode),
+    );
+  }
+});
+
 test('Scrape auth mode requires matching staged credential before browser setup', () => {
   for (const acceptanceCase of ['guest-scrape', 'guest-scrape-development']) {
     requireHostedAcceptanceCredential(acceptanceCase, { MATRX_SCRAPE_AUTH_MODE: 'guest' });
@@ -157,6 +178,7 @@ test('workflow admits development Scrape only with one complete development sele
     'utf8',
   );
   assert.match(workflow, /- guest-scrape-development/);
+  assert.match(workflow, /- scrape-error-recovery-guest/);
   assert.match(workflow, /- scrape-save-member/);
   assert.match(workflow, /D187 Save Source requires member auth/);
   assert.match(
@@ -167,6 +189,11 @@ test('workflow admits development Scrape only with one complete development sele
     workflow,
     /"\$ACCEPTANCE_CASE" == guest-scrape-development[^\n]*\n\s*\[\[ -z "\$RELEASE_RUN_ID" && -n "\$DEVELOPMENT_RUN_ID" && -n "\$DEVELOPMENT_ARTIFACT_ID" && "\$PUBLISHED_STORE_CRX" != true \]\]/,
   );
+  assert.match(
+    workflow,
+    /"\$ACCEPTANCE_CASE" == scrape-error-recovery-guest[^\n]*\n\s*\[\[ -z "\$RELEASE_RUN_ID" && -n "\$DEVELOPMENT_RUN_ID" && -n "\$DEVELOPMENT_ARTIFACT_ID"/,
+  );
+  assert.match(workflow, /SCRAPE_AUTH_MODE" == guest && "\$ACCEPTANCE_LANE" == B/);
 });
 
 test('workflow admits member Data with member auth while preserving guest and D187 routing', async () => {
@@ -200,15 +227,23 @@ test('workflow admits member Data with member auth while preserving guest and D1
     RUNNER_ARCH: isArm64 ? 'ARM64' : 'X64',
   };
 
-  for (const [acceptanceCase, authMode, laneStatus, provenanceStatus] of [
-    ['member-data', 'member', 0, 0],
-    ['member-data', 'guest', 1, 1],
-    ['guest-chat', 'guest', 0, 0],
-    ['guest-chat', 'member', 0, 1],
-    ['scrape-save-member', 'member', 0, 0],
-    ['scrape-save-member', 'guest', 1, 0],
+  for (const [acceptanceCase, authMode, acceptanceLane, laneStatus, provenanceStatus] of [
+    ['member-data', 'member', 'A', 0, 0],
+    ['member-data', 'guest', 'A', 1, 1],
+    ['guest-chat', 'guest', 'A', 0, 0],
+    ['guest-chat', 'member', 'A', 0, 1],
+    ['scrape-save-member', 'member', 'A', 0, 0],
+    ['scrape-save-member', 'guest', 'A', 1, 0],
+    ['scrape-error-recovery-guest', 'guest', 'B', 0, 0],
+    ['scrape-error-recovery-guest', 'guest', 'A', 1, 0],
+    ['scrape-error-recovery-guest', 'member', 'B', 1, 1],
   ]) {
-    const env = { ...shared, ACCEPTANCE_CASE: acceptanceCase, SCRAPE_AUTH_MODE: authMode };
+    const env = {
+      ...shared,
+      ACCEPTANCE_LANE: acceptanceLane,
+      ACCEPTANCE_CASE: acceptanceCase,
+      SCRAPE_AUTH_MODE: authMode,
+    };
     for (const [scriptName, script, expectedStatus] of [
       ['lane admission', laneAdmission, laneStatus],
       ['artifact preflight', artifactProvenance, provenanceStatus],

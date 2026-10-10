@@ -43,9 +43,11 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
   const scrapeMode =
     acceptanceCase === 'scrape-save-member'
       ? 'member'
-      : acceptanceCase.startsWith('guest-scrape')
-        ? (env.MATRX_SCRAPE_AUTH_MODE ?? 'guest')
-        : null;
+      : acceptanceCase === 'scrape-error-recovery-guest'
+        ? 'guest'
+        : acceptanceCase.startsWith('guest-scrape')
+          ? (env.MATRX_SCRAPE_AUTH_MODE ?? 'guest')
+          : null;
   if (
     [
       'member-chat',
