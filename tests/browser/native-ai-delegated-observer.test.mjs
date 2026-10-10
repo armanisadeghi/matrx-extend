@@ -68,6 +68,8 @@ test('native AI observer accepts only a fresh canonical ai result on exact POST 
   assert.deepEqual(observed, {
     posted: true,
     canonical_ai_tool: true,
+    is_error: false,
+    output_present: true,
     output_ok: false,
     output_unavailable: true,
     http_status: 200,
@@ -79,6 +81,33 @@ test('native AI observer accepts only a fresh canonical ai result on exact POST 
   assert.equal(fake.events.listenerCount('Network.requestWillBeSent'), 0);
   assert.equal(fake.events.listenerCount('Network.responseReceived'), 0);
   assert.equal(fake.events.listenerCount('Network.loadingFinished'), 0);
+});
+
+test('native AI observer reports the accepted error envelope without inferring unavailability', async () => {
+  const fake = fixture();
+  const observer = observeNativeAiDelegatedResult(fake.worker, serverOrigin);
+  observer.arm();
+  observer.expectCallId('owned-call');
+  fake.request('handler-error', 'POST', endpoint, {
+    tool_name: 'ai',
+    output: null,
+    is_error: true,
+    error_message: 'private failure detail',
+  });
+  fake.response('handler-error', 200);
+  fake.finish('handler-error');
+  assert.deepEqual(await observer.read(), {
+    posted: true,
+    canonical_ai_tool: true,
+    is_error: true,
+    output_present: false,
+    output_ok: false,
+    output_unavailable: false,
+    http_status: 200,
+    authenticated: true,
+    finished: true,
+  });
+  observer.stop();
 });
 
 test('native AI observer refuses leaf-only, failed transport, and duplicate result attribution', async () => {

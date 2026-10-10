@@ -9,6 +9,11 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { requireProductionBackendOrigin } from './member-logical-org-proof.mjs';
 import { observeNativeAiDelegatedResult } from './native-ai-delegated-observer.mjs';
 import {
+  completeNativeAiManualStep,
+  failNativeAiManualStep,
+  markNativeAiManualStep,
+} from './native-ai-probe-progress.mjs';
+import {
   nativeAiAttribution,
   requireNativeAiProbeEvidence,
   safeRealmProbe,
@@ -190,21 +195,26 @@ const toolCard = (name) => `(() => {
   return row?.closest('.rounded-md.border.bg-card')??null;
 })()`;
 
-async function manualRun(panel, name, args) {
+async function manualRun(panel, name, args, prefix, mark) {
+  mark(`${prefix}_search`);
   await inputText(
     panel,
     `[...(${toolsPane}?.querySelectorAll('input[placeholder="Search by name or description…"]')??[])]`,
     name,
     'search',
   );
+  mark(`${prefix}_row`);
   await waitFor('native_ai_tool_row', () => evaluate(panel, `Boolean(${toolCard(name)})`), Boolean);
+  mark(`${prefix}_expand`);
   await click(panel, 'tool-row', name);
   const card = toolCard(name);
+  mark(`${prefix}_form`);
   await waitFor(
     'native_ai_manual_form',
     () => evaluate(panel, `(${card})?.querySelectorAll('textarea').length??0`),
     (n) => n === 1,
   );
+  mark(`${prefix}_arguments`);
   await inputText(
     panel,
     `[...(${card}?.querySelectorAll('textarea')??[])]`,
@@ -213,11 +223,13 @@ async function manualRun(panel, name, args) {
   );
   const visibleArgs = await evaluate(panel, `(${card})?.querySelector('textarea')?.value??null`);
   assert.equal(visibleArgs, JSON.stringify(args), 'native_ai_manual_arguments_not_visible');
+  mark(`${prefix}_run`);
   await pointer(
     panel,
     `[...(${card}?.querySelectorAll('button')??[])].filter((el)=>el.textContent.trim()==='Run'&&!el.disabled)`,
     'run',
   );
+  mark(`${prefix}_result`);
   const text = await waitFor(
     'native_ai_manual_result',
     () =>
@@ -231,6 +243,7 @@ async function manualRun(panel, name, args) {
       ),
     (value) => typeof value === 'string' && value.length > 0,
   );
+  mark(`${prefix}_parse`);
   let parsed;
   try {
     parsed = JSON.parse(text);
@@ -252,25 +265,36 @@ async function manualRun(panel, name, args) {
   };
 }
 
-async function manualCycle(panel) {
+async function manualCycle(panel, mark, complete) {
+  mark('open_tools');
   await click(panel, 'title', 'Tools');
+  mark('catalog_ready');
   await waitFor(
     'native_ai_tools_catalog',
     () => toolsCatalogState(panel),
     (value) => value === 'catalog',
   );
+  mark('surface_filter');
   await pointer(
     panel,
     `[...(${toolsPane}?.querySelectorAll('button[role="combobox"]')??[])].filter((el)=>el.textContent.trim().startsWith('Agent surface ('))`,
     'surface_filter',
   );
+  mark('internal_delegates');
   await pointer(
     panel,
     `[...document.querySelectorAll('[role="option"]')].filter((el)=>el.textContent.trim().startsWith('Internal delegates ('))`,
     'internal_delegates',
   );
-  const availability = await manualRun(panel, 'ai_check_availability', {});
-  const summarize = await manualRun(panel, 'ai_summarize', { text: CONTROL_TEXT });
+  const availability = await manualRun(panel, 'ai_check_availability', {}, 'availability', mark);
+  const summarize = await manualRun(
+    panel,
+    'ai_summarize',
+    { text: CONTROL_TEXT },
+    'summarize',
+    mark,
+  );
+  complete();
   return { availability, summarize };
 }
 
@@ -403,7 +427,13 @@ async function cycle(label, panel, native, extensionId) {
       offscreen: await offscreenProbe(native.browserSession, extensionId),
     };
     report.stage = `${label}_manual`;
-    const manual = await native.resourceAction(() => manualCycle(panel));
+    const manual = await native.resourceAction(() =>
+      manualCycle(
+        panel,
+        (step) => markNativeAiManualStep(report, label, step),
+        () => completeNativeAiManualStep(report),
+      ),
+    );
     report.stage = `${label}_delegated`;
     const delegated = await native.resourceAction(() => delegatedCycle(panel, worker));
     const attribution = nativeAiAttribution(
@@ -522,9 +552,10 @@ try {
   await main();
 } catch (error) {
   report.failure_code =
-    typeof error?.message === 'string' && /^native_ai_/.test(error.message.split(':')[0])
+    failNativeAiManualStep(report) ??
+    (typeof error?.message === 'string' && /^native_ai_/.test(error.message.split(':')[0])
       ? error.message.split(':')[0]
-      : 'native_ai_probe_failed';
+      : 'native_ai_probe_failed');
   process.exitCode = 1;
 } finally {
   await mkdir(join(REPO, 'test-results'), { recursive: true });

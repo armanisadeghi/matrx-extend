@@ -71,6 +71,8 @@ export function observeNativeAiDelegatedResult(worker, serverOrigin) {
         const observation = {
           posted: entry.status === 200 && entry.authenticated && entry.finished && !entry.failed,
           canonical_ai_tool: matching[0].tool_name === 'ai',
+          is_error: matching[0].is_error === true,
+          output_present: matching[0].output !== null && matching[0].output !== undefined,
           output_ok: matching[0].output?.ok === true,
           output_unavailable:
             matching[0].output?.ok === false && matching[0].output?.availability === 'unavailable',
@@ -85,6 +87,8 @@ export function observeNativeAiDelegatedResult(worker, serverOrigin) {
         latest ?? {
           posted: false,
           canonical_ai_tool: false,
+          is_error: false,
+          output_present: false,
           output_ok: false,
           output_unavailable: false,
           http_status: null,
