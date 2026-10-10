@@ -17,7 +17,9 @@ import {
   verifyDataPatternLookupResult,
 } from './data-member-pattern-cleanup.mjs';
 import { observePatternWrites } from './data-member-save-observer.mjs';
+import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { captureFailure } from './profile-reload-capture.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import {
   activeTabPanelExpression,
@@ -537,7 +539,16 @@ try {
         report.observations.cancel_cleared_unsaved_selection = true;
 
         report.stage = 'extension_reload';
-        const reload = await native.reloadExtension();
+        let reload;
+        try {
+          reload = await native.reloadExtension();
+        } catch (error) {
+          report.reload_failure = {
+            helper: safeReloadOperationFailure(error?.reloadOperationFailure),
+            failure: captureFailure(error, native.transportFailureClass ?? (() => 'unavailable')),
+          };
+          throw error;
+        }
         assert.equal(
           reload?.management_reload_clicked,
           true,
@@ -546,9 +557,24 @@ try {
         assert.equal(reload?.old_targets_retired, true, 'data_member_old_panel_not_retired');
         assert.equal(reload?.worker_replaced, true, 'data_member_worker_not_replaced');
         assert.equal(reload?.panel_replaced, true, 'data_member_panel_not_replaced');
-        await panel.detach();
-        panel = await native.acquireLivePanel();
+        report.stage = 'extension_reload_adopt';
+        assert.equal(
+          reload?.retirement_evidence?.timeline?.final_predicate,
+          true,
+          'data_member_reload_retirement_unverified',
+        );
+        assert.equal(
+          typeof reload?.panel?.targetId === 'string' &&
+            reload.panel.targetId.length > 0 &&
+            reload.panel.targetId !== panel.targetId,
+          true,
+          'data_member_reload_replacement_invalid',
+        );
+        panel = reload.panel;
+        report.observations.reload_replacement_adopted = true;
+        report.stage = 'extension_reload_activate';
         await panel.send('Page.bringToFront');
+        report.stage = 'extension_reload_reopen_data';
         await click(panel, 'title', 'Data');
         await waitFor(
           'data_member_reloaded_data_tab_ready',
