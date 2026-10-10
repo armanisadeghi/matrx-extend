@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": 38084047241,
+  "status": "resource_invalid_zero_credit",
+  "case_id": "guest-chat-v0479-current-server",
+  "observed_at": "2026-10-10T20:37:47Z",
+  "workflow_source_sha": "8f1904f075883ec406c5223110c7fe471717d599",
+  "runner_label": "macos-15-intel",
+  "artifact": {
+    "release_run_id": 38080281242,
+    "artifact_id": 11680078743,
+    "version": "0.2.479",
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e"
+  },
+  "classification": "Infrastructure/resource interruption; no product verdict. The guard interrupted the first-answer wait, before a native Chat result was written.",
+  "last_reached_stage": "real_guest_answer",
+  "resource_finals": {
+    "package": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": {
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid",
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+    }
+  },
+  "server_sha": null,
+  "product_assertions": {
+    "opening_answer": null,
+    "same_conversation_followup": null,
+    "post_reload_answer": null
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084047241/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084047241/interruption.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084047241/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084047241/resource-journals/hosted-package.jsonl",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084047241/resource-journals/hosted-browser.jsonl",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084047241/resource-journals/hosted-guest.jsonl",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084047241/screenshots/native-side-panel.png",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084047241/screenshots/target-before-chat-answer.png",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38084047241"
+  ],
+  "limitations": [
+    "No server version SHA was captured for this run because process termination occurred before the runner wrote its native result; the preceding v0.2.205 run observed SHA 908045a2d1c74364e9a59cf47fb69cd39de141e0, but that value is not attributable to this run.",
+    "No Chat product behavior passed or failed; opening answer, same-conversation follow-up, and post-reload answer are all unverified.",
+    "This interruption does not establish a v0.2.479 product regression. A guarded retry is required for product evidence."
+  ]
+}

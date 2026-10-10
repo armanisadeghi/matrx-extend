@@ -1,0 +1,30 @@
+{
+  "classification": "resource_invalid_zero_credit",
+  "terminal_product_result": null,
+  "last_reached_stage": "real_guest_answer",
+  "completed_stages": [
+    "owned_profile",
+    "fresh_guest",
+    "owned_article_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_values_chip_open",
+    "guest_question",
+    "real_guest_answer_wait_started"
+  ],
+  "interruption": {
+    "reason_codes": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+    "observed_cpu_busy_fraction": 0.75,
+    "observed_one_minute_load": 5.67,
+    "logical_cpus": 4,
+    "safe_boundary_stop": true,
+    "process_group_signal": "SIGTERM",
+    "timestamp": "2026-10-10T20:37:46Z"
+  },
+  "product_assertions": {
+    "opening_answer": "not observed; native result JSON absent",
+    "same_conversation_followup": "not reached",
+    "post_reload_answer": "not reached",
+    "server_sha": "not emitted because report finalization did not run"
+  }
+}

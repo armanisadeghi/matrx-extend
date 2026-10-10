@@ -1,0 +1,10 @@
+{
+  "package": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+  "browser": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+  "acceptance": {
+    "resource_invalid": true,
+    "exit_code": 3,
+    "decision": "invalid",
+    "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+  }
+}

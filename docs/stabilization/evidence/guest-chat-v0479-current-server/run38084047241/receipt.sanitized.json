@@ -1,0 +1,12 @@
+{
+  "workflow_run_id": 38084047241,
+  "workflow_source_sha": "8f1904f075883ec406c5223110c7fe471717d599",
+  "release_run_id": 38080281242,
+  "release_artifact_id": 11680078743,
+  "release_version": "0.2.479",
+  "release_source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "hosted_result_artifact_id": 11681149552,
+  "hosted_result_artifact_sha256": "aa253e3b97f27ec61cb5ae1612782de5fccd7f2af5ec6bed4257708ce730cab1",
+  "run_server_sha_observation": null,
+  "note": "The guest-chat runner was stopped by the resource watchdog before report finalization; server-version and product-turn results were not emitted."
+}
