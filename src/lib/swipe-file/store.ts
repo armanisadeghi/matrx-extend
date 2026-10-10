@@ -8,6 +8,7 @@
 
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { platformDb, socialDb } from '@/lib/supabase/schemas';
+import { readSwipeCollections } from '@/lib/swipe-file/library';
 
 export interface SwipeCollectionRow {
   id: string;
@@ -18,16 +19,7 @@ export interface SwipeCollectionRow {
 const LAST_KEY = 'matrx.swipe.last_collection';
 
 export async function listCollections(): Promise<SwipeCollectionRow[]> {
-  // Everything the person can see across ALL their organizations (access-ladder
-  // law: the active org is where new things are saved, never a list filter).
-  const { data, error } = await socialDb()
-    .from('swipe_collection')
-    .select('id,name,organization_id')
-    .is('deleted_at', null)
-    .order('updated_at', { ascending: false })
-    .limit(200);
-  if (error) throw new Error(`Could not load your collections: ${error.message}`);
-  return (data ?? []) as SwipeCollectionRow[];
+  return readSwipeCollections();
 }
 
 export async function isPostInCollection(collectionId: string, postId: string): Promise<boolean> {

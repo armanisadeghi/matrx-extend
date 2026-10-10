@@ -18,6 +18,7 @@ import {
   updateSwipeCollection,
   updateSwipeNotes,
 } from '@/lib/swipe-file/library';
+import { listCollections } from '@/lib/swipe-file/store';
 
 const collection = (id: string, org: string) => ({
   id,
@@ -67,6 +68,25 @@ describe('canonical swipe library', () => {
     expect(harness.fetch).toHaveBeenCalledTimes(2);
     const second = new URL(String(harness.fetch.mock.calls[1]?.[0]));
     expect(second.searchParams.get('offset')).toBe('2');
+  });
+  it('the floating picker uses the same uncapped all-organization collection reader as the manager', async () => {
+    const rows = Array.from({ length: 203 }, (_, index) =>
+      collection(`campaign-${index}`, index % 2 ? 'studio-west' : 'studio-east'),
+    );
+    harness.fetch.mockImplementation(async (url: string) => {
+      const u = new URL(url);
+      expect(u.searchParams.has('organization_id')).toBe(false);
+      expect(u.searchParams.get('deleted_at')).toBe('is.null');
+      const offset = Number(u.searchParams.get('offset') ?? 0);
+      const limit = Number(u.searchParams.get('limit') ?? 200);
+      return json(rows.slice(offset, offset + limit), {
+        'content-range': `${offset}-${Math.min(offset + limit - 1, 202)}/203`,
+      });
+    });
+    const loaded = await listCollections();
+    expect(loaded).toHaveLength(203);
+    expect(loaded[202]?.id).toBe('campaign-202');
+    expect(harness.fetch).toHaveBeenCalledTimes(2);
   });
   it('shows archived collections only when the visible control asks for them', async () => {
     harness.fetch.mockImplementation(async (url: string) => {
