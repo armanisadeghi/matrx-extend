@@ -1,0 +1,235 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0147 native AI member diagnostic run adjudication",
+  "verdict": "DIAGNOSTIC_FAILED_ZERO_PRODUCT_CREDIT",
+  "hosted_run": {
+    "id": 38056251987,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38056251987",
+    "conclusion": "failure",
+    "ref": "refs/heads/main",
+    "source_sha": "61e969d50e7427baf95a6b9e5e9581d4e62f5277",
+    "lane": "A",
+    "runner": "macos-15"
+  },
+  "development_ci_artifact": {
+    "run_id": 38055652740,
+    "source_sha": "61e969d50e7427baf95a6b9e5e9581d4e62f5277",
+    "artifact_id": 11671776389,
+    "artifact_digest": "sha256:24eaef40170b9b802d46ccc7da7eb228b853149df10ac457d02d7d5e5f0dc857",
+    "version": "0.2.466",
+    "tree_sha256": "d6053891bae813bc93894a84fd801e9ef0a2f6ab1fb12ee7c9a5b160e9baf420"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11670966932,
+    "name": "hosted-guest-38056251987-1",
+    "digest": "sha256:d44626dca86632f231d53a0c10045ea87ed664b25339db0f6184fd069f857866",
+    "expired": false,
+    "included_unrelated_old_resource_journals": true
+  },
+  "native_result": {
+    "schema_version": 1,
+    "defect_id": "EXT-D-0147",
+    "scope": "diagnostic: member native AI manual catalog versus delegated canonical ai; warm and full reload",
+    "status": "unverified",
+    "product_acceptance_credit": false,
+    "stage": "post_reload_manual",
+    "failure_code": "native_ai_probe_failed",
+    "artifact": {
+      "source_sha": "61e969d50e7427baf95a6b9e5e9581d4e62f5277",
+      "ci_run_id": 38055652740,
+      "ci_artifact_id": 11671776389,
+      "tree_sha256": "d6053891bae813bc93894a84fd801e9ef0a2f6ab1fb12ee7c9a5b160e9baf420",
+      "version": "0.2.466"
+    },
+    "authentication": {
+      "member_signed_in": true,
+      "non_admin_identity": true,
+      "organization_selected": true
+    },
+    "reload": {
+      "management_reload_clicked": true,
+      "worker_replaced": true,
+      "panel_replaced": true
+    },
+    "cycles": [
+      {
+        "label": "warm",
+        "realms": {
+          "panel": {
+            "is_document": true,
+            "user_activation_active": true,
+            "user_activation_has_been_active": true,
+            "capabilities": {
+              "LanguageModel": {
+                "present": true,
+                "availability": "downloadable"
+              },
+              "Summarizer": {
+                "present": true,
+                "availability": "downloadable"
+              },
+              "Translator": {
+                "present": true,
+                "availability": "downloadable"
+              },
+              "LanguageDetector": {
+                "present": true,
+                "availability": "downloadable"
+              },
+              "Proofreader": {
+                "present": false,
+                "availability": "unavailable"
+              },
+              "Writer": {
+                "present": false,
+                "availability": "unavailable"
+              },
+              "Rewriter": {
+                "present": false,
+                "availability": "unavailable"
+              }
+            }
+          },
+          "worker": {
+            "is_document": false,
+            "user_activation_active": false,
+            "user_activation_has_been_active": false,
+            "capabilities": {
+              "LanguageModel": {
+                "present": true,
+                "availability": "downloadable"
+              },
+              "Summarizer": {
+                "present": true,
+                "availability": "downloadable"
+              },
+              "Translator": {
+                "present": true,
+                "availability": "downloadable"
+              },
+              "LanguageDetector": {
+                "present": true,
+                "availability": "downloadable"
+              },
+              "Proofreader": {
+                "present": false,
+                "availability": "unavailable"
+              },
+              "Writer": {
+                "present": false,
+                "availability": "unavailable"
+              },
+              "Rewriter": {
+                "present": false,
+                "availability": "unavailable"
+              }
+            }
+          },
+          "offscreen": {
+            "target_present": false,
+            "realm": null
+          }
+        },
+        "manual": {
+          "availability": {
+            "observed": true,
+            "tool_name": "ai_check_availability",
+            "any_available": false,
+            "summarizer_available": false,
+            "ok": false,
+            "unavailable": false,
+            "availability": null
+          },
+          "summarize": {
+            "observed": true,
+            "tool_name": "ai_summarize",
+            "any_available": false,
+            "summarizer_available": false,
+            "ok": false,
+            "unavailable": true,
+            "availability": "unavailable"
+          }
+        },
+        "delegated": {
+          "posted": true,
+          "canonical_ai_tool": true,
+          "output_ok": false,
+          "output_unavailable": false,
+          "http_status": 200,
+          "authenticated": true,
+          "finished": true,
+          "controlled_action_observed": true,
+          "completed_reply_observed": true
+        },
+        "attribution": "unavailable_api_result_not_attributed"
+      }
+    ]
+  },
+  "resource_finals": {
+    "package": {
+      "run_id": "hosted-package-38056251987-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "child_exit_code": 0
+    },
+    "browser": {
+      "run_id": "hosted-browser-38056251987-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "child_exit_code": 0
+    },
+    "guest": {
+      "run_id": "hosted-guest-38056251987-1",
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "child_exit_code": 1
+    }
+  },
+  "reviewer_local_compile_admission": {
+    "result": "refused_before_child_launch",
+    "reason": "RESOURCE_DISK_LOW",
+    "resource_invalid": false,
+    "observed_safety_free_gib": 15.24,
+    "required_safety_free_gib": 20,
+    "compile_or_lint_rerun": false
+  },
+  "cleanup": {
+    "github_member_link_secret_deleted": true,
+    "temporary_link_file_removed": true,
+    "temporary_link_directory_removed": true,
+    "disposable_browser_profile_removed_by_harness": true
+  },
+  "limits": [
+    "The warm cycle recorded downloadable native APIs, not a successful operation; the delegated canonical result returned HTTP 200 but was neither classified as successful nor unavailable.",
+    "The run failed during post_reload_manual before recording a second complete cycle; warm/reload parity and post-reload delegated execution remain unverified.",
+    "The probe explicitly grants no product acceptance credit. A controlled Chat prompt may leave a conversation in the test member account; no conversation ID or cleanup was recorded.",
+    "Hosted artifact glob included unrelated earlier resource journals; this evidence bundle retains only the three journals for this run."
+  ],
+  "reviewed_files": [
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/current-test-artifact.mjs",
+    "scripts/hosted-acceptance-route.mjs",
+    "scripts/hosted-guest-acceptance.mjs",
+    "scripts/hosted-native-ai-probe-route.mjs",
+    "scripts/hosted-native-ai-probe-route.test.mjs",
+    "scripts/hosted-profile-route.mjs",
+    "scripts/test-hosted-acceptance-lanes.mjs",
+    "tests/browser/member-logical-org-proof.mjs",
+    "tests/browser/native-ai-delegated-observer.mjs",
+    "tests/browser/native-ai-delegated-observer.test.mjs",
+    "tests/browser/native-ai-member-probe.mjs",
+    "tests/browser/native-ai-probe-verdict.mjs",
+    "tests/browser/native-ai-probe-verdict.test.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/settings-native-auth-driver.mjs",
+    "docs/stabilization/defects/EXT-D-0147.json",
+    "docs/stabilization/resource-policy.json"
+  ],
+  "evidence_directory": "docs/stabilization/evidence/native-ai-member/run38056251987"
+}

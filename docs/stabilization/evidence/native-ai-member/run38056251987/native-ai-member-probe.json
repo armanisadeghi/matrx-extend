@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0147",
+  "scope": "diagnostic: member native AI manual catalog versus delegated canonical ai; warm and full reload",
+  "status": "unverified",
+  "product_acceptance_credit": false,
+  "stage": "post_reload_manual",
+  "failure_code": "native_ai_probe_failed",
+  "artifact": {
+    "source_sha": "61e969d50e7427baf95a6b9e5e9581d4e62f5277",
+    "ci_run_id": 38055652740,
+    "ci_artifact_id": 11671776389,
+    "tree_sha256": "d6053891bae813bc93894a84fd801e9ef0a2f6ab1fb12ee7c9a5b160e9baf420",
+    "version": "0.2.466"
+  },
+  "authentication": {
+    "member_signed_in": true,
+    "non_admin_identity": true,
+    "organization_selected": true
+  },
+  "reload": {
+    "management_reload_clicked": true,
+    "worker_replaced": true,
+    "panel_replaced": true
+  },
+  "cycles": [
+    {
+      "label": "warm",
+      "realms": {
+        "panel": {
+          "is_document": true,
+          "user_activation_active": true,
+          "user_activation_has_been_active": true,
+          "capabilities": {
+            "LanguageModel": {
+              "present": true,
+              "availability": "downloadable"
+            },
+            "Summarizer": {
+              "present": true,
+              "availability": "downloadable"
+            },
+            "Translator": {
+              "present": true,
+              "availability": "downloadable"
+            },
+            "LanguageDetector": {
+              "present": true,
+              "availability": "downloadable"
+            },
+            "Proofreader": {
+              "present": false,
+              "availability": "unavailable"
+            },
+            "Writer": {
+              "present": false,
+              "availability": "unavailable"
+            },
+            "Rewriter": {
+              "present": false,
+              "availability": "unavailable"
+            }
+          }
+        },
+        "worker": {
+          "is_document": false,
+          "user_activation_active": false,
+          "user_activation_has_been_active": false,
+          "capabilities": {
+            "LanguageModel": {
+              "present": true,
+              "availability": "downloadable"
+            },
+            "Summarizer": {
+              "present": true,
+              "availability": "downloadable"
+            },
+            "Translator": {
+              "present": true,
+              "availability": "downloadable"
+            },
+            "LanguageDetector": {
+              "present": true,
+              "availability": "downloadable"
+            },
+            "Proofreader": {
+              "present": false,
+              "availability": "unavailable"
+            },
+            "Writer": {
+              "present": false,
+              "availability": "unavailable"
+            },
+            "Rewriter": {
+              "present": false,
+              "availability": "unavailable"
+            }
+          }
+        },
+        "offscreen": {
+          "target_present": false,
+          "realm": null
+        }
+      },
+      "manual": {
+        "availability": {
+          "observed": true,
+          "tool_name": "ai_check_availability",
+          "any_available": false,
+          "summarizer_available": false,
+          "ok": false,
+          "unavailable": false,
+          "availability": null
+        },
+        "summarize": {
+          "observed": true,
+          "tool_name": "ai_summarize",
+          "any_available": false,
+          "summarizer_available": false,
+          "ok": false,
+          "unavailable": true,
+          "availability": "unavailable"
+        }
+      },
+      "delegated": {
+        "posted": true,
+        "canonical_ai_tool": true,
+        "output_ok": false,
+        "output_unavailable": false,
+        "http_status": 200,
+        "authenticated": true,
+        "finished": true,
+        "controlled_action_observed": true,
+        "completed_reply_observed": true
+      },
+      "attribution": "unavailable_api_result_not_attributed"
+    }
+  ]
+}
