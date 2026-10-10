@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38086330146,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38086330146",
+  "workflow_source_sha": "f85c2930b3745598af1a101bb6d7437b362f2553",
+  "workflow_conclusion": "failure",
+  "lane": "A",
+  "runner": "macos-15 / ARM64",
+  "case": "guest-scrape",
+  "auth_mode": "guest",
+  "width_mode": "normal",
+  "minimum_and_observed_viewport_width_px": 600,
+  "release_run_id": 38080281242,
+  "release_artifact_id": 11680078743,
+  "release_artifact_name": "matrx-extend-v0.2.479",
+  "release_artifact_digest": "sha256:c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+  "release_tag_commit": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "package_version": "0.2.479",
+  "package_tree_sha256": "c1f031c444892d84422ffa4e4c6c4edbbaf49ca9b93ef64304c69c0fd3c292e8",
+  "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+  "hosted_artifact": {
+    "id": 11682787763,
+    "name": "hosted-guest-38086330146-1",
+    "digest": "sha256:6aec0d12915689136cc896a2f2fda1fde57c7cecca83db4bb5e6c6f9fb3e7e17"
+  },
+  "native_result": "unverified_after_reload",
+  "resource_finals": {
+    "hosted-package-38086330146-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "hosted-browser-38086330146-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "hosted-guest-38086330146-1": {
+      "decision": "child_failed",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1
+    }
+  },
+  "resource_journals": {
+    "hosted-package-38086330146-1.jsonl": {
+      "path": "resource-journals/hosted-package-38086330146-1.jsonl",
+      "sha256": "2ef5fdfb30574beb233dbed5e65f81f2dc7031718da0e3830716a73b97462564"
+    },
+    "hosted-browser-38086330146-1.jsonl": {
+      "path": "resource-journals/hosted-browser-38086330146-1.jsonl",
+      "sha256": "095d30d60019d38e0a851abde63cdad11a0ece226c9b44359ae72376612a1ec2"
+    },
+    "hosted-guest-38086330146-1.jsonl": {
+      "path": "resource-journals/hosted-guest-38086330146-1.jsonl",
+      "sha256": "0fc8b20e2687dc1776e2c5dc1f7ef098cdf339af5b72660d493bd477dfab5e54"
+    }
+  },
+  "artifact_loading": "Candidate-key adapted from exact Store ZIP and loaded unpacked; not Store-installed.",
+  "failure_summary": "Warm normal-width capture and T08 assertions completed. After the full extension reload, the replacement worker activated but the trusted opener message callback did not enter and no replacement panel target appeared. No resource-invalid verdict.",
+  "cleanup": "Harness finally detaches its owned CDP session, closes its owned fixture server, stops only its spawned Chromium child and removes its temporary profile root. Workflow job completed cleanup.",
+  "peer_review_status": "requested",
+  "evidence_files": {
+    "native-report.sanitized.json": {
+      "sha256": "54f1f0cffbe0b34d723041d5507aa922330cdb8e0c93dc54b47e24c710e1b0c2"
+    },
+    "screenshots/native-side-panel.png": {
+      "sha256": "38d80b460c7702c968ced57f1e94105648b9d288878ba7aa1cc73c329a89cd1d"
+    },
+    "screenshots/scrape-fast-article.png": {
+      "sha256": "add53d11aaa76398e4aa6205412da21b0a1a484a9bb2e4c0cd97063fc4478889"
+    },
+    "screenshots/scrape-deep-article.png": {
+      "sha256": "0cc5d253025f3efa50bd95904676014e487d7fd79389447a7f6e3cfc9dea71e4"
+    },
+    "screenshots/scrape-restricted-error.png": {
+      "sha256": "a1fa720c9a60170e740cd90f628afc15d230021645679dac3416fd0467cd86f7"
+    },
+    "resource-finals.sanitized.json": {
+      "sha256": "6e9898bf6d4b991dde79be23e0754a4a503dfe972ba4a757e358ade6364e7aa4"
+    }
+  },
+  "peer_review": {
+    "path": "docs/stabilization/reports/peer-review-guest-scrape-normal-run38086330146.json",
+    "sha256": "57ea7c92757b64dbd689a78e8b1be22e915f599a489372ddee83638d2c92c07d",
+    "status": "complete"
+  }
+}

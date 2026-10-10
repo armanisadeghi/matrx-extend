@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "subtarget": "guest_normal_width_T08",
+  "status": "unverified_after_reload",
+  "auth_mode": "guest",
+  "artifact": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "channel": "store",
+    "version": "0.2.479",
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "adapted_runtime_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0"
+  },
+  "browser_version": "Chrome/141.0.7390.37",
+  "guest_account_observed": true,
+  "guest_auth_storage": {
+    "hasAccessToken": false,
+    "hasUserProfile": false
+  },
+  "width": [
+    {
+      "phase": "warm",
+      "mode": "normal",
+      "mechanism": "owned_SIDE_PANEL_CDP_viewport_emulation",
+      "observed_px": 600,
+      "minimum_px": 600
+    }
+  ],
+  "native_stage": "exercise_panel",
+  "stage": "extension_reload",
+  "warm_capture": {
+    "case_id": "EXT-F-1007-T01",
+    "article_title": "Harbor Dental intake guide",
+    "result_tabs": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+    "busy_disabled": true
+  },
+  "t08_warm": {
+    "status": "partial",
+    "populated_panes": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+    "matching_content": {
+      "article": true,
+      "images": {
+        "pane": "Images",
+        "state": "matching_content",
+        "count": 3,
+        "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+        "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+        "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+      },
+      "video": {
+        "pane": "Video",
+        "state": "matching_content",
+        "count": 2,
+        "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+      },
+      "links": true,
+      "seo": true,
+      "schema": true,
+      "images_empty": {
+        "pane": "Images",
+        "state": "empty",
+        "count": 0,
+        "paths": [],
+        "alt": [],
+        "natural_sizes": []
+      },
+      "video_empty": {
+        "pane": "Video",
+        "state": "empty",
+        "count": 0,
+        "paths": []
+      },
+      "links_empty": {
+        "pane": "Links",
+        "state": "empty",
+        "count": 0,
+        "add_control_visible": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1152,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      },
+      "article_empty": {
+        "pane": "Article",
+        "state": "empty",
+        "fallback_visible": true,
+        "pane_unchanged": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1058,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      }
+    },
+    "empty_states": {
+      "Article": {
+        "pane": "Article",
+        "state": "empty",
+        "fallback_visible": true,
+        "pane_unchanged": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1058,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      },
+      "Images": {
+        "pane": "Images",
+        "state": "empty",
+        "count": 0,
+        "paths": [],
+        "alt": [],
+        "natural_sizes": []
+      },
+      "Video": {
+        "pane": "Video",
+        "state": "empty",
+        "count": 0,
+        "paths": []
+      },
+      "Links": {
+        "pane": "Links",
+        "state": "empty",
+        "count": 0,
+        "add_control_visible": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1152,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      }
+    },
+    "warm_capture_invariance": {
+      "panes_compared": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+      "unchanged": true,
+      "export": {
+        "export_format": "full_capture_ai_markdown",
+        "bytes_compared": 4106,
+        "identity_unchanged": true,
+        "exported_payload_unchanged": true
+      }
+    },
+    "reload_capture_invariance": null,
+    "remaining": [
+      "Post-extension-reload panel recovery and capture/export invariance were not established.",
+      "Empty SEO and Schema states are not asserted by this launcher.",
+      "Member/admin and physical resize remain unverified."
+    ]
+  },
+  "reload_failure": {
+    "code": "native_extension_replacement_panel_unverified",
+    "stage": "extension_reload",
+    "old_worker_execution_retired": true,
+    "old_worker_absent": true,
+    "old_panel_absent": true,
+    "replacement_worker_present": true,
+    "replacement_worker_created_event": true,
+    "replacement_worker_errors": 0,
+    "replacement_panel_created_event": false,
+    "trusted_fixture_click_received": true,
+    "extension_message_send_invoked": true,
+    "extension_message_send_returned": true,
+    "extension_message_callback_entered": false,
+    "reply_observation": "reply_not_observed",
+    "actual_panel_reopen_observed": false
+  },
+  "prior_same_release_comparison": {
+    "run_id": 38082622883,
+    "version": "0.2.479",
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "observed": "Independent review reports successful full extension reload and post-reload capture/export; that run used narrow width.",
+    "implication": "This single failure is intermittent/unresolved; it does not reproduce the closed EXT-D-0186 repeated-target defect."
+  },
+  "product_verdict": "unresolved_possible_reload_open_integration_failure",
+  "evidence_verdict": "partial_warm_pass_zero_credit_after_reload",
+  "user_visible_failure": "The owned frontend-style opener click did not reopen the extension panel after extension reload. The active replacement worker received no observed callback; attribution to product behavior versus runner/harness timing remains unresolved.",
+  "limits": [
+    "Only warm normal-width 600px emulated T08 observations passed before failure.",
+    "No after-reload pane/capture/export observations.",
+    "SEO and Schema were populated panes; their empty states were not asserted by this launcher.",
+    "Owned localhost fixture only; no public named demo or arbitrary external page.",
+    "Candidate-key-adapted unpacked Store ZIP, not a Store-installed browser copy.",
+    "Guest-only; member/admin and physical resize remain unverified."
+  ]
+}
