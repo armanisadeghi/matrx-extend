@@ -527,11 +527,32 @@ try {
         await resourceAction(() => click(panel, 'button-text', 'Projects'));
         const candidate = await waitFor(
           'scrape_save_project_candidate_ready',
-          () =>
-            evaluate(
+          async () => {
+            const state = await evaluate(
               panel,
-              `(() => { const root = document.querySelector('[data-testid="save-source-form"] [aria-label="Place results"]'); const input = root?.querySelector('input[placeholder="Search projects…"]'); const buttons = [...(root?.querySelectorAll('li > button') ?? [])].filter((button) => { const text = button.querySelector('span.flex-1')?.textContent?.trim(); return Boolean(text) && !button.className.includes('bg-accent/40'); }); return { input_count: input ? 1 : 0, labels: buttons.slice(0, 5).map((button) => button.querySelector('span.flex-1')?.textContent?.trim() ?? '') }; })()`,
-            ),
+              `(() => {
+                const root = document.querySelector('[data-testid="save-source-form"] [aria-label="Place results"]');
+                const inputs = root?.querySelectorAll('input[aria-label="Search Projects"]') ?? [];
+                const buttons = [...(root?.querySelectorAll('li > button') ?? [])];
+                const available = buttons.filter((button) => button.getAttribute('aria-pressed') === 'false'
+                  && Boolean(button.querySelector('span.flex-1')?.textContent?.trim()));
+                return { input_count: inputs.length, candidate_count: buttons.length,
+                  loading: root?.textContent?.includes('Loading…') === true,
+                  load_error: root?.textContent?.includes('Could not load places.') === true,
+                  empty: root?.textContent?.includes('No places found.') === true,
+                  labels: available.map((button) => button.querySelector('span.flex-1').textContent.trim()) };
+              })()`,
+            );
+            report.observations.project_picker = {
+              search_input_count: state?.input_count ?? null,
+              candidate_count: state?.candidate_count ?? null,
+              unselected_candidate_count: state?.labels?.length ?? null,
+              loading: state?.loading === true,
+              load_error: state?.load_error === true,
+              empty: state?.empty === true,
+            };
+            return state;
+          },
           (state) => state?.input_count === 1 && state.labels?.length > 0,
           30000,
         );
