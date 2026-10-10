@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "unverified",
+  "receipt_state": "in_progress",
+  "scope": "known-text guest SEO readability in an owned native side panel",
+  "case_selection": {
+    "scope": "readability",
+    "selected_cases": ["T09"],
+    "selected_subtargets": ["guest_manual_readability_matches_two_known_texts"],
+    "excluded_cases": ["T01-T08", "T10-T14", "all other T09 checks"]
+  },
+  "build": {
+    "kind": "ci_development_test",
+    "source_sha": "723fe3340b67fc89fae16779d8b089832fa5f64d",
+    "ci_run_id": 38027647344,
+    "artifact_id": 11660648736,
+    "version": "0.2.458",
+    "tree_sha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d"
+  },
+  "last_safe_stage": "known_readability_restored_page_native_values",
+  "current_operation": null,
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_readability_matches_two_known_texts",
+      "status_before_resource_stop": "pass",
+      "acceptance_credit": false,
+      "reason": "guest resource final is invalid"
+    }
+  ],
+  "scores_and_bands": "not recorded: the terminal resource decision is invalid",
+  "restoration": "Driver reached the restored-page native-values checkpoint, but no resource-valid terminal confirmation exists; acceptance credit remains unverified."
+}

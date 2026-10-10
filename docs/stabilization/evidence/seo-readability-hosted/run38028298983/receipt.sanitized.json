@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38028298983,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38028298983",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "cf806d0e1e3095b3a76aceb5c5dbc6a195e1aae2",
+  "lane": "B",
+  "acceptance_case": "guest-seo",
+  "seo_case_scope": "readability",
+  "metadata_fixture": "none",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "source_sha": "723fe3340b67fc89fae16779d8b089832fa5f64d",
+    "tree_sha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d",
+    "ci_run_id": 38027647344,
+    "artifact_id": 11660648736,
+    "artifact_digest": "sha256:03a5c536f501c930f8927232c1efcc00fb621d9f9e9fdaac0397aa71fc2bd653",
+    "version": "0.2.458"
+  },
+  "hosted_report_artifact": {
+    "artifact_id": 11660967490,
+    "name": "hosted-guest-38028298983-1",
+    "digest": "sha256:ccf4dc2f72a1ee55ba06b6f159e127ab2e2018b48a3865b72f988c65e66524a7"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "unverified",
+  "resource_valid_acceptance": false,
+  "resource_finals": {
+    "hosted-package-38028298983-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38028298983-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38028298983-1": "invalid; admitted=true; resourceInvalid=true; exitCode=3; watchdog stopped owned process after CPU busy/high-load unsafe samples"
+  },
+  "native_checkpoint": {
+    "selected_cases": ["T09"],
+    "selected_subtarget": "guest_manual_readability_matches_two_known_texts",
+    "report_last_safe_stage": "known_readability_restored_page_native_values",
+    "report_target_status_before_resource_stop": "pass",
+    "interpretation": "The native report was finalized as unverified/in-progress when the resource watchdog stopped the process. Its pre-stop target status is not acceptance credit. Exact fixture scores/bands are not available in the sanitized report and are not recorded because the terminal resource verdict is invalid."
+  },
+  "credential_scope": {
+    "mode": "guest",
+    "member_link_staged": false,
+    "member_link_child_environment": "cleared"
+  },
+  "claims": [
+    "The imported development artifact was bound to successful CI run 38027647344, source 723fe3340b67fc89fae16779d8b089832fa5f64d, artifact 11660648736, and the recorded GitHub digest; the hosted wrapper independently verified the imported tree hash before entering the Chrome exercise.",
+    "The workflow checkout was cf806d0e1e3095b3a76aceb5c5dbc6a195e1aae2. Changes after the frozen artifact source were D187 test/diagnostic and stabilization documentation changes; no product runtime or dependency-lock changes were present after 723fe3340.",
+    "Only the guest readability scope was selected; unrelated T09 checks and T01-T08/T10-T14 were excluded by the driver selection.",
+    "The guest run is invalid-resource, not a product failure or pass. Do not promote the pre-stop target status or infer T09 completion. No retry was launched."
+  ]
+}
