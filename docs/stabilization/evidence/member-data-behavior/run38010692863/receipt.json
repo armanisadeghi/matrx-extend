@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "run_id": 38010692863,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38010692863",
+    "lane": "A",
+    "runner": "macos-15",
+    "conclusion": "success",
+    "checkout_sha": "9d0d68341"
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.456",
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "ci_run_id": 37998294843,
+    "ci_artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b"
+  },
+  "hosted_artifact": {
+    "id": 11653034732,
+    "name": "hosted-guest-38010692863-1"
+  },
+  "resource_guards": {
+    "package": { "admitted": true, "resource_invalid": false, "decision": "valid", "exit_code": 0 },
+    "browser": { "admitted": true, "resource_invalid": false, "decision": "valid", "exit_code": 0 },
+    "guest": { "admitted": true, "resource_invalid": false, "decision": "valid", "exit_code": 0 }
+  },
+  "executed_behavior": {
+    "member_web_and_extension_identity": "verified",
+    "canonical_nonadmin_check": "verified",
+    "selected_organization": "load_ladder_with_independently_verified_expected_uuid",
+    "two_picker_field_clicks_and_previews": "verified",
+    "pattern_name_and_save_control": "verified",
+    "save_write_count_and_status": "one_http_201_post",
+    "request_body_name_and_organization": "owned_name_and_selected_organization_matched",
+    "returned_row_id_and_exact_scoped_get": "verified",
+    "saved_pattern_visible_in_side_panel": true,
+    "native_cleanup": "one_exact_row_deleted"
+  },
+  "credential_and_fixture_cleanup": {
+    "temporary_github_secret_removed": true,
+    "local_single_use_link_removed": true,
+    "independent_backend_exact_run_name_count_after": 0
+  },
+  "scope_boundary": "This passes the executed member manual-picker and named-pattern-save subset on the frozen development artifact. It does not cover running the saved pattern, clipboard variants, cancel, reload, admin, or Store behavior.",
+  "evidence_files": [
+    "native-report.json",
+    "cleanup-check.json",
+    "hosted-package-38010692863-1.jsonl",
+    "hosted-browser-38010692863-1.jsonl",
+    "hosted-guest-38010692863-1.jsonl"
+  ]
+}

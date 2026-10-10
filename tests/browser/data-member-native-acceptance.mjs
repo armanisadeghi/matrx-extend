@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-/** Native member Data picker, save and owned-row cleanup for EXT-F-2005-T01. */
+/** Native member Data lifecycle and owned-row cleanup for EXT-F-2005-T03. */
 import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
 import { clickPickerDone, clickPickerField, pickerText } from './data-guest-picker-driver.mjs';
 import {
@@ -48,7 +49,7 @@ const fixture = `<!doctype html><html><head><title>Northline Furnishings catalog
   .join('')}</section></main></body></html>`;
 const report = {
   schema_version: 1,
-  case_id: 'EXT-F-2005-T01',
+  case_id: 'EXT-F-2005-T03',
   auth_mode: 'member',
   status: 'unverified',
   stage: 'input',
@@ -59,7 +60,7 @@ const report = {
   cleanup: null,
   failure_stage: null,
   limits:
-    'Native member picker and pattern-save behavior on the exact imported development artifact; no admin, Store or guest claim.',
+    'Native member picker, save, run, clipboard, cancel and extension-reload behavior on the exact imported development artifact; no admin or Store claim.',
 };
 
 async function dataState(panel, name) {
@@ -79,6 +80,57 @@ async function dataState(panel, name) {
       };
     })()`,
   );
+}
+
+async function extractedRows(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+      const root = ${activeTabPanelExpression('Data')};
+      const hasExtractedRows = [...(root?.querySelectorAll('div') ?? [])]
+        .some((node) => node.firstElementChild?.textContent?.trim().startsWith('Extracted rows ('));
+      const pre = hasExtractedRows ? root?.querySelector('pre') : null;
+      if (!pre) return null;
+      try { return JSON.parse(pre.textContent ?? ''); } catch { return null; }
+    })()`,
+  );
+}
+
+async function copyRows(panel, browserSession, panelTarget, label) {
+  await click(panel, 'title', 'Copy rows');
+  await waitFor(
+    'data_member_copy_rows_menu_open',
+    () =>
+      evaluate(
+        panel,
+        `(() => [...document.querySelectorAll('[data-radix-popper-content-wrapper]')]
+          .some((node) => node.textContent?.includes('TSV (paste to spreadsheet)')
+            && node.textContent?.includes('JSON') && node.textContent?.includes('For AI agent')))()`,
+      ),
+    (open) => open === true,
+  );
+  await click(panel, 'button-text', label);
+  await waitFor(
+    'data_member_copy_feedback',
+    () => evaluate(panel, `!!document.querySelector('svg[aria-label="Copied"]')`),
+    (copied) => copied === true,
+  );
+  await panel.send('Page.bringToFront');
+  const permissionEvidence = {};
+  const text = await withClipboardReadPermission({
+    browserSession,
+    panel,
+    panelUrl: panelTarget.url,
+    evidence: permissionEvidence,
+    read: () => evaluate(panel, 'navigator.clipboard.readText()'),
+  });
+  assert.equal(
+    permissionEvidence.clipboardObservationPermissionRestored,
+    true,
+    'data_member_clipboard_permission_not_restored',
+  );
+  assert.equal(typeof text, 'string', 'data_member_clipboard_readback_missing');
+  return text;
 }
 
 async function lookupSavedPattern(panel, name, organizationId) {
@@ -189,13 +241,9 @@ try {
     onStage: (value) => {
       report.native_stage = value;
     },
-    exercisePanel: async ({
-      page,
-      panel,
-      activatePanel,
-      requireResourceHealth,
-      resourceAction,
-    }) => {
+    exercisePanel: async (native) => {
+      const { page, activatePanel, requireResourceHealth, resourceAction } = native;
+      let { panel } = native;
       report.stage = 'member_auth';
       await requireResourceHealth();
       const identity = await signInSettings({
@@ -359,6 +407,118 @@ try {
         );
         assert.equal(saved.savedPatternVisible, true, 'data_member_saved_row_not_refreshed');
         report.observations.saved_pattern_refreshed = true;
+
+        const expectedRows = [
+          { field_1: 'Cedar chair', field_2: '$189' },
+          { field_1: 'Walnut desk', field_2: '$429' },
+          { field_1: 'Linen lamp', field_2: '$74' },
+        ];
+        const runAndCopy = async (phase) => {
+          await click(panel, 'title', 'Run pattern');
+          const rows = await waitFor(
+            `data_member_saved_pattern_rows_${phase}`,
+            () => extractedRows(panel),
+            (value) => Array.isArray(value) && value.length === expectedRows.length,
+          );
+          assert.deepEqual(rows, expectedRows, `data_member_saved_pattern_rows_mismatch_${phase}`);
+          report.observations[`saved_pattern_run_${phase}`] = true;
+
+          const tsv = await copyRows(
+            panel,
+            native.browserSession,
+            native.panelTarget,
+            'TSV (paste to spreadsheet)',
+          );
+          assert.equal(
+            tsv,
+            'field_1\tfield_2\nCedar chair\t$189\nWalnut desk\t$429\nLinen lamp\t$74',
+            `data_member_tsv_copy_mismatch_${phase}`,
+          );
+          const json = await copyRows(panel, native.browserSession, native.panelTarget, 'JSON');
+          assert.deepEqual(
+            JSON.parse(json),
+            expectedRows,
+            `data_member_json_copy_mismatch_${phase}`,
+          );
+          const ai = await copyRows(
+            panel,
+            native.browserSession,
+            native.panelTarget,
+            'For AI agent',
+          );
+          assert.match(ai, /structured data extracted from a webpage using a saved pattern/);
+          assert.match(ai, /Row count: 3/);
+          assert.match(ai, /Cedar chair/);
+          assert.match(ai, /Walnut desk/);
+          assert.match(ai, /Linen lamp/);
+          report.observations[`clipboard_${phase}`] = {
+            tsv_matches_fixture: true,
+            json_matches_fixture: true,
+            ai_contains_all_fixture_rows: true,
+            native_copy_feedback_observed: true,
+            clipboard_readback: true,
+            observation_permission_restored: true,
+          };
+        };
+
+        await runAndCopy('before_reload');
+
+        report.stage = 'cancel_unsaved_selection';
+        await click(panel, 'data-picker-button', 'Pick fields on this page');
+        await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
+        await clickPickerField(page, '.product-card .product-name', 0);
+        await clickPickerField(page, '.product-card .product-price', 1);
+        await clickPickerDone(page);
+        await page.locator('#matrx-data-picker-host').waitFor({ state: 'detached' });
+        const selectedForCancel = await waitFor(
+          'data_member_cancel_selection_ready',
+          () => dataState(panel, patternName),
+          (state) => state?.pickedTwo === true,
+        );
+        assert.equal(selectedForCancel.pickedTwo, true, 'data_member_cancel_selection_missing');
+        await click(panel, 'button-text', 'Cancel');
+        const cancelled = await waitFor(
+          'data_member_cancel_cleared_selection',
+          () => dataState(panel, patternName),
+          (state) =>
+            state?.pickedTwo === false &&
+            state.savePatternCount === 0 &&
+            state.nameInputCount === 0,
+        );
+        assert.equal(cancelled.pickedTwo, false, 'data_member_cancel_kept_unsaved_fields');
+        report.observations.cancel_cleared_unsaved_selection = true;
+
+        report.stage = 'extension_reload';
+        const reload = await native.reloadExtension();
+        assert.equal(
+          reload?.management_reload_clicked,
+          true,
+          'data_member_extension_reload_missing',
+        );
+        assert.equal(reload?.old_targets_retired, true, 'data_member_old_panel_not_retired');
+        assert.equal(reload?.worker_replaced, true, 'data_member_worker_not_replaced');
+        assert.equal(reload?.panel_replaced, true, 'data_member_panel_not_replaced');
+        await panel.detach();
+        panel = await native.acquireLivePanel();
+        await panel.send('Page.bringToFront');
+        await click(panel, 'title', 'Data');
+        await waitFor(
+          'data_member_reloaded_data_tab_ready',
+          () => dataState(panel, patternName),
+          (state) => state?.active === true,
+        );
+        const reloaded = await waitFor(
+          'data_member_saved_pattern_survived_reload',
+          () => dataState(panel, patternName),
+          (state) => state?.active === true && state.savedPatternVisible === true,
+        );
+        assert.equal(
+          reloaded.savedPatternVisible,
+          true,
+          'data_member_saved_pattern_lost_on_reload',
+        );
+        report.observations.saved_pattern_survived_extension_reload = true;
+        await runAndCopy('after_reload');
       } catch (error) {
         primaryError = error;
       } finally {

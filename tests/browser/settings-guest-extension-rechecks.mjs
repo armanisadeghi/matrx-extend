@@ -63,6 +63,10 @@ function replacementPanel(result, previousPanel) {
   return nextPanel;
 }
 
+export async function detachPanelUnlessRetired(panel, oldTargetRetired) {
+  if (oldTargetRetired !== true) await panel?.detach?.();
+}
+
 export async function runGuestChoicesAcrossExtensionRestarts({
   panel: startingPanel,
   section,
@@ -173,7 +177,7 @@ export async function runGuestChoicesAcrossExtensionRestarts({
       lifecyclePredicatePassed: result.retirement_evidence.timeline.final_predicate,
     });
     failureDetailStage = `${prefix}_detach_previous_panel`;
-    await previousPanel.detach?.();
+    await detachPanelUnlessRetired(previousPanel, result.old_targets_retired);
     failureDetailStage = restoring ? 'restore_settings_reopen' : 'choice_settings_reopen';
     await settings(activePanel);
     failureDetailStage = restoring ? 'restore_section_reopen' : 'choice_section_reopen';

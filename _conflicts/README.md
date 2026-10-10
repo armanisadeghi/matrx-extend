@@ -24,6 +24,7 @@ Its files stay as they are.
 
 ## Held files
 - _conflicts/2026-10-09-164129/pnpm-lock.yaml.held — LOCAL latest 2026-10-09 14:50; GITHUB latest 2026-10-09 16:31; LOCAL lacks 104 of GITHUB's 104 new lines; GITHUB lacks 4 of LOCAL's 4 new lines; recover: git show aa101b191f:'pnpm-lock.yaml' / 8cc7d4f44c:'pnpm-lock.yaml'
+- _conflicts/2026-10-09-181616/pnpm-lock.yaml.held — LOCAL latest 2026-10-09 18:10; GITHUB latest 2026-10-09 18:13; LOCAL lacks 20 of GITHUB's 50 new lines; GITHUB lacks 20 of LOCAL's 37 new lines; recover: git show 8d06ede775:'pnpm-lock.yaml' / 4deeed7207:'pnpm-lock.yaml'
 
 ## Needs a manager
 

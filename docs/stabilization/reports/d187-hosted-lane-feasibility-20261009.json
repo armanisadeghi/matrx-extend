@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "assessment": "existing_guarded_hosted_lane_cannot_currently_execute_d187_save_acceptance",
+  "defect_id": "EXT-D-0187",
+  "case_ids": [
+    "EXT-F-1007-T04",
+    "EXT-F-1007-T29"
+  ],
+  "checked_at": "2026-10-09",
+  "source": {
+    "head": "5f519c011448bf8495945769296fb78864928763",
+    "origin_main": "5f519c011448bf8495945769296fb78864928763",
+    "dirty_paths_out_of_scope": [
+      "docs/stabilization/resource-journals/package-graph-repair.jsonl",
+      "docs/stabilization/resource-journals/package-graph-sync-2.jsonl",
+      "docs/stabilization/resource-journals/package-graph-sync-3.jsonl",
+      "docs/stabilization/resource-journals/package-graph-sync.jsonl"
+    ]
+  },
+  "existing_lane": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "registered_scrape_development_case": "guest-scrape-development",
+    "artifact_selection": "requires successful CI development run ID and exact artifact ID; importer validates artifact provenance",
+    "native_guard": "hosted package, browser, and acceptance phases run through scripts/stabilization-resource.mjs with isolated hosted profile volume",
+    "driver": "tests/browser/scrape-guest-native-acceptance.mjs",
+    "driver_scope": "Scrape capture and reload behavior; no Save Source dialog submission, persisted Source detail check, or association persistence assertion The nearby tests/browser/file-source-e2e.mjs is not a safe substitute: it injects an auth session into Chrome storage, hardcodes an organization, and tests post-save filing; it does not use the Save Source dialog or prove pre-save association behavior.",
+    "auth": "Hosted harness has member/admin credential staging support, but the existing guest-scrape-development route does not supply a D187 save fixture or save-specific assertions."
+  },
+  "recent_d187_attempt": {
+    "run_id": "scrape-save-native-5",
+    "receipt": "docs/stabilization/evidence/scrape-save-native-5/receipt.json",
+    "resource_journal": "docs/stabilization/resource-journals/scrape-save-native-5.jsonl",
+    "result": "resource-invalid before acceptance: the final host safety sample crossed the 20 GiB profile/system free-space floor (19.9955 GiB); no Save Source action or Source write occurred",
+    "observations_without_acceptance_credit": [
+      "Save Source dialog opened from a distinct public article.",
+      "Projects candidates were visible; Tab/Shift+Tab appeared contained; inner list scrolled below first rows."
+    ]
+  },
+  "decision": "Infeasible on the existing hosted route without adding D187-specific acceptance plumbing. A frozen CI artifact and guarded remote Chrome are available primitives, but no existing route drives Save Source or independently verifies saved associations. Running the current generic Scrape case would not exercise D187 and cannot satisfy its closure criteria.",
+  "minimum_next_safe_action": "Add a D187-specific hosted acceptance case and forcing driver (estimated 2\u20133 hours including source review and one guarded run) that imports an exact successful CI development artifact, uses the existing real UI member/admin sign-in flow, saves a uniquely named controlled Source, independently reopens it and verifies the selected Project association, then cleans up only that run-owned record. Source-review the driver failure-stage and sanitized evidence boundaries before its first guarded launch. Do not reuse file-source-e2e.mjs or the guest capture driver as D187 evidence, mutate shared fixtures, or lower the local resource floor.",
+  "acceptance_status": "No behavior pass. EXT-D-0187 remains in-fix; project association, final focus containment, one-click Projects behavior, and role/route coverage remain unverified."
+}

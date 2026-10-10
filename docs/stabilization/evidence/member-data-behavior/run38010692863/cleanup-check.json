@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "run_id": 38010692863,
+  "checked_at": "2026-10-10T00:57:36.531Z",
+  "source": "live PostgREST service-role read with private local configuration",
+  "table": "extend.wbx_pattern",
+  "predicate": "name equals the exact run-owned synthetic pattern name",
+  "query_shape": "SELECT id HEAD with count=exact",
+  "query_error": false,
+  "matching_rows": 0,
+  "conclusion": "no run-owned pattern remains after native exact-row cleanup",
+  "sensitive_values_included": false
+}

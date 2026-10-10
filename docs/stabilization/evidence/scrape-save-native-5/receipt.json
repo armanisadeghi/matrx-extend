@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "run_id": "scrape-save-native-5",
+  "defect_id": "EXT-D-0187",
+  "status": "resource_invalid_before_acceptance",
+  "resource_journal": "docs/stabilization/resource-journals/scrape-save-native-5.jsonl",
+  "resource_final": {
+    "admitted": true,
+    "resource_invalid": true,
+    "exit_code": 3,
+    "decision": "invalid",
+    "reason": "RESOURCE_DISK_LOW"
+  },
+  "identity_observed_before_resource_stop": {
+    "chrome_version": "154.0.8037.98",
+    "profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "extension_version": "0.2.457",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "source_sha": "7cf16860846756eb0f50cd6d2595b4d7529dda05",
+    "release_tree_sha256": "706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d",
+    "loaded_extension_reloaded": true,
+    "owned_target_page_reloaded": true
+  },
+  "pre_stop_observations_not_for_acceptance": [
+    "On a distinct public Wikipedia article, Capture opened the named Save Source dialog without writing a Source.",
+    "A Projects click showed a search field and project candidates; the dedicated prior test Project was present below the initial viewport.",
+    "Tab and Shift+Tab appeared to cycle within the Save Source dialog; the inner project list visibly scrolled below its first rows."
+  ],
+  "product_acceptance": "none; resource-invalid run",
+  "fixture": {
+    "source_created": false,
+    "project_created": false,
+    "cleanup_required": false,
+    "unsaved_dialog_left_open_at_stop": true
+  },
+  "remaining": [
+    "Repeat the focused native checks under a valid local browser permit with enough disk headroom.",
+    "Search, select, save, independently verify persisted association, and clean up an owned disposable Source.",
+    "Do not close EXT-D-0187 from this run."
+  ]
+}

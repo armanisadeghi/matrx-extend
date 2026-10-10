@@ -1,0 +1,60 @@
+name: Hosted package graph sync
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matrx-extend-package-graph-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Wait for published sibling tarballs
+        run: node scripts/await-matrx-latest.mjs
+      - name: Resolve direct and transitive latest packages
+        run: |
+          pnpm update -r "@ai-matrx/*" --latest --lockfile-only --ignore-scripts
+          pnpm update -r "@ai-matrx/*" --depth Infinity --lockfile-only --ignore-scripts
+      - name: Verify lockfile graph before installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          graph_root=$(mktemp -d)
+          cp package.json pnpm-lock.yaml "$graph_root/"
+          node scripts/check-matrx-packages.mjs --root "$graph_root" --duplicates
+          CI='' node scripts/check-matrx-packages.mjs --root "$graph_root"
+      - name: Exercise frozen install and real postinstall
+        run: pnpm install --frozen-lockfile
+      - name: Verify installed graph
+        run: |
+          node scripts/check-matrx-packages.mjs --duplicates
+          CI='' node scripts/check-matrx-packages.mjs
+      - name: Record candidate provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > package-sync-source-sha.txt
+          git diff --exit-code -- . ':!package.json' ':!pnpm-lock.yaml'
+          git diff -- package.json pnpm-lock.yaml > package-sync.patch
+          sha256sum package.json pnpm-lock.yaml > package-sync-sha256.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package-graph-sync-${{ github.run_id }}
+          path: |
+            package.json
+            pnpm-lock.yaml
+            package-sync-source-sha.txt
+            package-sync.patch
+            package-sync-sha256.txt
+          if-no-files-found: error
