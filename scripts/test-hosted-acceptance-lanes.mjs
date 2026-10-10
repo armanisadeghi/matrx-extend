@@ -65,6 +65,8 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
     seoCaseScope = 'full',
     seoFixture = 'none',
     seoInterrupt = 'none',
+    scrapeSaveScope = 'single',
+    scrapeSaveDestination = 'project',
   ) =>
     spawnSync('bash', ['-euo', 'pipefail', '-c', admission], {
       encoding: 'utf8',
@@ -73,7 +75,8 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
         ACCEPTANCE_LANE: lane,
         ACCEPTANCE_CASE: acceptanceCase,
         SCRAPE_AUTH_MODE: scrapeAuth,
-        SCRAPE_SAVE_DESTINATION: 'project',
+        SCRAPE_SAVE_DESTINATION: scrapeSaveDestination,
+        SCRAPE_SAVE_SCOPE: scrapeSaveScope,
         DESKTOP_SETTINGS_CASE: 'full',
         SEO_CASE_SCOPE: seoCaseScope,
         SEO_METADATA_FIXTURE: seoFixture,
@@ -81,6 +84,7 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
       },
     });
   for (const lane of ['A', 'B']) assert.equal(check(lane, 'guest-chat').status, 0, lane);
+  assert.equal(guest.steps[0].env.SCRAPE_SAVE_SCOPE, "${{ inputs.scrape_save_scope || 'single' }}");
   for (const lane of ['', 'C', 'A-extra'])
     assert.notEqual(check(lane, 'guest-chat').status, 0, lane);
   const cases = dispatch.inputs.acceptance_case.options;
@@ -130,6 +134,32 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
     assert.equal(check('A', 'guest-scrape', scrapeAuth).status, 0, scrapeAuth);
   }
   assert.equal(check('B', 'guest-scrape', 'guest').status, 0);
+  assert.equal(
+    check('A', 'scrape-save-member', 'member', 'full', 'none', 'none', 'duplicate-rename', 'none')
+      .status,
+    0,
+  );
+  for (const authMode of ['guest', 'admin'])
+    assert.notEqual(
+      check('A', 'scrape-save-member', authMode, 'full', 'none', 'none', 'duplicate-rename', 'none')
+        .status,
+      0,
+      `duplicate rename refuses ${authMode} auth`,
+    );
+  assert.notEqual(
+    check('B', 'scrape-save-member', 'member', 'full', 'none', 'none', 'duplicate-rename', 'none')
+      .status,
+    0,
+    'duplicate rename requires lane A',
+  );
+  assert.notEqual(
+    check('A', 'scrape-save-member', 'member', 'full', 'none', 'none', 'duplicate-rename').status,
+    0,
+  );
+  assert.notEqual(
+    check('A', 'guest-chat', 'guest', 'full', 'none', 'none', 'duplicate-rename').status,
+    0,
+  );
   assert.equal(check('B', 'guest-seo').status, 0);
   assert.equal(check('B', 'guest-seo', 'guest', 'controlled').status, 0);
   assert.notEqual(check('B', 'guest-chat', 'guest', 'controlled').status, 0);
