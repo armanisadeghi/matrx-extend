@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "kind": "pinned_development_extension_promotion",
-  "status": "awaiting_eligible_ci_artifact",
+  "status": "artifact_promoted_chrome_reload_blocked",
   "candidate": {
     "version": "0.2.476",
     "release_run_id": 38077256885,
@@ -9,7 +9,7 @@
     "release_artifact_name": "matrx-extend-v0.2.476",
     "release_artifact_sha256": "3e1277f1df8692fa252fadcb3ba5a600c386ca00fdb7b958d0189103ba20dde8",
     "release_source_main_sha": "6e2a383eef7bdf7775045aaa4a0410e7f85103bc",
-    "current_main_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "current_main_sha": "07a80a31ba30b82eb0b9beb9bcaa19fe0101f69c",
     "stable_destination": ".output/chrome-mv3-dev",
     "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
   },
@@ -21,20 +21,57 @@
     "requested_run_artifacts": 0,
     "reason_unusable": "Tag CI skips the three development-artifact steps; no importable artifact exists.",
     "latest_main_ci_at_inspection": {
-      "run_id": 38077798820,
-      "source_sha": "a684495fd015f95936330d6e21aa4d31aac36600",
-      "status": "in_progress",
-      "source_version": "0.2.475",
-      "reason_unusable": "This run is older than current v0.2.476 main and the intervening source changes include package.json and generated tool-catalog files outside the promotion script's runtime-equivalence allowlist."
+      "run_id": 38078202292,
+      "source_sha": "858e6761f9bdda4bfa19cded72bddb4ba4a206f7",
+      "status": "success",
+      "source_version": "0.2.476",
+      "artifact_id": 11679469719,
+      "artifact_name": "matrx-extend-development-test-858e6761f9bdda4bfa19cded72bddb4ba4a206f7-38078202292-1",
+      "artifact_digest": "sha256:a25fdc936f84be18c1ea2245d669148e4e69d66e9835ac1c5e0312d13c44783e",
+      "tree_sha256": "ac9a552a6038d622fd05fdfd667367fe9a305dba9d96c935572c09df6b9ffe36",
+      "compatibility_at_promotion": "runtime-equivalent",
+      "current_main_sha_at_promotion": "07a80a31ba30b82eb0b9beb9bcaa19fe0101f69c"
     },
     "ci_trigger": "A documentation-only promotion record on current v0.2.476 main will trigger the guarded main-push CI artifact path."
   },
   "promotion": {
-    "imported": false,
-    "installed": false,
+    "imported": true,
+    "installed": true,
+    "promoted_from": "test-results/ci-artifacts/858e6761f9bdda4bfa19cded72bddb4ba4a206f7/38078202292-1/chrome-mv3",
+    "destination": ".output/chrome-mv3-dev",
+    "tree_sha256": "ac9a552a6038d622fd05fdfd667367fe9a305dba9d96c935572c09df6b9ffe36",
     "chrome_reloaded": false,
+    "loaded_path_verified": false,
+    "pin_beside_store_copy_verified": false,
     "profile_touched": false,
     "upload_or_publisher_action": false
   },
-  "evidence": []
+  "evidence": [
+    {
+      "type": "release_provenance",
+      "run_id": 38077256885,
+      "artifact_id": 11678519586,
+      "artifact_sha256": "3e1277f1df8692fa252fadcb3ba5a600c386ca00fdb7b958d0189103ba20dde8",
+      "version": "0.2.476"
+    },
+    {
+      "type": "ci_development_artifact",
+      "run_id": 38078202292,
+      "artifact_id": 11679469719,
+      "source_sha": "858e6761f9bdda4bfa19cded72bddb4ba4a206f7",
+      "digest": "sha256:a25fdc936f84be18c1ea2245d669148e4e69d66e9835ac1c5e0312d13c44783e",
+      "tree_sha256": "ac9a552a6038d622fd05fdfd667367fe9a305dba9d96c935572c09df6b9ffe36"
+    },
+    {
+      "type": "promotion_receipt",
+      "path": "test-results/ci-dev-promotion-receipt.json",
+      "compatibility": "runtime-equivalent",
+      "current_main_sha": "07a80a31ba30b82eb0b9beb9bcaa19fe0101f69c"
+    },
+    {
+      "type": "chrome_ui_limit",
+      "result": "blocked_before_interaction",
+      "detail": "CUA blocks chrome://extensions navigation and cannot claim the existing internal extensions tab; its policy forbids alternate UI, indirect execution, or workaround routes. No reload, pin, publisher action, or profile change was performed."
+    }
+  ]
 }
