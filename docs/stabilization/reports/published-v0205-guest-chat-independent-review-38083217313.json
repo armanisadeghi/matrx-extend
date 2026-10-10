@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_published_store_guest_chat_review",
+  "reviewer": "member_secret_restore",
+  "run_id": 38083217313,
+  "product_verdict": "PASS_BOUNDED_PUBLISHED_V0205_GUEST_CHAT",
+  "evidence_verdict": "PASS_WITH_SCREENSHOT_RESPONSE_SERIALIZATION_AND_UNPACKED_LIMITS",
+  "identity": {
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "original_crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "server_sha_before_after": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
+    "hosted_artifact_id": 11681582578,
+    "hosted_artifact_sha256": "335950fe996ffcb25a7a5f5130a85983c23dd737354d0394cf90990222733ee0",
+    "published_tag_commit_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3"
+  },
+  "verification": [
+    "Independently downloaded raw artifact; retained sanitized result fields recursively match native values, and three reply screenshots plus three current resource journals byte-match raw files.",
+    "Published-CRX preparation log matches native version/Store identity/runtime hash; inspected production helper enforces pinned public CRX digest and matching CRX3 signing key.",
+    "Opening terminal answer contains unpredictable page code and ordered workflow stages according to native DOM assertions.",
+    "Same-conversation follow-up terminates with grounded code and unchanged conversation fingerprint; post-reload guest remains signed out and new conversation terminates with grounded code/heading.",
+    "All three native terminal timelines end terminal_answer with streaming=false; all three AI requests HTTP200, correct is_new sequence and old/new conversation identities.",
+    "Server/version endpoint HTTP200 before and after, stable SHA 908045a2d1c74364e9a59cf47fb69cd39de141e0.",
+    "Package/browser/guest raw resource finals all admitted valid, resourceInvalid=false and exitCode=0.",
+    "Screenshots independently viewed: real signed-out reply fragments; opening stages partly visible, full code and heading/terminal claims depend on native assertions.",
+    "No credential/token/link scrub issue found in reviewed durable JSON or screenshots.",
+    "Owner additions checked: original CRX digest matches enforced target, tag resolves to2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3, signing-key/verification-metadata adaptation matches helper, retained request statuses/fingerprints match raw."
+  ],
+  "limits": [
+    "Public Store CRX loaded unpacked with signing-key/verification-metadata adaptation; does not prove Chrome Web Store installation or update behavior.",
+    "Screenshots clipped and complete response text not serialized for every turn; do not claim visual proof of full response.",
+    "Controlled unpredictable article marker on public demo, not broad website coverage.",
+    "Observer attaches after panel load; preattachment requests unobserved.",
+    "No member/admin, SEO, broader Chat or tool-action acceptance. Real page-reading tool transport was observed; no stronger tool correctness claim.",
+    "Exact published v0.2.205 only; no pass transfer to pending v0.2.479 rerun against this newer server."
+  ],
+  "evidence_root": "docs/stabilization/evidence/published-v0205-guest-chat/run38083217313/",
+  "reviewed_evidence_commit": "8f1904f075"
+}

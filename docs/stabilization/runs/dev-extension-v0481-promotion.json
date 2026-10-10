@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "pinned_development_extension_promotion",
+  "status": "artifact_promoted_chrome_reload_blocked",
+  "observed_at": "2026-10-10T20:32:54.997Z",
+  "ci": {
+    "run_id": 38083507036,
+    "run_attempt": 1,
+    "artifact_id": 11681278805,
+    "source_sha": "6d4d91b2dc14fd1b001f4c3f4e0d712c00c13faf",
+    "main_sha_at_promotion": "bd6661546fd2a534ca6a0cad4c627d1a7541ba66",
+    "compatibility": "runtime-equivalent",
+    "version": "0.2.481",
+    "tree_sha256": "27bb537d9f2d1ad1bca0274f667e12e6952d1fe9c5b1a04b534e41d04f9c7836",
+    "file_count": 2002
+  },
+  "promotion": {
+    "destination": ".output/chrome-mv3-dev",
+    "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "promoted_on_disk": true,
+    "chrome_reloaded": false,
+    "loaded_path_verified": false,
+    "loaded_version_verified": false,
+    "pin_beside_store_copy_verified": false
+  },
+  "browser_limit": "Browser Use refused chrome://extensions/ navigation and expressly forbade alternate UI or indirect execution. No Chrome profile reload or pin assertion is available."
+}

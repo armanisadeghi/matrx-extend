@@ -1,0 +1,18 @@
+{
+  "workflow_run_id": 38083217313,
+  "workflow_artifact_id": 11681582578,
+  "workflow_artifact_name": "hosted-guest-38083217313-1",
+  "workflow_artifact_zip_sha256": "335950fe996ffcb25a7a5f5130a85983c23dd737354d0394cf90990222733ee0",
+  "artifact_mode": "published_store_crx_unpacked",
+  "published_version": "0.2.205",
+  "published_extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "published_unpacked_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+  "artifact_unchanged": true,
+  "deployed_server_sha_before": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
+  "deployed_server_sha_after": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
+  "server_version_http_status_before_after": 200,
+  "public_demo": "https://www.aimatrx.com/matrx-extend-demo",
+  "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+  "published_tag_commit_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+  "unpacked_adaptation": "The public CRX was unpacked for hosted loading; the verified signing proof supplied manifest.key to preserve the published extension ID, and verification metadata was removed."
+}
