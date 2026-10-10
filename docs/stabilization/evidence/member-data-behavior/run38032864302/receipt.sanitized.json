@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38032864302,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38032864302",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "5c274cdcb2a292f1c47c5e4fa569ecc21fb64d68",
+  "lane": "A",
+  "acceptance_case": "member-data",
+  "runner_label": "macos-15-intel",
+  "workflow_conclusion": "failure",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38029218282,
+    "development_artifact_id": 11661736374,
+    "source_sha": "7c6311e86562051bcaa58de997a248ae40c58bd7",
+    "version": "0.2.458",
+    "tree_sha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d"
+  },
+  "inputs": {
+    "scrape_auth_mode": "member",
+    "scrape_reload_open_diagnostic": true,
+    "reload_sender_document_diagnostic": false
+  },
+  "native_result": {
+    "status": "unverified",
+    "failure_stage": "extension_reload_reopen_data",
+    "error_code": "pointer_target_not_unique",
+    "failing_action": {
+      "kind": "title",
+      "label": "Data",
+      "stage": "visibility_filter"
+    },
+    "failure_resolution": {
+      "matched_target_count": null,
+      "visible_target_count": null,
+      "data_tab_diagnostic": null,
+      "reason": "This run predates the diagnostic capture. The shared helper refused because visible title-target count was not exactly one, but the native report retained only the failure code; it did not serialize matched/visible counts or the active Data-tab summary. Source confirms the check occurs after visible filtering and before scroll or hit testing. Zero versus multiple visible targets cannot be determined from this run."
+    },
+    "interpretation": "A non-unique target stop in the driver prevents post-reload Data-state observation. Do not infer data loss or a product root cause."
+  },
+  "bounded_observations": {
+    "member_auth_and_nonadmin_identity_verified": true,
+    "organization_selected": true,
+    "save_request_count": 1,
+    "save_http_status": 201,
+    "body_id_valid": true,
+    "exact_saved_row_lookup": true,
+    "saved_pattern_refreshed": true,
+    "saved_pattern_run_before_reload": true,
+    "clipboard_tsv_json_ai_readback_before_reload": true,
+    "cancel_cleared_unsaved_selection": true,
+    "replacement_worker_and_panel_adopted": true,
+    "diagnostic_only_reload_open_probe": {
+      "ingress": true,
+      "open_invoked": true,
+      "open_settlement": "resolved",
+      "send_response": "unobservable_without_instrumented_build"
+    },
+    "sender_document_refresh_requested": false,
+    "post_reload_saved_pattern_state_observed": false
+  },
+  "resource": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "resource_invalid_any": false,
+    "transient_cpu_pending_recovered": true
+  },
+  "fixture_cleanup": {
+    "native_driver_verified": true,
+    "deleted_rows": 1,
+    "exact_owned_name_organization_lookup": true,
+    "raw_ids_and_organization_values_omitted": true
+  },
+  "credential_handling": {
+    "temporary_secret_deleted": true,
+    "secret_name_count_after_delete": 0,
+    "local_link_absent": true,
+    "credential_values_persisted": false,
+    "independent_member_agent_verification": "unavailable; assigned to CI triage",
+    "local_link_file_absent": true
+  },
+  "evidence_files": [
+    {
+      "path": "native-report.sanitized.json",
+      "sha256": "4055e79361a2ee53e3645b2a34432995d179fd93ec79e02162baffbf9db7adba"
+    },
+    {
+      "path": "hosted-package-38032864302-1.jsonl",
+      "sha256": "54e8b9d3935fe1a7a0aa8dc7f257149e00b93dc0eb3e86d526556208a28e5e02"
+    },
+    {
+      "path": "hosted-browser-38032864302-1.jsonl",
+      "sha256": "8a9084a804d46781735aee95538f0fdfe3edc13162ad5176a468ef2c8c1aa89f"
+    },
+    {
+      "path": "hosted-guest-38032864302-1.jsonl",
+      "sha256": "dd777ae89b719a5c48be99062b3b6102e426c518ad3f5c96fc582463d9689df4"
+    }
+  ],
+  "verdict": "diagnostic_only_unverified",
+  "limitations": "Pre-reload member Save/run/clipboard/Cancel observations are recorded. The reload-open perturbation observed replacement-worker ingress and resolved Chrome open settlement; it is diagnostic-only and receives no acceptance credit. The driver stopped on the Data title target before post-reload saved-state verification. No product root cause or T03 lifecycle pass is assigned. No paired sender-refresh run was launched."
+}
