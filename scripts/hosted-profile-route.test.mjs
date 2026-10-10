@@ -190,6 +190,20 @@ test('other hosted acceptance still passes credential preflight without runtime 
   assert.match(result.stdout, /HOSTED_CREDENTIAL_PREFLIGHT_READY/);
 });
 
+test('member Data is restricted to the shared-credential lane and validates the member link', () => {
+  assert.throws(
+    () => requireHostedAcceptanceCredential('member-data', {}),
+    /hosted_member_link_secret_required/,
+  );
+  assert.throws(
+    () =>
+      requireHostedAcceptanceCredential('member-data', {
+        MATRX_HOSTED_MEMBER_LINK_JSON: '{"email":"unapproved@example.test"}',
+      }),
+    /d87_member_fingerprint_mismatch/,
+  );
+});
+
 test('hosted credential preflight executes from a fresh checkout without installed packages', async () => {
   const root = await mkdtemp(join(tmpdir(), 'hosted-preflight-fresh-'));
   try {

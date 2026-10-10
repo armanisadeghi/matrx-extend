@@ -376,6 +376,17 @@ export async function click(panel, kind, label, onPhase = undefined) {
         .filter((el) => el.textContent.trim() === label);
       dataPanelDiagnostic = ${dataPanelDiagnosticExpression()};
     }
+    else if (kind === 'data-save-button') {
+      const pane = ${activeTabPanelExpression('Data')};
+      candidates = [...(pane?.querySelectorAll('button') ?? [])]
+        .filter((el) => el.textContent.trim() === label && label === 'Save pattern');
+    }
+    else if (kind === 'data-pattern-name') {
+      const pane = ${activeTabPanelExpression('Data')};
+      candidates = label === 'Pattern name…'
+        ? [...(pane?.querySelectorAll('input[placeholder="Pattern name…"]') ?? [])]
+        : [];
+    }
     else if (kind === 'tool-row') {
       const pane = ${activeTabPanelExpression('Tools')};
       toolsPanelActive = Boolean(pane);
