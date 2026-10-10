@@ -76,5 +76,11 @@
     }
   ],
   "verdict": "member_auth_failure_resource_invalid_no_product_verdict",
-  "limitations": "No Settings persistence case or product interaction was completed; this run earns no acceptance credit."
+  "limitations": "No Settings persistence case or product interaction was completed; this run earns no acceptance credit.",
+  "hosted_result_artifact": {
+    "artifact_id": 11666125559,
+    "name": "hosted-guest-38040544722-1",
+    "digest": "sha256:c41a820de30752286a353686e5f05b374c47ac9ec6af21c523499ccfcf450421",
+    "expired": false
+  }
 }
