@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "scope": "Single guarded lane-B startup-only diagnostic after two owned-CDP endpoint timeouts; no product acceptance.",
+  "diagnostic_run_id": 38084416311,
+  "diagnostic_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38084416311",
+  "workflow_source_sha": "541648002e9e17321d7f5b9158273c47ee8e6c25",
+  "workflow_conclusion": "failure",
+  "lane": "B",
+  "runner": "macos-15-intel / x86_64",
+  "case": "startup-resource-diagnostic",
+  "diagnostic_verdict": "UNVERIFIED_INFRASTRUCTURE_ONLY",
+  "product_credit": "none",
+  "product_assertions_run": false,
+  "extension_ui_acceptance": false,
+  "development_artifact": {
+    "run_id": 38083507036,
+    "artifact_id": 11681278805,
+    "artifact_digest": "sha256:a2d93605850b1aee6a9703dc882873246ae1b55837cacfa744b23e9a083e315e",
+    "source_sha": "6d4d91b2dc14fd1b001f4c3f4e0d712c00c13faf",
+    "version": "0.2.481",
+    "tree_sha256": "27bb537d9f2d1ad1bca0274f667e12e6952d1fe9c5b1a04b534e41d04f9c7836",
+    "import_tree_matches_receipt": true,
+    "runtime_equivalent_to_workflow_checkout": "No diffs in src, package.json, pnpm-lock.yaml, or wxt.config.ts between the artifact source and the checkout used by this diagnostic."
+  },
+  "diagnostic_artifact": {
+    "artifact_id": 11682220609,
+    "artifact_name": "hosted-guest-38084416311-1",
+    "artifact_digest": "sha256:92416912c49d2a88843580ea8d9f29bdfc92cd7cf384d085d0575b084a86ef6f",
+    "diagnostic_json_sha256": "b81b5f75cae3f79aeda3fce20f5a054f2de2c4bf5bedef6c47639867f408642f"
+  },
+  "endpoint_observation": {
+    "deadline_ms": 8000,
+    "phase": "cdp_connected",
+    "endpoint_present": true,
+    "inspection_failed": false,
+    "exit_observed": false,
+    "elapsed_ms": 5602,
+    "observed_at": "2026-10-10T20:43:07.561Z",
+    "browser_spawn_stage_at": "2026-10-10T20:43:01.874Z",
+    "interpretation": "The endpoint appeared within the existing 8-second deadline in this admitted run. This run does not support increasing the deadline and does not prove endpoint timing under high CPU pressure."
+  },
+  "resource_finals": {
+    "package": {
+      "journal": "hosted-package-38084416311-1.jsonl",
+      "sha256": "91b4820de253afcad7226ecbf1d7a03ab661a77157925ab97ff177cc50a56731",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "journal": "hosted-browser-38084416311-1.jsonl",
+      "sha256": "6fed06ba450c2b4cd0436fdb6ea7602abb4ec1bf778cd7d7c68de65e6448b70a",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "startup_diagnostic": {
+      "journal": "hosted-startup-38084416311-1.jsonl",
+      "sha256": "412ade8ddfee7b83b95cb0c275297c40b2f574c12851eb3cf971995fe9e8487e",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid",
+      "final_reason": "RESOURCE_CPU_CONFIRMATION_EXPIRED"
+    }
+  },
+  "resource_observations": [
+    {
+      "at": "2026-10-10T20:42:39.005Z",
+      "code": "RESOURCE_ADMITTED",
+      "mean_cpu_busy_fraction": 0.21,
+      "one_minute_load_per_logical_cpu": 0.2925,
+      "logical_cpus": 4,
+      "pressure_level": 1,
+      "available_memory_gib": 12.46,
+      "swap_used_mib": 0
+    },
+    {
+      "at": "2026-10-10T20:43:11.584Z",
+      "code": "RESOURCE_CPU_PENDING",
+      "cpu_busy_fraction": 0.98,
+      "one_minute_load": 6.13,
+      "logical_cpus": 4,
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "process_attribution": "Owned Chromium Helper and Chromium processes were among the highest observed CPU consumers; macOS system daemons also contributed."
+    },
+    {
+      "at": "2026-10-10T20:44:32.684Z",
+      "code": "RESOURCE_WATCH_UNSAFE",
+      "cpu_busy_fraction": 0.38,
+      "one_minute_load": 2.51,
+      "logical_cpus": 4,
+      "reasons": ["RESOURCE_CPU_CONFIRMATION_EXPIRED"]
+    }
+  ],
+  "interpretation": "Chromium connected to CDP at 5.602 seconds, then entered the diagnostic's guarded panel/setup interval. The host later crossed the CPU-pending thresholds and the watchdog stopped the owned process group when CPU confirmation expired. The startup diagnostic did not complete its interval; its resource final is invalid, so it cannot establish sustained readiness or product behavior. No product defect is demonstrated.",
+  "related_unverified_attempt": {
+    "run_id": 38083739013,
+    "case": "guest-data / EXT-F-2005-T01",
+    "artifact_id": 11681935058,
+    "artifact_digest": "sha256:e42f257786600fd0cd0506ce2841e868d5b8d2c73ecb5e0e2cd9fee4e5107133",
+    "endpoint_result": "owned_cdp_endpoint_timeout at 8052 ms; child remained alive, endpoint was absent, and no UI observations were made.",
+    "resource_result": "RESOURCE_CPU_PENDING at cpuBusyFraction 1.0 and one-minute load 10.5 on 4 logical CPUs; guest resource final invalid with exitCode 3.",
+    "product_credit": "none"
+  },
+  "decision": "Do not change the 8-second default or retry guest Data from this evidence. Keep resource refusal intact. Any future hosted comparison needs a fresh peer-reviewed hypothesis and guarded admission; this single diagnostic is not a product pass.",
+  "limitations": [
+    "One startup-only run on one hosted runner; no controlled high-CPU timing comparison was completed.",
+    "The CPU process interval uses bracketed process snapshots and centisecond process CPU time; short-lived, reparented, or PID-reused processes cannot be assigned exact interval CPU time.",
+    "No Data picker, preview, Cancel, save-gate, or other product assertion ran.",
+    "The startup diagnostic was stopped before its full guarded observation interval, and its resource final is invalid."
+  ]
+}

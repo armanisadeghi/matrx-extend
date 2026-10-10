@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": 38084666691,
+  "status": "bounded_pass",
+  "case_id": "guest-chat-v0479-current-server",
+  "observed_at": "2026-10-10T20:47:56Z",
+  "workflow_source_sha": "dccf0c059ed40df506dec9ad6fac6010b1c25728",
+  "runner_label": "macos-15",
+  "artifact": {
+    "release_run_id": 38080281242,
+    "release_artifact_id": 11680078743,
+    "version": "0.2.479",
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "adapted_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "adapted_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_unchanged": true
+  },
+  "server": {
+    "version_endpoint_status_before": 200,
+    "version_endpoint_status_after": 200,
+    "git_sha_before": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
+    "git_sha_after": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
+    "stable_during_run": true,
+    "guest_chat_request_statuses": [200, 200, 200],
+    "conversation_fingerprints": ["c1b1c0fc577bb58b", "c1b1c0fc577bb58b", "e92040c005f5ad11"]
+  },
+  "verification": {
+    "identity": "Fresh signed-out guest profile; guest Chat visible without login, account, profile, or organization.",
+    "opening_turn": "Terminal assistant answer grounded in the article's unpredictable code and named Capture, Understand, Use in order.",
+    "same_conversation_followup": "Terminal answer grounded in the page's unique follow-up code; request used the same conversation fingerprint with is_new=false.",
+    "post_reload": "Panel reload kept the guest session absent; a new conversation returned a terminal answer with the unique page code and fixture heading.",
+    "transport": "Native observation proved three guest Chat requests returned HTTP 200; opening and same-conversation requests shared identity, post-reload request used a new identity.",
+    "runner_result": "pass"
+  },
+  "resource_finals": {
+    "package": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": { "resource_invalid": false, "exit_code": 0, "decision": "valid" }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084666691/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084666691/guest-chat-result.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084666691/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084666691/resource-journals/hosted-package.jsonl",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084666691/resource-journals/hosted-browser.jsonl",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084666691/resource-journals/hosted-guest.jsonl",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084666691/screenshots/guest-chat-opening-reply.png",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084666691/screenshots/guest-chat-same-conversation-followup.png",
+    "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084666691/screenshots/guest-chat-post-reload-reply.png",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38084666691"
+  ],
+  "limitations": [
+    "This is hosted guest Chat evidence against the recorded deployed server SHA; it is not Store-installed proof.",
+    "The fixture was a public demo page with an unpredictable page marker, not a named Store reviewer fixture.",
+    "Screenshots are clipped/scroll-positioned; exact grounding, conversation identity, and terminal states are supported by native DOM and transport assertions.",
+    "No claims about member/admin Chat, tool actions, SEO, or broader Chat health."
+  ]
+}

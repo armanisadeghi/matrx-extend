@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "reviewer": "member_secret_restore; independent of diagnostic owner",
+  "status": "VALID_BOUNDED_INFRASTRUCTURE_REVIEW",
+  "run_id": 38084416311,
+  "owner_commit": "0ce1960fb03924a3a427e47bd84be3e6f371b1ff",
+  "owner_report": "docs/stabilization/reports/owned-cdp-startup-diagnostic-38084416311.json",
+  "artifact_id": 11682220609,
+  "artifact_sha256": "92416912c49d2a88843580ea8d9f29bdfc92cd7cf384d085d0575b084a86ef6f",
+  "verification": [
+    "Downloaded hosted artifact bytes match GitHub digest. Native diagnostic JSON and all three journal SHA256 values match owner report.",
+    "Native endpointPresent=true, phase=cdp_connected, elapsedMs=5602; current startup deadline is 8000ms.",
+    "Native reached exercise_panel; completedAt is null. No product assertion/result is present.",
+    "Package and browser final decisions admitted=true, resourceInvalid=false, exitCode=0, valid. Startup final admitted=true, resourceInvalid=true, exitCode=3, invalid.",
+    "Startup CPU pending observed at busy .98/load 6.13 on four CPUs; watchdog later recorded RESOURCE_CPU_CONFIRMATION_EXPIRED at 20:44:32.684Z."
+  ],
+  "product_credit": "none",
+  "conclusion": "Owner classification is accurate. Endpoint success in this one run does not establish sustained readiness, resolve prior endpoint timeouts, support increasing the deadline, or authorize product retry. No product regression inference.",
+  "limitations": [
+    "One Intel hosted diagnostic; full observation interval did not complete.",
+    "Panel setup is not feature acceptance.",
+    "No controlled host-pressure comparison or fix was verified."
+  ]
+}

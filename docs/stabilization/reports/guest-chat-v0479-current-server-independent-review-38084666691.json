@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "reviewer": "member_secret_restore; independent of owner",
+  "status": "BOUNDED_PASS",
+  "run_id": 38084666691,
+  "owner_commit": "8cda5c3ea7549591807c94e106993da66e9004dc",
+  "artifact_id": 11681966197,
+  "artifact_sha256": "07b05fbabd5c25676b2d1d9e1821c1bca577973063aed168d776cf9f74ec7cd1",
+  "native_sha256": "1f43ae6f7f72f9003f265700a8cba73e1e4d7c9e6a6ca88bb92ac7e6aad31541",
+  "exact_candidate": {
+    "version": "0.2.479",
+    "release_run_id": 38080281242,
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "adapted_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "server_sha": "908045a2d1c74364e9a59cf47fb69cd39de141e0"
+  },
+  "checks": [
+    "Downloaded hosted ZIP matches GitHub artifact digest. Every selected sanitized native scalar matches raw native evidence recursively; all three durable journals are byte-identical. Four durable screenshots match raw PNG hashes and three answer screenshots were visually inspected.",
+    "Fresh guest has no access token/profile/organization, remains signed out after real panel reload; artifact unchanged=true.",
+    "Opening, same-conversation follow-up and post-reload timelines each end terminal_answer with streaming=false; page-specific code/heading/stage assertions pass.",
+    "Three guest requests HTTP200; opening/follow-up share fingerprint c1b1c0fc577bb58b with is_new=true/false; postreload fingerprint e92040c005f5ad11 is_new=true.",
+    "Completed get_page_text/read_page tool observations contain unpredictable page markers; terminal assignedTabMatchesFixture=true. Unknown server-event target and earlier null assigned-tab observations remain unknown.",
+    "Server version endpoints HTTP200 before/after with same recorded SHA. Package/browser/guest finals all admitted=true, resourceInvalid=false, exitCode=0, decision=valid."
+  ],
+  "limitations": [
+    "Hosted key-adapted exact v479 ZIP, not Store-installed/update acceptance and not v482 evidence.",
+    "Screenshots are clipped/scroll-positioned; opening image shows ordered stages while code is above crop. Native assertions support full grounding, not image alone.",
+    "Full opening/same-conversation answer strings are not serialized; postreload latestAssistantReply is sanitized. No complete textual transcript claim.",
+    "Owned unpredictable fixture on public demo page; not a broad guest Chat, member/admin, tool-action, or cross-feature pass."
+  ],
+  "findings": []
+}
