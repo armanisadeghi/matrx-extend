@@ -1,0 +1,49 @@
+{
+  "id": "EXT-D-0194",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T01"],
+  "surface": "Hosted guest Scrape acceptance artifact preflight",
+  "auth_mode": "guest; infrastructure-only, zero product behavior credit",
+  "title": "Scrape driver compares relocated receipt kind to wrapper package classification",
+  "severity": "S2: exact release guest Scrape acceptance fails before browser setup",
+  "priority": "P1: restore exact v0.2.469 guest Scrape acceptance",
+  "state": "in-fix",
+  "owner": "root",
+  "preconditions": ["Select exact v0.2.469 release Store ZIP for hosted guest-scrape acceptance."],
+  "reproduction": [
+    "Hosted run 38069924138 fails in inputs before browser launch.",
+    "Run the new release importer/preflight guard against baseline driver: canonical native_store_zip_candidate_key_adapted receipt is rejected as not published_store_zip_adapted."
+  ],
+  "expected": "Driver accepts the canonical relocated Store receipt kind while retaining runtime tree/version and canonical release harness archive checks.",
+  "actual": "Driver requires the outer prepared package classification as the relocated JSON receipt kind.",
+  "cause": "Two distinct identities were conflated: prepared.kind is published_store_zip_adapted; receipt.kind written by the importer is native_store_zip_candidate_key_adapted.",
+  "sibling_census": "All published_store_zip_adapted uses in scripts compare prepared/wrapper classification; this Scrape driver was the sole JSON receipt comparison. Existing Data release contract already uses the canonical JSON receipt kind.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38069924138",
+    "docs/stabilization/reports/d194-red-proof.json"
+  ],
+  "fix_commit": null,
+  "verification": [
+    "Baseline guard failed the real importer-to-driver preflight boundary; repaired guard plus Scrape routing pass 16/16.",
+    "Changed only the Scrape receipt-kind assertion in driver; tree/version checks and behavior oracle untouched.",
+    "Node syntax, focused Biome and diff checks pass. Independent review and guarded browser retest pending."
+  ],
+  "closure_requirement": "Independent source review followed by fresh guarded exact-v0.2.469 hosted guest-scrape run reaching the unchanged real behavior assertions, with valid resource final. Zero product credit from source guards; retest-pass and closed require fresh browser evidence.",
+  "transition_history": [
+    {
+      "from": null,
+      "to": "open",
+      "reason": "Run 38069924138 failed inputs before browser launch."
+    },
+    {
+      "from": "open",
+      "to": "triaged",
+      "reason": "Importer receipt kind and wrapper classification are distinct; driver checked the wrong identity."
+    },
+    {
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "One assertion corrected with importer-to-driver red/green regression guard; peer and browser retest pending."
+    }
+  ]
+}

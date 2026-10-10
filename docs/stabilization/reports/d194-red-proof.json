@@ -1,0 +1,26 @@
+{
+  "defect_id": "EXT-D-0194",
+  "product_behavior_credit": 0,
+  "baseline_source": "e19580f5317c3e298d9fcd53ffbb55f2d29123cb",
+  "baseline_driver_blob": "611099c1c145e4a23a62d0f84092240c3a11b635",
+  "repaired_driver_blob": "be4b05d94428d2cc0533f4549bb44b74b4c5836e",
+  "sut": "Real release importer plus real Scrape driver preflight block, executed from source with filesystem/hash/assert dependencies; no browser or behavior oracle is stubbed to grant acceptance.",
+  "red": {
+    "command": "node --test scripts/hosted-release-artifact.test.mjs",
+    "exit_status": 1,
+    "result": "4 tests; 3 pass; 1 fail",
+    "test": "real imported Store receipt passes the real Scrape preflight and tampered runtime fails",
+    "output_snippet": "scrape_store_receipt_required: actual native_store_zip_candidate_key_adapted; expected published_store_zip_adapted"
+  },
+  "green": {
+    "command": "node --test scripts/hosted-release-artifact.test.mjs scripts/hosted-scrape-route.test.mjs",
+    "exit_status": 0,
+    "result": "16 tests; 16 pass; 0 fail"
+  },
+  "negative_checks": [
+    "Modified runtime background bytes fail scrape_receipt_tree_mismatch.",
+    "Wrapper kind, local development kind and published CRX kind fail scrape_store_receipt_required.",
+    "Existing importer rejects altered Store archive hash; existing route requires release mode and Store wrapper kind."
+  ],
+  "limits": "Source regression guard only; exact v0.2.469 guest Scrape browser retest remains required."
+}
