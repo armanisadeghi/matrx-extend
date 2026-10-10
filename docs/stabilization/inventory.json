@@ -27662,14 +27662,16 @@
                 "canonical_outbound_opens_expected_public_tab",
                 "guest_broken_social_preview_shows_failure_fallback",
                 "guest_manual_readability_matches_two_known_texts",
-                "guest_airbnb_hreflang_and_schema_doors_match_public_dom"
+                "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+                "guest_owned_hreflang_article_doors_match_fixture_dom"
               ],
               "unverified_dimensions": [
                 "Wikipedia hreflang/schema doors remain unverified: its live DOM had no unique openable candidates",
                 "remaining detail controls",
                 "readability calculation beyond the two known-text fixtures",
                 "volatile public-detail and optional metadata-fixture phases excluded by this controlled run",
-                "Full-scope Wikipedia run 38054415137 also found no unique hreflang/schema door candidates; target remains unverified."
+                "Full-scope Wikipedia run 38054415137 also found no unique hreflang/schema door candidates; target remains unverified.",
+                "Current-main product behavior at source 6bca remains unverified; this result is bound to frozen source 99bc43a89."
               ],
               "run_id": "38016503649",
               "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
@@ -27701,7 +27703,7 @@
                 "docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/resource-finals.sanitized.json",
                 "docs/stabilization/reports/guest-seo-run38054415137-adjudication.json"
               ],
-              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred. Supplemental bounded result: Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim. Supplemental bounded readability result: hosted run 38034766398 independently reviewed PASS for only guest EXT-F-1008-T09 guest_manual_readability_matches_two_known_texts; exact known-text scores and bands matched, both fixture DOM restorations and original-page re-audit matched. Frozen unpublished development artifact source 22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c (CI 38032654367, artifact 11663251990); workflow checkout 6b286a60787da646a9e35c01eb378f9191ed7e60. Three resource finals valid. Only these two known texts are established; general readability behavior, remaining T09, other cases, current-main, member/admin and Store remain unverified.",
+              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred. Supplemental bounded result: Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim. Supplemental bounded readability result: hosted run 38034766398 independently reviewed PASS for only guest EXT-F-1008-T09 guest_manual_readability_matches_two_known_texts; exact known-text scores and bands matched, both fixture DOM restorations and original-page re-audit matched. Frozen unpublished development artifact source 22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c (CI 38032654367, artifact 11663251990); workflow checkout 6b286a60787da646a9e35c01eb378f9191ed7e60. Three resource finals valid. Only these two known texts are established; general readability behavior, remaining T09, other cases, current-main, member/admin and Store remain unverified. Supplemental bounded result: run 38058774504 independently peer-reviewed PASS for only guest_owned_hreflang_article_doors_match_fixture_dom on frozen development v0.2.466 product source 99bc43a89 (CI 38058143883/artifact 11672166361; workflow checkout cea6702df; only pnpm-lock.yaml differs). The source DOM had exactly one hreflang es and one Article schema candidate; trusted activations reached the expected destinations and source page remained unchanged after each. All three resource finals valid. This adds one owned-fixture target only; current-main 6bca behavior remains unverified, and Wikipedia/other T09 paths, all other guest SEO, member/admin and Store behavior remain open.",
               "bounded_subtarget_evidence": [
                 {
                   "subtarget": "guest_broken_social_preview_shows_failure_fallback",
@@ -27821,9 +27823,37 @@
                   ],
                   "independent_review": "docs/stabilization/reports/peer-review-run38052238895.json",
                   "detail": "Independent peer PASS for this bounded Airbnb target only: public DOM alternate es-US and WebSite schema door matched the SEO display, and trusted activation opened the exact expected destinations while the source page remained open and unchanged. Package, browser and guest resource finals are valid. Native run 38052238895 had 25 pass and one unverified target overall; other rows are re-observations, and the Wikipedia door target remains unverified. Guest T09 and the SEO feature remain partial; no member/admin, current Store or Store-install behavior is established."
+                },
+                {
+                  "subtarget": "guest_owned_hreflang_article_doors_match_fixture_dom",
+                  "status": "pass",
+                  "new_acceptance_credit": true,
+                  "resource_valid": true,
+                  "run_id": 38058774504,
+                  "source_sha": "99bc43a89f90f20f68b13c4ee16fbd6df425708b",
+                  "workflow_source_sha": "cea6702df7c6011a2b03fe50688a244a9073166d",
+                  "build_version": "0.2.466",
+                  "development_ci_run_id": 38058143883,
+                  "development_artifact_id": 11672166361,
+                  "development_artifact_digest": "sha256:41672044380892916f14da2d4fd06b80f5eb0786db930989c9d1f38c1fd26a26",
+                  "tree_sha256": "d6053891bae813bc93894a84fd801e9ef0a2f6ab1fb12ee7c9a5b160e9baf420",
+                  "hosted_result_artifact_id": 11672157464,
+                  "hosted_result_artifact_digest": "sha256:bef15e7126361f256f5814deccc8091afa6055a2d9762c55eddc56ade29425a1",
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/receipt.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/native-report.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/product-artifact.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-finals.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-journals/hosted-package-38058774504-1.jsonl",
+                    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-journals/hosted-browser-38058774504-1.jsonl",
+                    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-journals/hosted-guest-38058774504-1.jsonl",
+                    "docs/stabilization/reports/peer-review-run38058774504.json"
+                  ],
+                  "independent_review": "docs/stabilization/reports/peer-review-run38058774504.json",
+                  "detail": "Independent peer PASS for this one owned-fixture T09 target. The native source DOM had one hreflang es candidate and one Article schema candidate; the SEO detail values matched, trusted activations reached the expected destinations, and the source page remained unchanged after both doors. All three resource finals are valid. The overall native report remains partial with only this one selected target; Wikipedia and other SEO behavior remain unverified. Frozen product source 99bc43a89 is not current-main source 6bca and establishes no member/admin, Store, or full SEO behavior."
                 }
               ],
-              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed. Reviewed hosted run 38052238895 adds only the bounded Airbnb hreflang/schema-door target; 25 native targets passed and the Wikipedia door target remains unverified. The other selected target rows are re-observations with no new credit. T09, all six guest SEO cases, and the feature remain partial."
+              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed. Reviewed hosted run 38052238895 adds only the bounded Airbnb hreflang/schema-door target; 25 native targets passed and the Wikipedia door target remains unverified. The other selected target rows are re-observations with no new credit. T09, all six guest SEO cases, and the feature remain partial. Independently reviewed run 38058774504 adds one owned-fixture T09 target on frozen v0.2.466 source 99bc43a89: unique hreflang es and Article candidates matched the displayed SEO doors, trusted activations reached expected destinations, and the source page remained unchanged after each. Resource finals valid. This is not current-main 6bca evidence; T09 and guest SEO remain partial, and Wikipedia remains unverified."
             }
           },
           "result_history": [
@@ -28501,6 +28531,33 @@
                 "docs/stabilization/reports/guest-seo-run38054415137-adjudication.json"
               ],
               "detail": "Full scope selected the Wikipedia target; native report kept it unverified because its public DOM exposed no unique hreflang/schema door candidates. Workflow and all three resource finals were valid, but no trusted door activation occurred. Re-observed rows receive no new credit; T09 and guest SEO remain partial."
+            },
+            {
+              "at": "2026-10-10T14:13:44Z",
+              "mode": "guest",
+              "run_id": "38058774504",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "scope": "metadata",
+              "metadata_fixture": "owned",
+              "workflow_source_sha": "cea6702df7c6011a2b03fe50688a244a9073166d",
+              "product_artifact": "development v0.2.466; CI 38058143883/artifact 11672166361; source 99bc43a89f90f20f68b13c4ee16fbd6df425708b; tree d6053891bae813bc93894a84fd801e9ef0a2f6ab1fb12ee7c9a5b160e9baf420",
+              "hosted_result_artifact_id": 11672157464,
+              "target": "guest_owned_hreflang_article_doors_match_fixture_dom",
+              "target_status": "pass",
+              "evidence": [
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/product-artifact.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-finals.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-journals/hosted-package-38058774504-1.jsonl",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-journals/hosted-browser-38058774504-1.jsonl",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-journals/hosted-guest-38058774504-1.jsonl",
+                "docs/stabilization/reports/peer-review-run38058774504.json"
+              ],
+              "independent_review": "docs/stabilization/reports/peer-review-run38058774504.json",
+              "detail": "One bounded owned fixture target passed on frozen v0.2.466. The local DOM source had one hreflang es candidate and one Article schema candidate; matching SEO detail doors opened their expected destinations through trusted input, while the original page remained open and unchanged after each. Package, browser, and guest resource finals are all valid, admitted, resource_invalid=false, child exit 0; guest CPU-pending recovered. This establishes no other target, current-main 6bca behavior, full T09/guest SEO, member/admin, or Store behavior."
             }
           ],
           "revalidation_history": [

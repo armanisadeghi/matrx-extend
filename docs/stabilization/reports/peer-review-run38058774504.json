@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_seo_evidence_review",
+  "reviewer": "settings_harness_peer",
+  "verdict": "PASS_BOUNDED_OWNED_METADATA_T09",
+  "run": {
+    "hosted_run_id": 38058774504,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38058774504",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "conclusion": "success",
+    "workflow_source_sha": "cea6702df7c6011a2b03fe50688a244a9073166d",
+    "lane": "B",
+    "runner_label": "macos-15-intel",
+    "case": "guest-seo",
+    "scope": "metadata",
+    "fixture": "owned"
+  },
+  "provenance": {
+    "hosted_result_artifact_id": 11672157464,
+    "hosted_result_artifact_name": "hosted-guest-38058774504-1",
+    "hosted_result_artifact_digest": "sha256:bef15e7126361f256f5814deccc8091afa6055a2d9762c55eddc56ade29425a1",
+    "downloaded_result_digest_matches": true,
+    "hosted_result_artifact_expired": false,
+    "development_ci_run_id": 38058143883,
+    "development_artifact_id": 11672166361,
+    "development_artifact_digest": "sha256:41672044380892916f14da2d4fd06b80f5eb0786db930989c9d1f38c1fd26a26",
+    "development_source_sha": "99bc43a89f90f20f68b13c4ee16fbd6df425708b",
+    "development_version": "0.2.466",
+    "development_tree_sha256": "d6053891bae813bc93894a84fd801e9ef0a2f6ab1fb12ee7c9a5b160e9baf420",
+    "development_artifact_eligible_store": false,
+    "workflow_source_relation": "cea6702df is a descendant of 99bc43a89; pnpm-lock.yaml is the sole changed path"
+  },
+  "observations": {
+    "native_status": "partial",
+    "selected_target_count": 1,
+    "passed_target_count": 1,
+    "failed_target_count": 0,
+    "unverified_target_count": 0,
+    "bounded_target": "guest_owned_hreflang_article_doors_match_fixture_dom",
+    "owned_fixture_source_path": "/seo-metadata-article",
+    "source_title_matched": true,
+    "unique_hreflang_count": 1,
+    "hreflang_language": "es",
+    "unique_schema_count": 1,
+    "schema_type": "Article",
+    "native_doors_match_source_dom": true,
+    "target_blank_noopener_noreferrer": true,
+    "trusted_pointer_destinations_reached": true,
+    "source_page_retained_after_each_door": true,
+    "two_outbound_doors_tested": true
+  },
+  "resource_finals": {
+    "package": { "journal_sha256": "00ff422650c310306569ad5d39658abb272fbf9ef8498c62a586b12efea6a144", "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "journal_sha256": "ffdfb0b872108f89a682b66d00bf95552cc8e33adee4a0ea99fe13b12cfb11aa", "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": { "journal_sha256": "2de8905eb49a911df1262f0e4a7e87ab0a150eb46a471ce6d9b0265831392212", "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid", "cpu_pending_recovered_before_final": true }
+  },
+  "cleanup": {
+    "fixture": "In-memory owned pages served by the run-local localhost fixture server; no shared authentication or backend fixture mutation.",
+    "harness_finally_closed_fixture_server": true,
+    "harness_finally_stopped_owned_browser": true,
+    "harness_finally_removed_profile_root": true,
+    "profile_root_absence_independently_verified": false
+  },
+  "credit_limits": {
+    "EXT_F_1008_T09": "PASS only for the owned-fixture guest hreflang/Article schema doors matching source DOM and reaching their trusted destinations while retaining the source page.",
+    "other_guest_seo_targets": "No new credit; not selected in this run.",
+    "current_main_or_store": "No credit; observation uses frozen v0.2.466 development artifact built from 99bc43a89, not current-main or Store behavior.",
+    "live_public_site_metadata": "Not tested; source was a run-local owned fixture.",
+    "member_admin_or_full_guest_seo": "Not established."
+  },
+  "verification": {
+    "command": "node --test tests/browser/seo-owned-metadata-fixture.test.mjs scripts/hosted-seo-route.test.mjs",
+    "passed": 19,
+    "failed": 0,
+    "result_journal_hashes_match_final_receipts": true
+  },
+  "checked_files": [
+    ".github/workflows/hosted-guest-acceptance.yml at cea6702df7c6011a2b03fe50688a244a9073166d",
+    "scripts/hosted-seo-route.mjs at cea6702df7c6011a2b03fe50688a244a9073166d",
+    "tests/browser/seo-guest-acceptance.mjs at cea6702df7c6011a2b03fe50688a244a9073166d",
+    "tests/browser/seo-owned-metadata-fixture.mjs at cea6702df7c6011a2b03fe50688a244a9073166d",
+    "tests/browser/seo-owned-metadata-fixture.test.mjs",
+    "scripts/hosted-seo-route.test.mjs",
+    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/product-artifact.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-journals/hosted-package-38058774504-1.jsonl",
+    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-journals/hosted-browser-38058774504-1.jsonl",
+    "docs/stabilization/evidence/guest-seo-owned-metadata/run38058774504/resource-journals/hosted-guest-38058774504-1.jsonl"
+  ],
+  "limitations": [
+    "The native report is partial by design because exactly one metadata target was selected; no broad SEO acceptance is inferred.",
+    "The workflow used the 99bc43a89 frozen v0.2.466 artifact while its checkout was cea6702df; no current-main runtime credit.",
+    "The harness reported profile removal in finally, but no independent post-run profile absence receipt was retained."
+  ]
+}

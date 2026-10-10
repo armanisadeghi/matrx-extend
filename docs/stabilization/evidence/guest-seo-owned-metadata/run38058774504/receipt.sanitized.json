@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "run_id": 38058774504,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38058774504",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "cea6702df7c6011a2b03fe50688a244a9073166d",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "workflow_conclusion": "success",
+  "dispatch": {
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "metadata",
+    "seo_metadata_fixture": "owned"
+  },
+  "product_artifact": {
+    "ci_run_id": 38058143883,
+    "artifact_id": 11672166361,
+    "version": "0.2.466",
+    "source_sha": "99bc43a89f90f20f68b13c4ee16fbd6df425708b",
+    "tree_sha256": "d6053891bae813bc93894a84fd801e9ef0a2f6ab1fb12ee7c9a5b160e9baf420",
+    "github_artifact_digest": "sha256:41672044380892916f14da2d4fd06b80f5eb0786db930989c9d1f38c1fd26a26",
+    "eligible_store": false,
+    "import_claim": "exact_pushed_commit_only",
+    "workflow_source_relation": "workflow source cea6702df is a descendant of product source 99bc43a89; pnpm-lock.yaml is the sole diff"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11672157464,
+    "name": "hosted-guest-38058774504-1",
+    "digest": "sha256:bef15e7126361f256f5814deccc8091afa6055a2d9762c55eddc56ade29425a1",
+    "downloaded_zip_sha256": "bef15e7126361f256f5814deccc8091afa6055a2d9762c55eddc56ade29425a1",
+    "digest_verified": true,
+    "expired": false,
+    "size_in_bytes": 84169
+  },
+  "native": {
+    "status": "partial",
+    "target_count": 1,
+    "pass_count": 1,
+    "unverified_count": 0,
+    "fail_count": 0,
+    "bounded_target": "guest_owned_hreflang_article_doors_match_fixture_dom",
+    "bounded_target_status": "pass",
+    "observation": {
+      "source_title_matches": true,
+      "unique_hreflang_language": "es",
+      "hreflang_count": 1,
+      "schema_type": "Article",
+      "schema_type_count": 1,
+      "trusted_destination_activations": true,
+      "source_page_retained_after_each_door": true
+    }
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "all_three_valid": true,
+    "all_admitted": true,
+    "resource_invalid": false,
+    "all_child_exit_codes_zero": true,
+    "guest_cpu_pending_recovered_before_final": true
+  },
+  "cleanup": {
+    "fixture": "in-memory owned pages served by this run\u2019s localhost fixture server; no shared authentication or backend fixture mutation",
+    "teardown": "Successful driver completion ran the harness finally cleanup, which closes the fixture server, stops its owned browser process and removes its profile root.",
+    "separate_profile_root_absence_receipt": false
+  },
+  "limitations": [
+    "One bounded owned-fixture T09 target only; other guest SEO targets/cases remain unverified or carry separate provenance.",
+    "Behavior is on frozen v0.2.466 product artifact from 99bc43a89, not current-main runtime at workflow source cea6702df or later main, and not Store behavior.",
+    "No member/admin, live public-site metadata, or full guest SEO behavior is established.",
+    "Product credit awaits independent review."
+  ],
+  "evidence": {
+    "native_report": "native-report.sanitized.json",
+    "product_artifact": "product-artifact.sanitized.json",
+    "resource_finals": "resource-finals.sanitized.json",
+    "resource_journals": [
+      "resource-journals/hosted-package-38058774504-1.jsonl",
+      "resource-journals/hosted-browser-38058774504-1.jsonl",
+      "resource-journals/hosted-guest-38058774504-1.jsonl"
+    ]
+  },
+  "sanitization": "Native result reduced to source path, counts, enums and booleans; resource journals copied with scripts/copy-hosted-resource-journal.mjs. No raw artifact, screenshots, runner paths, process attribution, credentials, or account data retained."
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38058774504,
+  "finals": [
+    {
+      "role": "package",
+      "journal_sha256": "00ff422650c310306569ad5d39658abb272fbf9ef8498c62a586b12efea6a144",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "decision": "valid",
+      "cpu_pending_recovered_before_final": false
+    },
+    {
+      "role": "browser",
+      "journal_sha256": "ffdfb0b872108f89a682b66d00bf95552cc8e33adee4a0ea99fe13b12cfb11aa",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "decision": "valid",
+      "cpu_pending_recovered_before_final": false
+    },
+    {
+      "role": "guest",
+      "journal_sha256": "2de8905eb49a911df1262f0e4a7e87ab0a150eb46a471ce6d9b0265831392212",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0,
+      "decision": "valid",
+      "cpu_pending_recovered_before_final": true
+    }
+  ]
+}
