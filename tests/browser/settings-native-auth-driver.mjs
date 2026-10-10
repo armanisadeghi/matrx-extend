@@ -447,7 +447,7 @@ export async function signInSettings({
     const diagnostic = { stage: 'admin_credentials', signin_observations: {} };
     const stage = (value) => {
       diagnostic.stage = value;
-      onStage(value);
+      onStage?.(value);
     };
     let identity;
     try {
@@ -582,7 +582,7 @@ export async function signInSettings({
   const web = await page.context().newPage();
   try {
     await observeBoundary('member_web_created').catch(() => {});
-    onStage('member_magic_link');
+    onStage?.('member_magic_link');
     const secret = requireSettingsCredential(
       'member',
       JSON.stringify(await privateJson(memberLinkFile, 'd87_member_link')),
@@ -597,7 +597,7 @@ export async function signInSettings({
     const link = new URL(secret.action_link);
     await web.goto(link.href, { waitUntil: 'domcontentloaded', timeout: 60_000 });
     const email = secret.email;
-    onStage(`${mode}_web_identity`);
+    onStage?.(`${mode}_web_identity`);
     const identity = await waitFor(
       'd87_web_identity',
       () => authenticatedWebIdentity(web, MEMBER_FINGERPRINT),
@@ -610,7 +610,7 @@ export async function signInSettings({
       timeout: 60_000,
     });
     assert.equal(new URL(web.url()).pathname, '/matrx-extend-demo', 'd87_demo_route_unverified');
-    onStage(`${mode}_extension_signin`);
+    onStage?.(`${mode}_extension_signin`);
     await click(panel, 'title', 'Settings');
     await openSection(panel, 'Account');
     await waitFor(

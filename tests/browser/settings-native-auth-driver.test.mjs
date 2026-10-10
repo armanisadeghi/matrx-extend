@@ -15,6 +15,7 @@ import {
   selectOrganization,
   settingsOrganizationSelectionRequired,
   settingsShellReady,
+  signInSettings,
   waitForOrganizationOption,
 } from './settings-native-auth-driver.mjs';
 
@@ -566,3 +567,26 @@ test('Scrape requires the approved selected organization while Settings keeps it
     'the same approved device organization remains valid for the member route',
   );
 });
+
+for (const observerPresent of [false, true]) {
+  test(`member auth reaches credential validation with stage observer present=${observerPresent}`, async () => {
+    const operations = [];
+    const stages = [];
+    const page = {
+      context: () => ({ newPage: async () => ({ close: async () => operations.push('closed') }) }),
+      bringToFront: async () => operations.push('root_activated'),
+    };
+    await assert.rejects(
+      signInSettings({
+        mode: 'member',
+        page,
+        panel: {},
+        repo: '.',
+        ...(observerPresent && { onStage: (stage) => stages.push(stage) }),
+      }),
+      { message: 'd87_member_link_file_required' },
+    );
+    assert.deepEqual(operations, ['closed', 'root_activated']);
+    assert.deepEqual(stages, observerPresent ? ['member_magic_link'] : []);
+  });
+}
