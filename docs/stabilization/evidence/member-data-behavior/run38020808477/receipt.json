@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38020808477,
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "92f60fbcc3dee2bfaae875f1568e83abb492bed6",
+  "lane": "A",
+  "acceptance_case": "member-data",
+  "product_artifact": {
+    "development_run_id": 38019685913,
+    "development_artifact_id": 11657971729,
+    "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+    "version": "0.2.458",
+    "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "fail",
+  "failure_stage": "copy_ai_before_reload",
+  "failure_code": "native_acceptance_error",
+  "bounded_observations": {
+    "member_auth_and_non_admin_identity_verified": true,
+    "selected_organization_verified": true,
+    "two_picker_previews_observed": true,
+    "save_post_status": 201,
+    "request_body_organization_matches_selected": true,
+    "saved_row_exact_name_and_organization_lookup": true,
+    "saved_pattern_refreshed": true,
+    "saved_pattern_run_before_reload": true,
+    "cleanup_verified": true,
+    "cleanup_deleted_rows": 1
+  },
+  "unverified": [
+    "AI clipboard copy/readback and the failure cause",
+    "remaining clipboard modes",
+    "cancel behavior",
+    "extension reload and persistence",
+    "admin and Store behavior"
+  ],
+  "resource_journals": {
+    "package": "hosted-package-38020808477-1.jsonl",
+    "browser": "hosted-browser-38020808477-1.jsonl",
+    "guest": "hosted-guest-38020808477-1.jsonl",
+    "all_final_decisions_valid": true,
+    "guest_child_exit_code": 1
+  },
+  "cleanup": {
+    "github_secret_removed_and_verified": true,
+    "local_one_time_link_removed_and_verified": true
+  },
+  "scope_note": "Real member save and saved-pattern run are bounded confirmations. No full T03 lifecycle pass or product clipboard defect is established until the Copy for AI failure is diagnosed and independently replayed."
+}
