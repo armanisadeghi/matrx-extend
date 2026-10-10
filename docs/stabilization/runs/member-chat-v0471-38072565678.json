@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "run_id": 38072565678,
+  "status": "bounded_pass",
+  "case_id": "member-chat",
+  "observed_at": "2026-10-10T17:45:46Z",
+  "workflow_source_sha": "207509bd703d6d7e1fd1631ccd19a821807daa6b",
+  "artifact": {
+    "release_run_id": 38071981003,
+    "release_artifact_id": 11676918768,
+    "release_artifact_digest": "sha256:674432715dd8338fdbd4d919e2e1f8aeb7e6591d8e85688eb3bbfe2297883e3a",
+    "version": "0.2.471",
+    "product_source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "runtime_tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+    "hosted_result_artifact_id": 11677995226,
+    "hosted_result_artifact_digest": "sha256:f9780ef767becd70aa2917bc1a586e4d99d7338b7f7c59a177676524734a6f52"
+  },
+  "verification": {
+    "auth": "Fresh hosted profile; existing-user authentication; web and extension signed in; canonical admin check matched the extension user and returned HTTP 200 with zero rows.",
+    "chat": "One terminal real assistant answer observed; reply matched the prompt rubric.",
+    "transport": {
+      "start_count": 1,
+      "organization_header_fingerprint_present": true,
+      "start_http_status": 200,
+      "response_matches_request_conversation": true,
+      "backend_request_identity_present": true,
+      "actual_permission_mode": "ask",
+      "selected_permission_mode_match": false
+    }
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_absent": true,
+    "verified_by": "member_secret_restore agent",
+    "credential_values_recorded": false
+  },
+  "evidence": [
+    "docs/stabilization/evidence/member-chat-v0471/run38072565678/receipt.sanitized.json",
+    "docs/stabilization/evidence/member-chat-v0471/run38072565678/hosted-package-38072565678-1.jsonl",
+    "docs/stabilization/evidence/member-chat-v0471/run38072565678/hosted-browser-38072565678-1.jsonl",
+    "docs/stabilization/evidence/member-chat-v0471/run38072565678/hosted-guest-38072565678-1.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38072565678"
+  ],
+  "limitations": [
+    "Only the organization-header fingerprint is retained; exact organization identity is not independently verified.",
+    "The transport reported Ask and failed its selected-mode comparison; selected-mode alignment is not proven.",
+    "The exact Store ZIP was loaded unpacked with its matching public key added to the temporary extracted runtime; this is not an installed-from-Store test.",
+    "One bounded member Chat acceptance only; no broader surface coverage is claimed."
+  ]
+}

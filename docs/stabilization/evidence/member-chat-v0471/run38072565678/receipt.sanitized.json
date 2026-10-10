@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "run_id": 38072565678,
+  "case_id": "member-chat",
+  "lane": "A",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "207509bd703d6d7e1fd1631ccd19a821807daa6b",
+  "workflow_conclusion": "success",
+  "scope": "Fresh hosted Chrome-for-Testing profile; real existing-user non-admin login; native signed-in Chat",
+  "release_artifact": {
+    "release_run_id": 38071981003,
+    "release_artifact_id": 11676918768,
+    "release_artifact_digest": "sha256:674432715dd8338fdbd4d919e2e1f8aeb7e6591d8e85688eb3bbfe2297883e3a",
+    "product_source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "version": "0.2.471",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "publisher_source_tree_sha256": "a86844610bc4d3009bbb537ca0971f8b173109d8129dd616cbca5d08405410ac",
+    "runtime_tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "adaptation": "Matching-version public key added to the temporary extracted Store ZIP for Chrome identity; original ZIP unchanged."
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11677995226,
+    "artifact_digest": "sha256:f9780ef767becd70aa2917bc1a586e4d99d7338b7f7c59a177676524734a6f52"
+  },
+  "result": {
+    "status": "pass",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "canonical_extension_admin_check": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "returned_rows": 0
+    },
+    "organization_selected": true,
+    "device_active_organization_override_present": false,
+    "chat_visible": true,
+    "terminal_real_assistant_answer": true,
+    "completed_reply_count": 1,
+    "answer_names_capture_understand_use": true,
+    "transport": {
+      "start_count": 1,
+      "organization_header_fingerprint_present": true,
+      "organization_identity_matches_approved": false,
+      "start_http_status": 200,
+      "response_matches_request_conversation": true,
+      "backend_request_identity_present": true,
+      "actual_permission_mode": "ask",
+      "selected_permission_mode_match": false
+    }
+  },
+  "resource_finals": {
+    "hosted-package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_absent": true,
+    "local_single_use_link_file_absent": true,
+    "credential_values_recorded": false
+  },
+  "limitations": [
+    "The organization header is represented only by a fingerprint; the specific organization identity is not independently verified. HTTP 200 and matching response conversation establish acceptance of this organization-bearing request.",
+    "The captured permission mode was Ask, while the selected mode comparison was false; this run does not establish selected-mode alignment.",
+    "The tested payload was the exact published Store ZIP with only its matching public key added to the temporary extracted runtime. This was not a Chrome Web Store installed-copy test.",
+    "One bounded member Chat acceptance only; no Settings or broad extension coverage is claimed."
+  ],
+  "evidence": {
+    "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38072565678",
+    "release_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38071981003",
+    "resource_journals": [
+      "hosted-package-38072565678-1.jsonl",
+      "hosted-browser-38072565678-1.jsonl",
+      "hosted-guest-38072565678-1.jsonl"
+    ],
+    "result_screenshot": "reviewer-chat-result.png"
+  },
+  "product_credit": "bounded pass for member-chat only"
+}

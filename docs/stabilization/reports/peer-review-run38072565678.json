@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_member_chat_evidence_review",
+  "reviewer": "v471_member_chat_review",
+  "verdict": "PASS_BOUNDED_MEMBER_CHAT",
+  "run": {
+    "hosted_run_id": 38072565678,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38072565678",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "conclusion": "success",
+    "workflow_source_sha": "207509bd703d6d7e1fd1631ccd19a821807daa6b",
+    "case": "member-chat"
+  },
+  "provenance": {
+    "release_run_id": 38071981003,
+    "release_artifact_id": 11676918768,
+    "release_artifact_digest": "sha256:674432715dd8338fdbd4d919e2e1f8aeb7e6591d8e85688eb3bbfe2297883e3a",
+    "hosted_result_artifact_id": 11677995226,
+    "hosted_result_artifact_digest": "sha256:f9780ef767becd70aa2917bc1a586e4d99d7338b7f7c59a177676524734a6f52",
+    "version": "0.2.471",
+    "product_source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "publisher_source_tree_sha256": "a86844610bc4d3009bbb537ca0971f8b173109d8129dd616cbca5d08405410ac",
+    "runtime_tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "artifact_unchanged": true
+  },
+  "observations": {
+    "fresh_profile": true,
+    "web_and_extension_signed_in": true,
+    "canonical_admin_check_matched_user": true,
+    "canonical_admin_rows": 0,
+    "organization_selected": true,
+    "active_organization_device_override_present": false,
+    "opening_terminal_real_answer": true,
+    "completed_reply_count": 1,
+    "answer_matches_prompt_rubric": true,
+    "organization_header_present": true,
+    "start_http_status": 200,
+    "response_matches_request_conversation": true,
+    "backend_request_identity_present": true
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" }
+  },
+  "screenshot_review": {
+    "file": "docs/stabilization/evidence/member-chat-v0471/run38072565678/reviewer-chat-result.png",
+    "result": "Shows the native side panel at the completed page-grounded assistant answer."
+  },
+  "verification": {
+    "artifact": "Downloaded the hosted result and release artifacts; independently matched the Store ZIP SHA-256 to release-receipt.json and the downloaded ZIP bytes.",
+    "resource_finals": "All three downloaded journals end with admitted=true, resourceInvalid=false, exitCode=0, decision=valid.",
+    "auth": "The sanitized report records a real signed-in session and a canonical admin query for the same extension user returning zero rows.",
+    "credential_handling": "No private magic link or authentication values were inspected or recorded; terminal secret cleanup was handled by member_secret_restore.",
+    "source": "Read the exact acceptance predicates. Member Chat requires a populated organization-header fingerprint, HTTP 200, correlated conversation response and backend request identity; this report met those predicates. No tests run for this read-only review."
+  },
+  "limitations": [
+    "Exact organization identity cannot be confirmed because only a fingerprint is retained. HTTP 200 and response correlation support acceptance of the organization-bearing request.",
+    "The run reports actual permission mode Ask and mode_matches=false, so selected-mode alignment remains unverified.",
+    "The runtime used the exact v0.2.471 Store ZIP with its matching public key added to the temporary extracted manifest; it was not installed through the Chrome Web Store.",
+    "Bounded member Chat only."
+  ]
+}
