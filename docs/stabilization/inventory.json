@@ -23749,9 +23749,10 @@
             "37258276837",
             "37263606882",
             "scrape-save-native-3",
-            "scrape-save-native-4"
+            "scrape-save-native-4",
+            "scrape-save-native-5"
           ],
-          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. One-click Projects follow-up pending; no full T04/T29 pass. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects/focus/association remain unverified."
+          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. Native-5 observed dialog/project list/focus substeps but ended resource-invalid at 19.9955GiB and made no Save/write. Existing hosted development Scrape route lacks Save Source assertions; post-save filing E2E is not a safe substitute. One-click Projects follow-up pending; no full T04/T29 pass. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects/focus/association remain unverified. Hosted-lane feasibility: docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json."
         },
         "admin": {
           "test_status": "unverified",
@@ -23779,7 +23780,7 @@
             "source-workspace-008",
             "source-workspace-009"
           ],
-          "retest_status": "EXT-D-0187 remains unverified for admin; native-3 bounded member evidence is not admin proof; native-4 loaded-artifact/final focus acceptance blocked."
+          "retest_status": "EXT-D-0187 remains unverified for admin; native-3 bounded member evidence is not admin proof; native-4 loaded-artifact/final focus acceptance blocked. Native-5 ended resource-invalid before save. Existing hosted lane has no D187 Save Source driver; see docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json."
         }
       },
       "inventory_status": "complete",
@@ -23947,6 +23948,17 @@
           "resource_journal": "docs/stabilization/resource-journals/scrape-save-native-4.jsonl",
           "proven": "Local manifest and ScrapeView chunk hashes matched requested focus artifact; permit valid and cleanly stopped.",
           "limits": "CUA blocked extension management; no allowed reload/current loaded artifact verification, so no final focus, association, scrolling or Save-route assertions."
+        },
+        {
+          "run_id": "scrape-save-native-5",
+          "mode": "member",
+          "build": "v0.2.457 / 7cf16860846756eb0f50cd6d2595b4d7529dda05",
+          "defect_id": "EXT-D-0187",
+          "status": "invalid-resource",
+          "evidence": "docs/stabilization/evidence/scrape-save-native-5/receipt.json",
+          "resource_journal": "docs/stabilization/resource-journals/scrape-save-native-5.jsonl",
+          "proven": "Resource-valid pre-stop observations only: public article opened Save Source dialog; Projects list showed candidates; keyboard focus appeared contained and list scrolled below first rows.",
+          "limits": "Final resource decision invalid at 19.9955 GiB profile/system free space, below the 20 GiB floor. No submit, Source write, persisted association, or product acceptance. Do not count pre-stop observations as a pass."
         },
         {
           "run_id": "scrape-save-release-4",
