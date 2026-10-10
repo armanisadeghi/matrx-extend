@@ -1,0 +1,22 @@
+{
+  "observed_at_utc": "2026-10-10T03:28:00Z",
+  "channel": "unpacked development extension",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "stable_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "promoted_manifest_version": "0.2.458",
+  "promotion": {
+    "ci_run_id": 38019685913,
+    "artifact_id": 11657971729,
+    "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+    "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+    "local_receipt": "test-results/ci-dev-promotion-receipt.json"
+  },
+  "chrome_reload_observed": false,
+  "last_observed_running_version": "0.2.457",
+  "resource_journal": "docs/stabilization/resource-journals/chrome-dev-refresh-20261010-dcbda7.jsonl",
+  "resource_final": "RESOURCE_PREFLIGHT_REFUSED",
+  "resource_reason": "profile disk free 18.34 GiB below 20 GiB floor",
+  "cleanup_attempt": "approved dev-caches groom freed zero bytes; active app updater data preserved",
+  "next_action": "Retry resource admission when profile disk free is above the configured floor; then reload and verify Chrome extension identity, version, path, enabled state and toolbar pin.",
+  "limits": "Promoted files do not prove Chrome has reloaded them or establish product behavior."
+}
