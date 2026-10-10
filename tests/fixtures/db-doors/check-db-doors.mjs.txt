@@ -1,0 +1,620 @@
+#!/usr/bin/env node
+/**
+ * check-db-doors.mjs — ONE way to talk to the database (data layer design, step 1).
+ *
+ * `@ai-matrx/data` owns the connection, the session and every database operation.
+ * This guard reports every DIRECT database call outside it, per file, across every
+ * app that talks to the platform database:
+ *
+ *   aidream apps/shared/*  ·  matrx-frontend  ·  matrx-extend  ·  matrx-local  ·  matrx-vscode
+ *
+ * Parsed with the TypeScript compiler API (an AST, not a regex): multi-line chains,
+ * type arguments (`.from<Row>("t")`), element access (`sb["rpc"](…)`), destructured
+ * `rpc`, template-literal tables and comments are all read the way the compiler reads them.
+ *
+ * Shapes (every git-tracked JS/TS file — tests, scripts, work/tmp/out/build included: real code):
+ *   from-literal   `.from("table")`            (not Array/Buffer/typed-array/stream `.from`, not `.storage.from`)
+ *   from-dynamic   `.from(variable)`           a runtime-chosen table
+ *   rpc            `.rpc(`
+ *   schema         `.schema("x")` / `.schema(var).from|rpc`
+ *   storage        `.storage.from(`
+ *   auth           `.auth.<session/sign-in call>`
+ *   client         `createClient(` (in a file importing @supabase/*), `createBrowserClient(`,
+ *                  `createServerClient(`, `createAdminClient(`
+ *   supabase-import a value import from `@supabase/*` (type-only imports are free)
+ *   channel        `.channel(` outside @ai-matrx/realtime
+ *   rest           a `/rest/v1` URL (a hand-rolled PostgREST fetch)
+ *
+ * Homes (exempt): aidream `apps/shared/data/**` (everything); `apps/shared/realtime/**`
+ * (channel + @supabase import). Excluded: node_modules, dist, .next, vendor, `.d.ts`,
+ * generated types, this guard and its fixture. Browser acceptance tests in
+ * matrx-extend may name PostgREST URLs to observe and verify real wire traffic;
+ * that one REST shape is exempt there, while database SDK calls remain counted.
+ *
+ * Existing sites are a SHRINK-ONLY per-file baseline (db-doors-baseline.json).
+ * REPORT-ONLY today: exit 0 with the report; `--strict` exits 1 on any file over its
+ * baseline (the blocking mode each repo flips to as it reaches zero — design step 9).
+ *
+ *   node apps/shared/scripts/check-db-doors.mjs                report (per repo, per shape, growth)
+ *   node apps/shared/scripts/check-db-doors.mjs --strict       exit 1 on growth
+ *   node apps/shared/scripts/check-db-doors.mjs --self-test    planted call in a fixture copy: red, then green
+ *   node apps/shared/scripts/check-db-doors.mjs --prune-baseline   lower/drop entries only (never raises)
+ *   node apps/shared/scripts/check-db-doors.mjs --seed-baseline    only when no baseline exists
+ *   node apps/shared/scripts/check-db-doors.mjs --rebaseline "<why>"  ONLY when the counting method changes
+ *   --json                                                     machine-readable summary
+ *   --repo <key>   count ONE repo (matrx-frontend, matrx-extend, …) — what each repo's own release
+ *                  gate runs with --strict: a file over its baseline fails, a new file starts at zero.
+ *                  The repo not checked out here exits 2 (UNMEASURED), never a pass.
+ *   --repo-dir <path>   with --repo, scan that checkout rather than the sibling of aidream.
+ *                       Release snapshots use this to validate their own frozen source.
+ *
+ * A repo that is not checked out next to aidream is skipped and named (never a pass for it).
+ */
+import { execFileSync } from 'node:child_process';
+import {
+  cpSync,
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  realpathSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
+import { createRequire } from 'node:module';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const AIDREAM = path.resolve(HERE, '../../..');
+const CODE = path.resolve(AIDREAM, '..');
+const BASELINE = path.join(HERE, 'db-doors-baseline.json');
+const FIXTURE = path.join(HERE, 'fixtures', 'db-doors');
+// A consumer release installs its own compiler, not aidream's package dependencies.
+// Use the explicitly selected checkout; fleet scans retain the data package compiler.
+const compilerArgs = process.argv.slice(2);
+const compilerRepoDir = compilerArgs.includes('--repo-dir')
+  ? compilerArgs[compilerArgs.indexOf('--repo-dir') + 1]
+  : null;
+const compilerPackage =
+  compilerRepoDir && !compilerRepoDir.startsWith('--')
+    ? path.resolve(compilerRepoDir, 'package.json')
+    : path.join(HERE, '..', 'data', 'package.json');
+const ts = createRequire(compilerPackage)('typescript');
+
+/** repo key → { dir, pathspec } */
+export const REPOS = {
+  aidream: { dir: AIDREAM, pathspec: ['apps/shared'] },
+  'matrx-frontend': { dir: path.join(CODE, 'matrx-frontend'), pathspec: ['.'] },
+  'matrx-extend': { dir: path.join(CODE, 'matrx-extend'), pathspec: ['.'] },
+  'matrx-local': { dir: path.join(CODE, 'matrx-local'), pathspec: ['.'] },
+  'matrx-vscode': { dir: path.join(CODE, 'matrx-vscode'), pathspec: ['.'] },
+};
+
+const CODE_FILE = /\.(?:ts|tsx|mts|cts|js|jsx|mjs|cjs)$/;
+const EXCLUDED =
+  /(?:^|\/)(?:node_modules|dist|\.next|\.wt|\.matrx|vendor)\/|\.d\.[cm]?ts$|\.generated\.[cm]?[jt]sx?$|(?:^|\/)database\.types\.ts$|^apps\/shared\/scripts\/(?:check-db-doors\.mjs|fixtures\/db-doors\/)/;
+
+/** Files that ARE the data layer (exempt from every shape). */
+const DATA_HOME = /^apps\/shared\/data\//;
+/** The realtime package owns `.channel(` and its own @supabase import. */
+const REALTIME_HOME = /^apps\/shared\/realtime\//;
+
+/** Receivers whose `.from(` is never a table. */
+const NOT_A_TABLE_RECEIVER =
+  /^(?:Array|Buffer|Object|Set|Map|Readable|Iterator|Observable|Blob|Promise|String|Stream|Duplex|rxjs|Rx|Temporal\.\w+|[A-Z]\w*Array)$/;
+const DBISH = /supabase|client|\bdb\b|\bsb\b|admin|scoped|schema\(/i;
+const AUTH_METHODS = new Set(
+  'getSession getUser getClaims signInWithPassword signInWithOAuth signInWithOtp signInWithIdToken signInWithSSO signInAnonymously signUp signOut onAuthStateChange updateUser refreshSession setSession exchangeCodeForSession verifyOtp resetPasswordForEmail reauthenticate resend linkIdentity unlinkIdentity getUserIdentities admin mfa startAutoRefresh stopAutoRefresh'.split(
+    ' ',
+  ),
+);
+const TABLE_NAME = /^[a-z_][a-z0-9_]*(?:\.[a-z_][a-z0-9_]*)?$/;
+const QUICK = /from|rpc|schema|auth|Client|@supabase|channel|rest\/v1/;
+const kindOf = (file) =>
+  /\.tsx$|\.jsx$/.test(file)
+    ? ts.ScriptKind.TSX
+    : /\.[cm]?js$/.test(file)
+      ? ts.ScriptKind.JS
+      : ts.ScriptKind.TS;
+
+function calleeName(callee) {
+  if (ts.isPropertyAccessExpression(callee)) return callee.name.text;
+  if (ts.isElementAccessExpression(callee) && ts.isStringLiteralLike(callee.argumentExpression))
+    return callee.argumentExpression.text;
+  if (ts.isIdentifier(callee)) return callee.text;
+  return null;
+}
+const receiverOf = (callee) =>
+  ts.isPropertyAccessExpression(callee) || ts.isElementAccessExpression(callee)
+    ? callee.expression
+    : null;
+const isStringy = (n) => !!n && (ts.isStringLiteral(n) || ts.isNoSubstitutionTemplateLiteral(n));
+
+/** Is this call's result chained into a query verb (`.from(x).select(…)`)? */
+function chainedIntoQuery(call) {
+  const p = call.parent;
+  return (
+    !!p &&
+    ts.isPropertyAccessExpression(p) &&
+    p.expression === call &&
+    /^(?:select|insert|update|upsert|delete)$/.test(p.name.text)
+  );
+}
+
+/**
+ * Find every direct database call in one file's text. `home` is the exemption set
+ * that applies to the file ({ data, realtime }).
+ * @returns {{ line: number, shape: string }[]}
+ */
+export function findDbCalls(source, home = {}, file = 'x.ts') {
+  if (home.data || !QUICK.test(source)) return [];
+  const sf = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, kindOf(file));
+  const hits = [];
+  const hit = (node, shape) =>
+    hits.push({ line: sf.getLineAndCharacterOfPosition(node.getStart(sf)).line + 1, shape });
+  const importsSupabase = /["']@supabase\//.test(source);
+  const destructuredRpc = new Set();
+
+  const visit = (node) => {
+    if (
+      ts.isImportDeclaration(node) &&
+      isStringy(node.moduleSpecifier) &&
+      node.moduleSpecifier.text.startsWith('@supabase/') &&
+      !home.realtime
+    ) {
+      const clause = node.importClause;
+      const typeOnly =
+        clause &&
+        (clause.isTypeOnly ||
+          (!clause.name &&
+            clause.namedBindings &&
+            ts.isNamedImports(clause.namedBindings) &&
+            clause.namedBindings.elements.every((e) => e.isTypeOnly)));
+      if (!typeOnly) hit(node, 'supabase-import');
+    } else if (ts.isBindingElement(node) && ts.isObjectBindingPattern(node.parent)) {
+      const prop = node.propertyName ?? node.name;
+      if (ts.isIdentifier(prop) && prop.text === 'rpc') {
+        hit(node, 'rpc');
+        if (ts.isIdentifier(node.name)) destructuredRpc.add(node.name.text);
+      }
+    } else if (ts.isPropertyAccessExpression(node) && AUTH_METHODS.has(node.name.text)) {
+      const inner = node.expression;
+      // `admin` / `mfa` are sub-APIs (`.auth.admin.createUser(…)`): only a further member access
+      // counts, so a plain object's `input.auth?.admin ?? false` is not a session call.
+      const subApi = node.name.text === 'admin' || node.name.text === 'mfa';
+      if (
+        ts.isPropertyAccessExpression(inner) &&
+        inner.name.text === 'auth' &&
+        (!subApi || ts.isPropertyAccessExpression(node.parent))
+      )
+        hit(node, 'auth');
+    } else if (
+      !home.browserAcceptance &&
+      (ts.isStringLiteral(node) ||
+        ts.isNoSubstitutionTemplateLiteral(node) ||
+        ts.isTemplateHead(node) ||
+        ts.isTemplateMiddle(node) ||
+        ts.isTemplateTail(node)) &&
+      node.text.includes('/rest/v1')
+    ) {
+      hit(node, 'rest');
+    } else if (ts.isCallExpression(node)) {
+      const callee = node.expression;
+      const name = calleeName(callee);
+      const recv = receiverOf(callee);
+      const arg = node.arguments[0];
+      if (
+        name === 'require' &&
+        ts.isIdentifier(callee) &&
+        isStringy(arg) &&
+        arg.text.startsWith('@supabase/') &&
+        !home.realtime
+      )
+        hit(node, 'supabase-import');
+      else if (recv && name === 'from') {
+        const recvText = recv.getText(sf);
+        if (ts.isPropertyAccessExpression(recv) && recv.name.text === 'storage')
+          hit(node, 'storage');
+        else if (!NOT_A_TABLE_RECEIVER.test(recvText)) {
+          const dbish = DBISH.test(recvText) || chainedIntoQuery(node);
+          if (isStringy(arg)) {
+            if (TABLE_NAME.test(arg.text)) hit(node, 'from-literal');
+          } else if (arg && dbish) hit(node, 'from-dynamic');
+        }
+      } else if (recv && name === 'rpc') hit(node, 'rpc');
+      else if (!recv && name && destructuredRpc.has(name)) hit(node, 'rpc');
+      else if (recv && name === 'schema') {
+        const p = node.parent;
+        const intoQuery =
+          p && ts.isPropertyAccessExpression(p) && /^(?:from|rpc)$/.test(p.name.text);
+        if ((isStringy(arg) && /^[a-z_][a-z0-9_]*$/.test(arg.text)) || intoQuery)
+          hit(node, 'schema');
+      } else if (recv && name === 'channel' && !home.realtime) hit(node, 'channel');
+      else if (
+        name === 'createBrowserClient' ||
+        name === 'createServerClient' ||
+        name === 'createAdminClient'
+      )
+        hit(node, 'client');
+      else if (name === 'createClient' && importsSupabase) hit(node, 'client');
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(sf);
+  return hits;
+}
+
+function homeOf(repo, file) {
+  if (repo === 'matrx-extend' && file.startsWith('tests/browser/'))
+    return { browserAcceptance: true };
+  if (repo !== 'aidream') return {};
+  return { data: DATA_HOME.test(file), realtime: REALTIME_HOME.test(file) };
+}
+
+function listFiles(dir, pathspec) {
+  if (existsSync(path.join(dir, '.git'))) {
+    return execFileSync('git', ['ls-files', '-z', '--', ...pathspec], {
+      cwd: dir,
+      encoding: 'utf8',
+      maxBuffer: 1 << 28,
+    })
+      .split('\0')
+      .filter(Boolean);
+  }
+  // Not a git checkout (the self-test fixture copy): walk it.
+  const out = [];
+  const walk = (rel) => {
+    for (const name of readdirSync(path.join(dir, rel))) {
+      const r = rel ? `${rel}/${name}` : name;
+      if (statSync(path.join(dir, r)).isDirectory()) walk(r);
+      else out.push(r);
+    }
+  };
+  walk('');
+  return out;
+}
+
+/** @returns {Map<string, {count:number, shapes:Record<string,number>}>} keyed "repo:path" */
+export function census(repos) {
+  const out = new Map();
+  const skipped = [];
+  for (const [repo, { dir, pathspec }] of Object.entries(repos)) {
+    if (!existsSync(dir)) {
+      skipped.push(repo);
+      continue;
+    }
+    for (const file of listFiles(dir, pathspec)) {
+      if (!CODE_FILE.test(file) || EXCLUDED.test(file)) continue;
+      let text;
+      try {
+        text = readFileSync(path.join(dir, file), 'utf8');
+      } catch {
+        continue;
+      }
+      const hits = findDbCalls(text, homeOf(repo, file), file);
+      if (!hits.length) continue;
+      const shapes = {};
+      for (const h of hits) shapes[h.shape] = (shapes[h.shape] ?? 0) + 1;
+      out.set(`${repo}:${file}`, { count: hits.length, shapes });
+    }
+  }
+  return { sites: out, skipped };
+}
+
+function readBaseline(file) {
+  try {
+    return JSON.parse(readFileSync(file, 'utf8')).sites ?? {};
+  } catch {
+    return null;
+  }
+}
+
+function writeBaseline(file, sites) {
+  const sorted = Object.fromEntries(Object.entries(sites).sort(([a], [b]) => a.localeCompare(b)));
+  writeFileSync(
+    file,
+    `${JSON.stringify(
+      {
+        $comment:
+          'SHRINK-ONLY. Direct database calls per file outside @ai-matrx/data (check-db-doors.mjs). Lower with --prune-baseline; never raise by hand — move the call onto a data door instead.',
+        sites: sorted,
+      },
+      null,
+      2,
+    )}\n`,
+  );
+}
+
+/** Compare a census with a baseline. @returns {{grown: string[], total:number, files:number}} */
+export function compare(sites, baseline) {
+  const grown = [];
+  let total = 0;
+  for (const [key, { count }] of sites) {
+    total += count;
+    const allowed = baseline[key] ?? 0;
+    if (count > allowed)
+      grown.push(`${key}: ${count} direct database call(s), baseline ${allowed}`);
+  }
+  return { grown, total, files: sites.size };
+}
+
+const pkgOf = (key) => /^aidream:apps\/shared\/([^/]+)\//.exec(key)?.[1] ?? null;
+
+/** Growth inside an apps/shared package that has no baselined call at all (it is at zero → blocking). */
+export function blockingGrowth(grown, baseline) {
+  const withCalls = new Set(Object.keys(baseline).map(pkgOf).filter(Boolean));
+  return grown.filter((g) => {
+    const pkg = pkgOf(g.slice(0, g.indexOf(':', g.indexOf(':') + 1)));
+    return pkg && !withCalls.has(pkg);
+  });
+}
+
+function summarize(sites) {
+  const byRepo = {};
+  for (const [key, { count, shapes }] of sites) {
+    const repo = key.slice(0, key.indexOf(':'));
+    const row = (byRepo[repo] ??= { files: 0, calls: 0, shapes: {} });
+    row.files += 1;
+    row.calls += count;
+    for (const [s, n] of Object.entries(shapes)) row.shapes[s] = (row.shapes[s] ?? 0) + n;
+  }
+  return byRepo;
+}
+
+function selfTest() {
+  // 1. every shape is found; look-alikes are not.
+  const planted = {
+    'from-literal': [
+      'const { data } = await supabase.from("notes").select("*");',
+      'supabase\n  .from(\n    "notes",\n  )\n  .select("id");',
+      'supabase.from<NoteRow>("notes").select("*");',
+      'supabase.from(`notes`).select();',
+      'sb["from"]("notes").select("*");',
+    ],
+    'from-dynamic': [
+      'supabase\n  .from(tableName)\n  .select()',
+      'db.from(`${schema}_items`).select();',
+      'x.from(name).update({ a: 1 });',
+    ],
+    rpc: [
+      'await supabase.rpc("note_folder_get_or_create", { p_name });',
+      'await sb["rpc"]("touch", {});',
+      "const { rpc } = supabase; await rpc('touch');",
+      'await supabase\n  .rpc\n  ("touch");',
+    ],
+    schema: ['supabase.schema("workbench").from("notes")', 'client.schema(s).from(t)'],
+    storage: ['supabase.storage.from("avatars").upload(p, f);'],
+    auth: [
+      'const { data } = await supabase.auth.getSession();',
+      'supabase\n  .auth\n  .onAuthStateChange(cb);',
+      'await admin.auth.admin.createUser({ email });',
+    ],
+    client: [
+      'const admin = createAdminClient();',
+      'import { createClient } from "@supabase/supabase-js";\nconst c = createClient(u, k);',
+    ],
+    'supabase-import': [
+      'import { createClient } from "@supabase/supabase-js";',
+      'const { createClient } = require("@supabase/supabase-js");',
+    ],
+    channel: ['const ch = supabase.channel("room");'],
+    rest: ['await fetch(`${url}/rest/v1/notes?select=*`);', 'fetch(base + "/rest/v1/rpc/touch")'],
+  };
+  const lookAlikes = [
+    'const flags = { admin: input.auth?.admin ?? false, mfa: target.auth.mfa };',
+    'const xs = Array.from(set);',
+    "const b = Buffer.from(text, 'utf8');",
+    'const u = Uint8Array.from(bytes);',
+    'import type { SupabaseClient } from "@supabase/supabase-js";',
+    'import { type SupabaseClient } from "@supabase/supabase-js";',
+    '// supabase.from("notes") in a comment',
+    '/* supabase.rpc("x") */',
+    'const s = z.object({}).schema;',
+    'const it = Iterator.from(gen);',
+    'const label = "from(notes)";',
+  ];
+  const missed = Object.entries(planted)
+    .flatMap(([shape, texts]) => texts.map((text) => [shape, text]))
+    .filter(([shape, text]) => !findDbCalls(text).some((h) => h.shape === shape))
+    .map(([shape, text]) => `${shape}: ${text}`);
+  const falsePositives = lookAlikes.filter((t) => findDbCalls(t).length > 0);
+  if (missed.length || falsePositives.length) {
+    console.error(
+      `self-test FAILED — missed shapes: ${JSON.stringify(missed)}; false positives: ${JSON.stringify(falsePositives)}`,
+    );
+    return 1;
+  }
+  if (
+    findDbCalls('supabase.from("x")', { data: true }).length ||
+    findDbCalls('s.channel("x")', { realtime: true }).length
+  ) {
+    console.error('self-test FAILED — a home was not exempt');
+    return 1;
+  }
+  const browserAcceptance = 'fetch("/rest/v1/notes"); supabase.from("notes").select("id")';
+  const acceptanceHits = findDbCalls(browserAcceptance, { browserAcceptance: true });
+  if (
+    acceptanceHits.length !== 1 ||
+    acceptanceHits[0].shape !== 'from-literal' ||
+    findDbCalls(browserAcceptance).length !== 2
+  ) {
+    console.error(
+      'self-test FAILED — browser acceptance REST exception widened to SDK calls or production code',
+    );
+    return 1;
+  }
+
+  // 1b. a package at zero blocks; a package with baselined calls only reports.
+  const zero = blockingGrowth(
+    [
+      'aidream:apps/shared/kit/src/a.ts: 1 direct database call(s), baseline 0',
+      'aidream:apps/shared/chat/src/b.ts: 1 direct database call(s), baseline 0',
+    ],
+    {
+      'aidream:apps/shared/chat/src/c.ts': 3,
+    },
+  );
+  if (zero.length !== 1 || !zero[0].includes('/kit/')) {
+    console.error(`self-test FAILED — blocking-at-zero picked ${JSON.stringify(zero)}`);
+    return 1;
+  }
+
+  // 2. end to end on a COPY of the committed fixture (never a real file): green, red on a plant, green after.
+  const scratch = mkdtempSync(path.join(tmpdir(), 'db-doors-selftest-'));
+  const tree = path.join(scratch, 'repo');
+  cpSync(path.join(FIXTURE, 'repo'), tree, { recursive: true });
+  const repos = { fixture: { dir: tree, pathspec: ['.'] } };
+  const baseline = readBaseline(path.join(FIXTURE, 'baseline.json'));
+  const run = () => compare(census(repos).sites, baseline);
+  const before = run();
+  writeFileSync(
+    path.join(tree, 'src', 'planted.ts'),
+    'export const rows = () => supabase.schema("workbench").from("notes").select("id");\n',
+  );
+  const planted1 = run();
+  writeFileSync(
+    path.join(tree, 'src', 'planted.ts'),
+    'export const rows = () => listAll(db, notes);\n',
+  );
+  const after = run();
+  const ok =
+    before.grown.length === 0 &&
+    planted1.grown.length === 1 &&
+    planted1.grown[0].startsWith('fixture:src/planted.ts') &&
+    after.grown.length === 0;
+  console.log(
+    `  fixture green before plant: ${before.grown.length === 0} (${before.total} baselined call(s))`,
+  );
+  console.log(
+    `  red on planted call:        ${planted1.grown.length === 1} — ${planted1.grown[0] ?? 'nothing reported'}`,
+  );
+  console.log(`  green after the plant moves onto a door: ${after.grown.length === 0}`);
+  console.log(`  scratch copy: ${scratch}`);
+  if (!ok) {
+    console.error('self-test FAILED — fixture run did not go green → red → green');
+    return 1;
+  }
+  console.log(
+    `self-test ok — ${Object.values(planted).flat().length} planted calls in ${Object.keys(planted).length} shapes found, ${lookAlikes.length} look-alikes ignored, fixture green → red → green`,
+  );
+  return 0;
+}
+
+function main() {
+  const args = process.argv.slice(2);
+  if (args.includes('--self-test')) return selfTest();
+  const repoKey = args.includes('--repo') ? args[args.indexOf('--repo') + 1] : null;
+  const repoDir = args.includes('--repo-dir') ? args[args.indexOf('--repo-dir') + 1] : null;
+  if (repoKey !== null) {
+    if (!repoKey || !Object.hasOwn(REPOS, repoKey)) {
+      console.error(`check-db-doors: --repo takes one of ${Object.keys(REPOS).join(', ')}`);
+      return 2;
+    }
+    if (
+      args.some((a) => a === '--prune-baseline' || a === '--seed-baseline' || a === '--rebaseline')
+    ) {
+      console.error(
+        'check-db-doors: --repo only reports; the baseline is pruned over every repo at once.',
+      );
+      return 2;
+    }
+  }
+  if (repoDir !== null && (!repoKey || !repoDir || repoDir.startsWith('--'))) {
+    console.error('check-db-doors: --repo-dir requires --repo and a checkout path.');
+    return 2;
+  }
+  const selected = repoKey
+    ? { [repoKey]: { ...REPOS[repoKey], ...(repoDir && { dir: path.resolve(repoDir) }) } }
+    : REPOS;
+  const { sites, skipped } = census(selected);
+  if (repoKey && skipped.length) {
+    console.error(
+      `check-db-doors: UNMEASURED — ${repoKey} is not checked out at ${selected[repoKey].dir}`,
+    );
+    return 2;
+  }
+  const baseline = readBaseline(BASELINE);
+
+  if (args.includes('--seed-baseline')) {
+    if (baseline) {
+      console.error('check-db-doors: a baseline exists — it only shrinks (--prune-baseline).');
+      return 1;
+    }
+    writeBaseline(BASELINE, Object.fromEntries([...sites].map(([k, v]) => [k, v.count])));
+    console.log(`check-db-doors: seeded ${sites.size} files.`);
+    return 0;
+  }
+  if (args.includes('--rebaseline')) {
+    // ONLY when the counting METHOD changes (e.g. regex → AST): the new method's census
+    // replaces the old one wholesale. Never to admit a new call — move it onto a door.
+    const why = args[args.indexOf('--rebaseline') + 1];
+    if (!why || why.startsWith('--')) {
+      console.error(
+        'check-db-doors: --rebaseline "<the counting-method change>" — a reason is required',
+      );
+      return 1;
+    }
+    writeBaseline(BASELINE, Object.fromEntries([...sites].map(([k, v]) => [k, v.count])));
+    console.log(`check-db-doors: rebaselined ${sites.size} files (${why}).`);
+    return 0;
+  }
+  if (args.includes('--prune-baseline')) {
+    const next = {};
+    for (const [key, allowed] of Object.entries(baseline ?? {})) {
+      const repo = key.slice(0, key.indexOf(':'));
+      if (skipped.includes(repo)) {
+        next[key] = allowed; // never prune a repo we could not see
+        continue;
+      }
+      const now = sites.get(key)?.count ?? 0;
+      if (Math.min(now, allowed) > 0) next[key] = Math.min(now, allowed);
+    }
+    writeBaseline(BASELINE, next);
+    console.log(`check-db-doors: baseline pruned to ${Object.keys(next).length} files.`);
+    return 0;
+  }
+
+  const { grown, total, files } = compare(sites, baseline ?? {});
+  const byRepo = summarize(sites);
+  if (args.includes('--json')) {
+    console.log(JSON.stringify({ total, files, byRepo, grown, skipped }, null, 2));
+  } else {
+    console.log(
+      `check-db-doors: ${total} direct database calls in ${files} files outside @ai-matrx/data${repoKey ? ` (${repoKey})` : ''} (${args.includes('--strict') ? 'strict: a file over its baseline fails' : 'report-only'})`,
+    );
+    for (const [repo, row] of Object.entries(byRepo)) {
+      const shapes = Object.entries(row.shapes)
+        .sort((a, b) => b[1] - a[1])
+        .map(([s, n]) => `${s} ${n}`)
+        .join(', ');
+      console.log(
+        `  ${repo.padEnd(15)} ${String(row.calls).padStart(5)} calls / ${String(row.files).padStart(4)} files — ${shapes}`,
+      );
+    }
+    if (skipped.length) console.log(`  not checked out (not counted): ${skipped.join(', ')}`);
+    if (grown.length) {
+      console.log(
+        `\n${grown.length} file(s) over the shrink-only baseline — move the new call onto an @ai-matrx/data door:`,
+      );
+      for (const g of grown.slice(0, 50)) console.log(`  ${g}`);
+      if (grown.length > 50) console.log(`  … ${grown.length - 50} more`);
+    }
+  }
+  // A package with NO baselined call is BLOCKING (it reached zero, or never had one):
+  // a new direct call there fails the run even in report-only mode.
+  const blocked = blockingGrowth(grown, baseline ?? {});
+  if (blocked.length) {
+    console.error(
+      `\ncheck-db-doors: BLOCKING — ${blocked.length} new direct database call site(s) in packages that are at zero:`,
+    );
+    for (const g of blocked) console.error(`  ${g}`);
+    return 1;
+  }
+  return args.includes('--strict') && grown.length ? 1 : 0;
+}
+
+// Importing this module (tests, other guards) never runs the report.
+if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href)
+  process.exit(main());

@@ -1,4 +1,5 @@
-// Runs the real shared guard with the hosted dependency and symlink layout.
+// Runs a committed copy of the shared guard with the hosted dependency and symlink layout.
+// Unit-test CI checks out only this repository, so the fixture must stand alone.
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
@@ -18,8 +19,11 @@ it('checks frozen candidate growth through an aidream symlink with only consumer
   const candidate = join(root, 'snapshot/matrx-extend');
   mkdirSync(scripts, { recursive: true });
   mkdirSync(candidate, { recursive: true });
-  for (const file of ['check-db-doors.mjs', 'db-doors-baseline.json']) {
-    copyFileSync(resolve('../aidream/apps/shared/scripts', file), join(scripts, file));
+  for (const [fixture, file] of [
+    ['check-db-doors.mjs.txt', 'check-db-doors.mjs'],
+    ['db-doors-baseline.json', 'db-doors-baseline.json'],
+  ] as const) {
+    copyFileSync(resolve('tests/fixtures/db-doors', fixture), join(scripts, file));
   }
   symlinkSync(aidream, join(root, 'snapshot/aidream'), 'dir');
   symlinkSync(resolve('node_modules'), join(candidate, 'node_modules'), 'dir');
