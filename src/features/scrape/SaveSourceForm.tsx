@@ -1,3 +1,4 @@
+import { useMyLibraries } from '@/features/scrape/FileSourcePanel';
 import type { AttachTarget } from '@/lib/api/routes/sources';
 import { getAssociationsStore } from '@/lib/sources/associations-store';
 import {
@@ -7,7 +8,6 @@ import {
   readRememberedLibrary,
   writeRememberedLibrary,
 } from '@/lib/sources/save-source-logic';
-import { mediaDb } from '@/lib/supabase/schemas';
 import { useAuthStore } from '@/state/auth';
 import { pushNotice } from '@/state/notices';
 import type { EntityTypeToken } from '@ai-matrx/associations';
@@ -20,12 +20,6 @@ import {
 import { Button } from '@ai-matrx/design-system';
 import { Loader2, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-
-interface LibraryOption {
-  id: string;
-  name: string;
-  adapter: string;
-}
 
 const placeLabels: Record<(typeof SAVE_TARGET_TOKENS)[number], string> = {
   project: 'Projects',
@@ -268,8 +262,7 @@ export function SaveSourceForm({
   const [showLibrary, setShowLibrary] = useState(false);
   const [staged, setStaged] = useState<StagedTarget[]>([]);
   const [libraryId, setLibraryId] = useState<string | null>(null);
-  const [libraries, setLibraries] = useState<LibraryOption[]>([]);
-  const [libraryError, setLibraryError] = useState<string | null>(null);
+  const { libraries, error: libraryError } = useMyLibraries(userId, showLibrary);
   const store = useMemo(
     () => (showPlaces && placeType && organizationId ? getAssociationsStore() : null),
     [showPlaces, placeType, organizationId],
@@ -288,30 +281,7 @@ export function SaveSourceForm({
 
   useEffect(() => {
     if (!showLibrary || !userId) return;
-    let cancelled = false;
     setLibraryId(readRememberedLibrary(localStore(), userId));
-    void mediaDb()
-      .from('source_library')
-      .select('id,name,adapter')
-      .eq('created_by', userId)
-      .is('deleted_at', null)
-      .order('name')
-      .limit(200)
-      .then(({ data, error }) => {
-        if (cancelled) return;
-        if (error) setLibraryError('Libraries could not be loaded.');
-        else
-          setLibraries(
-            ((data ?? []) as LibraryOption[])
-              .slice()
-              .sort(
-                (a, b) => Number(b.adapter === 'web_capture') - Number(a.adapter === 'web_capture'),
-              ),
-          );
-      });
-    return () => {
-      cancelled = true;
-    };
   }, [showLibrary, userId]);
 
   const attachTo = buildAttachTargets(staged, libraryId);
