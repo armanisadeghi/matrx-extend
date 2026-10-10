@@ -1,0 +1,52 @@
+{
+  "id": "EXT-D-0192",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T08"],
+  "surface": "Hosted guest Scrape acceptance harness",
+  "auth_mode": "guest; infrastructure diagnostics only",
+  "title": "Scrape navigation timeout lacks click and active-tab evidence",
+  "severity": "S3: a failed acceptance run cannot distinguish input delivery from application state",
+  "priority": "P1: unblock diagnosis of an unverified Scrape case",
+  "state": "fixed",
+  "reproduction": [
+    "Run hosted guest Scrape T08 against exact CI development artifact 0.2.469 as in run 38069034568.",
+    "Observe the bounded timeout waiting for Scrape active and Capture ready after a trusted tab click.",
+    "Inspect the sanitized report and screenshot: they show final Chat state but no click target or immediate active-tab state."
+  ],
+  "expected": "A navigation failure records sanitized target resolution, trusted pointer/click delivery, and before/immediate/timeout tab state so missed input and application failure can be distinguished.",
+  "actual": "The original run recorded only the final readiness timeout and Chat screenshot; Capture, SEO, and Schema were never reached.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38069034568",
+    "docs/stabilization/runs/guest-scrape-empty-seo-schema-38069034568.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38069034568/"
+  ],
+  "fix_commit": null,
+  "verification": [
+    "Focused Scrape routing tests passed 12/12; Node syntax and Biome checks passed.",
+    "Independent peer reviewed sanitized probe fields, unchanged Article/title acceptance predicate, and listener disposal: PASS.",
+    "No browser retest or product behavior credit yet; T08 remains unverified."
+  ],
+  "closure_requirement": "A fresh guarded hosted T08 run must produce diagnostic fields and a valid resource final; use the result to classify the original navigation failure, then retest the product behavior separately.",
+  "transition_history": [
+    {
+      "from": null,
+      "to": "open",
+      "reason": "Run 38069034568 could not classify its navigation failure."
+    },
+    {
+      "from": "open",
+      "to": "triaged",
+      "reason": "The report omitted click delivery and active-tab snapshots."
+    },
+    {
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Add sanitized diagnostic probes without changing the acceptance oracle."
+    },
+    {
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source and peer checks pass; fresh guarded browser retest pending."
+    }
+  ]
+}

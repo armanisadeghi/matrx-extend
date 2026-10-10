@@ -28,6 +28,7 @@ const report = {
   native_stage: null,
   artifact: null,
   observations: null,
+  capture_diagnostic: null,
   failure_code: null,
   limits:
     'One owned localhost guest page; only T08 no-signal SEO and empty Schema panes. No broader T08, role, width, Store, or current-main claim.',
@@ -139,22 +140,102 @@ async function run() {
             ),
           (state) => state?.active && state.capture,
         );
-        await resourceAction(() =>
-          click(panel, 'title', 'Capture the page exactly as it is right now'),
-        );
-        const ready = await waitFor(
-          'scrape_empty_capture_ready',
-          () =>
-            evaluate(
-              panel,
-              `(() => {
-          const selected = [...document.querySelectorAll('[role="tablist"] [role="tab"]')].filter(node => node.getAttribute('aria-selected') === 'true');
-          return { count: selected.length, article: selected[0]?.firstChild?.textContent?.trim() === 'Article', title: document.querySelector('.truncate.text-sm.font-medium')?.textContent?.trim() ?? null };
-        })()`,
-            ),
-          (state) => state?.count === 1 && state.article && state.title === title,
-        );
-        assert.equal(ready.title, title, 'scrape_empty_capture_title_mismatch');
+        const diagnostic = {
+          before: null,
+          immediate: null,
+          immediate_events: null,
+          timeout: null,
+          pointer_target: null,
+          pointer_phase: null,
+          pointer_failure: null,
+          events: null,
+        };
+        report.capture_diagnostic = diagnostic;
+        const stateExpression = `(() => {
+          const outer = [...document.querySelectorAll('button[role="tab"]')].filter(node =>
+            (node.title || node.dataset.matrxTitle) === 'Scrape' && node.dataset.state === 'active');
+          const controls = outer.length === 1 ? outer[0].getAttribute('aria-controls') : null;
+          const pane = controls ? document.getElementById(controls) : null;
+          const selected = [...document.querySelectorAll('[role="tablist"] [role="tab"]')]
+            .filter(node => node.getAttribute('aria-selected') === 'true');
+          const result = selected.length === 1 ? selected[0] : null;
+          const resultPane = result ? document.getElementById(result.getAttribute('aria-controls') ?? '') : null;
+          const captureButtons = [...document.querySelectorAll('button[title],button[data-matrx-title]')]
+            .filter(node => (node.title || node.dataset.matrxTitle) === 'Capture the page exactly as it is right now');
+          return {
+            capture_match_count: captureButtons.length,
+            capture_inside_scrape: captureButtons.length === 1 && Boolean(pane?.contains(captureButtons[0])),
+            chat_active: [...document.querySelectorAll('button[role="tab"]')].some(node =>
+              (node.title || node.dataset.matrxTitle) === 'Chat' && node.dataset.state === 'active'),
+            active_scrape_count: outer.length, scrape_controls_present: Boolean(controls),
+            scrape_pane_found: Boolean(pane), scrape_pane_active: pane?.dataset.state === 'active',
+            selected_count: selected.length, article: result?.firstChild?.textContent?.trim() === 'Article',
+            selected_inside_scrape: Boolean(pane && result && pane.contains(result)),
+            result_controls_present: Boolean(result?.getAttribute('aria-controls')),
+            result_pane_found: Boolean(resultPane), result_pane_active: resultPane?.dataset.state === 'active',
+            title_matches: document.querySelector('.truncate.text-sm.font-medium')?.textContent?.trim() === ${JSON.stringify(title)},
+          };
+        })()`;
+        const probeKey = '__matrxT08CaptureInput';
+        const readProbe = `(() => {
+          const probe = globalThis[${JSON.stringify(probeKey)}];
+          return probe ? probe.events : null;
+        })()`;
+        let ready;
+        try {
+          diagnostic.before = await evaluate(panel, stateExpression);
+          await evaluate(
+            panel,
+            `(() => {
+            const events = { pointerdown: 0, pointerup: 0, click: 0, trusted_click: 0, capture_click: 0, trusted_capture_click: 0,
+              last_target_is_capture: null, last_target_inside_scrape: null };
+            const listener = event => {
+              const target = event.target instanceof Element ? event.target.closest('button') : null;
+              const capture = (target?.title || target?.dataset.matrxTitle) === 'Capture the page exactly as it is right now';
+              events[event.type] += 1;
+              if (event.type === 'click' && event.isTrusted) events.trusted_click += 1;
+              if (event.type === 'click' && capture) {
+                events.capture_click += 1;
+                if (event.isTrusted) events.trusted_capture_click += 1;
+              }
+              events.last_target_is_capture = capture;
+              const pane = target?.closest('[role="tabpanel"]');
+              events.last_target_inside_scrape = Boolean(pane && [...document.querySelectorAll('button[role="tab"]')].some(tab =>
+                (tab.title || tab.dataset.matrxTitle) === 'Scrape' && tab.dataset.state === 'active' &&
+                tab.getAttribute('aria-controls') === pane.id));
+            };
+            for (const type of ['pointerdown', 'pointerup', 'click']) document.addEventListener(type, listener, true);
+            globalThis[${JSON.stringify(probeKey)}] = { events, listener };
+          })()`,
+          );
+          diagnostic.pointer_target = await resourceAction(() =>
+            click(panel, 'title', 'Capture the page exactly as it is right now', (phase) => {
+              diagnostic.pointer_phase = phase;
+            }),
+          );
+          diagnostic.immediate = await evaluate(panel, stateExpression);
+          diagnostic.immediate_events = await evaluate(panel, readProbe);
+          ready = await waitFor(
+            'scrape_empty_capture_ready',
+            () => evaluate(panel, stateExpression),
+            (state) => state?.selected_count === 1 && state.article && state.title_matches,
+          );
+        } catch (error) {
+          diagnostic.pointer_failure = error.driverFailure ?? null;
+          diagnostic.timeout = await evaluate(panel, stateExpression).catch(() => null);
+          throw error;
+        } finally {
+          diagnostic.events = await evaluate(panel, readProbe).catch(() => null);
+          await evaluate(
+            panel,
+            `(() => {
+            const probe = globalThis[${JSON.stringify(probeKey)}];
+            if (probe) for (const type of ['pointerdown', 'pointerup', 'click']) document.removeEventListener(type, probe.listener, true);
+            delete globalThis[${JSON.stringify(probeKey)}];
+          })()`,
+          ).catch(() => {});
+        }
+        assert.equal(ready.title_matches, true, 'scrape_empty_capture_title_mismatch');
         const panelUrl = panelTarget?.url ?? '';
         const readExport = () =>
           readCaptureExport({
