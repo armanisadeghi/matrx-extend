@@ -17,6 +17,7 @@ import {
   selectOrImportNativeTarget,
   verifyImportedNativeEvidence,
 } from './current-test-artifact.mjs';
+import { hostedAcceptanceRoute } from './hosted-acceptance-route.mjs';
 import { hostedDesktopSettingsCase } from './hosted-desktop-settings-route.mjs';
 import { lockedHostedTypeScript } from './hosted-driver-dependencies.mjs';
 import {
@@ -26,7 +27,6 @@ import {
 } from './hosted-profile-route.mjs';
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
 import { hostedScrapeReloadDiagnostic } from './hosted-scrape-reload-diagnostic.mjs';
-import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
 import {
   hostedGuestSeoRoute,
   hostedSeoInterruptTarget,
@@ -280,7 +280,13 @@ async function preparePublishedStoreCrx(outputDir) {
 
 async function run(prepared, artifactMode) {
   const { extensionDir, relocatedReceipt, kind } = prepared;
-  const acceptanceCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat';
+  const requestedCase = process.env.MATRX_HOSTED_ACCEPTANCE_CASE ?? 'guest-chat';
+  const { acceptanceCase, scrapeRoute } = hostedAcceptanceRoute(
+    requestedCase,
+    artifactMode,
+    prepared,
+    process.env.MATRX_SCRAPE_AUTH_MODE,
+  );
   const scrapeReloadDiagnostic = hostedScrapeReloadDiagnostic(
     acceptanceCase,
     process.env.MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC ?? '0',
@@ -291,40 +297,6 @@ async function run(prepared, artifactMode) {
   );
   if (acceptanceCase.startsWith('desktop-settings-'))
     console.log(`HOSTED_DESKTOP_SETTINGS_CASE ${desktopCase}`);
-  assert.ok(
-    [
-      'guest-chat',
-      'guest-seo',
-      'guest-data',
-      'member-data',
-      'guest-scrape',
-      'guest-scrape-development',
-      'scrape-save-member',
-      'tab-groups-member',
-      'settings-controls',
-      'settings-theme-rendering',
-      'settings-auto-scrape-capture',
-      'settings-persistence',
-      'settings-persistence-admin',
-      'settings-persistence-member',
-      'desktop-settings-guest',
-      'desktop-settings-member',
-      'desktop-settings-admin',
-      'visibility-census-guest',
-      'visibility-census-member',
-      'visibility-census-admin',
-      'audit-key-admin',
-      'member-chat',
-      'prepare-stale-results',
-      'showcase-picker-admin',
-      'showcase-stale-admin',
-      'showcase-d47-admin',
-      'showcase-d47-public-admin',
-      'records-readonly-admin',
-      'profile-admin',
-      'profile-member',
-    ].includes(acceptanceCase),
-  );
   if (
     ['settings-controls', 'settings-theme-rendering', 'settings-auto-scrape-capture'].includes(
       acceptanceCase,
@@ -436,12 +408,6 @@ async function run(prepared, artifactMode) {
       'published_store_zip_adapted',
       'Guest Chat release requires exact Store ZIP payload',
     );
-  const scrapeRoute = requireHostedScrapeRoute(
-    acceptanceCase,
-    artifactMode,
-    prepared,
-    process.env.MATRX_SCRAPE_AUTH_MODE,
-  );
   const tabGroupsRoute =
     acceptanceCase === 'tab-groups-member'
       ? hostedTabGroupsRoute(acceptanceCase, {

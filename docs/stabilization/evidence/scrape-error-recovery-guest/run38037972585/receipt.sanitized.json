@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38037972585,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38037972585",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "4e5f34d254ceaa53c659460c05794ae5308e5c32",
+  "dispatch_ref": "main",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "acceptance_case": "scrape-error-recovery-guest",
+  "inputs": {
+    "scrape_auth_mode": "guest",
+    "scrape_width_mode": "narrow",
+    "development_run_id": 38036029832,
+    "development_artifact_id": 11664077690
+  },
+  "workflow_conclusion": "failure",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "frozen_product_artifact": true
+  },
+  "native_result": {
+    "native_report_present": false,
+    "classification": "harness_case_admission_failure_before_native_driver; no product behavior observed",
+    "failure_stage": "hosted_acceptance_case_allowlist",
+    "failure_code": "ERR_ASSERTION",
+    "source_location": "scripts/hosted-guest-acceptance.mjs:294",
+    "observation": "Workflow admission and selected authentication passed. The driver internal case allowlist omitted scrape-error-recovery-guest and asserted before selecting or executing its native route. The uploaded artifact contains no native report.",
+    "product_credit": false,
+    "host_access_transition_observed": false,
+    "fixture_restoration": "No T14 fixture/permission transition was evidenced; no product-state cleanup claim."
+  },
+  "resources": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "journal_sanitization": "Exact-run journals copied with scripts/copy-hosted-resource-journal.mjs; no private process attribution or opened paths retained."
+  },
+  "evidence_hashes": {
+    "resource-journals/hosted-package-38037972585-1.jsonl": "e9bea917447049d531166d6e14ab57d85416808444a3d54fe9e56304207f1e11",
+    "resource-journals/hosted-browser-38037972585-1.jsonl": "aa699b1ee1b22a2f60bcae04da09a6f926a25537b7a9975066f2e793d2b3810b",
+    "resource-journals/hosted-guest-38037972585-1.jsonl": "b86e8899975a5e83922c10d7ac980b12e410eaba60239f2c690e6a4a984269f4"
+  },
+  "evidence": [
+    "resource-journals/hosted-package-38037972585-1.jsonl",
+    "resource-journals/hosted-browser-38037972585-1.jsonl",
+    "resource-journals/hosted-guest-38037972585-1.jsonl"
+  ],
+  "independent_review": "pending",
+  "hosted_result_artifact": {
+    "artifact_id": 11665245992,
+    "name": "hosted-guest-38037972585-1",
+    "digest": "sha256:805068d1e35eb4df71407e7329e108e58d535766591fb4a8ef1bb227f38776ab",
+    "expired": false
+  }
+}

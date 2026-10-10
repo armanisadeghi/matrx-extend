@@ -3,11 +3,38 @@ import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { scrapeNativeSelection } from '../tests/browser/scrape-native-selection.mjs';
+import { hostedAcceptanceRoute } from './hosted-acceptance-route.mjs';
 import { requireHostedAcceptanceCredential } from './hosted-profile-route.mjs';
 import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
 
 const development = { kind: 'ci_development_test', eligibleStore: false };
 const store = { kind: 'published_store_zip_adapted' };
+
+test('the native acceptance runner admits and routes guest T14 to its real recovery driver', () => {
+  assert.deepEqual(
+    hostedAcceptanceRoute('scrape-error-recovery-guest', 'development', development, 'guest'),
+    {
+      acceptanceCase: 'scrape-error-recovery-guest',
+      scrapeRoute: {
+        driver: 'tests/browser/scrape-error-recovery-guest.mjs',
+        channel: 'development',
+      },
+    },
+  );
+  assert.throws(
+    () => hostedAcceptanceRoute('not-a-hosted-case', 'development', development, 'guest'),
+    /unknown_hosted_acceptance_case/,
+  );
+  assert.throws(
+    () =>
+      hostedAcceptanceRoute('scrape-error-recovery-guest', 'development', development, 'member'),
+    /scrape_recovery_guest_auth_required/,
+  );
+  assert.deepEqual(
+    scrapeNativeSelection({ MATRX_SCRAPE_AUTH_MODE: 'guest', MATRX_SCRAPE_WIDTH_MODE: 'narrow' }),
+    { mode: 'guest', widthMode: 'narrow', minimumPanelWidth: null },
+  );
+});
 
 function workflowStepScript(workflow, stepName) {
   const stepStart = workflow.indexOf(`      - name: ${stepName}`);
