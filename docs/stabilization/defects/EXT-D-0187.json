@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0187",
   "feature_id": "EXT-F-1007",
-  "case_ids": [
-    "EXT-F-1007-T04",
-    "EXT-F-1007-T29"
-  ],
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
   "surface": "Scrape > Save Source",
   "auth_mode": "member, admin",
   "title": "Scrape Save omits naming, delays confirmation, and opens an unusable filing browser",
@@ -42,14 +39,7 @@
     "docs/stabilization/resource-journals/scrape-save-native-5.jsonl"
   ],
   "cause": "Original client path omitted name/attach_to and awaited ancillary SEO audit. Subsequent native retest exposed modal focus escape and incomplete one-type browsing. A separate initial-organization hydration race remounted/dismissed the Save form and caused cumulative 10-second test waits; the builder repaired hydration/switch handling and the focused suite now passes.",
-  "fix_commits": [
-    "146a7fc38",
-    "2951e87c3",
-    "ab49bb08e",
-    "4126b60f1",
-    "577af8810",
-    "7cf168608"
-  ],
+  "fix_commits": ["146a7fc38", "2951e87c3", "ab49bb08e", "4126b60f1", "577af8810", "7cf168608"],
   "verification": [
     "Original implementation 146a7fc38: guarded compile-1/build-1 valid exit 0; native-1 valid but reproduced clipped Projects and focus escape.",
     "Focused save suite scrape-save-test-11: 26/26 passed in 1.84s, valid exit 0; initial lookup preserves typed draft, while first storage switch fences old draft/save. Journal: docs/stabilization/resource-journals/scrape-save-test-11.jsonl.",
