@@ -1,0 +1,22 @@
+{
+  "run_id": 38022710354,
+  "result": "fail",
+  "failure": {
+    "stage": "project_association_choice",
+    "error_code": "scrape_save_project_candidate_ready_not_observed",
+    "classification": "The project picker yielded no selectable Project candidate for this owned fixture. This is a missing fixture/precondition, not evidence of a product defect. The driver stops before Source submit, so this run gives no Source-save, reopen, or Project-association pass."
+  },
+  "observed": {
+    "lane_admission_passed": true,
+    "selected_auth_preflight_passed": true,
+    "artifact_import_identity_verified": true,
+    "package_browser_and_acceptance_resource_readiness_passed": true,
+    "source_submit_reached": false,
+    "cleanup": {
+      "verified": true,
+      "active_run_row_count": 0,
+      "verification_source": "Parent coordinator confirmed exact run-owned fixture cleanup and zero active rows; no broader data was changed."
+    }
+  },
+  "artifact_note": "The uploaded artifact contained the three run-matching resource journals and harness screenshots, but did not contain test-results/scrape-save-native-acceptance.json. The failure stage/code are preserved from the sanitized GitHub Actions log; no native report fields beyond those independently observed are inferred."
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "run_id": 38022710354,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38022710354",
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_checkout_sha": "c17b7bc2be70655dd2d36acca092ae0614f56691",
+  "lane": "A",
+  "acceptance_case": "scrape-save-member",
+  "auth_mode": "member",
+  "runner_label": "macos-15",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+    "ci_run_id": 38019685913,
+    "artifact_id": 11657971729,
+    "version": "0.2.458",
+    "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5"
+  },
+  "result": "fail",
+  "failure": {
+    "stage": "project_association_choice",
+    "error_code": "scrape_save_project_candidate_ready_not_observed",
+    "classification": "The project picker yielded no selectable Project candidate for this owned fixture. This is a missing fixture/precondition, not evidence of a product defect. The driver stops before Source submit, so this run gives no Source-save, reopen, or Project-association pass."
+  },
+  "observed": {
+    "lane_admission_passed": true,
+    "selected_auth_preflight_passed": true,
+    "artifact_import_identity_verified": true,
+    "package_browser_and_acceptance_resource_readiness_passed": true,
+    "source_submit_reached": false,
+    "cleanup": {
+      "verified": true,
+      "active_run_row_count": 0,
+      "verification_source": "Parent coordinator confirmed exact run-owned fixture cleanup and zero active rows; no broader data was changed."
+    }
+  },
+  "resource_finals": {
+    "hosted-package-38022710354-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38022710354-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38022710354-1": "child_failed; admitted=true; resourceInvalid=false; exitCode=1; transient CPU pending recovered before final"
+  },
+  "credential_cleanup": "Parent coordinator deleted the temporary repository secret and local one-time link; name-only secret listing returned zero and local-link existence check was false. No credential values retained.",
+  "artifact_note": "The uploaded artifact contained the three run-matching resource journals and harness screenshots, but did not contain test-results/scrape-save-native-acceptance.json. The failure stage/code are preserved from the sanitized GitHub Actions log; no native report fields beyond those independently observed are inferred.",
+  "claims": [
+    "Bounded failure on frozen unpublished development artifact source dcbda7e0.",
+    "No product failure verdict, Source save pass, reopen pass, or Project association pass.",
+    "No current-main or Store health claim."
+  ],
+  "evidence_files": {
+    "diagnostic_summary": {
+      "path": "diagnostic.sanitized.json",
+      "sha256": "d241fe3f7d035840571810298203ec9319491b62a479db9e15ee22597df4fe6a"
+    },
+    "resource_journals": [
+      {
+        "path": "resource-journals/hosted-package-38022710354-1.jsonl",
+        "sha256": "1f2082a96d7aff461ba399d9463fcd26e63ecadc75aa94f6969ac261952cc839",
+        "final": "valid",
+        "exit_code": 0
+      },
+      {
+        "path": "resource-journals/hosted-browser-38022710354-1.jsonl",
+        "sha256": "768db92266a20d8deda67261a6bc19de6faac9085240c8b5ab9f67dada2d402f",
+        "final": "valid",
+        "exit_code": 0
+      },
+      {
+        "path": "resource-journals/hosted-guest-38022710354-1.jsonl",
+        "sha256": "b97e37e413e415ed76c6fd168559469f430bbcc45b71bad1311f1839ce003164",
+        "final": "child_failed",
+        "exit_code": 1
+      }
+    ]
+  }
+}
