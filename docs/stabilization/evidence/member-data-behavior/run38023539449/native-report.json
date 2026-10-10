@@ -1,0 +1,502 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "auth_mode": "member",
+  "status": "fail",
+  "stage": "extension_reload",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "c17b7bc2be70655dd2d36acca092ae0614f56691",
+    "run_id": 38022618507,
+    "artifact_id": 11659180123,
+    "tree_sha256": "a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88",
+    "version": "0.2.458"
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_identity_verified": true,
+    "canonical_nonadmin_check_passed": true,
+    "organization_selected": true,
+    "organization_resolution": "load_ladder",
+    "selected_organization_id_verified": true
+  },
+  "observations": {
+    "picker_field_clicks_landed": true,
+    "two_distinct_previews": true,
+    "save_pattern_visible": true,
+    "pattern_name_visible": true,
+    "pattern_write_requests": 1,
+    "pattern_write_status": 201,
+    "pattern_response_body_capture": "body_id_valid",
+    "saved_row_lookup_verified": true,
+    "request_body_organization_present": true,
+    "request_body_organization_matched_selected": true,
+    "saved_pattern_refreshed": true,
+    "saved_pattern_run_before_reload": true,
+    "clipboard_before_reload": {
+      "tsv_matches_fixture": true,
+      "json_matches_fixture": true,
+      "ai_contains_all_fixture_rows": true,
+      "native_copy_feedback_observed": true,
+      "clipboard_readback": true,
+      "observation_permission_restored": true
+    },
+    "cancel_cleared_unsaved_selection": true,
+    "pattern_write_observation": [
+      {
+        "status": 201,
+        "failed": false,
+        "patternIdPresent": true,
+        "bodyCapture": "body_id_valid",
+        "requestBodyCapture": "request_body_valid",
+        "requestOrganizationPresent": true,
+        "requestNameMatches": true,
+        "requestOrganizationMatchesSelected": true,
+        "headerOrganizationPresent": false
+      }
+    ]
+  },
+  "cleanup": {
+    "verified": false,
+    "error": "native_acceptance_error"
+  },
+  "failure_stage": "extension_reload",
+  "limits": "Native member picker, save, run, clipboard, cancel and extension-reload behavior on the exact imported development artifact; no admin or Store claim.",
+  "auth_stage": "member_extension_signin",
+  "reload_failure": {
+    "helper": {
+      "operation": "panel_poll",
+      "exceptionClass": "Error",
+      "cleanupFailures": []
+    },
+    "failure": {
+      "failure_code": "native_extension_replacement_panel_unverified",
+      "transport_failure_class": "none",
+      "retirement_evidence": {
+        "old_worker_destroyed_event": false,
+        "old_worker_execution_retired": true,
+        "old_worker_absent": true,
+        "old_panel_absent": true,
+        "replacement_worker_present": true,
+        "replacement_worker_created_event": true,
+        "replacement_panel_created_event": false,
+        "observed_worker_count": 1,
+        "management": null,
+        "open_panel_request": {
+          "click_monotonic_ms": 22514,
+          "worker_at_click": {
+            "status": "activated",
+            "running_status": "running"
+          },
+          "received": false,
+          "ok": null,
+          "opened": null,
+          "category": "reply_not_observed",
+          "fixture": {
+            "availability": "ready",
+            "click_received": true,
+            "send_invoked": true,
+            "send_returned": true,
+            "callback_entered": false,
+            "callback_has_reply": false,
+            "callback_last_error": false,
+            "send_threw": false
+          }
+        },
+        "timeline": {
+          "old_worker_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+          "old_panel_id": "41585C6767283750872B1F78506ED0B4",
+          "replacement_worker_id": "571728E908AD95C4CFA707DE3F4D5105",
+          "pre_click_old_worker_present": true,
+          "entries": [
+            {
+              "at": "2026-10-10T04:23:49.826Z",
+              "phase": "discovery_enabled"
+            },
+            {
+              "at": "2026-10-10T04:23:49.829Z",
+              "phase": "initial_snapshot",
+              "targets": [
+                {
+                  "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+                  "type": "service_worker",
+                  "kind": "worker",
+                  "attached": true
+                },
+                {
+                  "target_id": "41585C6767283750872B1F78506ED0B4",
+                  "type": "page",
+                  "kind": "panel",
+                  "attached": true
+                }
+              ]
+            },
+            {
+              "at": "2026-10-10T04:23:49.829Z",
+              "phase": "listeners_registered"
+            },
+            {
+              "at": "2026-10-10T04:23:49.830Z",
+              "phase": "pre_click_snapshot",
+              "targets": [
+                {
+                  "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+                  "type": "service_worker",
+                  "kind": "worker",
+                  "attached": true
+                },
+                {
+                  "target_id": "41585C6767283750872B1F78506ED0B4",
+                  "type": "page",
+                  "kind": "panel",
+                  "attached": true
+                }
+              ]
+            },
+            {
+              "at": "2026-10-10T04:23:49.830Z",
+              "phase": "click_started"
+            },
+            {
+              "at": "2026-10-10T04:23:50.122Z",
+              "phase": "target_info_changed",
+              "target": {
+                "target_id": "41585C6767283750872B1F78506ED0B4",
+                "type": "page",
+                "kind": "panel",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:50.123Z",
+              "phase": "target_destroyed",
+              "target": {
+                "target_id": "41585C6767283750872B1F78506ED0B4",
+                "type": "page",
+                "kind": "panel",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:50.163Z",
+              "phase": "click_resolved"
+            },
+            {
+              "at": "2026-10-10T04:23:50.164Z",
+              "phase": "poll_transition",
+              "targets": [
+                {
+                  "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+                  "type": "service_worker",
+                  "kind": "worker",
+                  "attached": true
+                }
+              ]
+            },
+            {
+              "at": "2026-10-10T04:23:50.224Z",
+              "phase": "target_created",
+              "target": {
+                "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:50.224Z",
+              "phase": "target_info_changed",
+              "target": {
+                "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:50.235Z",
+              "phase": "target_info_changed",
+              "target": {
+                "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:50.266Z",
+              "phase": "poll_transition",
+              "targets": [
+                {
+                  "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+                  "type": "service_worker",
+                  "kind": "worker",
+                  "attached": true
+                }
+              ]
+            }
+          ],
+          "dropped_entries": 0,
+          "final_snapshot": [
+            {
+              "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+              "type": "service_worker",
+              "kind": "worker",
+              "attached": true
+            }
+          ],
+          "final_predicate": true
+        },
+        "reload_lifetime": {
+          "availability": "ready",
+          "browser_version": {
+            "protocol_version": "1.3",
+            "product": "Chrome/141.0.7390.37",
+            "revision": "@9f043f63b0e5b728c8d09f3e3ddfc1681a4bd58e"
+          },
+          "independent_targets": [
+            {
+              "at": "2026-10-10T04:23:49.813Z",
+              "phase": "created",
+              "target": {
+                "target_id": "41585C6767283750872B1F78506ED0B4",
+                "type": "page",
+                "kind": "panel",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:49.813Z",
+              "phase": "created",
+              "target": {
+                "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:49.816Z",
+              "phase": "initial",
+              "target": {
+                "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:49.816Z",
+              "phase": "initial",
+              "target": {
+                "target_id": "41585C6767283750872B1F78506ED0B4",
+                "type": "page",
+                "kind": "panel",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:50.122Z",
+              "phase": "changed",
+              "target": {
+                "target_id": "41585C6767283750872B1F78506ED0B4",
+                "type": "page",
+                "kind": "panel",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:50.122Z",
+              "phase": "destroyed",
+              "target": {
+                "target_id": "41585C6767283750872B1F78506ED0B4",
+                "type": "other",
+                "kind": "panel",
+                "attached": null
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:50.224Z",
+              "phase": "created",
+              "target": {
+                "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": false
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:50.224Z",
+              "phase": "changed",
+              "target": {
+                "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": true
+              }
+            },
+            {
+              "at": "2026-10-10T04:23:50.236Z",
+              "phase": "changed",
+              "target": {
+                "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+                "type": "service_worker",
+                "kind": "worker",
+                "attached": false
+              }
+            }
+          ],
+          "versions": [
+            {
+              "at": "2026-10-10T04:23:49.829Z",
+              "version_id": "0",
+              "registration_id": "0",
+              "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+              "running_status": "running",
+              "status": "activated"
+            },
+            {
+              "at": "2026-10-10T04:23:50.131Z",
+              "version_id": "0",
+              "registration_id": "0",
+              "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+              "running_status": "stopping",
+              "status": "activated"
+            },
+            {
+              "at": "2026-10-10T04:23:50.143Z",
+              "version_id": "0",
+              "registration_id": "0",
+              "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+              "running_status": "stopping",
+              "status": "redundant"
+            },
+            {
+              "at": "2026-10-10T04:23:50.150Z",
+              "version_id": "0",
+              "registration_id": "0",
+              "target_id": "7EB5DC2EAA33FAA6EB65D3FAB605F213",
+              "running_status": "stopping",
+              "status": "redundant"
+            },
+            {
+              "at": "2026-10-10T04:23:50.225Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": null,
+              "running_status": "stopped",
+              "status": "new"
+            },
+            {
+              "at": "2026-10-10T04:23:50.225Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": null,
+              "running_status": "stopped",
+              "status": "new"
+            },
+            {
+              "at": "2026-10-10T04:23:50.225Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": null,
+              "running_status": "starting",
+              "status": "new"
+            },
+            {
+              "at": "2026-10-10T04:23:50.225Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+              "running_status": "starting",
+              "status": "new"
+            },
+            {
+              "at": "2026-10-10T04:23:50.237Z",
+              "version_id": "0",
+              "registration_id": "0",
+              "target_id": null,
+              "running_status": "stopped",
+              "status": "redundant"
+            },
+            {
+              "at": "2026-10-10T04:23:50.417Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+              "running_status": "starting",
+              "status": "installing"
+            },
+            {
+              "at": "2026-10-10T04:23:50.418Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+              "running_status": "running",
+              "status": "installing"
+            },
+            {
+              "at": "2026-10-10T04:23:50.446Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+              "running_status": "running",
+              "status": "installed"
+            },
+            {
+              "at": "2026-10-10T04:23:50.446Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+              "running_status": "running",
+              "status": "activating"
+            },
+            {
+              "at": "2026-10-10T04:23:50.448Z",
+              "version_id": "2",
+              "registration_id": "2",
+              "target_id": "571728E908AD95C4CFA707DE3F4D5105",
+              "running_status": "running",
+              "status": "activated"
+            }
+          ],
+          "registrations": [
+            {
+              "at": "2026-10-10T04:23:49.827Z",
+              "registration_id": "0",
+              "is_deleted": false
+            },
+            {
+              "at": "2026-10-10T04:23:50.139Z",
+              "registration_id": "0",
+              "is_deleted": true
+            },
+            {
+              "at": "2026-10-10T04:23:50.225Z",
+              "registration_id": "2",
+              "is_deleted": false
+            },
+            {
+              "at": "2026-10-10T04:23:50.417Z",
+              "registration_id": "2",
+              "is_deleted": false
+            }
+          ],
+          "pre_click_version_count": 1,
+          "version_events_dropped": 0,
+          "old_version_id": "0",
+          "old_version_mapping": "correlated",
+          "version_observation": "visible",
+          "old_host_probe": null,
+          "replacement_host_probe": null,
+          "replacement_worker_errors": [],
+          "fresh_replacement": null
+        }
+      },
+      "context_boundary": null
+    }
+  },
+  "error_code": "native_acceptance_error"
+}

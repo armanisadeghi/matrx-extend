@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38023539449,
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "9a3acdba8f33bc5059b99b918829da7b1c6f4d28",
+  "lane": "A",
+  "acceptance_case": "member-data",
+  "product_artifact": {
+    "development_run_id": 38022618507,
+    "development_artifact_id": 11659180123,
+    "source_sha": "c17b7bc2be70655dd2d36acca092ae0614f56691",
+    "version": "0.2.458",
+    "tree_sha256": "a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88"
+  },
+  "hosted_result_artifact_id": 11659586529,
+  "workflow_conclusion": "failure",
+  "native_report_status": "fail",
+  "failure_stage": "extension_reload",
+  "failure_code": "native_extension_replacement_panel_unverified",
+  "bounded_observations": {
+    "member_auth_and_non_admin_identity_verified": true,
+    "selected_organization_verified": true,
+    "two_picker_previews_observed": true,
+    "save_post_status": 201,
+    "request_body_organization_matches_selected": true,
+    "saved_row_exact_name_and_organization_lookup": true,
+    "saved_pattern_refreshed": true,
+    "saved_pattern_run_before_reload": true,
+    "tsv_clipboard_readback_matched_fixture": true,
+    "json_clipboard_readback_matched_fixture": true,
+    "ai_clipboard_readback_matched_fixture": true,
+    "native_copy_feedback_observed": true,
+    "cancel_cleared_unsaved_selection": true,
+    "old_worker_and_panel_retirement_observed": true,
+    "replacement_worker_activated": true,
+    "replacement_panel_observed": false,
+    "owned_fixture_cleanup_post_readback_verified": true
+  },
+  "cleanup": {
+    "initial_native_cleanup_verified": false,
+    "manual_exact_scoped_soft_delete_response_verified": false,
+    "post_action_exact_tombstone_count": 1,
+    "post_action_active_residual_count": 0
+  },
+  "unverified": [
+    "Data panel reopening after extension replacement",
+    "saved-pattern persistence and run after extension reload",
+    "admin and Store behavior"
+  ],
+  "resource_journals": {
+    "package": "hosted-package-38023539449-1.jsonl",
+    "browser": "hosted-browser-38023539449-1.jsonl",
+    "guest": "hosted-guest-38023539449-1.jsonl",
+    "package_final": "valid",
+    "browser_final": "valid",
+    "guest_final": "child_failed",
+    "guest_child_exit_code": 1,
+    "all_resource_invalid_flags_false": true
+  },
+  "scope_note": "The native report shows the old worker/panel retired and a replacement worker activated, but Chrome did not report a replacement panel. Clipboard and cancel assertions passed before reload. Cleanup is supported by an exact owned-row tombstone and fresh zero-active readback; the REST mutation response itself was not accepted by the strict verifier. T03 remains Partial; this is not a full lifecycle pass or a current-main/Store claim."
+}

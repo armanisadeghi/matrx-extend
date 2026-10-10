@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T03:58:06Z",
+  "updated_at": "2026-10-10T04:27:40Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -38791,9 +38791,15 @@
                 "docs/stabilization/evidence/member-data-behavior/run38010692863/receipt.json",
                 "docs/stabilization/evidence/member-data-behavior/run38010692863/native-report.json",
                 "docs/stabilization/evidence/member-data-behavior/run38010692863/cleanup-check.json",
-                "docs/stabilization/evidence/member-data-behavior/run38010692863/hosted-guest-38010692863-1.jsonl"
+                "docs/stabilization/evidence/member-data-behavior/run38010692863/hosted-guest-38010692863-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/receipt.json",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/native-report.json",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/cleanup-check.json",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-package-38023539449-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-browser-38023539449-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-guest-38023539449-1.jsonl"
               ],
-              "detail": "Guarded native member run verified real nonadmin identity and selected organization through the load ladder; two trusted picker field hits and distinct previews; named save with one HTTP 201 POST whose JSON organization_id matched the independently verified selection; exact owned-row read and saved-pattern refresh in the side panel; native deletion of the one row and independent zero-residual count. All resource guards finalized valid. Running the saved pattern, TSV/JSON/AI clipboard variants, cancel, reload, admin, and Store behavior remain unverified."
+              "detail": "The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified."
             },
             "admin": {
               "status": "partial",
@@ -38847,6 +38853,29 @@
                 "docs/stabilization/evidence/member-data-behavior/run38018426632/hosted-guest-38018426632-1.jsonl"
               ],
               "detail": "Bounded member run re-observed member identity, selected organization, two picker previews, selected-org HTTP 201 save, exact owned-row lookup/refresh and cleanup. Saved-pattern run assertion passed. The driver then failed to uniquely target Copy rows (`pointer_target_not_unique`) before clipboard behavior was observed. Cancel, extension reload/persistence, zero-residual follow-up, admin and Store remain unverified. This attempt gives only the explicitly recorded save/run subtarget credit; the overall T03 member result remains Partial."
+            },
+            {
+              "at": "2026-10-10T04:24:08Z",
+              "mode": "member",
+              "run_id": "38023539449",
+              "status": "fail",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "build_version": "0.2.458",
+              "source_sha": "c17b7bc2be70655dd2d36acca092ae0614f56691",
+              "workflow_source_sha": "9a3acdba8f33bc5059b99b918829da7b1c6f4d28",
+              "development_ci_run_id": 38022618507,
+              "development_artifact_id": 11659180123,
+              "hosted_result_artifact_id": 11659586529,
+              "evidence": [
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/receipt.json",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/native-report.json",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/cleanup-check.json",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-package-38023539449-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-browser-38023539449-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-guest-38023539449-1.jsonl"
+              ],
+              "detail": "Bounded member run verified member/non-admin identity and selected organization; two picker previews; selected-org HTTP 201 save; exact saved-row lookup/refresh; saved-pattern run; TSV, JSON and AI clipboard readback matching the controlled fixture; and cancel clearing the unsaved selection. On reload, the old worker/panel retired and a replacement worker activated, but no replacement panel was observed, so persistence/reopen assertions did not run. Native cleanup reported unverified; a later exact row/org/owner soft-delete was followed by one matching tombstone and zero active rows, though the mutation response itself was not accepted by the strict verifier. T03 stays Partial; admin and Store remain unverified."
             }
           ]
         },
