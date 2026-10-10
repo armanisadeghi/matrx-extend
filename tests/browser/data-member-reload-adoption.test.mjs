@@ -115,3 +115,100 @@ test('member Data refuses an unverified or unchanged replacement before activati
     assert.equal(report.observations.reload_replacement_adopted, undefined);
   }
 });
+
+// SUT: the member driver's actual reload invocation/catch and report finalizer.
+// Only native Chrome reload and disk are external doubles; routing, capture,
+// diagnostic refusal, and JSON serialization execute their real implementation.
+test('member Data persists distinct probe evidence after successful and failed reload invocation', async () => {
+  const { refuseDiagnosticAcceptance } = await import('./scrape-reload-open-diagnostic.mjs');
+  const finalizerStart = source.lastIndexOf('} finally {') + '} finally {'.length;
+  const finalize = new AsyncFunction(
+    'report',
+    'refuseDiagnosticAcceptance',
+    'writeFile',
+    `const RELOAD_OPEN_DIAGNOSTIC = true, process = {}, output = 'owned.json';
+     const mkdir = async () => {};
+     ${source.slice(finalizerStart, source.lastIndexOf('}'))}
+     return process.exitCode;`,
+  );
+  for (const failed of [false, true]) {
+    const probe = {
+      availability: 'ready',
+      perturbation: 'cdp_worker_attach_and_synchronous_open_wrapper',
+      ingress: !failed,
+      open_invoked: !failed,
+      open_settlement: failed ? 'unobserved' : 'resolved',
+      send_response: 'unobservable_without_instrumented_build',
+    };
+    const report = { status: failed ? 'fail' : 'pass', observations: {} };
+    const replacement = { targetId: 'replacement-panel', send: async () => {} };
+    const native = {
+      async reloadExtension() {
+        if (failed) {
+          throw Object.assign(new Error('native_extension_replacement_panel_unverified'), {
+            lifecycleEvidence: { open_panel_diagnostic: probe },
+          });
+        }
+        return {
+          panel: replacement,
+          management_reload_clicked: true,
+          old_targets_retired: true,
+          worker_replaced: true,
+          panel_replaced: true,
+          retirement_evidence: {
+            timeline: { final_predicate: true },
+            open_panel_diagnostic: probe,
+          },
+        };
+      },
+      transportFailureClass: () => 'none',
+    };
+    const invocation = adopt(
+      assert,
+      native,
+      { targetId: 'retired-panel' },
+      report,
+      captureFailure,
+      safeReloadOperationFailure,
+    );
+    if (failed) await assert.rejects(invocation, /native_extension_replacement_panel_unverified/);
+    else assert.equal(await invocation, replacement);
+    let persisted;
+    const exitCode = await finalize(report, refuseDiagnosticAcceptance, async (_path, bytes) => {
+      persisted = JSON.parse(bytes);
+    });
+    assert.equal(persisted.status, 'unverified');
+    assert.equal(exitCode, 1);
+    if (failed) {
+      assert.equal(
+        persisted.reload_failure.failure.failure_code,
+        'native_extension_replacement_panel_unverified',
+      );
+      assert.deepEqual(
+        persisted.reload_failure?.failure?.retirement_evidence?.open_panel_diagnostic,
+        {
+          availability: 'ready',
+          perturbation: 'cdp_worker_attach_and_synchronous_open_wrapper',
+          ingress: false,
+          open_invoked: false,
+          open_settlement: 'unobserved',
+          send_response: 'unobservable_without_instrumented_build',
+        },
+        'failed reload probe must survive member report persistence',
+      );
+    } else {
+      assert.deepEqual(
+        persisted.reload_open_probe,
+        {
+          availability: 'ready',
+          perturbation: 'cdp_worker_attach_and_synchronous_open_wrapper',
+          ingress: true,
+          open_invoked: true,
+          open_settlement: 'resolved',
+          send_response: 'unobservable_without_instrumented_build',
+        },
+        'successful reload probe must survive member report persistence',
+      );
+    }
+  }
+});
