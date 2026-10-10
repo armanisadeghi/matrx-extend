@@ -85,7 +85,7 @@ const report = {
     },
     {
       case: 'T09',
-      part: 'broken social preview image and detail controls beyond the bounded next batch; optional hreflang/schema doors remain unverified when their live source data is absent',
+      part: 'detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope',
     },
     { case: 'T10-T13', part: 'recommendations and Chat staging' },
     { case: 'T14', part: 'social snippet behavior beyond the two controlled public page states' },
@@ -340,6 +340,38 @@ async function socialCopyState(panel) {
     const inspect = ${socialCopyButtonObservation.toString()};
     return { scopeValid: linked && tab?.getAttribute('aria-selected') === 'true',
       ...inspect(pane, 'Copy the meta tags this page is missing') };
+  })()`,
+  );
+}
+
+async function brokenSocialPreviewState(panel, expectedTitle) {
+  return evaluate(
+    panel,
+    `(() => {
+    ${SEO_SCOPE}
+    if (!linked || tab?.getAttribute('aria-selected') !== 'true') return { scopeValid: false };
+    const header = [...pane.querySelectorAll('span')]
+      .find((node) => node.textContent.trim() === 'Social preview' &&
+        node.parentElement?.nextElementSibling?.matches('div'));
+    const card = header?.parentElement?.nextElementSibling ?? null;
+    const visible = (node) => {
+      if (!node) return false;
+      const style = getComputedStyle(node), rect = node.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden'
+        && style.display !== 'none' && !node.closest('[inert]');
+    };
+    const fallback = (text) => [...(card?.querySelectorAll('div') ?? [])]
+      .find((node) => node.textContent.trim() === text) ?? null;
+    const title = [...pane.querySelectorAll('span')]
+      .find((node) => node.textContent.trim() === 'Title')?.parentElement
+      ?.lastElementChild?.lastElementChild?.textContent.trim() ?? null;
+    return {
+      scopeValid: true,
+      auditTitleMatchesExpected: title === ${JSON.stringify(expectedTitle)},
+      imageCount: card?.querySelectorAll('img[alt="Social preview"]').length ?? 0,
+      failureFallbackVisible: visible(fallback('Preview image failed to load')),
+      noImageFallbackVisible: visible(fallback('No preview image')),
+    };
   })()`,
   );
 }
@@ -1494,6 +1526,145 @@ try {
             originalSocial,
             'owned public DOM restored after SEO acceptance',
           );
+
+          // Name the failure this acceptance catches: a broken social preview image
+          // must render the explanatory fallback instead of a broken-image glyph.
+          // The source page is the real public tab; only its og:image meta is
+          // temporarily changed, then restored and checked in finally.
+          const beforeBrokenPreview = await publicSocialSource(page);
+          const savedImageTags = await page.evaluate(() =>
+            [...document.querySelectorAll('meta[property="og:image"]')].map((node) => ({
+              index: [...document.head.children].indexOf(node),
+              attributes: [...node.attributes].map(({ name, value }) => [name, value]),
+            })),
+          );
+          const brokenImageUrl = new URL(
+            `/__matrx_missing_social_preview_${randomUUID()}.png`,
+            beforeBrokenPreview.url,
+          ).href;
+          let brokenImageResponseStatus = null;
+          await panel.send('Network.enable');
+          const observeBrokenImageResponse = ({ response }) => {
+            if (response?.url === brokenImageUrl) brokenImageResponseStatus = response.status;
+          };
+          const offBrokenImageResponse = panel.on(
+            'Network.responseReceived',
+            observeBrokenImageResponse,
+          );
+          let brokenPreviewFixtureRestored = false;
+          try {
+            enter('broken_social_preview_fixture_install');
+            const expectedBrokenPreviewTitle = `${beforeBrokenPreview.title} — broken preview fixture`;
+            await page.evaluate(
+              ({ imageUrl, title }) => {
+                document
+                  .querySelectorAll('meta[property="og:image"]')
+                  .forEach((node) => node.remove());
+                const image = document.createElement('meta');
+                image.setAttribute('property', 'og:image');
+                image.setAttribute('content', imageUrl);
+                document.head.append(image);
+                document.title = title;
+              },
+              { imageUrl: brokenImageUrl, title: expectedBrokenPreviewTitle },
+            );
+            const brokenPreviewSource = await publicSocialSource(page);
+            assert.equal(
+              brokenPreviewSource.social.image,
+              true,
+              'public page exposes broken image tag',
+            );
+            assert.notEqual(
+              brokenPreviewSource.title,
+              beforeBrokenPreview.title,
+              'controlled public page title distinguishes fresh audit from stale audit',
+            );
+            advance('broken_social_preview_fixture_ready', {
+              sourceImagePresent: true,
+              sourceTitleChanged: true,
+            });
+
+            enter('broken_social_preview_reaudit_click');
+            await click(panel, 'button', 'Re-audit');
+            advance('broken_social_preview_reaudit_dispatched', { trustedInput: true });
+            const preview = await waitObserved(
+              'broken_social_preview_image_failure_wait',
+              () => brokenSocialPreviewState(panel, brokenPreviewSource.title),
+              (state) =>
+                state?.scopeValid &&
+                state.auditTitleMatchesExpected &&
+                state.imageCount === 0 &&
+                state.failureFallbackVisible &&
+                !state.noImageFallbackVisible,
+              15000,
+            );
+            assert.equal(
+              preview.auditTitleMatchesExpected,
+              true,
+              'native details use the changed current page title, not the stale audit',
+            );
+            assert.equal(
+              preview.failureFallbackVisible,
+              true,
+              'native SEO details show the explanatory failed-image fallback',
+            );
+            assert.equal(
+              preview.noImageFallbackVisible,
+              false,
+              'native SEO details distinguish a broken image from no image metadata',
+            );
+          } finally {
+            enter('broken_social_preview_fixture_restore');
+            offBrokenImageResponse();
+            await page.evaluate(
+              (previous) => {
+                document
+                  .querySelectorAll('meta[property="og:image"]')
+                  .forEach((node) => node.remove());
+                for (const item of previous.savedImageTags) {
+                  const node = document.createElement('meta');
+                  for (const [name, value] of item.attributes) node.setAttribute(name, value);
+                  const before = document.head.children[item.index] ?? null;
+                  document.head.insertBefore(node, before);
+                }
+                document.title = previous.previousTitle;
+              },
+              { savedImageTags, previousTitle: beforeBrokenPreview.title },
+            );
+            const restoredTags = await page.evaluate(() =>
+              [...document.querySelectorAll('meta[property="og:image"]')].map((node) => ({
+                index: [...document.head.children].indexOf(node),
+                attributes: [...node.attributes].map(({ name, value }) => [name, value]),
+              })),
+            );
+            brokenPreviewFixtureRestored =
+              JSON.stringify(restoredTags) === JSON.stringify(savedImageTags) &&
+              (await page.title()) === beforeBrokenPreview.title &&
+              page.url() === beforeBrokenPreview.url;
+            advance('broken_social_preview_fixture_restored', {
+              pageUrlUnchanged: page.url() === beforeBrokenPreview.url,
+              imageResponseStatus: brokenImageResponseStatus,
+              titleAndImageMetadataRestored: brokenPreviewFixtureRestored,
+            });
+          }
+          assert.equal(
+            brokenPreviewFixtureRestored,
+            true,
+            'owned public page image metadata restored after broken-image acceptance',
+          );
+          assert.equal(
+            brokenImageResponseStatus,
+            404,
+            'the exact attempted social-image URL returned HTTP 404',
+          );
+          target('T09', 'guest_broken_social_preview_shows_failure_fallback', {
+            publicImageMetadataPresent: true,
+            attemptedImageReturned404: true,
+            auditTitleMatchesChangedPage: true,
+            explanatoryFallbackVisible: true,
+            noImageFallbackAbsent: true,
+            titleAndImageMetadataRestored: true,
+          });
         },
         async () => {
           // A second rich page supplies an independent live DOM and browser
@@ -1691,6 +1862,7 @@ try {
           'guest_social_missing_tags_clipboard_before_reaudit',
           'guest_social_missing_tags_clipboard_after_reaudit',
           'guest_reaudit_captures_changed_page_metadata',
+          'guest_broken_social_preview_shows_failure_fallback',
         ])
           assert.ok(
             report.targets.some((item) => item.subtarget === subtarget && item.status === 'pass'),

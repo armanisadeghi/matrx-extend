@@ -109,6 +109,64 @@ function inspectDriverSequence(source) {
   assert.ok(t02, 'controlled phase records the changed-metadata result');
   for (const call of [recapture[0], ...socialCopies, t02])
     assertReachable(call, controlled, 'controlled phase is reachable');
+  const brokenPreviewTarget = callsNamed(controlled, 'target').find(
+    (call) =>
+      literal(call, 0) === 'T09' &&
+      literal(call, 1) === 'guest_broken_social_preview_shows_failure_fallback',
+  );
+  assert.ok(brokenPreviewTarget, 'controlled phase records the broken-image fallback behavior');
+  const brokenPreviewWait = callsNamed(controlled, 'waitObserved').find(
+    (call) => literal(call, 0) === 'broken_social_preview_image_failure_wait',
+  );
+  assert.ok(brokenPreviewWait, 'native driver waits for the actual image failure and fallback');
+  assert.ok(ts.isArrowFunction(brokenPreviewWait.arguments[2]), 'wait requires observable state');
+  const brokenPreviewPredicate = brokenPreviewWait.arguments[2].getText(ast);
+  for (const predicate of [
+    'state.imageCount === 0',
+    'state.auditTitleMatchesExpected',
+    'state.failureFallbackVisible',
+    '!state.noImageFallbackVisible',
+  ])
+    assert.ok(brokenPreviewPredicate.includes(predicate), `wait requires ${predicate}`);
+  assert.ok(
+    callsNamed(controlled, 'brokenSocialPreviewState').length === 1,
+    'fallback assertion observes the active native SEO pane',
+  );
+  assert.ok(
+    source.includes('state.imageCount === 0') &&
+      source.includes('failureFallbackVisible') &&
+      source.includes('noImageFallbackVisible'),
+    'T09 requires the removed failed image, explanatory fallback, and no-image distinction',
+  );
+  assert.ok(
+    source.includes("await panel.send('Network.enable')") &&
+      source.includes("'Network.responseReceived'") &&
+      source.includes('response?.url === brokenImageUrl'),
+    'T09 observes the exact attempted image on the SEO extension panel target',
+  );
+  assert.ok(
+    source.includes('offBrokenImageResponse();'),
+    'T09 detaches its panel network observer during fixture cleanup',
+  );
+  const restorationAssertion = source.indexOf(
+    "'owned public page image metadata restored after broken-image acceptance'",
+  );
+  assert.ok(restorationAssertion >= 0, 'the owned page restoration is asserted');
+  const responseAssertion = source.indexOf(
+    "'the exact attempted social-image URL returned HTTP 404'",
+  );
+  assert.ok(responseAssertion >= 0, 'the native 404 response is asserted');
+  assert.ok(
+    source.includes('brokenImageResponseStatus,\n            404,'),
+    'the native response assertion requires HTTP 404',
+  );
+  assert.ok(
+    brokenPreviewTarget.getStart(ast) > restorationAssertion &&
+      brokenPreviewTarget.getStart(ast) > responseAssertion,
+    'broken-image result is recorded only after observation, 404, and restoration',
+  );
+  assertReachable(brokenPreviewWait, controlled, 'broken-image observation is reachable');
+  assertReachable(brokenPreviewTarget, controlled, 'broken-image result is reachable');
   assert.ok(
     callsNamed(dynamic, 'assertNext').some(
       (call) => literal(call, 0) === 'manual_source_stability',
