@@ -7,10 +7,12 @@ const network = vi.hoisted(() => ({
   summary: vi.fn(),
   media: vi.fn(),
   coverage: vi.fn(),
+  save: vi.fn(),
   notes: vi.fn(),
   remove: vi.fn(),
   receipt: vi.fn(),
 }));
+vi.mock('@/lib/swipe-file/save', () => ({ saveToSwipeFile: network.save }));
 vi.mock('@/lib/swipe-file/library', () => ({
   readSwipeCollections: network.collections,
   readSwipeMemberships: network.memberships,
@@ -132,4 +134,42 @@ it('shows current canonical incomplete carousel coverage instead of trusting an 
   expect(await screen.findByText('1 of 7 media items stored')).toBeTruthy();
   expect(screen.queryByText('All reported media stored')).toBeNull();
   expect(network.coverage).toHaveBeenCalledWith('sunrise', 'studio-west');
+});
+
+it('repairs saved carousel through the canonical save path and reloads its current files', async () => {
+  network.save.mockResolvedValue({ status: 'already_saved' });
+  render(<SwipeFileView />);
+  await screen.findByText('Morning light over the ridge');
+  network.media.mockResolvedValue([
+    {
+      file_id: 'opening',
+      role: 'image',
+      mime_type: 'image/jpeg',
+      size_bytes: 1024,
+      door: '/opening',
+    },
+    {
+      file_id: 'closing',
+      role: 'image',
+      mime_type: 'image/jpeg',
+      size_bytes: 2048,
+      door: '/closing',
+    },
+  ]);
+  network.coverage.mockResolvedValue({
+    expected_items: 2,
+    observed_items: 2,
+    stored_items: 2,
+    missing_items: 0,
+    status: 'complete',
+  });
+  fireEvent.click(screen.getByRole('button', { name: 'Refresh capture' }));
+  await waitFor(() =>
+    expect(network.save).toHaveBeenCalledWith(
+      { url: post.url, collectionId: 'landscapes' },
+      expect.any(Function),
+    ),
+  );
+  expect(await screen.findByText('2 stored files')).toBeTruthy();
+  expect(screen.getByText('All reported media stored')).toBeTruthy();
 });
