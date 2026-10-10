@@ -511,7 +511,7 @@ async function permissionMode(panel, mode, surface = 'Chat') {
 }
 
 /** Passive network evidence: never replace auth, request assembly, stream or dispatch. */
-async function observeActionTransport(native, expectedUrl, mode) {
+async function observeAuthenticatedTransport(native, expectedUrl, mode) {
   const rows = new Map();
   const pending = new Set();
   let observedTabId = null;
@@ -863,7 +863,7 @@ async function exerciseApproval(native) {
     );
     assert.equal(focused, true);
     const mode = before.mode === 'Act without asking' ? 'act' : 'ask';
-    const transport = await observeActionTransport(native, url, mode);
+    const transport = await observeAuthenticatedTransport(native, url, mode);
     try {
       await panel.send('Input.insertText', {
         text: `Use the canonical ordinary browser action tool tabs exactly once with action create and url ${url}. This is my owned local workflow review page. Do not navigate or fetch it another way. After it opens, reply with Done.`,
@@ -1144,6 +1144,7 @@ try {
       const { page, panel, artifacts } = native;
       stage = MAGIC_LINK ? 'open_reviewer_magic_link' : 'open_reviewer_web_login';
       const web = await page.context().newPage();
+      let memberTransport = null;
       try {
         if (!MAGIC_LINK) {
           await web.goto(`${WEB_ORIGIN}/login`, { waitUntil: 'domcontentloaded', timeout: 60_000 });
@@ -1364,11 +1365,8 @@ try {
           return;
         }
 
-        assert.equal(
-          storageShape.activeOrganizationPresent,
-          true,
-          'selected organization must persist as a valid object',
-        );
+        // Load-time organization ladder selections intentionally stay in memory.
+        // Device storage is diagnostic only; the real Chat transport is the oracle.
 
         stage = 'open_chat';
         await click(panel, 'title', 'Chat');
@@ -1399,6 +1397,7 @@ try {
         );
         report.screenshots.action = await capture(panel, artifacts, 'reviewer-chat-action');
 
+        memberTransport = await observeAuthenticatedTransport(native, null, null);
         stage = 'send_three_stage_question';
         await click(panel, 'title', 'Send');
         const completed = await waitFor(
@@ -1411,6 +1410,21 @@ try {
             state.answerNamesWorkflowStages,
           180_000,
         );
+        stage = 'reviewer_chat_transport';
+        const network = memberTransport.snapshot();
+        report.chat_transport = network;
+        assert.equal(network.start_count, 1, 'one actual member Chat start required');
+        assert.ok(
+          network.organization_header_fingerprint,
+          'member Chat must carry a valid organization',
+        );
+        assert.equal(network.start_http_status, 200, 'server must accept member Chat organization');
+        assert.equal(
+          network.response_matches_request_conversation,
+          true,
+          'Chat response must match the sent conversation',
+        );
+        assert.ok(network.backend_request_fingerprint, 'real member Chat backend request required');
         report.screenshots.result = await capture(panel, artifacts, 'reviewer-chat-result');
         report.screenshots.store_candidate_640x400 = await captureStoreCandidate(panel, artifacts);
         report.chat = {
@@ -1423,6 +1437,7 @@ try {
           demo_route: `${WEB_ORIGIN}${DEMO_PATH}`,
         };
       } finally {
+        await memberTransport?.stop();
         await web.close();
       }
     },

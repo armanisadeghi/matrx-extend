@@ -191,7 +191,14 @@
     ["node", "--test", "scripts/test-stabilization-resource-safety.mjs"],
     ["node", "--test", "scripts/test-stabilization-resource-cpu-integration.mjs"],
     ["node", "--test", "scripts/hosted-driver-dependencies.test.mjs"],
-    ["node", "--test", "tests/browser/showcase-d47-public-initial-load.test.mjs"]
+    ["node", "--test", "tests/browser/showcase-d47-public-initial-load.test.mjs"],
+    [
+      "node",
+      "--test",
+      "tests/browser/reviewer-chat-organization-boundary.test.mjs",
+      "tests/browser/reviewer-chat-storage-shape.test.mjs",
+      "tests/browser/guest-chat-transport-observer.test.mjs"
+    ]
   ],
   "launchContract": "Only the listed trusted foreground tool invocations are admitted (plus positional test-file filters for the single-worker vitest invocation). Every descendant must inherit MATRX_RESOURCE_OWNER unchanged. New sessions/detached children are discovered and stopped by token census. Environment scrubbing, remote process brokers, external daemon handoff and arbitrary shell/script launchers are outside this contract and forbidden. Install skips lifecycle scripts; run required preparation separately through its listed command. WXT server occupies the sole permit until stopped, including while idle; stop it before manual browser testing, using a completed unpacked build. This is cooperative process ownership, not an OS security sandbox. Daemonizing commands are prohibited. macOS can hide protected system-binary environments: such binaries must remain in the owned foreground process group; detached protected system binaries are explicitly unsupported. This guard does not claim to contain arbitrary hostile descendants.",
   "processSnapshotMaxBytes": 33554432

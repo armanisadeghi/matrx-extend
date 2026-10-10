@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "scope": "Source guard mutation proof only; zero browser/product behavior credit",
+  "verdict": "both_mutants_rejected",
+  "shared_source_unchanged": true,
+  "harness_sha256": "e8c1fc77d7791536e7d732fe7602a5c57fd1a912752cf8cb10f50a969820945d",
+  "source_guard_sha256": "a476899f90d5c46ee0eca54ed5d4737f5370298d729af7a8da0ea1c3330f60f8",
+  "observations": [
+    {
+      "mutation": "old-device-gate",
+      "invocation": [
+        "/opt/homebrew/Cellar/node/25.6.0/bin/node",
+        "--test",
+        "<scratch>/old-device-gate.test.mjs"
+      ],
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_failure_code": "ERR_ASSERTION",
+      "expected_failure_message": "selected organization must persist as a valid object",
+      "output": "\u2716 signed-in member reaches Chat without a persisted device organization override (1.582042ms)\n\u2714 member Chat verdict refuses absent, rejected or uncorrelated organization transport (2.262167ms)\n\u2139 tests 2\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 1\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 72.851458\n\n\u2716 failing tests:\n\ntest at ../../../../private<scratch>/old-device-gate.test.mjs:14:1\n\u2716 signed-in member reaches Chat without a persisted device organization override (1.582042ms)\n  AssertionError [ERR_ASSERTION]: selected organization must persist as a valid object\n  \n  false !== true\n  \n      at evalmachine.<anonymous>:9:16\n      at evalmachine.<anonymous>:12:4\n      at Script.runInContext (node:vm:149:12)\n      at Script.runInNewContext (node:vm:154:17)\n      at runInNewContext (node:vm:310:38)\n      at TestContext.<anonymous> (file:///private<scratch>/old-device-gate.test.mjs:22:11)\n      at Test.runInAsyncScope (node:async_hooks:226:14)\n      at Test.run (node:internal/test_runner/test:1118:25)\n      at Test.start (node:internal/test_runner/test:1015:17)\n      at startSubtestAfterBootstrap (node:internal/test_runner/harness:358:17) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: false,\n    expected: true,\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n"
+    },
+    {
+      "mutation": "no-op-transport-verdict",
+      "invocation": [
+        "/opt/homebrew/Cellar/node/25.6.0/bin/node",
+        "--test",
+        "<scratch>/no-op-transport-verdict.test.mjs"
+      ],
+      "expected_exit_code": 1,
+      "actual_exit_code": 1,
+      "expected_failure_code": "ERR_ASSERTION",
+      "expected_failure_message": "Missing expected exception.",
+      "output": "\u2714 signed-in member reaches Chat without a persisted device organization override (2.247709ms)\n\u2716 member Chat verdict refuses absent, rejected or uncorrelated organization transport (0.917916ms)\n\u2139 tests 2\n\u2139 suites 0\n\u2139 pass 1\n\u2139 fail 1\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 73.673583\n\n\u2716 failing tests:\n\ntest at ../../../../private<scratch>/no-op-transport-verdict.test.mjs:45:1\n\u2716 member Chat verdict refuses absent, rejected or uncorrelated organization transport (0.917916ms)\n  AssertionError [ERR_ASSERTION]: Missing expected exception.\n      at TestContext.<anonymous> (file:///private<scratch>/no-op-transport-verdict.test.mjs:71:12)\n      at Test.runInAsyncScope (node:async_hooks:226:14)\n      at Test.run (node:internal/test_runner/test:1118:25)\n      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)\n      at Test.postRun (node:internal/test_runner/test:1247:19)\n      at Test.run (node:internal/test_runner/test:1175:12)\n      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {\n    generatedMessage: false,\n    code: 'ERR_ASSERTION',\n    actual: undefined,\n    expected: { code: 'ERR_ASSERTION' },\n    operator: 'throws',\n    diff: 'simple'\n  }\n"
+    }
+  ],
+  "recorded_at": "2026-10-10T16:51:45.528803+00:00",
+  "reproduce_from": "repository root",
+  "reproduce_command": "python3 -c 'import json, subprocess; p=json.load(open(\"docs/stabilization/reports/d191-source-guard-red-proof.json\")); subprocess.run([\"node\", \"--input-type=module\"], input=p[\"runner_source\"], text=True, check=True)'",
+  "runner_source": "import assert from 'node:assert/strict';\nimport { createHash } from 'node:crypto';\nimport { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';\nimport { tmpdir } from 'node:os';\nimport { join, resolve } from 'node:path';\nimport { pathToFileURL } from 'node:url';\nimport { spawnSync } from 'node:child_process';\n\nconst harness = resolve('tests/browser/reviewer-chat-store-acceptance.mjs');\nconst testPath = resolve('tests/browser/reviewer-chat-organization-boundary.test.mjs');\nconst harnessBefore = await readFile(harness, 'utf8');\nconst testBefore = await readFile(testPath, 'utf8');\nconst sha256 = (value) => createHash('sha256').update(value).digest('hex');\nconst scratch = await mkdtemp(join(tmpdir(), 'd191-red-proof-'));\nconst observations = [];\ntry {\n  const importNeedle = \"new URL('./reviewer-chat-store-acceptance.mjs', import.meta.url)\";\n  assert.equal(testBefore.split(importNeedle).length, 2);\n  const template = testBefore\n    .replace('const source = await readFile(', 'let source = await readFile(')\n    .replace(importNeedle, `new URL(${JSON.stringify(pathToFileURL(harness).href)})`);\n  const marker = '// Run the actual default-lane prerequisite';\n  assert.equal(template.split(marker).length, 2);\n  const mutations = [\n    {\n      name: 'old-device-gate',\n      injection: `source = source.replace(\"        stage = 'open_chat';\", \"        assert.equal(storageShape.activeOrganizationPresent, true, 'selected organization must persist as a valid object');\\\\n        stage = 'open_chat';\");\\n`,\n      expected_failure: 'selected organization must persist as a valid object',\n    },\n    {\n      name: 'no-op-transport-verdict',\n      injection: `{\n        const start = source.indexOf('        const network = memberTransport.snapshot();');\n        const end = source.indexOf('        report.screenshots.result', start);\n        assert.ok(start > 0 && end > start);\n        source = source.slice(0, start) + '        const network = memberTransport.snapshot();\\\\n' + source.slice(end);\n      }\\n`,\n      expected_failure: 'Missing expected exception.',\n    },\n  ];\n  for (const mutation of mutations) {\n    const scratchTest = join(scratch, `${mutation.name}.test.mjs`);\n    await writeFile(scratchTest, template.replace(marker, mutation.injection + marker));\n    const child = spawnSync(process.execPath, ['--test', scratchTest], { encoding: 'utf8' });\n    const output = child.stdout + child.stderr;\n    assert.equal(child.status, 1, `${mutation.name} must fail the existing source guard`);\n    assert.ok(output.includes('ERR_ASSERTION'), `${mutation.name} must fail by assertion`);\n    assert.ok(output.includes(mutation.expected_failure), `${mutation.name} must hit the intended assertion`);\n    observations.push({\n      mutation: mutation.name,\n      invocation: [process.execPath, '--test', '<scratch>/' + mutation.name + '.test.mjs'],\n      expected_exit_code: 1,\n      actual_exit_code: child.status,\n      expected_failure_code: 'ERR_ASSERTION',\n      expected_failure_message: mutation.expected_failure,\n      output: output.replaceAll(scratch, '<scratch>'),\n    });\n  }\n  assert.equal(await readFile(harness, 'utf8'), harnessBefore, 'real harness must remain unchanged');\n  assert.equal(await readFile(testPath, 'utf8'), testBefore, 'real source guard must remain unchanged');\n  console.log(JSON.stringify({\n    schema_version: 1,\n    scope: 'Source guard mutation proof only; zero browser/product behavior credit',\n    verdict: 'both_mutants_rejected',\n    shared_source_unchanged: true,\n    harness_sha256: sha256(harnessBefore),\n    source_guard_sha256: sha256(testBefore),\n    observations,\n  }, null, 2));\n} finally {\n  await rm(scratch, { recursive: true, force: true });\n}\n"
+}
