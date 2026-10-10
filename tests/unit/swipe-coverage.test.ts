@@ -1,10 +1,10 @@
-import { describe, expect, it } from 'vitest';
 import {
+  type MediaCoverage,
+  type SwipeCaptureReceipt,
   captureReceiptSummary,
   captureReceiptWarnings,
-  type SwipeCaptureReceipt,
-  type MediaCoverage,
 } from '@/lib/swipe-file/receipt';
+import { describe, expect, it } from 'vitest';
 
 // A relocation marketer needs all slides of a saved visa-options carousel.
 const receipt = (coverage?: MediaCoverage): SwipeCaptureReceipt => ({
