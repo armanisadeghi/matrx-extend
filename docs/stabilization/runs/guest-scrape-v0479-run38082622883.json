@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "scope": "Hosted native guest Scrape Capture reviewer path against exact v0.2.479 Store ZIP candidate; narrow 360px.",
+  "acceptance_run_id": 38082622883,
+  "acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38082622883",
+  "workflow_source_sha": "f1560944000a3679b261a72efd1389fe34cd4058",
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_conclusion": "success",
+  "lane": "B",
+  "runner": "macos-15-intel / x86_64",
+  "case": "guest-scrape",
+  "auth_mode": "guest",
+  "width_mode": "narrow",
+  "release_run_id": 38080281242,
+  "release_artifact_id": 11680078743,
+  "release_artifact_name": "matrx-extend-v0.2.479",
+  "release_artifact_sha256": "c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+  "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "release_store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+  "release_tree_sha256": "c1f031c444892d84422ffa4e4c6c4edbbaf49ca9b93ef64304c69c0fd3c292e8",
+  "hosted_artifact_id": 11680584038,
+  "hosted_artifact_sha256": "7b970477bc3461443b2c2405646cd17eda1c080d38274135f1e425f47d15d026",
+  "artifact_loading": "Candidate-key adapted from the exact v0.2.479 Store ZIP and loaded unpacked; native report tree SHA 267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0. Not a Store-installed copy.",
+  "native_result": "partial",
+  "native_stage": "exercise_panel",
+  "native_failure": null,
+  "extension_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "browser": "Chrome 141.0.7390.37; headed mode verified",
+  "resource_finals": {
+    "package": {
+      "journal": "hosted-package-38082622883-1.jsonl",
+      "sha256": "4928b710f16d6f6c6e35c7de99f17d406f9942d6ac9822247640cf6f96100514",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "journal": "hosted-browser-38082622883-1.jsonl",
+      "sha256": "306126a6dea83e318f9733c718026d7dcf838b3bacfcc81e4b6b1b2799c0b2ec",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "journal": "hosted-guest-38082622883-1.jsonl",
+      "sha256": "399e7621aa69cfbf40d169ebba8c2e101c8e549342db79f16b7c647aeab7ea1d",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    }
+  },
+  "case_results": {
+    "EXT-F-1007-T20": "PASS: initial empty state, stale-content clearing across navigation and extension reload, then recapture on the new page.",
+    "EXT-F-1007-T01": "PARTIAL: guest fast Capture and post-extension-reload recapture passed; member/admin and normal width are unverified.",
+    "EXT-F-1007-T08": "PARTIAL: all six tabs selected and matching populated content observed; empty Images/Video/Links/Article and warm/reload capture/export invariance passed. Member/admin and normal width unverified; this run does not demonstrate the full T08 inventory.",
+    "EXT-F-1007-T10": "PASS for guest subtarget: image removal/addition passed warm and after extension reload.",
+    "EXT-F-1007-T11": "PASS for guest subtarget: blank URL rejection, valid image add, and cancel passed warm and after reload.",
+    "EXT-F-1007-T12": "PASS for guest subtarget: video remove/add/open/copy passed warm and after reload.",
+    "EXT-F-1007-T13": "PARTIAL overall: guest link actions passed warm and after reload; member/admin unverified.",
+    "EXT-F-1007-T02": "PARTIAL: lazy content appeared in the browser and capture, including after extension reload; deep failure/retry remains unverified.",
+    "EXT-F-1007-T07": "PASS for guest subtarget: article scroll synchronization passed warm and after reload.",
+    "EXT-F-1007-T09": "PASS for guest subtarget: capture export/copy actions passed for the exercised formats.",
+    "EXT-F-1007-T14": "PARTIAL: expected chrome://settings denial notice and dismissal were observed; natural recoverable Reload page/Try again branches remain unverified."
+  },
+  "actual_user_visible_failures": [],
+  "observations": [
+    "Native assertions report fast busy text “Capturing…” (5 samples, disabled state observed) and deep busy text “Scrolling…” (18 samples, disabled state observed).",
+    "After extension reload, old worker/panel targets retired and a replacement worker was observed; the panel reopened and showed the capture. Reload screenshot shows the deep-capture result.",
+    "The restricted-page screenshot shows the expected retained-capture notice explaining Chrome blocks capture on chrome:// pages. This is expected restriction handling, not an unexpected product failure.",
+    "Screenshots show the Harbor Dental intake fixture, Article result and Images/Video/Links/SEO/Schema tabs; fast capture exposes Re-capture, Scroll & capture, and Save controls."
+  ],
+  "evidence": "docs/stabilization/evidence/guest-scrape-hosted/run38082622883/",
+  "comparison": "Exact v0.2.469 run 38069924138 and v0.2.471 run 38074083116 already established the same bounded guest T08 subset. The v0.2.479 run adds package-specific evidence, not a distinct T08 behavior class or inventory change.",
+  "limits": [
+    "Guest-only, 360px native default width; member/admin, normal width and physical resize remain unverified.",
+    "T08 SEO/Schema empty states remain unverified. T02 deep-failure retry and T14 natural recoverable retry remain unverified.",
+    "Native report has no deployed server SHA before/after field; no server SHA claim is made.",
+    "The release artifact was candidate-key adapted and loaded unpacked; this does not prove Store-installed behavior.",
+    "Later package releases exist; this is exact v0.2.479 evidence and not exact-latest acceptance.",
+    "All three run-matched resource finals are valid and runner job completed; artifact contains no separate cleanup attestation, so cleanup beyond job termination is unverified.",
+    "A named Chrome Web Store demo fixture was not exercised."
+  ],
+  "screenshots": {
+    "normal-target-after-open.png": "fb1191c2cbd2a6e88c3d4e9a167c3c6cd55f39a2c7e75f7022ead9e929b4263d",
+    "scrape-deep-article.png": "c8aacab94f14c4cd9ddb988f42277171731d63499e3e0cbe0056f302f28816a5",
+    "scrape-fast-article.png": "b26f7460a067dff8510ba455ca2e9c72c8586024200597996f27fcb9d92dfc24",
+    "scrape-reload-deep-article.png": "e6ffe97f7030d388cea0c183912b13016a1f3fe48fd4cdb185ac5015acc52a0c",
+    "scrape-restricted-error.png": "82375f41418d07ccb2d5526faa2776a04bcdf030b275f4eb0839c16018a32f1f"
+  },
+  "fixture": "Owned localhost Harbor Dental fixture; this is representative owned-fixture coverage, not named Store-demo or public-site coverage."
+}
