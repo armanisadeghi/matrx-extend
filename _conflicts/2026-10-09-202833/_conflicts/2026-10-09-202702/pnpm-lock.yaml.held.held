@@ -1,6 +1,46 @@
 matrx-auto-git-conflict-file-work-delete-this-when-resolved
 
 HELD CONFLICT, written by scripts/sync-main.py
+File:      _conflicts/2026-10-09-202702/pnpm-lock.yaml.held
+Why held:  deleted on one side, changed on the other
+GITHUB's version is live in the repo at the path above. LOCAL's version is at the bottom
+of this file, below the FACTS.
+Done with it: the final code is in the live file, this .held file is deleted, and its line
+in _conflicts/README.md is deleted. The list of open items is _conflicts/README.md.
+
+FACTS (computed by sync-main from git)
+
+THE TWO VERSIONS
+  LOCAL  = the version that was on this Mac. It is saved below, in this .held file.
+  GITHUB = the version from GitHub. It is LIVE in the repo right now, at _conflicts/2026-10-09-202702/pnpm-lock.yaml.held
+  Both grew from the same COMMON version: commit 365940fe2e, 2026-10-09 20:20.
+
+WHEN EACH SIDE CHANGED THIS FILE (newest first)
+  LOCAL:
+    2026-10-09 20:27  a643ca1d6e  "Merge origin/main (sync-main): 0 auto-fixed, 0 docs/comments flagged, 1 held"
+  GITHUB:
+    (no change on this side)
+  Which side changed it last is UNKNOWN (the local edit was never committed and its save time was not recorded).
+
+SIZE: common version 0 lines, LOCAL 12334 lines, GITHUB 0 lines
+
+WHAT EACH SIDE DID, compared with the common version
+  LOCAL added 9683 lines and removed 0 lines.
+  GITHUB deleted the whole file.
+
+CODE ONE SIDE HAS THAT THE OTHER DOES NOT
+
+COMPARE THEM (the labels are correct; '-' lines are GITHUB, '+' lines are LOCAL):
+  diff -u --label 'GITHUB (live)' --label 'LOCAL (held)' <(git show 92f60fbcc3de:'_conflicts/2026-10-09-202702/pnpm-lock.yaml.held') <(git show a643ca1d6e31:'_conflicts/2026-10-09-202702/pnpm-lock.yaml.held')
+
+RECOVER EITHER VERSION FOREVER (works even after this .held file is deleted):
+  LOCAL : git show a643ca1d6e31:'_conflicts/2026-10-09-202702/pnpm-lock.yaml.held'
+  GITHUB: git show 92f60fbcc3de:'_conflicts/2026-10-09-202702/pnpm-lock.yaml.held'
+
+---------------- LOCAL VERSION BELOW ----------------
+matrx-auto-git-conflict-file-work-delete-this-when-resolved
+
+HELD CONFLICT, written by scripts/sync-main.py
 File:      pnpm-lock.yaml
 Why held:  both sides changed the same code
 GITHUB's version is live in the repo at the path above. LOCAL's version is at the bottom
