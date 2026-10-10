@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38036515100,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38036515100",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "4b5571a93f3c4de726088b6adaacf84ed7582d8f",
+  "dispatch_ref": "main",
+  "lane": "A",
+  "runner_label": "macos-15",
+  "acceptance_case": "member-data",
+  "workflow_conclusion": "failure",
+  "inputs": {
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "narrow",
+    "scrape_reload_open_diagnostic": true,
+    "reload_sender_document_diagnostic": false
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "frozen_product_artifact": true
+  },
+  "native_result": {
+    "status": "unverified",
+    "failure_stage": "extension_reload",
+    "error_code": "native_acceptance_error",
+    "reload_diagnostic": {
+      "old_worker_retired": true,
+      "old_panel_destroyed": true,
+      "replacement_worker_created_and_activated": true,
+      "replacement_panel_created": false,
+      "open_panel_request": {
+        "reply_observed": false,
+        "category": "reply_not_observed",
+        "fixture_availability": "ready",
+        "click_received": true,
+        "send_invoked": true,
+        "send_call_returned": true,
+        "callback_entered": false,
+        "callback_has_reply": false,
+        "callback_last_error": false,
+        "send_threw": false
+      },
+      "instrumented_open_panel_diagnostic": {
+        "ingress": false,
+        "open_handler_invoked": false,
+        "chrome_api_settlement": "unobserved",
+        "send_response_observable_without_instrumented_build": false
+      }
+    },
+    "observations_before_reload": {
+      "picker_field_clicks_landed": true,
+      "two_distinct_previews": true,
+      "one_save_request": true,
+      "save_http_status": 201,
+      "response_id_valid": true,
+      "request_body_organization_matched_selected": true,
+      "exact_saved_row_lookup_and_refresh": true,
+      "saved_pattern_run": true,
+      "clipboard_tsv_json_ai_match_fixture": true,
+      "native_copy_feedback_and_clipboard_readback": true,
+      "cancel_cleared_unsaved_selection": true,
+      "request_header_organization_observed": false
+    }
+  },
+  "resources": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "sanitized_journal_policy": "Each exact-run journal retains its one final decision and all supported non-attribution events; RESOURCE_PROCESS_ATTRIBUTION rows and opened-event paths are omitted by the checked-in copier."
+  },
+  "fixture_cleanup": {
+    "native_driver_verified": false,
+    "post_run_exact_row_cleanup_verified": true,
+    "exact_run_name_org_actor_lookup_count": 1,
+    "exact_row_deleted": 1,
+    "active_residual_count": 0,
+    "raw_ids_and_organization_values_omitted": true
+  },
+  "credential_handling": {
+    "temporary_repo_secret_deleted_after_terminal": true,
+    "repo_secret_name_count_after_cleanup": 0,
+    "local_link_removed_during_active_run_and_absent_after_terminal": true,
+    "credential_values_persisted": false
+  },
+  "evidence": [
+    "docs/stabilization/evidence/member-data-behavior/run38036515100/native-report.sanitized.json",
+    "docs/stabilization/evidence/member-data-behavior/run38036515100/cleanup.sanitized.json",
+    "docs/stabilization/evidence/member-data-behavior/run38036515100/hosted-package-38036515100-1.jsonl",
+    "docs/stabilization/evidence/member-data-behavior/run38036515100/hosted-browser-38036515100-1.jsonl",
+    "docs/stabilization/evidence/member-data-behavior/run38036515100/hosted-guest-38036515100-1.jsonl"
+  ],
+  "limitations": "Frozen 0.2.459 artifact only; diagnostic-only unverified result. No reload persistence/reopen, handler outcome, or Chrome API settlement was observed. Existing T03 remains Partial; no current-main, admin, Store, or whole-feature claim."
+}
