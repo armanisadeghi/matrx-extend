@@ -66,6 +66,10 @@ test('readability scope runs only its owned fixture lifecycle and records a part
     () => runSeoCaseSequence(unrelated, volatile, 'unknown'),
     /unknown_seo_case_scope/,
   );
+  await assert.rejects(
+    () => runSeoCaseSequence(unrelated, volatile, null),
+    /unknown_seo_case_scope/,
+  );
 });
 
 test('volatile detail assertion runs after controlled T14 and T02 observations and still fails', async () => {

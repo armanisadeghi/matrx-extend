@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "auth_mode": "member",
+  "status": "fail",
+  "stage": "source_ui_reopen",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "72cfac914a5bbd1042c4df9246476ba0b9db77eb",
+    "ci_run_id": 38025597024,
+    "artifact_id": 11659438638,
+    "tree_sha256": "e087972546238e473a4444ae12702b491a332333f3be560e62db1a492c3f6ea5",
+    "version": "0.2.458"
+  },
+  "harness_checkout_sha": "556df135d0a3f124c191c7dfdae2b6c1a1978903",
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_role_verified": true,
+    "selected_organization_verified": true,
+    "organization_resolution": "load_ladder"
+  },
+  "observations": {
+    "owned_project_fixture_created": true,
+    "dialog_opened_from_captured_article": true,
+    "prefilled_name_visible": true,
+    "input_focused_on_open": true,
+    "no_destination_selected_by_default": true,
+    "custom_name_entered_by_trusted_keyboard": true,
+    "tab_and_shift_tab_contained": true,
+    "one_owned_project_candidate_selected": true,
+    "project_matches_selected_organization": true,
+    "dialog_closed_after_save": true,
+    "saved_confirmation_visible": true,
+    "source_row_read_from_service": true,
+    "custom_name_persisted": true,
+    "organization_scope_persisted": true,
+    "selected_project_edge_persisted": true,
+    "reopen_ui": {
+      "detail_open": true,
+      "name_matches": true,
+      "url_matches": true,
+      "captured_heading_matches": false,
+      "captured_marker_matches": true
+    }
+  },
+  "cleanup": {
+    "verified": true,
+    "run_owned_source_soft_deleted": true,
+    "source_associations_removed": true,
+    "owned_project_absent": true
+  },
+  "failure_code": "scrape_save_reopened_content_verified_not_observed",
+  "classification": "resource-valid native failure; whether the captured-heading mismatch is product behavior or an over-specific driver expectation remains unresolved pending independent review",
+  "limits": "Bounded to one real member save on the frozen CI development artifact, one run-owned Project association, independent row/edge reads, saved Source UI reopen, and cleanup. The reopened UI matched exact name and URL and the captured body marker, but not the expected heading. No current-main, Store, admin, guest, Library, multiple-destination, retry, responsive timing, or full T04/T29 claim."
+}

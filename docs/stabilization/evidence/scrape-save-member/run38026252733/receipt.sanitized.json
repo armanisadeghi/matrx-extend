@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38026252733,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38026252733",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "556df135d0a3f124c191c7dfdae2b6c1a1978903",
+  "lane": "A",
+  "acceptance_case": "scrape-save-member",
+  "defect_id": "EXT-D-0187",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "source_sha": "72cfac914a5bbd1042c4df9246476ba0b9db77eb",
+    "tree_sha256": "e087972546238e473a4444ae12702b491a332333f3be560e62db1a492c3f6ea5",
+    "ci_run_id": 38025597024,
+    "artifact_id": 11659438638,
+    "version": "0.2.458"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "fail",
+  "independent_review": "INDETERMINATE: the run proves the reopened rendered body lacks the expected title string while the marker is present, but the receipt does not compare captured markdown, persisted original content, and reopened DOM. The fixture uses the same string for <title> and <h1>, while the product extracts title separately and may trim the heading from markdown.",
+  "failure_boundary": {
+    "stage": "source_ui_reopen",
+    "failure_code": "scrape_save_reopened_content_verified_not_observed",
+    "observed": "Real member authentication, controlled article capture, trusted custom-name entry, one owned Project selection, Saved confirmation, independent Source row and Project edge reads all succeeded. Reopening the Source UI showed matching name and URL and the expected body marker, but the expected captured heading was absent.",
+    "classification": "The package and browser jobs ended valid; the guest job was admitted and ended child_failed with resourceInvalid=false. This is a resource-valid native acceptance failure, not an infrastructure invalidation. The report does not distinguish a product content-rendering issue from an over-specific heading assertion; independent review is required before that boundary is assigned. EXT-D-0187 remains in-fix."
+  },
+  "cleanup": {
+    "source_soft_deleted": true,
+    "source_associations_removed": true,
+    "owned_project_absent": true,
+    "temporary_secret_absent": true,
+    "local_one_time_link_absent": true
+  },
+  "resource_finals": {
+    "hosted-package-38026252733-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38026252733-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38026252733-1": "child_failed; admitted=true; resourceInvalid=false; exitCode=1; CPU pressure recovered before exit"
+  },
+  "resource_journals": [
+    "resource-journals/hosted-package-38026252733-1.jsonl",
+    "resource-journals/hosted-browser-38026252733-1.jsonl",
+    "resource-journals/hosted-guest-38026252733-1.jsonl"
+  ],
+  "evidence": {
+    "native_report": "native-report.sanitized.json",
+    "raw_runner_report_sha256": "53e940176dfaa31dae7f67e4dd24c0f02c39863b5d1faf0ed763bb19187ed126"
+  },
+  "claims": [
+    "This is a bounded failure on frozen development artifact source 72cfac914a5bbd1042c4df9246476ba0b9db77eb, not current-main health or Store behavior.",
+    "The saved Source and Project association were persisted and then cleaned up; this run does not pass the reopened captured-heading check.",
+    "Independent review classifies the heading mismatch as indeterminate. Do not promote a product fix or amend coverage until a targeted comparison checks heading/title/marker booleans in captured markdown, readCaptureOriginal after save, and the reopened DOM, recording only an allowlisted extractor enum."
+  ]
+}

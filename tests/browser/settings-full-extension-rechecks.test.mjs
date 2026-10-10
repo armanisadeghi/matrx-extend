@@ -404,6 +404,44 @@ test('full-extension callbacks retain separate safe choice and restore stages pl
   );
 });
 
+test('post-replacement stage outcomes and preference booleans survive report serialization without raw errors', async () => {
+  const f = fullRestartFixture({ failSettingsCalls: [2] });
+  await f.run();
+  const theme = f.reportCases.find((item) => item.id.endsWith('T04'));
+  const diagnostics = theme.fullExtensionReload.firstChoicePostReplacementStages;
+
+  assert.deepEqual(
+    diagnostics.map(({ stage, outcome }) => [stage, outcome]),
+    [
+      ['choice_detach_previous_panel', 'completed'],
+      ['choice_settings_reopen', 'failed'],
+    ],
+  );
+  assert.equal(diagnostics[0].observation, null);
+  assert.equal(diagnostics[1].observation, null);
+  const serialized = JSON.stringify(theme.fullExtensionReload);
+  assert.doesNotMatch(serialized, /private|secret|https?:\/\//);
+  assert.doesNotMatch(serialized, /pageText|token/);
+});
+
+test('post-replacement preference observation retains only safe match booleans after a later failure', async () => {
+  const f = fullRestartFixture({ failNewChat: true });
+  await f.run();
+  const mode = f.reportCases.find((item) => item.id.endsWith('T10'));
+  const observation = mode.fullExtensionReload.firstChoicePostReplacementStages.find(
+    ({ stage }) => stage === 'choice_preference_observation',
+  )?.observation;
+
+  assert.deepEqual(observation, {
+    settingsActive: true,
+    sectionOpen: null,
+    selectedMatches: true,
+    storedMatches: true,
+    preferenceMatches: true,
+  });
+  assert.doesNotMatch(JSON.stringify(observation), /Dark|dark|System|system/);
+});
+
 test('later rechecks are unverified and stop using a panel after failed recovery', async () => {
   const f = fullRestartFixture({
     failSettingsCalls: [6, 7],
