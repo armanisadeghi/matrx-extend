@@ -12,6 +12,7 @@ import {
   supabaseOrigin,
 } from './member-native-auth-proof.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { memberAuthFailureReport } from './settings-member-auth-diagnostic.mjs';
 import {
   panelIdentity,
   settingsShellReady,
@@ -97,6 +98,7 @@ let expectedEmail = null;
 let expectedOrganizationId = null;
 
 function failureCode(error) {
+  if (error?.memberAuthFailureCode) return error.memberAuthFailureCode;
   if (SAFE_CODES.has(error?.message)) return error.message;
   if (POINTER_CODES.has(error?.driverFailure?.code)) return error.driverFailure.code;
   const waitLabel = String(error?.message ?? '').split('_not_observed:', 1)[0];
@@ -475,7 +477,9 @@ try {
           observation: reloadedLatest,
         });
       } catch (error) {
-        report.failure_operation = operation;
+        const authFailure = memberAuthFailureReport(error, operation);
+        report.failure_operation = authFailure.stage;
+        if (error?.memberAuthBoundary) report.failure_code = authFailure.code;
         if (error?.driverFailure) report.driver_failure = error.driverFailure;
         if (
           operation === 'theme_menu_open' &&

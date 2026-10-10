@@ -584,9 +584,12 @@ for (const observerPresent of [false, true]) {
         repo: '.',
         ...(observerPresent && { onStage: (stage) => stages.push(stage) }),
       }),
-      { message: 'd87_member_link_file_required' },
+      (error) =>
+        error?.message === 'member_auth_boundary_failed' &&
+        error.memberAuthBoundary === 'member_credential_validation' &&
+        error.memberAuthFailureCode === 'd87_member_link_file_required',
     );
     assert.deepEqual(operations, ['closed', 'root_activated']);
-    assert.deepEqual(stages, observerPresent ? ['member_magic_link'] : []);
+    assert.deepEqual(stages, observerPresent ? ['member_credential_validation'] : []);
   });
 }
