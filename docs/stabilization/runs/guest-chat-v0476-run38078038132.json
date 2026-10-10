@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_guest_chat_store_run",
+  "run_id": 38078038132,
+  "version": "0.2.476",
+  "source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+  "scope": "bounded guest grounded Chat journey: first reply, same-conversation follow-up, reload, and new conversation",
+  "product_verdict": "PASS_BOUNDED_GUEST_CHAT",
+  "evidence_verdict": "PASS_WITH_SCREENSHOT_LIMITATION",
+  "evidence_folder": "docs/stabilization/evidence/guest-chat-store/run38078038132",
+  "peer_review": "docs/stabilization/reports/peer-review-run38078038132.json",
+  "limitations": [
+    "Opening screenshot does not show the reply; follow-up screenshots show only clipped reply fragments.",
+    "Pre-attachment network requests, all guest Chat behavior, member/admin modes, and broader tool paths were not tested."
+  ]
+}

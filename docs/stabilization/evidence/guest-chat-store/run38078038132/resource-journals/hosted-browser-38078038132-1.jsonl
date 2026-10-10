@@ -1,0 +1,4 @@
+{"schema":1,"code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"code":"RESOURCE_ADMITTED"}
+{"schema":1,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"code":"RESOURCE_FINAL_DECISION","decision":"valid","admitted":true,"resource_invalid":false,"exit_code":0}

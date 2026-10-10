@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008 guest chat",
+  "scope": "Fresh guest profile, unpredictable article fixture, grounded opening, same-conversation follow-up, panel reload, and new conversation after reload.",
+  "status": "pass",
+  "build": {
+    "version": "0.2.476",
+    "runtime_tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056",
+    "artifact_source": "exact v0.2.476 Store ZIP; matching public key added to temporary native acceptance copy only",
+    "artifact_unchanged": true
+  },
+  "server_version": {
+    "before_status": 200,
+    "before_git_sha": "13957f36f2cf07120fe59d7db6ebf0601cc1ec7d",
+    "after_status": 200,
+    "after_git_sha": "13957f36f2cf07120fe59d7db6ebf0601cc1ec7d",
+    "stable": true
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "session_absent_after_reload": true
+  },
+  "turns": [
+    {
+      "kind": "opening",
+      "request_http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint_redacted": true,
+      "reply_count": 1,
+      "turn_verdict": "terminal_answer",
+      "terminal_completion": true,
+      "grounded_in_fixture": true,
+      "answer_reflects_expected_stages": true
+    },
+    {
+      "kind": "same_conversation_followup",
+      "request_http_status": 200,
+      "is_new": false,
+      "same_conversation_as_opening": true,
+      "reply_count": 3,
+      "turn_verdict": "terminal_answer",
+      "terminal_completion": true,
+      "grounded_in_fixture": true
+    },
+    {
+      "kind": "post_reload_new_conversation",
+      "request_http_status": 200,
+      "is_new": true,
+      "conversation_distinct_from_opening": true,
+      "reply_count": 2,
+      "turn_verdict": "terminal_answer",
+      "terminal_completion": true,
+      "grounded_in_fixture": true
+    }
+  ],
+  "transport_proven": true,
+  "observer_scope": "CDP observer attaches after panel load; pre-attachment requests are not established by this run.",
+  "assertions": "Native acceptance report records successful completion, page-specific unpredictable markers, tool-result matches, assigned-tab match at terminal, no paywall/error, and unchanged runtime artifact.",
+  "screenshots": {
+    "names": [
+      "guest-chat-real-answer.png",
+      "guest-chat-same-conversation-followup.png",
+      "guest-chat-real-followup-answer.png"
+    ],
+    "inspection": "Opening screenshot shows an empty guest composer; follow-up screenshots show only clipped portions of assistant replies. These are limited visual corroboration; native assertions and event timelines establish the bounded results.",
+    "screenshots_copied": false
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_seo_full_store_evidence_review",
+  "reviewer": "independent_guest_store_run_review",
+  "verdict": "PARTIAL_FULL_GUEST_SEO_V0476",
+  "run_id": 38078047622,
+  "provenance": {
+    "release_run_id": 38077256885,
+    "release_source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "tag_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "store_zip_sha256": "584642d2f27a867f33dd37db7d798112648b03b91b25117367c1e8bb54c881bc",
+    "runtime_tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056",
+    "hosted_result_artifact_id": 11679643820,
+    "hosted_result_artifact_digest": "sha256:8b98f6de7271b134c7144861a2a3d5564fe90f77363d0909b2e3ff306470e91f"
+  },
+  "verdict_a_live_behavior": {
+    "status": "PARTIAL",
+    "passed_count": 24,
+    "unverified_count": 1,
+    "target_count": 25,
+    "failed_count": 0,
+    "unverified": [
+      "T09 public-page hreflang/schema doors could not be uniquely opened from the DOM.",
+      "Automatic SEO metric values are not independently verified; observed auto counts differ from manual DOM counts.",
+      "Live-page readability numeric correctness remains unverified."
+    ]
+  },
+  "coverage_comparison": {
+    "baseline_run_id": 38077041667,
+    "baseline_version": "0.2.474",
+    "same_25_target_ids_and_statuses": true,
+    "new_distinct_subtargets": 0,
+    "summary": "Fresh exact-v0.2.476 full-scope guest SEO repeat; no new target coverage versus the v0.2.474 run."
+  },
+  "verdict_b_evidence": {
+    "status": "PASS_FOR_BOUNDED_EVIDENCE_WITH_LIMITATIONS",
+    "notes": [
+      "Exact .476 Store ZIP receipt hash and reconstructed runtime tree match the native report; release and hosted-result artifact API digests were independently recomputed.",
+      "All package/browser/guest resource finals are valid.",
+      "Screenshots show a generic guest panel and research-brief target, not SEO output."
+    ]
+  },
+  "not_claimed": [
+    "Full SEO health.",
+    "Automatic/live metric correctness.",
+    "Member/admin behavior or deferred SEO/Chat cases."
+  ],
+  "verification": "Reviewed every native target/status, compared target IDs/statuses to exact v0.2.474 run, inspected screenshots, all resource finals, and artifact provenance. No browser launched during this review."
+}
