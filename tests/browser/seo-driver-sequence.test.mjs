@@ -58,6 +58,26 @@ function assertReachable(call, boundary, message) {
   }
 }
 
+function assertSourceRestorationGuard(source) {
+  const ast = ts.createSourceFile('seo-guest-acceptance.mjs', source, ts.ScriptTarget.Latest, true);
+  assert.equal(ast.parseDiagnostics.length, 0, 'SEO driver parses for restoration guard');
+  const activation = ast.statements.find(
+    (statement) =>
+      ts.isFunctionDeclaration(statement) && statement.name?.text === 'activateSeoLink',
+  );
+  assert.ok(activation, 'native door activation helper exists');
+  assert.equal(
+    callsNamed(activation, 'requireSeoDoorSourceRestoration').length,
+    1,
+    'native door activation enforces source restoration',
+  );
+  assert.ok(
+    callsNamed(activation, 'requireSeoDoorSourceRestoration')[0].parent.kind ===
+      ts.SyntaxKind.VariableDeclaration,
+    'native door restoration result is retained',
+  );
+}
+
 // Inspect the callback the native harness actually executes. The guard is
 // derived from calls that perform the cases, rather than a line or text order.
 function inspectDriverSequence(source) {
@@ -271,6 +291,56 @@ test('readability-only native scope exits before unrelated SEO actions', async (
     'guest_manual_image_alt_counts_match_live_dom',
   ])
     assert.doesNotMatch(branch, new RegExp(unrelatedAction));
+});
+
+test('owned metadata scope runs exactly the T09 fixture door boundary before returning', async () => {
+  const source = await readFile(DRIVER, 'utf8');
+  const ast = ts.createSourceFile('seo-guest-acceptance.mjs', source, ts.ScriptTarget.Latest, true);
+  assert.equal(ast.parseDiagnostics.length, 0);
+  const branchStart = source.indexOf("if (SEO_CASE_SCOPE === 'metadata') {");
+  const branchEnd = source.indexOf("if (SEO_CASE_SCOPE === 'readability') {", branchStart);
+  assert.ok(
+    branchStart >= 0 && branchEnd > branchStart,
+    'metadata branch precedes broader SEO flow',
+  );
+  const branch = source.slice(branchStart, branchEnd);
+  for (const required of [
+    'page.goto(fixtureUrl',
+    'page.evaluate(inspectOwnedSeoMetadataDom)',
+    'requireOwnedSeoMetadataCandidates(source, expected)',
+    'assertNextDoors(details, source)',
+    'alternateActivation = await activateSeoLink',
+    'schemaActivation = await activateSeoLink',
+    "target('T09', 'guest_owned_hreflang_article_doors_match_fixture_dom'",
+    'sourcePageRetainedAfterEachDoor:',
+    'return;',
+  ])
+    assert.ok(branch.includes(required), `metadata path requires ${required}`);
+  const target = branch.indexOf(
+    "target('T09', 'guest_owned_hreflang_article_doors_match_fixture_dom'",
+  );
+  assert.ok(
+    target > branch.indexOf('alternateActivation = await activateSeoLink') &&
+      target > branch.indexOf('schemaActivation = await activateSeoLink'),
+    'the T09 target is recorded only after both trusted door activations',
+  );
+  assert.ok(branch.includes('alternateActivation.sourceUrlUnchanged'));
+  assert.ok(branch.includes('schemaActivation.sourceUrlUnchanged'));
+  const activationStart = source.indexOf('async function activateSeoLink(');
+  const activationEnd = source.indexOf('async function waitForSourceSeoDoor(', activationStart);
+  const activation = source.slice(activationStart, activationEnd);
+  assert.ok(activation.includes('requireSeoDoorSourceRestoration(diagnostic)'));
+  assert.ok(activation.includes('return sourceRestoration;'));
+  assertSourceRestorationGuard(source);
+  const removedRestorationGuard = source.replace(
+    'const sourceRestoration = requireSeoDoorSourceRestoration(diagnostic);',
+    'const sourceRestoration = { sourcePageStillOpen: true, sourceUrlUnchanged: true };',
+  );
+  assert.throws(
+    () => assertSourceRestorationGuard(removedRestorationGuard),
+    /enforces source restoration/,
+  );
+  assert.match(source, /ownedPages: OWNED_SEO_METADATA_PAGES/);
 });
 
 test('actual native driver wires independent cases before volatile detail checks', async () => {

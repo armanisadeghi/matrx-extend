@@ -87,12 +87,21 @@ function persistSeoReceipt(path, report) {
 }
 
 export function hostedSeoMetadataFixture(acceptanceCase, scope, fixture = 'none') {
-  assert.ok(fixture === 'none' || fixture === 'airbnb', 'unknown_seo_metadata_fixture');
+  assert.ok(
+    fixture === 'none' || fixture === 'airbnb' || fixture === 'owned',
+    'unknown_seo_metadata_fixture',
+  );
   if (fixture === 'airbnb') {
     assert.equal(acceptanceCase, 'guest-seo', 'seo_metadata_fixture_requires_guest_seo');
     assert.equal(scope, 'full', 'seo_metadata_fixture_requires_full_scope');
   }
-  return fixture === 'airbnb' ? fixture : undefined;
+  if (fixture === 'owned') {
+    assert.equal(acceptanceCase, 'guest-seo', 'seo_metadata_fixture_requires_guest_seo');
+    assert.equal(scope, 'metadata', 'owned_metadata_fixture_requires_metadata_scope');
+  }
+  if (scope === 'metadata')
+    assert.equal(fixture, 'owned', 'owned_metadata_fixture_requires_metadata_scope');
+  return fixture === 'none' ? undefined : fixture;
 }
 
 export function hostedSeoResourceDiagnostic(acceptanceCase, scope, fixture, enabled = '0') {
@@ -151,7 +160,7 @@ export function hostedGuestSeoRoute(
   resourceDiagnostic = '0',
 ) {
   assert.ok(
-    scope === 'full' || scope === 'controlled' || scope === 'readability',
+    scope === 'full' || scope === 'controlled' || scope === 'readability' || scope === 'metadata',
     'unknown_seo_case_scope',
   );
   assert.ok(scope === 'full' || acceptanceCase === 'guest-seo', 'seo_scope_requires_guest_seo');

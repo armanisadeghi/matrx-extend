@@ -4,6 +4,7 @@ import {
   expectedMissingSocialTags,
   observeSocialCopyOutcome,
   pollSocialFeedback,
+  requireSeoDoorSourceRestoration,
   runCopyCheckThenRecapture,
   runSeoCaseSequence,
   seoCaseSelection,
@@ -70,6 +71,28 @@ test('readability scope runs only its owned fixture lifecycle and records a part
     () => runSeoCaseSequence(unrelated, volatile, null),
     /unknown_seo_case_scope/,
   );
+});
+
+test('metadata scope selects only the owned hreflang and Article door target', () => {
+  assert.deepEqual(seoCaseSelection('metadata'), {
+    scope: 'metadata',
+    selected_cases: ['T09'],
+    selected_subtargets: ['guest_owned_hreflang_article_doors_match_fixture_dom'],
+    excluded_cases: ['all SEO targets other than the owned T09 metadata door target'],
+  });
+});
+
+test('metadata door restoration fails when the source tab closes or changes URL', () => {
+  assert.deepEqual(
+    requireSeoDoorSourceRestoration({ sourcePageStillOpen: true, sourceUrlUnchanged: true }),
+    { sourcePageStillOpen: true, sourceUrlUnchanged: true },
+  );
+  for (const observation of [
+    { sourcePageStillOpen: false, sourceUrlUnchanged: true },
+    { sourcePageStillOpen: true, sourceUrlUnchanged: false },
+    null,
+  ])
+    assert.throws(() => requireSeoDoorSourceRestoration(observation));
 });
 
 test('volatile detail assertion runs after controlled T14 and T02 observations and still fails', async () => {

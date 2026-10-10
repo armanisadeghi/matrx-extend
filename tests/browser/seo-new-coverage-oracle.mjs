@@ -144,9 +144,16 @@ export async function runCopyCheckThenRecapture(copyCheck, recapture) {
 // Errors still propagate so a broken source or lost target fails the run.
 export function seoCaseSelection(scope = 'full') {
   assert.ok(
-    scope === 'full' || scope === 'controlled' || scope === 'readability',
+    scope === 'full' || scope === 'controlled' || scope === 'readability' || scope === 'metadata',
     'unknown_seo_case_scope',
   );
+  if (scope === 'metadata')
+    return {
+      scope,
+      selected_cases: ['T09'],
+      selected_subtargets: ['guest_owned_hreflang_article_doors_match_fixture_dom'],
+      excluded_cases: ['all SEO targets other than the owned T09 metadata door target'],
+    };
   if (scope === 'readability')
     return {
       scope,
@@ -195,5 +202,18 @@ export function verifyManualRecapture(before, changed, stale, refreshed) {
     publicDescriptionChanged: true,
     oldAuditVisibleBeforeClick: true,
     nativeTitleMatchesChangedPublicDom: true,
+  };
+}
+
+export function requireSeoDoorSourceRestoration(observation) {
+  assert.equal(observation?.sourcePageStillOpen, true, 'source page remains open after door click');
+  assert.equal(
+    observation?.sourceUrlUnchanged,
+    true,
+    'source page URL is unchanged after door click',
+  );
+  return {
+    sourcePageStillOpen: true,
+    sourceUrlUnchanged: true,
   };
 }

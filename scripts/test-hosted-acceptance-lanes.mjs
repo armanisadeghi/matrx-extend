@@ -165,6 +165,31 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
   );
   assert.equal(check('B', 'guest-seo').status, 0);
   assert.equal(check('B', 'guest-seo', 'guest', 'controlled').status, 0);
+  assert.equal(
+    check('B', 'guest-seo', 'guest', 'metadata', 'owned').status,
+    0,
+    'owned metadata T09 scope is admitted on lane B',
+  );
+  assert.notEqual(
+    check('A', 'guest-seo', 'guest', 'metadata', 'owned').status,
+    0,
+    'owned metadata T09 scope is refused on lane A',
+  );
+  assert.notEqual(
+    check('B', 'guest-chat', 'guest', 'metadata', 'owned').status,
+    0,
+    'owned metadata T09 scope requires guest SEO',
+  );
+  assert.notEqual(
+    check('B', 'guest-seo', 'guest', 'metadata', 'none').status,
+    0,
+    'metadata-only scope requires the owned fixture',
+  );
+  assert.notEqual(
+    check('B', 'guest-seo', 'guest', 'full', 'owned').status,
+    0,
+    'owned fixture refuses broader full scope',
+  );
   assert.notEqual(check('B', 'guest-chat', 'guest', 'controlled').status, 0);
   assert.notEqual(check('B', 'guest-seo', 'guest', 'unknown').status, 0);
   assert.equal(check('B', 'guest-seo', 'guest', 'full', 'airbnb').status, 0);

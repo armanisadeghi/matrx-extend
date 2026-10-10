@@ -23,6 +23,7 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
 import {
   observeSocialCopyOutcome,
+  requireSeoDoorSourceRestoration,
   requireSocialCopyTarget,
   runCopyCheckThenRecapture,
   runSeoCaseSequence,
@@ -30,6 +31,13 @@ import {
   socialCopyButtonObservation,
   verifyManualRecapture,
 } from './seo-new-coverage-oracle.mjs';
+import {
+  OWNED_SEO_METADATA_PAGES,
+  OWNED_SEO_METADATA_PATH,
+  OWNED_SEO_METADATA_TITLE,
+  inspectOwnedSeoMetadataDom,
+  requireOwnedSeoMetadataCandidates,
+} from './seo-owned-metadata-fixture.mjs';
 import {
   SEO_READABILITY_FIXTURES,
   runKnownReadabilityFixtures,
@@ -53,7 +61,12 @@ const DETAIL_PAGE = 'https://developer.mozilla.org/en-US/docs/Web/HTML/Element/l
 const NEXT_DETAIL_PAGE = 'https://en.wikipedia.org/wiki/HTML';
 const METADATA_FIXTURE_PAGE = 'https://www.airbnb.com/';
 const RUN_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'airbnb';
+const RUN_OWNED_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'owned';
 const SEO_CASE_SCOPE = process.env.SEO_GUEST_CASE_SCOPE ?? 'full';
+if (SEO_CASE_SCOPE === 'metadata')
+  assert.equal(RUN_OWNED_METADATA_FIXTURE, true, 'owned_metadata_scope_requires_owned_fixture');
+if (RUN_OWNED_METADATA_FIXTURE)
+  assert.equal(SEO_CASE_SCOPE, 'metadata', 'owned_metadata_fixture_requires_metadata_scope');
 if (SEO_CASE_SCOPE === 'readability')
   assert.equal(
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
@@ -85,7 +98,9 @@ const report = {
   scope:
     SEO_CASE_SCOPE === 'readability'
       ? 'known-text guest SEO readability in an owned native side panel'
-      : 'public-page guest SEO actions in an owned native side panel',
+      : SEO_CASE_SCOPE === 'metadata'
+        ? 'owned guest SEO hreflang and Article schema doors in a native side panel'
+        : 'public-page guest SEO actions in an owned native side panel',
   targets: [],
   deferred: [
     { case: 'T01', part: 'one audit per URL and slow-old-result race' },
@@ -1102,6 +1117,8 @@ async function activateSeoLink(panel, page, groupName, expectedHref) {
     diagnostic.sourcePageStillOpen = !page.isClosed();
     diagnostic.sourceUrlUnchanged = page.url() === sourceUrl;
   }
+  const sourceRestoration = requireSeoDoorSourceRestoration(diagnostic);
+  return sourceRestoration;
 }
 
 async function waitForSourceSeoDoor(panel, expectedTitle, expectedHref, stage) {
@@ -1212,8 +1229,106 @@ try {
       expectedRelease: before,
       releaseReceiptPath: RELEASE_RECEIPT,
     }),
+    ownedPages: OWNED_SEO_METADATA_PAGES,
     exercisePanel: async ({ page, panel, browserSession, panelTarget }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
+      if (SEO_CASE_SCOPE === 'metadata') {
+        const fixtureUrl = new URL(OWNED_SEO_METADATA_PATH, page.url()).href;
+        enter('owned_metadata_fixture_navigation');
+        const response = await page.goto(fixtureUrl, { waitUntil: 'load' });
+        assert.equal(response?.status(), 200, 'owned metadata fixture served successfully');
+        assert.equal(page.url(), fixtureUrl, 'owned metadata fixture remains the source tab');
+        const source = await page.evaluate(inspectOwnedSeoMetadataDom);
+        const expected = {
+          title: OWNED_SEO_METADATA_TITLE,
+          alternate: {
+            lang: 'es',
+            href: new URL('/seo-metadata-article-es', fixtureUrl).href,
+          },
+        };
+        const candidates = requireOwnedSeoMetadataCandidates(source, expected);
+        report.owned_metadata_source = {
+          titleMatched: source.title === expected.title,
+          alternateCount: source.alternates.length,
+          alternateLanguage: candidates.uniqueAlternate.lang,
+          schemaTypeCount: source.schemaTypes.length,
+          schemaType: candidates.uniqueSchema.type,
+        };
+        const tabSelection = await observe('owned_metadata_seo_tab_preflight', () =>
+          selectedSeo(panel),
+        );
+        assert.equal(
+          tabSelection.clickCandidateIsMainTab,
+          true,
+          'owned metadata audit selects the unique main SEO tab',
+        );
+        enter('owned_metadata_seo_tab_click');
+        await click(panel, 'title', 'SEO');
+        await waitObserved(
+          'owned_metadata_seo_tab_ready',
+          () => selectedSeo(panel),
+          (state) => state?.selected && state.linked && state.heading && !state.fallback,
+        );
+        await waitObserved(
+          'owned_metadata_initial_audit_wait',
+          () => seoContent(panel),
+          (state) =>
+            state?.scopeValid && state.title === expected.title && state.reAudit && !state.error,
+          30000,
+        );
+        const details = await observe('owned_metadata_native_details', () =>
+          seoNextDetailState(panel),
+        );
+        let schemaDoors;
+        assertNext('owned_metadata_source_dom_matches_native_doors', () => {
+          assert.equal(details.scopeValid, true, 'metadata doors belong to the active SEO pane');
+          assert.equal(details.title, expected.title, 'native audit belongs to the owned article');
+          schemaDoors = assertNextDoors(details, source);
+        });
+        assert.equal(candidates.uniqueAlternate.href, expected.alternate.href);
+        assert.equal(candidates.uniqueSchema.href, 'https://schema.org/Article');
+        enter('owned_metadata_hreflang_outbound_activation');
+        const alternateActivation = await activateSeoLink(
+          panel,
+          page,
+          'International',
+          candidates.uniqueAlternate.href,
+        );
+        await waitForSourceSeoDoor(
+          panel,
+          expected.title,
+          candidates.uniqueSchema.href,
+          'owned_metadata_schema_source_panel_restored',
+        );
+        enter('owned_metadata_schema_outbound_activation');
+        const schemaActivation = await activateSeoLink(
+          panel,
+          page,
+          'Structured data',
+          candidates.uniqueSchema.href,
+        );
+        target('T09', 'guest_owned_hreflang_article_doors_match_fixture_dom', {
+          sourcePath: OWNED_SEO_METADATA_PATH,
+          sourceTitleMatched: true,
+          alternateLanguage: candidates.uniqueAlternate.lang,
+          alternateDoorCount: source.alternates.length,
+          schemaType: candidates.uniqueSchema.type,
+          schemaDoorCount: schemaDoors.length,
+          targetBlankWithNoopenerAndNoreferrer: true,
+          trustedPointerDestinationsReached: true,
+          sourcePageRetainedAfterEachDoor:
+            alternateActivation.sourcePageStillOpen &&
+            alternateActivation.sourceUrlUnchanged &&
+            schemaActivation.sourcePageStillOpen &&
+            schemaActivation.sourceUrlUnchanged,
+        });
+        advance('owned_metadata_bounded_target_complete', {
+          sourceTitleMatched: true,
+          alternateLanguage: candidates.uniqueAlternate.lang,
+          schemaType: candidates.uniqueSchema.type,
+        });
+        return;
+      }
       if (SEO_CASE_SCOPE === 'readability') {
         enter('known_readability_original_page_navigation');
         const originalResponse = await page.goto(NEXT_DETAIL_PAGE, { waitUntil: 'load' });
