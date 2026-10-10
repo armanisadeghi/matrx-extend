@@ -9,10 +9,7 @@
   "acceptance_case": "desktop-settings-guest",
   "selected_case": "pair-forget",
   "inventory_case": "EXT-F-1003-T43",
-  "defects": [
-    "EXT-D-0084",
-    "EXT-D-0086"
-  ],
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
   "product_artifact": {
     "kind": "ci_development_test",
     "source_sha": "22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c",
@@ -39,7 +36,7 @@
     "hosted-guest-38035468996-1.jsonl": "child_failed; admitted=true; resourceInvalid=false; exitCode=1"
   },
   "evidence_hashes": {
-    "native-report.sanitized.json": "6fa4fdfc591af01c752d5acbf127d029f657b9389dd57735c805b2030293c808",
+    "native-report.sanitized.json": "e091fae890066144a094b44a4f6de57ddfaaa21c1254488c386b560b0e9656ec",
     "resource-journals/hosted-package-38035468996-1.jsonl": "6d592feada4974bf737ebdf408402171f22e0d61a3f5aba249ed2e4a8f7cb0e4",
     "resource-journals/hosted-browser-38035468996-1.jsonl": "38b61107f514226933fb99d2d92c1a2d91966112eaa4bbe41cd8d47d25915780",
     "resource-journals/hosted-guest-38035468996-1.jsonl": "b1b08cc31599b8b7ae211525f1862b622880c69015955b4830eeb49005d32d62"
