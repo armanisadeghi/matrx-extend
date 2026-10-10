@@ -1,0 +1,33 @@
+{
+  "observed_at_utc": "2026-10-10T03:49:00Z",
+  "chrome_profile": "Arman (armansadeghi.com)",
+  "channel": "unpacked development extension",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "displayed_version": "0.2.458",
+  "enabled": true,
+  "pinned_to_toolbar": true,
+  "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "reload_observed": true,
+  "post_reload_sidepanel_rendered": true,
+  "promotion": {
+    "ci_run_id": 38019685913,
+    "artifact_id": 11657971729,
+    "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+    "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+    "local_receipt": "test-results/ci-dev-promotion-receipt.json"
+  },
+  "resource_journal": "docs/stabilization/resource-journals/chrome-dev-refresh-20261010-dcbda7-stable.jsonl",
+  "resource_final": "valid",
+  "local_disk_incident": {
+    "cause_observed": "A user CloudKit temporary download repeatedly consumed about 17 GiB and pushed startup volume free space below the 20 GiB browser admission floor.",
+    "remediation": "Stopped the user CloudKit process, disabled its user launchd service temporarily, and removed only its closed temporary cache file. No cloud document was deleted.",
+    "current_user_service_state": "com.apple.cloudd disabled in user launchd; requires restoration after the large download/storage issue is resolved",
+    "rationale": "Restoring immediately had already redownloaded the same large cache and reduced free space to about 1.5 GiB."
+  },
+  "store_extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "installed_in_this_profile": false,
+    "installation_permission_prompt": "pending action-time user confirmation"
+  },
+  "limits": "This verifies development installation and reload only; no product feature, Store-installed behavior, or overall health claim."
+}
