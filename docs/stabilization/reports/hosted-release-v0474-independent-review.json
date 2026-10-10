@@ -1,0 +1,80 @@
+{
+  "schema": "matrx-extend.hosted-release-independent-review.v1",
+  "reviewedAt": "2026-10-10",
+  "release": {
+    "version": "0.2.474",
+    "runId": "38075458740",
+    "runUrl": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38075458740",
+    "artifactId": "11677569836",
+    "artifactName": "matrx-extend-v0.2.474",
+    "artifactApiSha256": "de9c3328855632872e56cdbf4cf6abf24909a63a7df0c27a139bd3c3b9d14a78",
+    "artifactDigestVerified": true,
+    "tag": "v0.2.474",
+    "sourceSha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+    "tagResolvesToSourceSha": true,
+    "receiptPublishState": "pushed",
+    "storeZipSha256": "93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02",
+    "localZipSha256": "8fc31a52ae6f20353922848c537a8a211e16a62eab0e7b018c82f1a20d6f4e5d",
+    "receiptTreeSha256": "240e3b80794f06c4e4b608cfe706d9950f0eb62cd4ab605f29be640916a2ec4a",
+    "treeHashIndependentlyRecomputedFromLocalZip": true,
+    "storeZipRetainedAt": "/tmp/matrx-extend-v0.2.474-store.zip"
+  },
+  "verdicts": {
+    "releaseIntegrity": "PASS",
+    "productAcceptance": "PENDING_NOT_EXERCISED",
+    "storePolicySurface": "PASS_ROUTINE_SURFACE_MATCHES_PUBLISHED_0.2.205"
+  },
+  "gates": {
+    "workflowConclusion": "success",
+    "allRequiredReleaseContractSteps": "success",
+    "latestPackageGate": "success; all 21 @ai-matrx packages at npm latest",
+    "typecheck": "success",
+    "lint": "success",
+    "unitTests": "335 files passed, 2 skipped; 2363 tests passed, 5 skipped",
+    "schemaRouting": "success",
+    "migrations": "success",
+    "toolDatabaseDrift": "success",
+    "storePackageValidation": "success",
+    "storeApprovalRisk": "success; policy surface equals approved baseline 0.2.205 and emitted-code scan found no forbidden runtime-code token",
+    "nonBlockingWarning": "6 mandate-reference findings; reported by the release gate as non-blocking"
+  },
+  "storePolicyReview": {
+    "baselineVersion": "0.2.205",
+    "manifestPolicyFieldsMatch": true,
+    "comparisonFields": [
+      "name",
+      "short_name",
+      "description",
+      "permissions",
+      "optional_permissions",
+      "host_permissions",
+      "side_panel",
+      "background",
+      "action.default_title",
+      "externally_connectable",
+      "web_accessible_resources",
+      "content_scripts"
+    ],
+    "versionField": "0.2.474",
+    "otherManifestDifference": "action.default_icon is present and references the existing extension icon assets; the approved risk comparator intentionally selects action.default_title only.",
+    "acceptanceBoundary": "A passing manifest/code risk gate is not a user-facing Store acceptance result. No browser acceptance was performed in this review."
+  },
+  "packageRefresh": {
+    "versions": {
+      "@ai-matrx/design-system": "0.86.83",
+      "@ai-matrx/records": "0.98.6",
+      "@ai-matrx/rich-editor": "0.5.75",
+      "@ai-matrx/icons": "0.3.63",
+      "@ai-matrx/canvas": "0.10.61"
+    },
+    "consumerAction": "These published changelog entries describe changed-only republishes and state no consumer action is required; the release latest-package gate confirmed currency.",
+    "reachabilityCaveat": "Package tarball comparison showed data-table output changes in design-system and PromptFixReview output changes in rich-editor. Extension source imports design-system broadly, so data-table bundle reachability is not ruled out by source inspection. No direct PromptFixReview import was found; the package-chat useTextareaFormatting path was unchanged. Neither source inspection nor the release gates establish exact Store runtime behavior; keep that acceptance unverified until the exact candidate is exercised."
+  },
+  "reproductionEvidence": {
+    "githubArtifactDigest": "GitHub Actions artifact API metadata for artifact 11677569836; independently downloaded archive SHA-256 matched.",
+    "receiptAndZipHashes": "Downloaded release-receipt.json and both ZIPs; computed SHA-256 values matched receipt fields.",
+    "sourceAndTree": "v0.2.474 resolves to 302ab93672e29a3aa5bc3e047feb2c551513bafc; extracted local ZIP tree hash independently recomputed with scripts/sync-unpacked-release.mjs hashReleaseTree.",
+    "gates": "Sanitized tmp/release-logs/latest.log included in the exact GitHub artifact; all named required checks returned exit 0.",
+    "manifest": "Extracted manifest.json from Store ZIP and compared policy projection with config/chrome-web-store-approved-baseline.json; hosted risk gate independently passed the same published baseline check."
+  }
+}
