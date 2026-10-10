@@ -27,7 +27,7 @@ import {
 } from './hosted-profile-route.mjs';
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
 import { hostedScrapeReloadDiagnostic } from './hosted-scrape-reload-diagnostic.mjs';
-import { hostedScrapeSaveDestination } from './hosted-scrape-route.mjs';
+import { hostedScrapeSaveDestination, hostedScrapeSaveScope } from './hosted-scrape-route.mjs';
 import {
   hostedGuestSeoRoute,
   hostedSeoInterruptTarget,
@@ -295,6 +295,11 @@ async function run(prepared, artifactMode) {
           process.env.MATRX_HOSTED_SCRAPE_SAVE_DESTINATION ?? 'project',
         )
       : undefined;
+  const scrapeSaveScope = hostedScrapeSaveScope(
+    acceptanceCase,
+    process.env.MATRX_HOSTED_SCRAPE_SAVE_SCOPE ?? 'single',
+    scrapeSaveDestination,
+  );
   const scrapeReloadDiagnostic = hostedScrapeReloadDiagnostic(
     acceptanceCase,
     process.env.MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC ?? '0',
@@ -512,6 +517,9 @@ async function run(prepared, artifactMode) {
     MATRX_SCRAPE_ARTIFACT_CHANNEL: scrapeRoute?.channel,
     MATRX_SCRAPE_AUTH_MODE: scrapeSelection?.mode,
     ...(scrapeSaveDestination ? { MATRX_SCRAPE_SAVE_DESTINATION: scrapeSaveDestination } : {}),
+    ...(acceptanceCase === 'scrape-save-member'
+      ? { MATRX_SCRAPE_SAVE_SCOPE: scrapeSaveScope }
+      : {}),
     MATRX_SCRAPE_WIDTH_MODE: scrapeSelection?.widthMode,
     MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: scrapeReloadDiagnostic,
     ...(seoRoute?.env ?? {}),

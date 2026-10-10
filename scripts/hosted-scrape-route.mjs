@@ -40,6 +40,17 @@ export function hostedScrapeSaveDestination(acceptanceCase, value = 'project') {
   return value;
 }
 
+export function hostedScrapeSaveScope(acceptanceCase, value = 'single', destination = 'project') {
+  if (acceptanceCase !== 'scrape-save-member') {
+    assert.equal(value, 'single', 'scrape_save_scope_case_refused');
+    return value;
+  }
+  assert.ok(value === 'single' || value === 'duplicate-rename', 'scrape_save_scope_invalid');
+  if (value === 'duplicate-rename')
+    assert.equal(destination, 'none', 'scrape_save_duplicate_destination_refused');
+  return value;
+}
+
 export function verifyHostedScrapeSaveAssociations(mode, edges, projectId, organizationId) {
   assert.ok(Array.isArray(edges), 'scrape_save_association_lookup_body_invalid');
   if (mode === 'none') {

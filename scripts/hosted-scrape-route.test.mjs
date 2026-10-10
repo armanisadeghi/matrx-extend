@@ -7,6 +7,7 @@ import { hostedAcceptanceRoute } from './hosted-acceptance-route.mjs';
 import { requireHostedAcceptanceCredential } from './hosted-profile-route.mjs';
 import {
   hostedScrapeSaveDestination,
+  hostedScrapeSaveScope,
   requireHostedScrapeRoute,
   verifyHostedScrapeSaveAssociations,
 } from './hosted-scrape-route.mjs';
@@ -159,6 +160,26 @@ test('D187 destination mode admits only the explicit project and no-destination 
   );
 });
 
+test('D187 duplicate rename is isolated to the member no-destination route', () => {
+  assert.equal(hostedScrapeSaveScope('scrape-save-member', 'single', 'project'), 'single');
+  assert.equal(
+    hostedScrapeSaveScope('scrape-save-member', 'duplicate-rename', 'none'),
+    'duplicate-rename',
+  );
+  assert.throws(
+    () => hostedScrapeSaveScope('scrape-save-member', 'duplicate-rename', 'project'),
+    /scrape_save_duplicate_destination_refused/,
+  );
+  assert.throws(
+    () => hostedScrapeSaveScope('scrape-save-member', 'library', 'none'),
+    /scrape_save_scope_invalid/,
+  );
+  assert.throws(
+    () => hostedScrapeSaveScope('guest-chat', 'duplicate-rename', 'none'),
+    /scrape_save_scope_case_refused/,
+  );
+});
+
 test('guest T14 recovery is development-artifact and guest-only', async () => {
   assert.deepEqual(
     requireHostedScrapeRoute('scrape-error-recovery-guest', 'development', development, 'guest'),
@@ -286,6 +307,7 @@ test('workflow admits member Data with member auth while preserving guest and D1
     SCRAPE_WIDTH_MODE: 'narrow',
     SCRAPE_NORMAL_WIDTH_PX: '',
     SCRAPE_SAVE_DESTINATION: 'project',
+    SCRAPE_SAVE_SCOPE: 'single',
     RUNNER_LABEL: isArm64 ? 'macos-15' : 'macos-15-intel',
     RUNNER_ARCH: isArm64 ? 'ARM64' : 'X64',
   };
@@ -325,6 +347,25 @@ test('workflow admits member Data with member auth while preserving guest and D1
       ACCEPTANCE_CASE: 'scrape-save-member',
       SCRAPE_AUTH_MODE: 'member',
       SCRAPE_SAVE_DESTINATION: 'none',
+    }).status,
+    0,
+  );
+  assert.equal(
+    runWorkflowStep(laneAdmission, {
+      ...shared,
+      ACCEPTANCE_CASE: 'scrape-save-member',
+      SCRAPE_AUTH_MODE: 'member',
+      SCRAPE_SAVE_DESTINATION: 'none',
+      SCRAPE_SAVE_SCOPE: 'duplicate-rename',
+    }).status,
+    0,
+  );
+  assert.notEqual(
+    runWorkflowStep(laneAdmission, {
+      ...shared,
+      ACCEPTANCE_CASE: 'scrape-save-member',
+      SCRAPE_AUTH_MODE: 'member',
+      SCRAPE_SAVE_SCOPE: 'duplicate-rename',
     }).status,
     0,
   );

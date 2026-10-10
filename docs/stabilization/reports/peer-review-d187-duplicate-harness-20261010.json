@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_review",
+  "reviewed_at": "2026-10-10",
+  "verdict": "PASS_BOUNDED_HARNESS_ONLY",
+  "scope": "D187 duplicate-rename native harness routing, observation and cleanup; no product or hosted-browser acceptance claim.",
+  "evidence": {
+    "defect": "EXT-D-0187 remains in-fix.",
+    "inventory": "EXT-F-1007-T04 and T29 remain partial. The reviewed Project receipt 38030536461 and no-destination receipt 38044665604 establish adjacent member substeps; both leave duplicate and refusal/retry unverified.",
+    "routing": "Workflow and runner admit duplicate-rename only for scrape-save-member with member auth and destination none. Default single mode remains the existing route; other cases and destinations reject duplicate scope.",
+    "duplicate_flow": "The native driver saves a custom-named Source, independently reads its row and zero edges, recaptures the same run-owned article, and submits a second custom name without a destination. The observer requires one successful /sources/land response with reused_existing=true and the original Source ID, plus one successful POST to /sources/<original-id>/edit. Independent readback requires exactly one active row with the renamed value and same ID, no edges, then reopens and checks the renamed Source and captured content.",
+    "cleanup": "Cleanup is constrained to valid IDs matching the run-unique canonical identity, selected organization and extension origin. Duplicate mode allows at most two rows; each matching row has edges removed and is soft-deleted with exact identity predicates, then active rows and edges are read back. Ambiguous counts fail before broad deletion.",
+    "report_privacy": "Native report records auth booleans and organization resolution, not credentials, email, tokens, request bodies or response text. Duplicate observer returns booleans only; failure output is reduced to a constrained code.",
+    "saved_and_refusal": "Saved is derived from the current capture and organization state and has no timer in ScrapeView, so the post-response check is not a short-lived toast check. The run does not measure confirmation latency. Controlled refusal, retry and rename recovery are outside this scope."
+  },
+  "verification": {
+    "focused": "node --test scripts/hosted-scrape-route.test.mjs tests/browser/scrape-save-duplicate-observer.test.mjs — 11/11 passed; scope refusals and reused=false, changed-ID and rename-503 failures are exercised.",
+    "compile": "pnpm compile — passed.",
+    "biome": "pnpm exec biome check on the seven requested paths — passed; six supported files checked.",
+    "diff_check": "git diff --check on the seven requested paths — passed."
+  },
+  "checked_files": [
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/hosted-guest-acceptance.mjs",
+    "scripts/hosted-scrape-route.mjs",
+    "scripts/hosted-scrape-route.test.mjs",
+    "tests/browser/scrape-save-native-acceptance.mjs",
+    "tests/browser/scrape-save-duplicate-observer.mjs",
+    "tests/browser/scrape-save-duplicate-observer.test.mjs"
+  ],
+  "limits": [
+    "No hosted browser run was launched; runtime behavior remains unverified by this review.",
+    "No controlled refusal/retry or rename-failure recovery is covered.",
+    "No confirmation latency measurement is covered.",
+    "T04/T29 and EXT-D-0187 remain open beyond this bounded substep."
+  ]
+}

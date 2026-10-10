@@ -169,6 +169,14 @@ on:
         options:
           - project
           - none
+      scrape_save_scope:
+        description: Single Save or bounded duplicate rename on the same owned article
+        required: false
+        default: single
+        type: choice
+        options:
+          - single
+          - duplicate-rename
       scrape_width_mode:
         description: Scrape side-panel viewport mode (normal uses CDP viewport emulation)
         required: false
@@ -208,6 +216,7 @@ jobs:
           SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_interrupt_after_target || 'none' }}
           SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           SCRAPE_SAVE_DESTINATION: ${{ inputs.scrape_save_destination || 'project' }}
+          SCRAPE_SAVE_SCOPE: ${{ inputs.scrape_save_scope || 'single' }}
           DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
         run: |
           # BEGIN hosted lane admission
@@ -220,8 +229,11 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'D187 Save Source requires member auth.' >&2; exit 1; }
             [[ "$SCRAPE_SAVE_DESTINATION" == project || "$SCRAPE_SAVE_DESTINATION" == none ]] || { echo 'Unknown Save Source destination.' >&2; exit 1; }
+            [[ "$SCRAPE_SAVE_SCOPE" == single || "$SCRAPE_SAVE_SCOPE" == duplicate-rename ]] || { echo 'Unknown Save Source scope.' >&2; exit 1; }
+            [[ "$SCRAPE_SAVE_SCOPE" != duplicate-rename || "$SCRAPE_SAVE_DESTINATION" == none ]] || { echo 'Duplicate rename requires no destination.' >&2; exit 1; }
           else
             [[ "$SCRAPE_SAVE_DESTINATION" == project ]] || { echo 'Save Source destination applies only to scrape-save-member.' >&2; exit 1; }
+            [[ "$SCRAPE_SAVE_SCOPE" == single ]] || { echo 'Save Source scope applies only to scrape-save-member.' >&2; exit 1; }
           fi
           if [[ "$ACCEPTANCE_CASE" == scrape-error-recovery-guest ]]; then
             [[ "$SCRAPE_AUTH_MODE" == guest && "$ACCEPTANCE_LANE" == B ]] || { echo 'Scrape error recovery requires guest auth on lane B.' >&2; exit 1; }
@@ -356,6 +368,7 @@ jobs:
           MATRX_HOSTED_PHASE: preflight
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_SCRAPE_SAVE_DESTINATION: ${{ inputs.scrape_save_destination || 'project' }}
+          MATRX_HOSTED_SCRAPE_SAVE_SCOPE: ${{ inputs.scrape_save_scope || 'single' }}
           MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           MATRX_HOSTED_SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
           MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
@@ -431,6 +444,7 @@ jobs:
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_ACCEPTANCE_LANE: ${{ inputs.acceptance_lane }}
           MATRX_HOSTED_SCRAPE_SAVE_DESTINATION: ${{ inputs.scrape_save_destination || 'project' }}
+          MATRX_HOSTED_SCRAPE_SAVE_SCOPE: ${{ inputs.scrape_save_scope || 'single' }}
           MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_D47_RESPONSE_ORDER: ${{ inputs.d47_response_order }}
           MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}

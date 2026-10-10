@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { verifyHostedScrapeSaveAssociations } from '../../scripts/hosted-scrape-route.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { observeDuplicateSourceSave } from './scrape-save-duplicate-observer.mjs';
 import { cleanupProjectFixture, projectFixtureRequest } from './scrape-save-project-fixture.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import { activeTabPanelExpression, click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -20,10 +21,12 @@ const publishableKey = process.env.WXT_SUPABASE_PUBLISHABLE_KEY;
 const runId = process.env.GITHUB_RUN_ID;
 const runAttempt = process.env.GITHUB_RUN_ATTEMPT;
 const destinationMode = process.env.MATRX_SCRAPE_SAVE_DESTINATION ?? 'project';
+const saveScope = process.env.MATRX_SCRAPE_SAVE_SCOPE ?? 'single';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const captureTitle = `Northline source intake ${runId}-${runAttempt}`;
 const captureHeading = `Preparing a Northline appointment ${runId}-${runAttempt}`;
 const sourceName = `Northline source acceptance ${runId}-${runAttempt}`;
+const renamedSourceName = `Northline source acceptance revised ${runId}-${runAttempt}`;
 const fixture = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${captureTitle}</title>
 <meta name="description" content="A controlled member Save Source acceptance page"></head><body>
 <main><article><h1>${captureHeading}</h1><p>This controlled article has enough real text to become a Source. It describes the intake process, preparation steps, and the information a reader should keep available before an appointment.</p>
@@ -36,6 +39,7 @@ const report = {
   case_ids: ['EXT-F-1007-T04', 'EXT-F-1007-T29'],
   auth_mode: 'member',
   destination_mode: destinationMode,
+  save_scope: saveScope,
   status: 'unverified',
   stage: 'inputs',
   native_stage: null,
@@ -44,7 +48,7 @@ const report = {
   observations: {},
   cleanup: null,
   failure_stage: null,
-  limits: `Exact imported CI development artifact, real member sign-in, one custom-named Source saved with ${destinationMode === 'project' ? 'one disposable owned Project association' : 'no destination'}, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.`,
+  limits: `Exact imported CI development artifact, real member sign-in, ${saveScope === 'duplicate-rename' ? 'same-article duplicate landing and custom rename' : 'one custom-named Source saved'} with ${destinationMode === 'project' ? 'one disposable owned Project association' : 'no destination'}, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, controlled rename refusal/retry, responsive timing, or full T04/T29 closure.`,
 };
 
 function safeFailureCode(error) {
@@ -460,6 +464,9 @@ try {
     'scrape_save_dev_channel_required',
   );
   assert.ok(['project', 'none'].includes(destinationMode), 'scrape_save_destination_invalid');
+  assert.ok(['single', 'duplicate-rename'].includes(saveScope), 'scrape_save_scope_invalid');
+  if (saveScope === 'duplicate-rename')
+    assert.equal(destinationMode, 'none', 'scrape_save_duplicate_destination_refused');
   assert.equal(
     process.env.MATRX_SCRAPE_AUTH_MODE,
     'member',
@@ -564,41 +571,43 @@ try {
             verified: remaining?.status === 200,
             no_active_run_row: remaining?.status === 200,
           };
-        assert.equal(matching.length, 1, 'scrape_save_cleanup_row_ambiguous');
-        sourceId = matching[0].id;
-        const detached = await associationRpc(
-          panel,
-          'assoc_remove_for_entity',
-          selectedOrganizationId,
-          {
-            p_type: 'processed_document',
-            p_id: sourceId,
-          },
-        );
-        assert.ok([200, 204].includes(detached.status), 'scrape_save_association_cleanup_failed');
-        const deleteRequest = restUrl('docproc', 'processed_documents', {
-          id: `eq.${sourceId}`,
-          organization_id: `eq.${selectedOrganizationId}`,
-          canonical_identity: `eq.${canonicalIdentity}`,
-          origin_client: 'eq.extension',
-          deleted_at: 'is.null',
-        });
-        const deleted = await panelRest(panel, {
-          ...deleteRequest,
-          organizationId: selectedOrganizationId,
-          method: 'PATCH',
-          body: { deleted_at: new Date().toISOString() },
-        });
-        assert.ok([204, 205].includes(deleted.status), 'scrape_save_source_soft_delete_failed');
+        if (saveScope === 'single')
+          assert.equal(matching.length, 1, 'scrape_save_cleanup_row_ambiguous');
+        else assert.ok(matching.length <= 2, 'scrape_save_duplicate_cleanup_row_ambiguous');
+        for (const row of matching) {
+          const detached = await associationRpc(
+            panel,
+            'assoc_remove_for_entity',
+            selectedOrganizationId,
+            { p_type: 'processed_document', p_id: row.id },
+          );
+          assert.ok([200, 204].includes(detached.status), 'scrape_save_association_cleanup_failed');
+          const deleteRequest = restUrl('docproc', 'processed_documents', {
+            id: `eq.${row.id}`,
+            organization_id: `eq.${selectedOrganizationId}`,
+            canonical_identity: `eq.${canonicalIdentity}`,
+            origin_client: 'eq.extension',
+            deleted_at: 'is.null',
+          });
+          const deleted = await panelRest(panel, {
+            ...deleteRequest,
+            organizationId: selectedOrganizationId,
+            method: 'PATCH',
+            body: { deleted_at: new Date().toISOString() },
+          });
+          assert.ok([204, 205].includes(deleted.status), 'scrape_save_source_soft_delete_failed');
+        }
         const after = await querySources(panel, canonicalIdentity, selectedOrganizationId, null);
         assert.equal(after.status, 200, 'scrape_save_cleanup_lookup_failed');
         assert.deepEqual(after.rows, [], 'scrape_save_active_row_residue');
-        const edges = await associationRpc(panel, 'assoc_for_entity', selectedOrganizationId, {
-          p_type: 'processed_document',
-          p_id: sourceId,
-        });
-        assert.equal(edges.status, 200, 'scrape_save_association_cleanup_read_failed');
-        assert.deepEqual(edges.value, [], 'scrape_save_association_residue');
+        for (const row of matching) {
+          const edges = await associationRpc(panel, 'assoc_for_entity', selectedOrganizationId, {
+            p_type: 'processed_document',
+            p_id: row.id,
+          });
+          assert.equal(edges.status, 200, 'scrape_save_association_cleanup_read_failed');
+          assert.deepEqual(edges.value, [], 'scrape_save_association_residue');
+        }
         return {
           verified: true,
           run_owned_source_soft_deleted: true,
@@ -922,12 +931,124 @@ try {
           report.observations.no_destination_associations_persisted = true;
         }
 
+        if (saveScope === 'duplicate-rename') {
+          report.stage = 'duplicate_recapture';
+          await resourceAction(() =>
+            click(panel, 'title', 'Capture the page exactly as it is right now'),
+          );
+          await waitFor(
+            'scrape_save_duplicate_capture_ready',
+            () =>
+              evaluate(
+                panel,
+                `(() => { const root = ${activeTabPanelExpression('Scrape')}; return { title: root?.querySelector('.truncate.text-sm.font-medium')?.textContent?.trim() ?? null, save: [...(root?.querySelectorAll('button') ?? [])].some((button) => button.textContent.trim() === 'Save') }; })()`,
+              ),
+            (state) => state?.title === captureTitle && state.save,
+            30000,
+          );
+          await click(panel, 'button-text', 'Article');
+          const secondLayer = await readCaptureArticleLayer(panel, {
+            title: captureTitle,
+            heading: captureHeading,
+            marker:
+              'Review the appointment details, collect the required forms, and confirm the time before arriving.',
+          });
+          assert.equal(secondLayer.heading_matches, true, 'scrape_save_duplicate_heading_missing');
+          assert.equal(secondLayer.marker_matches, true, 'scrape_save_duplicate_marker_missing');
+          report.observations.duplicate_recapture_observed = true;
+
+          const duplicateResponses = observeDuplicateSourceSave(
+            panel,
+            'https://server.app.matrxserver.com',
+          );
+          try {
+            await duplicateResponses.start();
+            report.stage = 'duplicate_save_dialog';
+            await resourceAction(() => click(panel, 'button-text', 'Save'));
+            const secondDialog = await waitFor(
+              'scrape_save_duplicate_dialog_open',
+              () => dialogState(panel),
+              (state) => state?.open === true,
+            );
+            assert.equal(
+              secondDialog.targetChipCount,
+              0,
+              'scrape_save_duplicate_destination_staged',
+            );
+            await trustedType(
+              panel,
+              '[data-testid="save-source-form"] input[aria-label="Source name"]',
+              renamedSourceName,
+            );
+            await waitFor(
+              'scrape_save_duplicate_name_entered',
+              () => dialogState(panel),
+              (state) => state?.name === renamedSourceName,
+            );
+            assert.equal(
+              (await dialogState(panel)).savedButton,
+              false,
+              'scrape_save_duplicate_saved_before_submit',
+            );
+            report.stage = 'duplicate_save_submit';
+            await resourceAction(() => click(panel, 'button-text', 'Save Source'));
+            await waitFor(
+              'scrape_save_duplicate_responses',
+              () => duplicateResponses.snapshot(),
+              (state) => state.ready,
+              30000,
+            );
+            report.observations.duplicate_responses = duplicateResponses.verify(sourceId);
+          } finally {
+            duplicateResponses.stop();
+          }
+          const renamedConfirmation = await waitFor(
+            'scrape_save_duplicate_confirmation',
+            () => dialogState(panel),
+            (state) => state?.open === false && state.savedButton === true,
+            30000,
+          );
+          assert.equal(
+            renamedConfirmation.savedButton,
+            true,
+            'scrape_save_duplicate_saved_missing',
+          );
+          report.stage = 'duplicate_source_independent_read';
+          const renamed = await querySources(
+            panel,
+            canonicalIdentity,
+            selectedOrganizationId,
+            null,
+          );
+          const renamedRow = verifySourceRows(
+            renamed,
+            canonicalIdentity,
+            selectedOrganizationId,
+            renamedSourceName,
+          );
+          assert.equal(renamedRow.id, sourceId, 'scrape_save_duplicate_source_id_changed');
+          const duplicateEdges = await associationRpc(
+            panel,
+            'assoc_for_entity',
+            selectedOrganizationId,
+            {
+              p_type: 'processed_document',
+              p_id: sourceId,
+            },
+          );
+          assert.equal(duplicateEdges.status, 200, 'scrape_save_duplicate_association_read_failed');
+          assert.deepEqual(duplicateEdges.value, [], 'scrape_save_duplicate_association_added');
+          report.observations.duplicate_name_persisted = true;
+          report.observations.duplicate_one_source_row = true;
+          report.observations.duplicate_no_associations = true;
+        }
+
         report.stage = 'source_ui_reopen';
         await resourceAction(() =>
           reopenSavedSourceUi(
             panel,
             {
-              name: sourceName,
+              name: saveScope === 'duplicate-rename' ? renamedSourceName : sourceName,
               url: sourceUrl,
               title: captureTitle,
               heading: captureHeading,
