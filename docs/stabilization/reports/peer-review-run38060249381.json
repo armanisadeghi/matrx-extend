@@ -1,0 +1,63 @@
+{
+  "run_id": 38060249381,
+  "verdict": "ZERO_CREDIT_RESOURCE_INVALID",
+  "scope": "Independent review of the sanitized member Settings hosted evidence and resource finals; no product acceptance adjudicated.",
+  "provenance": {
+    "workflow_source_sha": "663f8bb2a2644b70d98180f115a8175b4c08614e",
+    "development_ci_run_id": 38059544877,
+    "development_artifact_id": 11672931022,
+    "product_source_sha": "998cfc86af7ce161404a528f59c45958ad75bc43",
+    "product_version": "0.2.466",
+    "product_artifact_sha256": "536e6d8bbaf28750e4023e0162580ab28800d95aa2c4864aa838918a28b0d646",
+    "hosted_result_artifact_id": 11672429340,
+    "hosted_result_artifact_sha256": "bf350c2ae5edc3ba64de39782ce89edf288446265ea55d1b6cec5304a4dd6d49",
+    "digest_verified": true
+  },
+  "observed": {
+    "member_authenticated": true,
+    "non_admin": true,
+    "load_ladder_organization_selected": true,
+    "request_bound_expected_organization_get": true,
+    "request_bound_get_http_status": 200,
+    "failure_stage": "baseline",
+    "failure_code": "d87_settings_shell_not_observed",
+    "cases_reached": 0,
+    "settings_available": false,
+    "settings_active": false,
+    "identity_diagnostic_ran": false,
+    "identity_diagnostic_reason": "The exact guard requires settings_ready plus d87_rendered_identity_not_observed; this run failed earlier at settings_shell.",
+    "failure_operation_field": "member_logical_organization_proof",
+    "failure_operation_assessment": "stale metadata; source ordering shows the reported failure is the later baseline Settings-shell wait, after the organization proof completed."
+  },
+  "resource_finals": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "invalid",
+    "guest_resource_invalid": true,
+    "guest_child_exit_code": 3,
+    "native_child_exit_code": 1,
+    "cpu_pending_recovered": false
+  },
+  "cleanup": {
+    "temporary_repository_secret_absent": true,
+    "local_one_time_link_absent": true,
+    "raw_hosted_artifact_retained": false
+  },
+  "credit": {
+    "new_product_credit": false,
+    "settings_persistence_cases": 0,
+    "product_defect_established": false,
+    "reason": "The native harness stopped before any Settings case and the guest resource final is invalid. The shell observation remains unclassified; the stale operation field is diagnostic metadata, not evidence that the completed organization proof failed.",
+    "current_main_or_store": false
+  },
+  "evidence_files": [
+    "docs/stabilization/evidence/settings-persistence-member/run38060249381/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38060249381/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38060249381/product-artifact.sanitized.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38060249381/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38060249381/resource-journals/hosted-package-38060249381-1.jsonl",
+    "docs/stabilization/evidence/settings-persistence-member/run38060249381/resource-journals/hosted-browser-38060249381-1.jsonl",
+    "docs/stabilization/evidence/settings-persistence-member/run38060249381/resource-journals/hosted-guest-38060249381-1.jsonl"
+  ],
+  "limits": "Sanitized evidence only; no raw browser report, screenshots, account values, personal identifiers, credentials, or machine paths were retained. No product behavior or defect verdict follows from this run."
+}

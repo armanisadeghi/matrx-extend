@@ -37,10 +37,17 @@ const HOSTED_ACCEPTANCE_CASES = new Set([
 ]);
 
 /** Resolve the exact case and its native driver before the acceptance run proceeds. */
-export function hostedAcceptanceRoute(acceptanceCase, mode, prepared, authMode) {
+export function hostedAcceptanceRoute(acceptanceCase, mode, prepared, authMode, options = {}) {
   assert.ok(HOSTED_ACCEPTANCE_CASES.has(acceptanceCase), 'unknown_hosted_acceptance_case');
   return {
     acceptanceCase,
-    scrapeRoute: requireHostedScrapeRoute(acceptanceCase, mode, prepared, authMode),
+    scrapeRoute: requireHostedScrapeRoute(
+      acceptanceCase,
+      mode,
+      prepared,
+      authMode,
+      options.scrapeScope ?? 'full',
+      options.lane,
+    ),
   };
 }

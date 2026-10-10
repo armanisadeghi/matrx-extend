@@ -93,12 +93,14 @@ function originFor(key: string): ContextRowOrigin {
 /**
  * Split the builder's value map into rule-governed rows and directives.
  *
- * Every value carries `surfaceKey: "_default"`: the extension sends no
- * `surface` on its requests, so the server attributes every client value to
- * the person's `_default` rules row (`context_rules.client_value_facts`). A
- * rule saved anywhere else would be one the server never reads.
+ * Values carry the same declared surface as the request so the client's
+ * saved rules and the server's rule provenance agree. Utilities without a
+ * declared chat surface retain the global rules row.
  */
-export function contextRowSources(values: Readonly<Record<string, unknown>>): {
+export function contextRowSources(
+  values: Readonly<Record<string, unknown>>,
+  surfaceKey: string = DEFAULT_SURFACE_KEY,
+): {
   sources: ContextRowSource[];
   directives: Record<string, unknown>;
 } {
@@ -113,7 +115,7 @@ export function contextRowSources(values: Readonly<Record<string, unknown>>): {
     sources.push({
       key,
       label: labelFor(key),
-      surfaceKey: DEFAULT_SURFACE_KEY,
+      surfaceKey,
       origin: originFor(key),
       value,
     });
@@ -139,8 +141,9 @@ export function buildRequestContext(
   values: Readonly<Record<string, unknown>>,
   savedRules: SavedContextRuleRows | null | undefined,
   cap: number = DEFAULT_INLINE_CAP,
+  surfaceKey: string = DEFAULT_SURFACE_KEY,
 ): RequestContext {
-  const { sources, directives } = contextRowSources(values);
+  const { sources, directives } = contextRowSources(values, surfaceKey);
   const rows = sources.map((source) => resolveContextRow(source, savedRules, cap));
   const wire: Record<string, unknown> = buildContextWire(rows);
   for (const [key, value] of Object.entries(directives)) wire[key] = value;

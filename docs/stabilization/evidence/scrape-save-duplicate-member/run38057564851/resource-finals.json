@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38057564851,
+  "finals": [
+    {
+      "role": "package",
+      "journal_sha256": "e7f31d067a4c9fa6d258211033a20419d0c6c47ef3fca4eedac8a0a4d43ca0c3",
+      "event_codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ],
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0
+    },
+    {
+      "role": "guest",
+      "journal_sha256": "9c193d3e025d14522a54120e18d826d55f7eee6b7c1e5d46768a8e7e1aee2d91",
+      "event_codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_WATCH_HEALTHY",
+        "RESOURCE_CPU_PENDING",
+        "RESOURCE_PROCESS_ATTRIBUTION",
+        "RESOURCE_CPU_PENDING",
+        "RESOURCE_CPU_PENDING",
+        "RESOURCE_CPU_RECOVERED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ],
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0
+    },
+    {
+      "role": "browser",
+      "journal_sha256": "4584fd4af208ecdb93cfea6f95d4c6279ac12291c52dda723e1db620a706e85e",
+      "event_codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ],
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 0
+    }
+  ]
+}

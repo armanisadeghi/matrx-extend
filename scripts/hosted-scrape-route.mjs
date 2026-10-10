@@ -1,6 +1,14 @@
 import assert from 'node:assert/strict';
 
-export function requireHostedScrapeRoute(acceptanceCase, mode, prepared, authMode = undefined) {
+export function requireHostedScrapeRoute(
+  acceptanceCase,
+  mode,
+  prepared,
+  authMode = undefined,
+  scope = 'full',
+  lane = undefined,
+) {
+  if (scope !== 'full') hostedScrapeScope(acceptanceCase, scope, lane, authMode);
   if (acceptanceCase === 'scrape-error-recovery-guest') {
     assert.equal(mode, 'development', 'scrape_recovery_development_mode_required');
     assert.equal(prepared?.kind, 'ci_development_test', 'scrape_recovery_ci_receipt_required');
@@ -24,7 +32,15 @@ export function requireHostedScrapeRoute(acceptanceCase, mode, prepared, authMod
     assert.equal(mode, 'development', 'scrape_development_mode_required');
     assert.equal(prepared?.kind, 'ci_development_test', 'scrape_development_receipt_required');
     assert.equal(prepared?.eligibleStore, false, 'scrape_development_store_refused');
-    return { driver: 'tests/browser/scrape-guest-native-acceptance.mjs', channel: 'development' };
+    hostedScrapeScope(acceptanceCase, scope, lane, authMode);
+    return {
+      driver:
+        scope === 'seo-schema-empty'
+          ? 'tests/browser/scrape-seo-schema-empty-guest.mjs'
+          : 'tests/browser/scrape-guest-native-acceptance.mjs',
+      channel: 'development',
+      ...(scope === 'seo-schema-empty' ? { scope } : {}),
+    };
   }
   if (acceptanceCase === 'guest-scrape') {
     assert.equal(mode, 'release', 'scrape_store_mode_required');
@@ -32,6 +48,20 @@ export function requireHostedScrapeRoute(acceptanceCase, mode, prepared, authMod
     return { driver: 'tests/browser/scrape-guest-native-acceptance.mjs', channel: 'store' };
   }
   return null;
+}
+
+export function hostedScrapeScope(
+  acceptanceCase,
+  value = 'full',
+  lane = undefined,
+  authMode = undefined,
+) {
+  if (value === 'full') return value;
+  assert.equal(value, 'seo-schema-empty', 'scrape_scope_invalid');
+  assert.equal(acceptanceCase, 'guest-scrape-development', 'scrape_scope_case_refused');
+  assert.equal(lane, 'B', 'scrape_scope_lane_refused');
+  assert.equal(authMode, 'guest', 'scrape_scope_guest_required');
+  return value;
 }
 
 export function hostedScrapeSaveDestination(acceptanceCase, value = 'project') {

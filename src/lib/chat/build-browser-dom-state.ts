@@ -22,7 +22,6 @@
  */
 
 import { getAccessToken } from '@/lib/auth/flow';
-import { ALL_OPTIONAL, hasOptionalPermissions } from '@/lib/permissions/optional';
 import { useAuthStore } from '@/state/auth';
 import { useChatStore } from '@/state/chat';
 import { useDesktopStore } from '@/state/desktop';
@@ -48,6 +47,7 @@ export interface BrowserDomState {
   permission_mode: 'ask' | 'act';
   desktop_bridge: 'native' | 'http' | 'none';
   onbox_ai_available: boolean;
+  /** Effective Chrome permissions (required and granted optional); legacy wire field name. */
   optional_permissions_granted: string[];
   open_tab_count: number | null;
   extension_version: string;
@@ -124,12 +124,12 @@ async function queryActiveTab(): Promise<{
   }
 }
 
-async function listGrantedOptional(): Promise<string[]> {
-  const granted: string[] = [];
-  for (const p of ALL_OPTIONAL) {
-    if (await hasOptionalPermissions([p])) granted.push(p);
-  }
-  return granted;
+export async function listGrantedBrowserPermissions(): Promise<string[]> {
+  // Discovery compares tool requirements against this field. Required manifest
+  // permissions (notably debugger) must be included alongside optional grants.
+  if (typeof chrome.permissions?.getAll !== 'function') return [];
+  const held = await chrome.permissions.getAll();
+  return [...new Set(held.permissions ?? [])];
 }
 
 async function pageLangFor(tabId: number | null): Promise<string | null> {
@@ -180,7 +180,7 @@ export async function buildBrowserDomState(
   const langPromise =
     opts.pageLang !== undefined ? Promise.resolve(opts.pageLang) : pageLangFor(tab.id);
   const [granted, lang, openTabCount, onboxAi, accessToken] = await Promise.all([
-    listGrantedOptional(),
+    listGrantedBrowserPermissions(),
     langPromise,
     countOpenTabs(),
     detectOnboxAi(),

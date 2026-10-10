@@ -27,6 +27,7 @@ import {
   verifyCurrentSettingsIdentity,
 } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import { captureSettingsShellDiagnostic } from './settings-shell-diagnostic.mjs';
 
 // EXT-D-0087: trusted Settings choices, real Chrome storage reads, and one
 // controlled rejection/hold at the browser API boundary in an owned profile.
@@ -217,6 +218,7 @@ async function assertExpectedIdentity(panel) {
 }
 
 async function openSettings(panel) {
+  operation = 'settings_shell';
   await waitFor(
     'd87_settings_shell',
     () => observation(panel),
@@ -394,7 +396,7 @@ try {
     expectedRelease: receipt,
     releaseReceiptPath: receiptPath,
     ...(receipt.kind === 'local_dev_unpacked' && { localDevReceiptPath: receiptPath }),
-    exercisePanel: async ({ page, panel, activatePanel }) => {
+    exercisePanel: async ({ page, panel, activatePanel, browserSession, panelTarget }) => {
       try {
         if (AUTH_MODE !== 'guest') {
           stage = 'authentication';
@@ -515,6 +517,14 @@ try {
           observation: reloadedLatest,
         });
       } catch (error) {
+        if (failureCode(error) === 'd87_settings_shell_not_observed') {
+          report.settings_shell_diagnostic = await captureSettingsShellDiagnostic({
+            panel,
+            browserSession,
+            expectedTargetId: panelTarget.targetId,
+            expectedPanelUrl: panelTarget.url,
+          });
+        }
         const authFailure = memberAuthFailureReport(error, operation);
         report.failure_operation = authFailure.stage;
         if (error?.memberAuthBoundary) report.failure_code = authFailure.code;

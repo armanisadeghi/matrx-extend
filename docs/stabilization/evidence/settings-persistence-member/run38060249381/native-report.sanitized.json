@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "defect": "EXT-D-0087",
+  "case_id": "settings-persistence-member",
+  "mode": "member",
+  "status": "fail",
+  "scope": "one guarded native member Settings run; persistence cases not reached",
+  "build": {
+    "version": "0.2.466",
+    "tree_sha256": "3e75d2ada5642ad46dafa5c111f66582ced3edf1fe4edcd282af34c24cf77e20",
+    "matches_imported_artifact": true
+  },
+  "authentication_and_organization": {
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "canonical_nonadmin_check_matched": true,
+    "admin_role": false,
+    "organization_selected": true,
+    "organization_resolution": "load_ladder",
+    "selected_organization_matches_expected_resolution": true,
+    "stored_organization_uuid_and_name_match": false,
+    "logical_organization_get_observed": true,
+    "logical_organization_get_authenticated": true,
+    "logical_organization_matches_expected": true,
+    "logical_organization_get_http_status": 200
+  },
+  "failure": {
+    "stage": "baseline",
+    "operation_field": "member_logical_organization_proof",
+    "operation_field_limit": "The failure code is from the later settings-shell wait; the operation field was not reset after the auth callback and is stale at failure.",
+    "code": "d87_settings_shell_not_observed",
+    "cases_reached": 0,
+    "failure_identity_diagnostic_present": false,
+    "failure_identity_diagnostic_reason": "Its exact guard requires member mode, operation settings_ready, and code d87_rendered_identity_not_observed; this failure occurred earlier at settings_shell.",
+    "settings_shell_observation": {
+      "settings_available": false,
+      "settings_active": false,
+      "error_visible": false,
+      "retry_visible": false,
+      "guest_gate_visible": false
+    }
+  },
+  "raw_report_sha256": "6e40891bda230494221948a212a28b25f9744e09a3c1fe26068ce0f72228b5ef"
+}

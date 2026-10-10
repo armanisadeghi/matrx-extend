@@ -6,6 +6,8 @@ const m = vi.hoisted(() => ({
   addPostToCollection: vi.fn(),
   isPostInCollection: vi.fn(),
   getLast: vi.fn(),
+  getCollectionOrg: vi.fn(),
+  activeOrg: vi.fn(),
   setLast: vi.fn(),
 }));
 vi.mock('@/lib/api/routes/social', () => ({
@@ -13,7 +15,9 @@ vi.mock('@/lib/api/routes/social', () => ({
   createCollection: m.createCollection,
   addPostToCollection: m.addPostToCollection,
 }));
+vi.mock('@/lib/org/active-org', () => ({ getActiveOrganizationId: m.activeOrg }));
 vi.mock('@/lib/swipe-file/store', () => ({
+  getCollectionOrganizationId: m.getCollectionOrg,
   isPostInCollection: m.isPostInCollection,
   getLastCollectionId: m.getLast,
   setLastCollectionId: m.setLast,
@@ -24,12 +28,20 @@ import { saveToSwipeFile } from '@/lib/swipe-file/save';
 const URL_OK = 'https://www.tiktok.com/@u/video/7300000000000000000';
 const post = (trace: object = {}) => ({
   ok: true,
-  result: { post_id: 'p1', title: 'Hook', trace },
+  result: {
+    post_id: 'p1',
+    title: 'Hook',
+    trace,
+    media: [],
+    transcript: { status: 'available', notes: [] },
+  },
 });
 
 beforeEach(() => {
   vi.clearAllMocks();
   m.getLast.mockResolvedValue('c-last');
+  m.activeOrg.mockResolvedValue('org-start');
+  m.getCollectionOrg.mockResolvedValue('org-collection');
   m.isPostInCollection.mockResolvedValue(false);
   m.addPostToCollection.mockResolvedValue({ ok: true, data: { saved: true } });
 });
@@ -44,8 +56,8 @@ describe('saveToSwipeFile', () => {
       postId: 'p1',
       notice: null,
     });
-    expect(m.addPostToCollection).toHaveBeenCalledWith('c-last', 'p1');
-    expect(m.setLast).toHaveBeenCalledWith('c-last');
+    expect(m.addPostToCollection).toHaveBeenCalledWith('c-last', 'p1', 'org-collection');
+    expect(m.setLast).toHaveBeenCalledWith('c-last', 'org-collection');
   });
 
   it('says already saved and does not add twice', async () => {
@@ -76,7 +88,7 @@ describe('saveToSwipeFile', () => {
       { url: URL_OK, collectionId: null, newCollectionName: ' Hooks ' },
       () => {},
     );
-    expect(m.createCollection).toHaveBeenCalledWith('Hooks');
+    expect(m.createCollection).toHaveBeenCalledWith('Hooks', 'org-start');
     expect(o).toMatchObject({ status: 'saved', collectionId: 'new1' });
   });
 
@@ -103,4 +115,55 @@ describe('saveToSwipeFile', () => {
     expect(o.status).toBe('failed');
     expect(m.setLast).not.toHaveBeenCalled();
   });
+});
+
+it('preserves media/transcript warnings and pins destination organization across a mid-save switch', async () => {
+  m.ingestPost.mockImplementation(async () => {
+    m.activeOrg.mockResolvedValue('org-switched');
+    return {
+      ok: true,
+      result: {
+        post_id: 'partial-post',
+        media: [],
+        media_notes: ['video: could not be downloaded'],
+        transcript: { status: 'none', notes: ['No speech found'] },
+      },
+    };
+  });
+  const outcome = await saveToSwipeFile({ url: URL_OK, collectionId: 'destination' }, () => {});
+  expect(outcome).toMatchObject({
+    status: 'saved',
+    receipt: { organizationId: 'org-collection', transcript: { status: 'none' } },
+  });
+  expect(outcome.status !== 'failed' && outcome.notice).toContain('video: could not be downloaded');
+  expect(m.ingestPost.mock.calls[0]?.[3]).toBe('org-collection');
+  expect(m.addPostToCollection).toHaveBeenCalledWith(
+    'destination',
+    'partial-post',
+    'org-collection',
+  );
+});
+
+it('preserves incomplete carousel coverage through save and receipt persistence', async () => {
+  m.ingestPost.mockResolvedValue({
+    ok: true,
+    result: {
+      post_id: 'spain-carousel',
+      media: [],
+      transcript: { status: 'available', notes: [] },
+      media_coverage: {
+        expected_items: 7,
+        observed_items: 7,
+        stored_items: 1,
+        missing_items: 6,
+        status: 'partial',
+      },
+    },
+  });
+  const saved = await saveToSwipeFile({ url: URL_OK, collectionId: 'destination' }, () => {});
+  expect(saved).toMatchObject({
+    status: 'saved',
+    receipt: { coverage: { expected_items: 7, stored_items: 1, status: 'partial' } },
+  });
+  expect(saved.status !== 'failed' && saved.notice).toContain('6 media items missing');
 });

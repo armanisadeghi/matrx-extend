@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "kind": "ci_development_test",
+  "eligible_store": false,
+  "repository": "armanisadeghi/matrx-extend",
+  "workflow": ".github/workflows/ci.yml",
+  "source_sha": "99bc43a89f90f20f68b13c4ee16fbd6df425708b",
+  "ci_run_id": 38058143883,
+  "run_attempt": 1,
+  "artifact_id": 11672166361,
+  "github_artifact_digest": "sha256:41672044380892916f14da2d4fd06b80f5eb0786db930989c9d1f38c1fd26a26",
+  "version": "0.2.466",
+  "tree_sha256": "d6053891bae813bc93894a84fd801e9ef0a2f6ab1fb12ee7c9a5b160e9baf420",
+  "workflow_source_sha": "cea6702df7c6011a2b03fe50688a244a9073166d",
+  "workflow_vs_product_source": "workflow checkout is a descendant of the artifact source; pnpm-lock.yaml is the only changed path",
+  "import_verification": "scripts/current-test-artifact.mjs accepted CI run/artifact metadata, GitHub ZIP digest, build provenance and tree receipt",
+  "claim": "frozen development artifact only; not current-main or Store evidence"
+}

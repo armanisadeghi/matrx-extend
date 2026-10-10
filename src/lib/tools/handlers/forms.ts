@@ -1,3 +1,4 @@
+import { executeDomScript } from '@/lib/tools/dom-access';
 /**
  * Form-aware tools — discovery + targeted setters that produce the same
  * input/change events frameworks expect.
@@ -42,7 +43,7 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (formSelector: string | null, sensitiveSelectors: string[], sensitiveAttr: string) => {
         // Redaction is the OR of three signals — marker attribute, the
@@ -53,7 +54,8 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
         const sensitiveEls = new Set<Element>();
         for (const s of sensitiveSelectors) {
           try {
-            for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+            for (const e of Array.from(window.__matrxToolDom.querySelectorAll(s)))
+              sensitiveEls.add(e);
           } catch {
             /* a selector that no longer parses simply matches nothing */
           }
@@ -64,39 +66,12 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
           window.__matrx_generation_target_registry__?.isSensitive(el) === true ||
           (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
 
-        function uniqueSelector(el: Element): string {
-          if ('id' in el && (el as { id: string }).id) {
-            const id = (el as { id: string }).id;
-            return `#${CSS.escape(id)}`;
-          }
-          const name = el.getAttribute('name');
-          if (name) {
-            return `${el.tagName.toLowerCase()}[name="${CSS.escape(name)}"]`;
-          }
-          // fallback: nth-of-type chain
-          const parts: string[] = [];
-          let node: Element | null = el;
-          while (node && node.nodeType === 1 && node !== document.body && parts.length < 6) {
-            const current: Element = node;
-            const tag = current.tagName.toLowerCase();
-            const parent = current.parentElement;
-            if (!parent) {
-              parts.unshift(tag);
-              break;
-            }
-            const siblings = Array.from(parent.children).filter(
-              (c: Element) => c.tagName === current.tagName,
-            );
-            const idx = siblings.indexOf(current) + 1;
-            parts.unshift(siblings.length > 1 ? `${tag}:nth-of-type(${idx})` : tag);
-            node = parent;
-          }
-          return parts.join(' > ');
-        }
         function labelFor(input: Element): string | null {
           const id = input.getAttribute('id');
           if (id) {
-            const lbl = document.querySelector(`label[for="${CSS.escape(id)}"]`);
+            const lbl = (input.getRootNode() as Document | ShadowRoot).querySelector(
+              `label[for="${CSS.escape(id)}"]`,
+            );
             if (lbl?.textContent) return lbl.textContent.trim();
           }
           // wrapped: <label>X <input/></label>
@@ -110,8 +85,8 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
         }
 
         const forms = formSelector
-          ? Array.from(document.querySelectorAll(formSelector))
-          : Array.from(document.querySelectorAll('form'));
+          ? Array.from(window.__matrxToolDom.querySelectorAll(formSelector))
+          : Array.from(window.__matrxToolDom.querySelectorAll('form'));
         const items = forms.map((form) => {
           const inputs = Array.from(
             form.querySelectorAll('input, select, textarea, [contenteditable="true"]'),
@@ -154,7 +129,7 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
               placeholder: el.getAttribute('placeholder'),
               required: (el as HTMLInputElement).required ?? null,
               disabled: (el as HTMLInputElement).disabled ?? false,
-              selector: uniqueSelector(el),
+              selector: window.__matrxToolDom.selector(el),
               options:
                 tag === 'select'
                   ? Array.from((el as HTMLSelectElement).options).map((o) => ({
@@ -174,10 +149,10 @@ export const get_form_fields: ToolHandler<FormFieldsArgs, unknown> = {
             id: form.id || null,
             action: form.getAttribute('action'),
             method: form.getAttribute('method')?.toLowerCase() ?? 'get',
-            selector: uniqueSelector(form),
+            selector: window.__matrxToolDom.selector(form),
             field_count: fields.length,
             fields,
-            submit_selector: submit ? uniqueSelector(submit) : null,
+            submit_selector: submit ? window.__matrxToolDom.selector(submit) : null,
           };
         });
         return { count: items.length, forms: items };
@@ -209,10 +184,10 @@ export const select_dropdown_option: ToolHandler<SelectDropdownArgs, unknown> = 
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (selector: string, value: string | null, label: string | null, idx: number | null) => {
-        const el = document.querySelector(selector) as HTMLSelectElement | null;
+        const el = window.__matrxToolDom.querySelector(selector) as HTMLSelectElement | null;
         if (!el || el.tagName.toLowerCase() !== 'select') {
           return { ok: false, reason: `No <select> at ${selector}` };
         }
@@ -235,7 +210,7 @@ export const select_dropdown_option: ToolHandler<SelectDropdownArgs, unknown> = 
           };
         }
         el.selectedIndex = target;
-        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
         el.dispatchEvent(new Event('change', { bubbles: true }));
         return {
           ok: true,
@@ -266,10 +241,13 @@ export const set_checkbox: ToolHandler<SetCheckboxArgs, unknown> = {
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (selector: string, checked: boolean) => {
-        const el = document.querySelector(selector) as HTMLInputElement | HTMLElement | null;
+        const el = window.__matrxToolDom.querySelector(selector) as
+          | HTMLInputElement
+          | HTMLElement
+          | null;
         if (!el) return { ok: false, reason: `No element at ${selector}` };
         if (el instanceof HTMLInputElement && el.type === 'checkbox') {
           if (el.checked !== checked) {
@@ -310,14 +288,15 @@ export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (selector: string, value: string | null, label: string | null, idx: number | null) => {
-        const probe = document.querySelector(selector) as HTMLElement | null;
+        const probe = window.__matrxToolDom.querySelector(selector) as HTMLElement | null;
         if (!probe) return { ok: false, reason: `No element at ${selector}` };
-        const root: Element =
+        const root: Element | Document | ShadowRoot =
           probe instanceof HTMLInputElement && probe.type === 'radio'
-            ? (probe.closest('form, fieldset, body') ?? document.body)
+            ? (probe.closest('form, fieldset, body') ??
+              (probe.getRootNode() as Document | ShadowRoot))
             : probe;
         const groupName = probe instanceof HTMLInputElement ? probe.name : null;
         const radios = Array.from(
@@ -330,7 +309,11 @@ export const set_radio: ToolHandler<SetRadioArgs, unknown> = {
         } else if (label !== null) {
           target = radios.find((r) => {
             const id = r.getAttribute('id');
-            const lbl = id ? document.querySelector(`label[for="${CSS.escape(id)}"]`) : null;
+            const lbl = id
+              ? (r.getRootNode() as Document | ShadowRoot).querySelector(
+                  `label[for="${CSS.escape(id)}"]`,
+                )
+              : null;
             const text = (lbl?.textContent ?? r.closest('label')?.textContent ?? '').trim();
             return text === label.trim();
           });
@@ -370,15 +353,15 @@ export const submit_form: ToolHandler<SubmitFormArgs, unknown> = {
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (selector: string | null, viaButton: boolean) => {
         let form: HTMLFormElement | null;
         if (selector) {
-          const el = document.querySelector(selector) as Element | null;
+          const el = window.__matrxToolDom.querySelector(selector) as Element | null;
           form = el?.closest('form') ?? (el as HTMLFormElement | null);
         } else {
-          form = document.querySelector('form');
+          form = window.__matrxToolDom.querySelector('form') as HTMLFormElement | null;
         }
         if (!form) return { ok: false, reason: 'No form found' };
         if (viaButton) {
@@ -437,10 +420,10 @@ export const file_upload: ToolHandler<FileUploadArgs, unknown> = {
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     try {
-      const [first] = await chrome.scripting.executeScript({
+      const [first] = await executeDomScript({
         target: { tabId },
         func: (selector: string, files: { name: string; mime: string; base64: string }[]) => {
-          const el = document.querySelector(selector) as HTMLInputElement | null;
+          const el = window.__matrxToolDom.querySelector(selector) as HTMLInputElement | null;
           if (!el || el.tagName.toLowerCase() !== 'input' || el.type !== 'file') {
             return { ok: false, reason: `Not a file input at ${selector}` };
           }
@@ -453,7 +436,7 @@ export const file_upload: ToolHandler<FileUploadArgs, unknown> = {
             dt.items.add(new File([blob], f.name, { type: f.mime }));
           }
           el.files = dt.files;
-          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
           el.dispatchEvent(new Event('change', { bubbles: true }));
           return {
             ok: true,

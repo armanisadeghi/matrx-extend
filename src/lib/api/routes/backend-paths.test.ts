@@ -52,9 +52,12 @@ function toTemplate(raw: string): RegExp {
 }
 
 function resolves(method: string, raw: string): boolean {
-  const re = toTemplate(raw);
+  const callerPath = (raw.split('?')[0] ?? raw)
+    .replace(/^\/api\//, '/')
+    .replace(/\$\{[^}]+\}/g, 'x');
   return Object.entries(routes).some(
-    ([p, ops]) => method in ops && re.test(p.replace(/\{[^}]+\}/g, 'x')),
+    ([route, ops]) =>
+      method in ops && toTemplate(route.replace(/\{([^}]+)\}/g, '${$1}')).test(callerPath),
   );
 }
 
@@ -66,6 +69,18 @@ describe('extension backend paths exist on aidream', () => {
     expect(resolves('post', '/pdf/extract-text')).toBe(false);
     expect(resolves('get', '/health')).toBe(true);
     expect(resolves('get', '/api/compute-targets/')).toBe(true);
+    expect(resolves('put', '/social/collections/${collectionId}/items/social_post/${postId}')).toBe(
+      true,
+    );
+    expect(resolves('delete', '/social/collections/${collectionId}/items/social_ad/${adId}')).toBe(
+      true,
+    );
+    expect(
+      resolves('patch', '/social/collections/${collectionId}/items/social_post/${postId}'),
+    ).toBe(false);
+    expect(
+      resolves('put', '/social/collections/${collectionId}/missing/social_post/${postId}'),
+    ).toBe(false);
   });
 
   it('every literal backend path resolves to a route with that method', () => {

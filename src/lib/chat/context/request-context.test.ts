@@ -286,3 +286,18 @@ describe('context single door', () => {
     expect(offenders).toEqual([]);
   });
 });
+
+it('applies the declared extension surface rule and carries matching provenance', () => {
+  const result = buildRequestContext(
+    { page_brief: { title: 'Saved post' } },
+    {
+      _default: { page_brief: { include: true } },
+      'chrome-extension/assistant': { page_brief: { include: false } },
+    },
+    50000,
+    'chrome-extension/assistant',
+  );
+  expect(result.context).toBeUndefined();
+  expect(result.withheld).toContain('page_brief');
+  expect(result.rows[0]?.surfaceKey).toBe('chrome-extension/assistant');
+});

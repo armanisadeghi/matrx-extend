@@ -70,6 +70,7 @@ export const agentTargetExecutePath = (target: string): string => {
  * flow.
  */
 export interface AgentClientEnvelope {
+  surface?: `chrome-extension/${'assistant' | 'pilot'}`;
   capabilities: string[];
   state: Record<string, Record<string, unknown>>;
 }

@@ -7,7 +7,15 @@
  */
 
 import { addPostToCollection, createCollection, ingestPost } from '@/lib/api/routes/social';
+import { log } from '@/lib/debug/log';
+import { getActiveOrganizationId } from '@/lib/org/active-org';
 import {
+  type SwipeCaptureReceipt,
+  captureReceiptWarnings,
+  writeSwipeReceipt,
+} from '@/lib/swipe-file/receipt';
+import {
+  getCollectionOrganizationId,
   getLastCollectionId,
   isPostInCollection,
   setLastCollectionId,
@@ -21,6 +29,7 @@ export type SwipeOutcome =
       collectionId: string;
       title: string;
       notice: string | null;
+      receipt: SwipeCaptureReceipt;
     }
   | { status: 'failed'; reason: string };
 
@@ -38,19 +47,32 @@ export async function saveToSwipeFile(
   const target = swipeTargetFromUrl(req.url);
   if (!target) return { status: 'failed', reason: 'This page is not a post or ad Matrx can save.' };
 
+  const initiatingOrg = await getActiveOrganizationId();
+  if (!initiatingOrg) return { status: 'failed', reason: 'Sign in to Matrx to save this post.' };
+
   let collectionId =
-    req.collectionId ?? (req.newCollectionName ? null : await getLastCollectionId());
+    req.collectionId ?? (req.newCollectionName ? null : await getLastCollectionId(initiatingOrg));
   if (!collectionId && !req.newCollectionName?.trim())
     return { status: 'failed', reason: 'Choose a collection, or name a new one.' };
 
+  // A selected collection may belong to a different visible organization.
+  const organizationId = collectionId
+    ? await getCollectionOrganizationId(collectionId)
+    : initiatingOrg;
+
   onProgress(`Reading this ${target.label}`);
-  const ingest = await ingestPost(target.url, (s) => onProgress(s.label));
+  const ingest = await ingestPost(
+    target.url,
+    (s) => onProgress(s.label),
+    undefined,
+    organizationId,
+  );
   if (!ingest.ok) return { status: 'failed', reason: ingest.reason };
   const post = ingest.result;
 
   if (!collectionId) {
     onProgress('Creating the collection');
-    const made = await createCollection(req.newCollectionName!.trim());
+    const made = await createCollection(req.newCollectionName!.trim(), organizationId);
     if (!made.ok)
       return {
         status: 'failed',
@@ -67,14 +89,41 @@ export async function saveToSwipeFile(
   }
   if (!already) {
     onProgress('Adding to the collection');
-    const added = await addPostToCollection(collectionId, post.post_id);
+    const added = await addPostToCollection(collectionId, post.post_id, organizationId);
     if (!added.ok)
       return {
         status: 'failed',
         reason: `The post was fetched but could not be added: ${added.error}`,
       };
   }
-  await setLastCollectionId(collectionId);
+  const receipt: SwipeCaptureReceipt = {
+    postId: post.post_id,
+    url: target.url,
+    organizationId,
+    platform: target.platform,
+    capturedAt: new Date().toISOString(),
+    media: post.media ?? [],
+    mediaNotes: post.media_notes ?? [],
+    transcript: {
+      status: post.transcript?.status ?? 'unknown',
+      notes: post.transcript?.notes ?? [],
+    },
+    reused: post.trace?.reused === true,
+    ...(post.media_coverage ? { coverage: post.media_coverage } : {}),
+  };
+  const notices = captureReceiptWarnings(receipt);
+  try {
+    await writeSwipeReceipt(receipt);
+  } catch (err) {
+    log.warn('sw', 'swipe receipt could not be cached', err);
+    notices.push('Capture details could not be remembered on this device');
+  }
+  try {
+    await setLastCollectionId(collectionId, organizationId);
+  } catch (err) {
+    log.warn('sw', 'swipe collection preference could not be remembered', err);
+    notices.push('Collection preference could not be remembered');
+  }
   const fb = post.trace?.fallback_reason;
   return {
     status: already ? 'already_saved' : 'saved',
@@ -82,6 +131,7 @@ export async function saveToSwipeFile(
     collectionId,
     title: post.title || post.caption?.slice(0, 80) || target.label,
     // Vendors and their reasons are our business, not the person's (Arman, 2026-10-09).
-    notice: fb ? 'Fetched from a backup source' : null,
+    notice: [...(fb ? ['Fetched from a backup source'] : []), ...notices].join(' · ') || null,
+    receipt,
   };
 }

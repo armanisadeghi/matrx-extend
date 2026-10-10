@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_evidence_adjudication",
+  "reviewed_at": "2026-10-10",
+  "reviewer_lane": "guest-seo",
+  "run_id": 38057564851,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38057564851",
+  "verdict": "BOUNDED_PASS",
+  "scope": "Member same-article duplicate landing and custom rename with no destination for EXT-D-0187; no full T04/T29 closure.",
+  "evidence": {
+    "workflow_result": "success",
+    "workflow_source_sha": "e31be7511a3353901afdfe9237bdcd516d9d9415",
+    "product_artifact": "development v0.2.466; CI 38056819271/artifact 11671188921; tree d6053891bae813bc93894a84fd801e9ef0a2f6ab1fb12ee7c9a5b160e9baf420",
+    "hosted_result_artifact": "11671659646, sha256:5825b442bb77bd48330df6173a27a758189bf705371eef3740e154f56c81270b",
+    "native_evidence": "evidence/scrape-save-duplicate-member/run38057564851/native-evidence.json",
+    "native_evidence_sha256": "11d5f0df4c3216142f37cd226ba2c5bc5b4a715adfb6b2b6e472095758f3e9ff",
+    "resource_finals": {
+      "file": "evidence/scrape-save-duplicate-member/run38057564851/resource-finals.json",
+      "sha256": "aa0ad00d56c2bb9b1bfa5236bd5b2d94ac5626afeacb1338514b718c0b64c8c9",
+      "package": "valid; admitted; resource_invalid=false; child exit 0",
+      "guest": "valid; admitted; resource_invalid=false; child exit 0; transient CPU pending recovered",
+      "browser": "valid; admitted; resource_invalid=false; child exit 0"
+    }
+  },
+  "observed": [
+    "Real member/non-admin authentication and selected organization proof.",
+    "First custom-named no-destination save persisted; independent Source readback and zero destination associations were verified.",
+    "Same article was recaptured; one /sources/land request returned HTTP 201 with reuse=true and the existing Source identity.",
+    "One rename request returned HTTP 200 to that same Source; rename succeeded and persisted.",
+    "Exactly one Source row remained, zero associations were present, and reopened UI name, URL and article matched.",
+    "Run-owned Source soft-delete and association cleanup were verified; no Project fixture was created."
+  ],
+  "reasoning": {
+    "prior_observation": "Run 38054579156 failed because its observer required HTTP 200 for /sources/land, although the endpoint contract declares HTTP 201. It retained no status or later outcome and was indeterminate with zero credit.",
+    "adjudication": "The corrected observer retained the 201 response and bounded reuse, same-row, rename, persisted-name, zero-association, reopen and cleanup assertions. The prior duplicate-rename failure did not reproduce as product behavior; it was an observer status-contract false negative.",
+    "defect_state": "EXT-D-0187 remains in-fix because other Save Source requirements and paths remain open.",
+    "case_state": "Only the member no-destination duplicate-rename substep receives bounded evidence. EXT-F-1007-T04 and EXT-F-1007-T29 remain partial."
+  },
+  "limits": [
+    "No full T04/T29 closure or whole-feature pass is established.",
+    "Project display, guest/admin roles, Library, multiple destinations, controlled refusal/retry, responsive confirmation timing, and other surrounding paths remain unverified.",
+    "No product repair or new hosted run was performed as part of this review."
+  ],
+  "privacy": "Evidence contains no credential, account identifier, source/project ID, request body, response text, raw log, or runner path."
+}

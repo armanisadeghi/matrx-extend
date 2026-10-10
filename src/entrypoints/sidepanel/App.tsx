@@ -27,8 +27,10 @@ import {
   takePopupLaunchTarget,
   waitForSidePanelContextId,
 } from '@/lib/panel/launch-intent';
+import { SWIPE_OPEN_KEY } from '@/lib/swipe-file/navigation';
 import { useSettingsStore } from '@/state/settings';
 import { type SidepanelTab, useSidepanelTabStore } from '@/state/sidepanel-tab';
+import { useSwipeFileStore } from '@/state/swipe-file';
 import { AgentCatalogProvider } from '@ai-matrx/agents/catalog/react';
 import {
   ConfirmDialogHost,
@@ -40,6 +42,7 @@ import {
 } from '@ai-matrx/design-system';
 import {
   BookOpen,
+  Bookmark,
   Bug,
   Calendar,
   Camera,
@@ -87,6 +90,8 @@ const VIEW_LOADERS: Record<SidepanelTab, () => Promise<{ default: ComponentType 
   lists: () => import('@/features/lists/ListsHubView').then((m) => ({ default: m.ListsHubView })),
   agenda: () => import('@/features/agenda/AgendaView').then((m) => ({ default: m.AgendaView })),
   scrape: () => import('@/features/scrape/ScrapeView').then((m) => ({ default: m.ScrapeView })),
+  'swipe-file': () =>
+    import('@/features/swipe-file/SwipeFileView').then((m) => ({ default: m.SwipeFileView })),
   'saved-captures': () =>
     import('@/features/saved-captures/SavedCapturesView').then((m) => ({
       default: m.SavedCapturesView,
@@ -124,6 +129,7 @@ const TasksView = lazy(VIEW_LOADERS.tasks);
 const ListsHubView = lazy(VIEW_LOADERS.lists);
 const AgendaView = lazy(VIEW_LOADERS.agenda);
 const ScrapeView = lazy(VIEW_LOADERS.scrape);
+const SwipeFileView = lazy(VIEW_LOADERS['swipe-file']);
 const SavedCapturesView = lazy(VIEW_LOADERS['saved-captures']);
 const NeedsYourBrowserView = lazy(VIEW_LOADERS.capture);
 const DataView = lazy(VIEW_LOADERS.data);
@@ -224,6 +230,39 @@ export function App() {
     return () => {
       mounted = false;
       chrome.storage.onChanged.removeListener(onStorageChanged);
+    };
+  }, [setTab]);
+
+  useEffect(() => {
+    let mounted = true;
+    const applySwipeIntent = async () => {
+      const window = await chrome.windows.getCurrent();
+      const stored = await chrome.storage.session.get(SWIPE_OPEN_KEY);
+      const intent = stored[SWIPE_OPEN_KEY];
+      if (
+        !mounted ||
+        !intent ||
+        intent.windowId !== window.id ||
+        typeof intent.postId !== 'string' ||
+        typeof intent.organizationId !== 'string'
+      )
+        return;
+      useSwipeFileStore.getState().select({
+        postId: intent.postId,
+        organizationId: intent.organizationId,
+        ...(typeof intent.collectionId === 'string' ? { collectionId: intent.collectionId } : {}),
+      });
+      setTab('swipe-file');
+      await chrome.storage.session.remove(SWIPE_OPEN_KEY);
+    };
+    const listener = (changes: Record<string, chrome.storage.StorageChange>, area: string) => {
+      if (area === 'session' && changes[SWIPE_OPEN_KEY]?.newValue) void applySwipeIntent();
+    };
+    void applySwipeIntent();
+    chrome.storage.onChanged.addListener(listener);
+    return () => {
+      mounted = false;
+      chrome.storage.onChanged.removeListener(listener);
     };
   }, [setTab]);
 
@@ -425,6 +464,11 @@ export function App() {
                       <ScanLine className="size-3.5" />
                     </TabsTrigger>
                   )}
+                  {canAccess('swipe-file') && (
+                    <TabsTrigger value="swipe-file" className="size-7 p-0" title="Swipe file">
+                      <Bookmark className="size-3.5" />
+                    </TabsTrigger>
+                  )}
                   {canAccess('saved-captures') && (
                     <TabsTrigger
                       value="saved-captures"
@@ -605,6 +649,13 @@ export function App() {
                 <TabsContent value="scrape" className="flex-1 min-h-0">
                   <Suspense fallback={TabFallback}>
                     <ScrapeView />
+                  </Suspense>
+                </TabsContent>
+              )}
+              {canAccess('swipe-file') && (
+                <TabsContent value="swipe-file" className="flex-1 min-h-0">
+                  <Suspense fallback={TabFallback}>
+                    <SwipeFileView />
                   </Suspense>
                 </TabsContent>
               )}

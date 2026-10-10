@@ -21,6 +21,7 @@ export const SIDEPANEL_TAB_AUDIENCE = {
   lists: 'signed-in',
   scrape: 'everyone',
   'saved-captures': 'signed-in',
+  'swipe-file': 'signed-in',
   // The capture ladder's rung-3/rung-4 tray. Reads an org-scoped queue, so it
   // means nothing to a guest.
   capture: 'signed-in',

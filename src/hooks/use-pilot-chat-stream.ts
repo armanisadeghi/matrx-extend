@@ -538,6 +538,7 @@ export function usePilotChatStream() {
       let built: ChatRequestContext = { values: {}, rows: [], context: undefined, withheld: [] };
       try {
         built = await buildChatContext({
+          surface: 'pilot',
           user: user
             ? {
                 id: user.id,
@@ -618,6 +619,7 @@ export function usePilotChatStream() {
         ...adminOverrides,
         ...(configOverrides ? { config_overrides: configOverrides } : {}),
         client: {
+          surface: 'chrome-extension/pilot',
           capabilities: ['browser-dom'],
           state: {
             'browser-dom': browserDomState as unknown as Record<string, unknown>,
@@ -754,6 +756,7 @@ export function usePilotChatStream() {
       try {
         const user = useAuthStore.getState().user;
         built = await buildChatContext({
+          surface: 'pilot',
           user: user ? { id: user.id, email: user.email, full_name: user.full_name ?? null } : null,
           desktopTransport: useDesktopStore.getState().transport,
           scrape: useScrapeStore.getState().current,
@@ -777,6 +780,7 @@ export function usePilotChatStream() {
         // delegated tool answer, or the stall watchdog) — never a gesture.
         initiation: 'auto' satisfies RequestInitiation,
         client: {
+          surface: 'chrome-extension/pilot',
           capabilities: ['browser-dom'],
           state: {
             'browser-dom': browserDomState as unknown as Record<string, unknown>,

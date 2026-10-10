@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-10",
+  "verdict": "PASS_BOUNDED_HARNESS_ONLY",
+  "scope": "Independent review of lane-B guest development routing and the native EXT-F-1007-T08 no-signal SEO / empty Schema harness. No native product result or case credit is claimed.",
+  "reviewed_paths": [
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/hosted-acceptance-route.mjs",
+    "scripts/hosted-guest-acceptance.mjs",
+    "scripts/hosted-scrape-route.mjs",
+    "scripts/hosted-scrape-route.test.mjs",
+    "tests/browser/scrape-seo-schema-empty-guest.mjs",
+    "tests/browser/scrape-seo-schema-empty-observation.mjs",
+    "tests/browser/scrape-seo-schema-empty-oracle.mjs",
+    "tests/browser/scrape-seo-schema-empty-oracle.test.mjs"
+  ],
+  "review_findings": {
+    "route_admission": "The new scope routes only guest-scrape-development on lane B, requires a frozen development artifact, rejects Store/release selection, and selects only the dedicated driver. Route and executed workflow admission tests cover valid and invalid lane, case, auth, and provenance choices.",
+    "native_observation": "The driver serves an exact owned localhost title-only fixture, verifies no body text or SEO signal elements, uses the real native side panel and capture flow, and observes the rendered SEO/Schema panes through the same exported DOM expression exercised by the tests.",
+    "oracle": "The driver-shaped DOM result now matches the oracle field names. Tests execute that shared expression against a DOM fixture and send its output to the real oracle. Distinct titles prevent a fixed-title shortcut. Negative cases cover malformed Schema JSON, title, description, canonical, Open Graph, Twitter, schema type, JSON-LD, populated SEO groups, and capture/export mutation. Performance is allowed as a navigation-derived baseline; other signal groups are rejected.",
+    "privacy_and_side_effects": "The report records fixed labels, Booleans, bounded counts, artifact provenance, and capture digests/identity comparisons; it omits raw page/metadata content, credentials, and user values. The case uses an owned local page and clipboard observation; it performs no application save or product-data write. Only successful assertions set the bounded report pass."
+  },
+  "verification": {
+    "focused_tests": "19/19 pass: scripts/hosted-scrape-route.test.mjs and tests/browser/scrape-seo-schema-empty-oracle.test.mjs",
+    "compile": "pnpm compile passes",
+    "driver_syntax": "node --check tests/browser/scrape-seo-schema-empty-guest.mjs passes",
+    "biome": "Biome check passes on the eight supported changed source/test files; workflow YAML is not processed by Biome.",
+    "diff_check": "git diff --check passes on all nine reviewed paths.",
+    "forcing_mutation": "Independent plant.py mutation removed the JSON-LD empty assertion; the actual driver-shaped negative and focused oracle test both went RED with the expected missing-exception failure. plant.py restored the file byte-identically (SHA-256 0bef71630bc42feadd61a4a92ba581d6ab3966c879bfcd29f7dd2ca84c622ea8)."
+  },
+  "limits": "No hosted or browser run was performed. The report is evidence that the bounded harness and its source guards are ready for a guarded run, not proof that the product passes, the case is closed, current-main behavior is verified, or Store/other roles are covered."
+}

@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "run_id": 38060249381,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38060249381",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "663f8bb2a2644b70d98180f115a8175b4c08614e",
+  "workflow_conclusion": "failure",
+  "lane": "A",
+  "runner_label": "macos-15",
+  "dispatch": {
+    "acceptance_case": "settings-persistence-member"
+  },
+  "development_artifact": {
+    "ci_run_id": 38059544877,
+    "artifact_id": 11672931022,
+    "version": "0.2.466",
+    "source_sha": "998cfc86af7ce161404a528f59c45958ad75bc43",
+    "tree_sha256": "3e75d2ada5642ad46dafa5c111f66582ced3edf1fe4edcd282af34c24cf77e20",
+    "github_artifact_digest": "sha256:536e6d8bbaf28750e4023e0162580ab28800d95aa2c4864aa838918a28b0d646",
+    "eligible_store": false,
+    "import_claim": "exact_pushed_commit_only",
+    "workflow_source_relation": "Frozen product source 998cfc86 was loaded on workflow source 663f8bb2."
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11672429340,
+    "name": "hosted-guest-38060249381-1",
+    "digest": "sha256:bf350c2ae5edc3ba64de39782ce89edf288446265ea55d1b6cec5304a4dd6d49",
+    "downloaded_zip_sha256": "bf350c2ae5edc3ba64de39782ce89edf288446265ea55d1b6cec5304a4dd6d49",
+    "digest_verified": true,
+    "expired": false,
+    "size_in_bytes": 92436
+  },
+  "native": {
+    "status": "fail",
+    "failure_stage": "baseline",
+    "failure_code": "d87_settings_shell_not_observed",
+    "cases_reached": 0,
+    "logical_organization_get_matches_expected": true,
+    "settings_persistence_targets_passed": false
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "package_valid": true,
+    "browser_valid": true,
+    "guest_resource_invalid": true,
+    "guest_native_child_exit_code": 1,
+    "guest_resource_child_exit_code": 3,
+    "cpu_pending_recovered_before_final": false
+  },
+  "cleanup": {
+    "temporary_repository_secret_deleted_after_terminal": true,
+    "secret_name_absence_count": 0,
+    "local_one_time_link_file_removed_before_run": true,
+    "local_one_time_link_file_absent_at_terminal": true,
+    "raw_hosted_artifact_retained": false
+  },
+  "credit_limits": {
+    "EXT_D_0189": "No product credit; no Settings persistence case ran.",
+    "EXT_D_0087": "No new product credit; member identity and expected logical-org GET were observed, then Settings shell wait failed before test cases.",
+    "product_defect": "Not established. The failure is an unclassified baseline shell observation with inconsistent operation metadata and an invalid guest resource final.",
+    "current_main_or_store": "No credit; product artifact is frozen v0.2.466 source 998cfc86 and workflow source is 663f8bb2."
+  },
+  "evidence": {
+    "native_report": "native-report.sanitized.json",
+    "product_artifact": "product-artifact.sanitized.json",
+    "resource_finals": "resource-finals.sanitized.json",
+    "resource_journals": [
+      "resource-journals/hosted-package-38060249381-1.jsonl",
+      "resource-journals/hosted-browser-38060249381-1.jsonl",
+      "resource-journals/hosted-guest-38060249381-1.jsonl"
+    ]
+  },
+  "sanitization": "Only fixed enums, booleans, bounded status, counts, hashes and case scope retained. No raw report, screenshots, credentials, account values, personal identifiers or machine paths retained."
+}

@@ -1,0 +1,26 @@
+{
+  "date": "2026-10-10",
+  "verdict": "PASS_BOUNDED_DIAGNOSTIC_ONLY",
+  "scope": "Independent source and focused-test review of the D87 baseline Settings-shell failure diagnostic. This is not a native product acceptance result.",
+  "changed_paths_reviewed": [
+    "tests/browser/settings-d87-native-acceptance.mjs",
+    "tests/browser/settings-shell-diagnostic.mjs",
+    "tests/browser/settings-shell-diagnostic.test.mjs"
+  ],
+  "findings": {
+    "failure_gate": "The caller runs capture only when failureCode(error) is exactly d87_settings_shell_not_observed. A focused test exercises matching and unrelated failures; the operation is set to settings_shell before the shell wait can fail.",
+    "diagnostic_data": "Target IDs and panel URLs are used only for in-memory equality checks. The emitted snapshot contains Booleans and bounded counts; the tests confirm owned, replacement, and unobserved cases and check that fixture IDs/URLs do not appear in output.",
+    "acceptance_effect": "The catch-path diagnostic does not mark a case passed or alter the acceptance status. It only enriches failure evidence; no D87/D0189 or Settings product credit follows."
+  },
+  "forcing_evidence": {
+    "caller_gate": "The implementer reports an executed plant.py mutation disabling the exact-code gate; the matching-vs-unrelated test went RED and the source was restored byte-identically.",
+    "collector": "The implementer reports an executed plant.py constant-result collector mutation; the owned-vs-replacement test went RED and the source was restored byte-identically."
+  },
+  "verification": {
+    "focused_tests": "3/3 pass",
+    "compile": "pnpm compile passes",
+    "biome": "Biome check passes on all three reviewed paths",
+    "diff_check": "git diff --check passes on all three reviewed paths"
+  },
+  "limit": "CDP Target.getTargets and panel Runtime.evaluate use existing send/evaluate calls without a new per-call timeout; a stalled CDP response could delay failure-report completion. No hosted rerun was performed, and the original run remains zero-credit/resource-invalid."
+}

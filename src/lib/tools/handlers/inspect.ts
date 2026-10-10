@@ -1,3 +1,4 @@
+import { executeDomScript } from '@/lib/tools/dom-access';
 /**
  * Page inspection tools — surgical alternatives to read_active_page when the
  * agent only needs a slice of the page.
@@ -40,7 +41,7 @@ export const find_text_on_page: ToolHandler<FindTextArgs, unknown> = {
     const resolved = await resolveTabIdArg(args.tab_id, ctx);
     if (!resolved.ok) return { ok: false, reason: resolved.reason };
     const tabId = resolved.id;
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (
         query: string,
@@ -49,29 +50,6 @@ export const find_text_on_page: ToolHandler<FindTextArgs, unknown> = {
         limit: number,
         ctxChars: number,
       ) => {
-        function uniqueSelector(el: Element): string {
-          if ('id' in el && (el as { id: string }).id) {
-            return `#${CSS.escape((el as { id: string }).id)}`;
-          }
-          const parts: string[] = [];
-          let n: Element | null = el;
-          while (n && n !== document.body && parts.length < 6) {
-            const current: Element = n;
-            const tag = current.tagName.toLowerCase();
-            const parent = current.parentElement;
-            if (!parent) {
-              parts.unshift(tag);
-              break;
-            }
-            const siblings = Array.from(parent.children).filter(
-              (c: Element) => c.tagName === current.tagName,
-            );
-            const idx = siblings.indexOf(current) + 1;
-            parts.unshift(siblings.length > 1 ? `${tag}:nth-of-type(${idx})` : tag);
-            n = parent;
-          }
-          return parts.join(' > ');
-        }
         let regex: RegExp;
         try {
           regex = useRegex
@@ -81,39 +59,47 @@ export const find_text_on_page: ToolHandler<FindTextArgs, unknown> = {
           return { ok: false, reason: `bad regex: ${(err as Error).message}` };
         }
 
-        const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-          acceptNode: (node) => {
-            const parent = node.parentElement;
-            if (!parent) return NodeFilter.FILTER_REJECT;
-            const tag = parent.tagName.toLowerCase();
-            if (tag === 'script' || tag === 'style' || tag === 'noscript') {
-              return NodeFilter.FILTER_REJECT;
-            }
-            const style = window.getComputedStyle(parent);
-            if (style.visibility === 'hidden' || style.display === 'none') {
-              return NodeFilter.FILTER_REJECT;
-            }
-            return NodeFilter.FILTER_ACCEPT;
-          },
-        });
+        const walkers = window.__matrxToolDom.roots().map((root) =>
+          document.createTreeWalker(
+            root === document ? document.body : root,
+            NodeFilter.SHOW_TEXT,
+            {
+              acceptNode: (node) => {
+                const parent = node.parentElement;
+                if (!parent) return NodeFilter.FILTER_REJECT;
+                const tag = parent.tagName.toLowerCase();
+                if (tag === 'script' || tag === 'style' || tag === 'noscript') {
+                  return NodeFilter.FILTER_REJECT;
+                }
+                if (!window.__matrxToolDom.visible(parent, false)) {
+                  return NodeFilter.FILTER_REJECT;
+                }
+                return NodeFilter.FILTER_ACCEPT;
+              },
+            },
+          ),
+        );
         const matches: Array<Record<string, unknown>> = [];
         let node: Node | null;
-        while ((node = walker.nextNode())) {
-          const text = node.textContent ?? '';
-          if (!text.trim()) continue;
-          regex.lastIndex = 0;
-          let m: RegExpExecArray | null;
-          while ((m = regex.exec(text))) {
-            const start = Math.max(0, m.index - ctxChars);
-            const end = Math.min(text.length, m.index + m[0].length + ctxChars);
-            matches.push({
-              text: m[0],
-              context: text.slice(start, end).replace(/\s+/g, ' ').trim(),
-              selector: uniqueSelector(node.parentElement!),
-              tag: node.parentElement?.tagName.toLowerCase(),
-            });
+        for (const walker of walkers) {
+          while ((node = walker.nextNode())) {
+            const text = node.textContent ?? '';
+            if (!text.trim()) continue;
+            regex.lastIndex = 0;
+            let m: RegExpExecArray | null;
+            while ((m = regex.exec(text))) {
+              const start = Math.max(0, m.index - ctxChars);
+              const end = Math.min(text.length, m.index + m[0].length + ctxChars);
+              matches.push({
+                text: m[0],
+                context: text.slice(start, end).replace(/\s+/g, ' ').trim(),
+                selector: window.__matrxToolDom.selector(node.parentElement!),
+                tag: node.parentElement?.tagName.toLowerCase(),
+              });
+              if (matches.length >= limit) break;
+              if (m[0].length === 0) regex.lastIndex++;
+            }
             if (matches.length >= limit) break;
-            if (m[0].length === 0) regex.lastIndex++;
           }
           if (matches.length >= limit) break;
         }
@@ -146,7 +132,7 @@ export const get_page_links: ToolHandler<GetLinksArgs, unknown> = {
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (
         hrefContains: string | null,
@@ -158,7 +144,7 @@ export const get_page_links: ToolHandler<GetLinksArgs, unknown> = {
         const textSub = textContains?.toLowerCase();
         const origin = location.origin;
         const out: Array<Record<string, unknown>> = [];
-        const links = document.querySelectorAll('a[href]');
+        const links = window.__matrxToolDom.querySelectorAll('a[href]');
         for (const a of Array.from(links)) {
           const el = a as HTMLAnchorElement;
           const href = el.href;
@@ -209,10 +195,10 @@ export const get_computed_style: ToolHandler<ComputedStyleArgs, unknown> = {
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (selector: string, props: string[] | null) => {
-        const el = document.querySelector(selector) as HTMLElement | null;
+        const el = window.__matrxToolDom.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element at ${selector}` };
         const cs = window.getComputedStyle(el);
         const list =
@@ -266,7 +252,7 @@ export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (x: number, y: number, sensitiveSelectors: string[], sensitiveAttr: string) => {
         // Redaction is the OR of three signals — marker attribute, the
@@ -275,35 +261,13 @@ export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
         const sensitiveEls = new Set<Element>();
         for (const s of sensitiveSelectors) {
           try {
-            for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+            for (const e of Array.from(window.__matrxToolDom.querySelectorAll(s)))
+              sensitiveEls.add(e);
           } catch {
             /* a selector that no longer parses simply matches nothing */
           }
         }
-        function uniqueSelector(el: Element): string {
-          if ('id' in el && (el as { id: string }).id) {
-            return `#${CSS.escape((el as { id: string }).id)}`;
-          }
-          const parts: string[] = [];
-          let n: Element | null = el;
-          while (n && n !== document.body && parts.length < 6) {
-            const current: Element = n;
-            const tag = current.tagName.toLowerCase();
-            const parent = current.parentElement;
-            if (!parent) {
-              parts.unshift(tag);
-              break;
-            }
-            const siblings = Array.from(parent.children).filter(
-              (c: Element) => c.tagName === current.tagName,
-            );
-            const idx = siblings.indexOf(current) + 1;
-            parts.unshift(siblings.length > 1 ? `${tag}:nth-of-type(${idx})` : tag);
-            n = parent;
-          }
-          return parts.join(' > ');
-        }
-        const el = document.elementFromPoint(x, y);
+        const el = window.__matrxToolDom.elementFromPoint(x, y);
         if (!el) return { ok: false, reason: 'No element at that point' };
         const isPassword =
           el.hasAttribute(sensitiveAttr) ||
@@ -318,7 +282,7 @@ export const get_element_at_point: ToolHandler<ElementAtPointArgs, unknown> = {
           ok: true,
           tag: el.tagName.toLowerCase(),
           text: ((el as HTMLElement).innerText ?? '').slice(0, 200),
-          selector: uniqueSelector(el),
+          selector: window.__matrxToolDom.selector(el),
           attrs,
           ...(isPassword ? { masked: true } : {}),
         };
@@ -339,7 +303,7 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
   run: async (args, ctx) => {
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (selector: string, sensitiveSelectors: string[], sensitiveAttr: string) => {
         // Redaction is the OR of three signals — marker attribute, the
@@ -348,12 +312,13 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
         const sensitiveEls = new Set<Element>();
         for (const s of sensitiveSelectors) {
           try {
-            for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+            for (const e of Array.from(window.__matrxToolDom.querySelectorAll(s)))
+              sensitiveEls.add(e);
           } catch {
             /* a selector that no longer parses simply matches nothing */
           }
         }
-        const el = document.querySelector(selector) as HTMLElement | null;
+        const el = window.__matrxToolDom.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element at ${selector}` };
         const isPassword =
           el.hasAttribute(sensitiveAttr) ||
@@ -367,7 +332,7 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
         const cs = window.getComputedStyle(el);
         const rect = el.getBoundingClientRect();
         const ancestors: Array<{ tag: string; classes: string[]; id: string | null }> = [];
-        let node: Element | null = el.parentElement;
+        let node: Element | null = window.__matrxToolDom.parent(el);
         let depth = 0;
         while (node && depth < 6 && node !== document.body) {
           ancestors.push({
@@ -375,7 +340,7 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
             classes: Array.from(node.classList),
             id: node.id || null,
           });
-          node = node.parentElement;
+          node = window.__matrxToolDom.parent(node);
           depth++;
         }
         return {
@@ -393,6 +358,12 @@ export const inspect_element: ToolHandler<InspectArgs, unknown> = {
             'pointer-events': cs.pointerEvents,
           },
           child_count: el.childElementCount,
+          ...(el.shadowRoot
+            ? { shadow_root: 'open', shadow_child_count: el.shadowRoot.childElementCount }
+            : {}),
+          ...(window.__matrxToolDom.shadowHosts(el).length
+            ? { shadow_hosts: window.__matrxToolDom.shadowHosts(el) }
+            : {}),
           ancestors,
         };
       },
@@ -424,7 +395,7 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
     if (!resolved.ok) return { ok: false, reason: resolved.reason };
     const tabId = resolved.id;
     const refSelector = `[data-matrx-ref="${args.ref.replace(/^ref:/, '')}"]`;
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (
         selector: string,
@@ -439,7 +410,8 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
         const sensitiveEls = new Set<Element>();
         for (const s of sensitiveSelectors) {
           try {
-            for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+            for (const e of Array.from(window.__matrxToolDom.querySelectorAll(s)))
+              sensitiveEls.add(e);
           } catch {
             /* a selector that no longer parses simply matches nothing */
           }
@@ -449,7 +421,7 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
           sensitiveEls.has(e) ||
           window.__matrx_generation_target_registry__?.isSensitive(e) === true ||
           (e.tagName === 'INPUT' && (e as HTMLInputElement).type === 'password');
-        const el = document.querySelector(selector) as HTMLElement | null;
+        const el = window.__matrxToolDom.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element for ${selector}` };
         const isPassword = isSensitiveEl(el);
         const attrs: Record<string, string> = {};
@@ -471,6 +443,12 @@ export const get_element_details: ToolHandler<ElementDetailsArgs, unknown> = {
             cs.visibility !== 'hidden' &&
             cs.opacity !== '0',
           child_count: el.childElementCount,
+          ...(el.shadowRoot
+            ? { shadow_root: 'open', shadow_child_count: el.shadowRoot.childElementCount }
+            : {}),
+          ...(window.__matrxToolDom.shadowHosts(el).length
+            ? { shadow_hosts: window.__matrxToolDom.shadowHosts(el) }
+            : {}),
         };
         if (includeStyles) {
           out.styles = {

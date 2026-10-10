@@ -18,7 +18,14 @@ import {
 } from '@/lib/api/client';
 import { streamFetch } from '@/lib/api/stream';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
+import {
+  MediaCoverageSchema,
+  type SocialPostMedia,
+  SocialPostMediaSchema,
+} from '@/lib/swipe-file/receipt';
 import { z } from 'zod';
+
+export type { SocialPostMedia } from '@/lib/swipe-file/receipt';
 
 export const SocialTraceSchema = z
   .object({
@@ -40,6 +47,16 @@ export const SocialPostResultSchema = z
     thumbnail_url: z.string().nullable().optional(),
     trace: SocialTraceSchema.nullable().optional(),
     media_notes: z.array(z.string()).optional(),
+    media_coverage: MediaCoverageSchema.optional(),
+    media: z.array(SocialPostMediaSchema).optional(),
+    transcript: z
+      .object({
+        status: z.enum(['available', 'none']),
+        notes: z.array(z.string()).optional(),
+      })
+      .passthrough()
+      .nullable()
+      .optional(),
   })
   .passthrough();
 export type SocialPostResult = z.infer<typeof SocialPostResultSchema>;
@@ -66,11 +83,16 @@ export async function ingestPost(
   url: string,
   onStage: (s: IngestStage) => void,
   signal?: AbortSignal,
+  organizationId?: string,
 ): Promise<IngestOutcome> {
-  if (!(await getActiveOrganizationId()))
+  const org = organizationId ?? (await getActiveOrganizationId());
+  if (!org)
     return { ok: false, reason: 'No organization is selected. Open Matrx and choose one first.' };
   const base = await getApiBaseUrl();
-  const headers = await buildHeaders({ Accept: 'application/x-ndjson' });
+  const headers = await buildHeaders(
+    { Accept: 'application/x-ndjson' },
+    { token: null, organizationId: org },
+  );
   if (!headers.Authorization || !headers[ORGANIZATION_CONTEXT_HEADER])
     return { ok: false, reason: 'Sign in to Matrx to save to your swipe file.' };
 
@@ -117,8 +139,16 @@ export async function ingestPost(
   };
 }
 
-export async function createCollection(name: string): Promise<ApiResult<SwipeCollectionCreated>> {
-  const r = await apiPost<unknown>('/social/collections', { name });
+export async function createCollection(
+  name: string,
+  organizationId?: string,
+): Promise<ApiResult<SwipeCollectionCreated>> {
+  const r = await apiPost<unknown>(
+    '/social/collections',
+    { name },
+    undefined,
+    organizationId ? { organizationId } : undefined,
+  );
   if (!r.ok) return r;
   const p = SwipeCollectionSchema.safeParse(r.data);
   return p.success
@@ -129,9 +159,58 @@ export async function createCollection(name: string): Promise<ApiResult<SwipeCol
 export async function addPostToCollection(
   collectionId: string,
   postId: string,
+  organizationId?: string,
 ): Promise<ApiResult<{ saved: boolean }>> {
-  return apiPost<{ saved: boolean }>(`/social/collections/${collectionId}/items`, {
-    item_type: 'social_post',
-    item_id: postId,
-  });
+  return apiPost<{ saved: boolean }>(
+    `/social/collections/${collectionId}/items`,
+    {
+      item_type: 'social_post',
+      item_id: postId,
+    },
+    undefined,
+    organizationId ? { organizationId } : undefined,
+  );
+}
+
+/** Current canonical coverage, independent of this device's cached save receipt. */
+export async function getPostMediaCoverage(postId: string, organizationId: string) {
+  const { apiGet } = await import('@/lib/api/client');
+  const result = await apiGet<unknown>(
+    `/social/posts/${encodeURIComponent(postId)}/media-coverage`,
+    undefined,
+    { organizationId },
+  );
+  if (!result.ok) throw new Error(result.error);
+  return MediaCoverageSchema.parse(result.data);
+}
+
+export async function getPostMedia(
+  postId: string,
+  organizationId: string,
+): Promise<SocialPostMedia[]> {
+  const { apiGet } = await import('@/lib/api/client');
+  const result = await apiGet<unknown>(
+    `/social/posts/${encodeURIComponent(postId)}/media`,
+    undefined,
+    { organizationId },
+  );
+  if (!result.ok) throw new Error(result.error);
+  return z.array(SocialPostMediaSchema).parse(result.data);
+}
+
+export async function readPostMediaBlob(
+  postId: string,
+  fileId: string,
+  organizationId: string,
+): Promise<Blob> {
+  const base = await getApiBaseUrl();
+  const headers = await buildHeaders({}, { token: null, organizationId });
+  if (!headers.Authorization || !headers[ORGANIZATION_CONTEXT_HEADER])
+    throw new Error('Sign in to Matrx to view media.');
+  const response = await fetch(
+    `${base}/social/posts/${encodeURIComponent(postId)}/media/${encodeURIComponent(fileId)}`,
+    { headers },
+  );
+  if (!response.ok) throw new Error(`Media unavailable (${response.status}).`);
+  return response.blob();
 }

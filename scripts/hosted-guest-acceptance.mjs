@@ -28,7 +28,11 @@ import {
 } from './hosted-profile-route.mjs';
 import { prepareHostedReleaseArtifact } from './hosted-release-artifact.mjs';
 import { hostedScrapeReloadDiagnostic } from './hosted-scrape-reload-diagnostic.mjs';
-import { hostedScrapeSaveDestination, hostedScrapeSaveScope } from './hosted-scrape-route.mjs';
+import {
+  hostedScrapeSaveDestination,
+  hostedScrapeSaveScope,
+  hostedScrapeScope,
+} from './hosted-scrape-route.mjs';
 import {
   hostedGuestSeoRoute,
   hostedSeoInterruptTarget,
@@ -288,6 +292,10 @@ async function run(prepared, artifactMode) {
     artifactMode,
     prepared,
     process.env.MATRX_SCRAPE_AUTH_MODE,
+    {
+      scrapeScope: process.env.MATRX_HOSTED_SCRAPE_SCOPE ?? 'full',
+      lane: process.env.MATRX_HOSTED_ACCEPTANCE_LANE,
+    },
   );
   const scrapeSaveDestination =
     acceptanceCase === 'scrape-save-member'
@@ -522,6 +530,7 @@ async function run(prepared, artifactMode) {
     MATRX_SCRAPE_EXTENSION_DIR: extensionDir,
     MATRX_SCRAPE_RECEIPT: relocatedReceipt,
     MATRX_SCRAPE_ARTIFACT_CHANNEL: scrapeRoute?.channel,
+    MATRX_SCRAPE_SCOPE: scrapeRoute?.scope ?? 'full',
     MATRX_SCRAPE_AUTH_MODE: scrapeSelection?.mode,
     ...(scrapeSaveDestination ? { MATRX_SCRAPE_SAVE_DESTINATION: scrapeSaveDestination } : {}),
     ...(acceptanceCase === 'scrape-save-member'
@@ -731,6 +740,12 @@ if (process.env.MATRX_HOSTED_ACCEPTANCE_CASE?.startsWith('profile-'))
   throw new Error('hosted_profile_durable_recovery_unavailable');
 if (phase === 'preflight') {
   assert.equal(process.env.GITHUB_ACTIONS, 'true', 'hosted_preflight_runner_required');
+  hostedScrapeScope(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    process.env.MATRX_HOSTED_SCRAPE_SCOPE ?? 'full',
+    process.env.MATRX_HOSTED_ACCEPTANCE_LANE,
+    process.env.MATRX_SCRAPE_AUTH_MODE,
+  );
   hostedScrapeReloadDiagnostic(
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
     process.env.MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC ?? '0',

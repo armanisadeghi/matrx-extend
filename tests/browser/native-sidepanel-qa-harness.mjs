@@ -1492,6 +1492,7 @@ export async function runNativeSidepanelQa({
   onStartupEndpointObservation,
   startupEndpointObservationMs = 0,
   enableUserSiteRestrictions = false,
+  enableWebMcpTesting = false,
   reloadOpenDiagnostic = false,
   reloadSenderDocumentDiagnostic = false,
 } = {}) {
@@ -1569,6 +1570,7 @@ export async function runNativeSidepanelQa({
         ...(!headed ? ['--headless=new'] : []),
         '--enable-automation',
         ...(enableUserSiteRestrictions ? ['--enable-features=ExtensionsMenuAccessControl'] : []),
+        ...(enableWebMcpTesting ? ['--enable-features=WebMCPTesting'] : []),
         '--no-first-run',
         '--no-default-browser-check',
         '--use-mock-keychain',

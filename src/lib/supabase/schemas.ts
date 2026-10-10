@@ -89,11 +89,15 @@ export const TABLE_SCHEMA = {
   // it under RLS (Saved captures tab, recognition) and writes only the row's
   // soft delete. Creating or editing one always goes through the door.
   processed_documents: 'docproc',
-  // social — Social Intelligence swipe file. READ-ONLY here: collections and
-  // membership are read under RLS; every write goes through aidream `/social/*`
+  // social — Social Intelligence swipe file. Collection metadata is edited
+  // directly under RLS; ingestion and membership use aidream `/social/*`
   // (src/lib/api/routes/social.ts). Membership is a `platform.associations` row
   // (source = social_swipe_collection, target = social_post).
   swipe_collection: 'social',
+  post: 'social',
+  post_transcript: 'social',
+  social_profile: 'social',
+  post_stat: 'social',
   associations: 'platform',
   // misc
   user_form_profile: 'users',

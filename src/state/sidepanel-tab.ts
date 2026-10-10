@@ -13,6 +13,7 @@ export type SidepanelTab =
   | 'lists'
   | 'scrape'
   | 'saved-captures'
+  | 'swipe-file'
   | 'capture'
   | 'data'
   | 'highlight'
