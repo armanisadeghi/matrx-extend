@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "report_kind": "independent_member_logical_organization_harness_review",
+  "reviewed_at": "2026-10-10",
+  "verdict": "PASS_BOUNDED_HARNESS_ONLY",
+  "product_credit": "none",
+  "scope": {
+    "d87_member_settings": {
+      "verdict": "PASS_HARNESS_ORACLE",
+      "finding": "The Settings oracle distinguishes a validated load-ladder organization from an explicit device choice, checks the visible member organization, and independently compares the actual authenticated request-bound organization header to the private fixture expectation.",
+      "ordering": "The initial sign-in proof runs before signInSettings returns. The first Settings readiness check and each post-reload openSettings path repeat identity and fresh request proof before preference-case work is credited.",
+      "limits": "Infrastructure admission only; no corrected native member run or Settings persistence behavior is accepted."
+    },
+    "d187_scrape_save": {
+      "verdict": "PASS_HARNESS_ADMISSION",
+      "finding": "A fresh authenticated GET /api/compute-targets/ is forced through the Compute picker Refresh button and must carry the expected organization header and return HTTP 200 before the Project fixture write or first Save Source action.",
+      "limits": "This proves the harness write-target precondition only; no Source save, duplicate behavior, native product behavior, or hosted run is credited."
+    },
+    "d189_defect_record": {
+      "verdict": "PASS_RECORD_SHAPE_AND_SCOPE",
+      "finding": "The record parses, follows the established defect-record key shape, remains in-fix with no fix commit, and accurately preserves the prior zero-persistence-case result and fresh-native-run closure requirement.",
+      "limits": "No separate formal defect JSON schema was found in the repository; this was a shape and content review, not defect closure."
+    }
+  },
+  "false_pass_review": {
+    "stale_request": "PASS. Chat is force-mounted, so the proof opens Compute, waits until its Refresh control is uniquely ready, arms the observer immediately before the trusted Refresh click, and ignores pre-arm requests.",
+    "wrong_or_missing_org": "PASS. Missing or mismatched organization header, missing bearer, duplicate exact requests, non-200 response, or wrong backend configuration prevents the proof from succeeding.",
+    "read_only_boundary": "PASS. The source path is the extension's authenticated apiGet request; the proof does not call the compute-target resolve POST or select/create a target.",
+    "report_privacy": "PASS. Reports expose only fixed booleans, HTTP status, and a resolution enum; raw organization UUIDs, profile IDs, email, bearer tokens, and storage values are not serialized."
+  },
+  "verification": {
+    "focused_tests": "29 passed, 0 failed across member logical-org proof, Scrape admission, Settings auth-driver, identity-diagnostic, and member-auth-diagnostic suites.",
+    "compile": "pnpm compile passed.",
+    "biome": "Biome check passed for all 11 reviewed/touched source, test, and defect-record files.",
+    "diff_check": "git diff --check passed.",
+    "forcing_mutation": "The shared-checkout plant.py at .claude/skills/forcing-function-tests/plant.py removed the organization-equality refusal. The named wrong/missing-organization test failed with Missing expected rejection; the tool restored the helper byte-identically. Restored helper SHA-256: e92ee0c0410207d05f25a28a74f96165cff3dc8bbc9f90ded17b5aae7b7fdc37.",
+    "prior_run_boundary": "The prior member run failed its identity gate before any persistence case and retains zero product credit. No repaired native run was launched or reviewed."
+  },
+  "files_checked": [
+    "tests/browser/member-logical-org-proof.mjs",
+    "tests/browser/member-logical-org-proof.test.mjs",
+    "tests/browser/scrape-save-org-admission.test.mjs",
+    "tests/browser/scrape-save-native-acceptance.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/settings-native-auth-driver.mjs",
+    "tests/browser/settings-native-auth-driver.test.mjs",
+    "tests/browser/settings-d87-native-acceptance.mjs",
+    "tests/browser/settings-identity-diagnostic.mjs",
+    "tests/browser/settings-identity-diagnostic.test.mjs",
+    "tests/browser/settings-member-auth-diagnostic.mjs",
+    "docs/stabilization/defects/EXT-D-0189.json",
+    "docs/stabilization/reports/peer-review-settings-d87-load-ladder-20261010.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38051093370/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38051093370/receipt.sanitized.json"
+  ],
+  "limits": "Source and automated-guard review only. No repaired native member run, Save Source persistence, product behavior, Store behavior, or role-matrix closure is established."
+}

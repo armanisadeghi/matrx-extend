@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "report_kind": "independent_settings_d87_acceptance_oracle_review",
+  "reviewed_at": "2026-10-10T12:55:00Z",
+  "scope": "Sol's uncommitted member Settings D87 load-ladder acceptance-oracle correction and sanitized run 38051093370",
+  "verdict": "NOT_READY_ORACLE_GAPS",
+  "product_credit": "none",
+  "findings": [
+    {
+      "severity": "blocking",
+      "title": "Initial rendered-identity check does not receive the load-ladder resolution",
+      "evidence": [
+        "tests/browser/settings-native-auth-driver.mjs: resolveMemberOrganizationSelection computes organizationResolution, then the member_rendered_identity call to verifyCurrentSettingsIdentity passes only selected.organizationId",
+        "tests/browser/settings-native-auth-driver.mjs: verifyCurrentSettingsIdentity defaults organizationResolution to undefined, so currentSettingsIdentityMatches compares absent storage against the expected ladder UUID",
+        "tests/browser/settings-native-auth-driver.test.mjs: source propagation assertion covers assertExpectedIdentity after Settings reload, but not the immediate sign-in identity boundary"
+      ],
+      "impact": "The proposed correction still rejects the intended load_ladder path before signInSettings returns and before any persistence case can run. Thread organizationResolution and the required fixture name through this initial check, then add a forcing test that fails if either argument is omitted."
+    },
+    {
+      "severity": "blocking",
+      "title": "Load-ladder proof does not bind the expected UUID to the live logical organization",
+      "evidence": [
+        "tests/browser/settings-native-auth-driver.mjs: load_ladder acceptance checks UUID syntax, absent matrx.org.active storage, organizationSelected, and the fixed organization label",
+        "tests/browser/settings-native-auth-driver.mjs: panelIdentity observes only persisted matrx.org.active; accountIdentity observes the rendered label, not the active-org logical UUID",
+        "tests/browser/settings-native-auth-driver.mjs: expectedOrganizationId comes from the private member link fixture and is only syntax-checked in the load-ladder branch"
+      ],
+      "impact": "A label can match while the extension's in-memory/request-bound active organization is a different membership. The oracle does not establish that the live logical organization ID equals the fixture ID. Add a read-only observation at the product boundary that exposes the validated logical active-org ID (or an equivalent request header/principal proof), and force a wrong-ID/ correct-label negative to fail."
+    }
+  ],
+  "evidence_assessment": {
+    "run_id": 38051093370,
+    "run_verdict": "zero_product_credit_member_identity_not_ready",
+    "run_observation": "Native report failed at baseline/settings_ready with d87_rendered_identity_not_observed; zero persistence cases ran.",
+    "resource_finals": "package and browser valid; guest child_failed exit 1 with resourceInvalid=false. This is a product-oracle child failure, not resource invalidation, but it is not a product defect verdict.",
+    "artifact_scope": "Run used frozen v0.2.464 from CI 38050509032/artifact 11669182890 at source 8d2f8ca2. The reviewed five-file correction is uncommitted local work and was not exercised by this run.",
+    "sanitized_fixture_limit": "The sanitized receipt omits the private fixture's organization UUID/name mapping, so this review verifies the harness's source-level fixture use but cannot independently verify the live fixture membership-to-ID mapping from run artifacts."
+  },
+  "verification": {
+    "focused_tests": "node --test tests/browser/settings-native-auth-driver.test.mjs tests/browser/settings-identity-diagnostic.test.mjs: 20 passed, 0 failed",
+    "limits": "Unit tests pass but do not exercise the omitted initial identity arguments or bind the logical active organization ID to the fixture ID. No hosted retest was run."
+  },
+  "reviewed_files": [
+    "tests/browser/settings-d87-native-acceptance.mjs",
+    "tests/browser/settings-identity-diagnostic.mjs",
+    "tests/browser/settings-identity-diagnostic.test.mjs",
+    "tests/browser/settings-native-auth-driver.mjs",
+    "tests/browser/settings-native-auth-driver.test.mjs",
+    "docs/stabilization/evidence/settings-persistence-member/run38051093370/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38051093370/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38051093370/hosted-package-38051093370-1.jsonl",
+    "docs/stabilization/evidence/settings-persistence-member/run38051093370/hosted-browser-38051093370-1.jsonl",
+    "docs/stabilization/evidence/settings-persistence-member/run38051093370/hosted-guest-38051093370-1.jsonl"
+  ]
+}

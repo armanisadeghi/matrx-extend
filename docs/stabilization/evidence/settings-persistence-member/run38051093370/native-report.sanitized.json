@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "report_kind": "sanitized_native_settings_failure",
+  "status": "fail",
+  "defect": "EXT-D-0087",
+  "scope": "settings-persistence-member",
+  "failure_stage": "baseline",
+  "failure_code": "d87_rendered_identity_not_observed",
+  "failure_operation": "settings_ready",
+  "cases_observed": 0,
+  "failure_identity_checks": {
+    "account_read_succeeded": true,
+    "storage_read_succeeded": true,
+    "email_matches": true,
+    "sign_out_visible": true,
+    "access_token_present": true,
+    "profile_matches": true,
+    "role_matches": true,
+    "rendered_role_absent": true,
+    "rendered_admin_role": false,
+    "storage_admin_flag_true": false,
+    "expected_device_choice_absent": false,
+    "stored_device_choice_absent": true,
+    "stored_organization_matches_expected": false,
+    "stored_organization_uuid_valid": false,
+    "rendered_organization_selected": true,
+    "rendered_organization_matches_storage": false,
+    "organization_matches": false,
+    "identity_ready": false
+  },
+  "privacy": "Only fixed booleans and fixed failure metadata retained; account, storage, and DOM values omitted."
+}

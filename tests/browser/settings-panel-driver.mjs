@@ -412,6 +412,21 @@ export async function click(panel, kind, label, onPhase = undefined) {
       candidates = [...(chatPanel?.querySelectorAll('button[title="Send"], button:not([title])[data-matrx-title="Send"]') ?? [])]
         .filter((el) => label === 'Send');
     }
+    else if (kind === 'chat-compute-trigger') {
+      const chatPanel = ${activeTabPanelExpression('Chat')};
+      candidates = label === 'Compute'
+        ? [...(chatPanel?.querySelectorAll('button[title]') ?? [])]
+            .filter((el) => el.title === 'Pick a sandbox or your own computer' || el.title.startsWith('Bound to '))
+        : [];
+    }
+    else if (kind === 'chat-compute-refresh') {
+      const dialogs = [...document.querySelectorAll('[role="dialog"][data-state="open"]')]
+        .filter((dialog) => [...dialog.querySelectorAll('div')]
+          .some((node) => node.textContent.trim() === 'Agent compute target'));
+      candidates = label === 'Refresh'
+        ? dialogs.flatMap((dialog) => [...dialog.querySelectorAll('button[title="Refresh"]')])
+        : [];
+    }
     else if (kind === 'context-values') {
       const chatTab = [...document.querySelectorAll('button[role="tab"][title="Chat"]')]
         .find((el) => el.getAttribute('aria-selected') === 'true');

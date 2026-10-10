@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "case_id": "settings-persistence-member",
+  "hosted_run_id": 38051093370,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38051093370",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+  "lane": "A",
+  "runner_label": "macos-15",
+  "workflow_conclusion": "failure",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38050509032,
+    "development_artifact_id": 11669182890,
+    "github_artifact_digest": "sha256:8a1e61fa4c44646f7a65782f4c12fd60066caecfb5990e2edff3d7888652d14d",
+    "source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "version": "0.2.464",
+    "tree_sha256": "6aade2663cbe077bf3736fa7ec7c4c43c89b71e4f92392f93e78235dc8059d48"
+  },
+  "native_report": {
+    "status": "fail",
+    "failure_stage": "baseline",
+    "failure_operation": "settings_ready",
+    "failure_code": "d87_rendered_identity_not_observed",
+    "cases_observed": 0,
+    "identity_checks": {
+      "account_read_succeeded": true,
+      "storage_read_succeeded": true,
+      "email_matches": true,
+      "sign_out_visible": true,
+      "access_token_present": true,
+      "profile_matches": true,
+      "role_matches": true,
+      "rendered_role_absent": true,
+      "rendered_admin_role": false,
+      "storage_admin_flag_true": false,
+      "expected_device_choice_absent": false,
+      "stored_device_choice_absent": true,
+      "stored_organization_matches_expected": false,
+      "stored_organization_uuid_valid": false,
+      "rendered_organization_selected": true,
+      "rendered_organization_matches_storage": false,
+      "organization_matches": false,
+      "identity_ready": false
+    },
+    "interpretation": "settings_ready failed because the extension-reported organization identity did not match the expected member identity and rendered organization; no persistence case ran. The boolean evidence does not distinguish product initialization from local fixture/state setup."
+  },
+  "resource": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "credential_handling": {
+    "temporary_secret_name_absent_at_terminal": true,
+    "local_one_time_link_absent_at_terminal": true,
+    "credential_values_persisted": false
+  },
+  "verdict": "zero_product_credit_member_identity_not_ready",
+  "limitations": "The run does not verify Settings persistence or prove a product defect. No cases ran. D187 lane A is paused because an unready organization could direct a save to the wrong organization.",
+  "sanitization": "Native report retained fixed metadata and Boolean diagnostics only; resource journals were copied through the repository sanitizer, which omits process attribution and opened paths."
+}

@@ -60,6 +60,28 @@ test('load-ladder selection is allowed without a stored device choice', () => {
   assert.equal(checks.organization_matches, true);
 });
 
+test('member load-ladder diagnostic expects absent device storage but still checks the visible organization', () => {
+  const ladderExpected = {
+    ...expected,
+    organizationResolution: 'load_ladder',
+    requiredOrganizationName: 'private organization',
+  };
+  const ladderObserved = { ...observed, organizationId: null, organizationName: null };
+  const checks = settingsIdentityDiagnostic(ladderObserved, ladderExpected);
+  assert.equal(checks.expected_device_choice_absent, true);
+  assert.equal(checks.stored_device_choice_absent, true);
+  assert.equal(checks.stored_organization_matches_expected, true);
+  assert.equal(checks.organization_matches, true);
+  assert.equal(checks.identity_ready, true);
+  assert.equal(
+    settingsIdentityDiagnostic(
+      { ...ladderObserved, organizationLabel: 'another private organization' },
+      ladderExpected,
+    ).identity_ready,
+    false,
+  );
+});
+
 test('only the member rendered-identity timeout records the caller diagnostic', async () => {
   let reads = 0;
   const panel = {};

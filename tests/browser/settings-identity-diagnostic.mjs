@@ -8,19 +8,32 @@ import {
 // This report contains only fixed booleans. Raw account and storage values stay in memory.
 export function settingsIdentityDiagnostic(value, expected) {
   const account = value ?? {};
+  const expectedStorageOrganizationId =
+    expected.organizationResolution === 'load_ladder' ? null : expected.organizationId;
   const organizationMatches =
-    expected.organizationId === null
-      ? !expected.requireSelectedOrganization &&
+    expected.organizationResolution === 'load_ladder'
+      ? expected.mode === 'member' &&
+        isNativeUuid(expected.organizationId) &&
         account.organizationId === null &&
-        account.organizationName === null
-      : account.organizationId === expected.organizationId &&
-        isNativeUuid(account.organizationId) &&
-        Boolean(account.organizationSelected) &&
-        account.organizationLabel === account.organizationName &&
-        (!expected.requireSelectedOrganization ||
-          (typeof expected.requiredOrganizationName === 'string' &&
-            account.organizationName === expected.requiredOrganizationName &&
-            account.organizationLabel === expected.requiredOrganizationName));
+        account.organizationName === null &&
+        account.organizationSelected === true &&
+        typeof expected.requiredOrganizationName === 'string' &&
+        account.organizationLabel === expected.requiredOrganizationName
+      : expected.organizationResolution !== undefined &&
+          expected.organizationResolution !== 'device_choice'
+        ? false
+        : expected.organizationId === null
+          ? !expected.requireSelectedOrganization &&
+            account.organizationId === null &&
+            account.organizationName === null
+          : account.organizationId === expected.organizationId &&
+            isNativeUuid(account.organizationId) &&
+            Boolean(account.organizationSelected) &&
+            account.organizationLabel === account.organizationName &&
+            (!expected.requireSelectedOrganization ||
+              (typeof expected.requiredOrganizationName === 'string' &&
+                account.organizationName === expected.requiredOrganizationName &&
+                account.organizationLabel === expected.requiredOrganizationName));
   return {
     email_matches: account.emailMatches === true,
     sign_out_visible: account.signOutVisible === true,
@@ -33,10 +46,10 @@ export function settingsIdentityDiagnostic(value, expected) {
     rendered_role_absent: account.roleAbsent === true,
     rendered_admin_role: account.adminRole === true,
     storage_admin_flag_true: account.isAdmin === true,
-    expected_device_choice_absent: expected.organizationId === null,
+    expected_device_choice_absent: expectedStorageOrganizationId === null,
     stored_device_choice_absent:
       account.organizationId === null && account.organizationName === null,
-    stored_organization_matches_expected: account.organizationId === expected.organizationId,
+    stored_organization_matches_expected: account.organizationId === expectedStorageOrganizationId,
     stored_organization_uuid_valid: isNativeUuid(account.organizationId),
     rendered_organization_selected: account.organizationSelected === true,
     rendered_organization_matches_storage:

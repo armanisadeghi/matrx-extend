@@ -7,6 +7,11 @@ import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { storageFaultInstallerSource } from './d87-storage-fault-injector.mjs';
 import {
+  observeMemberLogicalOrganizationGet,
+  refreshMemberLogicalOrganizationGet,
+  requireProductionBackendOrigin,
+} from './member-logical-org-proof.mjs';
+import {
   firstPartyWebIdentity,
   observeCanonicalAdminCheck,
   supabaseOrigin,
@@ -15,6 +20,7 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { recordSettingsIdentityFailure } from './settings-identity-diagnostic.mjs';
 import { memberAuthFailureReport } from './settings-member-auth-diagnostic.mjs';
 import {
+  MEMBER_TEST_ORGANIZATION_NAME,
   panelIdentity,
   settingsShellReady,
   signInSettings,
@@ -43,6 +49,14 @@ const SAFE_CODES = new Set([
   'native_sidepanel_release_tree_refused',
   'native_sidepanel_local_build_receipt_missing',
   'native_sidepanel_local_build_provenance_refused',
+  'member_logical_org_backend_not_production',
+  'member_logical_org_backend_override_present',
+  'd87_member_backend_origin_unverified',
+  'd87_member_logical_organization_ambiguous',
+  'd87_member_logical_organization_unauthenticated',
+  'd87_member_logical_organization_mismatch',
+  'd87_member_logical_organization_get_failed',
+  'd87_member_logical_organization_not_armed',
 ]);
 const OBSERVATION_CODES = new Set([
   'd87_settings_shell',
@@ -68,6 +82,8 @@ const OBSERVATION_CODES = new Set([
   'd87_rendered_identity',
   'd87_reload_first_party',
   'd87_panel_foreground',
+  'd87_member_logical_organization_get',
+  'member_compute_refresh_ready',
 ]);
 const POINTER_CODES = new Set([
   'pointer_initial_evaluation_failed',
@@ -97,6 +113,7 @@ let operation = 'receipt_validation';
 let expectedProfileId = null;
 let expectedEmail = null;
 let expectedOrganizationId = null;
+let expectedOrganizationResolution = null;
 
 function failureCode(error) {
   if (error?.memberAuthFailureCode) return error.memberAuthFailureCode;
@@ -176,13 +193,27 @@ async function assertExpectedIdentity(panel) {
       30_000,
     );
   }
-  return verifyCurrentSettingsIdentity({
+  const identity = await verifyCurrentSettingsIdentity({
     panel,
     mode: AUTH_MODE,
     email: expectedEmail,
     profileId: expectedProfileId,
     organizationId: expectedOrganizationId,
+    organizationResolution: expectedOrganizationResolution,
+    ...(AUTH_MODE === 'member' && { requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME }),
   });
+  if (AUTH_MODE !== 'member') return identity;
+  const serverOrigin = await requireProductionBackendOrigin(panel);
+  const observer = observeMemberLogicalOrganizationGet(panel, expectedOrganizationId, serverOrigin);
+  try {
+    await observer.start();
+    await refreshMemberLogicalOrganizationGet(panel, observer);
+    const logicalOrganizationRequest = await observer.verify();
+    await click(panel, 'title', 'Settings');
+    return { ...identity, logical_organization_request: logicalOrganizationRequest };
+  } finally {
+    observer.stop();
+  }
 }
 
 async function openSettings(panel) {
@@ -263,8 +294,12 @@ async function reload(page, panel, expectedTheme) {
             firstParty.email.toLowerCase() === expectedEmail.toLowerCase(),
           rendered_account_and_role_match:
             rendered.rendered_email_matches_first_party && rendered.rendered_role_matches_mode,
-          selected_organization_matches_stored_uuid_and_name:
-            rendered.selected_organization_matches_stored_uuid_and_name,
+          selected_organization_matches_expected_resolution:
+            rendered.selected_organization_matches_expected_resolution,
+          logical_organization_request_verified:
+            AUTH_MODE === 'member'
+              ? rendered.logical_organization_request?.organization_matches_expected === true
+              : null,
           canonical_nonadmin_check: null,
         });
       } finally {
@@ -379,6 +414,7 @@ try {
           expectedProfileId = profileId;
           expectedEmail = email;
           expectedOrganizationId = organizationId;
+          expectedOrganizationResolution = authentication.organization_resolution;
           report.authentication = safeAuthentication;
           await activatePanel();
           await waitFor(
@@ -503,6 +539,10 @@ try {
             email: expectedEmail,
             profileId: expectedProfileId,
             organizationId: expectedOrganizationId,
+            organizationResolution: expectedOrganizationResolution,
+            ...(AUTH_MODE === 'member' && {
+              requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+            }),
           },
         });
         throw error;

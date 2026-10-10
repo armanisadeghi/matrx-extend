@@ -7,6 +7,11 @@ import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyHostedScrapeSaveAssociations } from '../../scripts/hosted-scrape-route.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import {
+  observeMemberLogicalOrganizationGet,
+  refreshMemberLogicalOrganizationGet,
+  requireProductionBackendOrigin,
+} from './member-logical-org-proof.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { observeDuplicateSourceSave } from './scrape-save-duplicate-observer.mjs';
 import { cleanupProjectFixture, projectFixtureRequest } from './scrape-save-project-fixture.mjs';
@@ -655,6 +660,23 @@ try {
           selected_organization_verified: true,
           organization_resolution: identity.organization_resolution,
         };
+
+        report.stage = 'member_logical_organization_proof';
+        const expectedOrganizationId = selectedOrganizationId;
+        const serverOrigin = await requireProductionBackendOrigin(panel);
+        const observer = observeMemberLogicalOrganizationGet(
+          panel,
+          expectedOrganizationId,
+          serverOrigin,
+        );
+        try {
+          await observer.start();
+          await resourceAction(() => refreshMemberLogicalOrganizationGet(panel, observer));
+          report.observations.member_logical_organization_request = await observer.verify();
+          await resourceAction(() => click(panel, 'title', 'Settings'));
+        } finally {
+          observer.stop();
+        }
 
         if (destinationMode === 'project') {
           report.stage = 'owned_project_fixture';

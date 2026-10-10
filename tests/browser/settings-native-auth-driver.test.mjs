@@ -91,6 +91,44 @@ test('member Settings acceptance admits the verified load-ladder organization', 
     /allowLadderOrganization:\s*AUTH_MODE === 'member'/,
     'member Settings must admit an organization resolved by the load ladder',
   );
+  assert.match(
+    source,
+    /expectedOrganizationResolution = authentication\.organization_resolution/,
+    'the verified sign-in resolution must reach subsequent Settings checks',
+  );
+  const reloadIdentityCheck = source.match(
+    /async function assertExpectedIdentity\(panel\) \{([\s\S]*?)\n\}\n\nasync function openSettings/,
+  );
+  assert.ok(reloadIdentityCheck, 'Settings reload must use its identity checker');
+  assert.match(
+    reloadIdentityCheck[1],
+    /verifyCurrentSettingsIdentity\(\{[\s\S]*?organizationResolution: expectedOrganizationResolution/,
+    'reload readiness must distinguish a ladder result from a device choice',
+  );
+  assert.match(reloadIdentityCheck[1], /observeMemberLogicalOrganizationGet\(/);
+  assert.match(reloadIdentityCheck[1], /await refreshMemberLogicalOrganizationGet\(panel, observer\)/);
+  assert.match(reloadIdentityCheck[1], /await observer\.verify\(\)/);
+  const authDriver = await readFile(
+    new URL('./settings-native-auth-driver.mjs', import.meta.url),
+    'utf8',
+  );
+  const initialIdentityCheck = authDriver.match(
+    /const rendered = await runMemberAuthBoundary\('member_rendered_identity',[\s\S]*?await onTrace\?\.\('auth_identity_after'\)/,
+  );
+  assert.ok(initialIdentityCheck, 'member sign-in must verify the initial Settings identity');
+  assert.match(
+    initialIdentityCheck[0],
+    /organizationId: expectedOrganizationId \?\? selected\.organizationId/,
+  );
+  assert.match(initialIdentityCheck[0], /organizationResolution,/);
+  assert.match(initialIdentityCheck[0], /requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME/);
+  const requestProof = authDriver.match(
+    /const logicalOrganizationRequest = await runMemberAuthBoundary\([\s\S]*?return \{\s*mode,\s*profileId: identity\.userId/,
+  );
+  assert.ok(requestProof, 'member sign-in must prove the live request-bound organization');
+  assert.match(requestProof[0], /observeMemberLogicalOrganizationGet\(/);
+  assert.match(requestProof[0], /await refreshMemberLogicalOrganizationGet\(panel, observer\)/);
+  assert.match(requestProof[0], /await observer\.verify\(\)/);
 });
 import { click } from './settings-panel-driver.mjs';
 
@@ -465,6 +503,67 @@ test('reload identity rejects cached storage with wrong rendered role or organiz
   assert.equal(
     currentSettingsIdentityMatches({ ...valid, organizationId: MEMBER }, expected),
     false,
+  );
+});
+
+test('member Settings reload preserves the distinction between load-ladder and device-choice organizations', () => {
+  const rendered = {
+    emailMatches: true,
+    signOutVisible: true,
+    accessTokenPresent: true,
+    profileId: MEMBER,
+    roleAbsent: true,
+    adminRole: false,
+    isAdmin: false,
+    organizationId: null,
+    organizationName: null,
+    organizationSelected: true,
+    organizationLabel: MEMBER_TEST_ORGANIZATION_NAME,
+  };
+  const ladder = {
+    mode: 'member',
+    profileId: MEMBER,
+    organizationId: ORGANIZATION,
+    organizationResolution: 'load_ladder',
+    requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
+  };
+  assert.equal(currentSettingsIdentityMatches(rendered, ladder), true);
+  assert.equal(
+    currentSettingsIdentityMatches(
+      { ...rendered, organizationLabel: 'Another Organization' },
+      ladder,
+    ),
+    false,
+  );
+  assert.equal(
+    currentSettingsIdentityMatches({ ...rendered, organizationSelected: false }, ladder),
+    false,
+  );
+  assert.equal(
+    currentSettingsIdentityMatches({ ...rendered, organizationId: ORGANIZATION }, ladder),
+    false,
+  );
+  assert.equal(
+    currentSettingsIdentityMatches(rendered, { ...ladder, organizationId: 'invalid' }),
+    false,
+  );
+  assert.equal(
+    currentSettingsIdentityMatches(rendered, {
+      ...ladder,
+      organizationResolution: 'device_choice',
+    }),
+    false,
+  );
+  assert.equal(
+    currentSettingsIdentityMatches(
+      {
+        ...rendered,
+        organizationId: ORGANIZATION,
+        organizationName: MEMBER_TEST_ORGANIZATION_NAME,
+      },
+      { ...ladder, organizationResolution: 'device_choice' },
+    ),
+    true,
   );
 });
 

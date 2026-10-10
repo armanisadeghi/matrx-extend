@@ -1,0 +1,66 @@
+{
+  "id": "EXT-D-0189",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T05"],
+  "surface": "Member Settings native acceptance identity gate",
+  "auth_mode": "member infrastructure; no product behavior credited",
+  "title": "Settings acceptance confuses a load-ladder organization with a persisted device choice",
+  "severity": "S2: the member native test stops before preference cases even when the selected organization is valid",
+  "priority": "P1: repair the identity oracle before interpreting a member Settings native run",
+  "state": "fixed",
+  "owner": "root/settings_reload_fix",
+  "preconditions": [
+    "Use the receipt-bound member Settings native artifact and private member fixture; the extension may resolve its active organization from the account load ladder without writing matrx.org.active."
+  ],
+  "reproduction": [
+    "Run the member Settings native acceptance at CI development source 8d2f8ca2 using the guarded hosted path (run 38051093370).",
+    "After successful member sign-in, observe the selected Organization label and absent device-choice key at baseline/settings_ready.",
+    "Observe d87_rendered_identity_not_observed before any persistence case because the runner expects the fixture's logical organization UUID in device-choice storage."
+  ],
+  "expected": "The oracle distinguishes a validated load-ladder organization from an explicit device choice, proves the live request-bound organization ID equals the private fixture ID, and then evaluates the member Settings persistence cases.",
+  "actual": "Sanitized run 38051093370 reports stored_device_choice_absent=true, rendered_organization_selected=true, expected_device_choice_absent=false, identity_ready=false, and zero persistence cases. The first candidate corrected post-sign-in checks but omitted resolution in the immediate check and could accept a correct label with the wrong live organization ID; independent review rejected it.",
+  "cause": "The harness reused the logical load-ladder organization UUID as the expected matrx.org.active device-choice UUID. The original and first repair also lacked an independent read-only proof of the actual request-bound organization UUID.",
+  "sibling_census": "The member Scrape Save harness also uses the selected organization as a write target; its own pre-save read-only request-bound proof is being added under this infrastructure repair. No product storage defect is established.",
+  "evidence": [
+    "docs/stabilization/evidence/settings-persistence-member/run38051093370/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38051093370/receipt.sanitized.json",
+    "docs/stabilization/reports/peer-review-settings-d87-load-ladder-20261010.json",
+    "docs/stabilization/reports/peer-review-d189-member-org-proof-20261010.json",
+    "tests/browser/settings-native-auth-driver.mjs",
+    "tests/browser/settings-d87-native-acceptance.mjs",
+    "tests/browser/member-logical-org-proof.mjs"
+  ],
+  "fix_commit": null,
+  "transition_history": [
+    {
+      "at": "2026-10-10T12:33:24Z",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-valid hosted member run 38051093370 failed at the baseline identity gate with zero persistence cases."
+    },
+    {
+      "at": "2026-10-10T12:33:24Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Sanitized Booleans and source identify a logical-organization versus device-choice oracle mismatch; first independent review found two further proof gaps."
+    },
+    {
+      "at": "2026-10-10T12:33:24Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Uncommitted acceptance-harness correction and read-only request-bound organization proof are under focused testing and fresh peer review."
+    },
+    {
+      "at": "2026-10-10T12:39:58Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent review passed the corrected Settings oracle and fresh read-only logical-organization proof; a repaired native member retest remains pending."
+    }
+  ],
+  "verification": [
+    "Run 38051093370 has zero Settings persistence case credit; its artifact predates this uncommitted harness correction.",
+    "Focused source guards and read-only request observer tests pass 29/29; compile, Biome, and diff checks pass. A plant.py constant-success mutation produces a named wrong-organization RED and restores byte-identically.",
+    "Fresh independent review passes the bounded D87/D187 harness correction. No repaired native run or product verdict exists."
+  ],
+  "closure_requirement": "Fresh independent review of exact identity-source propagation and wrong-ID refusal, then a resource-valid native member run reaching the intended Settings cases on a receipt-bound artifact. Close only the infrastructure oracle; product EXT-D-0087 and feature-role cells require their own acceptance."
+}

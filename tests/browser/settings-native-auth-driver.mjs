@@ -3,6 +3,11 @@ import { createHash } from 'node:crypto';
 import { readFile, stat } from 'node:fs/promises';
 import { signInAdminSettings } from './admin-settings-signin.mjs';
 import {
+  observeMemberLogicalOrganizationGet,
+  refreshMemberLogicalOrganizationGet,
+  requireProductionBackendOrigin,
+} from './member-logical-org-proof.mjs';
+import {
   authenticatedWebIdentity,
   observeCanonicalAdminCheck,
   supabaseOrigin,
@@ -185,26 +190,36 @@ export function currentSettingsIdentityMatches(
     mode,
     profileId,
     organizationId,
+    organizationResolution,
     requireSelectedOrganization = false,
     requiredOrganizationName,
   },
 ) {
-  // A missing device choice is not a missing active organization: the shell's
-  // load ladder can render one without persisting matrx.org.active. Identity
-  // readiness must not claim approved-organization proof from that label.
+  // The load ladder keeps its validated logical organization in memory. It
+  // renders the selected member organization without writing a device choice.
   const organizationMatches =
-    organizationId === null
-      ? !requireSelectedOrganization &&
+    organizationResolution === 'load_ladder'
+      ? mode === 'member' &&
+        UUID.test(organizationId ?? '') &&
         value?.organizationId === null &&
-        value?.organizationName === null
-      : value?.organizationId === organizationId &&
-        UUID.test(value?.organizationId ?? '') &&
-        value?.organizationSelected &&
-        value?.organizationLabel === value?.organizationName &&
-        (!requireSelectedOrganization ||
-          (typeof requiredOrganizationName === 'string' &&
-            value?.organizationName === requiredOrganizationName &&
-            value?.organizationLabel === requiredOrganizationName));
+        value?.organizationName === null &&
+        value?.organizationSelected === true &&
+        typeof requiredOrganizationName === 'string' &&
+        value?.organizationLabel === requiredOrganizationName
+      : organizationResolution !== undefined && organizationResolution !== 'device_choice'
+        ? false
+        : organizationId === null
+          ? !requireSelectedOrganization &&
+            value?.organizationId === null &&
+            value?.organizationName === null
+          : value?.organizationId === organizationId &&
+            UUID.test(value?.organizationId ?? '') &&
+            value?.organizationSelected &&
+            value?.organizationLabel === value?.organizationName &&
+            (!requireSelectedOrganization ||
+              (typeof requiredOrganizationName === 'string' &&
+                value?.organizationName === requiredOrganizationName &&
+                value?.organizationLabel === requiredOrganizationName));
   return Boolean(
     value?.emailMatches &&
       value.signOutVisible &&
@@ -223,6 +238,7 @@ export async function verifyCurrentSettingsIdentity({
   email,
   profileId,
   organizationId,
+  organizationResolution,
   requireSelectedOrganization = false,
   requiredOrganizationName,
 }) {
@@ -236,6 +252,7 @@ export async function verifyCurrentSettingsIdentity({
         mode,
         profileId,
         organizationId,
+        organizationResolution,
         requireSelectedOrganization,
         requiredOrganizationName,
       }),
@@ -254,6 +271,17 @@ export async function verifyCurrentSettingsIdentity({
       : organizationId === null ||
         (observed.organizationId === organizationId &&
           observed.organizationLabel === observed.organizationName),
+    selected_organization_matches_expected_resolution:
+      organizationResolution === 'load_ladder'
+        ? observed.organizationId === null &&
+          observed.organizationName === null &&
+          observed.organizationSelected === true &&
+          observed.organizationLabel === requiredOrganizationName
+        : organizationId === null
+          ? observed.organizationId === null && observed.organizationName === null
+          : observed.organizationId === organizationId &&
+            observed.organizationSelected === true &&
+            observed.organizationLabel === observed.organizationName,
   };
 }
 
@@ -720,16 +748,40 @@ export async function signInSettings({
           mode,
           email: identity.email,
           profileId: identity.userId,
-          organizationId: selected.organizationId,
+          organizationId: expectedOrganizationId ?? selected.organizationId,
+          organizationResolution,
+          requiredOrganizationName: MEMBER_TEST_ORGANIZATION_NAME,
         }),
       );
       await onTrace?.('auth_identity_after');
+      const logicalOrganizationRequest = await runMemberAuthBoundary(
+        'member_logical_organization_proof',
+        onStage,
+        async () => {
+          const serverOrigin = await requireProductionBackendOrigin(panel);
+          const observer = observeMemberLogicalOrganizationGet(
+            panel,
+            expectedOrganizationId ?? selected.organizationId,
+            serverOrigin,
+          );
+          try {
+            await observer.start();
+            await refreshMemberLogicalOrganizationGet(panel, observer);
+            const proof = await observer.verify();
+            await click(panel, 'title', 'Settings');
+            return proof;
+          } finally {
+            observer.stop();
+          }
+        },
+      );
       return {
         mode,
         profileId: identity.userId,
         email: identity.email,
         organizationId: expectedOrganizationId ?? selected.organizationId,
         organization_resolution: organizationResolution,
+        logical_organization_request: logicalOrganizationRequest,
         account_fingerprint: fingerprint(identity.email),
         web_signed_in: true,
         extension_signed_in: true,

@@ -10,6 +10,7 @@ const STAGES = new Set([
   'member_organization_selected',
   'member_organization_storage_resolution',
   'member_rendered_identity',
+  'member_logical_organization_proof',
 ]);
 
 const ASSERTION_CODES = new Set([
@@ -28,6 +29,14 @@ const ASSERTION_CODES = new Set([
   'd87_member_organization_mismatch',
   'reviewer_web_identity_unverified',
   'reviewer_canonical_nonadmin_role_unverified',
+  'member_logical_org_backend_not_production',
+  'member_logical_org_backend_override_present',
+  'd87_member_backend_origin_unverified',
+  'd87_member_logical_organization_ambiguous',
+  'd87_member_logical_organization_unauthenticated',
+  'd87_member_logical_organization_mismatch',
+  'd87_member_logical_organization_get_failed',
+  'd87_member_logical_organization_not_armed',
 ]);
 
 const WAIT_CODES = new Set([
@@ -38,6 +47,8 @@ const WAIT_CODES = new Set([
   'd87_member_organization_selected',
   'd87_member_organization_option_unavailable',
   'd87_rendered_identity',
+  'd87_member_logical_organization_get',
+  'member_compute_refresh_ready',
 ]);
 
 const POINTER_CODES = new Set([
