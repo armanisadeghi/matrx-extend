@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "run_id": 38052238895,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38052238895",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "a88f68d8c54a16400b2404b437178840e44f820d",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "workflow_conclusion": "success",
+  "dispatch": {
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "full",
+    "seo_metadata_fixture": "airbnb"
+  },
+  "product_artifact": {
+    "ci_run_id": 38051368919,
+    "artifact_id": 11669294531,
+    "version": "0.2.465",
+    "source_sha": "ea92c5645a44fb9812ec34faeea1532500b0bf75",
+    "tree_sha256": "bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+    "github_artifact_digest": "sha256:172e6081a26e5c6022a9a5ac03624aa632ee4379692959aaab5963b74b86a97a",
+    "eligible_store": false
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11670146555,
+    "name": "hosted-guest-38052238895-1",
+    "digest": "sha256:0f7ae657a6397bf7a306f64835d4da3e4885b90236f84cbe08f8a5762445fab3",
+    "expired": false
+  },
+  "native": {
+    "status": "partial",
+    "target_count": 26,
+    "pass_count": 25,
+    "unverified_count": 1,
+    "new_target": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+    "new_target_status": "pass",
+    "observation": {
+      "sourceUrl": "https://www.airbnb.com/",
+      "alternate": {
+        "lang": "es-US",
+        "href": "https://es.airbnb.com/"
+      },
+      "schemaType": "WebSite",
+      "schemaUrl": "https://schema.org/WebSite",
+      "trustedInput": true
+    }
+  },
+  "resource_finals": {
+    "package": {
+      "journal": "resource-journals/hosted-package-38052238895-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admission_at": "2026-10-10T12:33:06.314Z",
+      "final_at": "2026-10-10T12:33:08.921Z"
+    },
+    "browser": {
+      "journal": "resource-journals/hosted-browser-38052238895-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admission_at": "2026-10-10T12:35:02.728Z",
+      "final_at": "2026-10-10T12:35:10.255Z"
+    },
+    "guest": {
+      "journal": "resource-journals/hosted-guest-38052238895-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admission_at": "2026-10-10T12:36:58.963Z",
+      "final_at": "2026-10-10T12:38:42.333Z"
+    }
+  },
+  "evidence": {
+    "native_report": "native-report.sanitized.json",
+    "product_artifact": "product-artifact.sanitized.json",
+    "resource_finals": "resource-finals.sanitized.json",
+    "journals": [
+      "resource-journals/hosted-package-38052238895-1.jsonl",
+      "resource-journals/hosted-browser-38052238895-1.jsonl",
+      "resource-journals/hosted-guest-38052238895-1.jsonl"
+    ]
+  },
+  "limitations": [
+    "The target is one bounded public-page observation; full guest SEO remains partial.",
+    "The run re-observed the other selected target rows; no additional credit is claimed for them here.",
+    "The Wikipedia manual-door target remains unverified.",
+    "No member/admin, current Store, or Store-install behavior is established.",
+    "Runner cleanup is governed by the hosted ephemeral VM lifecycle; a separate profile-root absence receipt was not included in the artifact."
+  ],
+  "sanitization": "Native report reduced to allowlisted target/build fields; journals copied through scripts/copy-hosted-resource-journal.mjs; no screenshots, runner paths, process attribution, credentials or account data retained."
+}

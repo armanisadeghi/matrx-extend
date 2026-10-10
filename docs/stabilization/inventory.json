@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T12:25:08Z",
+  "updated_at": "2026-10-10T12:43:34Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -27573,10 +27573,11 @@
                 "rich_public_detail_groups_and_canonical_door",
                 "canonical_outbound_opens_expected_public_tab",
                 "guest_broken_social_preview_shows_failure_fallback",
-                "guest_manual_readability_matches_two_known_texts"
+                "guest_manual_readability_matches_two_known_texts",
+                "guest_airbnb_hreflang_and_schema_doors_match_public_dom"
               ],
               "unverified_dimensions": [
-                "hreflang/schema doors: this live public DOM had no unique openable candidates",
+                "Wikipedia hreflang/schema doors remain unverified: its live DOM had no unique openable candidates",
                 "remaining detail controls",
                 "readability calculation beyond the two known-text fixtures",
                 "volatile public-detail and optional metadata-fixture phases excluded by this controlled run"
@@ -27597,7 +27598,15 @@
                 "docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-browser-38034766398-1.jsonl",
                 "docs/stabilization/evidence/seo-readability-hosted/run38034766398/resource-journals/hosted-guest-38034766398-1.jsonl",
                 "docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json",
-                "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json"
+                "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-metadata/run38052238895/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-metadata/run38052238895/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-metadata/run38052238895/product-artifact.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-finals.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-package-38052238895-1.jsonl",
+                "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-browser-38052238895-1.jsonl",
+                "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-guest-38052238895-1.jsonl",
+                "docs/stabilization/reports/peer-review-run38052238895.json"
               ],
               "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred. Supplemental bounded result: Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim. Supplemental bounded readability result: hosted run 38034766398 independently reviewed PASS for only guest EXT-F-1008-T09 guest_manual_readability_matches_two_known_texts; exact known-text scores and bands matched, both fixture DOM restorations and original-page re-audit matched. Frozen unpublished development artifact source 22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c (CI 38032654367, artifact 11663251990); workflow checkout 6b286a60787da646a9e35c01eb378f9191ed7e60. Three resource finals valid. Only these two known texts are established; general readability behavior, remaining T09, other cases, current-main, member/admin and Store remain unverified.",
               "bounded_subtarget_evidence": [
@@ -27691,9 +27700,37 @@
                   "independent_review": "docs/stabilization/reports/peer-review-run38045276587.json",
                   "limits": "Only five new bounded T09 subtargets pass; hreflang/schema door remains unverified. Nineteen exact duplicate targets receive no new credit. All three completed sanitized resource journals were later recovered and independently reviewed by the addendum; the immutable original peer review retains its earlier evidence scope. Full guest SEO cases and feature remain partial.",
                   "journal_recovery_review": "docs/stabilization/reports/peer-review-run38045276587-journal-recovery.json"
+                },
+                {
+                  "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+                  "status": "pass",
+                  "new_acceptance_credit": true,
+                  "resource_valid": true,
+                  "run_id": 38052238895,
+                  "source_sha": "ea92c5645a44fb9812ec34faeea1532500b0bf75",
+                  "workflow_source_sha": "a88f68d8c54a16400b2404b437178840e44f820d",
+                  "build_version": "0.2.465",
+                  "development_ci_run_id": 38051368919,
+                  "development_artifact_id": 11669294531,
+                  "development_artifact_digest": "sha256:172e6081a26e5c6022a9a5ac03624aa632ee4379692959aaab5963b74b86a97a",
+                  "tree_sha256": "bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+                  "hosted_result_artifact_id": 11670146555,
+                  "hosted_result_artifact_digest": "sha256:0f7ae657a6397bf7a306f64835d4da3e4885b90236f84cbe08f8a5762445fab3",
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/receipt.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/native-report.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/product-artifact.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-finals.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-package-38052238895-1.jsonl",
+                    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-browser-38052238895-1.jsonl",
+                    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-guest-38052238895-1.jsonl",
+                    "docs/stabilization/reports/peer-review-run38052238895.json"
+                  ],
+                  "independent_review": "docs/stabilization/reports/peer-review-run38052238895.json",
+                  "detail": "Independent peer PASS for this bounded Airbnb target only: public DOM alternate es-US and WebSite schema door matched the SEO display, and trusted activation opened the exact expected destinations while the source page remained open and unchanged. Package, browser and guest resource finals are valid. Native run 38052238895 had 25 pass and one unverified target overall; other rows are re-observations, and the Wikipedia door target remains unverified. Guest T09 and the SEO feature remain partial; no member/admin, current Store or Store-install behavior is established."
                 }
               ],
-              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed."
+              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed. Reviewed hosted run 38052238895 adds only the bounded Airbnb hreflang/schema-door target; 25 native targets passed and the Wikipedia door target remains unverified. The other selected target rows are re-observations with no new credit. T09, all six guest SEO cases, and the feature remain partial."
             }
           },
           "result_history": [

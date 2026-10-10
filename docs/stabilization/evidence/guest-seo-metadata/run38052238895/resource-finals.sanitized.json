@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": 38052238895,
+  "phases": {
+    "package": {
+      "journal": "resource-journals/hosted-package-38052238895-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admission_at": "2026-10-10T12:33:06.314Z",
+      "final_at": "2026-10-10T12:33:08.921Z"
+    },
+    "browser": {
+      "journal": "resource-journals/hosted-browser-38052238895-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admission_at": "2026-10-10T12:35:02.728Z",
+      "final_at": "2026-10-10T12:35:10.255Z"
+    },
+    "guest": {
+      "journal": "resource-journals/hosted-guest-38052238895-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admission_at": "2026-10-10T12:36:58.963Z",
+      "final_at": "2026-10-10T12:38:42.333Z"
+    }
+  }
+}

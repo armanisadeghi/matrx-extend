@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_seo_evidence_review",
+  "reviewer": "settings_harness_peer",
+  "status": "PASS",
+  "verdict": "PASS_BOUNDED_AIRBNB_T09_TARGET_ONLY",
+  "run": {
+    "hosted_run_id": 38052238895,
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_source_sha": "a88f68d8c54a16400b2404b437178840e44f820d",
+    "conclusion": "success",
+    "lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "full",
+    "metadata_fixture": "airbnb"
+  },
+  "provenance": {
+    "hosted_result_artifact_id": 11670146555,
+    "hosted_result_artifact_name": "hosted-guest-38052238895-1",
+    "hosted_result_artifact_digest": "sha256:0f7ae657a6397bf7a306f64835d4da3e4885b90236f84cbe08f8a5762445fab3",
+    "hosted_artifact_run_id_and_head_sha_verified": true,
+    "development_ci_run_id": 38051368919,
+    "development_ci_conclusion": "success",
+    "development_source_sha": "ea92c5645a44fb9812ec34faeea1532500b0bf75",
+    "development_artifact_id": 11669294531,
+    "development_artifact_digest": "sha256:172e6081a26e5c6022a9a5ac03624aa632ee4379692959aaab5963b74b86a97a",
+    "development_tree_sha256": "bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+    "development_artifact_eligible_store": false,
+    "artifact_digest_and_workflow_associations_match_bundle": true
+  },
+  "target": {
+    "case_id": "EXT-F-1008-T09",
+    "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+    "verdict": "PASS",
+    "public_source_url": "https://www.airbnb.com/",
+    "observation": {
+      "alternate_language": "es-US",
+      "alternate_href": "https://es.airbnb.com/",
+      "schema_type": "WebSite",
+      "schema_documentation_url": "https://schema.org/WebSite",
+      "trusted_pointer_input": true,
+      "source_tab_remained_open_and_unchanged": true
+    },
+    "basis": "The native flow reads public DOM metadata before and after re-audit, requires complete door data to remain stable, asserts displayed hreflang/schema values against that DOM, requires unique matching outbound doors, hit-tests the scoped anchors, uses trusted mouse press/release, verifies the exact destination, closes each outbound tab, and restores the source panel before the next door."
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest_cpu_pending_recovered_before_final": true
+  },
+  "overall_native_report": {
+    "status": "partial",
+    "target_count": 26,
+    "pass_count": 25,
+    "unverified_count": 1,
+    "fail_count": 0
+  },
+  "credit_limits": {
+    "new_credit": "Only the Airbnb hreflang/schema door subtarget above is supported by this review.",
+    "other_rows": "Re-observations only; no additional credit without comparison and separate review.",
+    "wikipedia_manual_door_target": "Unverified; the public page did not expose unique openable hreflang and schema candidates.",
+    "overall_guest_seo": "Not established as complete; native report remains partial.",
+    "member_admin_store": "No credit; no Store installation or Store behavior established."
+  },
+  "privacy_and_cleanup": {
+    "sanitized_bundle_scan": "No credentials, email addresses, private account data, or local runner paths found in retained files.",
+    "cleanup_basis": "Hosted ephemeral VM lifecycle completed.",
+    "separate_profile_root_absence_receipt": false
+  },
+  "checked_files": [
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/hosted-guest-acceptance.mjs",
+    "tests/browser/seo-guest-acceptance.mjs",
+    "scripts/copy-hosted-resource-journal.mjs",
+    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/product-artifact.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-package-38052238895-1.jsonl",
+    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-browser-38052238895-1.jsonl",
+    "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-guest-38052238895-1.jsonl",
+    "GitHub Actions run and artifact API metadata for hosted run 38052238895 and CI run 38051368919"
+  ],
+  "verification": {
+    "typecheck_or_build_run": false,
+    "native_browser_rerun": false,
+    "scope": "Independent source and sanitized evidence review; no hosted test, build, or source modification."
+  }
+}

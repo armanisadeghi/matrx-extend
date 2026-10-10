@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "report_kind": "sanitized_native_guest_seo_acceptance",
+  "status": "partial",
+  "mode": "guest",
+  "scope": "public-page guest SEO actions in an owned native side panel",
+  "build": {
+    "version": "0.2.465",
+    "tree_sha256": "bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+    "publish_state": "not_published"
+  },
+  "case_selection": {
+    "scope": "full",
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "excluded_cases": []
+  },
+  "target_counts": {
+    "total": 26,
+    "pass": 25,
+    "unverified": 1,
+    "fail": 0
+  },
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_0_title_and_headings",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_1_title_and_headings",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "new_url_replaces_visible_title",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "manual_button_returns_to_current_page",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "reload_audits_current_url",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_role_gate_after_reload",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "subtarget": "about_blank_clear_error_without_stale_audit",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "subtarget": "public_page_recovers_after_restricted_url",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "sparse_public_detail_groups",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "rich_public_detail_groups_and_canonical_door",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "canonical_outbound_opens_expected_public_tab",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtarget": "guest_social_missing_tags_clipboard_before_reaudit",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "guest_reaudit_captures_changed_page_metadata",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtarget": "guest_social_missing_tags_clipboard_after_reaudit",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_broken_social_preview_shows_failure_fallback",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_link_counts_match_live_dom",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_readability_matches_two_known_texts",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_performance_reflects_current_navigation",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+      "status": "unverified",
+      "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+      "status": "pass"
+    }
+  ],
+  "metadata_fixture": {
+    "public_source": "https://www.airbnb.com/",
+    "source_url_before": "https://www.airbnb.com/",
+    "source_url_after": "https://www.airbnb.com/",
+    "title_unchanged": true,
+    "response_status_before": 200,
+    "response_status_after": 200,
+    "hreflang_count_before": 96,
+    "hreflang_count_after": 96,
+    "schema_types_before": ["WebSite", "SearchAction"],
+    "schema_types_after": ["WebSite", "SearchAction"],
+    "changed_fields": ["links", "images"],
+    "door_target": {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
+      "status": "pass",
+      "evidence": {
+        "sourceUrl": "https://www.airbnb.com/",
+        "alternate": {
+          "lang": "es-US",
+          "href": "https://es.airbnb.com/"
+        },
+        "schemaType": "WebSite",
+        "schemaUrl": "https://schema.org/WebSite",
+        "trustedInput": true
+      }
+    }
+  },
+  "limits": [
+    "Only guest_airbnb_hreflang_and_schema_doors_match_public_dom is newly scoped for this run; other target rows are retained for traceability and re-observation, not additional credit without comparison/review.",
+    "The separate Wikipedia manual-door target remains unverified because that public page did not expose unique hreflang and schema door candidates.",
+    "No full guest SEO case, feature, other role, Store installation, or Store behavior is established."
+  ],
+  "privacy": "Retained fixed target identifiers/statuses and public-page metadata only; removed runtime extension ID, screenshots, local paths and raw diagnostics."
+}
