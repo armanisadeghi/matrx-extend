@@ -1,5 +1,6 @@
 import { type SocialPostMedia, readPostMediaBlob } from '@/lib/api/routes/social';
 import { Button } from '@ai-matrx/design-system';
+import { formatFileSize } from '@ai-matrx/kit/format';
 import { useEffect, useState } from 'react';
 
 /** Authenticated files are fetched on demand, never by leaking a token into a URL. */
@@ -36,7 +37,7 @@ export function StoredMedia({
         <span>{media.role.replaceAll('_', ' ')}</span>
         <span className="text-muted-foreground">
           {media.mime_type ?? 'File'}
-          {media.size_bytes !== null ? ` · ${(media.size_bytes / 1024 / 1024).toFixed(1)} MB` : ''}
+          {media.size_bytes !== null ? ` · ${formatFileSize(media.size_bytes)}` : ''}
         </span>
       </div>
       {!url && (
