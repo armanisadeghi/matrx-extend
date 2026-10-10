@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T03:00:06Z",
+  "updated_at": "2026-10-10T03:04:48Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5825,29 +5825,31 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37999970113",
-              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
-              "workflow_source_sha": "234c323c7a9dc6a379e9260e2dc6b2edbb874b61",
-              "development_ci_run_id": 37998294843,
-              "development_artifact_id": 11647758423,
-              "build_version": "0.2.456",
-              "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+              "status": "pass",
+              "run_id": "38018411295",
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "hosted_result_artifact_id": 11657092463,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
               "resource_valid": true,
               "passed_subtargets": [
-                "Warm guest Dark, Light, and System selection/storage/class observed; computed design-system token and body backgrounds matched for all three.",
-                "Original implicit System selection and absent theme/settings storage key restored exactly."
+                "19/19 bounded guest assertions observed Dark, Light and System changes with rendered appearance, panel persistence and separate full-extension persistence. Effective System was restored."
               ],
-              "unverified": "Full-extension reload/reopen persistence; System appearance while systemDark=true; Store/member/admin acceptance.",
-              "detail": "Hosted native guest run 37999970113 passed the isolated warm Dark\u2192Light\u2192System probe with token/body matching at each choice, then restored the original implicit System baseline with storedPresent=false and storagePresent=false. No panel-document or full-extension reload was performed, so the canonical row remains partial. Earlier run 37994579674 renderedBackgroundMatches=false was a measurement artifact: its bare var(--background) probe was invalid for the HSL-channel token; no product mismatch was established.",
+              "unverified": [
+                "Final absent-key restoration is unproved; member/admin and Store remain outside this run."
+              ],
+              "detail": "Independent review accepts the guest theme behavior as a qualified pass. Dark, Light, and System all persisted through panel and separate full-extension reloads. The effective System state was restored, but the final absent-key restoration was not proved; no claim that the original missing storage key was restored.",
               "evidence": [
-                ".research/settings-full-extension-recheck-diagnostics-20261009.json",
-                "docs/stabilization/evidence/settings-theme/run37999970113/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-theme/run37999970113/hosted-package-37999970113-1.jsonl",
-                "docs/stabilization/evidence/settings-theme/run37999970113/hosted-browser-37999970113-1.jsonl",
-                "docs/stabilization/evidence/settings-theme/run37999970113/hosted-guest-37999970113-1.jsonl"
+                "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl"
               ],
-              "scope": "Hosted lane B run 37999970113 on macos-15-intel, signed-out guest; exact frozen CI development artifact 11647758423 (CI run 37998294843), source 7230bb7669582179898fc187e05f1b939562a89e, v0.2.456. No Store/member/admin result; no reload claim."
+              "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior."
             }
           },
           "linked_defects": [
@@ -5954,6 +5956,35 @@
                 "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
               },
               "reason": "Preserve preceding guest result when recording hosted run 37994579674."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37999970113",
+                "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+                "workflow_source_sha": "234c323c7a9dc6a379e9260e2dc6b2edbb874b61",
+                "development_ci_run_id": 37998294843,
+                "development_artifact_id": 11647758423,
+                "build_version": "0.2.456",
+                "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Warm guest Dark, Light, and System selection/storage/class observed; computed design-system token and body backgrounds matched for all three.",
+                  "Original implicit System selection and absent theme/settings storage key restored exactly."
+                ],
+                "unverified": "Full-extension reload/reopen persistence; System appearance while systemDark=true; Store/member/admin acceptance.",
+                "detail": "Hosted native guest run 37999970113 passed the isolated warm Dark\u2192Light\u2192System probe with token/body matching at each choice, then restored the original implicit System baseline with storedPresent=false and storagePresent=false. No panel-document or full-extension reload was performed, so the canonical row remains partial. Earlier run 37994579674 renderedBackgroundMatches=false was a measurement artifact: its bare var(--background) probe was invalid for the HSL-channel token; no product mismatch was established.",
+                "evidence": [
+                  ".research/settings-full-extension-recheck-diagnostics-20261009.json",
+                  "docs/stabilization/evidence/settings-theme/run37999970113/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-theme/run37999970113/hosted-package-37999970113-1.jsonl",
+                  "docs/stabilization/evidence/settings-theme/run37999970113/hosted-browser-37999970113-1.jsonl",
+                  "docs/stabilization/evidence/settings-theme/run37999970113/hosted-guest-37999970113-1.jsonl"
+                ],
+                "scope": "Hosted lane B run 37999970113 on macos-15-intel, signed-out guest; exact frozen CI development artifact 11647758423 (CI run 37998294843), source 7230bb7669582179898fc187e05f1b939562a89e, v0.2.456. No Store/member/admin result; no reload claim."
+              },
+              "superseded_at": "2026-10-10T03:04:48Z"
             }
           ],
           "attempt_history": [
@@ -6363,17 +6394,31 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37851603306",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "build_version": "0.2.414",
+              "status": "pass",
+              "run_id": "38018411295",
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "hosted_result_artifact_id": 11657092463,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
               "resource_valid": true,
-              "detail": "Ask baseline survives full extension reload; Act/Ask new-chat inheritance and panel persistence pass with restoration. Actual tool behavior and nondefault full-extension persistence remain unverified.",
-              "evidence": [
-                ".research/settings-t67-restoration-repair-20261008.json",
-                ".research/settings-t67-native-peer-20261008.json"
+              "passed_subtargets": [
+                "17/17 bounded guest assertions passed for Ask/Act choice, new-chat default inheritance, panel reload and full-extension reload."
               ],
-              "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
+              "unverified": [
+                "Member/admin and Store behavior remain outside this run."
+              ],
+              "detail": "Independent review accepts the bounded guest default-mode case. Ask and Act selection, new-chat inheritance, and panel/full-extension persistence passed on the exact imported artifact.",
+              "evidence": [
+                "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl"
+              ],
+              "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior."
             }
           },
           "linked_defects": [
@@ -6439,6 +6484,23 @@
                 "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
               },
               "reason": "Preserve preceding attempted native scope."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37851603306",
+                "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+                "build_version": "0.2.414",
+                "resource_valid": true,
+                "detail": "Ask baseline survives full extension reload; Act/Ask new-chat inheritance and panel persistence pass with restoration. Actual tool behavior and nondefault full-extension persistence remain unverified.",
+                "evidence": [
+                  ".research/settings-t67-restoration-repair-20261008.json",
+                  ".research/settings-t67-native-peer-20261008.json"
+                ],
+                "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
+              },
+              "superseded_at": "2026-10-10T03:04:48Z"
             }
           ],
           "attempt_history": [
@@ -7691,16 +7753,30 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37851603306",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "build_version": "0.2.414",
+              "run_id": "38018411295",
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "hosted_result_artifact_id": 11657092463,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
               "resource_valid": true,
-              "detail": "All11 guest sections verified warm and after full extension reload with content, empty-state and expand/collapse checks;44 post-extension criteria pass.",
-              "evidence": [
-                ".research/settings-t67-restoration-repair-20261008.json",
-                ".research/settings-t67-native-peer-20261008.json"
+              "passed_subtargets": [
+                "88/88 bounded assertions passed across all 11 guest Settings sections at warm state, panel reload and full-extension reload; content and expand/collapse behavior checked."
               ],
-              "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
+              "unverified": [
+                "Member/admin and Store behavior remain outside this run."
+              ],
+              "detail": "Independent review accepts the bounded guest collapsible-groups case. All 11 guest sections passed content and open/close checks across warm, panel reload and full-extension reload.",
+              "evidence": [
+                "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl"
+              ],
+              "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior."
             }
           },
           "preparation_history": [
@@ -7808,6 +7884,23 @@
                 "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
               },
               "reason": "Preserve preceding attempted native scope."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37851603306",
+                "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+                "build_version": "0.2.414",
+                "resource_valid": true,
+                "detail": "All11 guest sections verified warm and after full extension reload with content, empty-state and expand/collapse checks;44 post-extension criteria pass.",
+                "evidence": [
+                  ".research/settings-t67-restoration-repair-20261008.json",
+                  ".research/settings-t67-native-peer-20261008.json"
+                ],
+                "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
+              },
+              "superseded_at": "2026-10-10T03:04:48Z"
             }
           ],
           "attempt_history": [
@@ -8634,31 +8727,30 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "38003055389",
-              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
-              "workflow_source_sha": "be0622647c87fedcd2f732e62babd83eaacfd640",
-              "development_ci_run_id": 37998294843,
-              "development_artifact_id": 11647758423,
-              "hosted_result_artifact_id": 11650137438,
-              "build_version": "0.2.456",
-              "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+              "run_id": "38018411295",
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "hosted_result_artifact_id": 11657092463,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
               "resource_valid": true,
               "passed_subtargets": [
-                "Warm guest ON emitted one successful scrape:capture-page call for the loaded Harbor Dental intake URL with the unique page marker present.",
-                "Warm guest OFF loaded the Harbor Dental follow-up page and completed the observation window with zero capture calls.",
-                "Cleanup restored visible OFF and the original absent scrapeAutoOnLoad field; key-presence equality was asserted."
+                "Bounded guest ON/OFF UI and storage changes plus panel reload persistence were reviewed."
               ],
-              "unverified": "Panel/full-extension reload persistence; member/admin/Store roles; downstream chat/context consumption.",
-              "detail": "Hosted native guest run verified actual warm ON capture and OFF no-traffic behavior on the exact frozen artifact. The original implicit OFF baseline was restored. T40 includes a reload dimension, which this run did not exercise, so canonical status remains partial. Earlier runs 38001190308 and 38002340132 stopped before capture interaction on probe assumptions; their sanitized receipts are retained as evidence.",
+              "unverified": [
+                "Downstream capture behavior; ON persistence across a verified full-extension restart; member/admin and Store behavior."
+              ],
+              "detail": "Independent review limits credit to ON/OFF UI and storage plus panel reload. The driver report\u2019s full-extension ON claim is not credited; downstream capture and ON across a verified full-extension restart remain unproved. T40 remains Partial.",
               "evidence": [
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-package-38003055389-1.jsonl",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-browser-38003055389-1.jsonl",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-guest-38003055389-1.jsonl",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38001190308/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38002340132/receipt.sanitized.json"
+                "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl"
               ],
-              "scope": "Hosted lane B run 38003055389 on macos-15-intel, signed-out guest; exact frozen CI development artifact 11647758423 (CI run 37998294843), source 7230bb7669582179898fc187e05f1b939562a89e, v0.2.456. Warm capture only; reload and other roles remain unverified."
+              "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior."
             }
           },
           "result_history": [
@@ -8740,6 +8832,38 @@
                 "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
               },
               "reason": "Preserve preceding guest result when recording hosted run 37994579674."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "38003055389",
+                "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+                "workflow_source_sha": "be0622647c87fedcd2f732e62babd83eaacfd640",
+                "development_ci_run_id": 37998294843,
+                "development_artifact_id": 11647758423,
+                "hosted_result_artifact_id": 11650137438,
+                "build_version": "0.2.456",
+                "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Warm guest ON emitted one successful scrape:capture-page call for the loaded Harbor Dental intake URL with the unique page marker present.",
+                  "Warm guest OFF loaded the Harbor Dental follow-up page and completed the observation window with zero capture calls.",
+                  "Cleanup restored visible OFF and the original absent scrapeAutoOnLoad field; key-presence equality was asserted."
+                ],
+                "unverified": "Panel/full-extension reload persistence; member/admin/Store roles; downstream chat/context consumption.",
+                "detail": "Hosted native guest run verified actual warm ON capture and OFF no-traffic behavior on the exact frozen artifact. The original implicit OFF baseline was restored. T40 includes a reload dimension, which this run did not exercise, so canonical status remains partial. Earlier runs 38001190308 and 38002340132 stopped before capture interaction on probe assumptions; their sanitized receipts are retained as evidence.",
+                "evidence": [
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-package-38003055389-1.jsonl",
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-browser-38003055389-1.jsonl",
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38003055389/hosted-guest-38003055389-1.jsonl",
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38001190308/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-auto-scrape-capture/run38002340132/receipt.sanitized.json"
+                ],
+                "scope": "Hosted lane B run 38003055389 on macos-15-intel, signed-out guest; exact frozen CI development artifact 11647758423 (CI run 37998294843), source 7230bb7669582179898fc187e05f1b939562a89e, v0.2.456. Warm capture only; reload and other roles remain unverified."
+              },
+              "superseded_at": "2026-10-10T03:04:48Z"
             }
           ],
           "linked_defects": [
@@ -10816,17 +10940,31 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": "37851603306",
-              "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
-              "build_version": "0.2.414",
+              "status": "pass",
+              "run_id": "38018411295",
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "hosted_result_artifact_id": 11657092463,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
               "resource_valid": true,
-              "detail": "Both capture choices, panel persistence and baseline restoration pass after extension restart (five criteria). Each nondefault choice across separate full extension restart and actual downstream capture remain unverified. Prior intermittent cleanup cause unresolved.",
-              "evidence": [
-                ".research/settings-t67-restoration-repair-20261008.json",
-                ".research/settings-t67-native-peer-20261008.json"
+              "passed_subtargets": [
+                "13/13 bounded guest assertions passed for both Auto-scrape modes through panel and full-extension reload; original saved baseline restored."
               ],
-              "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
+              "unverified": [
+                "Member/admin and Store behavior remain outside this run."
+              ],
+              "detail": "Independent review accepts the bounded guest Auto-scrape modes case. Both modes persisted across panel/full-extension reloads, and the original saved baseline was restored.",
+              "evidence": [
+                "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl"
+              ],
+              "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior."
             }
           },
           "linked_defects": [
@@ -10920,6 +11058,23 @@
                 "scope": "Guest frozen artifact11568846736 only; overall workflow failed T67. No Store/current-main acceptance."
               },
               "reason": "Preserve preceding attempted native scope."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37851603306",
+                "source_sha": "5f7fe7c29d7dd78528161c8928d3da78b41aa55b",
+                "build_version": "0.2.414",
+                "resource_valid": true,
+                "detail": "Both capture choices, panel persistence and baseline restoration pass after extension restart (five criteria). Each nondefault choice across separate full extension restart and actual downstream capture remain unverified. Prior intermittent cleanup cause unresolved.",
+                "evidence": [
+                  ".research/settings-t67-restoration-repair-20261008.json",
+                  ".research/settings-t67-native-peer-20261008.json"
+                ],
+                "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
+              },
+              "superseded_at": "2026-10-10T03:04:48Z"
             }
           ],
           "attempt_history": [
