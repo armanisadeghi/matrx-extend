@@ -19,6 +19,8 @@ This Mac's workspace rule prohibits manually initiating builds, releases and dep
 
 The two hosted browser lanes use isolated hosts/profiles and owned fixtures; one heavy job per physical host. Shared member credentials, temporary repository secrets and fixture mutation are serialized. Every terminal member run requires immediate secret cleanup, then sanitized evidence. No agent should reuse a failed or resource-invalid run as acceptance.
 
+For a supported hosted resource journal, copy the private downloaded artifact with `node scripts/copy-hosted-resource-journal.mjs --run-id <guard-run-id> --source <private-jsonl> --output <new-evidence-jsonl>`. The helper strips process attribution, refuses overwrite, preserves the final verdict, and rejects unknown fields or unsupported diagnostic events (including startup-interval brackets); a refusal requires manual reviewed sanitization from the private artifact before sharing evidence. Do not commit the private source artifact.
+
 ## Integration and evidence discipline
 
 `origin/main` is the shared sync point. Fetch/reconcile at boundaries and at least every 15 minutes; preserve concurrent edits and merge, never reset or force-push. Latest known local/remote checkpoint at this edit is `00893e06a`; fetch before acting because other contributors push continuously. Push verified code and exact-path evidence frequently. The current Chrome build, frozen hosted artifact, CI source, Git HEAD, public listing and Store-installed copy are different boundaries and must be reported separately.
