@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-10-10T01:48:32.230Z","runId":"ext-d-0187-save-ui-release-20261009-g","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-10T01:48:43.295Z","runId":"ext-d-0187-save-ui-release-20261009-g","signal":"SIGINT","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-10T01:49:39.473Z","runId":"ext-d-0187-save-ui-release-20261009-g","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-10T01:49:39.482Z","runId":"ext-d-0187-save-ui-release-20261009-g","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}
