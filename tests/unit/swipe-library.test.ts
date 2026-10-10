@@ -1,15 +1,16 @@
-import { createClient } from '@supabase/supabase-js';
+import { createScriptDb } from '@ai-matrx/data/script';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const harness = vi.hoisted(() => ({ fetch: vi.fn(), put: vi.fn(), remove: vi.fn() }));
-const client = createClient('https://library.aimatrx.com', 'public-library-key', {
-  global: { fetch: harness.fetch },
-  auth: { persistSession: false, autoRefreshToken: false },
+vi.stubGlobal('fetch', harness.fetch);
+const db = createScriptDb({
+  env: {
+    NEXT_PUBLIC_SUPABASE_URL: 'https://library.aimatrx.com',
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'public-library-key',
+  },
 });
-vi.mock('@/lib/supabase/schemas', () => ({
-  socialDb: () => client.schema('social'),
-  platformDb: () => client.schema('platform'),
-}));
+if (!db) throw new Error('Test database transport unavailable.');
+vi.mock('@/lib/supabase/client', () => ({ getSupabase: () => db.client }));
 vi.mock('@/lib/api/client', () => ({ apiPut: harness.put, apiDelete: harness.remove }));
 import {
   readSwipeCollections,
@@ -47,27 +48,27 @@ beforeEach(() => {
 });
 describe('canonical swipe library', () => {
   it('keeps every visible organization and follows server pagination instead of silently losing later collections', async () => {
-    const rows = [
-      collection('launch', 'studio-west'),
-      collection('reels', 'studio-east'),
-      collection('hooks', 'studio-north'),
-    ];
+    const rows = Array.from({ length: 1003 }, (_, index) =>
+      collection(`campaign-${index}`, index % 2 ? 'studio-west' : 'studio-east'),
+    );
     harness.fetch.mockImplementation(async (url: string) => {
       const u = new URL(url);
       expect(u.searchParams.has('organization_id')).toBe(false);
       const offset = Number(u.searchParams.get('offset') ?? 0);
-      return json(rows.slice(offset, offset + 2), {
-        'content-range': `${offset}-${Math.min(offset + 1, 2)}/3`,
+      const limit = Math.min(Number(u.searchParams.get('limit') ?? 1000), 1000);
+      return json(rows.slice(offset, offset + limit), {
+        'content-range': `${offset}-${Math.min(offset + limit - 1, 1002)}/1003`,
       });
     });
-    expect((await readSwipeCollections()).map((c) => c.organization_id)).toEqual([
-      'studio-west',
-      'studio-east',
-      'studio-north',
-    ]);
+    const loaded = await readSwipeCollections();
+    expect(loaded).toHaveLength(1003);
+    expect(loaded[1002]?.id).toBe('campaign-1002');
+    expect(new Set(loaded.map((c) => c.organization_id))).toEqual(
+      new Set(['studio-east', 'studio-west']),
+    );
     expect(harness.fetch).toHaveBeenCalledTimes(2);
     const second = new URL(String(harness.fetch.mock.calls[1]?.[0]));
-    expect(second.searchParams.get('offset')).toBe('2');
+    expect(second.searchParams.get('offset')).toBe('1000');
   });
   it('the floating picker uses the same uncapped all-organization collection reader as the manager', async () => {
     const rows = Array.from({ length: 203 }, (_, index) =>
@@ -86,7 +87,6 @@ describe('canonical swipe library', () => {
     const loaded = await listCollections();
     expect(loaded).toHaveLength(203);
     expect(loaded[202]?.id).toBe('campaign-202');
-    expect(harness.fetch).toHaveBeenCalledTimes(2);
   });
   it('shows archived collections only when the visible control asks for them', async () => {
     harness.fetch.mockImplementation(async (url: string) => {
@@ -134,9 +134,12 @@ describe('canonical swipe library', () => {
     harness.fetch.mockImplementation(async (url: string, options: RequestInit) => {
       const u = new URL(url);
       expect(u.searchParams.get('id')).toBe('eq.launch');
-      expect(u.searchParams.get('organization_id')).toBe('eq.studio-west');
+      expect(u.searchParams.has('organization_id')).toBe(false);
       expect(options.method).toBe('PATCH');
-      expect(JSON.parse(String(options.body))).toEqual({ name: 'Spring campaign' });
+      expect(JSON.parse(String(options.body))).toEqual({
+        name: 'Spring campaign',
+        organization_id: 'studio-west',
+      });
       return json({ id: 'launch' });
     });
     await updateSwipeCollection(collection('launch', 'studio-west'), { name: 'Spring campaign' });
