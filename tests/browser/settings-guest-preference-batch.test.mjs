@@ -6,6 +6,7 @@ import {
   guestChatDefaultMatches,
   observeGuestPreference,
   preferenceMatches,
+  runGuestPreferenceCase,
   runGuestThemeRenderingProbe,
 } from './settings-guest-preference-batch.mjs';
 
@@ -13,6 +14,7 @@ function themeProbeFixture({
   failOptionOnce,
   unpersistedBaseline = false,
   storagePresent = true,
+  accurateAppearance = false,
 } = {}) {
   const preference = GUEST_PREFERENCES.find((candidate) => candidate.caseId === 'T04');
   const settingsStorage = storagePresent
@@ -22,6 +24,7 @@ function themeProbeFixture({
     unpersistedBaseline ? 'system' : 'light',
     !unpersistedBaseline,
     storagePresent,
+    accurateAppearance,
   );
   let failed = false;
   const optionClicks = [];
@@ -39,7 +42,7 @@ function themeProbeFixture({
       const saved = typeof serialized === 'string' ? JSON.parse(serialized) : { state: {} };
       saved.state.theme = value;
       settingsStorage['matrx.settings.v1'] = JSON.stringify(saved);
-      current = themeObservation(value, true, true);
+      current = themeObservation(value, true, true, accurateAppearance);
     },
     evaluate: async (_panel, script) => {
       if (script.includes('const originalStoragePresent =')) {
@@ -49,10 +52,10 @@ function themeProbeFixture({
               local: {
                 get: async (key) => ({ [key]: settingsStorage[key] }),
                 set: async (values) => Object.assign(settingsStorage, values),
-                remove: async (keys) =>
-                  (Array.isArray(keys) ? keys : [keys]).forEach(
-                    (key) => delete settingsStorage[key],
-                  ),
+                remove: async (keys) => {
+                  for (const key of Array.isArray(keys) ? keys : [keys])
+                    delete settingsStorage[key];
+                },
               },
             },
           },
@@ -60,7 +63,12 @@ function themeProbeFixture({
         const serialized = settingsStorage['matrx.settings.v1'];
         const parsed = typeof serialized === 'string' ? JSON.parse(serialized) : null;
         const storedPresent = Object.hasOwn(parsed?.state ?? {}, 'theme');
-        current = themeObservation(current.value, storedPresent, typeof serialized === 'string');
+        current = themeObservation(
+          current.value,
+          storedPresent,
+          typeof serialized === 'string',
+          accurateAppearance,
+        );
         return true;
       }
       return current;
@@ -69,6 +77,13 @@ function themeProbeFixture({
       const observed = await read();
       if (!accept(observed)) throw new Error('theme_probe_wait_not_observed');
       return observed;
+    },
+    reload: async () => {
+      const raw = settingsStorage['matrx.settings.v1'];
+      const parsed = typeof raw === 'string' ? JSON.parse(raw) : null;
+      const storedPresent = Object.hasOwn(parsed?.state ?? {}, 'theme');
+      const value = storedPresent ? parsed.state.theme : current.value;
+      current = themeObservation(value, storedPresent, typeof raw === 'string', accurateAppearance);
     },
   };
   return {
@@ -83,7 +98,13 @@ function themeProbeFixture({
   };
 }
 
-function themeObservation(value, storedPresent = true, storagePresent = true) {
+function themeObservation(
+  value,
+  storedPresent = true,
+  storagePresent = true,
+  accurateAppearance = false,
+) {
+  const dark = value === 'dark';
   return {
     activeSettings: true,
     count: 1,
@@ -92,12 +113,17 @@ function themeObservation(value, storedPresent = true, storagePresent = true) {
     stored: storedPresent ? value : null,
     storedPresent,
     storagePresent,
-    darkClass: value === 'dark',
+    darkClass: dark,
     systemDark: false,
-    renderedBackgroundMatches: value !== 'dark',
+    renderedBackgroundMatches: accurateAppearance || !dark,
     renderedBackgrounds: {
-      token: value === 'dark' ? 'rgb(24, 24, 27)' : 'rgb(255, 255, 255)',
-      body: value === 'dark' ? 'rgb(250, 250, 250)' : 'rgb(255, 255, 255)',
+      token: dark ? 'rgb(24, 24, 27)' : 'rgb(255, 255, 255)',
+      body:
+        dark && !accurateAppearance
+          ? 'rgb(250, 250, 250)'
+          : dark
+            ? 'rgb(24, 24, 27)'
+            : 'rgb(255, 255, 255)',
       root: 'rgba(0, 0, 0, 0)',
       activePanel: 'rgba(0, 0, 0, 0)',
     },
@@ -253,6 +279,102 @@ test('isolated guest theme probe preserves other stored settings when theme was 
   assert.equal(Object.hasOwn(f.readStoredSettings().state, 'theme'), false);
   assert.equal(
     observations.find(([name]) => name === 'Original theme selection and storage restored')[2],
+    true,
+  );
+});
+
+test('T04 restores the case-entry theme and rendered appearance after panel reload', async () => {
+  const f = themeProbeFixture({ accurateAppearance: true });
+  const observations = [];
+  let reloads = 0;
+  await runGuestPreferenceCase(
+    {},
+    async () => {
+      reloads += 1;
+      await f.driver.reload();
+    },
+    f.preference,
+    (...entry) => observations.push(entry),
+    async () => {},
+    f.driver,
+  );
+
+  assert.equal(reloads, 4, 'three choice reloads plus the original-baseline reload');
+  assert.deepEqual(f.optionClicks, ['Dark', 'Light', 'System', 'Light']);
+  assert.equal(f.read().selected, 'Light');
+  assert.equal(f.read().stored, 'light');
+  assert.equal(f.read().renderedBackgroundMatches, true);
+  assert.equal(
+    observations.find(
+      ([name]) => name === 'Original theme baseline restored after panel reload',
+    )[2],
+    true,
+  );
+});
+
+test('T04 restores an originally implicit System value and absent theme key after panel reload', async () => {
+  const f = themeProbeFixture({
+    unpersistedBaseline: true,
+    storagePresent: true,
+    accurateAppearance: true,
+  });
+  const observations = [];
+  let reloads = 0;
+  await runGuestPreferenceCase(
+    {},
+    async () => {
+      reloads += 1;
+      await f.driver.reload();
+    },
+    f.preference,
+    (...entry) => observations.push(entry),
+    async () => {},
+    f.driver,
+  );
+
+  assert.equal(reloads, 4, 'three choice reloads plus the original-baseline reload');
+  assert.deepEqual(f.optionClicks, ['Dark', 'Light', 'System']);
+  assert.equal(f.read().selected, 'System');
+  assert.equal(f.read().stored, null);
+  assert.equal(f.read().storedPresent, false);
+  assert.equal(f.read().storagePresent, true);
+  assert.equal(f.readStoredSettings().state.sentinel, 'keep-me');
+  assert.equal(
+    observations.find(
+      ([name]) => name === 'Original theme baseline restored after panel reload',
+    )[2],
+    true,
+  );
+});
+
+test('T04 restores the case-entry theme after a choice failure and preserves that failure', async () => {
+  const f = themeProbeFixture({ failOptionOnce: 'Light', accurateAppearance: true });
+  const observations = [];
+  let reloads = 0;
+  await assert.rejects(
+    runGuestPreferenceCase(
+      {},
+      async () => {
+        reloads += 1;
+        await f.driver.reload();
+      },
+      f.preference,
+      (...entry) => observations.push(entry),
+      async () => {},
+      f.driver,
+    ),
+    /simulated_theme_option_failure/,
+  );
+
+  assert.equal(reloads, 2, 'one completed choice reload plus baseline restoration reload');
+  assert.deepEqual(f.optionClicks, ['Dark', 'Light', 'Light']);
+  assert.equal(f.read().selected, 'Light');
+  assert.equal(f.read().stored, 'light');
+  assert.equal(f.read().renderedBackgroundMatches, true);
+  assert.equal(
+    observations.find(
+      ([name]) => name === 'Original theme baseline restored after panel reload',
+    )[2],
     true,
   );
 });

@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "workflow_run_id": 38009653156,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38009653156",
+  "workflow_source_sha": "2a0946d3e568b8725e3bf6972661eb1cf8443da1",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "acceptance_case": "settings-controls",
+  "native_case": "EXT-F-1003-T04",
+  "development_ci_run_id": 37998294843,
+  "development_artifact_id": 11647758423,
+  "product_source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+  "product_version": "0.2.456",
+  "product_tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+  "product_artifact_verified": true,
+  "resource_journals": {
+    "hosted-package-38009653156-1.jsonl": {
+      "sha256": "22df756b28229ef67baecfb2d4002c93c6253ed3c0649010927baffb6627d21c",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38009653156-1.jsonl": {
+      "sha256": "d19cca4767860c865ee637b4b46bdce054819a0bdadafecca4dc055e5635083b",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38009653156-1.jsonl": {
+      "sha256": "641614a4bec14f4c63fcd6ad60f018c7fdbfb55eaf22d403219c87a322912839",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "result": {
+    "hosted_run_conclusion": "failure",
+    "native_case_status": "fail",
+    "panel_document_reload": {
+      "status": "pass",
+      "criteria": [
+        {
+          "name": "Dark changes UI, persisted preference, and applied appearance",
+          "status": "pass"
+        },
+        {
+          "name": "Dark survives panel reload",
+          "status": "pass"
+        },
+        {
+          "name": "Light changes UI, persisted preference, and applied appearance",
+          "status": "pass"
+        },
+        {
+          "name": "Light survives panel reload",
+          "status": "pass"
+        },
+        {
+          "name": "System changes UI, persisted preference, and applied appearance",
+          "status": "pass"
+        },
+        {
+          "name": "System survives panel reload",
+          "status": "pass"
+        }
+      ]
+    },
+    "system_after_panel_reload": {
+      "activeSettings": true,
+      "count": 1,
+      "selected": "System",
+      "stored": "system",
+      "storedPresent": true,
+      "storagePresent": true,
+      "darkClass": false,
+      "systemDark": false,
+      "renderedBackgroundMatches": true,
+      "renderedBackgrounds": {
+        "token": "rgb(244, 244, 245)",
+        "body": "rgb(244, 244, 245)",
+        "root": null,
+        "activePanel": "rgba(0, 0, 0, 0)"
+      }
+    },
+    "os_dark_system_case": {
+      "status": "unverified",
+      "actual_system_dark": false,
+      "note": "The hosted Mac reported prefers-color-scheme: dark as false; no OS-dark observation is claimed."
+    },
+    "full_extension_reload": {
+      "status": "fail",
+      "extension_worker_and_panel_replaced": {
+        "managementReloadClicked": true,
+        "oldTargetsRetired": true,
+        "workerReplaced": true,
+        "panelReplaced": true
+      },
+      "failure_category": "full_extension_preference_or_restore_failed",
+      "first_choice_failure_stage": "choice_settings_reopen",
+      "restoration_failure_stage": "restore_acquire_panel",
+      "first_choice_transport": "protocol_error",
+      "restoration_transport": "protocol_error",
+      "note": "No post-reload persisted Dark observation or restored-baseline observation; native failure followed replacement at the panel reacquisition/Settings reopen boundary. No product failure inferred."
+    },
+    "original_theme_baseline_restoration": {
+      "status": "unverified",
+      "note": "The standard settings-controls path cycles the theme before it snapshots the full-extension baseline; it does not prove restoration to the original case-entry value."
+    }
+  },
+  "scope_boundary": "Exact imported development artifact 0.2.456 from CI source 7230bb766, run 37998294843, artifact 11647758423. Dark, Light, and System each passed selection, persisted value, rendered token/body match, and panel-document reload on the observed light OS context. The full-extension lifecycle replacement itself was observed, followed by protocol_error at choice_settings_reopen and restore_acquire_panel; post-reload preference and original baseline restoration were not observed. This is not an OS-dark System pass or complete T04 pass."
+}

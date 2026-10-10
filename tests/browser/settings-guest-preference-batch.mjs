@@ -158,31 +158,103 @@ export async function runGuestPreferenceCase(
   preference,
   record,
   afterReload = async () => {},
+  driver = nativeDriver,
 ) {
-  await openSection(panel, preference.section);
-  for (const [value, label] of preference.choices) {
-    await click(panel, 'settings-select', preference.label);
-    await click(panel, 'option', label);
-    const warm = await waitFor(
-      `${preference.caseId}_${value}_warm`,
-      () => observeGuestPreference(panel, preference),
-      (state) => preferenceMatches(state, preference, value, label),
-    );
-    record(
-      `${label} changes UI, persisted preference${preference.key === 'theme' ? ', and applied appearance' : ''}`,
-      warm,
-      true,
-    );
-    await reloadSettings(panel);
-    await openSection(panel, preference.section);
-    const reloaded = await observeGuestPreference(panel, preference);
-    record(
-      `${label} survives panel reload`,
-      reloaded,
-      preferenceMatches(reloaded, preference, value, label),
-    );
-    await afterReload({ panel, preference, value, label, observation: reloaded });
+  await driver.openSection(panel, preference.section);
+  const initial =
+    preference.key === 'theme' ? await observeGuestPreference(panel, preference, driver) : null;
+  const baselineChoice =
+    initial &&
+    (preference.choices.find(
+      ([value, label]) => value === initial.stored && label === initial.selected,
+    ) ??
+      (initial.storedPresent === false
+        ? preference.choices.find(([, label]) => label === initial.selected)
+        : undefined));
+  if (preference.key === 'theme') assert.ok(baselineChoice, 'theme_case_requires_visible_baseline');
+
+  let primaryError;
+  try {
+    for (const [value, label] of preference.choices) {
+      await driver.click(panel, 'settings-select', preference.label);
+      await driver.click(panel, 'option', label);
+      const warm = await driver.waitFor(
+        `${preference.caseId}_${value}_warm`,
+        () => observeGuestPreference(panel, preference, driver),
+        (state) => preferenceMatches(state, preference, value, label),
+      );
+      record(
+        `${label} changes UI, persisted preference${preference.key === 'theme' ? ', and applied appearance' : ''}`,
+        warm,
+        true,
+      );
+      await reloadSettings(panel);
+      await driver.openSection(panel, preference.section);
+      const reloaded = await observeGuestPreference(panel, preference, driver);
+      record(
+        `${label} survives panel reload`,
+        reloaded,
+        preferenceMatches(reloaded, preference, value, label),
+      );
+      await afterReload({ panel, preference, value, label, observation: reloaded });
+    }
+  } catch (error) {
+    primaryError = error;
   }
+
+  if (preference.key === 'theme') {
+    const [baselineValue, baselineLabel] = baselineChoice;
+    const baselineWasStored = initial.storedPresent === true;
+    try {
+      await driver.openSection(panel, preference.section);
+      let current = await observeGuestPreference(panel, preference, driver);
+      if (
+        !themeBaselineSelectionMatches(
+          current,
+          baselineValue,
+          baselineLabel,
+          baselineWasStored,
+          initial.storagePresent,
+        )
+      ) {
+        if (baselineWasStored) {
+          await driver.click(panel, 'settings-select', preference.label);
+          await driver.click(panel, 'option', baselineLabel);
+        } else {
+          await restoreAbsentThemePreference(panel, preference, initial.storagePresent, driver);
+        }
+      }
+      await reloadSettings(panel);
+      await driver.openSection(panel, preference.section);
+      current = await driver.waitFor(
+        'T04_original_baseline_after_panel_reload',
+        () => observeGuestPreference(panel, preference, driver),
+        (state) =>
+          themeBaselineSelectionMatches(
+            state,
+            baselineValue,
+            baselineLabel,
+            baselineWasStored,
+            initial.storagePresent,
+          ) && themeAppearanceMatches(state, baselineValue),
+      );
+      const restored =
+        themeBaselineSelectionMatches(
+          current,
+          baselineValue,
+          baselineLabel,
+          baselineWasStored,
+          initial.storagePresent,
+        ) && themeAppearanceMatches(current, baselineValue);
+      record('Original theme baseline restored after panel reload', current, restored);
+      if (!restored) throw new Error('T04_original_baseline_restore_failed');
+    } catch (error) {
+      record('Original theme baseline restored after panel reload', { status: 'failed' }, false);
+      if (!primaryError) primaryError = error;
+    }
+  }
+
+  if (primaryError) throw primaryError;
 }
 
 export async function runGuestThemeRenderingProbe(
