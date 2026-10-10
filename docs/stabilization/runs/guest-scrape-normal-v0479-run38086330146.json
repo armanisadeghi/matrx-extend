@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "run_id": 38086330146,
+  "title": "Exact v0.2.479 guest Scrape normal-width T08 attempt",
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38086330146",
+  "product_verdict": "unresolved_possible_reload_open_integration_failure",
+  "evidence_verdict": "partial_warm_pass_zero_credit_after_reload",
+  "scope": "Guest only; controlled localhost fixture; 600px CDP viewport emulation.",
+  "tested": "Warm capture, six populated result panes, empty Article/Images/Video/Links, warm capture/export invariance.",
+  "unverified": "Post-extension-reload reopen/capture/export; empty SEO/Schema states (not asserted by launcher); member/admin; physical resize; Store-installed behavior.",
+  "failure": "Warm normal-width capture and T08 assertions completed. After the full extension reload, the replacement worker activated but the trusted opener message callback did not enter and no replacement panel target appeared. No resource-invalid verdict.",
+  "distinction": "Not resource-invalid. Does not reproduce closed EXT-D-0186 repeated-target bug. Same exact v0.2.479 had a prior successful reload in run 38082622883, so this single failure remains unresolved.",
+  "evidence_dir": "docs/stabilization/evidence/guest-scrape-normal/run38086330146",
+  "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-normal-run38086330146.json",
+  "review_verdict": "INDETERMINATE_REPLACEMENT_PANEL_BOUNDARY"
+}

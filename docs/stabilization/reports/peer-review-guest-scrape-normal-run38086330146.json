@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_guest_scrape_reload_boundary_review",
+  "reviewer": "seo_metadata_review",
+  "run_id": 38086330146,
+  "product_verdict": "INDETERMINATE_REPLACEMENT_PANEL_BOUNDARY",
+  "evidence_verdict": "PASS_FOR_WARM_ASSERTIONS_WITH_RELOAD_LIMIT",
+  "scope": "Exact v0.2.479 candidate-key-adapted unpacked guest Scrape, normal-width emulation (600px), run 38086330146. T08 warm/pane assertions only; no after-reload or whole-run pass.",
+  "provenance": {
+    "hosted_workflow": "Hosted guest side-panel acceptance",
+    "workflow_conclusion": "failure",
+    "workflow_source_sha": "f85c2930b3745598af1a101bb6d7437b362f2553",
+    "hosted_artifact_id": 11682787763,
+    "hosted_artifact_sha256": "6aec0d12915689136cc896a2f2fda1fde57c7cecca83db4bb5e6c6f9fb3e7e17",
+    "native_report": "scrape-guest-native-4b42f69f-1e55-4759-af5c-1fc1de7ad96f.json",
+    "candidate_version": "0.2.479",
+    "release_run_id": 38080281242,
+    "release_artifact_id": 11680078743,
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "adapted_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "loading_limit": "Candidate-key-adapted exact Store ZIP loaded unpacked; not Store-installed."
+  },
+  "warm_product_observations": [
+    "Normal width was emulated at 600px; captured geometry reports document/body width 600px with scrollWidth 600px and no horizontal overflow.",
+    "T08 selected Article, Images, Video, Links, SEO and Schema and observed matching populated content in all six panes.",
+    "Empty Images and Video states were observed with zero items; empty Links showed its add control and preserved capture export identity/payload; empty Article showed fallback and preserved capture identity/payload.",
+    "Warm capture invariance across all six panes passed, including full-capture export identity and payload invariance. SEO/Schema empty states were not asserted by this runner.",
+    "Initial guest panel and owned opener screenshots were reviewed. The opener screenshot records an initial successful open; it is not evidence of a post-reload panel."
+  ],
+  "reload_boundary": {
+    "native_status": "unverified",
+    "stage": "extension_reload",
+    "failure_code": "native_extension_replacement_panel_unverified",
+    "old_worker_and_panel_retired": true,
+    "replacement_worker_installed_and_activated": true,
+    "replacement_worker_errors": [],
+    "trusted_opener_click_received": true,
+    "opener_send_invoked_and_returned": true,
+    "opener_callback_entered": false,
+    "open_panel_reply_observed": false,
+    "replacement_panel_target_observed": false,
+    "extension_side_message_receipt_or_response_trace": "Absent; the native report cannot determine whether the replacement worker received or handled the opener message.",
+    "classification": "The report proves worker replacement but not panel reopen. Product behavior versus Chrome/fixture message-routing or panel-target observation remains unresolved. Do not infer a product regression or an after-reload pass."
+  },
+  "resource_finals": {
+    "package": {
+      "journal": "hosted-package-38086330146-1.jsonl",
+      "sha256": "2ef5fdfb30574beb233dbed5e65f81f2dc7031718da0e3830716a73b97462564",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "journal": "hosted-browser-38086330146-1.jsonl",
+      "sha256": "095d30d60019d38e0a851abde63cdad11a0ece226c9b44359ae72376612a1ec2",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "journal": "hosted-guest-38086330146-1.jsonl",
+      "sha256": "0fc8b20e2687dc1776e2c5dc1f7ef098cdf339af5b72660d493bd477dfab5e54",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1,
+      "decision": "child_failed"
+    }
+  },
+  "comparison": {
+    "prior_run_id": 38082622883,
+    "prior_result": "That exact v0.2.479 run reopened the panel and established bounded Scrape flows at narrow width. It is supportive context, not reproduction of this normal-width failure or proof of this run's replacement panel.",
+    "closed_defect": "EXT-D-0186 addressed stale panel-target reuse across successive full extension reloads. This run observed one reload, a replacement worker, and failure at reopening the panel; the reported failure is distinct from that closed target-chain defect."
+  },
+  "next_diagnostic": "On a guarded rerun, add independent extension-side instrumentation for receipt and response of the trusted opener FRONTEND_RPC/openPanel message, correlated with Chrome side-panel target creation and callback completion. Preserve the acceptance route and record the first missing boundary; do not turn this run into a product defect without that evidence.",
+  "checked_files": [
+    "docs/stabilization/runs/guest-scrape-normal-v0479-run38086330146.json",
+    "docs/stabilization/evidence/guest-scrape-normal/run38086330146/"
+  ],
+  "reviewed_raw_artifact_path": "/tmp/guest-scrape-t08-38086330146/hosted-guest-38086330146-1/"
+}
