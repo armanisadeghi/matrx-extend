@@ -269,6 +269,26 @@ test('extension reload transport failures retain the first safe choice and resto
   assert.equal(observedError.message.includes('owned_cdp_transport_failed'), false);
 });
 
+test('reload boundary reports unknown truncation when lifecycle evidence is absent', async () => {
+  const f = fixture();
+  let observedError;
+  await assert.rejects(
+    run(f, {
+      reloadExtension: async () => {
+        throw new Error('private native transport detail');
+      },
+      safeStages: ['extension_reload', 'restore_extension_reload'],
+    }),
+    (error) => {
+      observedError = error;
+      return error.message === 'full_extension_preference_or_restore_failed';
+    },
+  );
+  assert.equal(observedError.safeFirstChoiceReloadBoundary.lastCapturedPhase, 'unavailable');
+  assert.equal(observedError.safeFirstChoiceReloadBoundary.timelineTruncated, null);
+  assert.equal(observedError.safeRestorationReloadBoundary.timelineTruncated, null);
+});
+
 test('a failed native switch target reports its bounded pointer code before any preference write', async () => {
   const f = fixture();
   const records = [];

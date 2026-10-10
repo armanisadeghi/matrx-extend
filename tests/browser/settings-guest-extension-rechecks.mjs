@@ -127,7 +127,7 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     const phases = evidence?.timeline?.entries?.map((entry) => entry.phase) ?? [];
     return {
       lastCapturedPhase: phases.at(-1) ?? 'unavailable',
-      timelineTruncated: (evidence?.timeline?.dropped_entries ?? 0) > 0,
+      timelineTruncated: evidence?.timeline ? (evidence.timeline.dropped_entries ?? 0) > 0 : null,
       clickStarted: phases.includes('click_started'),
       clickResolved: phases.includes('click_resolved'),
       preClickOldWorkerPresent: evidence?.timeline?.pre_click_old_worker_present ?? null,
