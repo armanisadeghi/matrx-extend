@@ -1,0 +1,20 @@
+{
+  "workflow_run_id": 38084666691,
+  "workflow_artifact_id": 11681966197,
+  "workflow_artifact_name": "hosted-guest-38084666691-1",
+  "workflow_artifact_zip_sha256": "07b05fbabd5c25676b2d1d9e1821c1bca577973063aed168d776cf9f74ec7cd1",
+  "workflow_source_sha": "dccf0c059ed40df506dec9ad6fac6010b1c25728",
+  "release_run_id": 38080281242,
+  "release_artifact_id": 11680078743,
+  "release_artifact_name": "matrx-extend-v0.2.479",
+  "release_source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "release_artifact_zip_sha256": "c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+  "release_store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+  "adapted_unpacked_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+  "adapted_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "artifact_unchanged": true,
+  "deployed_server_sha_before": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
+  "deployed_server_sha_after": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
+  "server_version_http_status_before_after": 200,
+  "public_demo": "https://www.aimatrx.com/matrx-extend-demo"
+}
