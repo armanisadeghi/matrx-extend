@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "provenance": "Three exact hosted phase journals copied through scripts/copy-hosted-resource-journal.mjs; opened paths and process attribution removed.",
+  "all_phases_resource_valid": false,
+  "resource_guard_invalidation": false,
+  "phases": {
+    "package": {
+      "journal": "resource-journals/hosted-package-38049410816-1.jsonl",
+      "sha256": "1a21f50edae1f50ac7065544cb099d8dbf7b71b89267e8c3fdec15f08fbad15c",
+      "final_decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "final_at": "2026-10-10T11:45:37.035Z"
+    },
+    "browser": {
+      "journal": "resource-journals/hosted-browser-38049410816-1.jsonl",
+      "sha256": "7e16278abfb00fb61403efc1b9313ce241d4e9a215c5ad7e6afd49d4fb0c4b4a",
+      "final_decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false,
+      "final_at": "2026-10-10T11:47:43.121Z"
+    },
+    "guest": {
+      "journal": "resource-journals/hosted-guest-38049410816-1.jsonl",
+      "sha256": "bf427b58737685193d32cba494c68d8ca3481ec4b41c51d5e5e80811f3427aa1",
+      "final_decision": "child_failed",
+      "exit_code": 1,
+      "resource_invalid": false,
+      "final_at": "2026-10-10T11:50:33.127Z"
+    }
+  },
+  "guest_watch": "One RESOURCE_CPU_PENDING interval recovered before terminal decision.",
+  "classification": "The guard did not mark the attempt resource-invalid; guest wrapper ended child_failed with exit code 1, so acceptance was not a valid completed pass."
+}

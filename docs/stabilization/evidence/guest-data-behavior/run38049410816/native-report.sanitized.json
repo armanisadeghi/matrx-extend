@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "new_target": "EXT-F-2005-C16",
+  "mode": "guest",
+  "driver_status": "fail",
+  "stage": "picker_cancel",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "63425796f26a26e57c327bb01212d04c4f37b3d0",
+    "run_id": 38048498559,
+    "artifact_id": 11668174989,
+    "tree_sha256": "6aade2663cbe077bf3736fa7ec7c4c43c89b71e4f92392f93e78235dc8059d48",
+    "version": "0.2.464"
+  },
+  "observations": {
+    "picker_cancel_without_selection": false
+  },
+  "failure_code": "data_guest_cancel_baseline_picker_missing",
+  "classification": "unverified_precondition_failure_before_opening_or_canceling_the_picker; no product behavior conclusion",
+  "scope_limit": "The two-field selection path and C16 action were not reached; this run earns no product credit."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T11:51:00Z",
+  "updated_at": "2026-10-10T12:01:39Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -40357,13 +40357,14 @@
             "37996443185",
             "37999961791",
             "38001402806",
-            "38002259163"
+            "38002259163",
+            "38049410816"
           ],
-          "retest_status": "not-run",
+          "retest_status": "Latest guest C16 attempt 38049410816 stopped at a pre-open picker readiness oracle before Cancel or the two-field flow. Package/browser resource finals valid; guest child_failed exit 1, resourceInvalid=false. Independent review grants zero new product credit; prior bounded T01 pass remains only in its original scope. C16 close-without-select and full guest Data remain unverified. See reports/peer-review-run38049410816.json.",
           "retest_evidence": {
-            "run_id": "38002259163",
-            "report": "docs/stabilization/evidence/guest-data-behavior/run38002259163/receipt.json",
-            "scope": "Guest resource watcher stopped the child on CPU_BUSY and CPU_HIGH_LOAD_BUSY before CDP/native panel QA. Data guest behavior and save gate remain unverified."
+            "run_id": "38049410816",
+            "report": "docs/stabilization/reports/peer-review-run38049410816.json",
+            "scope": "Unverified zero-credit pre-picker failure; no product defect proven. Earlier bounded T01 pass retained."
           }
         },
         "member": {

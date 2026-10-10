@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "new_target": "EXT-F-2005-C16",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "run_id": 38049410816,
+  "attempt": 1,
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38049410816",
+  "workflow_source_sha": "63425796f26a26e57c327bb01212d04c4f37b3d0",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "runner_arch": "X64",
+  "machine": "x86_64",
+  "job_conclusion": "failure",
+  "started_at": "2026-10-10T11:43:27Z",
+  "finished_at": "2026-10-10T11:50:49Z",
+  "product_artifact": {
+    "path": "product-artifact.sanitized.json",
+    "sha256": "5ec39c19b06bcd9574a397c9a6512fd489bab1dc18749a3f47223c4c3f1fef2a"
+  },
+  "hosted_result_artifact": {
+    "id": 11668858194,
+    "name": "hosted-guest-38049410816-1",
+    "digest": "sha256:ecf348cd6d2971d7cc5da8d775fbd8452f646054819b90353bbca4f89400f405",
+    "expired": false
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "sha256": "439fcd07ed7fb60b82022ee742f90851c76f2b853f25e1ddf7ff57b6469b457f",
+    "driver_status": "fail",
+    "failure_stage": "picker_cancel",
+    "failure_code": "data_guest_cancel_baseline_picker_missing"
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "sha256": "7d941d4697a8ecfe1c91f24ce239deda9e169c132bfc92171894867ab3111b32",
+    "phases": {
+      "package": {
+        "decision": "valid",
+        "resource_invalid": false,
+        "exit_code": 0,
+        "journal_sha256": "1a21f50edae1f50ac7065544cb099d8dbf7b71b89267e8c3fdec15f08fbad15c"
+      },
+      "browser": {
+        "decision": "valid",
+        "resource_invalid": false,
+        "exit_code": 0,
+        "journal_sha256": "7e16278abfb00fb61403efc1b9313ce241d4e9a215c5ad7e6afd49d4fb0c4b4a"
+      },
+      "guest": {
+        "decision": "child_failed",
+        "resource_invalid": false,
+        "exit_code": 1,
+        "journal_sha256": "bf427b58737685193d32cba494c68d8ca3481ec4b41c51d5e5e80811f3427aa1"
+      }
+    }
+  },
+  "cleanup": {
+    "path": "cleanup.sanitized.json",
+    "sha256": "40a007d0fefaf9792657be6807911205888d4638eb86a9dc1fac2b238c96c876"
+  },
+  "verdict": "unverified_zero_credit",
+  "classification": "The native driver failed its picker-control baseline before opening the picker. C16 was not exercised; no product failure or pass is established.",
+  "harness_note": "The baseline picker count is derived from enabled buttons; a disabled control is counted as missing. The assertion runs before the existing picker-readiness wait, so the report does not distinguish missing from temporarily disabled control.",
+  "limits": [
+    "C16 cancellation was not attempted.",
+    "The original two-field preview/Done path did not run.",
+    "No product acceptance credit until the precondition is repaired and independently reviewed."
+  ],
+  "sanitization": "No raw logs, screenshots, credentials, auth values, unrestricted page text, or private runner paths are included."
+}

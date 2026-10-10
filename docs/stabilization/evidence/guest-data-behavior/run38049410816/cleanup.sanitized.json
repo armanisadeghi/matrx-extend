@@ -1,0 +1,8 @@
+{
+  "schema_version": 1,
+  "owned_fixture_server": "closed by native harness finally block after exercise failure",
+  "owned_chrome_child": "stopped by native harness finally block after exercise failure",
+  "temporary_profile": "removed by native harness finally block; no independent post-removal filesystem readback was retained",
+  "runner": "hosted ephemeral macos-15-intel job completed",
+  "excluded": "Downloaded screenshots and raw workflow logs were not copied into repository evidence."
+}

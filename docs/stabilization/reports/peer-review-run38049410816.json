@@ -1,0 +1,63 @@
+{
+  "status": "PASS",
+  "verdict": "UNVERIFIED_ZERO_CREDIT",
+  "review_scope": "Independent evidence adjudication of hosted guest Data attempt 38049410816; no inventory update, hosted rerun, build, or product case credit.",
+  "identity_and_artifact_association": {
+    "hosted_attempt": "GitHub confirms workflow run 38049410816, attempt 1, Hosted guest side-panel acceptance, workflow_dispatch on main at source 63425796f26a26e57c327bb01212d04c4f37b3d0, conclusion failure.",
+    "hosted_result_artifact": "GitHub API confirms artifact 11668858194, hosted-guest-38049410816-1, digest sha256:ecf348cd6d2971d7cc5da8d775fbd8452f646054819b90353bbca4f89400f405, unexpired. This matches the receipt.",
+    "product_artifact": "The imported CI development artifact is from successful CI run 38048498559 on the same source SHA; GitHub API confirms artifact 11668174989 and digest sha256:e0e31f10a1763ee0ee5f49de80b3431a672af80eb9477f7edfc9a07860857fe1, matching product-artifact.sanitized.json.",
+    "run_id_disambiguation": "The native report artifact.run_id value 38048498559 is CI artifact provenance, not the hosted attempt. The receipt and GitHub Actions API bind hosted attempt 38049410816."
+  },
+  "evidence_integrity": {
+    "result": "PASS",
+    "checked_files": [
+      "receipt.sanitized.json",
+      "native-report.sanitized.json",
+      "product-artifact.sanitized.json",
+      "cleanup.sanitized.json",
+      "resource-finals.sanitized.json",
+      "resource-journals/hosted-package-38049410816-1.jsonl",
+      "resource-journals/hosted-browser-38049410816-1.jsonl",
+      "resource-journals/hosted-guest-38049410816-1.jsonl"
+    ],
+    "hashes": {
+      "receipt.sanitized.json": "62677d0a20240d1d42f27b06215257dc1996a00bf2b1506d486a879e8c36e067",
+      "native-report.sanitized.json": "439fcd07ed7fb60b82022ee742f90851c76f2b853f25e1ddf7ff57b6469b457f",
+      "product-artifact.sanitized.json": "5ec39c19b06bcd9574a397c9a6512fd489bab1dc18749a3f47223c4c3f1fef2a",
+      "cleanup.sanitized.json": "40a007d0fefaf9792657be6807911205888d4638eb86a9dc1fac2b238c96c876",
+      "resource-finals.sanitized.json": "7d941d4697a8ecfe1c91f24ce239deda9e169c132bfc92171894867ab3111b32",
+      "resource-journals/hosted-package-38049410816-1.jsonl": "1a21f50edae1f50ac7065544cb099d8dbf7b71b89267e8c3fdec15f08fbad15c",
+      "resource-journals/hosted-browser-38049410816-1.jsonl": "7e16278abfb00fb61403efc1b9313ce241d4e9a215c5ad7e6afd49d4fb0c4b4a",
+      "resource-journals/hosted-guest-38049410816-1.jsonl": "bf427b58737685193d32cba494c68d8ca3481ec4b41c51d5e5e80811f3427aa1"
+    },
+    "privacy": "The eight files contain sanitized run metadata, fixed failure categories, aggregate resource telemetry, hashes, and cleanup statements. Inspection found no credential values, personal data, or private runner paths. Raw logs and screenshots are not included in the repository evidence."
+  },
+  "native_boundary": {
+    "result": "FAIL_BEFORE_TARGET_ACTION",
+    "stage": "picker_cancel",
+    "failure_code": "data_guest_cancel_baseline_picker_missing",
+    "finding": "The native guest flow reached exercise_panel and failed its baseline before opening the picker or clicking Cancel. The old baseline counted only enabled buttons and asserted immediately; it could not distinguish a temporarily disabled picker from an absent picker.",
+    "observations": {
+      "picker_cancel_without_selection": false,
+      "picker_cancel_selected_fields_unchanged": "not reached",
+      "picker_cancel_pattern_writes": "not observed; Network.enable and the write listener are installed only after the baseline passes",
+      "two_field_preview_and_done_path": "not reached"
+    },
+    "credit": "Zero C16 and zero EXT-F-2005-T01 credit from this attempt. It establishes a harness precondition failure, not a product failure or product pass."
+  },
+  "resource_and_cleanup": {
+    "package": "valid; exit 0; resource_invalid=false",
+    "browser": "valid; exit 0; resource_invalid=false",
+    "guest": "child_failed; exit 1; resource_invalid=false",
+    "classification": "Resource-valid execution ending in child failure; not a resource-invalid refusal and not an acceptance pass.",
+    "telemetry": "One CPU_PENDING interval recovered to CPU_RECOVERED before terminal child failure.",
+    "cleanup_limits": "Sanitized cleanup record says owned fixture server and Chrome child were stopped and the temporary profile was removed by the harness finally block. No independent post-removal filesystem readback is retained."
+  },
+  "exact_limits": [
+    "Picker opening and Cancel were not attempted.",
+    "No selected-field state after Cancel was observed.",
+    "No write listener was active during the failed baseline, so this attempt does not establish zero network writes for C16.",
+    "The original two-field preview/Done flow was not reached.",
+    "No product behavior failure or success is inferred from this run."
+  ]
+}
