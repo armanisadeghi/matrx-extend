@@ -42,6 +42,7 @@ export const extensionPageContextSource: ChatContextSource = {
     };
   },
   async contribute({ conversationId }) {
+    const t0 = Date.now(); // [DBG-eye7]
     try {
       const user = useAuthStore.getState().user;
       const built = await buildChatContext({
@@ -52,6 +53,7 @@ export const extensionPageContextSource: ChatContextSource = {
         activeTab: await resolveActiveTab(),
         conversationId,
       });
+      console.log('EYEDBG contribute', Date.now() - t0, Object.keys(built.context ?? {}).length); // [DBG-eye7]
       return built.context && Object.keys(built.context).length > 0
         ? { context: built.context as Record<string, unknown> }
         : null;
