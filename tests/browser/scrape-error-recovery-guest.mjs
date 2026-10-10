@@ -5,6 +5,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { probeEffectiveHostAccess } from './scrape-effective-host-access-probe.mjs';
 import { assertGuestScrapeRecoveryEvidence } from './scrape-error-recovery-guest-oracle.mjs';
 import { updateHostAccessIfExpected } from './scrape-host-access-transition.mjs';
 import {
@@ -172,24 +173,6 @@ async function recoveryState(panel) {
   );
 }
 
-async function probeEffectiveHostAccess(panel) {
-  return evaluate(
-    panel,
-    `(() => new Promise(async (resolve) => {
-      try {
-        if (!chrome.scripting?.executeScript || !chrome.tabs?.query) return resolve('unknown');
-        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-        if (!Number.isInteger(tab?.id)) return resolve('unknown');
-        await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: () => true });
-        resolve('available');
-      } catch (error) {
-        const message = String(error?.message ?? '');
-        resolve(/permission|cannot access|not allowed|host/i.test(message) ? 'denied' : 'unknown');
-      }
-    }))()`,
-  );
-}
-
 async function forceActiveTabGrantRevocation(page, pageUrl) {
   const changedOrigin = new URL(pageUrl.href);
   changedOrigin.hostname = changedOrigin.hostname === 'localhost' ? '127.0.0.1' : 'localhost';
@@ -240,6 +223,7 @@ async function run() {
       exercisePanel: async ({
         page,
         panel,
+        browserSession,
         requireResourceHealth,
         resourceAction,
         transportFailureClass,
@@ -339,7 +323,10 @@ async function run() {
           assert.equal(state.ready, true, 'scrape_recovery_panel_lost_after_fixture_reload');
           assert.equal(state.deepTitles.length, 1, 'scrape_recovery_deep_control_not_unique');
           const denialStart = await runAfterEffectiveHostDenial(
-            () => preflight('effective_host_access', () => probeEffectiveHostAccess(panel)),
+            () =>
+              preflight('effective_host_access', () =>
+                probeEffectiveHostAccess(panel, browserSession.timeoutMs),
+              ),
             () => resourceAction(() => click(panel, 'title', state.deepTitles[0])),
           );
           const effectiveAccess = denialStart.access;
