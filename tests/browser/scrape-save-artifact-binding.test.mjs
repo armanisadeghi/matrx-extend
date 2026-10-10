@@ -100,3 +100,17 @@ for (const [field, value, error] of [
     );
   });
 }
+
+for (const checkoutSha of [undefined, '', '0d6e69aa7', 'z'.repeat(40)]) {
+  test(`refuses missing or malformed harness checkout SHA (${String(checkoutSha)})`, async () => {
+    await fixture(
+      async (validate) => {
+        await assert.rejects(validate(), { message: /^scrape_save_harness_checkout_sha_required/ });
+      },
+      ({ env }) => {
+        if (checkoutSha === undefined) Reflect.deleteProperty(env, 'GITHUB_SHA');
+        else env.GITHUB_SHA = checkoutSha;
+      },
+    );
+  });
+}

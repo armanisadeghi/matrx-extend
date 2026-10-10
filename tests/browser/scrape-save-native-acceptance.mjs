@@ -281,7 +281,12 @@ try {
   const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
   assert.equal(manifest.version, receipt.version, 'scrape_save_version_mismatch');
   // The selected CI artifact may predate the harness checkout. Bind it to its receipt.
-  report.harness_checkout_sha = process.env.GITHUB_SHA ?? null;
+  assert.match(
+    process.env.GITHUB_SHA ?? '',
+    /^[a-f0-9]{40}$/,
+    'scrape_save_harness_checkout_sha_required',
+  );
+  report.harness_checkout_sha = process.env.GITHUB_SHA;
   report.artifact = {
     kind: 'ci_development_test',
     eligible_store: false,
