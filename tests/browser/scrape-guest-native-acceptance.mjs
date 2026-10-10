@@ -955,7 +955,11 @@ try {
     assert.match(process.env.MATRX_SCRAPE_CI_RUN_ID ?? '', /^[1-9][0-9]*$/);
     assert.match(process.env.MATRX_SCRAPE_CI_ARTIFACT_ID ?? '', /^[1-9][0-9]*$/);
   } else {
-    assert.equal(receipt.kind, 'published_store_zip_adapted', 'scrape_store_receipt_required');
+    assert.equal(
+      receipt.kind,
+      'native_store_zip_candidate_key_adapted',
+      'scrape_store_receipt_required',
+    );
   }
   assert.equal(hashReleaseTree(EXTENSION_DIR), receipt.treeSha256, 'scrape_receipt_tree_mismatch');
   const manifest = JSON.parse(await readFile(join(EXTENSION_DIR, 'manifest.json'), 'utf8'));

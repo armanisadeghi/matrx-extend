@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "width_mode": "narrow",
+  "stage": "inputs",
+  "status": "unverified",
+  "failure": {
+    "stage": "inputs",
+    "code": "scrape_store_receipt_required",
+    "actual_receipt_kind": "native_store_zip_candidate_key_adapted",
+    "expected_receipt_kind": "published_store_zip_adapted"
+  },
+  "native_stage": null,
+  "browser_launch": null,
+  "cases_exercised": [],
+  "guest_account_observed": false,
+  "screenshots": [],
+  "interpretation": "The acceptance driver stopped at its receipt precondition before launching the native scrape case. No product behavior was exercised."
+}

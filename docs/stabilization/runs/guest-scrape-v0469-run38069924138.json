@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "status": "unverified",
+  "lane": "B",
+  "runner": "hosted guest-scrape / macos-15",
+  "acceptance_run_id": 38069924138,
+  "acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38069924138",
+  "workflow_source_sha": "2acb41f25d1654593d8df66cc36ba4538021fc1e",
+  "release_run_id": 38067449240,
+  "release_artifact_id": 11675900444,
+  "release_artifact_name": "matrx-extend-v0.2.469",
+  "release_source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+  "acceptance_artifact_id": 11677180163,
+  "acceptance_artifact_name": "hosted-guest-38069924138-1",
+  "failure_stage": "inputs",
+  "failure_code": "scrape_store_receipt_required",
+  "actual": "Sanitized native report shows receipt kind native_store_zip_candidate_key_adapted; guest scrape driver requires published_store_zip_adapted. The failure occurred before the native case launched.",
+  "classification": "hosted acceptance harness receipt-contract mismatch; resource gates admitted all stages; no product behavior verdict",
+  "resource_finals_evidence": "docs/stabilization/evidence/guest-scrape-hosted/run38069924138/resource-finals.sanitized.json",
+  "native_report_evidence": "docs/stabilization/evidence/guest-scrape-hosted/run38069924138/native-report.sanitized.json",
+  "screenshots": "none; artifact contains only the unverified JSON report",
+  "limits": [
+    "Guest scrape remains unverified on exact release v0.2.469.",
+    "No scrape UI, extraction, capture, or persistence assertion was reached.",
+    "No product pass or product failure is inferred from this run."
+  ],
+  "next_action": "Align the hosted receipt serialization contract with the guest driver precondition, add a focused forcing test for the exact release receipt written to disk, then rerun this exact-release lane before claiming behavior coverage."
+}

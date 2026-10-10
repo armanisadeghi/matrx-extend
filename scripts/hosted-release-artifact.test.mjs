@@ -10,6 +10,27 @@ import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
 const root = await mkdtemp(join(tmpdir(), 'hosted-release-artifact-test-'));
 after(() => rm(root, { recursive: true, force: true }));
+const scrapeDriverSource = await readFile(
+  new URL('../tests/browser/scrape-guest-native-acceptance.mjs', import.meta.url),
+  'utf8',
+);
+const scrapePreflight = new (Object.getPrototypeOf(async () => {}).constructor)(
+  'assert',
+  'readFile',
+  'join',
+  'hashReleaseTree',
+  'EXTENSION_DIR',
+  'RECEIPT',
+  'ARTIFACT_CHANNEL',
+  `${scrapeDriverSource.slice(
+    scrapeDriverSource.indexOf('  const receipt = JSON.parse(await readFile(RECEIPT'),
+    scrapeDriverSource.indexOf(
+      '  report.artifact = {',
+      scrapeDriverSource.indexOf('  const receipt = JSON.parse(await readFile(RECEIPT'),
+    ),
+  )}\nreturn receipt;`,
+);
+
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 const sourceSha = 'a'.repeat(40);
 const version = '0.2.205';
@@ -92,6 +113,42 @@ test('guest and member Store cases load Store bytes with only manifest.key added
     assert.deepEqual(adapted.artifactSelection.modifiedPaths, ['manifest.json']);
     assert.equal(sha256(await readFile(storeZip)), receipt.storeZip.sha256);
   }
+});
+
+test('real imported Store receipt passes the real Scrape preflight and tampered runtime fails', async () => {
+  const { artifactDir } = await fixture('scrape-driver-receipt');
+  const output = join(root, 'scrape-driver-output');
+  await mkdir(output);
+  const prepared = await prepareHostedReleaseArtifact(
+    artifactDir,
+    output,
+    sourceSha,
+    'guest-scrape',
+  );
+  const runPreflight = () =>
+    scrapePreflight(
+      assert,
+      readFile,
+      join,
+      hashReleaseTree,
+      prepared.extensionDir,
+      prepared.relocatedReceipt,
+      'store',
+    );
+  const receipt = await runPreflight();
+  assert.equal(receipt.artifactSelection.source, 'release_receipt_store_zip');
+  assert.equal(receipt.artifactSelection.selectedZipSha256, receipt.storeZip.sha256);
+  for (const kind of [
+    'published_store_zip_adapted',
+    'local_dev_unpacked',
+    'published_store_crx_unpacked',
+  ]) {
+    await writeFile(prepared.relocatedReceipt, JSON.stringify({ ...receipt, kind }));
+    await assert.rejects(runPreflight(), /scrape_store_receipt_required/);
+  }
+  await writeFile(prepared.relocatedReceipt, JSON.stringify(receipt));
+  await writeFile(join(prepared.extensionDir, 'background.js'), 'altered Store runtime');
+  await assert.rejects(runPreflight(), /scrape_receipt_tree_mismatch/);
 });
 
 test('a wrong Store ZIP is refused even when the local ZIP is valid', async () => {

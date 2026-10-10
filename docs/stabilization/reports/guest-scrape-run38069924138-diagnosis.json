@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "report_type": "hosted_acceptance_failure_diagnosis",
+  "run_id": 38069924138,
+  "reviewed_at": "2026-10-10",
+  "verdict": "harness_failure_before_product_behavior",
+  "failed_stage": "inputs",
+  "first_failure": {
+    "code": "scrape_store_receipt_required",
+    "actual_receipt_kind": "native_store_zip_candidate_key_adapted",
+    "expected_receipt_kind": "published_store_zip_adapted",
+    "evidence": "The uploaded native report records an input-stage assertion and has null native_stage/browser_launch, no cases, and no screenshots."
+  },
+  "source_confirmation": {
+    "receipt_writer": "scripts/hosted-release-artifact.mjs writes native_store_zip_candidate_key_adapted into the relocated receipt for Store ZIP adaptation.",
+    "acceptance_driver": "tests/browser/scrape-guest-native-acceptance.mjs requires receipt.kind to equal published_store_zip_adapted for the store channel.",
+    "classification": "The acceptance harness disagrees with its own receipt writer. The mismatch occurs before the guest scrape product path."
+  },
+  "resource_finals": {
+    "package": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "browser": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "acceptance": "child_failed; admitted=true; resourceInvalid=false; exitCode=1"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-scrape-hosted/run38069924138/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-hosted/run38069924138/resource-finals.sanitized.json"
+  ],
+  "product_verdict": "none; the case did not reach native browser launch or scrape assertions.",
+  "bounded_repair": "Make the serialized receipt kind and guest driver precondition use one truthful contract, preserving any candidate/adaptation detail in a separate receipt field if needed. Add a focused test that reads the exact relocated receipt and proves the guest driver accepts it; then rerun the exact release lane.",
+  "release_gate_truth": "The release workflow passed and produced v0.2.469, but this guest-scrape acceptance run failed. Release existence does not establish scrape behavior; this lane remains unverified."
+}
