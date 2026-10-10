@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_review",
+  "reviewed_at": "2026-10-10",
+  "verdict": "PASS_BOUNDED_DIAGNOSTIC_ONLY",
+  "scope": "Member Settings rendered-identity failure diagnostic and caller guard; no product behavior or native acceptance claim.",
+  "initial_finding": "The first version ran on every member failure during settings_ready. It did not satisfy the requested exact failure gate.",
+  "correction": "The caller now delegates every caught error to recordSettingsIdentityFailure, which returns without reading when mode is not member, operation is not settings_ready, or failureCode is not d87_rendered_identity_not_observed. The corrected helper test verifies both the exact positive condition and rejected failure codes, operation, and mode.",
+  "evidence": {
+    "run": "Sanitized run38048431986 report records a resource-valid child failure with d87_rendered_identity_not_observed at settings_ready, Settings active, member auth and non-admin checks passed, and zero cases observed. It grants no product behavior credit.",
+    "privacy": "The diagnostic reads Account/Organization DOM and local storage, but returns only fixed booleans, including email/token presence and profile/organization matches. No raw email, UUID, organization name, token, request data, or path is returned. The read-only checks run only after the exact member rendered-identity timeout.",
+    "credit": "The caller records only failure_identity_checks and rethrows. The outer acceptance handler retains failure status; it adds no case result or pass credit.",
+    "guard": "Tests distinguish identity-boundary failures while requiring Boolean-only output. Caller-guard cases verify no read/report field for a different Settings failure code, assertion failure, different operation, or guest mode, and one read for the exact member rendered-identity timeout."
+  },
+  "verification": {
+    "focused": "node --test tests/browser/settings-identity-diagnostic.test.mjs tests/browser/settings-native-auth-driver.test.mjs — 18/18 passed.",
+    "compile": "pnpm compile — passed.",
+    "biome": "pnpm exec biome check on the three reviewed source/test files — passed.",
+    "diff_check": "git diff --check on the three reviewed paths — passed."
+  },
+  "checked_files": [
+    "tests/browser/settings-d87-native-acceptance.mjs",
+    "tests/browser/settings-identity-diagnostic.mjs",
+    "tests/browser/settings-identity-diagnostic.test.mjs",
+    "tests/browser/settings-native-auth-driver.mjs",
+    "docs/stabilization/evidence/settings-controls-member/run38048431986/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-member/run38048431986/receipt.sanitized.json"
+  ],
+  "limits": [
+    "No native browser rerun was performed; the diagnostic was not observed in a new run.",
+    "The cited run remains a failed zero-case attempt and does not establish product behavior.",
+    "This review covers only the targeted member identity diagnostic, not Settings persistence, retry, reload, guest/admin, Store, or current-main behavior."
+  ]
+}

@@ -12,6 +12,7 @@ import {
   supabaseOrigin,
 } from './member-native-auth-proof.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { recordSettingsIdentityFailure } from './settings-identity-diagnostic.mjs';
 import { memberAuthFailureReport } from './settings-member-auth-diagnostic.mjs';
 import {
   panelIdentity,
@@ -491,6 +492,19 @@ try {
         // Only the fixed Settings predicates below cross from the panel. A
         // destroyed execution context is recorded as unavailable.
         report.failure_observation = await observation(panel).catch(() => null);
+        await recordSettingsIdentityFailure({
+          report,
+          panel,
+          mode: AUTH_MODE,
+          operation,
+          failureCode: failureCode(error),
+          expected: {
+            mode: AUTH_MODE,
+            email: expectedEmail,
+            profileId: expectedProfileId,
+            organizationId: expectedOrganizationId,
+          },
+        });
         throw error;
       }
     },
