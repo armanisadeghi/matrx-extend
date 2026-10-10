@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "scope": "Hosted native guest Scrape acceptance against exact v0.2.476 Store ZIP candidate; narrow 360px.",
+  "acceptance_run_id": 38078590279,
+  "acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38078590279",
+  "workflow_source_sha": "858e6761f9bdda4bfa19cded72bddb4ba4a206f7",
+  "release_run_id": 38077256885,
+  "release_artifact_id": 11678519586,
+  "release_artifact_name": "matrx-extend-v0.2.476",
+  "release_artifact_sha256": "3e1277f1df8692fa252fadcb3ba5a600c386ca00fdb7b958d0189103ba20dde8",
+  "source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+  "release_tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056",
+  "hosted_artifact_id": 11679980579,
+  "hosted_artifact_sha256": "476771abee744365491133fcef5dcbf7387f77b79f74a5ce7342051e2a922059",
+  "artifact_loading": "Candidate-key adapted and loaded unpacked; not a Store-installed copy.",
+  "native_result": "partial",
+  "resource_finals": "All three matching package/browser/guest resource journals are valid: admitted, resourceInvalid=false, exitCode=0.",
+  "case_results": {
+    "EXT-F-1007-T20": "pass",
+    "EXT-F-1007-T01": "partial",
+    "EXT-F-1007-T02": "partial",
+    "EXT-F-1007-T08": "partial",
+    "EXT-F-1007-T07": "pass",
+    "EXT-F-1007-T09": "pass",
+    "EXT-F-1007-T10": "pass",
+    "EXT-F-1007-T11": "pass",
+    "EXT-F-1007-T12": "pass",
+    "EXT-F-1007-T13": "partial overall; guest substeps passed",
+    "EXT-F-1007-T14": "partial"
+  },
+  "review": "docs/stabilization/reports/peer-review-guest-scrape-run38078590279.json",
+  "evidence": "docs/stabilization/evidence/guest-scrape-hosted/run38078590279/",
+  "comparison": "T08 repeats the bounded guest behavior already evidenced by exact v0.2.469 run 38070816110 and v0.2.471 run 38074083116; this adds v0.2.476 package-specific evidence but no new T08 behavior class.",
+  "limits": [
+    "No unexpected user-visible failure was observed.",
+    "Guest-only narrow width; normal width, physical resize, member/admin remain unverified.",
+    "T08 SEO/Schema empty states remain unverified. T02 deep failure retry and T14 natural recoverable retry remain unverified.",
+    "Candidate-key adaptation and unpacked loading do not prove Store-installed behavior; no exact-latest acceptance claim is made."
+  ]
+}

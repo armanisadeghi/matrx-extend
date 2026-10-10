@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "run_id": 38078590279,
+  "finals": {
+    "hosted-package-38078590279-1.jsonl": {
+      "admitted": true,
+      "admission_reasons": [],
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "hosted-browser-38078590279-1.jsonl": {
+      "admitted": true,
+      "admission_reasons": [],
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "hosted-guest-38078590279-1.jsonl": {
+      "admitted": true,
+      "admission_reasons": [],
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_scrape_evidence_review",
+  "reviewer": "guest_scrape_run38078590279_review",
+  "run": {
+    "hosted_run_id": 38078590279,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38078590279",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_conclusion": "success",
+    "workflow_source_sha": "858e6761f9bdda4bfa19cded72bddb4ba4a206f7",
+    "lane": "B",
+    "runner": "macos-15-intel / x86_64",
+    "case": "guest-scrape",
+    "auth_mode": "guest",
+    "width_mode": "narrow"
+  },
+  "verdict_a_product_behavior": {
+    "verdict": "PARTIAL",
+    "basis": "Native assertions reached actual guest Scrape UI behavior; overall harness green is not product acceptance.",
+    "cases": {
+      "EXT-F-1007-T01": "PARTIAL: busy-disabled observation, lazy-content absence, fast capture, and post-extension-reload fast recapture passed; normal width and member/admin remain unverified.",
+      "EXT-F-1007-T02": "PARTIAL: lazy content appeared in the browser and deep capture, including after extension reload; deep failure/retry remains unverified.",
+      "EXT-F-1007-T08": "PARTIAL: all six panes showed matching populated content; empty Images, Video, Links, and Article states and capture/export invariance warm and after extension reload passed. SEO/Schema empty states, normal width, physical resize, and member/admin remain unverified.",
+      "EXT-F-1007-T07": "PASS for guest subtarget: article scroll synchronization passed warm and after reload.",
+      "EXT-F-1007-T09": "PASS for guest subtarget: current-capture copy behavior passed warm, after navigation, and after reload.",
+      "EXT-F-1007-T10": "PASS for guest subtarget: image removal/addition passed warm and after reload.",
+      "EXT-F-1007-T11": "PASS for guest subtarget: image URL validation, addition, and cancel passed warm and after reload.",
+      "EXT-F-1007-T12": "PASS for guest subtarget: video remove/add/open/copy passed warm and after reload.",
+      "EXT-F-1007-T13": "PARTIAL overall: guest link actions passed warm and after reload; member/admin remain unverified.",
+      "EXT-F-1007-T14": "PARTIAL: expected chrome://settings denial notice and dismissal were observed. Natural recoverable Reload page/Try again branches remain unverified.",
+      "EXT-F-1007-T20": "PASS: empty state, stale-content clearing on navigation, and clearing after extension reload passed."
+    },
+    "actual_user_visible_failures": [],
+    "expected_restricted_page_ui": "The red capture-denied notice on chrome://settings is expected browser restriction behavior and is not an unexpected product failure."
+  },
+  "verdict_b_evidence_quality": {
+    "verdict": "PASS_WITH_LIMITS",
+    "findings": [],
+    "provenance": "The hosted workflow selected successful release run 38077256885 and validated its release artifact receipt. Artifact 11678519586 is matrx-extend-v0.2.476 (GitHub digest 3e1277f1df8692fa252fadcb3ba5a600c386ca00fdb7b958d0189103ba20dde8). The native report source SHA b0ddaa566cd8c87a68cd234cc3db01b7959181db matches the v0.2.476 tag commit; package tree SHA is 3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056. Hosted artifact 11679980579 digest matches GitHub metadata. Native report shows temporary candidate-key adaptation and unpacked loading.",
+    "resource_finals": "Only the current run-matched package, browser, and guest journals were used. Each shows admission reasons empty and terminal admitted=true, resourceInvalid=false, exitCode=0, decision=valid.",
+    "screenshots": "Inspected native panel, fast Article, deep Article, post-reload deep Article, and restricted-page screenshots. They corroborate guest mode, article content/deep capture, and expected restricted-page denial; assertions remain primary evidence.",
+    "limits": [
+      "Candidate-key adaptation and unpacked loading do not establish Store-installed-copy acceptance.",
+      "The reviewed package is v0.2.476; a later release is in progress, so this is not exact-latest acceptance.",
+      "No browser run or heavy test was started for this review."
+    ]
+  },
+  "comparison": {
+    "prior_bounded_run": "Run 38070816110 on exact v0.2.469 already showed the same bounded T08 guest subset: six populated panes, empty Images/Video/Links/Article, and warm/reload capture/export invariance. Run 38074083116 on exact v0.2.471 repeated the same case suite.",
+    "inventory_effect": "No T08 inventory change is warranted; it remains Partial. SEO/Schema empty states, normal width, physical resize, and member/admin coverage are open. No defect transition is warranted because no unexpected product failure was observed.",
+    "distinct_coverage": "Adds v0.2.476 package-specific evidence for this guest native case set but no distinct T08 behavior beyond v0.2.469/v0.2.471."
+  },
+  "evidence_directory": "docs/stabilization/evidence/guest-scrape-hosted/run38078590279/"
+}

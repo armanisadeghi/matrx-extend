@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "status": "partial",
+  "artifact": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "channel": "store",
+    "version": "0.2.476",
+    "source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056"
+  },
+  "guest_account_observed": true,
+  "width_mode": "narrow",
+  "viewport_width_px": 360,
+  "browser_version": "Chrome/141.0.7390.37",
+  "extension_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "guest_auth_storage": {
+    "hasAccessToken": false,
+    "hasUserProfile": false
+  },
+  "stage": "post_reload_deep_capture",
+  "native_stage": "exercise_panel",
+  "failure": null,
+  "cases": {
+    "EXT-F-1007-T20": {
+      "status": "passed",
+      "evidence": {
+        "initial_empty": true,
+        "stale_content_cleared_on_navigation": true,
+        "stale_content_cleared_on_extension_reload": true,
+        "capture_enabled_after_normal_page_reload": true
+      },
+      "remaining": []
+    },
+    "EXT-F-1007-T01": {
+      "status": "partial",
+      "evidence": {
+        "busy_disabled": true,
+        "article_capture_observed": true,
+        "lazy_content_absent_before_scroll": true,
+        "six_result_tabs_present": true,
+        "full_extension_reload_and_post_reload_fast_capture": true
+      },
+      "remaining": [
+        "member/admin modes remain unverified by this receipt.",
+        "Normal-width verification remains unverified."
+      ]
+    },
+    "EXT-F-1007-T02": {
+      "status": "partial",
+      "evidence": {
+        "lazy_content_seen_in_browser_and_deep_capture": true,
+        "progress_text_observed": "Scrolling\u2026",
+        "post_reload_deep_capture": true,
+        "deep_failure_retry": false
+      },
+      "remaining": ["Deep failure retry mode remains unverified."]
+    },
+    "EXT-F-1007-T08": {
+      "status": "partial",
+      "evidence": {
+        "all_six_tabs_selected_and_matched": true,
+        "populated_panes": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+        "empty_states_checked": ["Images", "Video", "Links", "Article"],
+        "warm_capture_and_export_invariance": true,
+        "post_extension_reload_capture_and_export_invariance": true,
+        "SEO_and_Schema_empty_states": false
+      },
+      "remaining": [
+        "member/admin modes remain unverified by this receipt.",
+        "Normal-width verification remains unverified."
+      ]
+    },
+    "EXT-F-1007-T07": {
+      "status": "passed",
+      "evidence": {
+        "guest_warm_and_reload_scroll_sync": true
+      },
+      "remaining": []
+    },
+    "EXT-F-1007-T09": {
+      "status": "passed",
+      "evidence": {
+        "guest_copy_menu_current_capture_output_warm_navigation_and_reload": true
+      },
+      "remaining": []
+    },
+    "EXT-F-1007-T10": {
+      "status": "passed",
+      "evidence": {
+        "image_remove_add_warm_and_reload": true
+      },
+      "remaining": []
+    },
+    "EXT-F-1007-T11": {
+      "status": "passed",
+      "evidence": {
+        "image_url_validation_add_cancel_warm_and_reload": true
+      },
+      "remaining": []
+    },
+    "EXT-F-1007-T12": {
+      "status": "passed",
+      "evidence": {
+        "video_remove_add_open_copy_warm_and_reload": true
+      },
+      "remaining": []
+    },
+    "EXT-F-1007-T13": {
+      "status": "partial",
+      "evidence": {
+        "guest_link_actions_warm_and_reload": true
+      },
+      "remaining": ["member/admin modes remain unverified by this receipt."]
+    },
+    "EXT-F-1007-T14": {
+      "status": "partial",
+      "evidence": {
+        "restricted_chrome_settings_denial_observed": true,
+        "notice_dismissed": true,
+        "natural_recoverable_retry": false
+      },
+      "remaining": [
+        "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+      ]
+    }
+  },
+  "actual_user_visible_failures": [],
+  "expected_restricted_page_ui": "The chrome://settings capture-denied notice is expected browser restriction behavior and was dismissed.",
+  "screenshots": [
+    "screenshots/native-side-panel.png",
+    "screenshots/scrape-fast-article.png",
+    "screenshots/scrape-deep-article.png",
+    "screenshots/scrape-reload-deep-article.png",
+    "screenshots/scrape-restricted-error.png"
+  ],
+  "limits": [
+    "Guest-only narrow 360px run; normal width, physical resize, member/admin remain unverified.",
+    "T08 SEO/Schema empty states remain unverified.",
+    "T02 deep-failure retry and T14 natural recoverable Reload page/Try again flows remain unverified.",
+    "Candidate-key adaptation and unpacked loading do not establish Store-installed behavior."
+  ]
+}
