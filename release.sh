@@ -784,7 +784,7 @@ matrx_imports_ok() {  # 0 when every @ai-matrx import resolves in the installed 
     ( cd "$REPO_ROOT" && bounded 300 node scripts/check-matrx-imports.mjs ) >> "$RELEASE_LOG_FILE" 2>&1
 }
 catch_up_matrx_packages() {
-    local stale review paths=() p imports_before=0 train
+    local stale review paths=() p imports_before=0 train update_phase update_limit update_rc
     stale="$(node "$REPO_ROOT/scripts/release-matrx-catchup.mjs" stale-only "$JOBS/check-matrx-packages.out")" || return 1
     (( SECONDS - SHIP_START < SHIP_RACE_BUDGET_SECS )) || {
         finding "ERROR" "Packages" "@ai-matrx was still publishing after $MATRX_CATCHUPS catch-ups and $((SECONDS - SHIP_START))s (the release's race budget); stopping" "./ship.sh"
@@ -797,10 +797,32 @@ catch_up_matrx_packages() {
         log "catch-up $MATRX_CATCHUPS: $train"
     fi
     matrx_imports_ok || imports_before=1
-    if ! ( cd "$REPO_ROOT" && bounded 900 node scripts/await-matrx-latest.mjs && bounded 600 pnpm update -r "@ai-matrx/*" --latest && bounded 600 pnpm update -r "@ai-matrx/*" --depth Infinity ) >> "$RELEASE_LOG_FILE" 2>&1; then
-        finding "ERROR" "Packages" "pnpm update of the stale @ai-matrx packages failed during catch-up" "pnpm sync:matrx-packages"
+    if ! ( cd "$REPO_ROOT" && bounded 900 node scripts/await-matrx-latest.mjs ) >> "$RELEASE_LOG_FILE" 2>&1; then
+        finding "ERROR" "Packages" "npm did not serve every latest @ai-matrx tarball before catch-up" "node scripts/await-matrx-latest.mjs"
         return 1
     fi
+    for update_phase in direct transitive; do
+        update_limit=$((SHIP_RACE_BUDGET_SECS - (SECONDS - SHIP_START)))
+        if (( update_limit <= 0 )); then
+            finding "ERROR" "Packages" "@ai-matrx catch-up reached the ${SHIP_RACE_BUDGET_SECS}s release race budget before its ${update_phase} update" "retry ./ship.sh"
+            return 1
+        fi
+        (( update_limit > 1200 )) && update_limit=1200
+        if [[ "$update_phase" == direct ]]; then
+            ( cd "$REPO_ROOT" && bounded "$update_limit" pnpm update -r "@ai-matrx/*" --latest ) >> "$RELEASE_LOG_FILE" 2>&1
+        else
+            ( cd "$REPO_ROOT" && bounded "$update_limit" pnpm update -r "@ai-matrx/*" --depth Infinity ) >> "$RELEASE_LOG_FILE" 2>&1
+        fi
+        update_rc=$?
+        if [[ $update_rc -ne 0 ]]; then
+            if [[ $update_rc -eq 124 ]]; then
+                finding "ERROR" "Packages" "${update_phase} @ai-matrx update timed out after ${update_limit}s during catch-up" "retry ./ship.sh after npm recovers"
+            else
+                finding "ERROR" "Packages" "${update_phase} @ai-matrx update failed during catch-up (exit $update_rc)" "pnpm sync:matrx-packages"
+            fi
+            return 1
+        fi
+    done
     if (( imports_before == 0 )) && ! matrx_imports_ok; then
         ( cd "$REPO_ROOT" && node scripts/check-matrx-imports.mjs 2>&1 | grep -v '^MATRX-ITEM' | tail -8 ) > "$JOBS/catchup-broke.txt" 2>/dev/null
         for p in package.json pnpm-lock.yaml; do

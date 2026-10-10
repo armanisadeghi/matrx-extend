@@ -177,6 +177,17 @@ esac
 exit 0
 STUB
 chmod +x "$SANDBOX/bin/node" "$SANDBOX/bin/pnpm"
+REAL_TIMEOUT="$(command -v timeout)"
+cat > "$SANDBOX/bin/timeout" <<STUB
+#!/usr/bin/env bash
+if [[ "\$2" == pnpm && "\$3" == update && "\$4" == -r && "\$5" == "@ai-matrx/*" && -f "$SANDBOX/timeout-matrx-update" ]]; then
+  printf '%s\n' "\$1" > "$SANDBOX/update-timeout-limit"
+  printf '%s\n' "\$*" > "$SANDBOX/update-timeout-args"
+  exit 124
+fi
+exec "$REAL_TIMEOUT" "\$@"
+STUB
+chmod +x "$SANDBOX/bin/timeout"
 # aidream's GitHub Actions, as the catch-up's publish-train wait reads them: nothing in flight.
 cat > "$SANDBOX/bin/gh" <<STUB
 #!/usr/bin/env bash
@@ -574,6 +585,25 @@ check "the caught-up lockfile is in the release"       'git show origin/main:pnp
 check "the catch-up commit is in main"                 '[[ -n "$(git log --format=%s --grep="catch up @ai-matrx packages" origin/main)" ]]'
 check "the package gate ran again on the new candidate" '[[ $(( $(grep -c "check:matrx-packages" "$SANDBOX/pnpm-calls") - PKG_CHECKS_BEFORE )) -eq 2 ]]'
 check "the replaced candidate leaves no ERROR"         '! grep -q "^ERROR .*matrx-packages failed" "$SANDBOX/catchup-out"'
+# The resolver can time out even after every package tarball is ready. That
+# failure must name its direct-update phase and never publish the candidate.
+touch "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update"
+rm -f "$SANDBOX/update-timeout-limit" "$SANDBOX/update-timeout-args"
+TIMEOUT_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+TIMEOUT_STATUS=0; run_release catchup-timeout-out || TIMEOUT_STATUS=$?
+rm -f "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update"
+check "catch-up timeout is explicit and blocks publication" '[[ $TIMEOUT_STATUS -ne 0 && "$TIMEOUT_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" && "$(cat "$SANDBOX/update-timeout-limit")" == 1200 ]] && grep -q "^1200 pnpm update -r @ai-matrx/\\* --latest$" "$SANDBOX/update-timeout-args" && grep -q "direct @ai-matrx update timed out after 1200s" "$SANDBOX/catchup-timeout-out"'
+# Each update is capped by the remaining release-wide race budget, not merely
+# its nominal maximum. The fixture keeps this budget short and intercepts the
+# update before it runs.
+perl -pi -e 's/^SHIP_RACE_BUDGET_SECS=3600$/SHIP_RACE_BUDGET_SECS=60/' release.sh
+touch "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update"
+rm -f "$SANDBOX/update-timeout-limit" "$SANDBOX/update-timeout-args"
+BUDGET_TIMEOUT_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
+BUDGET_TIMEOUT_STATUS=0; run_release catchup-budget-timeout-out || BUDGET_TIMEOUT_STATUS=$?
+rm -f "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update"
+git checkout -q -- release.sh
+check "catch-up timeout honors remaining race budget" '[[ $BUDGET_TIMEOUT_STATUS -ne 0 && "$(cat "$SANDBOX/update-timeout-limit")" -gt 0 && "$(cat "$SANDBOX/update-timeout-limit")" -lt 60 && "$BUDGET_TIMEOUT_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "^$(cat "$SANDBOX/update-timeout-limit") pnpm update -r @ai-matrx/\\* --latest$" "$SANDBOX/update-timeout-args" && grep -q "direct @ai-matrx update timed out after $(cat "$SANDBOX/update-timeout-limit")s" "$SANDBOX/catchup-budget-timeout-out"'
 # An install that lags a lockfile which is already current is not a stop: the
 # update fixes the install and the same candidate is checked again in full.
 # The committed lockfile must be the current one: nothing for a catch-up to commit.
