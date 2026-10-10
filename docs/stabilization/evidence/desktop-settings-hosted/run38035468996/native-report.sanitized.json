@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "defects": [
+    "EXT-D-0084",
+    "EXT-D-0086"
+  ],
+  "scope": "bounded guest T43 Pair/Forget selector diagnostic",
+  "case": "pair-forget",
+  "inventory_case": "EXT-F-1003-T43",
+  "role": "guest",
+  "status": "fail",
+  "build": {
+    "source_sha": "22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c",
+    "ci_run_id": 38032654367,
+    "artifact_id": 11663251990,
+    "tree_sha256": "db4aecd3a87d865bb97288f9e61b7d71a7045e6b71c51e58cb51d22a7e1e57a2",
+    "version": "0.2.458"
+  },
+  "failure_stage": "desktop_pair_forget_cancel",
+  "failure_code": "pointer_target_not_unique",
+  "observed": "The driver could not identify one unique visible “Forget pair code” pointer target before the first Pair/Forget interaction. The run stopped before Cancel, injected removal refusal, or retry; no product behavior was observed.",
+  "limits": [
+    "No T43 Pair/Forget acceptance credit.",
+    "Pair-code removal behavior remains unverified.",
+    "This does not establish a healthy desktop-engine connection.",
+    "The report contains no account, page URL, DOM content, raw error text, or screenshot."
+  ]
+}

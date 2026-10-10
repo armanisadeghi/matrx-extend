@@ -14,7 +14,14 @@ import {
   signInSettings,
   verifyCurrentSettingsIdentity,
 } from './settings-native-auth-driver.mjs';
-import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
+import {
+  click,
+  desktopPairForgetControlReady,
+  evaluate,
+  openSection,
+  settingsActionSummary,
+  waitFor,
+} from './settings-panel-driver.mjs';
 
 // D84/D86: the actual Settings handlers and Chrome storage in a disposable
 // native side panel. A storage wrapper creates one controlled failure/delay.
@@ -77,7 +84,7 @@ function safeCode(error) {
 }
 
 async function state(panel) {
-  return evaluate(
+  const observed = await evaluate(
     panel,
     `(async () => {
     const pane = (() => {
@@ -121,6 +128,14 @@ async function state(panel) {
     };
   })()`,
   );
+  if (CASE !== 'pair-forget') return observed;
+  const forgetControl = await settingsActionSummary(panel, 'Forget pair code');
+  return {
+    ...observed,
+    forgetButtonMatchedCount: forgetControl?.matchedCount ?? null,
+    forgetButtonVisibleCount: forgetControl?.visibleCount ?? null,
+    forgetVisible: (forgetControl?.visibleCount ?? 0) > 0,
+  };
 }
 
 async function storageCensus(panel, baseline = null) {
@@ -515,6 +530,36 @@ try {
           (s) => s?.pairIsA,
         );
         assert.equal((await state(panel)).pairKeyPresent, true, 'desktop_pair_fixture_not_stored');
+
+        let latestForgetState = null;
+        try {
+          await waitFor(
+            'desktop_pair_forget_control_ready',
+            async () => {
+              latestForgetState = await state(panel);
+              return latestForgetState;
+            },
+            (s) => desktopPairForgetControlReady(s),
+            10000,
+            (s) => ({
+              settingsActive: s?.settingsActive === true,
+              pairAvailable: s?.pairAvailable === true,
+              matchedCount: s?.forgetButtonMatchedCount ?? null,
+              visibleCount: s?.forgetButtonVisibleCount ?? null,
+            }),
+          );
+        } catch {
+          report.diagnostics = {
+            desktop_pair_forget_control_readiness: {
+              settingsActive: latestForgetState?.settingsActive === true,
+              pairAvailable: latestForgetState?.pairAvailable === true,
+              matchedCount: latestForgetState?.forgetButtonMatchedCount ?? null,
+              visibleCount: latestForgetState?.forgetButtonVisibleCount ?? null,
+            },
+          };
+          throw new Error('desktop_pair_forget_control_not_ready');
+        }
+        assert.equal(desktopPairForgetControlReady(latestForgetState), true);
 
         stage = 'desktop_pair_forget_cancel';
         await click(panel, 'settings-button', 'Forget pair code');

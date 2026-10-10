@@ -266,6 +266,36 @@ export function activeTabPanelExpression(title) {
   })()`;
 }
 
+export function settingsActionSummaryExpression(label) {
+  return `(() => {
+    const pane = ${activeTabPanelExpression('Settings')};
+    const matches = [...(pane?.querySelectorAll('button') ?? [])]
+      .filter((button) => button.textContent.trim() === ${JSON.stringify(label)});
+    const visible = (button) => {
+      const style = getComputedStyle(button), rect = button.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden' &&
+        style.display !== 'none' && !button.closest('[inert]');
+    };
+    return {
+      settingsActive: Boolean(pane),
+      matchedCount: matches.length,
+      visibleCount: matches.filter(visible).length,
+    };
+  })()`;
+}
+
+export async function settingsActionSummary(panel, label) {
+  return evaluate(panel, settingsActionSummaryExpression(label));
+}
+
+export function desktopPairForgetControlReady(state) {
+  return (
+    state?.settingsActive === true &&
+    state?.pairAvailable === true &&
+    state?.forgetButtonVisibleCount === 1
+  );
+}
+
 // Failure receipts need enough context to distinguish a missing or relabelled
 // control from a pointer-hit problem without transporting arbitrary UI text.
 export function dataPanelDiagnosticExpression() {
