@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-10 03:05 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-10T03:04:48Z. 205 features · 769 cases · 1358 controls · 187 linked defect records.
+Generated 2026-10-10 03:19 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-10T03:18:47Z. 205 features · 769 cases · 1358 controls · 187 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 94 · Partial: 90 · Fail: 2 · Unverified: 1043 · N/A: 1.
+Applicable case-by-role slots: **1230** — Pass: 93 · Partial: 91 · Fail: 2 · Unverified: 1043 · N/A: 1.
 Unverified splits into **132 explicitly marked unverified** and **911 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -24,7 +24,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 9 pass · 4 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 9, partial 14, fail 0, unverified 68, n/a 0 | 10 |
+| [Scrape](#scrape) | 1 | 8 pass · 5 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 8, partial 15, fail 0, unverified 68, n/a 0 | 10 |
 | [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 36, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -849,7 +849,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1007-T10 Remove image | Pass | Partial | Unverified | EXT-F-1007-C10 |
 | EXT-F-1007-T11 Add image URL validation | Pass | Partial | Unverified | EXT-F-1007-C11 |
 | EXT-F-1007-T12 Video actions | Pass | Partial | Unverified | EXT-F-1007-C12 |
-| EXT-F-1007-T13 Link actions | Pass | Partial | Unverified | EXT-F-1007-C13 |
+| EXT-F-1007-T13 Link actions | Partial | Partial | Unverified | EXT-F-1007-C13 |
 | EXT-F-1007-T14 Capture error recovery | Partial | Unverified | Unverified | EXT-F-1007-C14 |
 | EXT-F-1007-T15 Admin capture diagnostics gate | Unverified | Unverified | Unverified | EXT-F-1007-C15 |
 | EXT-F-1007-T16 Diagnose Missing/Unwanted picker | Unverified | Unverified | Unverified | EXT-F-1007-C16 |
@@ -872,12 +872,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Recorded case details and evidence:**
 
-- EXT-F-1007-T01 · guest: Partial. Fast capture and busy/result behavior are observed, but no natural capture error and corresponding recovery actions are exercised.
-  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
+- EXT-F-1007-T01 · guest: Partial. Guest fast capture and post-extension-reload recapture passed on the exact frozen development artifact. The case remains partial because a natural error/recovery path and other roles were not exercised.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
 - EXT-F-1007-T01 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Full extension reload and post-reload capture not yet exercised. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T02 · guest: Partial. Warm and post-full-extension-reload deep capture verified: lazy text absent in new document before scroll, actual Scrolling progress, exact text in page DOM and displayed Article. Deep natural failure/retry with mode preservation remains unverified.
-  Evidence / build / date recorded: 37816940141, ['.research/scrape-reload-deep-native-20261008/report.json', '.research/scrape-reload-deep-peer-20261008.json']
+- EXT-F-1007-T02 · guest: Partial. Warm and post-extension-reload deep capture passed. The deep failure/retry mode-preservation path remains unverified.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
 - EXT-F-1007-T02 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Deep failure retry mode and post-reload deep capture remain unverified. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T03 · guest: Pass. Warm deep capture tests visible dialog Cancel preserving edits, then confirmation and actual deep result; post-reload fast capture explicitly records dialog/trusted confirmation and expected Article. This meets the stated guest recapture case across warm/reload and fast/deep. Cancel is not separately repeated after reload; no member/admin inference.
@@ -888,34 +888,34 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T06 · guest: Pass. pass_cancel_discarded_draft_and_recapture_cleanup
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
-- EXT-F-1007-T07 · guest: Pass. Guest warm/reload scroll synchronization and off-stops-sync observations match the historical pass.
-  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
-- EXT-F-1007-T08 · guest: Partial. All six tabs, populated content, capture invariance, and empty Images/Video panes are evidenced. The earlier peer identified empty Article, Links, SEO, and Schema pane states as outstanding where supported; this receipt records those panes as populated, not empty. Member/admin omissions do not determine this guest verdict.
-  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
+- EXT-F-1007-T07 · guest: Pass. Guest scroll-sync behavior passed warm and after full extension reload.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
+- EXT-F-1007-T08 · guest: Partial. Guest result tabs, populated and empty states, and capture invariance were observed warm and after full extension reload; other roles remain unverified.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
 - EXT-F-1007-T08 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Image and video empty states and reload lifecycle need full observation. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T09 · guest: Pass. Guest copy formats and current-content equality remain covered warm and after reload.
-  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
-- EXT-F-1007-T10 · guest: Pass. Guest image removal through empty state and valid add remain covered warm and after reload.
-  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
+- EXT-F-1007-T09 · guest: Pass. Guest copy menu options and current-capture clipboard output passed across warm state, navigation, and full extension reload.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
+- EXT-F-1007-T10 · guest: Pass. Guest image removal and add behavior passed warm and after full extension reload.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
 - EXT-F-1007-T10 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T11 · guest: Pass. Guest blank rejection, valid add, and Cancel draft clearing remain covered warm and after reload.
-  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
+- EXT-F-1007-T11 · guest: Pass. Guest image validation, add, and Cancel behavior passed warm and after full extension reload.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
 - EXT-F-1007-T11 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T12 · guest: Pass. Guest video open/copy/remove, blank rejection, and valid add remain covered warm and after reload.
-  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
+- EXT-F-1007-T12 · guest: Pass. Guest video remove/add, blank rejection, open, and copy behavior passed warm and after full extension reload.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
 - EXT-F-1007-T12 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload; verify native link and clipboard outcomes. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T13 · guest: Pass. Guest link open/copy/remove, blank rejection, valid add, and cancel remain covered warm and after reload.
-  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
+- EXT-F-1007-T13 · guest: Partial. Guest link actions were observed warm, after navigation, and after full extension reload; retain partial because member/admin coverage was not exercised.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
 - EXT-F-1007-T13 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Repeat controls after full extension reload; guest/admin modes remain unverified by this receipt. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
-- EXT-F-1007-T14 · guest: Partial. A restricted-URL dismiss is present, but natural recoverable Reload page/Try again and deep-mode retry behavior remain open.
-  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
-- EXT-F-1007-T20 · guest: Pass. Initial/reload empty state and navigation clearing prior content and saved state remain covered.
-  Evidence / build / date recorded: 37801787667, ['.research/scrape-arm-414-native-20261008-1532.json', '.research/scrape-live-peer-20261008-1544.json']
+- EXT-F-1007-T14 · guest: Partial. Restricted navigation dismissal was observed, but natural error classification and recovery controls were not triggered; other roles remain unverified.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
+- EXT-F-1007-T20 · guest: Pass. Guest empty-state and stale-content clearing passed across navigation and extension reload.
+  Evidence / build / date recorded: 38019366328, ['docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json', 'docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl']
 - EXT-F-1007-T20 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Navigation and reload lifecycle remain to be exercised. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
 - EXT-F-1007-T29 · member: Partial. Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c.

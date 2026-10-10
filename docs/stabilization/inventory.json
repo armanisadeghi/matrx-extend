@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T03:04:48Z",
+  "updated_at": "2026-10-10T03:18:47Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -20481,16 +20481,29 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37801787667",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "Guest fast capture observed the busy state, article content, and result tabs; a separate full extension reload was followed by a successful fast recapture."
               ],
-              "detail": "Fast capture and busy/result behavior are observed, but no natural capture error and corresponding recovery actions are exercised.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "unverified": [
+                "Natural capture error and recovery actions remain unverified; member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Guest fast capture and post-extension-reload recapture passed on the exact frozen development artifact. The case remains partial because a natural error/recovery path and other roles were not exercised.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             },
             "member": {
               "status": "partial",
@@ -20601,6 +20614,23 @@
                 "new_subtarget": "post-reload fast capture revalidated"
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37801787667",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-arm-414-native-20261008-1532.json",
+                  ".research/scrape-live-peer-20261008-1544.json"
+                ],
+                "detail": "Fast capture and busy/result behavior are observed, but no natural capture error and corresponding recovery actions are exercised.",
+                "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ],
           "attempt_history": [
@@ -20693,16 +20723,29 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37816940141",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "59f0345b674c34c3d38bb65531133984484dae0f",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-reload-deep-native-20261008/report.json",
-                ".research/scrape-reload-deep-peer-20261008.json"
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "Warm and post-full-extension-reload deep captures showed scrolling progress and included the lazy-loaded fixture text in the browser and Article result."
               ],
-              "detail": "Warm and post-full-extension-reload deep capture verified: lazy text absent in new document before scroll, actual Scrolling progress, exact text in page DOM and displayed Article. Deep natural failure/retry with mode preservation remains unverified.",
-              "release_scope": "Guest normal600px frozen development414 only; three current journals valid. Same driver blob as focused30f5c006. No member/admin, Store or later-main product inference."
+              "unverified": [
+                "Deep failure retry with deep mode preserved remains unverified; member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Warm and post-extension-reload deep capture passed. The deep failure/retry mode-preservation path remains unverified.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             },
             "member": {
               "status": "partial",
@@ -20858,6 +20901,23 @@
               ],
               "detail": "Post-reload deep capture and a natural deep failure/retry with mode preservation remain unverified.",
               "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37816940141",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "59f0345b674c34c3d38bb65531133984484dae0f",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-reload-deep-native-20261008/report.json",
+                  ".research/scrape-reload-deep-peer-20261008.json"
+                ],
+                "detail": "Warm and post-full-extension-reload deep capture verified: lazy text absent in new document before scroll, actual Scrolling progress, exact text in page DOM and displayed Article. Deep natural failure/retry with mode preservation remains unverified.",
+                "release_scope": "Guest normal600px frozen development414 only; three current journals valid. Same driver blob as focused30f5c006. No member/admin, Store or later-main product inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ],
           "native_preparation": {
@@ -21112,16 +21172,29 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37801787667",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "With sync ON, Article followed the owned page scroll; after Stop, reversing page scroll left Article at its independently established position, both warm and after full extension reload."
               ],
-              "detail": "Guest warm/reload scroll synchronization and off-stops-sync observations match the historical pass.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "unverified": [
+                "Member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Guest scroll-sync behavior passed warm and after full extension reload.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             }
           },
           "result_history": [
@@ -21202,6 +21275,23 @@
                 }
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37801787667",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-arm-414-native-20261008-1532.json",
+                  ".research/scrape-live-peer-20261008-1544.json"
+                ],
+                "detail": "Guest warm/reload scroll synchronization and off-stops-sync observations match the historical pass.",
+                "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ],
           "defect_ids": [
@@ -21297,16 +21387,29 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37801787667",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "All six result tabs showed matching populated content; Images and Video empty states were observed; capture identity/export remained unchanged warm and after full extension reload."
               ],
-              "detail": "All six tabs, populated content, capture invariance, and empty Images/Video panes are evidenced. The earlier peer identified empty Article, Links, SEO, and Schema pane states as outstanding where supported; this receipt records those panes as populated, not empty. Member/admin omissions do not determine this guest verdict.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "unverified": [
+                "Member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Guest result tabs, populated and empty states, and capture invariance were observed warm and after full extension reload; other roles remain unverified.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             },
             "member": {
               "status": "partial",
@@ -21414,6 +21517,23 @@
                 "new_subtarget": "Post-reload empty Images and Video panes after Capture boundary, with zero rows"
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37801787667",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-arm-414-native-20261008-1532.json",
+                  ".research/scrape-live-peer-20261008-1544.json"
+                ],
+                "detail": "All six tabs, populated content, capture invariance, and empty Images/Video panes are evidenced. The earlier peer identified empty Article, Links, SEO, and Schema pane states as outstanding where supported; this receipt records those panes as populated, not empty. Member/admin omissions do not determine this guest verdict.",
+                "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ],
           "attempt_history": [
@@ -21629,16 +21749,29 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37801787667",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "Native copy menus and clipboard output matched the expected representations for capture and section data on the intake fixture, after navigation to referrals, and after full extension reload."
               ],
-              "detail": "Guest copy formats and current-content equality remain covered warm and after reload.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "unverified": [
+                "Member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Guest copy menu options and current-capture clipboard output passed across warm state, navigation, and full extension reload.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             }
           },
           "linked_defects": [
@@ -21722,6 +21855,23 @@
                 }
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37801787667",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-arm-414-native-20261008-1532.json",
+                  ".research/scrape-live-peer-20261008-1544.json"
+                ],
+                "detail": "Guest copy formats and current-content equality remain covered warm and after reload.",
+                "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ],
           "defect_ids": [
@@ -21835,16 +21985,29 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37801787667",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "Removing each image updated the rendered image set and count through the empty state; a valid image could then be added, warm and after full extension reload."
               ],
-              "detail": "Guest image removal through empty state and valid add remain covered warm and after reload.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "unverified": [
+                "Member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Guest image removal and add behavior passed warm and after full extension reload.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             },
             "member": {
               "status": "partial",
@@ -21946,6 +22109,23 @@
                 }
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37801787667",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-arm-414-native-20261008-1532.json",
+                  ".research/scrape-live-peer-20261008-1544.json"
+                ],
+                "detail": "Guest image removal through empty state and valid add remain covered warm and after reload.",
+                "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ],
           "attempt_history": [
@@ -22052,16 +22232,29 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37801787667",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "Blank image add was rejected without adding a row; a valid image appeared; Cancel cleared the draft while preserving the added image, warm and after full extension reload."
               ],
-              "detail": "Guest blank rejection, valid add, and Cancel draft clearing remain covered warm and after reload.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "unverified": [
+                "Member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Guest image validation, add, and Cancel behavior passed warm and after full extension reload.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             },
             "member": {
               "status": "partial",
@@ -22160,6 +22353,23 @@
                 }
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37801787667",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-arm-414-native-20261008-1532.json",
+                  ".research/scrape-live-peer-20261008-1544.json"
+                ],
+                "detail": "Guest blank rejection, valid add, and Cancel draft clearing remain covered warm and after reload.",
+                "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ],
           "attempt_history": [
@@ -22266,16 +22476,29 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37801787667",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "Video removal and valid add updated the rendered set; blank add did not add a row; opening and clipboard copy/readback matched the fixture URL, warm and after full extension reload."
               ],
-              "detail": "Guest video open/copy/remove, blank rejection, and valid add remain covered warm and after reload.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "unverified": [
+                "Member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Guest video remove/add, blank rejection, open, and copy behavior passed warm and after full extension reload.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             },
             "member": {
               "status": "partial",
@@ -22393,6 +22616,23 @@
                 }
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37801787667",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-arm-414-native-20261008-1532.json",
+                  ".research/scrape-live-peer-20261008-1544.json"
+                ],
+                "detail": "Guest video open/copy/remove, blank rejection, and valid add remain covered warm and after reload.",
+                "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ],
           "attempt_history": [
@@ -22509,17 +22749,30 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "37801787667",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+              "status": "partial",
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "Guest link open/copy, remove, blank rejection, valid add, and Cancel behavior were observed warm, after navigation, and after full extension reload."
               ],
-              "detail": "Guest link open/copy/remove, blank rejection, valid add, and cancel remain covered warm and after reload.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "unverified": [
+                "Member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Guest link actions were observed warm, after navigation, and after full extension reload; retain partial because member/admin coverage was not exercised.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             },
             "member": {
               "status": "partial",
@@ -22631,6 +22884,23 @@
                 }
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37801787667",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-arm-414-native-20261008-1532.json",
+                  ".research/scrape-live-peer-20261008-1544.json"
+                ],
+                "detail": "Guest link open/copy/remove, blank rejection, valid add, and cancel remain covered warm and after reload.",
+                "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ],
           "attempt_history": [
@@ -22723,16 +22993,29 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37801787667",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "Restricted chrome://settings navigation was dismissed; no recovery action was available without a naturally occurring browser failure."
               ],
-              "detail": "A restricted-URL dismiss is present, but natural recoverable Reload page/Try again and deep-mode retry behavior remain open.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "unverified": [
+                "A natural recoverable error with Reload page/Try again and deep retry-mode preservation remains unverified; member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Restricted navigation dismissal was observed, but natural error classification and recovery controls were not triggered; other roles remain unverified.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             }
           },
           "component_evidence": [
@@ -22859,6 +23142,23 @@
                 }
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "37801787667",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-arm-414-native-20261008-1532.json",
+                  ".research/scrape-live-peer-20261008-1544.json"
+                ],
+                "detail": "A restricted-URL dismiss is present, but natural recoverable Reload page/Try again and deep-mode retry behavior remain open.",
+                "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ]
         },
@@ -23034,16 +23334,29 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37801787667",
-              "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
-              "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
-              "build_version": "0.2.414",
-              "evidence": [
-                ".research/scrape-arm-414-native-20261008-1532.json",
-                ".research/scrape-live-peer-20261008-1544.json"
+              "run_id": 38019366328,
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "build_version": "0.2.457",
+              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "resource_valid": true,
+              "passed_subtargets": [
+                "The initial empty state, cleared prior capture after navigation, cleared state before reloading the owned page, and empty state after full extension reload were observed; a new referral capture then showed current content."
               ],
-              "detail": "Initial/reload empty state and navigation clearing prior content and saved state remain covered.",
-              "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              "unverified": [
+                "Member/admin modes were not exercised."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+              ],
+              "detail": "Guest empty-state and stale-content clearing passed across navigation and extension reload.",
+              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
             },
             "member": {
               "status": "partial",
@@ -23177,6 +23490,23 @@
                 }
               },
               "superseded_at": "2026-10-08T15:48:53.830295+00:00"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "37801787667",
+                "source_sha": "e7b7dc1ecae946369cebb482915faf7ef792c692",
+                "driver_source_sha": "d992eadd3153dc3769306b42b8cd1f596deef32d",
+                "build_version": "0.2.414",
+                "evidence": [
+                  ".research/scrape-arm-414-native-20261008-1532.json",
+                  ".research/scrape-live-peer-20261008-1544.json"
+                ],
+                "detail": "Initial/reload empty state and navigation clearing prior content and saved state remain covered.",
+                "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
+              },
+              "superseded_at": "2026-10-10T03:18:47Z"
             }
           ],
           "attempt_history": [
