@@ -7,7 +7,7 @@
   "title": "Settings acceptance confuses a load-ladder organization with a persisted device choice",
   "severity": "S2: the member native test stops before preference cases even when the selected organization is valid",
   "priority": "P1: repair the identity oracle before interpreting a member Settings native run",
-  "state": "fixed",
+  "state": "in-fix",
   "owner": "root/settings_reload_fix",
   "preconditions": [
     "Use the receipt-bound member Settings native artifact and private member fixture; the extension may resolve its active organization from the account load ladder without writing matrx.org.active."
@@ -26,6 +26,8 @@
     "docs/stabilization/evidence/settings-persistence-member/run38051093370/receipt.sanitized.json",
     "docs/stabilization/reports/peer-review-settings-d87-load-ladder-20261010.json",
     "docs/stabilization/reports/peer-review-d189-member-org-proof-20261010.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38052813528",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38052951198",
     "tests/browser/settings-native-auth-driver.mjs",
     "tests/browser/settings-d87-native-acceptance.mjs",
     "tests/browser/member-logical-org-proof.mjs"
@@ -55,12 +57,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fresh independent review passed the corrected Settings oracle and fresh read-only logical-organization proof; a repaired native member retest remains pending."
+    },
+    {
+      "at": "2026-10-10T12:52:22Z",
+      "from": "fixed",
+      "to": "in-fix",
+      "reason": "Exact-source CI 38052813528 failed a formatting gate; formatting-only follow-up ffc6aab3e passed local full lint, but CI 38052951198 then exposed a stale dynamic signInSettings transport-test fixture. Both runs produced no accepted artifact or product credit."
     }
   ],
   "verification": [
     "Run 38051093370 has zero Settings persistence case credit; its artifact predates this uncommitted harness correction.",
     "Focused source guards and read-only request observer tests pass 29/29; compile, Biome, and diff checks pass. A plant.py constant-success mutation produces a named wrong-organization RED and restores byte-identically.",
-    "Fresh independent review passes the bounded D87/D187 harness correction. No repaired native run or product verdict exists."
+    "Fresh independent review passes the bounded D87/D187 harness correction. CI 38052813528 and 38052951198 failed before an accepted artifact; no repaired native run or product verdict exists."
   ],
   "closure_requirement": "Fresh independent review of exact identity-source propagation and wrong-ID refusal, then a resource-valid native member run reaching the intended Settings cases on a receipt-bound artifact. Close only the infrastructure oracle; product EXT-D-0087 and feature-role cells require their own acceptance."
 }

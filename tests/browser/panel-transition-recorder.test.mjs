@@ -3,6 +3,10 @@ import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { createContext, runInContext } from 'node:vm';
 import {
+  PRODUCTION_BACKEND_ORIGIN,
+  observeMemberLogicalOrganizationGet,
+} from './member-logical-org-proof.mjs';
+import {
   classifyPanelTransition,
   startPanelTransitionRecorder,
   traceOrganizationPointers,
@@ -48,7 +52,14 @@ function fixture() {
     },
   });
   const calls = [];
+  const networkListeners = new Map();
   const panel = {
+    on(event, listener) {
+      const group = networkListeners.get(event) ?? new Set();
+      group.add(listener);
+      networkListeners.set(event, group);
+      return () => group.delete(listener);
+    },
     async send(method, args) {
       calls.push(method);
       if (method === 'Runtime.evaluate')
@@ -60,6 +71,12 @@ function fixture() {
     panel,
     calls,
     listeners,
+    emitNetwork(event, payload) {
+      for (const listener of networkListeners.get(event) ?? []) listener(payload);
+    },
+    networkListenerCount() {
+      return [...networkListeners.values()].reduce((count, group) => count + group.size, 0);
+    },
     hide() {
       visibility = 'hidden';
       listeners.get('visibilitychange')?.();
@@ -410,7 +427,12 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       evaluatePanel,
     );
 
-  async function scenario(selectionRequired, source = prefix, failAdmin = false) {
+  async function scenario(
+    selectionRequired,
+    source = prefix,
+    failAdmin = false,
+    proofOrganizationId = '123e4567-e89b-42d3-a456-426614174001',
+  ) {
     const env = fixture();
     let selected = !selectionRequired;
     let cleanup = 0;
@@ -431,6 +453,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
     Object.freeze(env.panel);
     const identity = { userId: '123e4567-e89b-42d3-a456-426614174000', email: 'member@matrx.test' };
     const organizationId = '123e4567-e89b-42d3-a456-426614174001';
+    const proofActions = [];
     const accountIdentity = async () => ({
       signInEnabled: true,
       emailMatches: true,
@@ -512,6 +535,49 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       signInAdminSettings: async () => identity,
       observeMemberExtensionIdentity,
       runMemberAuthBoundary,
+      requireProductionBackendOrigin: async () => PRODUCTION_BACKEND_ORIGIN,
+      observeMemberLogicalOrganizationGet: (panel, expected, origin) => {
+        assert.equal(expected, organizationId);
+        assert.equal(origin, PRODUCTION_BACKEND_ORIGIN);
+        proofActions.push('observe');
+        const observer = observeMemberLogicalOrganizationGet(panel, expected, origin);
+        return {
+          async start() {
+            proofActions.push('start');
+            await observer.start();
+          },
+          arm() {
+            proofActions.push('arm');
+            observer.arm();
+          },
+          async verify() {
+            proofActions.push('verify');
+            return observer.verify();
+          },
+          stop() {
+            proofActions.push('stop');
+            observer.stop();
+          },
+        };
+      },
+      refreshMemberLogicalOrganizationGet: async (_panel, observer) => {
+        proofActions.push('refresh');
+        observer.arm();
+        const requestId = 'fresh-compute-read';
+        env.emitNetwork('Network.requestWillBeSent', {
+          requestId,
+          request: {
+            method: 'GET',
+            url: `${PRODUCTION_BACKEND_ORIGIN}/api/compute-targets/`,
+            headers: {
+              Authorization: 'Bearer fixture-token',
+              'X-Organization-Id': proofOrganizationId,
+            },
+          },
+        });
+        env.emitNetwork('Network.responseReceived', { requestId, response: { status: 200 } });
+        env.emitNetwork('Network.loadingFinished', { requestId });
+      },
     };
     deps.selectOrganization = new Function(
       ...Object.keys(deps),
@@ -540,18 +606,23 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       requireResourceHealth: async () => {},
       resourceAction: async (action) => action(),
     };
-    if (failAdmin)
-      await assert.rejects(run(args), (error) => {
-        assert.equal(error.message, 'member_auth_boundary_failed');
-        assert.equal(error.memberAuthBoundary, 'member_nonadmin_role_observation');
-        assert.equal(error.memberAuthFailureCode, 'member_nonadmin_role_observation_failed');
-        return true;
-      });
-    else await run(args);
-    return { report, inputs, cleanup };
+    try {
+      if (failAdmin)
+        await assert.rejects(run(args), (error) => {
+          assert.equal(error.message, 'member_auth_boundary_failed');
+          assert.equal(error.memberAuthBoundary, 'member_nonadmin_role_observation');
+          assert.equal(error.memberAuthFailureCode, 'member_nonadmin_role_observation_failed');
+          return true;
+        });
+      else await run(args);
+    } finally {
+      assert.equal(env.networkListenerCount(), 0, 'member logical-org observer must clean up');
+    }
+    return { report, inputs, cleanup, proofActions };
   }
 
   const selected = await scenario(true);
+  assert.deepEqual(selected.proofActions, ['observe', 'start', 'refresh', 'arm', 'verify', 'stop']);
   const kinds = Array.from(selected.report.panel_transition.events, (event) => event.kind);
   assert.deepEqual(kinds.slice(0, 16), [
     'start',
@@ -591,6 +662,20 @@ test('real Scrape auth caller records first member selection, skip, identity, an
   assert.equal(skipKinds.includes('auth_org_select'), false);
   assert.deepEqual(skipped.inputs, ['mouseMoved']);
   assert.equal(skipped.cleanup, 1);
+  assert.deepEqual(skipped.proofActions, selected.proofActions);
+
+  await assert.rejects(
+    scenario(false, prefix, false, '123e4567-e89b-42d3-a456-426614174002'),
+    (error) => {
+      assert.equal(error.message, 'member_auth_boundary_failed');
+      assert.equal(error.memberAuthBoundary, 'member_logical_organization_proof');
+      assert.equal(
+        error.memberAuthFailureCode,
+        'member_logical_organization_proof_assertion_failed',
+      );
+      return true;
+    },
+  );
 
   const failed = await scenario(false, prefix, true);
   assert.equal(failed.report.panel_transition.status, 'unavailable');

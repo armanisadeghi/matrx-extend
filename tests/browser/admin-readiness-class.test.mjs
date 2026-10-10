@@ -154,8 +154,8 @@ test('admin sign-in and reload accept the captured load-ladder state without wea
 test('readiness self-test rejects the obsolete no-device-no-selection rule and constant success', async () => {
   const legacy = load((value) =>
     value.replace(
-      'value?.organizationName === null',
-      'value?.organizationName === null && !value?.organizationSelected',
+      ': organizationId === null\n          ? !requireSelectedOrganization &&\n            value?.organizationId === null &&\n            value?.organizationName === null',
+      ': organizationId === null\n          ? !requireSelectedOrganization &&\n            value?.organizationId === null &&\n            value?.organizationName === null &&\n            !value?.organizationSelected',
     ),
   );
   await assert.rejects(() => contract(legacy), /d87_rendered_identity_not_observed/);
