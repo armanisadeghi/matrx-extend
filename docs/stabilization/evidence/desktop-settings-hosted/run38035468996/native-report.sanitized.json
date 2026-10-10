@@ -1,9 +1,6 @@
 {
   "schema_version": 1,
-  "defects": [
-    "EXT-D-0084",
-    "EXT-D-0086"
-  ],
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
   "scope": "bounded guest T43 Pair/Forget selector diagnostic",
   "case": "pair-forget",
   "inventory_case": "EXT-F-1003-T43",

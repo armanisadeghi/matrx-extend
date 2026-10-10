@@ -9,10 +9,7 @@
   "acceptance_case": "desktop-settings-guest",
   "selected_case": "pair-forget",
   "inventory_case": "EXT-F-1003-T43",
-  "defects": [
-    "EXT-D-0084",
-    "EXT-D-0086"
-  ],
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
   "product_artifact": {
     "kind": "ci_development_test",
     "source_sha": "22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c",
