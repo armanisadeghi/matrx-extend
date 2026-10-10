@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "provenance": "Three exact hosted phase journals copied through scripts/copy-hosted-resource-journal.mjs; opened paths and process attribution removed.",
+  "all_phases_resource_valid": true,
+  "resource_guard_invalidation": false,
+  "phases": {
+    "package": {
+      "journal": "resource-journals/hosted-package-38050967096-1.jsonl",
+      "sha256": "8023a559127e5b67dbd3faa1f43f2156eb7a6c1a8fa1df3f8817c23296534d61",
+      "final_decision": "valid",
+      "admitted": true,
+      "exit_code": 0,
+      "resource_invalid": false,
+      "final_at": "2026-10-10T12:13:10.229Z"
+    },
+    "browser": {
+      "journal": "resource-journals/hosted-browser-38050967096-1.jsonl",
+      "sha256": "ed48bf4e4ed5d822bc7a8bd4e0b4521830a0e441ab1804905826b36e981e5f79",
+      "final_decision": "valid",
+      "admitted": true,
+      "exit_code": 0,
+      "resource_invalid": false,
+      "final_at": "2026-10-10T12:15:14.186Z"
+    },
+    "guest": {
+      "journal": "resource-journals/hosted-guest-38050967096-1.jsonl",
+      "sha256": "93a195a3cdddf5906c1c1700dcf3f13171d0f292d270be64b59aa8b535e0c3cc",
+      "final_decision": "valid",
+      "admitted": true,
+      "exit_code": 0,
+      "resource_invalid": false,
+      "final_at": "2026-10-10T12:18:24.431Z"
+    }
+  },
+  "classification": "All three phase finals are admitted, valid, non-invalidated, and exit 0; native acceptance completed successfully."
+}

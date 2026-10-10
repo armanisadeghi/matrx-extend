@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "new_target": "EXT-F-2005-C16",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "run_id": 38050967096,
+  "attempt": 1,
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38050967096",
+  "workflow_source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "runner_arch": "X64",
+  "machine": "x86_64",
+  "job_conclusion": "success",
+  "started_at": "2026-10-10T12:10:06Z",
+  "finished_at": "2026-10-10T12:18:41Z",
+  "product_artifact": {
+    "path": "product-artifact.sanitized.json",
+    "ci_run_id": 38050509032,
+    "ci_artifact_id": 11669182890,
+    "version": "0.2.464",
+    "source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "digest": "sha256:8a1e61fa4c44646f7a65782f4c12fd60066caecfb5990e2edff3d7888652d14d",
+    "tree_sha256": "6aade2663cbe077bf3736fa7ec7c4c43c89b71e4f92392f93e78235dc8059d48"
+  },
+  "hosted_result_artifact": {
+    "id": 11670095190,
+    "name": "hosted-guest-38050967096-1",
+    "digest": "sha256:65b58d55e56ad6e8d69d0a8fd051af9ce136e2cd0e8b6e802aad753521339309",
+    "expired": false
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "sha256": "38676caea3a85aab9d4a4704bdaf82c1d64514e4cbf888d452dda055162a2c03",
+    "raw_report_sha256": "b35b7ed663b4b77f74183f82eb8f177662c557db1c87f27c5fa08d1431306619",
+    "driver_status": "pass",
+    "failure_stage": null,
+    "new_target_status": "observed_pass_pending_independent_review"
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "sha256": "f0d190687e67431d0d59367f7b2b0349bed9fcab3e6146766c1632f1b01328b7",
+    "phases": {
+      "package": {
+        "journal": "resource-journals/hosted-package-38050967096-1.jsonl",
+        "sha256": "8023a559127e5b67dbd3faa1f43f2156eb7a6c1a8fa1df3f8817c23296534d61",
+        "final_decision": "valid",
+        "admitted": true,
+        "exit_code": 0,
+        "resource_invalid": false,
+        "final_at": "2026-10-10T12:13:10.229Z"
+      },
+      "browser": {
+        "journal": "resource-journals/hosted-browser-38050967096-1.jsonl",
+        "sha256": "ed48bf4e4ed5d822bc7a8bd4e0b4521830a0e441ab1804905826b36e981e5f79",
+        "final_decision": "valid",
+        "admitted": true,
+        "exit_code": 0,
+        "resource_invalid": false,
+        "final_at": "2026-10-10T12:15:14.186Z"
+      },
+      "guest": {
+        "journal": "resource-journals/hosted-guest-38050967096-1.jsonl",
+        "sha256": "93a195a3cdddf5906c1c1700dcf3f13171d0f292d270be64b59aa8b535e0c3cc",
+        "final_decision": "valid",
+        "admitted": true,
+        "exit_code": 0,
+        "resource_invalid": false,
+        "final_at": "2026-10-10T12:18:24.431Z"
+      }
+    }
+  },
+  "cleanup": {
+    "path": "cleanup.sanitized.json",
+    "sha256": "9645da0442f500dcd64620eb363c49a955678162e3d453708011df7c448ce373"
+  },
+  "verdict": "bounded_observation_pass_pending_independent_review",
+  "classification": "The C16 empty-picker Cancel behavior and existing two-field guest picker/save-gate path were observed on the exact frozen development artifact. No full Guest Data, signed-in persistence, Store, or overall health claim.",
+  "sanitization": "No raw logs, screenshots, credentials, auth values, unrestricted page text, or private runner paths included.",
+  "workflow_dispatch_inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-data",
+    "development_run_id": 38050509032,
+    "development_artifact_id": 11669182890,
+    "published_store_crx": false
+  },
+  "runner_observation": "HOSTED_RUNNER_PLATFORM label=macos-15-intel runner_arch=X64 machine=x86_64"
+}

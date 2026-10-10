@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "owned_fixture_server": "Loopback-only controlled product fixture; native harness awaited server.close() in finally block.",
+  "owned_chrome_child": "Only the exact spawned Chromium child is stopped by harness finally block; no browser-wide kill.",
+  "temporary_profile": "Owned temporary root removed recursively by awaited harness finally cleanup after native completion.",
+  "runner": "Isolated ephemeral macos-15-intel hosted job completed successfully; runner lifecycle removes remaining temporary runner files.",
+  "verification_limits": "The removed profile-root path was not independently checked after job completion; the hosted result artifact intentionally retains screenshots only.",
+  "shared_auth_or_fixture_mutation": "None; guest auth state confirmed signed out and fixture served locally from owned loopback server.",
+  "excluded": "No screenshots, raw workflow logs, credentials, tokens, or private runner paths copied into repository evidence."
+}

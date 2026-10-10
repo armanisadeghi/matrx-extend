@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "kind": "ci_development_test",
+  "eligible_store": false,
+  "publish_state": "not_published",
+  "repository": "armanisadeghi/matrx-extend",
+  "workflow": ".github/workflows/ci.yml",
+  "source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+  "ci_run_id": 38050509032,
+  "ci_attempt": 1,
+  "artifact_id": 11669182890,
+  "artifact_name": "matrx-extend-development-test-8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741-38050509032-1",
+  "artifact_digest": "sha256:8a1e61fa4c44646f7a65782f4c12fd60066caecfb5990e2edff3d7888652d14d",
+  "version": "0.2.464",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "tree_sha256": "6aade2663cbe077bf3736fa7ec7c4c43c89b71e4f92392f93e78235dc8059d48",
+  "native_report_product_artifact": {
+    "source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "run_id": 38050509032,
+    "artifact_id": 11669182890,
+    "tree_sha256": "6aade2663cbe077bf3736fa7ec7c4c43c89b71e4f92392f93e78235dc8059d48",
+    "version": "0.2.464"
+  }
+}

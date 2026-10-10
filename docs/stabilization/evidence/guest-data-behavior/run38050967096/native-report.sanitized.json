@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "new_target": "EXT-F-2005-C16",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "failure_stage": null,
+  "product_artifact": {
+    "source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "run_id": 38050509032,
+    "artifact_id": 11669182890,
+    "tree_sha256": "6aade2663cbe077bf3736fa7ec7c4c43c89b71e4f92392f93e78235dc8059d48",
+    "version": "0.2.464"
+  },
+  "new_target_observations": {
+    "guest_auth_state_confirmed": true,
+    "picker_opened_empty": true,
+    "trusted_cancel_pointer": "CDP exact closed-shadow button hit validation followed by page.mouse.click",
+    "overlay_dismissed": "picker host detached after Cancel",
+    "selected_field_markers_before_and_after": 0,
+    "selected_fields_unchanged": true,
+    "non_get_wbx_pattern_writes_during_cancel": 0
+  },
+  "existing_two_field_path": {
+    "distinct_previews_seen": true,
+    "two_fields_selected": true,
+    "guest_save_gate_present": true,
+    "pattern_name_absent": true,
+    "save_pattern_absent": true,
+    "sign_in_action_used": true,
+    "non_get_wbx_pattern_writes_before_auth": 0
+  },
+  "limits": "Guest native behavior on exact imported development artifact; no signed-in save or Store claim.",
+  "raw_report_sha256": "b35b7ed663b4b77f74183f82eb8f177662c557db1c87f27c5fa08d1431306619"
+}

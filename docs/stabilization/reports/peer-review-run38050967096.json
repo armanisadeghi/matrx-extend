@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_data_evidence_review",
+  "reviewer": "settings_harness_peer",
+  "verdict": "PASS_BOUNDED_GUEST_NATIVE_OBSERVATION",
+  "run": {
+    "hosted_run_id": 38050967096,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38050967096",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "conclusion": "success",
+    "workflow_source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "lane": "B",
+    "runner_label": "macos-15-intel",
+    "runner_arch": "X64",
+    "case": "guest-data"
+  },
+  "provenance": {
+    "hosted_result_artifact_id": 11670095190,
+    "hosted_result_artifact_name": "hosted-guest-38050967096-1",
+    "hosted_result_artifact_digest": "sha256:65b58d55e56ad6e8d69d0a8fd051af9ce136e2cd0e8b6e802aad753521339309",
+    "hosted_result_artifact_expired": false,
+    "development_ci_run_id": 38050509032,
+    "development_artifact_id": 11669182890,
+    "development_artifact_digest": "sha256:8a1e61fa4c44646f7a65782f4c12fd60066caecfb5990e2edff3d7888652d14d",
+    "development_source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "development_tree_sha256": "6aade2663cbe077bf3736fa7ec7c4c43c89b71e4f92392f93e78235dc8059d48",
+    "development_artifact_eligible_store": false,
+    "native_report_run_id_interpretation": "The native report run_id is the development CI run 38050509032, not hosted run 38050967096."
+  },
+  "observations": {
+    "guest_auth_state_confirmed": true,
+    "empty_picker_opened": true,
+    "cancel_target": "The exact Cancel button in the picker's closed shadow root was resolved through CDP; its backend node owned the pointer hit before page.mouse.click sent a trusted pointer.",
+    "picker_overlay_dismissed": true,
+    "selected_field_markers_before_and_after": 0,
+    "selected_fields_unchanged": true,
+    "non_get_wbx_pattern_writes_during_cancel": 0,
+    "existing_two_field_path_continued": true,
+    "distinct_previews_seen": true,
+    "two_fields_selected": true,
+    "guest_save_gate_present": true,
+    "pattern_name_and_save_controls_absent": true,
+    "sign_in_action_used": true,
+    "non_get_wbx_pattern_writes_before_auth": 0,
+    "raw_native_report_sha256_verified": "b35b7ed663b4b77f74183f82eb8f177662c557db1c87f27c5fa08d1431306619"
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" }
+  },
+  "cleanup": {
+    "loopback_fixture_server_closed_in_finally": true,
+    "exact_owned_chromium_child_stopped_in_finally": true,
+    "temporary_profile_root_removed_by_harness": true,
+    "profile_root_absence_independently_verified": false,
+    "shared_auth_or_fixture_mutation": false,
+    "runner_lifecycle": "isolated ephemeral hosted runner completed the job"
+  },
+  "credit_limits": {
+    "EXT_F_2005_C16": "PASS for empty-picker Cancel with no selection, no observed pattern write, and unchanged selection state.",
+    "guest_two_field_picker_and_save_gate": "Observed on this exact development artifact.",
+    "full_guest_data_acceptance": "Not claimed; no authenticated save or persistence was attempted.",
+    "member_admin_or_store_acceptance": "No credit."
+  },
+  "verification": {
+    "command": "node --test tests/browser/data-guest-picker-cancel.test.mjs tests/browser/data-guest-picker-driver.test.mjs",
+    "passed": 5,
+    "failed": 0,
+    "biome": "Not run; this evidence review did not modify product source."
+  },
+  "checked_files": [
+    ".github/workflows/hosted-guest-acceptance.yml at 8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "tests/browser/data-guest-native-acceptance.mjs at 8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "tests/browser/data-guest-picker-cancel.mjs at 8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "tests/browser/data-guest-picker-driver.mjs at 8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "tests/browser/data-guest-picker-cancel.test.mjs",
+    "tests/browser/data-guest-picker-driver.test.mjs",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/product-artifact.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/cleanup.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/resource-journals/hosted-package-38050967096-1.jsonl",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/resource-journals/hosted-browser-38050967096-1.jsonl",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/resource-journals/hosted-guest-38050967096-1.jsonl"
+  ],
+  "limitations": [
+    "No signed-in save, server persistence, cross-role behavior, or Store build was exercised.",
+    "The temporary profile root was reported removed by harness cleanup but its post-run absence was not independently verified.",
+    "The result is bounded to C16 and the guest picker/save-gate behavior on this frozen development artifact; it does not establish overall Guest Data health."
+  ]
+}

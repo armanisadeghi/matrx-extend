@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "run_id": "38050967096",
+  "scope": "Guarded hosted native guest Data acceptance, EXT-F-2005-T01 with new bounded target EXT-F-2005-C16.",
+  "mode": "guest",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+  "workflow_lane": "B",
+  "runner": {
+    "label": "macos-15-intel",
+    "architecture": "X64",
+    "machine": "x86_64"
+  },
+  "started_at": "2026-10-10T12:10:06Z",
+  "finished_at": "2026-10-10T12:18:41Z",
+  "outcome": "pass",
+  "build": {
+    "kind": "ci_development_test",
+    "source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
+    "ci_run_id": 38050509032,
+    "ci_artifact_id": 11669182890,
+    "artifact_digest": "sha256:8a1e61fa4c44646f7a65782f4c12fd60066caecfb5990e2edff3d7888652d14d",
+    "version": "0.2.464",
+    "tree_sha256": "6aade2663cbe077bf3736fa7ec7c4c43c89b71e4f92392f93e78235dc8059d48",
+    "eligible_store": false
+  },
+  "hosted_result_artifact": {
+    "id": 11670095190,
+    "name": "hosted-guest-38050967096-1",
+    "digest": "sha256:65b58d55e56ad6e8d69d0a8fd051af9ce136e2cd0e8b6e802aad753521339309",
+    "expired": false
+  },
+  "case_results": {
+    "EXT-F-2005-T01": {
+      "guest": "pass",
+      "new_control_target": "EXT-F-2005-C16",
+      "observations": [
+        "Empty picker opened and dismissed by trusted Cancel pointer after CDP hit-target confirmation.",
+        "No selected-field markers before or after; selection unchanged.",
+        "Zero non-GET /wbx_pattern writes during Cancel.",
+        "Existing two-field previews, Done, and guest save gate passed; zero non-GET /wbx_pattern writes before auth."
+      ],
+      "resource_valid": true,
+      "independent_review": "docs/stabilization/reports/peer-review-run38050967096.json"
+    }
+  },
+  "resource_admission": {
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "journal": "docs/stabilization/evidence/guest-data-behavior/run38050967096/resource-journals/hosted-package-38050967096-1.jsonl"
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "journal": "docs/stabilization/evidence/guest-data-behavior/run38050967096/resource-journals/hosted-browser-38050967096-1.jsonl"
+    },
+    "guest": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "journal": "docs/stabilization/evidence/guest-data-behavior/run38050967096/resource-journals/hosted-guest-38050967096-1.jsonl"
+    }
+  },
+  "cleanup": {
+    "owned_loopback_fixture_server_closed": true,
+    "owned_chromium_child_stopped": true,
+    "temporary_profile_root_removed_by_harness": true,
+    "post_removal_filesystem_readback": false,
+    "shared_auth_or_fixture_mutation": false
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/product-artifact.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38050967096/cleanup.sanitized.json",
+    "docs/stabilization/reports/peer-review-run38050967096.json"
+  ],
+  "limits": [
+    "No authenticated pattern save or persistence was attempted.",
+    "No other Guest Data cases, member/admin behavior, Store behavior, or full feature acceptance is claimed."
+  ]
+}
