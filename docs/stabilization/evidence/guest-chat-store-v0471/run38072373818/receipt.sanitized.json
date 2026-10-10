@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "run_id": "38072373818",
+  "feature_id": "EXT-F-2013",
+  "case_id": "EXT-F-2013-T10",
+  "scope": "Fresh hosted guest profile, exact v0.2.471 Store ZIP prepared as unpacked extension; opening answer, same-conversation follow-up, real panel reload, and a post-reload new conversation.",
+  "status": "pass_bounded",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38072373818",
+    "workflow_source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "conclusion": "success",
+    "started_at": "2026-10-10T17:35:41Z",
+    "finished_at": "2026-10-10T17:42:53Z"
+  },
+  "artifact": {
+    "release_run_id": 38071981003,
+    "release_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38071981003",
+    "release_artifact_id": 11676918768,
+    "release_artifact_name": "matrx-extend-v0.2.471.zip",
+    "release_artifact_digest": "sha256:674432715dd8338fdbd4d919e2e1f8aeb7e6591d8e85688eb3bbfe2297883e3a",
+    "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "version": "0.2.471",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "loaded_artifact_tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_unchanged": true
+  },
+  "backend": {
+    "reachable_before_and_after": true,
+    "http_status": 200,
+    "git_sha_before_and_after": "8173fb855b486219e735d9777d0c1c4168e460d2"
+  },
+  "fresh_guest": {
+    "profile_fresh": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "session_absent_after_reload": true
+  },
+  "opening_answer": {
+    "terminal": true,
+    "unpredictable_page_code_present": true,
+    "workflow_stages_named_in_order": true,
+    "login_paywall_or_error": false
+  },
+  "same_conversation_followup": {
+    "terminal": true,
+    "identity_verified": true,
+    "unpredictable_page_code_present": true,
+    "reply_count": 3
+  },
+  "post_reload_new_conversation": {
+    "terminal": true,
+    "unpredictable_page_code_present": true,
+    "fixture_heading_present": true,
+    "conversation_identity_changed": true
+  },
+  "resource_finals": {
+    "package": "valid; admitted; resourceInvalid=false; child exit 0",
+    "browser": "valid; admitted; resourceInvalid=false; child exit 0",
+    "acceptance": "valid; admitted; resourceInvalid=false; child exit 0"
+  },
+  "evidence": [
+    "native-report.sanitized.json",
+    "resource-finals.sanitized.json",
+    "package-resource.jsonl",
+    "browser-resource.jsonl",
+    "guest-resource.jsonl",
+    "opening-answer.png",
+    "same-conversation-followup.png",
+    "post-reload-followup.png"
+  ],
+  "independent_review": "docs/stabilization/reports/peer-review-run38072373818.json",
+  "limitations": [
+    "The artifact was the exact Store ZIP loaded unpacked with a candidate-key adaptation; this does not establish behavior of the actual Store-installed extension.",
+    "The CDP observer attached after panel load, so prior requests are outside this run observation.",
+    "This bounded T10 smoke does not establish full Chat or overall extension health."
+  ]
+}

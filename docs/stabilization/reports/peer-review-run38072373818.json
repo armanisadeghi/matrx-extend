@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_chat_evidence_review",
+  "reviewer": "v471_guest_chat_review",
+  "verdict": "PASS_BOUNDED_GUEST_CHAT_ZIP_UNPACKED",
+  "run": {
+    "hosted_run_id": 38072373818,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38072373818",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "conclusion": "success",
+    "workflow_source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "case": "guest-chat"
+  },
+  "provenance": {
+    "release_run_id": 38071981003,
+    "release_artifact_id": 11676918768,
+    "hosted_result_artifact_id": 11676779988,
+    "hosted_result_artifact_digest": "sha256:8f9e4d223b7a38484d35e3e6a7add4eff7df2731dc17f9260a5bc6b2dce502a8",
+    "version": "0.2.471",
+    "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "artifact_unchanged": true
+  },
+  "observations": {
+    "fresh_guest_profile": true,
+    "opening_terminal_answer": true,
+    "opening_unpredictable_code_and_ordered_stages": true,
+    "same_conversation_followup_terminal": true,
+    "same_conversation_identity_verified": true,
+    "post_reload_new_conversation_terminal": true,
+    "post_reload_code_and_heading_present": true,
+    "server_sha_before_after": "8173fb855b486219e735d9777d0c1c4168e460d2",
+    "server_sha_stable": true
+  },
+  "failure_observation_review": {
+    "finding": "Harmless diagnostic sentinel; not a failure.",
+    "basis": "The driver assigns report.failure_observation after each successful waitForTerminalAnswer, including before the try block can fail. On the final successful post-reload follow-up, the diagnostic snapshot therefore contains that real latest assistant answer. Its answerMatchesPublicStages/answerStagesInOrder flags evaluate the opening-answer rubric, whereas this distinct follow-up asks for the separate follow-up code and heading. Those flags are false as expected; the follow-up-specific assertions and receipt booleans are true, the verdict is terminal_answer, and the screenshot shows the page-grounded heading answer."
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "screenshot_review": {
+    "files": [
+      "opening-answer.png",
+      "same-conversation-followup.png",
+      "post-reload-followup.png"
+    ],
+    "result": "Screenshots show guest side panel and portions of each real assistant response; page codes are redacted in receipt and named in screenshot only via controlled synthetic fixture."
+  },
+  "verification": {
+    "artifact": "Downloaded and inspected hosted result and release artifacts; release receipt binds Store ZIP hash and version.",
+    "resource_finals": "Matched all three journal final decisions in downloaded journals and workflow logs.",
+    "source": "Read the exact browser driver predicates and observed how success-path failure_observation is assigned; no tests run for this read-only evidence review."
+  },
+  "checked_files": [
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "docs/stabilization/evidence/guest-chat-store-v0471/run38072373818/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-store-v0471/run38072373818/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-store-v0471/run38072373818/resource-finals.sanitized.json"
+  ],
+  "limitations": [
+    "The tested artifact is the exact Store ZIP loaded unpacked with a candidate key adaptation; this is not an actual Chrome Web Store installed-copy test.",
+    "Only bounded EXT-F-2013-T10 public guest Chat behavior is credited.",
+    "The CDP observer attached after panel load."
+  ]
+}

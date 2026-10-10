@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38072373818,
+  "status": "pass",
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation",
+  "artifact": {
+    "version": "0.2.471",
+    "tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_unchanged": true
+  },
+  "server": {
+    "before": {
+      "reachable": true,
+      "status": 200,
+      "git_sha": "8173fb855b486219e735d9777d0c1c4168e460d2"
+    },
+    "after": {
+      "reachable": true,
+      "status": 200,
+      "git_sha": "8173fb855b486219e735d9777d0c1c4168e460d2"
+    },
+    "stable": true
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "fixture_reinstalled_before_first_send": false,
+    "session_absent_after_reload": true,
+    "fixture_reinstalled_after_reload": false
+  },
+  "questions": {
+    "opening": "Read the unique opening check code from the article on my current tab. What are the three workflow stages in order? Include the exact code.",
+    "same_conversation_followup": "Read the unique follow-up check code from the article on my current tab and name the heading directly above the check codes. Include the exact code.",
+    "post_reload_new_conversation": "Same follow-up question after a real panel reload; the run used a new conversation identity."
+  },
+  "turns": {
+    "opening": {
+      "verdict": "terminal_answer",
+      "completed_reply_count": 1,
+      "answer_contains_unpredictable_page_code": true,
+      "answer_names_page_stages": true,
+      "answer_stages_in_order": true,
+      "no_login_paywall_or_error": true
+    },
+    "same_conversation_followup": {
+      "verdict": "terminal_answer",
+      "completed": true,
+      "reply_count": 3,
+      "page_code_present": true,
+      "same_conversation_identity_verified": true
+    },
+    "post_reload_new_conversation": {
+      "verdict": "terminal_answer",
+      "completed": true,
+      "reply_count": 2,
+      "page_code_present": true,
+      "fixture_heading_present": true
+    }
+  },
+  "observed_ai_requests": [
+    {
+      "attempt": "opening",
+      "status": 200,
+      "conversation_fingerprint": "4354376a7b92be09",
+      "is_new": true
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "status": 200,
+      "conversation_fingerprint": "4354376a7b92be09",
+      "is_new": false
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "status": 200,
+      "conversation_fingerprint": "a4021fec5d8d1fe3",
+      "is_new": true
+    }
+  ],
+  "grounding_and_terminal": {
+    "opening": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": true
+    },
+    "same_conversation_followup": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": true
+    },
+    "post_reload_new_conversation": {
+      "readableMarkerPresent": true,
+      "pageUrlMatches": true,
+      "activeTabMatchesFixture": true,
+      "activeUrlMatchesFixture": true,
+      "assignedTabMatchesFixture": true
+    }
+  },
+  "failure_observation_interpretation": "This field is populated on the successful path after each turn. Its final value describes the post-reload follow-up answer. answerMatchesPublicStages and answerStagesInOrder are opening-question diagnostics; false is expected for the different follow-up question. The success assertions for this turn require terminal completion, unpredictable code, and fixture heading, all true.",
+  "limitations": [
+    "This tested the exact v0.2.471 Store ZIP loaded unpacked with a candidate key adaptation in a fresh hosted guest profile; it is not a Chrome Web Store installed-copy observation.",
+    "The CDP observer attached after panel load; requests before attachment are outside the observation.",
+    "This is bounded Chat evidence and does not establish broad Chat or extension health."
+  ]
+}

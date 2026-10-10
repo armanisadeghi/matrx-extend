@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "run_id": 38072373818,
+  "scope": "Bounded hosted guest Chat T10 check on exact v0.2.471 Store ZIP candidate.",
+  "mode": "guest",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+  "workflow_lane": "A",
+  "runner": {
+    "label": "macos-15-intel",
+    "architecture": "X64",
+    "machine": "x86_64"
+  },
+  "started_at": "2026-10-10T17:35:41Z",
+  "finished_at": "2026-10-10T17:42:53Z",
+  "outcome": "pass_bounded",
+  "build": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "release_run_id": 38071981003,
+    "artifact_id": 11676918768,
+    "artifact_name": "matrx-extend-v0.2.471.zip",
+    "version": "0.2.471",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f"
+  },
+  "hosted_result_artifact": {
+    "id": 11676779988,
+    "name": "hosted-guest-38072373818-1",
+    "digest": "sha256:8f9e4d223b7a38484d35e3e6a7add4eff7df2731dc17f9260a5bc6b2dce502a8",
+    "expired": false
+  },
+  "resource_admission": {
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "acceptance": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    }
+  },
+  "case_results": {
+    "EXT-F-2013-T10": {
+      "guest": "pass_bounded",
+      "opening": "terminal grounded answer, unpredictable page code, ordered stages",
+      "same_conversation_followup": "terminal grounded answer with code and same conversation identity",
+      "after_panel_reload": "new conversation terminal answer with code and fixture heading",
+      "independent_review": "docs/stabilization/reports/peer-review-run38072373818.json"
+    }
+  },
+  "evidence_dir": "docs/stabilization/evidence/guest-chat-store-v0471/run38072373818",
+  "limits": [
+    "Exact Store ZIP was loaded unpacked; actual Store installation was not tested.",
+    "Bounded public guest Chat only; no broad Chat or overall health claim."
+  ]
+}

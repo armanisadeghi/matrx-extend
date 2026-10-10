@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38072373818,
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "package-resource.jsonl"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "browser-resource.jsonl"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal": "guest-resource.jsonl"
+    }
+  },
+  "source": "Downloaded hosted artifact plus hosted workflow log. Journals each end with RESOURCE_FINAL_DECISION."
+}
