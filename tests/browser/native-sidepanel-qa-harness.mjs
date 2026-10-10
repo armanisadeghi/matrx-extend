@@ -32,6 +32,7 @@ import { awaitNativeResourceHealth, runNativeResourceAction } from './native-res
 import { serveOwnedFixture } from './owned-fixture-server.mjs';
 import { panelOpenerHtml } from './owned-panel-opener.mjs';
 import { startReloadLifetimeDiagnostic } from './reload-lifetime-diagnostic.mjs';
+import { prepareReloadSenderDocument } from './reload-sender-document-diagnostic.mjs';
 import { maybeStartScrapeReloadOpenDiagnostic } from './scrape-reload-open-diagnostic.mjs';
 
 const require = createRequire(import.meta.url);
@@ -638,6 +639,7 @@ async function reloadOwnedExtension({
   extensionId,
   oldPanelId,
   scrapeOpenDiagnostic = false,
+  reloadSenderDocumentDiagnostic = false,
 }) {
   const operation = reloadOperationBoundary();
   let primaryError;
@@ -833,6 +835,14 @@ async function reloadOwnedExtension({
       };
       throw error;
     }
+    operation.mark('sender_document_prepare');
+    retirementEvidence.sender_document = {
+      refresh_requested: reloadSenderDocumentDiagnostic,
+      refresh_completed: false,
+      new_document_observed: false,
+      same_url_observed: null,
+    };
+    await prepareReloadSenderDocument(page, retirementEvidence.sender_document);
     operation.mark('fixture_focus');
     await page.bringToFront();
     // Diagnostic-only CDP attachment can perturb worker lifetime and the
@@ -1482,6 +1492,7 @@ export async function runNativeSidepanelQa({
   onStartupEndpointObservation,
   startupEndpointObservationMs = 0,
   reloadOpenDiagnostic = false,
+  reloadSenderDocumentDiagnostic = false,
 } = {}) {
   onStage('receipt');
   let receipt;
@@ -1773,6 +1784,7 @@ export async function runNativeSidepanelQa({
             extensionId: expectedExtensionId,
             oldPanelId,
             scrapeOpenDiagnostic: reloadOpenDiagnostic,
+            reloadSenderDocumentDiagnostic,
           }),
       );
       try {

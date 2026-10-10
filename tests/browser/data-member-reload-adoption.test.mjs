@@ -4,7 +4,7 @@ import test from 'node:test';
 import { createContext, runInContext } from 'node:vm';
 import { reloadCase } from './native-reload-fixture.mjs';
 import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
-import { captureFailure } from './profile-reload-capture.mjs';
+import { captureFailure, captureSenderDocument } from './profile-reload-capture.mjs';
 
 const source = await readFile(
   new URL('./data-member-native-acceptance.mjs', import.meta.url),
@@ -13,15 +13,17 @@ const source = await readFile(
 const start = source.indexOf("        report.stage = 'extension_reload';");
 const end = source.indexOf("        await click(panel, 'title', 'Data');", start);
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
-const adopt = new AsyncFunction(
+const adoptDriver = new AsyncFunction(
   'assert',
   'native',
   'panel',
   'report',
   'captureFailure',
   'safeReloadOperationFailure',
+  'captureSenderDocument',
   `${source.slice(start, end)} return panel;`,
 );
+const adopt = (...args) => adoptDriver(...args, captureSenderDocument);
 
 test('member Data adopts verified replacement without touching retired session or reacquiring', async () => {
   const replacement = {
@@ -128,7 +130,7 @@ test('member Data persists distinct probe evidence after successful and failed r
     'report',
     'refuseDiagnosticAcceptance',
     'writeFile',
-    `const RELOAD_OPEN_DIAGNOSTIC = true, process = {}, output = 'owned.json';
+    `const RELOAD_OPEN_DIAGNOSTIC = true, RELOAD_SENDER_DOCUMENT_DIAGNOSTIC = true, process = {}, output = 'owned.json';
      const mkdir = async () => {};
      ${source.slice(finalizerStart, source.lastIndexOf('}'))}
      return process.exitCode;`,
@@ -165,6 +167,7 @@ test('member Data persists distinct probe evidence after successful and failed r
       reloadExtension: () =>
         reloadCase({
           initiallyEnabled: true,
+          reloadSenderDocumentDiagnostic: true,
           panelAppears: !failed,
           expectFailure: failed,
           openReply: failed ? null : { ok: true, result: { opened: true } },
@@ -202,7 +205,22 @@ test('member Data persists distinct probe evidence after successful and failed r
     });
     assert.equal(persisted.status, 'unverified');
     assert.equal(exitCode, 1);
+    assert.deepEqual(
+      persisted.reload_sender_document,
+      {
+        refresh_requested: true,
+        refresh_completed: true,
+        new_document_observed: true,
+        same_url_observed: true,
+      },
+      'sender observations must survive success and failure JSON persistence',
+    );
     if (failed) {
+      assert.deepEqual(
+        persisted.reload_failure.failure.retirement_evidence.sender_document,
+        persisted.reload_sender_document,
+        'failure lifecycle retains the sender observations',
+      );
       assert.equal(
         persisted.reload_failure.failure.failure_code,
         'native_extension_replacement_panel_unverified',
@@ -234,4 +252,24 @@ test('member Data persists distinct probe evidence after successful and failed r
       );
     }
   }
+});
+
+test('sender projection preserves boolean observations and excludes raw diagnostic fields', () => {
+  assert.deepEqual(
+    captureSenderDocument({
+      refresh_requested: false,
+      refresh_completed: false,
+      new_document_observed: false,
+      same_url_observed: 'private URL',
+      marker: 'private marker',
+      previousUrl: 'private URL',
+    }),
+    {
+      refresh_requested: false,
+      refresh_completed: false,
+      new_document_observed: false,
+      same_url_observed: null,
+    },
+  );
+  assert.equal(captureSenderDocument(undefined), null);
 });

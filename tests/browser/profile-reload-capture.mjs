@@ -1,5 +1,6 @@
 const FAILURE_CODES = new Set([
   'native_extension_management_reload_unavailable',
+  'native_reload_sender_document_refresh_unverified',
   'native_extension_developer_mode_unverified',
   'native_extension_reload_disabled',
   'native_extension_current_worker_unverified',
@@ -100,9 +101,20 @@ export function captureManagement(value) {
   };
 }
 
+export function captureSenderDocument(value) {
+  if (!value || typeof value !== 'object') return null;
+  return Object.fromEntries(
+    ['refresh_requested', 'refresh_completed', 'new_document_observed', 'same_url_observed'].map(
+      (key) => [key, typeof value[key] === 'boolean' ? value[key] : null],
+    ),
+  );
+}
+
 export function captureLifecycleEvidence(value) {
   if (!value || typeof value !== 'object') return null;
   const evidence = {};
+  if (value.sender_document !== undefined)
+    evidence.sender_document = captureSenderDocument(value.sender_document);
   for (const key of BOOL_KEYS) evidence[key] = typeof value[key] === 'boolean' ? value[key] : null;
   if (value.replacement_panel_created_event !== undefined)
     evidence.replacement_panel_created_event =
