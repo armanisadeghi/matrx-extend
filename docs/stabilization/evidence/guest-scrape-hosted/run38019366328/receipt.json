@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "run_id": 38019366328,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38019366328",
+  "lane": "B",
+  "acceptance_case": "guest-scrape-development",
+  "authentication_mode": "guest",
+  "width_mode": "normal",
+  "normal_width_px": 600,
+  "workflow_checkout_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.457",
+    "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+    "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+    "ci_run_id": 38017683667,
+    "artifact_id": 11657076101
+  },
+  "result": "partial",
+  "case_outcomes": {
+    "passed": [
+      "EXT-F-1007-T07",
+      "EXT-F-1007-T09",
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12",
+      "EXT-F-1007-T20"
+    ],
+    "partial": [
+      "EXT-F-1007-T01",
+      "EXT-F-1007-T02",
+      "EXT-F-1007-T08",
+      "EXT-F-1007-T13",
+      "EXT-F-1007-T14"
+    ]
+  },
+  "observed_controls_and_actions": [
+    "Native side panel and owned Harbor Dental fixtures opened in guest mode; guest account readiness observed.",
+    "Fast and deep captures were exercised, including full extension reload, post-reload recapture, and progress state observation.",
+    "Result panes and content were inspected; capture invariance was checked across reload.",
+    "Image/video/link editing, blank rejection, cancel, copy/open actions, and warm/reload persistence were exercised.",
+    "Restricted chrome://settings navigation was dismissed; no recovery action was available without a naturally occurring browser failure."
+  ],
+  "remaining_boundaries": [
+    "Guest-only evidence: member/admin authentication modes are unverified.",
+    "T02 deep failure retry mode remains unverified.",
+    "T14 recoverable Reload page and Try again actions require a natural browser failure."
+  ],
+  "resource_finals": {
+    "hosted-package-38019366328-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38019366328-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38019366328-1": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "fixture_and_credential_boundary": "Guest lane B used its own hosted profile and local owned fixtures. No member/admin credentials or shared member fixture were used. Hosted job completed; no separate shared-fixture cleanup was required.",
+  "claims": [
+    "These are bounded guest behaviors on the frozen development artifact listed above.",
+    "This receipt does not claim current-main health, Store behavior, member/admin behavior, or full EXT-F-1007 completion."
+  ],
+  "evidence_files": {
+    "native_report": {
+      "path": "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+      "sha256": "16f5c9c0f707d8f62548e539cb36d4469b3fb180af8cf881a2debaadcdc0b967"
+    },
+    "resource_journals": [
+      {
+        "path": "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+        "sha256": "49156e22aece67185eb5d37a12d19602ad9366dcc10c5f9a864e482c5658156a"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+        "sha256": "93c971eff91da3e6c7cb521e29d0faa2ac71331a91ec4746bca75ad5acfc7321"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl",
+        "sha256": "4393e4ea157193f818105b8ec6e48f734e18606620797d8e3a4abec0560f7ade"
+      }
+    ]
+  }
+}
