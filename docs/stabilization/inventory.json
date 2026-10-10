@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T10:44:37Z",
+  "updated_at": "2026-10-10T10:53:18Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -40050,7 +40050,7 @@
                 "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-browser-38023539449-1.jsonl",
                 "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-guest-38023539449-1.jsonl"
               ],
-              "detail": "The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified. A later diagnostic-only run (38028339414) repeated the pre-reload member observations but adds no T03 lifecycle credit; replacement-worker instrumentation saw no message ingress, while handler execution and Chrome open settlement remain unobserved. Its native cleanup was unverified; a separately verified exact run-owned soft-delete left one tombstone and zero active rows. T03 remains Partial."
+              "detail": "The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified. A later diagnostic-only run (38028339414) repeated the pre-reload member observations but adds no T03 lifecycle credit; replacement-worker instrumentation saw no message ingress, while handler execution and Chrome open settlement remain unobserved. Its native cleanup was unverified; a separately verified exact run-owned soft-delete left one tombstone and zero active rows. T03 remains Partial. Later diagnostic-only hosted run 38045479599 verified sender refresh/replacement ingress/open settlement, then stopped at `pointer_target_not_unique` in visibility_filter with zero visible Data targets. It adds zero T03 lifecycle credit and proves no product defect; post-reload pattern state/send response were unavailable. Cleanup lacked post-delete active-row readback; secret and local private files were absent after cleanup."
             },
             "admin": {
               "status": "partial",
@@ -40151,6 +40151,37 @@
                 "docs/stabilization/evidence/member-data-behavior/run38028339414/hosted-guest-38028339414-1.jsonl"
               ],
               "detail": "Diagnostic-only member run repeated the previously observed authentication/org, picker, save, run, clipboard and cancel behavior. Reload retired the old worker/panel and created an activated replacement worker but no replacement panel. The fixture reports send invoked/returned but callback not entered; CDP observed no replacement-worker message ingress and no handler invocation, while Chrome open settlement was unobserved. No product root cause is established. The native cleanup was unverified; exact run-owned name/org/owner soft-delete and fresh readback verified one tombstone and zero active rows. Resource finals were valid for package and browser; guest child exited 1 with resourceInvalid=false after transient CPU pressure recovered. No new T03 lifecycle acceptance credit; admin, Store and full reload persistence remain open."
+            },
+            {
+              "at": "2026-10-10T10:53:18Z",
+              "mode": "member",
+              "run_id": "38045479599",
+              "status": "diagnostic-only",
+              "diagnostic_only": true,
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+              "workflow_source_sha": "181c66f471499e705c817d5a4f82fdc7e39139f1",
+              "development_ci_run_id": 38036029832,
+              "development_artifact_id": 11664077690,
+              "evidence": [
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/receipt.sanitized.json",
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/native-report.sanitized.json",
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/cleanup.sanitized.json",
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-package-38045479599-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-browser-38045479599-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-guest-38045479599-1.jsonl",
+                "docs/stabilization/reports/peer-review-run38045479599.json"
+              ],
+              "independent_review": "docs/stabilization/reports/peer-review-run38045479599.json",
+              "detail": "Member identity and organization were verified before reload; sender document refreshed, replacement ingress/open handler ran, and Chrome open settled. Visibility filter then failed with pointer_target_not_unique and zero visible Data targets; post-reload saved-pattern state and send response were unavailable. Diagnostic only: zero T03 lifecycle credit and no proven product defect. Guest sign-in screenshot does not prove auth loss. Cleanup was acknowledged and identity-checked but no post-delete active-row readback was recorded; remote secret is absent and local private files were absent after delayed follow-up cleanup.",
+              "acceptance_outcome": "child_failed",
+              "acceptance_exit_code": 1,
+              "resource_invalid": false,
+              "failure_stage": "extension_reload_reopen_data/visibility_filter",
+              "failure_code": "pointer_target_not_unique",
+              "matched_target_count": 0,
+              "visible_target_count": 0
             }
           ]
         },
@@ -40255,8 +40286,10 @@
             "EXT-D-0053",
             "EXT-D-0054"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "38045479599"
+          ],
+          "retest_status": "Run 38045479599 was diagnostic-only and earns zero T03 lifecycle credit: after sender refresh and replacement open settlement, visibility_filter found zero visible Data targets (`pointer_target_not_unique`). T03 member and feature member remain unverified for reload lifecycle; no product defect is proven. Cleanup had no post-delete active-row readback."
         },
         "admin": {
           "test_status": "unverified",

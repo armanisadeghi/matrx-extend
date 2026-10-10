@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38045479599,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38045479599",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "181c66f471499e705c817d5a4f82fdc7e39139f1",
+  "dispatch_ref": "main",
+  "lane": "A",
+  "runner": {
+    "label": "macos-15",
+    "runner_arch": "ARM64",
+    "machine": "arm64",
+    "chrome_version": "141.0.7390.37"
+  },
+  "acceptance_case": "member-data",
+  "workflow_conclusion": "failure",
+  "inputs": {
+    "scrape_auth_mode": "member",
+    "scrape_width_mode": "narrow",
+    "scrape_reload_open_diagnostic": true,
+    "reload_sender_document_diagnostic": true
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "artifact_sha256": "388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "frozen_product_artifact": true
+  },
+  "native_result": {
+    "status": "unverified",
+    "failure_stage": "extension_reload_reopen_data",
+    "error_code": "pointer_target_not_unique",
+    "diagnostic_only": true,
+    "sender_document_refresh_observed": true,
+    "open_ingress_observed": true,
+    "chrome_open_settled": "resolved"
+  },
+  "resources": {
+    "package": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1,
+      "decision": "child_failed"
+    }
+  },
+  "resource_invalid_any": false,
+  "credential_handling": {
+    "temporary_repo_secret_deleted_after_terminal": true,
+    "repo_secret_name_count_after_cleanup": 0,
+    "local_link_file_absent_after_cleanup": true,
+    "local_reviewer_identity_file_absent_after_cleanup": true,
+    "local_cleanup_completed_at_utc": "2026-10-10T10:47:27Z",
+    "cleanup_timing_note": "The first watcher exited at a zsh read-only parameter error while assigning to `status`; its private link and identity files were removed during a follow-up cleanup before evidence work. The remote secret was deleted and verified absent at workflow terminal.",
+    "failure_mode": "zsh reserves `status` as a read-only parameter; using it for the run-state variable aborted the watcher before its credential cleanup ran.",
+    "safer_cleanup_note": "Use a non-reserved variable such as `runstate`; retain the exact private file paths in the watcher and, after terminal status, delete the GitHub secret, unlink those exact files with Python, then verify the secret name count and file absence.",
+    "credential_values_in_repo_evidence": false
+  },
+  "evidence": [
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/native-report.sanitized.json",
+      "sha256": "dadb49aea5adf2773291c1a3cdd64e68674fceeed7ddc44f07514f73af89d0fa"
+    },
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/cleanup.sanitized.json",
+      "sha256": "445d731f96c25548f84963b5b72e433c883daba8de72f8ebd79f1b22e5af6c9d"
+    },
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-package-38045479599-1.jsonl",
+      "sha256": "8094d97c0dd757d4a88838c9ab6be5dcce8598ae3da515796ab39ed6057468e5"
+    },
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-browser-38045479599-1.jsonl",
+      "sha256": "0626018d6f8112bfea89fbb47dd4d89684f477cafb4bb5e594298b78758c2fa7"
+    },
+    {
+      "path": "docs/stabilization/evidence/member-data-behavior/run38045479599/hosted-guest-38045479599-1.jsonl",
+      "sha256": "f406562f216c33fb199e714ff7dbf3ca0ba4537372c185a89e0e573739ca65fe"
+    }
+  ],
+  "limitations": "This diagnostic-only run does not earn lifecycle acceptance credit. The send response remains unobservable; the native driver stopped on zero visible Data targets before checking saved-pattern persistence after reload. Admin, Store, current-main product behavior and full T03 remain open."
+}
