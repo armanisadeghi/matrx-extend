@@ -20877,19 +20877,21 @@
           ],
           "results": {
             "member": {
-              "run_id": "scrape-save-native-3",
-              "build_variant": "development 0.2.456; native-2 loaded identity inherited; native-3 did not freshly reload",
-              "verified_at": "2026-10-09T22:21:39+00:00",
-              "evidence": "/tmp/scrape-save-native-3.md; docs/stabilization/resource-journals/scrape-save-native-3.jsonl; /tmp/scrape-save-native-4.md; docs/stabilization/resource-journals/scrape-save-native-4.jsonl",
+              "run_id": "scrape-save-native-5-browser",
+              "build_variant": "development 0.2.457; extension cihdkmcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
+              "verified_at": "2026-10-10T01:27:29Z",
+              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl",
               "status": "partial",
               "verified_substeps": [
-                "Custom name EXT-D-0187 TEST SOURCE \u2014 native retest persisted: independently reopened Source detail c798c0e5-7d3e-47b1-a5af-91ef4aaabbd1 displayed that title, Saved, History of computing and Wikipedia URL."
+                "Named Source 5f25b273-3f3b-4708-808b-b7a290c688cf (\u201cEXT-D-0187 Native Save 5 2026-10-10\u201d) persisted and independently reopened at its Source page with Saved state, page heading, full unique URL and captured content.",
+                "The same Source was listed after reopening the dedicated Project Attach sources panel, confirming persisted association with EXT-D-0187 TEST PROJECT \u2014 native retest (4484ab9c-bb04-4adc-a894-df2e9f18960f)."
               ],
               "remaining_criteria": [
-                "Project association persistence unverified; precise confirmation latency unmeasured.",
-                "Final focus acceptance on 4126b60f1 blocked by allowed native reload; same-content duplicate, refusal/retry, guest flow and full admin coverage remain unverified."
+                "Save without a destination, duplicate-save behavior, precise confirmation latency, controlled refusal/retry, guest/admin behavior, and full T04 coverage remain unverified.",
+                "Current uncommitted Save UI behavior remains unverified; the loaded artifact was v0.2.457 at source 7cf16860846756eb0f50cd6d2595b4d7529dda05.",
+                "Dialog URL display, Project-list scrolling, and Tab/Shift+Tab containment and wrap remain unverified."
               ],
-              "detail": "Verified title-persistence substep only, not full T04. Native-3 Saved/open Source succeeded; native-3 Tab escaped the modal. Native-4 valid permit blocked before exact loaded focus-build verification because CUA could not open extension management. Native-2 invalid has no acceptance credit. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects/focus/association remain unverified."
+              "detail": "Resource-valid native member run confirmed exact loaded extension identity, saved Source persistence, and persisted Project association after reopening the Project Attach sources panel. These are bounded substeps only; EXT-D-0187 remains in-fix. See the native receipt for evidence limits."
             },
             "admin": {
               "status": "unverified",
@@ -23509,22 +23511,21 @@
           ],
           "results": {
             "member": {
-              "run_id": "scrape-save-native-3",
-              "build_variant": "development 0.2.456; native-2 loaded identity inherited; native-3 did not freshly reload",
-              "verified_at": "2026-10-09T22:21:39+00:00",
-              "evidence": "/tmp/scrape-save-native-3.md; docs/stabilization/resource-journals/scrape-save-native-3.jsonl; /tmp/scrape-save-native-4.md; docs/stabilization/resource-journals/scrape-save-native-4.jsonl",
+              "run_id": "scrape-save-native-5-browser",
+              "build_variant": "development 0.2.457; extension cihdkmcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
+              "verified_at": "2026-10-10T01:27:29Z",
+              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl",
               "status": "partial",
               "verified_substeps": [
-                "After inner Projects browsing loaded 43 projects, wheel and Page_Down reached and selected the dedicated below-fold Project; selected chip visible.",
-                "Initial candidate fetch failed once and recovered via Retry."
+                "Save Source exposed editable name and place controls; Projects candidates appeared after choosing Projects.",
+                "Selecting EXT-D-0187 TEST PROJECT \u2014 native retest and saving produced named Source 5f25b273-3f3b-4708-808b-b7a290c688cf; after reopening the Project Attach sources panel, that Source was listed, confirming persisted association."
               ],
               "remaining_criteria": [
-                "Canonical one-click Projects fix 577af8810 is included in local release v0.2.457; exact-release native one-click browsing remains unverified.",
-                "Selected Project association persistence remains unverified on the independently reopened Source.",
-                "Tab escaped the modal in valid native-3 (retest-fail); focus candidate 4126b60f1 final native retest blocked by allowed CUA reload in native-4.",
-                "File elsewhere, top/footer Save, narrow-panel, multiple destinations, Library, remove and refusal routes remain unverified."
+                "Scroll behavior remains unverified because the attempted scroll produced no accessibility-state change; keyboard movement to the next row is not proof of focus containment or scroll reachability.",
+                "The dialog did not separately display the URL; URL display in the current uncommitted Save UI is unverified.",
+                "Duplicate, no-destination, search-to-late-result, multi-target, remove, Library, refusal/retry, File elsewhere, responsive layout, focus containment/wrap, and admin paths remain unverified."
               ],
-              "detail": "Partial selection/navigation only: wheel and Page_Down passed after inner Projects; no one-click flow or stored association pass. Native-3 focus escape retest failed. Native-4 valid permit blocked before loading/verifying focus-fix artifact; final focus and association retests unverified. Native-2 invalid has no acceptance credit. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects/focus/association remain unverified."
+              "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or the current uncommitted UI."
             },
             "admin": {
               "status": "unverified",
@@ -23971,6 +23972,21 @@
           "tree_sha256": "706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d",
           "proven": "Mandatory release gates passed; 2281 tests across 323 files passed, 5 tests/2 files skipped; Git tag/main and local/Store ZIP bundles pushed.",
           "limits": "No Web Store submission. New-release native one-click Projects, focus containment, association persistence and remaining Save/File elsewhere/role checks unverified; D187 in-fix and case results remain partial."
+        },
+        {
+          "run_id": "scrape-save-native-5-browser",
+          "mode": "member",
+          "build": "0.2.457 / cihdkmcdjjckfhjpgoedmgfpoljebaml / 7cf16860846756eb0f50cd6d2595b4d7529dda05 (exact loaded build reloaded)",
+          "defect_id": "EXT-D-0187",
+          "status": "bounded-native-substeps-pass",
+          "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md",
+          "resource_journals": [
+            "docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl",
+            "docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl",
+            "docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl"
+          ],
+          "proven": "Named Source 5f25b273-3f3b-4708-808b-b7a290c688cf (EXT-D-0187 Native Save 5 2026-10-10) persisted with full unique URL and captured content; reopening Project 4484ab9c-bb04-4adc-a894-df2e9f18960f Attach sources panel listed that Source, confirming association.",
+          "limits": "Only bounded member substeps. Save dialog URL display, scrolling, focus containment/wrap, duplicate, no-destination, refusal/retry, other target flows, current uncommitted UI, guest/admin and full T04/T29 remain unverified. EXT-D-0187 remains in-fix."
         }
       ]
     },
