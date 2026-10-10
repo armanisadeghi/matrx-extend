@@ -7,6 +7,7 @@
  * their attachment sources (`composer-extensions`).
  */
 
+import { subscribeActiveTab } from '@/hooks/use-active-tab';
 import { resolveActiveTab } from '@/lib/chat/active-tab';
 import { buildChatContext } from '@/lib/chat/build-context';
 import { log } from '@/lib/debug/log';
@@ -27,7 +28,15 @@ export const extensionPageContextSource: ChatContextSource = {
     };
     chrome.tabs.onActivated.addListener(onActivated);
     chrome.tabs.onUpdated.addListener(onUpdated);
+    // The page's scrape lands (or is cleared) after those tab events; the count must follow it.
+    const unsubscribeScrape = useAutoScrapeStore.subscribe((state, prev) => {
+      if (state.current !== prev.current) onChange();
+    });
+    // The tab events fire before the page identity settles; the scrape only counts once it does.
+    const unsubscribeIdentity = subscribeActiveTab(onChange);
     return () => {
+      unsubscribeIdentity();
+      unsubscribeScrape();
       chrome.tabs.onActivated.removeListener(onActivated);
       chrome.tabs.onUpdated.removeListener(onUpdated);
     };

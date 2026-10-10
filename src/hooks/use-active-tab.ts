@@ -172,6 +172,9 @@ function subscribe(listener: () => void) {
   };
 }
 
+/** Non-React subscription to the same shared identity (ref-counted with `useActiveTab`). */
+export const subscribeActiveTab = subscribe;
+
 export function useActiveTab(): ActiveTabInfo {
   return useSyncExternalStore(
     subscribe,

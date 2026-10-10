@@ -11,6 +11,7 @@ vi.mock('@/lib/chat/active-tab', () => ({
   resolveActiveTab: async () => ({ id: 7, url: 'https://harborlightdental.com/lab-policy' }),
 }));
 
+import { useAutoScrapeStore } from '@/state/auto-scrape';
 import { extensionPageContextSource } from './context-source';
 
 const input = {
@@ -41,5 +42,58 @@ describe('extension page context source', () => {
   it('a failed build is skipped, not thrown', async () => {
     build.mockRejectedValueOnce(new Error('tab gone'));
     expect(await extensionPageContextSource.contribute(input)).toBeNull();
+  });
+  it('re-reads when the background page capture lands or clears, not only on tab events', () => {
+    // Regression: returning to a tab fires onActivated before the auto-capture finishes, so the
+    // chip read the page without its scrape (13 -> 3) and never refreshed when the capture landed.
+    const l = () => ({ addListener: vi.fn(), removeListener: vi.fn() });
+    const chromeStub = {
+      tabs: { onActivated: l(), onUpdated: l(), query: vi.fn(async () => []) },
+      windows: { onFocusChanged: l() },
+      webNavigation: {
+        onBeforeNavigate: l(),
+        onCommitted: l(),
+        onErrorOccurred: l(),
+        getFrame: vi.fn(),
+      },
+    };
+    vi.stubGlobal('chrome', chromeStub);
+    const onChange = vi.fn();
+    const unsubscribe = extensionPageContextSource.subscribe?.(onChange);
+    useAutoScrapeStore.getState().clear();
+    useAutoScrapeStore.getState().set({
+      url: 'https://en.wikipedia.org/wiki/Coffee',
+      pageKey: 'k',
+      capturedAt: Date.now(),
+      usedFullScroll: false,
+      soup: {} as never,
+    });
+    expect(onChange).toHaveBeenCalled();
+    onChange.mockClear();
+    unsubscribe?.();
+    useAutoScrapeStore.getState().clear();
+    expect(onChange).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
+  it('re-reads when the active page identity settles (it lags the tab events)', () => {
+    // Regression: the scrape only counts once the page identity is ready, which happens after
+    // onActivated; without this subscription the chip stayed at 3 on a page that gives 13.
+    const l = () => ({ addListener: vi.fn(), removeListener: vi.fn() });
+    const webNavigation = {
+      onBeforeNavigate: l(),
+      onCommitted: l(),
+      onErrorOccurred: l(),
+      getFrame: vi.fn(),
+    };
+    vi.stubGlobal('chrome', {
+      tabs: { onActivated: l(), onUpdated: l(), query: vi.fn(async () => []) },
+      windows: { onFocusChanged: l() },
+      webNavigation,
+    });
+    const off = extensionPageContextSource.subscribe?.(vi.fn());
+    expect(webNavigation.onCommitted.addListener).toHaveBeenCalled();
+    off?.();
+    expect(webNavigation.onCommitted.removeListener).toHaveBeenCalled();
+    vi.unstubAllGlobals();
   });
 });
