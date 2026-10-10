@@ -983,8 +983,7 @@ try {
             panel,
             'https://server.app.matrxserver.com',
           );
-          try {
-            await duplicateResponses.start();
+          await duplicateResponses.run(sourceId, report.observations, async () => {
             report.stage = 'duplicate_save_dialog';
             await resourceAction(() => click(panel, 'button-text', 'Save'));
             const secondDialog = await waitFor(
@@ -1021,9 +1020,7 @@ try {
               30000,
             );
             report.observations.duplicate_responses = duplicateResponses.verify(sourceId);
-          } finally {
-            duplicateResponses.stop();
-          }
+          });
           const renamedConfirmation = await waitFor(
             'scrape_save_duplicate_confirmation',
             () => dialogState(panel),
