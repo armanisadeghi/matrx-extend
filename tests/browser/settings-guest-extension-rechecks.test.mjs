@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { reloadCase } from './native-reload-fixture.mjs';
-import { runGuestChoicesAcrossExtensionRestarts } from './settings-guest-extension-rechecks.mjs';
+import {
+  detachPanelUnlessRetired,
+  runGuestChoicesAcrossExtensionRestarts,
+} from './settings-guest-extension-rechecks.mjs';
 import { serializeGuestReloadFailure } from './settings-probe-cleanup.mjs';
 
 function fixture({ skipLabel = null, skipLabels = [], corruptAfterRestart = false } = {}) {
@@ -128,6 +131,47 @@ test('every nonbaseline choice survives its own replacement-worker extension res
     records.some(([, status]) => status === 'fail'),
     false,
   );
+});
+
+test('retired panel sessions are not detached before reading the replacement Settings panel', async () => {
+  const f = fixture();
+  let detachCalls = 0;
+  let sharedClientPoisoned = false;
+  const read = f.read;
+  f.read = async (panel) => {
+    if (sharedClientPoisoned) throw new Error('replacement_session_transport_failed');
+    return read(panel);
+  };
+  const reloadExtension = f.reloadExtension;
+  f.reloadExtension = async () => {
+    const retiredPanel = f.state.panel;
+    const result = await reloadExtension();
+    retiredPanel.detach = async () => {
+      detachCalls += 1;
+      sharedClientPoisoned = true;
+    };
+    return result;
+  };
+
+  const { result } = await run(f);
+  assert.equal(result.targetId, 'panel-3');
+  assert.equal(detachCalls, 0);
+  assert.equal(sharedClientPoisoned, false);
+  assert.equal(f.state.visible, 'System');
+  assert.equal(f.state.stored, 'system');
+});
+
+test('a panel session without retirement proof is still detached', async () => {
+  let detachCalls = 0;
+  await detachPanelUnlessRetired(
+    {
+      detach: async () => {
+        detachCalls += 1;
+      },
+    },
+    false,
+  );
+  assert.equal(detachCalls, 1);
 });
 
 test('a skipped choice fails its assertion and still restarts with the original preference restored', async () => {
