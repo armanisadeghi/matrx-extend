@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "partial",
+  "scope": "Owned guest SEO hreflang and Article schema doors in a native side panel",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_owned_hreflang_article_doors_match_fixture_dom",
+      "status": "pass",
+      "evidence": {
+        "sourceTitleMatched": true,
+        "alternateLanguage": "es",
+        "alternateDoorCount": 1,
+        "schemaType": "Article",
+        "schemaDoorCount": 1,
+        "targetBlankWithNoopenerAndNoreferrer": true,
+        "trustedPointerDestinationsReached": true,
+        "sourcePageRetainedAfterEachDoor": true
+      }
+    }
+  ],
+  "last_safe_stage": "owned_metadata_bounded_target_complete",
+  "case_selection": {
+    "scope": "metadata",
+    "selected_cases": ["T09"],
+    "selected_subtargets": ["guest_owned_hreflang_article_doors_match_fixture_dom"],
+    "excluded_cases": ["all SEO targets other than the owned T09 metadata door target"]
+  },
+  "build": {
+    "version": "0.2.469",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0"
+  },
+  "limitations": [
+    "This was one owned-fixture T09 target; it does not supersede the full SEO run's one unverified public-page door target.",
+    "No full SEO, readability metric correctness, other T09 details, member/admin, or Store-installation health is claimed.",
+    "The uploaded screenshots show the generic guest side panel and a generic target page, not the SEO result; behavioral credit comes from the native assertion report."
+  ],
+  "sanitization": "Removed extension ID, source URL/title, raw page content, private paths, credentials, and screenshots."
+}

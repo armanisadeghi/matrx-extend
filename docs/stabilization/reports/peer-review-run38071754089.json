@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_seo_metadata_evidence_review",
+  "reviewer": "seo_metadata_review",
+  "verdict": "PASS_BOUNDED_GUEST_T09_METADATA_TARGET",
+  "run": {
+    "hosted_run_id": 38071754089,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38071754089",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "conclusion": "success",
+    "workflow_head_sha": "4e875dd4e8299a6fcfc3c1ddfbf13e85309e9ce9",
+    "lane": "B",
+    "case": "guest-seo",
+    "scope": "metadata",
+    "reviewed_at": "2026-10-10"
+  },
+  "provenance": {
+    "release_run_id": 38067449240,
+    "release_artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "version": "0.2.469",
+    "source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904",
+    "hosted_result_artifact_id": 11677725113,
+    "hosted_result_artifact_digest": "sha256:da81bc7e525cc0a2be0fff4e0b29534ec3133183e07fb05deed28c4921ce8aff"
+  },
+  "verdict_a_live_behavior": {
+    "status": "PASS_BOUNDED",
+    "target": "EXT-F-1008-T09/guest_owned_hreflang_article_doors_match_fixture_dom",
+    "observed": [
+      "The owned fixture exposed one es alternate-language door and one Article schema door.",
+      "Native assertions confirmed the title, link target/rel behavior, trusted destination activation, and source-page retention after each door.",
+      "The exact v0.2.469 Store build/tree hashes were unchanged before and after the run.",
+      "Package, browser, and acceptance resource finals all recorded valid decisions."
+    ],
+    "partial_or_unverified": [
+      "The native batch outcome was PARTIAL because the run selected one target only.",
+      "The separately recorded full SEO run 38070400935 remains partial: 24/25 pass, one public-DOM hreflang/schema door unverified, and readability metric-value correctness unverified.",
+      "Generic screenshots do not show the SEO panel result; behavior credit comes from the native assertion report."
+    ]
+  },
+  "verdict_b_doctrine_and_evidence": {
+    "status": "PASS_FOR_EVIDENCE_SCOPE",
+    "notes": [
+      "Artifact provenance is exact and matches the previously reviewed guest Data run 38071036836 and full SEO run 38070400935.",
+      "The focused target is a real native behavior assertion, not a screenshot-based inference or source-only test.",
+      "No full SEO, current-main, member/admin, published Store installation, or uncontrolled metric correctness claim is supported."
+    ]
+  },
+  "d193_adjudication": {
+    "status": "KEEP_FIXED_NOT_CLOSED",
+    "reason": "The exact-release guest Data bounded target and the additional owned T09 metadata target pass, but the existing full SEO run is partial. D193's recorded closure requirement calls for paired guest Data and guest SEO retests to pass their unchanged real behavior assertions; one unverified target remains in the full SEO run. This focused target is supplemental evidence and does not replace that unmet closure condition.",
+    "required_next_evidence": "A paired exact-artifact SEO retest that resolves the remaining T09 public-page door assertion, with metric correctness kept explicitly unverified unless independently proven."
+  },
+  "checked_files": [
+    "docs/stabilization/defects/EXT-D-0193.json",
+    "docs/stabilization/runs/guest-data-v0469-run38071036836.json",
+    "docs/stabilization/runs/guest-seo-v0469-38070400935.json",
+    "docs/stabilization/evidence/guest-seo-store/run38071754089/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38071754089/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38071754089/resource-finals.sanitized.json"
+  ],
+  "verification": {
+    "method": "Read hosted workflow metadata and logs; downloaded hosted result artifact; inspected sanitized native report and both screenshots.",
+    "tests": "Not run; read-only evidence review."
+  }
+}

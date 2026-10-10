@@ -21,14 +21,19 @@
   "cause": "Guest Data and SEO were added as development-only acceptance cases and omitted from the existing release Store ZIP case set.",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38069675622",
-    "docs/stabilization/reports/d193-red-proof.json"
+    "docs/stabilization/reports/d193-red-proof.json",
+    "docs/stabilization/reports/peer-review-run38071754089.json",
+    "docs/stabilization/evidence/guest-seo-store/run38071754089/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38071754089/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38071754089/resource-finals.sanitized.json"
   ],
   "fix_commit": null,
   "verification": [
     "Baseline importer and SEO routing tests failed before repair; baseline workflow mode matrix and Data receipt tests failed in scratch copies.",
     "37 focused tests pass after repair, including actual ZIP payload selection, executable workflow mode matrix and negative source/tree/version/selection provenance.",
     "Fresh exact-v0.2.469 guest Data run 38071036836 passed bounded native EXT-F-2005-T01 assertions with valid package, browser and acceptance resource finals; independent review is recorded in docs/stabilization/reports/peer-review-run38071036836.json.",
-    "Paired exact-v0.2.469 guest SEO run 38070400935 remains partial (24 pass, 1 unverified); D193 stays fixed pending SEO retest evidence that meets the closure requirement."
+    "Paired exact-v0.2.469 guest SEO run 38070400935 remains partial (24 pass, 1 unverified); D193 stays fixed pending SEO retest evidence that meets the closure requirement.",
+    "Fresh exact-v0.2.469 hosted guest SEO metadata run 38071754089 passed only the owned T09 hreflang/Article door target; package, browser, and acceptance resource finals are valid. Independent evidence review is docs/stabilization/reports/peer-review-run38071754089.json. The companion full SEO run 38070400935 remains partial (24 pass, 1 unverified; metric value correctness unverified), so the existing paired-run closure requirement is still unmet and D193 remains fixed, not closed."
   ],
   "closure_requirement": "Independent review, then fresh guarded hosted guest-data and guest-seo runs selecting exact v0.2.469 release bytes must reach and pass their unchanged real behavior assertions with valid resource finals. Record both retests before retest-pass and closed. No CI-development substitute or product credit from source tests.",
   "transition_history": [
