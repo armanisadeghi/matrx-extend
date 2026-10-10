@@ -18,7 +18,11 @@ import {
 } from '@/lib/api/client';
 import { streamFetch } from '@/lib/api/stream';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
-import { type SocialPostMedia, SocialPostMediaSchema } from '@/lib/swipe-file/receipt';
+import {
+  type SocialPostMedia,
+  SocialPostMediaSchema,
+  MediaCoverageSchema,
+} from '@/lib/swipe-file/receipt';
 import { z } from 'zod';
 
 export type { SocialPostMedia } from '@/lib/swipe-file/receipt';
@@ -43,6 +47,7 @@ export const SocialPostResultSchema = z
     thumbnail_url: z.string().nullable().optional(),
     trace: SocialTraceSchema.nullable().optional(),
     media_notes: z.array(z.string()).optional(),
+    media_coverage: MediaCoverageSchema.optional(),
     media: z.array(SocialPostMediaSchema).optional(),
     transcript: z
       .object({

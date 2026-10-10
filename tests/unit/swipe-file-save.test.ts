@@ -143,3 +143,27 @@ it('preserves media/transcript warnings and pins destination organization across
     'org-collection',
   );
 });
+
+it('preserves incomplete carousel coverage through save and receipt persistence', async () => {
+  m.ingestPost.mockResolvedValue({
+    ok: true,
+    result: {
+      post_id: 'spain-carousel',
+      media: [],
+      transcript: { status: 'available', notes: [] },
+      media_coverage: {
+        expected_items: 7,
+        observed_items: 7,
+        stored_items: 1,
+        missing_items: 6,
+        status: 'partial',
+      },
+    },
+  });
+  const saved = await saveToSwipeFile({ url: URL_OK, collectionId: 'destination' }, () => {});
+  expect(saved).toMatchObject({
+    status: 'saved',
+    receipt: { coverage: { expected_items: 7, stored_items: 1, status: 'partial' } },
+  });
+  expect(saved.status !== 'failed' && saved.notice).toContain('6 media items missing');
+});

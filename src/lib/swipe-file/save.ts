@@ -108,6 +108,7 @@ export async function saveToSwipeFile(
       notes: post.transcript?.notes ?? [],
     },
     reused: post.trace?.reused === true,
+    ...(post.media_coverage ? { coverage: post.media_coverage } : {}),
   };
   const notices = captureReceiptWarnings(receipt);
   try {

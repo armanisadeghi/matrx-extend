@@ -3676,3 +3676,7 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - For a partial media download, verify saved membership is reported alongside the missing-file warning, never as a complete archive. Verify an unavailable media read displays an error rather than a zero-file success.
 - Browser agent tools: use `read_page`, `find`, `query_elements`, text search and inspection on the floating control and nested open-shadow controls. References must work for click/type/select/focus; normal page controls still work. Inspecting the host identifies its open shadow root. Closed roots require accessibility/CDP.
 - Discovery must advertise held required permissions (including debugger) along with optional grants; an ungranted optional permission stays absent. Assistant and Pilot start/resume requests carry their declared `client.surface`, with matching context-rule provenance.
+
+### Carousel capture coverage
+
+Save an Instagram carousel to Swipe file. Verify the saved summary counts all carousel media, excluding a duplicate cover thumbnail. A partial download shows the stored/expected count and missing-item warning; an unknown total says coverage could not be verified. Re-save a previously incomplete cached carousel and verify it attempts repair rather than silently reusing its first image. Open the saved post in the extension to review its files.
