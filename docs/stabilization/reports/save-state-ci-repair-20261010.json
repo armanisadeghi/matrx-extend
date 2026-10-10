@@ -1,0 +1,102 @@
+{
+  "task_id": "save-state-ci-repair-20261010",
+  "lane": "save-state-ci-repair",
+  "status": "verified-engineering-peer-pass",
+  "related_defect_id": "EXT-D-0187",
+  "scope": "CI component-test synchronization only; no product defect or native acceptance claim",
+  "trigger": {
+    "ci_run": "38087114272",
+    "test": "keeps a reused Source saved and offers a details-only retry when renaming fails",
+    "failure": "Synchronous Saved query after asynchronous rename warning found Save instead."
+  },
+  "root_cause": "ScrapeView commits rename warning and savedSource before its acknowledgement effect clears the capture edited flag. Saved requires !edited. Waiting for the warning does not await that separate commit.",
+  "diagnostic_proof": {
+    "method": "Temporary React Profiler onRender snapshots asserted the warning/edited/not-Saved commit and the later warning/not-edited/Saved commit both exist; removed after diagnosis.",
+    "snapshots": [
+      {
+        "warning": true,
+        "edited": true,
+        "saved": false
+      },
+      {
+        "warning": true,
+        "edited": false,
+        "saved": true
+      }
+    ],
+    "run_id": "save-state-ci-transition-proof-20261010",
+    "result": "27 tests pass; resource final valid"
+  },
+  "repair": "Await the actual Saved control, assert edited=false and Source link, preserve rename recovery input and details-only retry, assert Saved remains after retry and exact /land,/edit,/edit request sequence.",
+  "sibling_census": "Other successful-save cases already use findByRole(Saved); organization switch cases assert absence synchronously after awaited switch and are correct. No equivalent warning-before-Saved synchronous assertion found.",
+  "verification": [
+    {
+      "run_id": "save-state-ci-baseline-20261010",
+      "verdict": "pass",
+      "evidence": "27 tests passed on unchanged source and test; resource valid."
+    },
+    {
+      "run_id": "save-state-ci-transition-proof-20261010",
+      "verdict": "pass",
+      "evidence": "27 tests passed including explicit temporary commit-snapshot assertions; resource valid."
+    },
+    {
+      "run_id": "save-state-ci-mutation-20261010",
+      "verdict": "interrupted-not-proof",
+      "evidence": "Broad acknowledgement deletion triggered multiple unrelated wait timeouts. Stopped owned guard with SIGINT; final interrupted/resourceInvalid=false; plant restored original identical SHA; no valid RED claim."
+    },
+    {
+      "run_id": "save-state-ci-narrow-mutation-20261010",
+      "verdict": "red-proven",
+      "evidence": "Protected plant suppressed markSaved only while renameRecovery exists; original symptom case fails at awaited Saved assertion line493; resource final child_failed/resourceInvalid=false; product file restored identical SHA3c911c189dc9."
+    },
+    {
+      "run_id": "save-state-ci-green-neighbors-20261010",
+      "verdict": "pass",
+      "evidence": "46 passed, 1 existing skipped across6 files: Save persistence/form-focus/source orchestration and Scrape link/media/error controls; final resource valid exit0."
+    },
+    {
+      "run_id": "save-state-ci-compile-20261010",
+      "verdict": "refused-not-proof",
+      "evidence": "Resource guard saw finalizing prior green runner PID58639 and refused admission. Prior runner subsequently exited0; no unsafe hold."
+    },
+    {
+      "run_id": "save-state-ci-compile-final-20261010",
+      "verdict": "pass",
+      "evidence": "pnpm compile/tsc --noEmit exit0; resource final valid."
+    },
+    {
+      "run_id": "save-state-ci-lint-final-20261010",
+      "verdict": "pass",
+      "evidence": "pnpm lint checked2540 files, zero errors,853 existing warnings, exit0; resource final valid."
+    }
+  ],
+  "limitations": [
+    "Component test uses real ScrapeView/useScrape/saveCaptureAsSource/landSource with mocked network and identity; no new native behavior claim.",
+    "Original product EXT-D-0187 acceptance remains independent and incomplete."
+  ],
+  "reviewer": {
+    "identity": "/root/seo_metadata_review",
+    "verdict_A": "PASS for bounded component behavior; native acceptance not changed or claimed",
+    "verdict_B": "PASS: awaited Saved plus edited=false/Source link, stable saved state and exact API sequence strengthen guard; no product diff, instrumentation, or weakening",
+    "verification": {
+      "run_id": "save-state-peer-targeted-neighbors-20261010b",
+      "result": "3 files passed;30 tests passed;1 existing skip;resource-valid exit0"
+    },
+    "limitations": "Reviewer deliberately interrupted the overbroad full local suite; no full local-suite pass claimed. Hosted contributor CI passed instead."
+  },
+  "next_action": "Push exact test/report/owned-journal commit. No native acceptance closure or product release claim.",
+  "feature_test_docs": "Unchanged: test synchronization only; docs/feature-tests.md already specifies Saved plus details-only Retry name and no relanding.",
+  "contributor_fix": {
+    "sha": "5b4c21df3",
+    "behavior": "Remote main independently contributed the same await Saved fix; preserved by fast-forward merge. This lane contributes extra persistence/retry assertions and independent causal/mutation evidence only."
+  },
+  "hosted_ci": {
+    "run_id": "38087857191",
+    "sha": "5b4c21df3",
+    "verdict": "success",
+    "scope": "Contributor async Saved assertion fix, before this lane extra assertions/evidence."
+  },
+  "reconciled_main": "5a22b7b6c",
+  "owned_processes": "All owned diagnostic, mutation, targeted/neighbor, compile and lint processes are terminal; product mutations restored identical and temporary instrumentation removed."
+}

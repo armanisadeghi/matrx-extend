@@ -488,7 +488,11 @@ describe('Save never loses input', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
     expect(await screen.findByText(/Source saved, but its name could not be updated/)).toBeTruthy();
+    // The warning commits before the effect acknowledges the landed capture.
+    // Wait for that state transition; the warning alone is not its completion.
     expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
+    expect(useScrapeStore.getState().edited).toBe(false);
+    expect(screen.getByRole('button', { name: /Open this Source/ })).toBeTruthy();
     expect((screen.getByLabelText('Retry Source name') as HTMLInputElement).value).toBe(
       'Correct name',
     );
@@ -497,6 +501,13 @@ describe('Save never loses input', () => {
     expect(mocks.apiPost.mock.calls[2]?.[0]).toMatch(/\/sources\/.*\/edit/);
     expect(mocks.apiPost.mock.calls[2]?.[1]).toEqual({ name: 'Correct name' });
     await waitFor(() => expect(screen.queryByLabelText('Retry Source name')).toBeNull());
+    expect(screen.getByRole('button', { name: /^Saved$/ })).toBeTruthy();
+    expect(screen.queryByText(/Source saved, but its name could not be updated/)).toBeNull();
+    expect(mocks.apiPost.mock.calls.map(([path]) => path)).toEqual([
+      '/sources/land',
+      '/sources/6b8c38dd-6d68-4824-b664-a380b7611627/edit',
+      '/sources/6b8c38dd-6d68-4824-b664-a380b7611627/edit',
+    ]);
   });
 
   it('keeps the Save form usable without an organization and shows the existing refusal', async () => {
