@@ -195,7 +195,12 @@ export function NeedsYourBrowserView(): React.JSX.Element {
   const giveUpOn = useCallback(async (handoff: Handoff, note: string): Promise<void> => {
     setBusyId(handoff.id);
     try {
-      const res = await dismissHandoff(handoff.id, note.trim() || undefined);
+      const res = await dismissHandoff(
+        handoff.id,
+        note.trim() || undefined,
+        undefined,
+        handoff.organization_id,
+      );
       setStatuses((cur) => ({
         ...cur,
         [handoff.id]: {

@@ -166,7 +166,12 @@ export async function runOne(
   /** Hand back to the person, with the sentence they will read. */
   const handToPerson = async (reason: string, note: string): Promise<RunnerOutcome> => {
     report('reporting');
-    const res = await postNeedsDrive(handoff.id, { reason, note }, options.signal);
+    const res = await postNeedsDrive(
+      handoff.id,
+      { reason, note },
+      options.signal,
+      handoff.organization_id,
+    );
     outcome.posted = res.ok ? 'needs_drive' : 'none';
     outcome.note = res.ok
       ? note
@@ -194,6 +199,7 @@ export async function runOne(
         handoff.id,
         { client: 'chrome-extension' },
         options.signal,
+        handoff.organization_id,
       );
       if (!claimed.ok) {
         outcome.posted = 'none';
@@ -300,6 +306,7 @@ export async function runOne(
           final_url: finalUrl,
         },
         options.signal,
+        handoff.organization_id,
       );
 
       if (!posted.ok) {
@@ -428,6 +435,7 @@ export async function captureDrivenTab(
         final_url: finalUrl,
       },
       signal,
+      handoff.organization_id,
     );
     if (!posted.ok) {
       outcome.note = `AI Matrx read the page but could not file it: ${posted.error}`;

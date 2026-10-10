@@ -3,6 +3,7 @@ import { z } from 'zod';
 export const SocialPostMediaSchema = z.object({
   file_id: z.string(),
   role: z.string(),
+  source_index: z.number().int().nonnegative().nullable().optional(),
   mime_type: z.string().nullable(),
   size_bytes: z.number().nullable(),
   door: z.string(),

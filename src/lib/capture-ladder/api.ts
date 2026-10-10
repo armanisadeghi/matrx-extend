@@ -88,6 +88,7 @@ export interface ResultBody {
    * The server copies the wanted ones into the person's private files.
    */
   images?: { src: string; alt?: string; width?: number; height?: number; post_ref?: string }[];
+  videos?: { src: string; post_ref?: string; poster?: string; mime_type?: string }[];
 }
 
 /**
@@ -143,9 +144,15 @@ export async function claimHandoff(
   id: string,
   body: ClaimBody = { client: 'chrome-extension' },
   signal?: AbortSignal,
+  organizationId?: string,
 ): Promise<ApiResult<Handoff>> {
   if (!(await getAccessToken())) return signedOut();
-  const res = await apiPost<unknown>(`${BASE}/${id}/claim`, body, signal);
+  const res = await apiPost<unknown>(
+    `${BASE}/${id}/claim`,
+    body,
+    signal,
+    organizationId ? { organizationId } : undefined,
+  );
   return parseHandoff(res);
 }
 
@@ -153,12 +160,14 @@ export async function postCaptureResult(
   id: string,
   body: ResultBody,
   signal?: AbortSignal,
+  organizationId?: string,
 ): Promise<ApiResult<ResultResponse>> {
   if (!(await getAccessToken())) return signedOut();
   // Landing a social capture copies its images into the person's private files
   // before the door answers, which can take well over the 30s default.
   const res = await apiPost<unknown>(`${BASE}/${id}/result`, body, signal, {
     timeoutMs: RESULT_POST_TIMEOUT_MS,
+    ...(organizationId ? { organizationId } : {}),
   });
   return res.ok ? { ok: true, data: parseResultResponse(res.data) } : res;
 }
@@ -167,9 +176,15 @@ export async function postNeedsDrive(
   id: string,
   body: NeedsDriveBody,
   signal?: AbortSignal,
+  organizationId?: string,
 ): Promise<ApiResult<Handoff>> {
   if (!(await getAccessToken())) return signedOut();
-  const res = await apiPost<unknown>(`${BASE}/${id}/needs-drive`, body, signal);
+  const res = await apiPost<unknown>(
+    `${BASE}/${id}/needs-drive`,
+    body,
+    signal,
+    organizationId ? { organizationId } : undefined,
+  );
   return parseHandoff(res);
 }
 
@@ -177,12 +192,14 @@ export async function dismissHandoff(
   id: string,
   note?: string,
   signal?: AbortSignal,
+  organizationId?: string,
 ): Promise<ApiResult<Handoff>> {
   if (!(await getAccessToken())) return signedOut();
   const res = await apiPost<unknown>(
     `${BASE}/${id}/dismiss`,
     note !== undefined ? { note } : {},
     signal,
+    organizationId ? { organizationId } : undefined,
   );
   return parseHandoff(res);
 }

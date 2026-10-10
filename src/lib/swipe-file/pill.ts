@@ -39,6 +39,7 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
  <div id="feedback" class="feedback" hidden>
   <div class="status" role="status" aria-live="polite"><span id="mark" class="mark" aria-hidden="true"></span><span id="msg" class="msg"></span></div>
   <div id="summary" class="summary" hidden></div><div id="notice" class="notice" hidden></div>
+  <button id="capture-slides" hidden>Capture remaining slides</button>
   <div id="links" class="links" hidden><button id="review">View in extension</button><a id="web" target="_blank" rel="noopener noreferrer">Open in Matrx ↗</a></div>
  </div>
 </section>`;
@@ -54,6 +55,7 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
   const notice = $('notice');
   const links = $('links');
   const web = $<HTMLAnchorElement>('web');
+  const captureSlides = $<HTMLButtonElement>('capture-slides');
   let port: chrome.runtime.Port | null = null;
   let loaded = false;
   let currentUrl: string | null = null;
@@ -69,7 +71,8 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
   }
   function clearResult() {
     saved = null;
-    summary.hidden = notice.hidden = links.hidden = true;
+    summary.hidden = notice.hidden = links.hidden = captureSlides.hidden = true;
+    captureSlides.disabled = false;
     web.removeAttribute('href');
   }
   function send(message: SwipeClientMsg) {
@@ -79,6 +82,7 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
         port.onMessage.addListener(onHost);
         port.onDisconnect.addListener(() => {
           port = null;
+          captureSlides.disabled = false;
           if (save.disabled) {
             save.disabled = false;
             say('Connection lost. Check Swipe file before retrying.', 'bad', '!');
@@ -108,6 +112,11 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
       col.replaceChildren(option('New collection…', NEW));
       newname.hidden = false;
       say(message.reason, 'bad', '!');
+    } else if (message.t === 'capture_started') {
+      if (message.url !== currentUrl) return;
+      captureSlides.disabled = false;
+      notice.textContent = message.sentence;
+      notice.hidden = false;
     } else if (message.t === 'progress') {
       if (savingUrl === currentUrl) say(`${message.label}…`, '', '◌');
     } else if (message.t === 'result') {
@@ -129,6 +138,10 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
         notice.hidden = !outcome.notice;
         web.href = swipePostWebUrl(outcome.postId, outcome.receipt.organizationId);
         links.hidden = false;
+        captureSlides.hidden =
+          !['instagram', 'linkedin', 'x', 'facebook', 'tiktok'].includes(
+            outcome.receipt.platform,
+          ) || outcome.receipt.coverage?.status === 'complete';
         send({ t: 'list' });
       }
     }
@@ -153,6 +166,18 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
       url: currentUrl,
       collectionId: isNew ? null : col.value,
       ...(isNew ? { newCollectionName: name } : {}),
+    });
+  });
+  captureSlides.addEventListener('click', () => {
+    if (!saved || !currentUrl || captureSlides.disabled) return;
+    captureSlides.disabled = true;
+    notice.textContent = 'Opening browser capture…';
+    notice.hidden = false;
+    send({
+      t: 'capture_slides',
+      postId: saved.postId,
+      organizationId: saved.receipt.organizationId,
+      url: currentUrl,
     });
   });
   $('review').addEventListener('click', () => {

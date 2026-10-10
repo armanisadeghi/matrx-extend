@@ -101,3 +101,50 @@ it('never attaches an earlier post save result to a new SPA page', () => {
   expect(root.querySelector<HTMLElement>('#feedback')!.hidden).toBe(true);
   expect(root.querySelector<HTMLElement>('#links')!.hidden).toBe(true);
 });
+
+it('offers browser capture for unverified media with the saved destination organization', () => {
+  mountSwipePill();
+  const root = document.querySelector('#matrx-swipe-pill')!.shadowRoot!;
+  receive({
+    t: 'collections',
+    collections: [{ id: 'collection', name: 'Inspiration', organization_id: 'saved-org' }],
+    lastId: 'collection',
+  });
+  root.querySelector<HTMLButtonElement>('#save')!.click();
+  receive({
+    t: 'result',
+    outcome: {
+      status: 'saved',
+      postId: 'saved-post',
+      collectionId: 'collection',
+      title: 'Coast',
+      notice: '',
+      receipt: {
+        postId: 'saved-post',
+        organizationId: 'saved-org',
+        platform: 'instagram',
+        capturedAt: '2026-10-10T12:00:00Z',
+        media: [],
+        mediaNotes: [],
+        transcript: { status: 'none', notes: [] },
+        reused: false,
+        coverage: {
+          expected_items: null,
+          observed_items: 1,
+          stored_items: 1,
+          missing_items: null,
+          status: 'unknown',
+        },
+      },
+    },
+  });
+  const capture = root.querySelector<HTMLButtonElement>('#capture-slides')!;
+  expect(capture.hidden).toBe(false);
+  capture.click();
+  expect(posted).toHaveBeenLastCalledWith({
+    t: 'capture_slides',
+    postId: 'saved-post',
+    organizationId: 'saved-org',
+    url: 'https://www.instagram.com/p/captured-post/',
+  });
+});

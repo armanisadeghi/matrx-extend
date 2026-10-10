@@ -22,6 +22,7 @@ export interface GuidedTabJob {
 
 /** What the overlay needs to draw itself. */
 export interface GuidedJobView {
+  url: string;
   handoffId: string;
   title: string;
   platform: string | null;
@@ -36,6 +37,8 @@ export interface GuidedCapturePayload {
   html: string;
   itemCount: number;
   images: { src: string; alt?: string; width?: number; height?: number; post_ref?: string }[];
+  videos?: { src: string; post_ref?: string; poster?: string; mime_type?: string }[];
+  mediaNotes?: string[];
 }
 
 export type GuidedClientMsg =
