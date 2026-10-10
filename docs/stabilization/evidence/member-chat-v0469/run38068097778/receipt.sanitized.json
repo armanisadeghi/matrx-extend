@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": 38068097778,
+  "case_id": "member-chat",
+  "lane": "A",
+  "workflow_source_sha": "df3b1ba5fa5f90e0cf1465e76895c5e6fe2b3738",
+  "release": {
+    "run_id": 38067449240,
+    "release_workflow_head_sha": "f8a23b43450eca6f41e5a76c97cc66ba4e9a7922",
+    "source_sha": "3ec9eda26",
+    "version": "0.2.469",
+    "artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "artifact_digest": "sha256:b8a7ecf06718b690cbededd69a18843baf241f52b1e1f709b35354342e7bfdc6",
+    "unpacked_tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0"
+  },
+  "scope": "Fresh owned Chrome-for-Testing profile; real existing-user magic-link login; native signed-in member Chat",
+  "status": "unverified",
+  "failure_stage": "reviewer_organization_resolve",
+  "failure_code": "unclassified_failure",
+  "account_observations": {
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_check": {
+      "matched_current_extension_user": true,
+      "http_status": 200,
+      "returned_rows": 0
+    },
+    "organization_picker_available": true,
+    "organization_selected_in_settings_ui": true,
+    "device_active_organization_override_present": false
+  },
+  "chat_observed": false,
+  "screenshots": {
+    "available": ["native-side-panel.png", "normal-target-after-open.png"],
+    "scope_note": "The panel screenshot is the initial pre-auth guest state; no post-auth organization screenshot was emitted."
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid"
+    },
+    "acceptance_invalidation": "RESOURCE_CPU_PENDING with RESOURCE_CPU_HIGH_LOAD_BUSY was followed by job exit without recovery."
+  },
+  "product_credit": "none: the acceptance journal is resource-invalid and Chat was not exercised.",
+  "credential_cleanup": {
+    "temporary_github_secret_absent": true,
+    "local_single_use_link_file_absent": true,
+    "credential_values_recorded": false
+  },
+  "prior_setup_attempt": {
+    "run_id": 38067907835,
+    "result": "failed before browser setup because the designated reviewer-link Actions secret was absent; no product or resource admission credit."
+  }
+}

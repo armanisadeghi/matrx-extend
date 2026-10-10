@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "run_id": "38068475194",
+  "feature_id": "EXT-F-2013",
+  "case_id": "EXT-F-2013-T10",
+  "mode": "guest",
+  "status": "bounded-pass",
+  "scope": "Fresh hosted guest profile on the published Store CRX; page-grounded first answer, same-conversation follow-up, and a new conversation after panel reload.",
+  "artifact": {
+    "version": "0.2.205",
+    "source": "Google public update service",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "receipt_kind": "published_store_crx_unpacked",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg"
+  },
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38068475194",
+    "workflow_source_sha": "df3b1ba5fa5f90e0cf1465e76895c5e6fe2b3738",
+    "lane": "B",
+    "runner_label": "macos-15"
+  },
+  "backend_sha": "d5aa71b24ae58cb84e19d80c8e916466ad5d0588",
+  "proven": [
+    "Fresh guest profile had no access token, user profile, or active organization.",
+    "Opening answer completed without sign-in/paywall/error, contained the unpredictable page code, and named the page stages in order.",
+    "Same-conversation follow-up completed with verified conversation identity and the page code.",
+    "After panel reload, a new conversation completed and contained the unpredictable page code.",
+    "Three observed AI requests returned HTTP 200; the first and post-reload requests were new conversations and the middle request reused the conversation fingerprint."
+  ],
+  "resource_finals": {
+    "package": "valid; admitted; resourceInvalid=false; child exit 0",
+    "browser": "valid; admitted; resourceInvalid=false; child exit 0",
+    "acceptance": "valid; admitted; resourceInvalid=false; child exit 0"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-chat-store-current/run38068475194/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-store-current/run38068475194/package-resource.jsonl",
+    "docs/stabilization/evidence/guest-chat-store-current/run38068475194/browser-resource.jsonl",
+    "docs/stabilization/evidence/guest-chat-store-current/run38068475194/acceptance-resource.jsonl"
+  ],
+  "limitations": [
+    "Observer attached after panel load; pre-attachment requests are unobserved.",
+    "This is bounded guest Chat T10 evidence, not broad Chat coverage."
+  ]
+}

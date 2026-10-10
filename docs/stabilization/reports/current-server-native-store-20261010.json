@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2013-T10",
+  "observation": "native Store-installed public guest Chat against newly deployed live server",
+  "observed_at_utc": "2026-10-10T16:40:24Z",
+  "extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "version": "0.2.205",
+    "surface": "Chrome Web Store-installed side panel in Arman (armansadeghi.com) Chrome profile",
+    "guest_state": "guest banner and Sign in/Sign up shown; no extension sign-in"
+  },
+  "server_sha_before_after": "d5aa71b24ae58cb84e19d80c8e916466ad5d0588",
+  "target_page": "https://www.aimatrx.com/matrx-extend-demo",
+  "opening": {
+    "prompt": "On this page, list the three workflow stages in order and identify which one produces structured rows.",
+    "result": "pass",
+    "observed_reply": "The assistant described Capture, Understand, Use in order and identified Use as producing structured rows that can be copied or reused. The Send control returned after the reply."
+  },
+  "same_conversation_followup": {
+    "prompt": "In that workflow, what does Understand do, and how is it different from Use?",
+    "result": "pass",
+    "observed_reply": "In the same visible conversation, the assistant distinguished Understand as page-grounded answers from Use as reusable structured data. The Send control returned after the reply."
+  },
+  "resource_journal": "docs/stabilization/resource-journals/oct10-store-current-server.jsonl",
+  "resource_final": {
+    "admitted": true,
+    "resource_invalid": false,
+    "decision": "valid"
+  },
+  "limits": [
+    "The Chrome profile retained a website account session, while the Store extension itself displayed guest state; this is not a clean-profile Store-install test.",
+    "This covers only the opening and same-conversation follow-up on one public demo page; it does not establish broad guest or product health.",
+    "The clean hosted Store-CRX check against this server deployment is separate and passed in run 38068475194."
+  ]
+}

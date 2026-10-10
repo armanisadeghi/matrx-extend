@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "report_id": "guest-settings-downstream-blocker-20261010",
+  "status": "blocked_on_test_artifact",
+  "lane": "hosted-guest-settings-A",
+  "feature_id": "EXT-F-1003",
+  "case_id": "EXT-F-1003-T34",
+  "control_id": "EXT-F-1003-C12",
+  "behavior": "Guest Settings password-suggestion preference changes the on-page suggestion consumer between on_page and quiet.",
+  "selection_reason": "T34 is explicitly preferred by the guest Settings inventory as downstream behavior still unverified. Existing evidence already covers its Settings switch, stored value, panel reload and restoration, so repeating settings-controls would add no new behavior evidence.",
+  "source_readiness": {
+    "current_source_sha": "f8a23b43450eca6f41e5a76c97cc66ba4e9a7922",
+    "current_main_ci_run_id": 38067311412,
+    "current_main_ci_status_at_review": "in_progress",
+    "existing_verified_frozen_artifact": {
+      "ci_run_id": 38036029832,
+      "artifact_id": 11664077690,
+      "version": "0.2.459",
+      "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+      "digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+      "eligible_and_unexpired": true
+    },
+    "existing_runner_gap": "tests/browser/settings-local-controls-acceptance.mjs explicitly records the T34 downstream consumer criterion as unverified; no downstream browser fixture is exercised. Its existing T34 checks already verify UI/storage values through panel-document reload and restore the original value."
+  },
+  "admission": {
+    "hosted_active_run_snapshot": "At review, no hosted guest acceptance workflow was active. Hosted release 38067449240 and CI 38067311412 were in progress on separate GitHub-hosted jobs.",
+    "lane_assignment": "Lane A assigned by the parent coordinator; guest-only case needs no member/admin credentials or mutable shared backend fixture. Scrape lane B was separately assigned and notified.",
+    "product_browser_launched": false,
+    "resource_guard": "The hosted workflow's own guarded admission must run for the eventual browser job. A local resource preflight was attempted with a nonexistent scratch profile, refused before admission, and launched no workload; its pending local diagnostic journal was discarded as an invalid setup attempt."
+  },
+  "dispatch_inputs_after_harness_artifact_exists": {
+    "workflow": "hosted-guest-acceptance.yml",
+    "ref": "main",
+    "acceptance_lane": "A",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "settings-controls",
+    "development_run_id": "the successful CI main-push run that produced the new tested artifact",
+    "development_artifact_id": "the exact unexpired artifact ID from that run",
+    "reason_current_case_must_not_be_launched_yet": "The current acceptance_case has no downstream T34 assertion. Dispatching it against the existing artifact would only repeat already-verified Settings persistence and leave the requested behavior unobserved."
+  },
+  "required_harness_acceptance": [
+    "On a controlled sign-in-form fixture with no credential values entered or submitted, verify T34 quiet state does not render the on-page suggestion surface.",
+    "Switch T34 to on_page through the actual guest Settings UI and verify the supported downstream presentation changes on the controlled fixture.",
+    "Switch back to quiet and verify the presentation is removed; reload the extension and verify the preference and downstream presentation remain aligned.",
+    "Restore the original preference, record explicit baseline/final values, and keep receipts free of form values, page text, credentials, tokens and raw errors."
+  ],
+  "verification": {
+    "result": "No new product behavior was tested; the existing hosted driver cannot execute this consumer path.",
+    "existing_evidence": [
+      "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+      "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json",
+      "docs/stabilization/reports/peer-review-d186-reload-20261010.json"
+    ],
+    "inventory_truth": "EXT-F-1003-T34 guest remains partial; downstream on-page consumer behavior remains unverified."
+  },
+  "files_touched": [
+    "docs/stabilization/reports/guest-settings-downstream-blocker-20261010.json"
+  ],
+  "open_questions": [
+    "A reviewed hosted acceptance-driver extension and a successful CI artifact containing it are required before Lane A can produce T34 downstream evidence."
+  ],
+  "next_action": "Once the downstream T34 assertion is present in a successful main CI artifact, dispatch Lane A with that exact CI run and artifact ID; wait for resource-valid journals and sanitized evidence, then obtain independent review before changing inventory status."
+}

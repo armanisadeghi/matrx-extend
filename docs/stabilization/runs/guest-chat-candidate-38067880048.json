@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "run_id": "38067880048",
+  "feature_id": "EXT-F-2013",
+  "case_id": "EXT-F-2013-T10",
+  "mode": "guest",
+  "status": "bounded-pass",
+  "scope": "Fresh hosted guest; public-page fixture; first terminal Chat reply, same-conversation follow-up, and a new conversation after panel reload.",
+  "artifact": {
+    "version": "0.2.469",
+    "source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "hosted_release_run_id": 38067449240,
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38067880048",
+    "workflow_source_sha": "f8a23b43450eca6f41e5a76c97cc66ba4e9a7922",
+    "lane": "B",
+    "runner_label": "macos-15"
+  },
+  "backend_sha": "d5aa71b24ae58cb84e19d80c8e916466ad5d0588",
+  "proven": [
+    "Fresh guest profile had no access token, user profile, or active organization.",
+    "Opening answer completed without sign-in/paywall/error, contained the unpredictable page code, and named the page stages in order.",
+    "Same-conversation follow-up completed with verified conversation identity and the page code.",
+    "After panel reload, a new conversation completed and contained the unpredictable page code.",
+    "Three observed AI requests returned HTTP 200; the first and post-reload requests were new conversations and the middle request reused the conversation fingerprint."
+  ],
+  "resource_finals": {
+    "package": "valid; admitted; resourceInvalid=false; child exit 0",
+    "browser": "valid; admitted; resourceInvalid=false; child exit 0",
+    "acceptance": "valid; admitted; resourceInvalid=false; child exit 0"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-chat-candidate/run38067880048/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-candidate/run38067880048/package-resource.jsonl",
+    "docs/stabilization/evidence/guest-chat-candidate/run38067880048/browser-resource.jsonl",
+    "docs/stabilization/evidence/guest-chat-candidate/run38067880048/acceptance-resource.jsonl"
+  ],
+  "limitations": [
+    "Observer attached after panel load; pre-attachment requests are unobserved.",
+    "Hosted release-candidate result does not prove published Store CRX behavior or broad Chat coverage."
+  ]
+}

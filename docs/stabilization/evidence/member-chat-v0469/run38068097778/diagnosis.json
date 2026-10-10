@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "run_id": 38068097778,
+  "verdict": "harness_false_negative_confirmed; product behavior remains unverified",
+  "observed_failure": "The reviewer runner stopped at reviewer_organization_resolve before opening Chat. Its assertion requires storageShape.activeOrganizationPresent to be true.",
+  "evidence": {
+    "sanitized_runner_report": "The run artifact records web_signed_in=true, extension_signed_in=true, organizationSelected=true, organizationPickerAvailable=true, and activeOrganizationPresent=false. It also records the canonical extension admin check as HTTP 200 with zero rows.",
+    "runner_assertion": "tests/browser/reviewer-chat-store-acceptance.mjs checks activeOrganizationPresent immediately after collecting the account and organization UI observations.",
+    "product_contract": "src/lib/org/active-org.ts documents that fallback choices from account-last-active, start-up, or first-membership rungs are held in memory and are not written back as the device choice. Only a deliberate switch writes matrx.org.active.",
+    "capture_limit": "The only panel screenshot is the initial pre-auth guest state. The runner did not emit a screenshot or raw DOM after organization resolution."
+  },
+  "interpretation": "The selected organization and absent device override can coexist by design under the load ladder. This run shows a stale runner prerequisite, not evidence that the product failed to initialize an organization. The browser run nevertheless has an invalid acceptance resource final, so it earns no product credit.",
+  "remaining_evidence_needed": "After the runner assertion is corrected and reviewed, rerun the exact release artifact. Continue into native Chat and verify the real server response/request organization boundary; do not infer that from the Settings label or in-memory state alone.",
+  "credential_cleanup": "The single-use GitHub Actions link secret and local link file were removed after the run; name-only checks confirmed the secret is absent. No credential value is retained."
+}

@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "run_id": "38068475194",
+  "feature_id": "EXT-F-2013",
+  "case_id": "EXT-F-2013-T10",
+  "scope": "Fresh hosted guest profile using the published Store CRX; controlled page fixture; opening answer, same-conversation follow-up, and a new conversation after reload.",
+  "status": "pass",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38068475194",
+    "workflow_source_sha": "df3b1ba5fa5f90e0cf1465e76895c5e6fe2b3738",
+    "lane": "B",
+    "runner_label": "macos-15"
+  },
+  "artifact": {
+    "source": "Google public update service",
+    "version": "0.2.205",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "receipt_kind": "published_store_crx_unpacked",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "artifact_unchanged": true
+  },
+  "backend": {
+    "reachable_before_and_after": true,
+    "http_status": 200,
+    "git_sha_before_and_after": "d5aa71b24ae58cb84e19d80c8e916466ad5d0588"
+  },
+  "fresh_guest": {
+    "profile_fresh": true,
+    "chat_visible": true,
+    "access_token_absent": true,
+    "user_profile_absent": true,
+    "organization_absent": true
+  },
+  "opening_answer": {
+    "terminal": true,
+    "unpredictable_page_code_present": true,
+    "page_stages_named_in_order": true,
+    "login_paywall_or_error": false
+  },
+  "same_conversation_followup": {
+    "terminal": true,
+    "same_conversation_identity_verified": true,
+    "unpredictable_page_code_present": true,
+    "reply_count": 3
+  },
+  "post_reload_new_conversation": {
+    "terminal": true,
+    "unpredictable_page_code_present": true,
+    "conversation_identity_changed": true
+  },
+  "observed_ai_requests": [
+    {
+      "attempt": "opening",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "c32c59404ff3d077"
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "http_status": 200,
+      "is_new": false,
+      "conversation_fingerprint": "c32c59404ff3d077"
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "4bd6f6d5540a2972"
+    }
+  ],
+  "resource_finals": {
+    "package": "valid; admitted; resourceInvalid=false; child exit 0",
+    "browser": "valid; admitted; resourceInvalid=false; child exit 0",
+    "acceptance": "valid; admitted; resourceInvalid=false; child exit 0"
+  },
+  "limitations": [
+    "The CDP observer attached after panel load; requests before attachment are outside this run's observation.",
+    "This is a bounded Chat case result, not broad Chat coverage or a Store release health claim."
+  ],
+  "resource_evidence": [
+    "package-resource.jsonl",
+    "browser-resource.jsonl",
+    "acceptance-resource.jsonl"
+  ]
+}

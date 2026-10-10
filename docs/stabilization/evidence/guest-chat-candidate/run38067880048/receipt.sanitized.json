@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "run_id": "38067880048",
+  "feature_id": "EXT-F-2013",
+  "case_id": "EXT-F-2013-T10",
+  "scope": "fresh hosted guest profile; controlled unpredictable page fixture; opening Chat answer, same-conversation follow-up, and post-reload follow-up",
+  "status": "pass",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38067880048",
+    "workflow_source_sha": "f8a23b43450eca6f41e5a76c97cc66ba4e9a7922",
+    "lane": "B",
+    "runner_label": "macos-15"
+  },
+  "artifact": {
+    "source": "validated Hosted release run 38067449240",
+    "version": "0.2.469",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_unchanged": true
+  },
+  "backend": {
+    "reachable_before_and_after": true,
+    "http_status": 200,
+    "git_sha_before_and_after": "d5aa71b24ae58cb84e19d80c8e916466ad5d0588"
+  },
+  "fresh_guest": {
+    "profile_fresh": true,
+    "chat_visible": true,
+    "access_token_absent": true,
+    "user_profile_absent": true,
+    "organization_absent": true
+  },
+  "opening_answer": {
+    "terminal": true,
+    "unpredictable_page_code_present": true,
+    "page_stages_named_in_order": true,
+    "login_paywall_or_error": false
+  },
+  "same_conversation_followup": {
+    "terminal": true,
+    "same_conversation_identity_verified": true,
+    "unpredictable_page_code_present": true,
+    "reply_count": 3
+  },
+  "post_reload_new_conversation": {
+    "terminal": true,
+    "unpredictable_page_code_present": true,
+    "conversation_identity_changed": true
+  },
+  "observed_ai_requests": [
+    {
+      "attempt": "opening",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "641f2083b2868e57"
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "http_status": 200,
+      "is_new": false,
+      "conversation_fingerprint": "641f2083b2868e57"
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "http_status": 200,
+      "is_new": true,
+      "conversation_fingerprint": "35b36440637632b9"
+    }
+  ],
+  "resource_finals": {
+    "package": "valid; admitted; resourceInvalid=false; child exit 0",
+    "browser": "valid; admitted; resourceInvalid=false; child exit 0",
+    "acceptance": "valid; admitted; resourceInvalid=false; child exit 0"
+  },
+  "limits": [
+    "The CDP observer attached after panel load; requests before attachment are outside this run's observation.",
+    "This is a bounded hosted release-candidate result, not verification of the published Store CRX or broad Chat coverage."
+  ],
+  "resource_evidence": [
+    "package-resource.jsonl",
+    "browser-resource.jsonl",
+    "acceptance-resource.jsonl"
+  ]
+}
