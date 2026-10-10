@@ -83,7 +83,9 @@ for (const focused of [false, true]) {
     const trustedType = factory(assert, evaluate, { platform: 'darwin' });
     const evidence = {};
     await assert.rejects(trustedType(panel, 'input', 'Northline saved source', evidence), {
-      message: focused ? /^scrape_save_input_selection_missing/ : /^scrape_save_input_focus_missing/,
+      message: focused
+        ? /^scrape_save_input_selection_missing/
+        : /^scrape_save_input_focus_missing/,
     });
     assert.equal(inserts, 0);
     assert.equal(evidence.before_insert.focused, focused);
