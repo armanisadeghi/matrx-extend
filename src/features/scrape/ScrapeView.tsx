@@ -877,6 +877,7 @@ export function ScrapeView() {
         <SaveSourceForm
           key={current.url}
           initialName={captureName(current)}
+          sourceUrl={current.url}
           organizationId={activeOrganizationId}
           saving={saving}
           error={saveError}

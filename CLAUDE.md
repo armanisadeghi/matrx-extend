@@ -51,11 +51,12 @@ Arman plus dozens of agents edit this checkout simultaneously; `origin/main` is 
 point. Commit and push as you go; never run tree-wide destructive git; never request your own
 branch/worktree. Full ruling: workspace root [`../CLAUDE.md`](../CLAUDE.md) § Shared checkout.
 
-**Release: you run it.** This repo is NOT on the twice-hourly release train (only `aidream` and
-`ai-matrx` are). Whoever works here releases their own work: when your change is verified,
-run `./release.sh` from `origin/main` before you finish — do not leave it for "the release
-agent"; there is none for this repo. Expected cadence is about one release a day. A daily
-scheduled sweep only catches what a session forgot; it is a safety net, not the plan.
+**Release: you own it.** This repo is NOT on the twice-hourly release train. Once verified,
+release from synchronized `origin/main` through the authorized path; do not leave it for a
+release agent. On this Mac, the workspace root prohibits manual local build/release commands:
+dispatch and verify the guarded hosted `.github/workflows/release.yml` instead of running
+`./release.sh` here. Where local release is allowed, `./release.sh` remains the path. Expected
+cadence is about one release a day; the daily sweep is only a safety net.
 
 ## Platform laws (one-liners — the rule bodies live at the links)
 

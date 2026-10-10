@@ -18,6 +18,7 @@ import { installWebLocksForTest } from '../helpers/web-locks';
 const mocks = vi.hoisted(() => ({
   apiPost: vi.fn(),
   saveSeoAudit: vi.fn(),
+  createEntityRow: vi.fn(),
   requireOrg: vi.fn(),
   organizationId: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f',
 }));
@@ -65,37 +66,23 @@ vi.mock('@/lib/supabase/queries', () => ({ saveSeoAudit: mocks.saveSeoAudit }));
 vi.mock('@/lib/sources/associations-store', () => ({ getAssociationsStore: () => ({}) }));
 vi.mock('@ai-matrx/associations/react', () => ({
   AssociationsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  attachedKey: (token: string, id: string) => `${token}:${id}`,
-  AssociationCandidateBody: ({
-    onAttach,
-    token,
-  }: {
-    onAttach: (id: string, title: string) => Promise<unknown>;
-    token: string;
-  }) => (
-    <button
-      type="button"
-      data-token={token}
-      onClick={() => void onAttach('project-1', 'Launch plan')}
-    >
-      Pick Launch plan
-    </button>
-  ),
-  UniversalAssociationPicker: ({
-    onAttach,
-    tokens,
-  }: {
-    onAttach: (token: string, id: string, title: string) => Promise<unknown>;
-    tokens: string[];
-  }) => (
-    <button
-      type="button"
-      data-tokens={tokens.join(',')}
-      onClick={() => void onAttach('project', 'project-1', 'Launch plan')}
-    >
-      Pick Launch plan
-    </button>
-  ),
+  useAssociationCandidates: ({ enabled }: { enabled: boolean }) => ({
+    candidates: enabled ? [{ id: 'project-1', title: 'Launch plan' }] : [],
+    loading: false,
+    error: null,
+    reload: () => undefined,
+  }),
+  useAssociationsStore: () => ({
+    registry: {
+      getEntityInfo: () => ({ label: 'Project', titleColumn: 'name', listCandidates: null }),
+    },
+    entityRows: { createEntityRow: mocks.createEntityRow },
+  }),
+  useUniversalEntitySearch: ({ enabled }: { enabled: boolean }) => ({
+    results: enabled ? [{ token: 'project', id: 'project-1', title: 'Launch plan' }] : [],
+    loading: false,
+    error: null,
+  }),
 }));
 vi.mock('@/hooks/use-active-tab', () => ({
   useActiveTab: () => ({
@@ -179,6 +166,7 @@ const listeners = new Set<Listener>();
 
 beforeEach(async () => {
   mocks.apiPost.mockReset();
+  mocks.createEntityRow.mockReset();
   mocks.saveSeoAudit.mockReset().mockResolvedValue({ id: 'audit-1' });
   mocks.requireOrg.mockReset().mockImplementation(async () => mocks.organizationId);
   useAuthStore.setState({ user: { id: '87a6e699-3622-4869-8843-d0867456c0dd' } as never });
@@ -289,7 +277,7 @@ describe('Save never loses input', () => {
         expect((screen.getByLabelText('Source name') as HTMLInputElement).value).toBe(draftName);
         fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
         fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
-        fireEvent.click(screen.getByRole('button', { name: 'Pick Launch plan' }));
+        fireEvent.click(screen.getByRole('button', { name: 'Launch plan' }));
         fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
         await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
         expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({
@@ -314,8 +302,10 @@ describe('Save never loses input', () => {
     });
     fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
     fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Pick Launch plan' }));
-    expect(screen.getByText('Launch plan')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Launch plan' }));
+    expect(screen.getByRole('button', { name: 'Launch plan' }).getAttribute('aria-pressed')).toBe(
+      'true',
+    );
 
     await switchWorkspace(OTHER_ORGANIZATION_ID);
 
@@ -383,6 +373,11 @@ describe('Save never loses input', () => {
     render(<ScrapeView />);
     fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
     expect(((await screen.findByLabelText('Source name')) as HTMLInputElement).value).toBe('Guide');
+    expect(
+      screen
+        .getByRole('dialog', { name: 'Save Source' })
+        .querySelector('[title="https://docs.example.com/guide"]'),
+    ).toBeTruthy();
     expect(mocks.apiPost).not.toHaveBeenCalled();
     expect(screen.queryByRole('button', { name: 'Projects' })).toBeNull();
     fireEvent.change(screen.getByLabelText('Source name'), { target: { value: 'My research' } });
@@ -398,18 +393,46 @@ describe('Save never loses input', () => {
     render(<ScrapeView />);
     fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
     await screen.findByLabelText('Source name');
-    expect(screen.queryByRole('button', { name: 'Pick Launch plan' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Launch plan' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
-    expect(screen.queryByRole('button', { name: 'Pick Launch plan' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Launch plan' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
-    const picker = screen.getByRole('button', { name: 'Pick Launch plan' });
-    expect(picker.getAttribute('data-token')).toBe('project');
+    const picker = screen.getByRole('button', { name: 'Launch plan' });
     fireEvent.click(picker);
-    expect(screen.getByText('Launch plan')).toBeTruthy();
+    expect(picker.getAttribute('aria-pressed')).toBe('true');
     fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
     await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
     expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({
       attach_to: [{ entity_type: 'project', entity_id: 'project-1' }],
+    });
+  });
+
+  it('creates a project from the compact place list and includes it in Save', async () => {
+    mocks.apiPost.mockResolvedValue(landedResponse);
+    mocks.createEntityRow.mockResolvedValue({
+      ok: true,
+      data: { id: 'project-2', title: 'New project' },
+    });
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await screen.findByLabelText('Source name');
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create new project' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'New Project name' }), {
+      target: { value: 'New project' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+    await waitFor(() =>
+      expect(mocks.createEntityRow).toHaveBeenCalledWith('project', {
+        title: 'New project',
+        orgId: mocks.organizationId,
+      }),
+    );
+    fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+    expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({
+      attach_to: [{ entity_type: 'project', entity_id: 'project-2' }],
     });
   });
 

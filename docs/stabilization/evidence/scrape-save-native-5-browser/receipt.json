@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_id": "scrape-save-native-5-browser",
+  "defect_id": "EXT-D-0187",
+  "status": "partial-native-substeps",
+  "build": {
+    "version": "0.2.457",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "source_sha": "7cf16860846756eb0f50cd6d2595b4d7529dda05",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "chrome_version": "154.0.8037.98",
+    "reloaded": true
+  },
+  "mode": "member",
+  "resource_journals": [
+    "docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl",
+    "docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl",
+    "docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl"
+  ],
+  "resource_decisions": {
+    "preflight_root2": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "preflight2": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "browser": "valid; admitted=true; resourceInvalid=false; exitCode=0; clean stop at 2026-10-10T01:27:29.185Z"
+  },
+  "verified_substeps": [
+    "Exact installed development extension identity was observed after reload: version 0.2.457, extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, source SHA 7cf16860846756eb0f50cd6d2595b4d7529dda05.",
+    "Saved named Source 5f25b273-3f3b-4708-808b-b7a290c688cf as \u201cEXT-D-0187 Native Save 5 2026-10-10\u201d; reopened its web-app Source page and observed Saved state, Example Domain heading, full source URL, and captured content.",
+    "Reopened Project 4484ab9c-bb04-4adc-a894-df2e9f18960f Attach sources inspection panel; it listed EXT-D-0187 Native Save 5 2026-10-10 linked to Source 5f25b273-3f3b-4708-808b-b7a290c688cf, alongside the prior fixture Source. This confirms the persisted Source-to-Project association."
+  ],
+  "unverified_or_out_of_scope": [
+    "The Save Source dialog did not display the URL separately; it was visible in the Scrape panel before opening the dialog and in the browser address bar.",
+    "Project-list scrolling remains unverified: the attempted scroll produced no accessibility-state change; selecting the project does not prove scroll behavior.",
+    "Tab/Shift+Tab focus containment and wrap remain unverified; Tab moved to the next Project row, and Shift+Tab wrap was not checked.",
+    "Duplicate-save behavior, no-destination save, refusal/retry, multi-target/Library paths, guest/admin roles, and Save Source UI changes committed in 3e3c2770c remain unverified on a current exact artifact."
+  ],
+  "source": {
+    "id": "5f25b273-3f3b-4708-808b-b7a290c688cf",
+    "name": "EXT-D-0187 Native Save 5 2026-10-10",
+    "url": "https://example.com/?matrx-ext-d-0187-native-5=20261010T0127Z"
+  },
+  "project": {
+    "id": "4484ab9c-bb04-4adc-a894-df2e9f18960f",
+    "name": "EXT-D-0187 TEST PROJECT \u2014 native retest"
+  },
+  "product_acceptance": "confirmed substeps only; EXT-D-0187 remains in-fix",
+  "cleanup": "No cleanup performed; dedicated test Source was authorized to remain."
+}

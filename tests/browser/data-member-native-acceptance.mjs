@@ -82,16 +82,30 @@ async function dataState(panel, name) {
   );
 }
 
-async function extractedRows(panel) {
+async function extractionState(panel) {
   return evaluate(
     panel,
     `(() => {
       const root = ${activeTabPanelExpression('Data')};
-      const hasExtractedRows = [...(root?.querySelectorAll('div') ?? [])]
-        .some((node) => node.firstElementChild?.textContent?.trim().startsWith('Extracted rows ('));
-      const pre = hasExtractedRows ? root?.querySelector('pre') : null;
-      if (!pre) return null;
-      try { return JSON.parse(pre.textContent ?? ''); } catch { return null; }
+      if (!root) return { active: false, sectionVisible: false, parseable: false, rows: null };
+      const label = [...root.querySelectorAll('div')]
+        .find((node) => node.firstElementChild?.textContent?.trim().startsWith('Extracted rows ('));
+      const pre = label ? root.querySelector('pre') : null;
+      let rows = null;
+      try { if (pre) rows = JSON.parse(pre.textContent ?? ''); } catch { /* safe diagnostic below */ }
+      const alerts = [...root.querySelectorAll('div')]
+        .filter((node) => node.className.includes('text-destructive'));
+      const info = [...root.querySelectorAll('div')]
+        .filter((node) => node.className.includes('text-muted-foreground'));
+      return {
+        active: true,
+        sectionVisible: Boolean(label),
+        parseable: Array.isArray(rows),
+        rows,
+        errorVisible: alerts.length > 0,
+        outcomeVisible: info.length > 0,
+        running: [...root.querySelectorAll('button')].some((button) => button.title === 'Run pattern' && button.disabled),
+      };
     })()`,
   );
 }
@@ -408,18 +422,27 @@ try {
         assert.equal(saved.savedPatternVisible, true, 'data_member_saved_row_not_refreshed');
         report.observations.saved_pattern_refreshed = true;
 
-        const expectedRows = [
-          { field_1: 'Cedar chair', field_2: '$189' },
-          { field_1: 'Walnut desk', field_2: '$429' },
-          { field_1: 'Linen lamp', field_2: '$74' },
-        ];
+        // A manual-css pattern without a list root queries each field once
+        // against the document, so the real product contract is one first-match row.
+        const expectedRows = [{ field_1: 'Cedar chair', field_2: '$189' }];
         const runAndCopy = async (phase) => {
           await click(panel, 'title', 'Run pattern');
-          const rows = await waitFor(
+          const state = await waitFor(
             `data_member_saved_pattern_rows_${phase}`,
-            () => extractedRows(panel),
-            (value) => Array.isArray(value) && value.length === expectedRows.length,
+            () => extractionState(panel),
+            (value) => value?.parseable === true && value.rows?.length === expectedRows.length,
+            10000,
+            (value) => ({
+              active_data_panel: value?.active === true,
+              extracted_rows_section_visible: value?.sectionVisible === true,
+              extracted_rows_json_parseable: value?.parseable === true,
+              extracted_row_count: Array.isArray(value?.rows) ? value.rows.length : null,
+              error_visible: value?.errorVisible === true,
+              outcome_visible: value?.outcomeVisible === true,
+              run_button_disabled: value?.running === true,
+            }),
           );
+          const rows = state.rows;
           assert.deepEqual(rows, expectedRows, `data_member_saved_pattern_rows_mismatch_${phase}`);
           report.observations[`saved_pattern_run_${phase}`] = true;
 
@@ -431,7 +454,7 @@ try {
           );
           assert.equal(
             tsv,
-            'field_1\tfield_2\nCedar chair\t$189\nWalnut desk\t$429\nLinen lamp\t$74',
+            'field_1\tfield_2\nCedar chair\t$189',
             `data_member_tsv_copy_mismatch_${phase}`,
           );
           const json = await copyRows(panel, native.browserSession, native.panelTarget, 'JSON');
@@ -447,10 +470,8 @@ try {
             'For AI agent',
           );
           assert.match(ai, /structured data extracted from a webpage using a saved pattern/);
-          assert.match(ai, /Row count: 3/);
+          assert.match(ai, /Row count: 1/);
           assert.match(ai, /Cedar chair/);
-          assert.match(ai, /Walnut desk/);
-          assert.match(ai, /Linen lamp/);
           report.observations[`clipboard_${phase}`] = {
             tsv_matches_fixture: true,
             json_matches_fixture: true,
