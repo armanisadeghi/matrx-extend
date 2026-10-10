@@ -26,7 +26,8 @@
   "current_server_followup": {
     "server_sha": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
     "published_public_crx_result": "three terminal guest Chat turns passed in clean hosted unpacked public CRX run 38083217313; not Store-installed proof",
-    "candidate_result": "run 38084047241 resource-invalid before assistant result; guarded retry 38084666691 running; compatibility unverified"
+    "candidate_result": "guarded retry 38084666691 independently passed three terminal guest Chat replies, first/same-conversation/postreload, each HTTP 200, against stable server 908045a2d1c74364e9a59cf47fb69cd39de141e0; all resource finals valid; first attempt 38084047241 remains zero-credit resource-invalid",
+    "candidate_independent_review": "docs/stabilization/reports/guest-chat-v0479-current-server-independent-review-38084666691.json"
   },
-  "next_action": "Preserve pending review; monitor dashboard and candidate current-server retry, then test actual Store-installed version after publication."
+  "next_action": "Preserve pending review; monitor dashboard and test actual Store-installed v0.2.479 after publication. Continue unresolved Settings, Scrape, Data, SEO and other mode coverage."
 }
