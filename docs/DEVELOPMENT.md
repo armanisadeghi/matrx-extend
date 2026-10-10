@@ -67,6 +67,10 @@ local development install, with no Store publication claim. After promotion,
 reload the extension in Chrome and confirm **Loaded from** and version there.
 Use this path after each main sync that has a verified imported CI artifact;
 do not run a manual build or release to refresh this Mac's unpacked copy.
+The active hourly Matrx repository-sync automation repeats this import,
+promotion, resource-guarded Chrome reload, and pin check on Arman's Mac. If CI
+has not produced an artifact for the current source, record that SHA gap and
+retry after CI; the displayed version alone cannot prove freshness.
 
 `pnpm dev` uses that directory for temporary HMR output. A successful `release.sh`
 replaces the complete trees in both `.output/chrome-mv3-dev/` and
