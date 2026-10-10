@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "run_id": 38085419850,
+  "finals": {
+    "hosted-package-38085419850-1": {
+      "journal_sha256": "f255fd8ffd224587dcc6aaa303b1771cd497e78a69ae414ce954959ceeff74b2",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "hosted-browser-38085419850-1": {
+      "journal_sha256": "db3859fc17e7b26540136e522f6159da0a67e19d3114114aeaeb456a3c1ca67e",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "hosted-guest-38085419850-1": {
+      "journal_sha256": "803bec0eeee28ed200ceebd40fc0be701fcf96436458d79aa93f78ab916f8887",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    }
+  },
+  "watch_observation": "The guest wrapper saw a transient RESOURCE_CPU_HIGH_LOAD_BUSY at 0.74 CPU busy and one-minute load 2.61 on 3 logical CPUs. The watchdog reported recovery and finalized valid; this did not invalidate the run."
+}

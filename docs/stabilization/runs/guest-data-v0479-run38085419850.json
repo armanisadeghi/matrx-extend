@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-2005",
+  "scope": "Guarded hosted native guest Data acceptance on exact v0.2.479 Store ZIP candidate; bounded EXT-F-2005-T01.",
+  "acceptance_run_id": 38085419850,
+  "acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38085419850",
+  "workflow_source_sha": "84d858e213a45a02111f1d3dff4e5362eb382afe",
+  "workflow_conclusion": "success",
+  "workflow_lane": "A",
+  "runner": "macos-15 / ARM64",
+  "release_run_id": 38080281242,
+  "release_artifact_id": 11680078743,
+  "release_artifact_name": "matrx-extend-v0.2.479",
+  "release_artifact_sha256": "c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+  "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "release_tree_sha256": "c1f031c444892d84422ffa4e4c6c4edbbaf49ca9b93ef64304c69c0fd3c292e8",
+  "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+  "hosted_artifact_id": 11682586572,
+  "hosted_artifact_sha256": "599bc1fbd2a9ea13ee00502c13f999f8d9a33160400a5f1ab47991b765ccfa08",
+  "artifact_loading": "Candidate-key adapted and loaded unpacked; no Store-installed claim.",
+  "native_result": "pass_bounded",
+  "case_results": {
+    "EXT-F-2005-T01": {
+      "guest": "pass_bounded",
+      "observations": [
+        "Empty picker Cancel dismissed the picker, preserved the selected fields, and made zero pattern writes.",
+        "Distinct product-name and price previews (Cedar chair and $429) and two selected fields were observed on the controlled three-card page.",
+        "Guest pattern-name and Save pattern controls were absent; Sign in to save was present and used.",
+        "No pattern write request occurred before authentication."
+      ]
+    }
+  },
+  "resource_finals": "Package, browser, and guest decisions valid; admitted=true, resourceInvalid=false, exitCode=0 for all three.",
+  "cleanup": "Native harness success path closed its local server, stopped its owned Chromium child, and removed the temporary profile root. Hosted job completed successfully.",
+  "comparison": "Reconfirms the same bounded T01 behavior already observed on v0.2.471, v0.2.473, and v0.2.474; adds exact v0.2.479 package evidence, not a distinct Data behavior class or broader Data coverage.",
+  "limits": [
+    "No signed-in pattern save or persistence, other Data cases, or member/admin behavior was tested.",
+    "Screenshots show setup, not Data interaction; native assertions are the behavior evidence.",
+    "Candidate-key adaptation and unpacked loading do not establish Store-installed behavior.",
+    "This exact v0.2.479 run is not exact-latest acceptance; later package versions exist."
+  ],
+  "evidence": "docs/stabilization/evidence/guest-data-v0479/run38085419850/"
+}
