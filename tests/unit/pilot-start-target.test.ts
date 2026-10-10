@@ -38,6 +38,7 @@ describe('Pilot start target routing', () => {
     transport.send.mockClear();
     Object.assign(chrome, {
       tabs: { query: async () => [] },
+      permissions: { getAll: async () => ({ permissions: ['debugger'] }) },
       runtime: { id: 'harbor-dental-extension', getManifest: () => ({ version: '0.2.1' }) },
     });
     useSettingsStore.setState({ modelOverrideId: null });
@@ -65,7 +66,12 @@ describe('Pilot start target routing', () => {
       const envelope = transport.send.mock.calls[0]?.[1];
       if (!envelope) throw new Error('Pilot start transport was not called');
       expect(envelope.endpoint).toBe(`/v2/ai/mandates/${target.slice('mandate:'.length)}`);
-      expect(envelope.body).toMatchObject({ is_new: true, store: true, initiation: 'user' });
+      expect(envelope.body).toMatchObject({
+        is_new: true,
+        store: true,
+        initiation: 'user',
+        client: { surface: 'chrome-extension/pilot' },
+      });
       expect(envelope.body.conversation_id).toBe(
         usePilotChatStore.getState().selectedConversationId,
       );
@@ -93,6 +99,7 @@ describe('Pilot start target routing', () => {
         conversation_id: conversation,
         is_new: false,
         store: true,
+        client: { surface: 'chrome-extension/pilot' },
       });
       expect(envelope.assignedTabId).toBe(73);
     },

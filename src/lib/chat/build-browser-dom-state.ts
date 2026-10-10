@@ -127,6 +127,7 @@ async function queryActiveTab(): Promise<{
 export async function listGrantedBrowserPermissions(): Promise<string[]> {
   // Discovery compares tool requirements against this field. Required manifest
   // permissions (notably debugger) must be included alongside optional grants.
+  if (typeof chrome.permissions?.getAll !== 'function') return [];
   const held = await chrome.permissions.getAll();
   return [...new Set(held.permissions ?? [])];
 }
