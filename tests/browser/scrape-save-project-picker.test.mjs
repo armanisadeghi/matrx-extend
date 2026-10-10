@@ -15,6 +15,7 @@ const observeCandidate = new AsyncFunction(
   'evaluate',
   'panel',
   'report',
+  'projectFixture',
   `${source.slice(start, end)} return candidate;`,
 );
 
@@ -33,6 +34,7 @@ async function observe(contents) {
       async (_panel, expression) => window.eval(expression),
       {},
       report,
+      { name: 'Northline intake project' },
     );
     return { candidate, report };
   } finally {
@@ -52,4 +54,19 @@ test('Source project candidate resolves the rendered accessible search control a
 
 test('Source project picker refuses an empty candidate list instead of inventing a destination', async () => {
   await assert.rejects(observe('<div>No places found.</div>'), /project picker not ready/);
+});
+
+test('Source project picker refuses an unrelated existing project', async () => {
+  await assert.rejects(
+    observe(
+      '<ul><li><button aria-pressed="false"><span class="flex-1">Someone else project</span></button></li></ul>',
+    ),
+    /project picker not ready/,
+  );
+});
+
+test('Source project picker refuses duplicated owned candidate labels', async () => {
+  const row =
+    '<li><button aria-pressed="false"><span class="flex-1">Northline intake project</span></button></li>';
+  await assert.rejects(observe(`<ul>${row}${row}</ul>`), /project picker not ready/);
 });

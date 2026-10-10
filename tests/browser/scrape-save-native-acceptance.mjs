@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 /** Real member Save Source dialog, project edge, and exact owned-row cleanup. */
 import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { cleanupProjectFixture, projectFixtureRequest } from './scrape-save-project-fixture.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import { activeTabPanelExpression, click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -39,7 +41,7 @@ const report = {
   cleanup: null,
   failure_stage: null,
   limits:
-    'Exact imported CI development artifact, real member sign-in, one custom-named Source with one existing Project association, independent reads, and cleanup; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.',
+    'Exact imported CI development artifact, real member sign-in, one custom-named Source with one disposable owned Project association, independent reads, and cleanup; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.',
 };
 
 function safeFailureCode(error) {
@@ -332,6 +334,7 @@ try {
       let cleanupError;
       let sourceId = null;
       let projectId = null;
+      let projectFixture = null;
       let selectedOrganizationId = null;
       const url = new URL(page.url());
       url.pathname = '/source-acceptance';
@@ -445,6 +448,52 @@ try {
           organization_resolution: identity.organization_resolution,
         };
 
+        report.stage = 'owned_project_fixture';
+        projectFixture = {
+          id: randomUUID(),
+          organizationId: selectedOrganizationId,
+          ownerId: identity.profileId,
+          name: `Northline acceptance project ${runId}-${runAttempt}`,
+        };
+        const projectRequest = projectFixtureRequest(projectFixture, 'POST');
+        const createdProject = await panelRest(panel, {
+          ...restUrl('projects', 'projects'),
+          ...projectRequest,
+        });
+        assert.equal(createdProject.status, 201, 'scrape_save_project_fixture_create_failed');
+        const fixtureLookup = projectFixtureRequest(projectFixture);
+        const fixtureReadback = await panelRest(panel, {
+          ...restUrl('projects', 'projects', fixtureLookup.filters),
+          ...fixtureLookup,
+        });
+        assert.equal(fixtureReadback.status, 200, 'scrape_save_project_fixture_readback_failed');
+        assert.equal(
+          fixtureReadback.rows?.length,
+          1,
+          'scrape_save_project_fixture_owner_unverified',
+        );
+        assert.equal(
+          fixtureReadback.rows[0].id,
+          projectFixture.id,
+          'scrape_save_project_fixture_id_mismatch',
+        );
+        assert.equal(
+          fixtureReadback.rows[0].organization_id,
+          projectFixture.organizationId,
+          'scrape_save_project_fixture_org_mismatch',
+        );
+        assert.equal(
+          fixtureReadback.rows[0].created_by,
+          projectFixture.ownerId,
+          'scrape_save_project_fixture_actor_mismatch',
+        );
+        assert.equal(
+          fixtureReadback.rows[0].name,
+          projectFixture.name,
+          'scrape_save_project_fixture_name_mismatch',
+        );
+        report.observations.owned_project_fixture_created = true;
+
         report.stage = 'owned_fixture';
         await resourceAction(() => page.goto(sourceUrl));
         assert.equal(
@@ -553,10 +602,13 @@ try {
             };
             return state;
           },
-          (state) => state?.input_count === 1 && state.labels?.length > 0,
+          (state) =>
+            state?.input_count === 1 &&
+            state.labels?.filter((label) => label === projectFixture.name).length === 1,
           30000,
         );
-        const projectName = candidate.labels[0];
+        const projectName = projectFixture.name;
+        assert.ok(candidate.labels.includes(projectName), 'scrape_save_owned_project_not_visible');
         assert.ok(projectName, 'scrape_save_project_candidate_name_missing');
         await resourceAction(() => click(panel, 'button-text', projectName));
         const selected = await waitFor(
@@ -574,6 +626,11 @@ try {
           projects.rows[0].organization_id,
           selectedOrganizationId,
           'scrape_save_project_organization_mismatch',
+        );
+        assert.equal(
+          projects.rows[0].id,
+          projectFixture.id,
+          'scrape_save_owned_project_id_mismatch',
         );
         projectId = projects.rows[0].id;
         assert.match(projectId ?? '', UUID, 'scrape_save_project_id_invalid');
@@ -641,6 +698,16 @@ try {
             report.cleanup = { verified: false, error_code: safeFailureCode(error) };
           }
         } else report.cleanup = { verified: true, no_write_possible: true };
+        if (projectFixture) {
+          try {
+            report.project_cleanup = await cleanupProjectFixture(projectFixture, (request) =>
+              panelRest(panel, { ...restUrl('projects', 'projects', request.filters), ...request }),
+            );
+          } catch (error) {
+            cleanupError = error;
+            report.project_cleanup = { verified: false, error_code: safeFailureCode(error) };
+          }
+        }
       }
       if (primaryError) throw primaryError;
       if (cleanupError) throw new Error('scrape_save_cleanup_failed');
