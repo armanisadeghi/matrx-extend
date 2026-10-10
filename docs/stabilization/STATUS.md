@@ -1,12 +1,12 @@
 # Extension stabilization status
 
-Generated 2026-10-10 03:19 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-10T03:18:47Z. 205 features · 769 cases · 1358 controls · 187 linked defect records.
+Generated 2026-10-10 03:45 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-10T03:44:29Z. 205 features · 769 cases · 1358 controls · 187 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1230** — Pass: 93 · Partial: 91 · Fail: 2 · Unverified: 1043 · N/A: 1.
+Applicable case-by-role slots: **1230** — Pass: 94 · Partial: 90 · Fail: 2 · Unverified: 1043 · N/A: 1.
 Unverified splits into **132 explicitly marked unverified** and **911 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 17, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 17 pass · 7 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 31, partial 17, fail 0, unverified 46, n/a 1 | 3 |
+| [Settings](#settings) | 1 | 18 pass · 6 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | pass 32, partial 16, fail 0, unverified 46, n/a 1 | 3 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -412,7 +412,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1003-T37 guest: Deep clean | Pass | N/A | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T38 member: Deep clean | N/A | Unverified | N/A | EXT-F-1003-C13 |
 | EXT-F-1003-T39 admin: Deep clean | N/A | N/A | Unverified | EXT-F-1003-C13 |
-| EXT-F-1003-T40 guest: Auto-scrape on load | Partial | N/A | N/A | EXT-F-1003-C14 |
+| EXT-F-1003-T40 guest: Auto-scrape on load | Pass | N/A | N/A | EXT-F-1003-C14 |
 | EXT-F-1003-T41 member: Auto-scrape on load | N/A | Unverified | N/A | EXT-F-1003-C14 |
 | EXT-F-1003-T42 admin: Auto-scrape on load | N/A | N/A | Unverified | EXT-F-1003-C14 |
 | EXT-F-1003-T43 guest: Desktop bridge pairing | Partial | N/A | N/A | EXT-F-1003-C15 |
@@ -508,8 +508,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: settings-local397-native-20261008, development0.2.397/sourcecedcec02/CI37724859892/artifact11527132614, 2026-10-08T06:30:08.992059+00:00, .research/settings-local397-native-20261008.json
 - EXT-F-1003-T37 · guest: Pass. Independent review confirms original guest criteria.
   Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json']
-- EXT-F-1003-T40 · guest: Partial. Independent review limits credit to ON/OFF UI and storage plus panel reload. The driver report’s full-extension ON claim is not credited; downstream capture and ON across a verified full-extension restart remain unproved. T40 remains Partial.
-  Evidence / build / date recorded: 38018411295, ['docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json', 'docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl']
+- EXT-F-1003-T40 · guest: Pass. Independent review approves a bounded guest T40 pass on the exact frozen 0.2.458 development artifact. Warm and post-full-extension-reload ON/OFF capture behavior passed. The report's `initial` criterion is after warm OFF; original pre-probe baseline values were captured separately and key/field equality was asserted during cleanup, though that baseline was not serialized. No current-main, Store, member/admin, or broader feature claim.
+  Evidence / build / date recorded: 38020947337, ['docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/receipt.json', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/native-report.sanitized.json', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-package-38020947337-1.jsonl', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-browser-38020947337-1.jsonl', 'docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-guest-38020947337-1.jsonl']
 - EXT-F-1003-T43 · guest: Partial.
   Evidence / build / date recorded: 37701201664, ['.research/desktop-remaining-native-20261007.json', '.research/lifecycle-desktop-final-review-20261007.json']
 - EXT-F-1003-T44 · member: Partial.
