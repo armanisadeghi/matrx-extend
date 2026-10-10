@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "run_id": 38079852513,
+  "status": "bounded_pass",
+  "case_id": "member-chat",
+  "observed_at": "2026-10-10T19:34:38.175Z",
+  "workflow_source_sha": "abc53c31322fbaa9358f497298789f87a09719e9",
+  "runner_label": "macos-15",
+  "artifact": {
+    "release_run_id": 38079083742,
+    "artifact_id": 11680071460,
+    "artifact_name": "matrx-extend-v0.2.478",
+    "version": "0.2.478",
+    "product_source_sha": "abc53c31322fbaa9358f497298789f87a09719e9",
+    "digest": "sha256:d7de272ee6aa41b879fee32f5b1a6445b323c4997297743453a870cd368c4260",
+    "tree_sha256": "b619da73bf7291bd1b666977aa2a6b14a95961d10b9124098123ed80ce283042"
+  },
+  "verification": {
+    "auth": "Existing-user magic-link login; signed-in web and extension; canonical extension admin check matched the extension user and returned HTTP 200 with zero rows.",
+    "chat": "One completed real assistant answer observed; result screenshot inspected.",
+    "transport": {
+      "start_count": 1,
+      "organization_header_present": true,
+      "start_http_status": 200,
+      "response_matches_request_conversation": true,
+      "backend_request_identity_present": true
+    }
+  },
+  "resource_finals": {
+    "package": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/member-chat-v0478/run38079852513/receipt.sanitized.json",
+    "docs/stabilization/evidence/member-chat-v0478/run38079852513/hosted-package.jsonl",
+    "docs/stabilization/evidence/member-chat-v0478/run38079852513/hosted-browser.jsonl",
+    "docs/stabilization/evidence/member-chat-v0478/run38079852513/hosted-guest.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38079852513"
+  ],
+  "hosted_evidence_artifact_id": 11680302072,
+  "limitations": [
+    "The approved-organization identity comparison and selected permission-mode comparison are not evaluated by this standard member-chat path; their false defaults do not prove a mismatch.",
+    "Bounded release-artifact member Chat evidence only; no tool-action, Store-install, Settings or full-surface coverage.",
+    "Runtime dependencies changed on main after this release. This result applies only to exact v0.2.478 and is not acceptance of a newer submission candidate."
+  ],
+  "credential_cleanup": {
+    "temporary_github_secret_absent": true,
+    "local_single_use_link_file_absent": true,
+    "verification": "Exact-name GitHub secret metadata check returned zero matches after terminal cleanup."
+  }
+}
