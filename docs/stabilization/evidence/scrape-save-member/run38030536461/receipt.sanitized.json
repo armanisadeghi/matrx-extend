@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38030536461,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38030536461",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "01df3c808183a25e3f40cda1b80d1d2714d5c285",
+  "lane": "A",
+  "acceptance_case": "scrape-save-member",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "source_sha": "7c6311e86562051bcaa58de997a248ae40c58bd7",
+    "tree_sha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d",
+    "ci_run_id": 38029218282,
+    "artifact_id": 11661736374,
+    "artifact_digest": "sha256:eda8dbd6fd8a924bdb3554586cd62d2b252a9b29f19fb54a80bd6d074cbac397",
+    "version": "0.2.458"
+  },
+  "hosted_report_artifact": {
+    "artifact_id": 11661963446,
+    "name": "hosted-guest-38030536461-1",
+    "digest": "sha256:1c2f91aa41d00735ccdcbb61541f4e164ad29dd54e57b046d77ddfeda9869540",
+    "size_bytes": 98870,
+    "native_report_present": true,
+    "native_report_path": "test-results/scrape-save-native-acceptance.json",
+    "sanitized_report_path": "native-report.sanitized.json",
+    "sanitized_report_sha256": "3af259e220a1bb7eae6268619e33e59596080555fbbe2200cc023f3a30528e2c"
+  },
+  "workflow_conclusion": "success",
+  "native_report_status": "pass",
+  "resource_valid_acceptance": true,
+  "resource_finals": {
+    "hosted-package-38030536461-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38030536461-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38030536461-1": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "resource_journal_evidence": {
+    "uploaded_original_journals_present": false,
+    "recovered_from": "exact Actions job log RESOURCE_* JSON events emitted by the guard; entries were grouped by exact runId and passed through the reviewed journal-copy sanitizer; absolute RESOURCE_JOURNAL_OPENED.path values were then removed from the shared copies",
+    "sanitized_paths": [
+      "hosted-package-38030536461-1.jsonl",
+      "hosted-browser-38030536461-1.jsonl",
+      "hosted-guest-38030536461-1.jsonl"
+    ],
+    "sha256": {
+      "hosted-package-38030536461-1.jsonl": "0c7486248a8bc09aea5504388630bcb5a763080ecccd824d839507890d284c23",
+      "hosted-browser-38030536461-1.jsonl": "7dc43ec3d2a6146ee5e21ff1d622bc1a230c72c824680aed08267a84bef906b6",
+      "hosted-guest-38030536461-1.jsonl": "641ec33410e6eecaa838e93d16f43deb98d3366725277631dbcc07493f2b960d"
+    },
+    "attribution_rows_removed": true,
+    "final_decisions_preserved": true,
+    "guest_cpu_pending_recovered_before_final": true
+  },
+  "native_observations": {
+    "authentication": "real member sign-in, extension session, non-admin role, and selected organization verified",
+    "capture": {
+      "article_title_matches": true,
+      "heading_matches": true,
+      "body_marker_matches": true,
+      "extractor": "defuddle"
+    },
+    "saved_source": {
+      "custom_name_persisted": true,
+      "project_edge_persisted": true,
+      "original_read_ready": true
+    },
+    "saved_original": {
+      "article_title_matches": true,
+      "heading_matches": true,
+      "body_marker_matches": true,
+      "extractor": "defuddle"
+    },
+    "reopened_ui": {
+      "name_matches": true,
+      "url_matches": true,
+      "heading_matches": true,
+      "body_marker_matches": true
+    },
+    "project_display_in_ui": "not covered"
+  },
+  "cleanup_reconciliation": {
+    "native_driver": {
+      "source_soft_deleted": true,
+      "source_associations_removed": true,
+      "owned_project_absent": true
+    },
+    "independent_read_only_database_read": {
+      "source_exact_name": {
+        "matching_rows_including_tombstones": 1,
+        "active_rows": 0,
+        "soft_deleted_rows": 1,
+        "reviewer_created_by_match": true,
+        "extension_run_marker_match": true
+      },
+      "source_extension_run_marker": {
+        "matching_rows_including_tombstones": 1,
+        "active_rows": 0,
+        "soft_deleted_rows": 1,
+        "exact_name_rows": 1
+      },
+      "project_exact_name": {
+        "matching_rows_including_tombstones": 1,
+        "active_rows": 0,
+        "soft_deleted_rows": 1,
+        "reviewer_created_by_match": true,
+        "same_organization_as_source": true
+      },
+      "source_project_edge_rpc": {
+        "http_status": 200,
+        "remaining_edges": 0
+      },
+      "writes_performed": false
+    }
+  },
+  "credential_cleanup": {
+    "temporary_secret_name_count": 0,
+    "local_one_time_link_present": false
+  },
+  "claim_limit": "Bounded member Save Source custom-name and Project association save, independent persisted/original read, UI reopen, and exact owned cleanup on the frozen development artifact. Does not close T04/T29 or claim guest/admin/Store/Library, Project display, retry, duplicate, no-destination, or full-surface behavior."
+}
