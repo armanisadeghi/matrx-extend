@@ -821,6 +821,11 @@
    "application/json"
   ]
  },
+ "/ai/latency/client-report": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/ai/mandates/{mandate_key}": {
   "post": [
    "application/json"
@@ -1211,6 +1216,9 @@
   "get": []
  },
  "/bored-api/random-activity": {
+  "get": []
+ },
+ "/box/oauth/callback": {
   "get": []
  },
  "/brand-voice/extract": {
@@ -2329,6 +2337,9 @@
   "get": []
  },
  "/drip/public/status": {
+  "get": []
+ },
+ "/dropbox/oauth/callback": {
   "get": []
  },
  "/dryad/public/dataset": {
@@ -6638,6 +6649,9 @@
  "/scheduling/admin/run-now/{task_id}": {
   "post": []
  },
+ "/scheduling/admin/support-tasks": {
+  "get": []
+ },
  "/scheduling/admin/system-tasks": {
   "get": []
  },
@@ -7476,6 +7490,9 @@
   "post": [
    "application/json"
   ]
+ },
+ "/social-oauth/facebook/deauthorize": {
+  "post": []
  },
  "/social-oauth/x/attach": {
   "post": [
@@ -9432,9 +9449,6 @@
   "get": []
  },
  "/zype/public/status": {
-  "get": []
- },
- "/{provider}/oauth/callback": {
   "get": []
  }
 }
