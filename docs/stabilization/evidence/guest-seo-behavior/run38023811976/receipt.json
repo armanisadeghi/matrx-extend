@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 38023811976,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38023811976",
+    "lane": "B",
+    "conclusion": "failure",
+    "checkout_sha": "dc249bf913beb31be5498093af1e080d9f39661a"
+  },
+  "acceptance": {
+    "case": "guest-seo",
+    "auth_mode": "guest",
+    "scope": "controlled",
+    "fixture": "none",
+    "report_status": "unverified",
+    "first_unfinished_operation": "guest_copy_ai_click",
+    "last_safe_stage": "copy_menu_choices_wait_accepted",
+    "native_report": "in_progress; no assertion failure recorded; the broken-image fallback target was not reached",
+    "product_credit": "none; the resource guard stopped the run before this acceptance completed"
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.458",
+    "source_sha": "0c1ceda533c2e78e68a006a4a407741d6af8cba1",
+    "ci_run_id": 38023323516,
+    "ci_artifact_id": 11659740949,
+    "tree_sha256": "a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88"
+  },
+  "hosted_run_artifact": {
+    "id": 11659671895,
+    "name": "hosted-guest-38023811976-1",
+    "expired": false
+  },
+  "resource_guards": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid",
+      "events": [
+        "CPU busy 1.0 and one-minute load 7.79 on 4 logical CPUs: RESOURCE_CPU_PENDING",
+        "CPU busy 0.81 and one-minute load 7.65: RESOURCE_WATCH_UNSAFE",
+        "RESOURCE_STOP_AT_SAFE_BOUNDARY",
+        "watchdog sent SIGTERM to the owned process group"
+      ]
+    }
+  },
+  "evidence_files": {
+    "native_report": {
+      "path": "docs/stabilization/evidence/guest-seo-behavior/run38023811976/native-report.sanitized.json",
+      "sha256": "9f1b109b740f1e9e3328b8915f99d5c20e031b42e48f6404bd22c00ddb803734"
+    },
+    "resource_journals": [
+      {
+        "path": "docs/stabilization/resource-journals/hosted-package-38023811976-1.jsonl",
+        "sha256": "f654ba8b8ae0bca51b0ce73d7443ad1b2735dd1ac4f1fd9b6a8b7d94189fc10a"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-browser-38023811976-1.jsonl",
+        "sha256": "286c9fcec7beb3978d2cf1e755f1f76526d4582d020e018755f6dd94d27f5d58"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-guest-38023811976-1.jsonl",
+        "sha256": "89f3a60f3a30c8112e788f3501f09023dabd0f40583e96df8e85e9c10d0b907b"
+      }
+    ]
+  },
+  "limits": [
+    "The guest run imported the exact 0c1ceda development artifact; the workflow checkout was dc249bf.",
+    "The extension panel was located, but the guard terminated the acceptance while the driver was at guest_copy_ai_click.",
+    "No outcome for the newly added broken social-preview image fallback was observed.",
+    "The native report includes earlier in-run target observations, but the invalid resource final makes this run ineligible for product acceptance credit.",
+    "No retry was started; the hosted CPU/load guard refused continued work."
+  ]
+}

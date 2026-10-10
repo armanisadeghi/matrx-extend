@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "unverified",
+  "receipt_state": "in_progress",
+  "scope": "public-page guest SEO actions in an owned native side panel",
+  "case_selection": {
+    "scope": "controlled",
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "excluded_cases": ["T09 volatile public detail", "T09 optional metadata fixture"]
+  },
+  "resource_diagnostic_enabled": false,
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.458",
+      "treeSha256": "a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88"
+    },
+    "after": null
+  },
+  "last_safe_stage": "copy_menu_choices_wait_accepted",
+  "current_operation": "guest_copy_ai_click",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_0_title_and_headings",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_1_title_and_headings",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+      "status": "pass"
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "new_url_replaces_visible_title",
+      "status": "pass"
+    }
+  ]
+}
