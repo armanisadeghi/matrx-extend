@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "workflow_run_id": 38079946517,
+  "workflow_source_sha": "0880bd94cc410cf60a8cf5eaa8a88a947fca7b9b",
+  "workflow_result_artifact": {
+    "id": 11680605707,
+    "name": "hosted-guest-38079946517-1",
+    "sha256": "3273ec1b3412b1bfd63b8c2b7922ceae7664b028966c15fc99b5278782d106c4"
+  },
+  "release": {
+    "run_id": 38079083742,
+    "artifact_id": 11680071460,
+    "artifact_name": "matrx-extend-v0.2.478",
+    "artifact_sha256": "d7de272ee6aa41b879fee32f5b1a6445b323c4997297743453a870cd368c4260",
+    "version": "0.2.478",
+    "tag": "v0.2.478",
+    "source_sha": "abc53c31322fbaa9358f497298789f87a09719e9",
+    "store_zip_sha256": "4feb50b44707b3e82788091b5dfa7f0df3d53df85deb81a8d6dece7329cca5b7",
+    "publisher_tree_sha256": "7a3557451a2d18fd1d7d463d0cc46ef4ed948b9fe2f2e8f6b0e87a9a15e7cd85",
+    "runtime_tree_sha256": "b619da73bf7291bd1b666977aa2a6b14a95961d10b9124098123ed80ce283042",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "adaptation": "Store ZIP remained unchanged; the matching-version local ZIP key was added to the extracted test copy only. Independent extraction reproduced the native report runtime tree hash."
+  },
+  "server": {
+    "before": {
+      "reachable": true,
+      "status": 200,
+      "git_sha": "71d98c981c77672de0fb2a7b172962c1f21787dd"
+    },
+    "after": {
+      "reachable": true,
+      "status": 200,
+      "git_sha": "71d98c981c77672de0fb2a7b172962c1f21787dd"
+    },
+    "stable": true
+  }
+}

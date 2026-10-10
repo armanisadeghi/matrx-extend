@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_chat_store_evidence_review",
+  "reviewer": "independent_guest_store_run_review",
+  "run_id": 38079946517,
+  "verdict_a_live_behavior": {
+    "status": "PASS_FOR_BOUNDED_GUEST_CHAT_V0478",
+    "coverage": [
+      "The first fresh-guest response terminated successfully and native assertions confirmed an unpredictable page-specific code plus ordered page stages.",
+      "The same-conversation follow-up terminated, retained the same conversation fingerprint, and matched a second page-specific code.",
+      "After panel reload, the guest remained signed out and a separate new conversation returned a terminal answer grounded in the same owned article fixture.",
+      "All three observed guest AI requests returned HTTP 200; server version responded 200 with the same git SHA before and after."
+    ],
+    "not_claimed": [
+      "This is a bounded journey, not full guest Chat or other role/tool coverage.",
+      "This validates the exact v0.2.478 release candidate and does not accept a later current-main package."
+    ]
+  },
+  "verdict_b_evidence_quality": {
+    "status": "PASS_WITH_SCREENSHOT_LIMITATION",
+    "notes": [
+      "The release receipt, release artifact API digest, Store ZIP hash, source tag SHA, native version, and runtime tree hash agree; independent ZIP extraction and key adaptation reproduced the native runtime tree hash.",
+      "All package, browser, and guest resource finals are admitted and valid; cleanup/failure codes are absent.",
+      "The opening screenshot shows ordered public stages but not its unique fixture code; follow-up screenshots show clipped reply fragments. Native assertions/timelines and request fingerprints support terminal/content claims, with the screenshots retained for context."
+    ]
+  },
+  "checked_files": [
+    "docs/stabilization/evidence/guest-chat-store/run38079946517/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-store/run38079946517/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-store/run38079946517/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-store/run38079946517/guest-chat-real-answer.png",
+    "docs/stabilization/evidence/guest-chat-store/run38079946517/guest-chat-same-conversation-followup.png",
+    "docs/stabilization/evidence/guest-chat-store/run38079946517/guest-chat-real-followup-answer.png"
+  ],
+  "verification": "Reviewed the full native JSON report and all three journey screenshots; verified terminal timelines, content-match assertions, guest conversation sequence, HTTP statuses, server SHA before/after, all resource finals and cleanup; downloaded release artifact and independently verified Store ZIP digest, matching v0.2.478 local key source, and adapted runtime tree. No second browser was launched."
+}

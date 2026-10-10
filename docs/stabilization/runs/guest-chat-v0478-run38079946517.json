@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_guest_chat_store_run",
+  "run_id": 38079946517,
+  "version": "0.2.478",
+  "source_sha": "abc53c31322fbaa9358f497298789f87a09719e9",
+  "scope": "bounded guest grounded Chat journey: terminal first reply, same-conversation follow-up, reload, and new conversation",
+  "product_verdict": "PASS_BOUNDED_GUEST_CHAT_V0478",
+  "evidence_verdict": "PASS_WITH_SCREENSHOT_LIMITATION",
+  "evidence_folder": "docs/stabilization/evidence/guest-chat-store/run38079946517",
+  "peer_review": "docs/stabilization/reports/peer-review-run38079946517.json",
+  "comparison": "Repeats the bounded guest journey on exact v0.2.478 source; does not add a new Chat subtarget beyond the earlier v0.2.476 journey.",
+  "limitations": [
+    "This is exact v0.2.478 release-artifact evidence, not acceptance of any later package refresh or latest main.",
+    "Screenshots show clipped answer fragments; terminal success and full content checks are supported by native assertions and timelines.",
+    "Observer attachment begins after panel load; member/admin roles, broader Chat behavior, and other tools are untested."
+  ]
+}

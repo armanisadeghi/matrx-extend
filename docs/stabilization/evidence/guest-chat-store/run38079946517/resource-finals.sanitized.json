@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "workflow_run_id": 38079946517,
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal_sha256": "0cc782fb03851a1e97e967dc3e461f04b517c0d5d5f9d820ede94e7c7dbf175"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal_sha256": "dfa64d5b6bc947084794759ada4d15911ddcc811ff7cd60aa86506705daaf705"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal_sha256": "3ae8c48a3f90e9ce92ad2647265cd447a70852655cf4b3de2fc843a774247b26"
+    }
+  }
+}

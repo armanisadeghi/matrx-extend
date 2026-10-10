@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "workflow_run_id": 38079946517,
+  "status": "pass",
+  "scope": "fresh guest profile: grounded opening reply, same-conversation follow-up, panel reload, and new-conversation grounded reply",
+  "build": {
+    "version": "0.2.478",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "runtime_tree_sha256": "b619da73bf7291bd1b666977aa2a6b14a95961d10b9124098123ed80ce283042",
+    "artifact_unchanged": true
+  },
+  "guest_state": {
+    "fresh_profile": true,
+    "chat_visible": true,
+    "guest_session_absent_after_reload": true,
+    "fixture_reinstalled_before_first_send": false,
+    "fixture_reinstalled_after_reload": false
+  },
+  "assistant_replies": {
+    "opening": {
+      "terminal_verdict": "terminal_answer",
+      "reply_count": 1,
+      "contains_unpredictable_page_code": true,
+      "names_public_page_stages": true,
+      "stages_in_order": true,
+      "no_login_paywall_or_error": true,
+      "terminal_assigned_tab_matches_fixture": true
+    },
+    "same_conversation_followup": {
+      "terminal_verdict": "terminal_answer",
+      "same_conversation_identity": true,
+      "reply_count": 3,
+      "contains_unpredictable_page_code": true,
+      "terminal_assigned_tab_matches_fixture": true
+    },
+    "post_reload_new_conversation": {
+      "terminal_verdict": "terminal_answer",
+      "is_new_conversation": true,
+      "reply_count": 2,
+      "contains_unpredictable_page_code": true,
+      "names_fixture_heading": true,
+      "terminal_assigned_tab_matches_fixture": true
+    }
+  },
+  "guest_ai_requests": [
+    {
+      "attempt": "opening",
+      "status": 200,
+      "conversation_fingerprint": "b9c58c50e33dc27f",
+      "is_new": true
+    },
+    {
+      "attempt": "same_conversation_followup",
+      "status": 200,
+      "conversation_fingerprint": "b9c58c50e33dc27f",
+      "is_new": false
+    },
+    {
+      "attempt": "post_reload_new_conversation",
+      "status": 200,
+      "conversation_fingerprint": "fdd8e493dd82845e",
+      "is_new": true
+    }
+  ],
+  "context_rule_reads": [],
+  "cleanup": { "cleanup_failure_codes": null, "failure_code": null, "failure_reason": null },
+  "native_report_sha256": "0f24408887183cf072c68aa7e2607eaba3c9ad9c3f96ef1c540e49726243ffe9",
+  "screenshots": {
+    "guest-chat-real-answer.png": "d6c7b0699d8c4500155e2862a2990013bd0ed23a2dda2b6bf7da88f353c81452",
+    "guest-chat-same-conversation-followup.png": "dd4980f6497768201c44df779cdb0854ecf707af2b42d3cf827195a39d167f07",
+    "guest-chat-real-followup-answer.png": "c63d58647218979e84f446ac5c8cc7de24e2353897b8775b4a84704407536dfa"
+  },
+  "evidence_limitations": [
+    "The opening screenshot shows the ordered public page stages but not the unique code; native assertions verify the code match.",
+    "The follow-up screenshots show clipped answer fragments; full terminal/content claims rely on native assertions and transport/terminal timelines.",
+    "The observer starts after panel load, so requests before observer attachment are outside this run's evidence scope."
+  ]
+}
