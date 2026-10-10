@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_defect_retest_adjudication",
+  "reviewer_task": "/root/member_run_peer",
+  "reviewed_at": "2026-10-10T11:20:45Z",
+  "defect_id": "EXT-D-0186",
+  "verdict": "retest_pass_for_defined_guest_scope",
+  "current_tracker_state": "retest-fail",
+  "status_assessment": "The retest-fail basis predates the later successful native run and no longer matches the evidence. The defect's repeated-target and restoration behavior passes on the workflow source containing the harness fix. Recommend advancing the defect state; no tracker or defect file was changed in this review.",
+  "evidence": {
+    "original_failure": {
+      "run_id": 37858551975,
+      "source": ".research/settings-per-choice-binding-native-20261008/raw/settings-local-controls-acceptance.json",
+      "sha256": "9656e78be5e7b0dc939de10bfeca89ba734d5d182540e21ccb8cb58de15eb139",
+      "resource_result": "package and browser valid exit 0; guest resource-valid child_failed exit 1",
+      "finding": "T04 verified initial System baseline, Dark visible/stored selection, and a real worker/panel replacement with a changed target. The next Dark-survives-full-reload observation is absent; the case ends full_extension_preference_or_restore_failed and no original-baseline restoration record exists. T10 and T67 terminate through generic recheck failures, so this run supplies no repeated-target acceptance for those cases."
+    },
+    "diagnostic": {
+      "run_id": 37994579674,
+      "source": ".research/settings-full-extension-recheck-diagnostics-20261009.json",
+      "sha256": "6b49f93a60ba040c81baf397f3b3cf471a436c7e1b14b39a413e19dcbe00a421",
+      "source_sha": "bc9a0a511bdbea8b7cc77b12cf1ba8f2a58e7f04",
+      "resource_result": "package, browser and acceptance admitted; resourceInvalid=false; acceptance child_failed exit 1",
+      "finding": "This is diagnostic evidence, not a successful D186 retest. T10 failed while reopening Settings after replacement and again while acquiring a panel for restoration, both with protocol_error. The guard marked later T28, T40 and T67 checks unverified. T04's separate rendered-color comparator failure was identified as an invalid measurement. No target-chain or full-reload persistence result was established."
+    },
+    "harness_fix": {
+      "commit": "51f5f99bc9999aca6ed93cad1e27d65a2a5b675f",
+      "change": "When the old panel target is confirmed retired, do not detach its CDP session before opening the replacement Settings panel; keep detachment when retirement is unproven.",
+      "relationship_to_retest": "Commit 51f5f99bc is an ancestor of workflow checkout c7465457fe7c565d5591ac99d9b7f72a379767a0 used by run 38041519886."
+    },
+    "successful_native_retest": {
+      "run_id": 38041519886,
+      "workflow_checkout_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+      "workflow_conclusion": "success",
+      "hosted_artifact": {
+        "id": 11665862988,
+        "name": "hosted-guest-38041519886-1",
+        "digest": "sha256:9e8dbe6b7aba384bbd2f4aea19789d7f63000252780fa5188dc3ebe0ceacce18",
+        "expired": false
+      },
+      "frozen_product": {
+        "version": "0.2.459",
+        "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+        "artifact_id": 11664077690,
+        "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+      },
+      "receipt": {
+        "path": "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+        "sha256": "3d32323973d4e8d1eeb747fffbfcd706b9d48e31302b7fee592e31edc49595cb"
+      },
+      "native_report": {
+        "path": "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json",
+        "sha256": "406bdd9bd659c4caf8b494657744b83c2f4754cb1189bc77baf1c88236f8d7b5"
+      },
+      "resource_journals": [
+        {
+          "path": "docs/stabilization/evidence/settings-controls-hosted/run38041519886/hosted-package-38041519886-1.jsonl",
+          "sha256": "a9f63529729ff855176b4f2312a1e90156fa1ce3c8088dbf0b7c026a60af9049",
+          "final": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+        },
+        {
+          "path": "docs/stabilization/evidence/settings-controls-hosted/run38041519886/hosted-browser-38041519886-1.jsonl",
+          "sha256": "5ed55d1ddc219ad6a88ebbf2515bd48b6b562b80b867227c5b38bd0e97458206",
+          "final": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+        },
+        {
+          "path": "docs/stabilization/evidence/settings-controls-hosted/run38041519886/hosted-guest-38041519886-1.jsonl",
+          "sha256": "ab7a7d102142564b584abf19feb19e1c40798dbcfae131df98ae4674ec086eb8",
+          "final": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+        }
+      ]
+    }
+  },
+  "requirements": {
+    "immediate_replacement_target_used_for_each_successive_reload": "Proven by the successful repeated native sequences, subject to the committed runtime guard. The reload controller supplies its current target as oldPanelId, checks that the returned target differs and the lifecycle predicate passed, then advances its stored target. The per-choice helper independently checks replacementPanel.targetId differs from the immediately previous activePanel before recording a pass. The sanitized report does not retain the literal target ID sequence.",
+    "panel_only_reload_cannot_satisfy_full_extension_lifecycle": "The harness enforces this: it requires management reload click, retired old targets, replaced worker and panel, final lifecycle predicate, and a changed replacement target. The hosted positive run records those lifecycle-backed per-choice replacement criteria. A deliberately panel-only native negative control was not run in this retest; its rejection is covered by the source-level controller test, not a separate native observation.",
+    "preference_survives_each_full_extension_reload": "Proven for the targeted guest cases: T04, T10 and T67 each have full_extension_reload status pass in the sanitized native report.",
+    "original_saved_baseline_restored": "Proven for the values observed by these probes: T04 reports its saved System baseline matched initially and restored before/after the final extension reload; T10 reports original default-mode restoration; T67 reports original mode restoration before and after its final reload.",
+    "original_absent_storage_key_shape_restored": "Not proven. T04's recorded baseline is explicit stored System; this run does not claim restoration of an initially absent theme key.",
+    "member_admin_or_store_behavior": "Not exercised; the retest is a signed-out guest run."
+  },
+  "case_results": {
+    "T04_theme": "19/19 bounded criteria pass, including Dark and Light successive full-extension replacement/recheck and final System restoration.",
+    "T10_default_mode": "17/17 bounded criteria pass, including successive full-extension replacement/recheck, new-chat inheritance, and baseline restoration.",
+    "T67_auto_scrape_mode": "13/13 bounded mode criteria pass across full-extension reloads with baseline restoration; nested downstream capture remains unverified and is outside D186."
+  },
+  "limitations": [
+    "Run 38041519886 is a bounded guest Settings-controls run, not a full Settings acceptance. Its overall native report is unverified (12 pass, 7 unverified); only D186's T04/T10/T67 reload scope is adjudicated here.",
+    "The sanitized report omits literal target IDs and exact key-presence baselines. The pass is supported by the source guards that gate each recorded native reload pass and the receipt-bound run source, not by a retained raw trace.",
+    "No product persistence defect is demonstrated by EXT-D-0186; it concerns the test harness's target/session lifecycle."
+  ],
+  "recommendation": "The retest-fail status is stale for the defined guest repeated-reload defect. Treat EXT-D-0186 as retest-passed and advance its lifecycle state under the defect process; retain the separate absent-key, member/admin, Store, and broader Settings limits above."
+}

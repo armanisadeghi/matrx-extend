@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T11:10:10Z",
+  "updated_at": "2026-10-10T11:24:03Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -13402,7 +13402,7 @@
             "settings-local397-native-20261008",
             "38041519886"
           ],
-          "retest_status": "Partial surface. Reviewed frozen129 guest Settings controls run38041519886 observed 12/19 native case passes and seven unverified rows; per-case criteria and stronger historical evidence retain their own provenance. T16/T19/T31/T34 downstream behavior, T40 capture in this run, T63 member denial, T70 branches and T67 nested capture remain unverified. No full Settings/current-main/Store/member/admin promotion."
+          "retest_status": "Partial surface. Reviewed frozen129 guest Settings controls run38041519886 observed 12/19 native case passes and seven unverified rows; per-case criteria and stronger historical evidence retain their own provenance. Independent D186 adjudication closes only the guest repeated-target full-extension reload and saved-baseline scope for T04/T10/T67; absent-key restoration remains unverified. T16/T19/T31/T34 downstream behavior, T40 capture in this run, T63 member denial, T70 branches and T67 nested capture remain unverified. No full Settings/current-main/Store/member/admin promotion."
         },
         "member": {
           "test_status": "unverified",
@@ -13604,6 +13604,16 @@
           "report": "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
           "proven": "19 bounded guest case rows: 12 pass, 7 unverified; per-criterion truth retained in native report.",
           "limits": "T16/T19/T31/T34 downstream behavior; T40 capture; T63 member denial; T70 update/API branches remain unverified in this run. T67 nested capture unverified. No full Settings/current-main/Store/member/admin claim."
+        },
+        {
+          "run_id": 38041519886,
+          "mode": "guest",
+          "status": "defect_retest_pass",
+          "defect_id": "EXT-D-0186",
+          "build": "0.2.459",
+          "report": "docs/stabilization/reports/peer-review-d186-reload-20261010.json",
+          "proven": "Independent review confirms successive full-extension reload and saved-baseline restoration in T04/T10/T67, with current-target and lifecycle assertions gating each native pass. Three resource journals valid.",
+          "limits": "Defined guest D186 scope only; literal target IDs and initially absent theme-key shape were not retained. No member/admin, Store, current-main, or full Settings claim."
         },
         {
           "run_id": 38046648854,
