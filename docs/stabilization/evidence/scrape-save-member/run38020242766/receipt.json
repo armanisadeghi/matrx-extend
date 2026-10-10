@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "run_id": 38020242766,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38020242766",
+  "lane": "A",
+  "acceptance_case": "scrape-save-native-member",
+  "workflow_checkout_sha": "365940fe2eecfbef9b91e24d6294e7354f9674ff",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+    "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+    "ci_run_id": 38017683667,
+    "artifact_id": 11657076101,
+    "version": "0.2.457"
+  },
+  "result": "fail",
+  "authentication_observed": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_role_verified": true,
+    "selected_organization_verified": true
+  },
+  "failure_boundary": {
+    "stage": "save_dialog",
+    "error_code": "scrape_save_custom_name_entered_not_observed",
+    "observed": "The native report records that custom-name entry was not observed; its observations object is empty.",
+    "source_state": "No active Source row was present after the attempt. No successful Source save or Project association is credited.",
+    "classification": "The run does not establish whether the observed failure is product or harness behavior. EXT-D-0187 remains in-fix."
+  },
+  "cleanup": {
+    "report_verified": true,
+    "no_active_run_row": true,
+    "temporary_member_link_and_repository_secret": "Deleted and absence verified by the parent task owner; no values retained."
+  },
+  "resource_finals": {
+    "hosted-package-38020242766-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38020242766-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38020242766-1": "child_failed; admitted=true; resourceInvalid=false; exitCode=1"
+  },
+  "claims": [
+    "This is a bounded result on the frozen development artifact listed above.",
+    "It does not establish current-main health, Store behavior, a successful Source save, or defect closure."
+  ],
+  "evidence_files": {
+    "native_report": {
+      "path": "docs/stabilization/evidence/scrape-save-member/run38020242766/native-report.sanitized.json",
+      "sha256": "5915369156c37c8c22a24d77a63c2049012003ef6d6ca10bb822a5c407bd8c13"
+    },
+    "resource_journals": [
+      "docs/stabilization/evidence/scrape-save-member/run38020242766/hosted-package-38020242766-1.jsonl",
+      "docs/stabilization/evidence/scrape-save-member/run38020242766/hosted-browser-38020242766-1.jsonl",
+      "docs/stabilization/evidence/scrape-save-member/run38020242766/hosted-guest-38020242766-1.jsonl"
+    ]
+  }
+}

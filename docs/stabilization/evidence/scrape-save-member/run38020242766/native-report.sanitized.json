@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "auth_mode": "member",
+  "status": "fail",
+  "stage": "save_dialog",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+    "run_id": 38017683667,
+    "artifact_id": 11657076101,
+    "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+    "version": "0.2.457"
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_role_verified": true,
+    "selected_organization_verified": true,
+    "organization_resolution": "load_ladder"
+  },
+  "observations": {},
+  "cleanup": {
+    "verified": true,
+    "no_active_run_row": true
+  },
+  "failure_stage": "save_dialog",
+  "limits": "Exact imported CI development artifact, real member sign-in, one custom-named Source with one existing Project association, independent reads, and cleanup; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.",
+  "harness_checkout_sha": "365940fe2eecfbef9b91e24d6294e7354f9674ff",
+  "error_code": "scrape_save_custom_name_entered_not_observed"
+}
