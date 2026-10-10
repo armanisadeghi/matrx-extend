@@ -86,6 +86,37 @@ test('development Scrape requires verified CI development provenance', () => {
     assert.throws(() => requireHostedScrapeRoute('guest-scrape-development', mode, prepared));
 });
 
+test('T08 no-signal metadata scope routes only guest development Scrape on lane B', () => {
+  assert.deepEqual(
+    hostedAcceptanceRoute('guest-scrape-development', 'development', development, 'guest', {
+      scrapeScope: 'seo-schema-empty',
+      lane: 'B',
+    }),
+    {
+      acceptanceCase: 'guest-scrape-development',
+      scrapeRoute: {
+        driver: 'tests/browser/scrape-seo-schema-empty-guest.mjs',
+        channel: 'development',
+        scope: 'seo-schema-empty',
+      },
+    },
+  );
+  for (const [acceptanceCase, auth, lane, scope] of [
+    ['guest-scrape-development', 'guest', 'A', 'seo-schema-empty'],
+    ['guest-scrape-development', 'member', 'B', 'seo-schema-empty'],
+    ['guest-scrape', 'guest', 'B', 'seo-schema-empty'],
+    ['scrape-error-recovery-guest', 'guest', 'B', 'seo-schema-empty'],
+    ['guest-scrape-development', 'guest', 'B', 'other'],
+  ]) {
+    assert.throws(() =>
+      hostedAcceptanceRoute(acceptanceCase, 'development', development, auth, {
+        scrapeScope: scope,
+        lane,
+      }),
+    );
+  }
+});
+
 test('Store Scrape keeps its release ZIP restriction', () => {
   assert.equal(requireHostedScrapeRoute('guest-scrape', 'release', store).channel, 'store');
   for (const [mode, prepared] of [
@@ -279,6 +310,52 @@ test('workflow admits development Scrape only with one complete development sele
   assert.match(workflow, /SCRAPE_AUTH_MODE" == guest && "\$ACCEPTANCE_LANE" == B/);
 });
 
+test('workflow lane admission forces T08 empty SEO/schema to lane B guest with CI artifact', async () => {
+  const workflow = await readFile(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  const admission = workflowStepScript(
+    workflow,
+    'Require bounded lane and isolate shared credentials',
+  );
+  const base = {
+    ACCEPTANCE_LANE: 'B',
+    ACCEPTANCE_CASE: 'guest-scrape-development',
+    RELEASE_RUN_ID: '',
+    DEVELOPMENT_RUN_ID: '123456',
+    DEVELOPMENT_ARTIFACT_ID: '654321',
+    PUBLISHED_STORE_CRX: 'false',
+    RELOAD_SENDER_DOCUMENT_DIAGNOSTIC: '0',
+    SEO_CASE_SCOPE: 'full',
+    SEO_METADATA_FIXTURE: 'none',
+    SEO_INTERRUPT_AFTER_TARGET: 'none',
+    SCRAPE_AUTH_MODE: 'guest',
+    SCRAPE_SAVE_DESTINATION: 'project',
+    SCRAPE_SAVE_SCOPE: 'single',
+    SCRAPE_SCOPE: 'seo-schema-empty',
+    DESKTOP_SETTINGS_CASE: 'full',
+  };
+  assert.equal(runWorkflowStep(admission, base).status, 0);
+  for (const invalid of [
+    { ...base, ACCEPTANCE_LANE: 'A' },
+    { ...base, ACCEPTANCE_CASE: 'guest-scrape' },
+    { ...base, SCRAPE_AUTH_MODE: 'member' },
+    { ...base, DEVELOPMENT_ARTIFACT_ID: '' },
+    { ...base, RELEASE_RUN_ID: '123' },
+  ])
+    assert.notEqual(runWorkflowStep(admission, invalid).status, 0);
+  assert.match(workflow, /MATRX_HOSTED_SCRAPE_SCOPE: \$\{\{ inputs\.scrape_scope \|\| 'full' \}\}/);
+  const executionStep = workflow.match(
+    /- name: Exercise the selected Chrome side-panel case\n([\s\S]*?)(?=\n {6}- name: )/,
+  )?.[1];
+  assert.match(
+    executionStep ?? '',
+    /MATRX_HOSTED_SCRAPE_SCOPE: \$\{\{ inputs\.scrape_scope \|\| 'full' \}\}/,
+  );
+  assert.match(workflow, /test-results\/scrape-seo-schema-empty-guest-native\.json/);
+});
+
 test('workflow admits member Data with member auth while preserving guest and D187 routing', async () => {
   const workflow = await readFile(
     new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
@@ -308,6 +385,7 @@ test('workflow admits member Data with member auth while preserving guest and D1
     SCRAPE_NORMAL_WIDTH_PX: '',
     SCRAPE_SAVE_DESTINATION: 'project',
     SCRAPE_SAVE_SCOPE: 'single',
+    SCRAPE_SCOPE: 'full',
     RUNNER_LABEL: isArm64 ? 'macos-15' : 'macos-15-intel',
     RUNNER_ARCH: isArm64 ? 'ARM64' : 'X64',
   };
