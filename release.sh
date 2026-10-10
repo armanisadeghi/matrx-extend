@@ -690,6 +690,8 @@ for (const line of input.split('\n')) {
   console.log(`${match[1]} ${match[2]}${match[3] ? ` installed=${match[3]}` : ''}${latest ? ` latest=${latest}` : ''}`);
 }
 NODE
+                elif [[ "$name" == db-doors ]]; then
+                    node "$CHECK_SNAP/scripts/release-db-door-diagnostics.mjs" "$JOBS/check-$name.out"
                 elif [[ "$name" == lint ]]; then
                     ( cd "$CHECK_SNAP" && node_modules/.bin/biome check --reporter=json . ) \
                         > "$JOBS/check-lint.json" 2>/dev/null || true
