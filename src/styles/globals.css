@@ -48,8 +48,26 @@
 /* THE THEME IS THE WEB APP'S: `web-theme.css` (above) carries the web app's token values
    (light + dark), the Tailwind colour/glass/radius/font mapping, tw-animate-css, the typography
    plugin and the dark variant. This extension declares NO palette of its own, so its base
-   colours are the web app's by construction. Deliberate differences from the web theme:
-   NONE (an override would be declared here, in `:root` / `.dark`, and listed in this comment). */
+   colours are the web app's by construction. Deliberate differences from the web theme (the
+   ONLY ones; each exists because the extension's own UI is written to the shadcn vocabulary and
+   the web's value breaks it — proven by tests/browser/contrast-guard.mjs):
+   1. `--secondary` is the NEUTRAL chip surface here (the web's is brand purple, which the web
+      always pairs with white `secondary-foreground`; this app's ~50 files paint
+      `bg-secondary text-foreground` chips/buttons, unreadable on purple).
+   2. DARK `--primary` is the readable "ink" blue with a dark `--primary-foreground`: the web's
+      dark primary is 2.9:1 as TEXT on the dark surface, and this app paints `text-primary` in
+      62 places. The pair stays a valid fill (dark text on light blue).
+   Any new override is declared here in `:root` / `.dark` and listed in this comment. */
+:root {
+  --secondary: 240 5% 92%;
+  --secondary-foreground: 240 10% 10%;
+}
+.dark {
+  --secondary: 240 4% 24%;
+  --secondary-foreground: 240 5% 90%;
+  --primary: 221 90% 75%;
+  --primary-foreground: 240 10% 10%;
+}
 
 @theme inline {
   --animate-spin-slow: spin 3s linear infinite;
