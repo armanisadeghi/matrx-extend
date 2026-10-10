@@ -1,0 +1,61 @@
+{
+  "id": "EXT-D-0190",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-0001-T01"],
+  "surface": "Development CI and release gate",
+  "auth_mode": "all modes; infrastructure, no product behavior credited",
+  "title": "Social media coverage client route is absent from the committed backend route index",
+  "severity": "S2: main CI stops before producing the current development artifact or release candidate",
+  "priority": "P1: restore CI so exact-main browser testing and release validation can proceed",
+  "state": "fixed",
+  "owner": "root",
+  "preconditions": [
+    "Main contains the social media-coverage API call introduced by commit 84895262e."
+  ],
+  "reproduction": [
+    "Run pnpm exec vitest run --maxWorkers=1 src/lib/api/routes/backend-paths.test.ts at source 138c5c67c before updating the route index.",
+    "Observe that GET /social/posts/${encodeURIComponent(postId)}/media-coverage is reported missing."
+  ],
+  "expected": "The committed route index contains each literal extension API path and method exposed by the deployed aidream OpenAPI schema, and the backend-path guard passes.",
+  "actual": "CI run 38065991010 failed one backend-path guard test for the new social media-coverage GET; 2361 other unit tests passed. The deployed server OpenAPI schema contains GET /social/posts/{post_id}/media-coverage.",
+  "cause": "The new extension call was committed without refreshing the generated compact OpenAPI route index.",
+  "sibling_census": "The same guard scanned all literal extension apiGet/apiPost/apiPatch/apiPut/apiDelete paths and reported only this route. Dynamic paths remain outside its scanner contract.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38065991010",
+    "https://server.app.matrxserver.com/openapi.json",
+    "docs/stabilization/resource-journals/d190-route-index-focused.jsonl"
+  ],
+  "fix_commit": null,
+  "transition_history": [
+    {
+      "at": "2026-10-10T16:08:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Exact-main CI failed its backend-path contract guard."
+    },
+    {
+      "at": "2026-10-10T16:08:10Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "The deployed aidream OpenAPI schema confirms the GET endpoint; committed route index omission is the cause."
+    },
+    {
+      "at": "2026-10-10T16:08:20Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Adding the exact deployed endpoint and method to the compact index."
+    },
+    {
+      "at": "2026-10-10T16:09:28Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "The resource-valid focused backend-path guard passes 2/2 after the index correction; full CI retest pending."
+    }
+  ],
+  "verification": [
+    "Live deployed /openapi.json has GET /social/posts/{post_id}/media-coverage with no request body content types.",
+    "Resource-valid focused test d190-route-index-focused passed 2/2; no product behavior credited.",
+    "Fresh Luna peer independently checked the live schema, caller, generated ordering and 2/2 focused guard; review passed with no material questions."
+  ],
+  "closure_requirement": "Fresh exact-main CI must pass, including the full backend-path guard and development-artifact production, followed by independent review."
+}
