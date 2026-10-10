@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_member_chat_review",
+  "reviewer": "seo_metadata_review",
+  "verdict": "PASS_BOUNDED_MEMBER_CHAT_V0478",
+  "candidate_scope": "Exact v0.2.478 run only; superseded by later shared-package refresh and not current-candidate acceptance.",
+  "run": {
+    "hosted_run_id": 38079852513,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38079852513",
+    "conclusion": "success",
+    "workflow_source_sha": "abc53c31322fbaa9358f497298789f87a09719e9",
+    "case": "member-chat",
+    "release_run_id": 38079083742,
+    "artifact_id": 11680071460,
+    "artifact_name": "matrx-extend-v0.2.478",
+    "artifact_digest": "sha256:d7de272ee6aa41b879fee32f5b1a6445b323c4997297743453a870cd368c4260",
+    "adapted_tree_sha256": "b619da73bf7291bd1b666977aa2a6b14a95961d10b9124098123ed80ce283042"
+  },
+  "verdict_a_product": {
+    "status": "PASS_BOUNDED",
+    "evidence": [
+      "Existing-user magic-link login completed in the owned Chrome-for-Testing profile; signed-in web and extension were observed.",
+      "Canonical extension-admin check matched the current extension user, returned HTTP 200, and returned zero rows, supporting a non-admin test identity.",
+      "One actual chat start carried an organization header, returned HTTP 200, and the response conversation matched the request conversation.",
+      "A real assistant response completed with reply count one; the result screenshot was inspected and visibly contains the completed answer.",
+      "Package, browser, and acceptance resource journals all ended admitted, resourceInvalid=false, exit code zero, and final decision valid."
+    ],
+    "not_covered": [
+      "No tool action or browser side effect was exercised.",
+      "No explicit permission-mode switching, Settings, Store installation, or broader extension-surface coverage.",
+      "This v0.2.478 result does not validate later shared-package refreshes or a newer submission candidate."
+    ]
+  },
+  "verdict_b_evidence_quality": {
+    "status": "PASS_WITH_BOUNDED_IDENTITY_AND_SCREENSHOT_EVIDENCE",
+    "provenance": "Run record, sanitized receipt, and GitHub artifact metadata agree on v0.2.478, artifact 11680071460, and the recorded SHA-256 digest.",
+    "screenshot": {
+      "inspected": true,
+      "source": "Downloaded hosted result artifact",
+      "file": "reviewer-chat-result.png",
+      "sha256": "9260f8388a2a383e142a88026d3f9ad2848f85c011dfff4e35eae1ffd1c6b41f",
+      "limitation": "The screenshot shows the end of the answer; identity and transport are supported by the sanitized native report and request observations."
+    },
+    "resource_finals": "All three retained resource journals terminate with valid final decisions and zero child exit codes."
+  },
+  "unevaluated_flags": {
+    "organization_header_matches_approved": "False is an unevaluated comparison in this standard member-chat path: the harness emits the boolean by comparing the captured header with an optional approvedOrganization fixture. This path has no approved-organization comparison configured; the independent positive observations are a header fingerprint and HTTP 200.",
+    "mode_matches": "False is an unevaluated comparison in this standard member-chat path: the harness compares the captured request mode to an optional selected mode and asserts equality in the approval-action flow, which this case does not exercise. The recorded actual mode is ask; no mismatch is established."
+  },
+  "credential_cleanup": {
+    "github_secret_name": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+    "secret_name_absent_at_review": true,
+    "method": "Queried GitHub Actions secret metadata by exact name; no secret value was read.",
+    "local_single_use_link_path_absent": true,
+    "method_local": "Checked for remaining /private/tmp/matrx-v478-member-arm.* directories; none remained."
+  },
+  "verification": {
+    "method": "Inspected sanitized run record and receipt, all three resource journals, screenshot, native report values, hosted workflow status, GitHub release artifact metadata, and harness comparison/assertion code; checked cleanup using exact-name metadata and path existence only.",
+    "tests": "Not run; read-only independent review."
+  },
+  "checked_files": [
+    "docs/stabilization/runs/member-chat-v0478-38079852513.json",
+    "docs/stabilization/evidence/member-chat-v0478/run38079852513/receipt.sanitized.json",
+    "docs/stabilization/evidence/member-chat-v0478/run38079852513/hosted-package.jsonl",
+    "docs/stabilization/evidence/member-chat-v0478/run38079852513/hosted-browser.jsonl",
+    "docs/stabilization/evidence/member-chat-v0478/run38079852513/hosted-guest.jsonl",
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "scripts/hosted-guest-acceptance.mjs"
+  ]
+}
