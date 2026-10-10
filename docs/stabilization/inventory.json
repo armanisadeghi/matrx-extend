@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T11:41:07Z",
+  "updated_at": "2026-10-10T11:51:00Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -2118,7 +2118,8 @@
             "EXT-D-0085",
             "EXT-D-0092",
             "EXT-D-0116",
-            "EXT-D-0140"
+            "EXT-D-0140",
+            "EXT-D-0188"
           ],
           "run_ids": [
             "release-red-001",
@@ -2158,7 +2159,8 @@
             "EXT-D-0085",
             "EXT-D-0092",
             "EXT-D-0116",
-            "EXT-D-0140"
+            "EXT-D-0140",
+            "EXT-D-0188"
           ],
           "run_ids": [
             "release-red-001",
@@ -2197,7 +2199,8 @@
             "EXT-D-0020",
             "EXT-D-0085",
             "EXT-D-0092",
-            "EXT-D-0140"
+            "EXT-D-0140",
+            "EXT-D-0188"
           ],
           "run_ids": [
             "release-red-001",

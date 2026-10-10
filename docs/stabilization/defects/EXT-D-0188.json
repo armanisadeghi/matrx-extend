@@ -1,0 +1,61 @@
+{
+  "id": "EXT-D-0188",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T01"],
+  "surface": "Hosted acceptance admission tests and CI release gate",
+  "auth_mode": "guest/member/admin infrastructure; no product behavior tested",
+  "title": "Admission tests omit the Scrape Save scope now required by the hosted workflow",
+  "severity": "S2: CI is red and cannot produce a current development artifact; no product failure established",
+  "priority": "P1: restore green main before the next guarded native run or development promotion",
+  "state": "fixed",
+  "owner": "root/settings_reload_fix",
+  "reproduction": [
+    "Run CI 38049605800 at source 0857621f6 after hosted workflow admission began reading SCRAPE_SAVE_SCOPE under Bash -u.",
+    "Observe scripts/test-hosted-acceptance-lanes.mjs expect a valid lane A default route to exit 0 but receive 1.",
+    "Observe tests/browser/data-member-sender-admission.test.mjs fail with SCRAPE_SAVE_SCOPE: unbound variable; the separate resource-guard-integration job repeats the lane failure."
+  ],
+  "expected": "Admission fixtures provide the same default scope as the hosted workflow, retain invalid-route refusals and credential isolation, and allow CI to finish its real checks.",
+  "actual": "Two fixture subprocess environments omit SCRAPE_SAVE_SCOPE; Bash -u aborts before valid route assertions. Focused acceptance passes 378/380 and resource-guard integration fails 1/2, so CI produces no current development artifact.",
+  "cause": "Admission fixture environments drifted from the workflow's new required scope variable.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38049605800",
+    "scripts/test-hosted-acceptance-lanes.mjs",
+    "tests/browser/data-member-sender-admission.test.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "docs/stabilization/reports/peer-review-d188-ci-admission-20261010.json"
+  ],
+  "fix_commit": "7096e4cc9",
+  "transition_history": [
+    {
+      "at": "2026-10-10T11:48:08Z",
+      "from": null,
+      "to": "open",
+      "reason": "Exact-main CI failed in two admission fixtures before a development artifact was produced."
+    },
+    {
+      "at": "2026-10-10T11:49:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent log inspection identified the shared missing SCRAPE_SAVE_SCOPE environment variable under Bash -u; no product failure claimed."
+    },
+    {
+      "at": "2026-10-10T11:49:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow fixture repair 7096e4cc9 passes local focused checks; independent review and exact-main CI remain pending."
+    },
+    {
+      "at": "2026-10-10T11:53:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh independent review accepted the narrow fixture repair and forcing negatives; exact-main CI retest remains pending."
+    }
+  ],
+  "verification": [
+    "Before repair, the focused fixture check reproduces failure (1/3 pass).",
+    "After repair, 13 relevant tests and all 380 focused acceptance tests pass locally; compile, lint and diff check pass.",
+    "These are source and fixture checks only; no hosted browser or product case is credited.",
+    "Fresh peer review passes 7096e4cc9, including two scratch mutations that fail at the intended member-auth and lane-B assertions; exact-main CI remains pending."
+  ],
+  "closure_requirement": "Fresh independent review of unchanged admission safety and the default-scope contract, green exact-main focused and resource-guard CI, then mark fixed/retest-pass/closed. No product feature-role cell gains credit."
+}

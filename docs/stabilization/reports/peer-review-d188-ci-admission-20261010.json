@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "candidate_commit": "7096e4cc9042d93b174cc2665eaa18cba28d6064",
+  "scope": "Independent source and guard review of EXT-D-0188 admission fixture repair; no product behavior or browser acceptance credited.",
+  "prior_finding": "The initial candidate omitted same-route guest/admin rejection and an explicit lane-B duplicate-rename refusal, so removal of either relevant guard could escape the added tests.",
+  "correction_review": "The amended candidate adds guest and admin negatives for scrape-save-member with duplicate-rename/no-destination, plus an explicit lane-B/member negative. The positive A/member/no-destination path remains admitted. Wrong destination and duplicate scope on another case remain rejected.",
+  "routing_and_scope": "PASS. The production workflow admission is unchanged by this candidate. It still requires member auth for scrape-save-member, constrains duplicate-rename to destination none, rejects non-single scope on other cases, and keeps authenticated scrape-save-member in lane A. Existing shared-fixture admission matrix and other credential-isolation checks remain in place.",
+  "forcing_proofs": {
+    "member_auth": "PASS. In an isolated scratch copy, removing the workflow member-auth check makes scripts/test-hosted-acceptance-lanes.mjs fail specifically at 'duplicate rename refuses guest auth' (exit 1).",
+    "lane_b": "PASS. In an isolated scratch copy, allowing lane B to bypass admission only for duplicate-rename makes the same guard fail specifically at 'duplicate rename requires lane A' (exit 1).",
+    "restoration": "Both mutations were applied only to temporary copies and removed with the scratch directory; shared workflow/source files were not modified."
+  },
+  "verification": [
+    "node --test scripts/test-hosted-acceptance-lanes.mjs tests/browser/data-member-sender-admission.test.mjs: 3/3 pass.",
+    "pnpm exec biome check scripts/test-hosted-acceptance-lanes.mjs tests/browser/data-member-sender-admission.test.mjs: pass.",
+    "Scratch mutation proof for member-auth refusal: expected assertion fails when guard is removed.",
+    "Scratch mutation proof for lane-B duplicate refusal: expected assertion fails when lane guard is bypassed."
+  ],
+  "files_checked": [
+    "scripts/test-hosted-acceptance-lanes.mjs",
+    "tests/browser/data-member-sender-admission.test.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    ".github/workflows/hosted-resource-diagnostic.yml"
+  ],
+  "limits": "No browser/native acceptance or product case credit. No exact-main CI run was found for the candidate commit at review time; this PASS does not authorize the member Settings lane. Wait for green exact-main CI before dispatching it."
+}
