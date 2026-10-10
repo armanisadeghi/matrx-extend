@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38031583402,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38031583402",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "cd59220a97a19899982187535a9f55e6dc13461a",
+  "lane": "B",
+  "acceptance_case": "settings-controls",
+  "mode": "guest",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "source_sha": "7c6311e86562051bcaa58de997a248ae40c58bd7",
+    "tree_sha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d",
+    "ci_run_id": 38029218282,
+    "artifact_id": 11661736374,
+    "artifact_digest": "sha256:eda8dbd6fd8a924bdb3554586cd62d2b252a9b29f19fb54a80bd6d074cbac397",
+    "version": "0.2.458",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_report_artifact": {
+    "artifact_id": 11663235116,
+    "name": "hosted-guest-38031583402-1",
+    "digest": "sha256:02700d596a8075f20a47a23029415bd0c9cae1a9a65abc5bce728e3607fe8601",
+    "native_report_present": false,
+    "expected_native_report_path": "test-results/settings-local-controls-acceptance.json",
+    "artifact_contents": "two screenshots only; no native report or resource journal"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "unavailable_after_resource_guard_abort",
+  "resource_valid_acceptance": false,
+  "resource_finals": {
+    "hosted-package-38031583402-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38031583402-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38031583402-1": "invalid; admitted=true; resourceInvalid=true; exitCode=3; watchdog stopped the owned process after CPU busy/high-load unsafe samples"
+  },
+  "resource_journal_provenance": "Sanitized RESOURCE_* events recovered from the exact Actions run logs because the hosted artifact did not include journals. RESOURCE_PROCESS_ATTRIBUTION rows and absolute path fields were omitted. The process-group stop-request event was omitted to avoid exposing its process-group identifier; the safe-boundary stop and invalid final decision remain.",
+  "resource_journals": {
+    "hosted-package-38031583402-1": {
+      "path": "resource-journals/hosted-package-38031583402-1.jsonl",
+      "sha256": "022ab6ebf9a2bf7b2aad63044d1e0b680ac92870c470559fac97bcccb24117f7"
+    },
+    "hosted-browser-38031583402-1": {
+      "path": "resource-journals/hosted-browser-38031583402-1.jsonl",
+      "sha256": "5455d8ffd1ea767583906bca2036d955889936d9e3fc64c3f65d9567aca61749"
+    },
+    "hosted-guest-38031583402-1": {
+      "path": "resource-journals/hosted-guest-38031583402-1.jsonl",
+      "sha256": "64b36ac296eaf1807ce071331e53a37c3942f9033e97060b1013d71db1014b01"
+    }
+  },
+  "native_observations": {
+    "initial_browser_panel_context_ready": "observed in workflow log before resource abort",
+    "settings_controls_execution": "unknown; no native report",
+    "guest_choices_after_extension_reload": "unknown; no native report",
+    "post_replacement_settings_readback": "unknown; no native report",
+    "case_verdict": "unknown; no native report"
+  },
+  "cleanup": "Native driver cleanup and Settings persistence remain unverified because the native report is absent. No product pass or fail is assigned.",
+  "claim_limit": "This is a resource-invalid lane-B attempt only. It provides no D186 post-replacement Settings readback, no full Settings acceptance, and no product acceptance credit. No retry was launched.",
+  "source_boundary": "The frozen product artifact is from CI source 7c6311e86562051bcaa58de997a248ae40c58bd7. The hosted workflow checkout is cd59220a97a19899982187535a9f55e6dc13461a; current main later advanced to d77e461b0f7289ca19122522e153515b807e932a. This run is not a current-main acceptance claim."
+}
