@@ -7,13 +7,13 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { probeEffectiveHostAccess } from './scrape-effective-host-access-probe.mjs';
 import { assertGuestScrapeRecoveryEvidence } from './scrape-error-recovery-guest-oracle.mjs';
-import { updateHostAccessIfExpected } from './scrape-host-access-transition.mjs';
 import {
   observeRecoveryPreflight,
   runAfterEffectiveHostDenial,
   waitForRecoveryOutcome,
   withRecoveryHostAccessCleanup,
 } from './scrape-recovery-failure-diagnostic.mjs';
+import { readSiteRestriction, setSiteRestriction } from './scrape-site-restriction.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -40,7 +40,7 @@ const report = {
   failure_code: null,
   failure_diagnostic: null,
   limits:
-    'Bounded guest host-permission denial, Try again, deep-mode preservation, and Dismiss only. Reload page remains unverified because the real second-no-receiver-after-injection condition is a runtime/manifest fault, while a genuine permission denial offers Try again only.',
+    'Non-default Chrome ExtensionsMenuAccessControl feature enabled in the isolated test profile; not default-Chrome or Store acceptance. Bounded guest host-permission denial, Try again, deep-mode preservation, and Dismiss only. Reload page remains unverified because the real second-no-receiver-after-injection condition is a runtime/manifest fault, while a genuine permission denial offers Try again only.',
 };
 
 function safeFailureCode(error) {
@@ -65,77 +65,22 @@ async function readHostAccess(detailsPage, extensionId) {
   }, extensionId);
 }
 
-async function hostAccess(detailsPage, extensionId, requested, expectedBefore = null) {
-  return detailsPage.evaluate(
-    async ({ id, requestedAccess, expectedBefore: requiredBefore }) => {
-      const api = chrome.developerPrivate;
-      if (!api?.getExtensionsInfo || !api?.updateExtensionConfiguration)
-        throw new Error('scrape_recovery_chrome_site_access_api_missing');
-      const before = await api.getExtensionsInfo({
-        includeDisabled: true,
-        includeTerminated: true,
-      });
-      const item = before.find((entry) => entry.id === id);
-      const hostAccessBefore = item?.permissions?.runtimeHostPermissions?.hostAccess;
-      if (!hostAccessBefore) throw new Error('scrape_recovery_host_access_state_missing');
-      if (requiredBefore && hostAccessBefore !== requiredBefore)
-        throw new Error('scrape_recovery_host_access_precondition_failed');
-      const hostAccessValues = { ON_CLICK: 'ON_CLICK', ON_ALL_SITES: 'ON_ALL_SITES' };
-      const next = hostAccessValues[requestedAccess];
-      if (!next) throw new Error('scrape_recovery_host_access_value_missing');
-      await api.updateExtensionConfiguration({ extensionId: id, hostAccess: next });
-      return { before: hostAccessBefore, changed: true };
-    },
-    { id: extensionId, requestedAccess: requested, expectedBefore },
-  );
+async function withSiteSettings(page, extensionId, action) {
+  const details = await page.context().newPage();
+  try {
+    await details.goto(`chrome://extensions/?id=${extensionId}`, {
+      waitUntil: 'domcontentloaded',
+      timeout: 30000,
+    });
+    return await action(details);
+  } finally {
+    await details.close().catch(() => {});
+    await page.bringToFront().catch(() => {});
+  }
 }
 
 async function getHostAccess(page, extensionId) {
-  const details = await page.context().newPage();
-  try {
-    await details.goto(`chrome://extensions/?id=${extensionId}`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 30000,
-    });
-    return await readHostAccess(details, extensionId);
-  } finally {
-    await details.close().catch(() => {});
-    await page.bringToFront().catch(() => {});
-  }
-}
-
-async function setHostAccess(
-  page,
-  extensionId,
-  requested,
-  expected,
-  expectedBefore = null,
-  onMutationAttempt = () => {},
-) {
-  const details = await page.context().newPage();
-  try {
-    await details.goto(`chrome://extensions/?id=${extensionId}`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 30000,
-    });
-    const current = await readHostAccess(details, extensionId);
-    const changed = await updateHostAccessIfExpected(
-      current,
-      requested,
-      expectedBefore,
-      async (validatedRequest) => {
-        onMutationAttempt();
-        const result = await hostAccess(details, extensionId, validatedRequest, expectedBefore);
-        return result;
-      },
-    );
-    const observed = await readHostAccess(details, extensionId);
-    assert.equal(observed, expected, `scrape_recovery_${requested.toLowerCase()}_not_observed`);
-    return { before: changed.before, after: observed };
-  } finally {
-    await details.close().catch(() => {});
-    await page.bringToFront().catch(() => {});
-  }
+  return withSiteSettings(page, extensionId, (details) => readHostAccess(details, extensionId));
 }
 
 async function recoveryState(panel) {
@@ -173,14 +118,6 @@ async function recoveryState(panel) {
   );
 }
 
-async function forceActiveTabGrantRevocation(page, pageUrl) {
-  const changedOrigin = new URL(pageUrl.href);
-  changedOrigin.hostname = changedOrigin.hostname === 'localhost' ? '127.0.0.1' : 'localhost';
-  await page.goto(changedOrigin.href, { waitUntil: 'domcontentloaded' });
-  await page.goto(pageUrl.href, { waitUntil: 'domcontentloaded' });
-  return true;
-}
-
 async function run() {
   assert.equal(
     process.env.MATRX_SCRAPE_ARTIFACT_CHANNEL,
@@ -212,6 +149,7 @@ async function run() {
   try {
     await runNativeSidepanelQa({
       headed: true,
+      enableUserSiteRestrictions: true,
       extensionDir,
       localDevReceiptPath: receiptPath,
       expectedRelease: receipt,
@@ -228,6 +166,11 @@ async function run() {
         resourceAction,
         transportFailureClass,
       }) => {
+        const commandLine = await browserSession.send('Browser.getBrowserCommandLine');
+        assert.ok(
+          commandLine.arguments?.includes('--enable-features=ExtensionsMenuAccessControl'),
+          'scrape_recovery_site_restriction_feature_missing',
+        );
         const extensionId = await evaluate(panel, 'chrome.runtime.id');
         assert.match(extensionId ?? '', /^[a-p]{32}$/, 'scrape_recovery_extension_id_missing');
         const url = new URL(page.url());
@@ -246,6 +189,12 @@ async function run() {
           case_id: 'EXT-F-1007-T14',
           auth_mode: 'guest',
           requested_mode: 'deep',
+          browser_configuration: {
+            enabled_feature: 'ExtensionsMenuAccessControl',
+            flag_observed: true,
+            default_chrome: false,
+          },
+          access_probes: [],
           denial: null,
           retry: null,
           dismiss: null,
@@ -258,40 +207,51 @@ async function run() {
           'ON_ALL_SITES',
           'scrape_recovery_profile_not_initially_all_sites',
         );
-        let hostAccessMutationAttempted = false;
-        const markHostAccessMutationAttempt = () => {
-          hostAccessMutationAttempted = true;
-        };
-        const restoreHostAccess = async () => {
-          if (!hostAccessMutationAttempted) return;
-          const restored = await resourceAction(() =>
-            setHostAccess(
-              page,
-              extensionId,
-              originalHostAccess,
-              originalHostAccess,
-              null,
-              markHostAccessMutationAttempt,
+        const originalSiteSetting = await resourceAction(() =>
+          withSiteSettings(page, extensionId, (details) =>
+            readSiteRestriction(details, url.origin),
+          ),
+        );
+        assert.deepEqual(
+          originalSiteSetting,
+          { restricted: false, permitted: false },
+          'scrape_recovery_fixture_site_not_neutral',
+        );
+        let siteMutationAttempted = false;
+        const setRestriction = (restricted, expectedBefore) =>
+          resourceAction(() =>
+            withSiteSettings(page, extensionId, (details) =>
+              setSiteRestriction(details, url.origin, restricted, expectedBefore, () => {
+                siteMutationAttempted = true;
+              }),
             ),
           );
+        const restoreHostAccess = async () => {
+          const restored = siteMutationAttempted
+            ? await setRestriction(false, null)
+            : originalSiteSetting;
+          const hostAccess = await resourceAction(() => getHostAccess(page, extensionId));
           report.observations.cleanup = {
             original_host_access: originalHostAccess,
-            host_access: restored.after,
-            restored: restored.after === originalHostAccess,
+            host_access: hostAccess,
+            original_site_restricted: originalSiteSetting.restricted,
+            site_restricted: restored.restricted,
+            site_permitted: restored.permitted,
+            restored:
+              hostAccess === originalHostAccess && !restored.restricted && !restored.permitted,
           };
         };
+        const probe = (round) =>
+          probeEffectiveHostAccess(panel, browserSession.timeoutMs, {
+            expectedUrl: url.href,
+            onObservation: (value) => {
+              report.observations.access_probes.push({ round, ...value });
+              if (value.access === 'unknown') report.failure_diagnostic = value;
+            },
+          });
         let restorationError;
         const exerciseDenialAndRecovery = async () => {
-          const deny = await resourceAction(() =>
-            setHostAccess(
-              page,
-              extensionId,
-              'ON_CLICK',
-              'ON_CLICK',
-              originalHostAccess,
-              markHostAccessMutationAttempt,
-            ),
-          );
+          const deny = await setRestriction(true, false);
           await resourceAction(() => page.reload({ waitUntil: 'domcontentloaded' }));
           await waitFor(
             'scrape_recovery_fixture_reloaded',
@@ -302,16 +262,12 @@ async function run() {
             () => performance.getEntriesByType('navigation')[0]?.type ?? null,
           );
           assert.equal(reloadType, 'reload', 'scrape_recovery_denied_page_reload_missing');
-          let originTransitionCompleted = false;
-          await resourceAction(() => forceActiveTabGrantRevocation(page, url));
-          originTransitionCompleted = true;
-          await resourceAction(() => page.reload({ waitUntil: 'domcontentloaded' }));
           await resourceAction(() => page.bringToFront());
           const preflight = (operation, read) =>
             observeRecoveryPreflight(
               {
                 operation,
-                originTransitionCompleted,
+                originTransitionCompleted: false,
                 transportFailureClass,
                 onFailure: (value) => {
                   report.failure_diagnostic = value;
@@ -323,10 +279,7 @@ async function run() {
           assert.equal(state.ready, true, 'scrape_recovery_panel_lost_after_fixture_reload');
           assert.equal(state.deepTitles.length, 1, 'scrape_recovery_deep_control_not_unique');
           const denialStart = await runAfterEffectiveHostDenial(
-            () =>
-              preflight('effective_host_access', () =>
-                probeEffectiveHostAccess(panel, browserSession.timeoutMs),
-              ),
+            () => preflight('effective_host_access', () => probe('denial')),
             () => resourceAction(() => click(panel, 'title', state.deepTitles[0])),
           );
           const effectiveAccess = denialStart.access;
@@ -350,8 +303,8 @@ async function run() {
             'scrape_recovery_marker_present_before_retry',
           );
           report.observations.denial = {
-            host_access: deny.after,
-            active_tab_revocation_origin_change: true,
+            host_access: originalHostAccess,
+            site_restricted: deny.restricted,
             effective_injection_access: effectiveAccess,
             page_reloaded_without_access: reloadType === 'reload',
             error_visible: state.error,
@@ -360,15 +313,11 @@ async function run() {
             reload_visible: state.reloadPage === 1,
           };
 
-          const grant = await resourceAction(() =>
-            setHostAccess(
-              page,
-              extensionId,
-              'ON_ALL_SITES',
-              'ON_ALL_SITES',
-              'ON_CLICK',
-              markHostAccessMutationAttempt,
-            ),
+          const grant = await setRestriction(false, true);
+          assert.equal(
+            await probe('retry'),
+            'available',
+            'scrape_recovery_retry_access_not_available',
           );
           await resourceAction(() => click(panel, 'button-text', 'Try again'));
           state = await waitFor(
@@ -377,22 +326,14 @@ async function run() {
             (value) => value?.ready && !value.error && value.resultText?.includes(marker),
           );
           report.observations.retry = {
-            host_access: grant.after,
+            host_access: originalHostAccess,
+            site_restricted: grant.restricted,
             clicked: true,
             error_cleared: !state.error,
             deep_only_marker_visible: state.resultText.includes(marker),
           };
 
-          const secondDenial = await resourceAction(() =>
-            setHostAccess(
-              page,
-              extensionId,
-              'ON_CLICK',
-              'ON_CLICK',
-              'ON_ALL_SITES',
-              markHostAccessMutationAttempt,
-            ),
-          );
+          const secondDenial = await setRestriction(true, false);
           await resourceAction(() => page.reload({ waitUntil: 'domcontentloaded' }));
           await waitFor(
             'scrape_recovery_dismiss_fixture_ready',
@@ -406,7 +347,10 @@ async function run() {
             1,
             'scrape_recovery_dismiss_deep_control_not_unique',
           );
-          await resourceAction(() => click(panel, 'title', state.deepTitles[0]));
+          const dismissalStart = await runAfterEffectiveHostDenial(
+            () => probe('dismiss'),
+            () => resourceAction(() => click(panel, 'title', state.deepTitles[0])),
+          );
           state = await waitFor(
             'scrape_recovery_dismiss_error',
             () => recoveryState(panel),
@@ -420,7 +364,9 @@ async function run() {
             (value) => value?.ready && !value.error,
           );
           report.observations.dismiss = {
-            host_access: secondDenial.after,
+            host_access: originalHostAccess,
+            site_restricted: secondDenial.restricted,
+            effective_injection_access: dismissalStart.access,
             error_visible: true,
             permission_message_visible: dismissError.permissionMessage,
             clicked: true,

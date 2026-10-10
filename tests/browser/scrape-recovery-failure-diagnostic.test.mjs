@@ -62,7 +62,7 @@ test('T14 wait failure records only bounded pane, capture, and host categories',
       deep_control_present: true,
       deep_capture_in_progress: true,
       result_present: false,
-      expected_host_access: 'ON_CLICK',
+      expected_host_access: 'ON_ALL_SITES',
       observed_host_access: 'ON_CLICK',
     },
   );

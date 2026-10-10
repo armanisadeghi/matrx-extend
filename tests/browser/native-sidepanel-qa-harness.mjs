@@ -1491,6 +1491,7 @@ export async function runNativeSidepanelQa({
   onBrowserLaunchObservation,
   onStartupEndpointObservation,
   startupEndpointObservationMs = 0,
+  enableUserSiteRestrictions = false,
   reloadOpenDiagnostic = false,
   reloadSenderDocumentDiagnostic = false,
 } = {}) {
@@ -1567,6 +1568,7 @@ export async function runNativeSidepanelQa({
       [
         ...(!headed ? ['--headless=new'] : []),
         '--enable-automation',
+        ...(enableUserSiteRestrictions ? ['--enable-features=ExtensionsMenuAccessControl'] : []),
         '--no-first-run',
         '--no-default-browser-check',
         '--use-mock-keychain',

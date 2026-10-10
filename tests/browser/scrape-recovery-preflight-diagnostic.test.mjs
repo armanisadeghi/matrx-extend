@@ -181,7 +181,7 @@ test('T14 unknown diagnostic inputs never copy transport or error text and rethr
 // Chrome APIs can leave the promise returned to Runtime.evaluate unsettled after
 // a host-access transition. Execute the actual emitted expression, with only
 // Chrome and the clock replaced, so dropping its bound is observable.
-async function probeRuntime({ query, execute }) {
+async function probeRuntime({ query, execute, expectedUrl = null }) {
   const { runInNewContext } = await import('node:vm');
   const { probeEffectiveHostAccess } = await import('./scrape-effective-host-access-probe.mjs');
   const timers = new Map();
@@ -189,6 +189,7 @@ async function probeRuntime({ query, execute }) {
   let injections = 0;
   let resolved = false;
   let result;
+  let observation;
   const panel = {
     async send(method, params) {
       assert.equal(method, 'Runtime.evaluate');
@@ -217,7 +218,12 @@ async function probeRuntime({ query, execute }) {
       return { result: { value } };
     },
   };
-  const pending = probeEffectiveHostAccess(panel, 100).then((value) => {
+  const pending = probeEffectiveHostAccess(panel, 100, {
+    expectedUrl,
+    onObservation: (value) => {
+      observation = value;
+    },
+  }).then((value) => {
     resolved = true;
     result = value;
     return value;
@@ -233,6 +239,7 @@ async function probeRuntime({ query, execute }) {
     },
     flush,
     pending,
+    observation: () => observation,
     state: () => ({ resolved, result, injections, timers: timers.size }),
   };
 }
@@ -254,6 +261,8 @@ for (const boundary of ['tabs_query', 'execute_script']) {
       'unsettled Chrome API must not hold Runtime.evaluate until strict CDP failure',
     );
     assert.equal(runtime.state().result, 'unknown');
+    assert.equal(runtime.observation().operation, boundary);
+    assert.equal(runtime.observation().outcome, 'timed_out');
     let clicks = 0;
     let restores = 0;
     await assert.rejects(
@@ -289,6 +298,7 @@ for (const boundary of ['tabs_query', 'execute_script']) {
 }
 
 for (const [name, execute, expected, clicks] of [
+  ['Chrome user-restricted site', () => Promise.reject(new Error('Blocked')), 'denied', 1],
   ['successful injection', () => Promise.resolve([]), 'available', 0],
   [
     'Chrome permission refusal',
@@ -327,3 +337,25 @@ for (const [name, execute, expected, clicks] of [
     assert.equal(runtime.state().result, expected);
   });
 }
+
+test('T14 query rejection cannot masquerade as injection denial', async () => {
+  const runtime = await probeRuntime({
+    query: () => Promise.reject(new Error('Blocked')),
+    execute: () => Promise.resolve([]),
+  });
+  assert.equal(runtime.state().result, 'unknown');
+  assert.equal(runtime.state().injections, 0);
+  assert.equal(runtime.observation().operation, 'tabs_query');
+  assert.equal(runtime.observation().outcome, 'rejected');
+});
+
+test('T14 a different active page cannot supply denial evidence for the owned fixture', async () => {
+  const runtime = await probeRuntime({
+    expectedUrl: 'http://localhost:32123/capture-recovery',
+    query: () => Promise.resolve([{ id: 27, url: 'http://localhost:32123/other' }]),
+    execute: () => Promise.reject(new Error('Blocked')),
+  });
+  assert.equal(runtime.state().result, 'unknown');
+  assert.equal(runtime.state().injections, 0);
+  assert.equal(runtime.observation().outcome, 'tab_mismatch');
+});

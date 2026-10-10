@@ -111,6 +111,7 @@ export async function runAfterEffectiveHostDenial(probe, action) {
 export async function waitForRecoveryOutcome({
   readState,
   readObservedHostAccess,
+  expectedHostAccess = 'ON_ALL_SITES',
   onFailure,
   wait = waitFor,
   now = () => Date.now(),
@@ -151,11 +152,13 @@ export async function waitForRecoveryOutcome({
       },
       (value) => value?.ready && (value.error || value.resultPresent),
       10000,
-      (value) => ({ phase: safeRecoveryFailureSnapshot(value, 'ON_CLICK', 'unknown').stage }),
+      (value) => ({
+        phase: safeRecoveryFailureSnapshot(value, expectedHostAccess, 'unknown').stage,
+      }),
     );
   } catch (error) {
     const observedHostAccess = await readObservedHostAccess().catch(() => 'unknown');
-    onFailure(safeRecoveryFailureSnapshot(lastState, 'ON_CLICK', observedHostAccess));
+    onFailure(safeRecoveryFailureSnapshot(lastState, expectedHostAccess, observedHostAccess));
     throw error;
   }
 }
