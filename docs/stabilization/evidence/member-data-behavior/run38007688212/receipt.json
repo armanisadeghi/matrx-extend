@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 38007688212,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38007688212",
+    "lane": "A",
+    "runner": "macos-15",
+    "conclusion": "failure",
+    "checkout_sha": "5e76b1301ca409187ecf7f8ed3c614fd69bda133"
+  },
+  "acceptance": {
+    "case": "member-data",
+    "case_id": "EXT-F-2005-T01",
+    "auth_mode": "member",
+    "scope": "T01",
+    "fixture": "static synthetic /products catalog",
+    "report_status": "fail_before_data_picker",
+    "stage": "member_auth",
+    "auth_stage": "member_extension_signin",
+    "failure_code": "d87_member_organization_uuid_unverified",
+    "classification": "member_active_organization_storage_not_verified",
+    "data_behavior": "unverified",
+    "observations": {},
+    "pattern_write_attempted": false,
+    "cleanup_required": false
+  },
+  "execution_flow": {
+    "basis": "serialized failure code at the exact post-selection UUID assertion in settings-native-auth-driver.mjs",
+    "member_identity_and_canonical_nonadmin_checks": "passed before failure site",
+    "organization_label_wait": "passed before failure site",
+    "active_organization_uuid_in_extension_storage": "missing_or_invalid",
+    "data_picker_opened": false,
+    "pattern_save_clicked": false
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.456",
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "ci_run_id": 37998294843,
+    "ci_artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+    "verification": "exact imported development artifact receipt and tree hash passed"
+  },
+  "hosted_run_artifact": {
+    "id": 11652485606,
+    "name": "hosted-guest-38007688212-1",
+    "sha256": "sha256:c86680d1332d0ff44c577ed1e1892eb8e1312c84a722a920db11bf91adfa1c09",
+    "expired": false,
+    "contains_native_report": true,
+    "unrelated_journal_run_ids": [37105304739, 37724762467]
+  },
+  "resource_guards": {
+    "package": { "admitted": true, "resource_invalid": false, "decision": "valid", "exit_code": 0 },
+    "browser": { "admitted": true, "resource_invalid": false, "decision": "valid", "exit_code": 0 },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "child_failed",
+      "exit_code": 1,
+      "transient_cpu_busy_recovered": true,
+      "terminal_watch": "healthy"
+    }
+  },
+  "credential_and_fixture_cleanup": {
+    "temporary_github_secret_removed": true,
+    "local_single_use_link_removed": true,
+    "member_link_consumed_by_auth_flow": true,
+    "saved_pattern_or_remote_fixture_write": false,
+    "isolated_runner_session_after_job": "not retained"
+  },
+  "scope_boundary": "The exact frozen development artifact 0.2.456 from source 7230bb7, CI run 37998294843, artifact 11647758423 and tree hash 230d4629... was imported and verified. All three resource journals ended with resourceInvalid=false; the guest child failed with exit 1 at member organization UUID verification. The failure occurred before Data picker interaction or any wbx_pattern write. This is no Data picker/save verdict and does not establish member Data health on current main or Store.",
+  "evidence_files": [
+    "data-member-native-acceptance.json (uploaded native report)",
+    "hosted-package-38007688212-1.jsonl",
+    "hosted-browser-38007688212-1.jsonl",
+    "hosted-guest-38007688212-1.jsonl"
+  ]
+}
