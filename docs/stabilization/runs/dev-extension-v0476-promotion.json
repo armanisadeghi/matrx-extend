@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "kind": "pinned_development_extension_promotion",
+  "status": "awaiting_eligible_ci_artifact",
+  "candidate": {
+    "version": "0.2.476",
+    "release_run_id": 38077256885,
+    "release_artifact_id": 11678519586,
+    "release_artifact_name": "matrx-extend-v0.2.476",
+    "release_artifact_sha256": "3e1277f1df8692fa252fadcb3ba5a600c386ca00fdb7b958d0189103ba20dde8",
+    "release_source_main_sha": "6e2a383eef7bdf7775045aaa4a0410e7f85103bc",
+    "current_main_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "stable_destination": ".output/chrome-mv3-dev",
+    "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "ci_search": {
+    "requested_run_id": 38077463631,
+    "requested_run_source_sha": "3b367c44a54af2757ddc62bfb2ae1f92753b347e",
+    "requested_run_ref": "v0.2.475",
+    "requested_run_conclusion": "success",
+    "requested_run_artifacts": 0,
+    "reason_unusable": "Tag CI skips the three development-artifact steps; no importable artifact exists.",
+    "latest_main_ci_at_inspection": {
+      "run_id": 38077798820,
+      "source_sha": "a684495fd015f95936330d6e21aa4d31aac36600",
+      "status": "in_progress",
+      "source_version": "0.2.475",
+      "reason_unusable": "This run is older than current v0.2.476 main and the intervening source changes include package.json and generated tool-catalog files outside the promotion script's runtime-equivalence allowlist."
+    },
+    "ci_trigger": "A documentation-only promotion record on current v0.2.476 main will trigger the guarded main-push CI artifact path."
+  },
+  "promotion": {
+    "imported": false,
+    "installed": false,
+    "chrome_reloaded": false,
+    "profile_touched": false,
+    "upload_or_publisher_action": false
+  },
+  "evidence": []
+}
