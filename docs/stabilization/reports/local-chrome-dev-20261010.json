@@ -1,21 +1,21 @@
 {
   "schema_version": 1,
   "kind": "local_chrome_development_installation_observation",
-  "observed_at": "2026-10-10T18:18:00Z",
+  "observed_at": "2026-10-10T18:41:00Z",
   "chrome_profile": "Arman (armansadeghi.com)",
   "development": {
-    "version": "0.2.473",
+    "version": "0.2.474",
     "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
     "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
     "enabled": true,
     "pinned_to_toolbar": true,
     "chrome_reload_confirmed": true,
-    "source_sha": "ada1e9cc2e66faca20923ce9be251d708b79da84",
-    "promotion_main_sha": "0a1090e955ae4b814baa4bab779164621600ea90",
+    "source_sha": "e8f67d84bd69c5209ce4b693191530b4fad181c1",
+    "promotion_main_sha": "3cd608615edfa8518618fee496d26edd211e61b3",
     "compatibility": "runtime-equivalent",
-    "tree_sha256": "a2af68f942c539649a67a268ec7708e519521c04436953f3532caf6a826ac269",
-    "ci_run_id": 38074465790,
-    "ci_artifact_id": 11677708705
+    "tree_sha256": "a9dcf5583e266f3026b72f1fc67b05047c43c1c078dff43db7802716bfc74800",
+    "ci_run_id": 38076037431,
+    "ci_artifact_id": 11679336208
   },
   "store": {
     "version": "0.2.205",
@@ -24,6 +24,6 @@
     "enabled": true,
     "pinned_to_toolbar": true
   },
-  "evidence": "The exact-main CI development artifact importer verified provenance and tree hash, the promoter installed it at the stable unpacked path, and Chrome's extension detail page showed Reloaded, version 0.2.473, the development ID, loaded-from path, and Pin to toolbar on. The Store extension detail page separately showed version 0.2.205, Store source, and Pin to toolbar on. Intervening main commit 0a1090e was evidence-only.",
+  "evidence": "The exact-main CI development artifact importer verified provenance and tree hash, the promoter installed it at the stable unpacked path, and Chrome's extension detail page showed Reloaded, version 0.2.474, the development ID, loaded-from path, and Pin to toolbar on. The Store extension detail page separately showed version 0.2.205, Store source, and Pin to toolbar on. Intervening main commit 3cd6086 was evidence-only.",
   "limits": "This verifies installation identity, version, pin and reload only. It is not a product behavior pass, a Store submission, or proof that later main changes are installed."
 }
