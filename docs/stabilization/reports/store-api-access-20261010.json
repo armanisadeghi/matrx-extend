@@ -1,0 +1,89 @@
+{
+  "observed_at": "2026-10-10T22:18:39Z",
+  "status": "access_unverified_prepared_activation_contract",
+  "scope": "Official Chrome Web Store Publisher API v2 access for the primary Matrx Extend item",
+  "source_commit": "a2c77f10d6ae85643590d5fc1954be86e2a7d3ca",
+  "primary_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "publisher": {
+    "display_name": "Matrx",
+    "google_account": "arman@armansadeghi.com",
+    "api_publisher_id": null,
+    "identity_verified_by_api": false,
+    "identity_source": "Canonical common-docs/systems/apps/extension/CHROME-WEB-STORE.md; display name and item ID do not substitute for the API publisher ID."
+  },
+  "release_boundary": {
+    "last_authenticated_public_version": "0.2.205",
+    "last_authenticated_submitted_version": "0.2.479",
+    "last_authenticated_submitted_state": "Pending review",
+    "fresh_private_status_observed": false,
+    "action": "Preserve the existing submission. Newer main versions alone do not justify replacement."
+  },
+  "observations": [
+    {
+      "kind": "inherited_account_metadata",
+      "result": "The owning release session reports an existing personal Vault Google connection marked Automation-only, managed/sealed and restricted to trusted server execution. This lane did not read its credential or independently establish its scopes or exact connection ID."
+    },
+    {
+      "kind": "current_tool_inventory",
+      "result": "No Vault, Supabase or AI Dream trusted-execution connector is exposed to this lane. The existing Google connection cannot be invoked through the available tool inventory."
+    },
+    {
+      "kind": "current_repository_configuration",
+      "method": "Read names only using gh secret list --repo armanisadeghi/matrx-extend --json name; inspect .github/workflows/release.yml.",
+      "result": "No Store-specific credential secret name is configured in this repository. Hosted release produces the validated package and has no Store API submission/status step. This does not prove credentials are absent from other Vault items, environments or Google Cloud."
+    },
+    {
+      "kind": "current_local_backend_source",
+      "method": "Search aidream/aidream/services and aidream/aidream/api for chromewebstore and fetchStatus; inspect google_integrations/service.py, google_integrations/scopes.py and api/routers/vault.py.",
+      "result": "No Store API operation or Store scope declaration was found. The canonical in-process Google token resolver exists; browser Vault resolution explicitly excludes sealed fields. This is source evidence, not proof of the deployed server's entire configuration."
+    },
+    {
+      "kind": "inherited_ui_constraint",
+      "result": "The owning session reports Browser Use refused scripting the Store dashboard. No alternate UI route, CDP workaround, credential reveal or protected-route bypass was attempted by this lane."
+    }
+  ],
+  "existing_trusted_path": {
+    "resolver": "aidream/aidream/services/google_integrations/service.py:refresh_connection_access_token",
+    "execution": "Run inside the authorized aidream trusted consumer, with exact connection_id, acting user_id, organization_id and audited credential purpose. Keep the derived token in process and send it only to the official Google endpoint.",
+    "identity_options": {
+      "strict_user_connection": true,
+      "strict_exact_connection": true,
+      "include_connection_identity": true
+    },
+    "scope_admission": "Use required_scope_options for either chromewebstore.readonly or chromewebstore when reading status. Declare scope strings in the canonical Google scope registries before a real consumer is implemented; do not add consent implicitly.",
+    "not_an_agent_token_route": "The existing /api/google-integrations/internal/credential bridge returns credential material to authorized server consumers. It is not a route for exposing a sealed Google credential to an agent or shell. Browser /api/vault/resolve excludes sealed values."
+  },
+  "prepared_activation_sequence": [
+    "First restore or expose the supported trusted-server connector/invocation and inspect only metadata for the exact publisher Google connection, including provider account identity and granted scopes. Confirm Chrome Web Store API is enabled in the existing ai-matrix-engine Google Cloud project. No token value is needed in chat, shell arguments, logs or repository secrets.",
+    "Obtain the non-secret API publisher ID from the official Developer Dashboard Publisher > Settings for Matrx through permitted account access. Do not guess it from the publisher display name, extension ID or public listing. The current Browser Use refusal is a tool constraint; do not route around it.",
+    "If the exact publisher connection already holds an accepted Store scope, implement an in-process read-only Store consumer using the canonical resolver. If no accepted grant exists, prepare an explicit official OAuth consent flow for the chosen Store operation, preserving every existing Google grant. For status alone request chromewebstore.readonly; upload/publish require chromewebstore. A new grant is not inferred from the existing Google login.",
+    "An official server-to-server alternative is a Google Cloud service account linked under the Store Developer Dashboard Account section. Google permits one linked service account per publisher. Check existing linkage before changing it; do not replace one silently. Prefer supported short-lived token issuance through the trusted server. Creating a service account alone does not grant Store authority; this linkage remains unverified and was not performed.",
+    "Before any mutation, issue GET https://chromewebstore.googleapis.com/v2/publishers/{verifiedPublisherId}/items/hnfolienncfklkgmdjjmhhegglimlamg:fetchStatus with an empty body. Require response name and itemId to match exactly; retain only timestamp, identity and review/version fields. Read publishedItemRevisionStatus and submittedItemRevisionStatus separately, including distributionChannels[].crxVersion, state, takenDown, warned and lastAsyncUploadState. A successful token refresh alone earns no Store access or status credit.",
+    "After read-only identity/status verification, independently review and test the real consumer before enabling any upload/publish step. Keep it separate from package generation. Reconcile the exact guarded hosted ZIP, provenance and digest; refuse to replace a pending submission merely because main advanced. Upload uses POST /upload/v2/publishers/{publisherId}/items/{itemId}:upload. Submit uses POST /v2/publishers/{publisherId}/items/{itemId}:publish with DEFAULT_PUBLISH and skipReview false. Verify returned state and a fresh fetchStatus; do not silently retry an uncertain mutation. Existing listing/privacy reconciliation and package gates still apply."
+  ],
+  "missing_evidence": [
+    "Exact publisher Google connection metadata and its granted Store scope, or an authorized linked service account.",
+    "Verified API publisher ID for Matrx.",
+    "An available supported trusted-server operation that consumes the sealed credential and returns only status metadata.",
+    "Successful primary-item fetchStatus proving identity, authorization and current private review status."
+  ],
+  "blocker_classification": "Supported access/execution is unavailable to this lane. This is not established as a human-only blocker: agent-accessible Vault/account setup may be possible once the proper connector is available. No live 2FA challenge or OAuth consent screen was reached.",
+  "changes": "Sanitized activation contract only. No speculative adapter, new scope, service-account linkage, workflow change, new schedule, token retrieval, upload or publish.",
+  "verification": {
+    "official_documentation_reviewed": true,
+    "existing_resolver_and_browser_boundary_inspected": true,
+    "repository_secret_names_only_inspected": true,
+    "live_store_api_request_made": false,
+    "store_automation_operational": false,
+    "product_test_credit": "None; no product code changed."
+  },
+  "official_sources": [
+    "https://developer.chrome.com/docs/webstore/using-api",
+    "https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/fetchStatus",
+    "https://developer.chrome.com/docs/webstore/api/reference/rest/v2/ItemState",
+    "https://developer.chrome.com/docs/webstore/api/reference/rest/v2/media/upload",
+    "https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/publish",
+    "https://developer.chrome.com/docs/webstore/service-accounts"
+  ],
+  "next_action": "The owning session restores a supported Vault/trusted-server invocation and resolves publisher identity plus scope metadata; then dispatches the bounded read-only consumer implementation and independent verification. Preserve pending 0.2.479 throughout."
+}
