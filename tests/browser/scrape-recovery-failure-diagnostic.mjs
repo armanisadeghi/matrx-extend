@@ -5,8 +5,26 @@ const hostCategory = (value) =>
 const flag = (value) => (typeof value === 'boolean' ? value : null);
 
 export function safeRecoveryFailureSnapshot(state, expectedHostAccess, observedHostAccess) {
+  const stage = state?.deepScrollProgressPresent
+    ? 'deep_scroll_in_progress'
+    : state?.deepScrollProgressFinished
+      ? 'capture_after_deep_scroll'
+      : state?.deepCaptureInProgress
+        ? 'deep_scroll_progress_not_observed'
+        : 'capture_not_active';
   return {
-    phase: 'permission_denial_or_capture_wait',
+    phase: 'capture_outcome_wait',
+    stage,
+    elapsed_ms: boundedMs(state?.diagnosticElapsedMs),
+    deep_mode_seen: flag(state?.deepModeSeen),
+    deep_scroll_progress_seen: flag(state?.deepScrollProgressSeen),
+    deep_scroll_progress_finished: flag(state?.deepScrollProgressFinished),
+    deep_scroll_first_progress_ms: boundedMs(state?.deepScrollFirstProgressMs),
+    deep_scroll_finished_ms: boundedMs(state?.deepScrollFinishedMs),
+    capture_wait_ms:
+      state?.deepScrollFinishedMs !== null && state?.deepScrollFinishedMs !== undefined
+        ? boundedMs((state?.diagnosticElapsedMs ?? 0) - state.deepScrollFinishedMs)
+        : null,
     scrape_tab_active: flag(state?.scrapeTabActive),
     scrape_pane_active: flag(state?.scrapePaneActive),
     error_present: flag(state?.error),
@@ -21,21 +39,69 @@ export function safeRecoveryFailureSnapshot(state, expectedHostAccess, observedH
   };
 }
 
+const boundedMs = (value) =>
+  Number.isInteger(value) && value >= 0 ? Math.min(value, 60000) : null;
+
+export function classifyEffectiveHostAccessProbe(result) {
+  if (result === 'available' || result === 'denied') return result;
+  return 'unknown';
+}
+
+export function requireEffectiveHostAccessDenied(result) {
+  const access = classifyEffectiveHostAccessProbe(result);
+  if (access !== 'denied') throw new Error(`scrape_recovery_effective_access_${access}`);
+  return access;
+}
+
+export async function runAfterEffectiveHostDenial(probe, action) {
+  const access = requireEffectiveHostAccessDenied(await probe());
+  return { access, value: await action() };
+}
+
 export async function waitForRecoveryOutcome({
   readState,
   readObservedHostAccess,
   onFailure,
   wait = waitFor,
+  now = () => Date.now(),
 }) {
   let lastState = null;
+  const startedAt = now();
+  let deepModeSeen = false;
+  let deepScrollProgressSeen = false;
+  let deepScrollProgressFinished = false;
+  let deepScrollFirstProgressMs = null;
+  let deepScrollFinishedMs = null;
+  let previousProgress = false;
   try {
     return await wait(
-      'scrape_recovery_permission_denial_or_capture',
+      'scrape_recovery_capture_outcome',
       async () => {
         lastState = await readState();
+        const progress = lastState?.deepScrollProgressPresent === true;
+        const elapsedMs = now() - startedAt;
+        deepModeSeen ||= lastState?.deepCaptureInProgress === true;
+        if (progress && deepScrollFirstProgressMs === null) deepScrollFirstProgressMs = elapsedMs;
+        deepScrollProgressSeen ||= progress;
+        if (previousProgress && !progress && lastState?.deepCaptureInProgress) {
+          deepScrollProgressFinished = true;
+          deepScrollFinishedMs = elapsedMs;
+        }
+        previousProgress = progress;
+        lastState = {
+          ...lastState,
+          diagnosticElapsedMs: elapsedMs,
+          deepModeSeen,
+          deepScrollProgressSeen,
+          deepScrollProgressFinished,
+          deepScrollFirstProgressMs,
+          deepScrollFinishedMs,
+        };
         return lastState;
       },
       (value) => value?.ready && (value.error || value.resultPresent),
+      10000,
+      (value) => ({ phase: safeRecoveryFailureSnapshot(value, 'ON_CLICK', 'unknown').stage }),
     );
   } catch (error) {
     const observedHostAccess = await readObservedHostAccess().catch(() => 'unknown');

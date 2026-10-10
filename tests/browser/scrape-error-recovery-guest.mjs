@@ -7,7 +7,10 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertGuestScrapeRecoveryEvidence } from './scrape-error-recovery-guest-oracle.mjs';
 import { updateHostAccessIfExpected } from './scrape-host-access-transition.mjs';
-import { waitForRecoveryOutcome } from './scrape-recovery-failure-diagnostic.mjs';
+import {
+  runAfterEffectiveHostDenial,
+  waitForRecoveryOutcome,
+} from './scrape-recovery-failure-diagnostic.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -158,12 +161,39 @@ async function recoveryState(panel) {
       deepTitles: buttons.filter((node) => (node.getAttribute('title') ?? node.getAttribute('data-matrx-title') ?? '').startsWith('Scroll the page top'))
         .map((node) => node.getAttribute('title') ?? node.getAttribute('data-matrx-title')),
       deepCaptureInProgress: Boolean(deepButton && /^Scrolling/.test(deepButton.textContent.trim())),
+      deepScrollProgressPresent: Boolean(deepButton && /^Scrolling\\s+\\d+\\/\\d+/.test(deepButton.textContent.trim())),
       resultPresent: Boolean(resultText?.trim()),
       resultText,
       fixtureTitle: pane.querySelector('.truncate.text-sm.font-medium')?.textContent?.trim() ?? null,
     };
   })()`,
   );
+}
+
+async function probeEffectiveHostAccess(panel) {
+  return evaluate(
+    panel,
+    `(() => new Promise(async (resolve) => {
+      try {
+        if (!chrome.scripting?.executeScript || !chrome.tabs?.query) return resolve('unknown');
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        if (!Number.isInteger(tab?.id)) return resolve('unknown');
+        await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: () => true });
+        resolve('available');
+      } catch (error) {
+        const message = String(error?.message ?? '');
+        resolve(/permission|cannot access|not allowed|host/i.test(message) ? 'denied' : 'unknown');
+      }
+    }))()`,
+  );
+}
+
+async function forceActiveTabGrantRevocation(page, pageUrl) {
+  const changedOrigin = new URL(pageUrl.href);
+  changedOrigin.hostname = changedOrigin.hostname === 'localhost' ? '127.0.0.1' : 'localhost';
+  await page.goto(changedOrigin.href, { waitUntil: 'domcontentloaded' });
+  await page.goto(pageUrl.href, { waitUntil: 'domcontentloaded' });
+  return true;
 }
 
 async function run() {
@@ -280,11 +310,17 @@ async function run() {
             () => performance.getEntriesByType('navigation')[0]?.type ?? null,
           );
           assert.equal(reloadType, 'reload', 'scrape_recovery_denied_page_reload_missing');
+          await resourceAction(() => forceActiveTabGrantRevocation(page, url));
+          await resourceAction(() => page.reload({ waitUntil: 'domcontentloaded' }));
           await resourceAction(() => page.bringToFront());
           let state = await recoveryState(panel);
           assert.equal(state.ready, true, 'scrape_recovery_panel_lost_after_fixture_reload');
           assert.equal(state.deepTitles.length, 1, 'scrape_recovery_deep_control_not_unique');
-          await resourceAction(() => click(panel, 'title', state.deepTitles[0]));
+          const denialStart = await runAfterEffectiveHostDenial(
+            () => probeEffectiveHostAccess(panel),
+            () => resourceAction(() => click(panel, 'title', state.deepTitles[0])),
+          );
+          const effectiveAccess = denialStart.access;
           state = await waitForRecoveryOutcome({
             readState: () => recoveryState(panel),
             readObservedHostAccess: () => getHostAccess(page, extensionId),
@@ -306,6 +342,8 @@ async function run() {
           );
           report.observations.denial = {
             host_access: deny.after,
+            active_tab_revocation_origin_change: true,
+            effective_injection_access: effectiveAccess,
             page_reloaded_without_access: reloadType === 'reload',
             error_visible: state.error,
             permission_message_visible: state.permissionMessage,
