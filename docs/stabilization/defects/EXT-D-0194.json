@@ -1,15 +1,19 @@
 {
   "id": "EXT-D-0194",
   "feature_id": "EXT-F-1007",
-  "case_ids": ["EXT-F-1007-T01"],
+  "case_ids": [
+    "EXT-F-1007-T01"
+  ],
   "surface": "Hosted guest Scrape acceptance artifact preflight",
   "auth_mode": "guest; infrastructure-only, zero product behavior credit",
   "title": "Scrape driver compares relocated receipt kind to wrapper package classification",
   "severity": "S2: exact release guest Scrape acceptance fails before browser setup",
   "priority": "P1: restore exact v0.2.469 guest Scrape acceptance",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "root",
-  "preconditions": ["Select exact v0.2.469 release Store ZIP for hosted guest-scrape acceptance."],
+  "preconditions": [
+    "Select exact v0.2.469 release Store ZIP for hosted guest-scrape acceptance."
+  ],
   "reproduction": [
     "Hosted run 38069924138 fails in inputs before browser launch.",
     "Run the new release importer/preflight guard against baseline driver: canonical native_store_zip_candidate_key_adapted receipt is rejected as not published_store_zip_adapted."
@@ -20,15 +24,21 @@
   "sibling_census": "All published_store_zip_adapted uses in scripts compare prepared/wrapper classification; this Scrape driver was the sole JSON receipt comparison. Existing Data release contract already uses the canonical JSON receipt kind.",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38069924138",
-    "docs/stabilization/reports/d194-red-proof.json"
+    "docs/stabilization/reports/d194-red-proof.json",
+    "docs/stabilization/reports/independent-guest-scrape-retest-38070816110.json",
+    "docs/stabilization/reports/independent-guest-scrape-retest-38070816110.json",
+    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-package-38070816110-1.jsonl",
+    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-browser-38070816110-1.jsonl",
+    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-guest-38070816110-1.jsonl"
   ],
-  "fix_commit": null,
+  "fix_commit": "03d342c345ba332f59771e8b87183d1e49231190",
   "verification": [
-    "Baseline guard failed the real importer-to-driver preflight boundary; repaired guard plus Scrape routing pass 16/16.",
-    "Changed only the Scrape receipt-kind assertion in driver; tree/version checks and behavior oracle untouched.",
-    "Node syntax, focused Biome and diff checks pass. Independent review and guarded browser retest pending."
+    "Independent hosted retest 38070816110 on exact Store v0.2.469 reached the browser and completed the unchanged Scrape behavior assertions; native receipt records guest UI behavior.",
+    "Package, browser and guest resource journals each end valid (admitted=true, resourceInvalid=false, exitCode=0).",
+    "Independent review distinguishes the successful artifact-preflight/harness path from product UX evidence; T08 guest remains partial with normal-width and member/admin coverage open."
   ],
-  "closure_requirement": "Independent source review followed by fresh guarded exact-v0.2.469 hosted guest-scrape run reaching the unchanged real behavior assertions, with valid resource final. Zero product credit from source guards; retest-pass and closed require fresh browser evidence.",
+  "closure_requirement": "Met: independent review and fresh guarded exact-v0.2.469 hosted guest-Scrape run reached the unchanged behavior assertions with valid package, browser and guest resource finals. Product evidence is bounded to the receipt observations; it does not mark T08 or the feature fully passed.",
   "transition_history": [
     {
       "from": null,
@@ -44,6 +54,11 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "One assertion corrected with importer-to-driver red/green regression guard; peer and browser retest pending."
+    },
+    {
+      "from": "in-fix",
+      "to": "closed",
+      "reason": "Independent review of hosted run 38070816110 confirmed the exact Store receipt passed preflight, reached real guest Scrape assertions, and had valid resource finals; see docs/stabilization/reports/independent-guest-scrape-retest-38070816110.json."
     }
   ]
 }

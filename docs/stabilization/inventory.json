@@ -22325,7 +22325,7 @@
               "unverified": [
                 "Guest-only narrow-width run; member/admin and normal-width dimensions remain unverified."
               ],
-              "detail": "Guest result tabs, matching populated/empty states, and capture invariance were observed warm and after full extension reload. Other modes and normal width were not exercised. Reviewed bounded normal-width guest run 38044684443 verified six populated panes, empty Article/Images/Video/Links states, and capture/export invariance warm and after full extension reload at 600px CDP viewport emulation. SEO/Schema empty-state, physical resize, other roles, and Store/current-main remain unverified; the case remains partial.",
+              "detail": "Independent review of hosted run 38070816110 confirms the exact Store v0.2.469 guest run reached real Scrape behavior assertions: all six populated panes, empty Images/Video/Links/Article states, and capture/export invariance warm and after full extension reload. This is bounded guest evidence only. Normal-width verification, member/admin modes, SEO/Schema empty states, and physical resize remain unverified; T08 remains partial.",
               "bounded_subtarget_evidence": [
                 {
                   "run_id": 38044684443,
@@ -22344,6 +22344,25 @@
                   "proven": "Six populated panes; empty Article/Images/Video/Links states; capture and exported payload invariance warm and after full extension reload.",
                   "limits": "SEO/Schema empty-state, physical resize, other roles, Store/current-main, and full feature behavior remain unverified. Other driver cases receive no credit.",
                   "independent_review": "docs/stabilization/reports/peer-review-run38044684443.json"
+                },
+                {
+                  "run_id": 38070816110,
+                  "status": "bounded-observation",
+                  "mode": "guest",
+                  "viewport": "Narrow 360px native side panel; normal-width verification remains unverified.",
+                  "workflow_source_sha": "03d342c345ba332f59771e8b87183d1e49231190",
+                  "product_artifact": "Store 0.2.469; source 3ec9eda26c3d8af777f56992985d754880b7e148; tree 10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0.",
+                  "evidence": [
+                    "docs/stabilization/reports/independent-guest-scrape-retest-38070816110.json",
+                    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/receipt.sanitized.json",
+                    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/scrape-fast-article.png",
+                    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-package-38070816110-1.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-browser-38070816110-1.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-guest-38070816110-1.jsonl"
+                  ],
+                  "proven": "Six matching populated panes, four empty-pane states, and capture/export invariance warm and after full extension reload.",
+                  "limits": "Normal-width verification, member/admin modes, SEO/Schema empty-state behavior, physical resize, and full feature acceptance remain unverified. T08 guest status remains partial.",
+                  "independent_review": "docs/stabilization/reports/independent-guest-scrape-retest-38070816110.json"
                 }
               ]
             },
