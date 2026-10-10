@@ -6,6 +6,7 @@ import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { verifyDesktopArtifactIdentity } from './desktop-artifact-identity.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { assertDesktopPairForgetReportScope } from './settings-desktop-report-scope.mjs';
 import { desktopStorageFaultSource } from './settings-desktop-storage-faults.mjs';
 import {
   panelIdentity,
@@ -35,8 +36,12 @@ const RESET_DRAFT = 'Review Harbor Dental new-patient intake';
 const report = {
   schema_version: 1,
   defects: ['EXT-D-0084', 'EXT-D-0086'],
-  scope: 'native side-panel storage behavior in an owned disposable profile',
+  scope:
+    CASE === 'pair-forget'
+      ? 'bounded guest T43 pairing Forget cancel, refusal and storage-removal retry'
+      : 'native side-panel storage behavior in an owned disposable profile',
   case: CASE,
+  ...(CASE === 'pair-forget' && { inventory_case: 'EXT-F-1003-T43' }),
   role: MODE,
   status: 'unverified',
   build: null,
@@ -102,6 +107,7 @@ async function state(panel) {
       pairAvailable: !!pair,
       pairInputPresent: !!pair?.value,
       pairStored: typeof local[${JSON.stringify(PAIR_KEY)}] === 'string' && !!local[${JSON.stringify(PAIR_KEY)}],
+      pairKeyPresent: Object.hasOwn(local, ${JSON.stringify(PAIR_KEY)}),
       pairIsA: local[${JSON.stringify(PAIR_KEY)}] === ${JSON.stringify(PAIR_A)},
       pairIsB: local[${JSON.stringify(PAIR_KEY)}] === ${JSON.stringify(PAIR_B)},
       pairIsC: local[${JSON.stringify(PAIR_KEY)}] === ${JSON.stringify(PAIR_C)},
@@ -428,8 +434,12 @@ function passed(name, observation) {
 
 try {
   assert.ok(['guest', 'member', 'admin'].includes(MODE), 'desktop_auth_mode_invalid');
-  assert.ok(['full', 'reset-census', 'remaining'].includes(CASE), 'desktop_case_invalid');
+  assert.ok(
+    ['full', 'reset-census', 'remaining', 'pair-forget'].includes(CASE),
+    'desktop_case_invalid',
+  );
   if (CASE === 'reset-census') assert.equal(MODE, 'guest', 'desktop_reset_diagnostic_guest_only');
+  if (CASE === 'pair-forget') assert.equal(MODE, 'guest', 'desktop_pair_forget_guest_only');
   assert.ok(EXTENSION_DIR && RECEIPT_PATH, 'desktop_artifact_inputs_required');
   const extensionDir = resolve(EXTENSION_DIR);
   const receiptPath = resolve(RECEIPT_PATH);
@@ -484,6 +494,97 @@ try {
       stage = 'desktop_port';
       await openSettings(panel);
       await assertIdentity(panel);
+      if (CASE === 'pair-forget') {
+        stage = 'desktop_pair_forget_fixture';
+        assert.equal(
+          (await state(panel)).pairKeyPresent,
+          false,
+          'desktop_pair_fixture_key_not_initially_absent',
+        );
+        await setOwnedHttpTransport(attachWorker);
+        await waitFor(
+          'desktop_pair_fixture_controls',
+          () => state(panel),
+          (s) => s?.pairAvailable,
+        );
+        await replaceInput(panel, 'pair', PAIR_A);
+        await click(panel, 'button', 'Pair');
+        await waitFor(
+          'desktop_pair_fixture_saved',
+          () => state(panel),
+          (s) => s?.pairIsA,
+        );
+        assert.equal((await state(panel)).pairKeyPresent, true, 'desktop_pair_fixture_not_stored');
+
+        stage = 'desktop_pair_forget_cancel';
+        await click(panel, 'settings-button', 'Forget pair code');
+        await waitFor(
+          'desktop_pair_forget_cancel_dialog',
+          () => state(panel),
+          (s) => s?.pairDialog,
+        );
+        await click(panel, 'dialog', 'Cancel');
+        await waitFor(
+          'desktop_pair_forget_cancel_preserved',
+          () => state(panel),
+          (s) => !s?.pairDialog && s.pairIsA && s.pairKeyPresent,
+        );
+        passed('Forget cancel preserves the owned guest pairing', { stored_pair_preserved: true });
+
+        stage = 'desktop_pair_forget_refusal';
+        await fault(panel, 'remove', PAIR_KEY, 'reject');
+        try {
+          await click(panel, 'settings-button', 'Forget pair code');
+          await waitFor(
+            'desktop_pair_forget_refusal_dialog',
+            () => state(panel),
+            (s) => s?.pairDialog,
+          );
+          await confirmPairForget(panel);
+          await waitFor(
+            'desktop_pair_forget_refusal_visible',
+            () => state(panel),
+            (s) => s?.pairForgetError && s.pairIsA && s.pairKeyPresent,
+          );
+          assert.equal(
+            (await faultState(panel)).calls,
+            1,
+            'desktop_pair_forget_refusal_wrong_call_count',
+          );
+          passed('Forget refusal preserves pairing and shows retry', {
+            stored_pair_preserved: true,
+            error_visible: true,
+          });
+        } finally {
+          await restoreFault(panel);
+        }
+        await waitFor(
+          'desktop_pair_forget_refusal_dialog_closed',
+          () => state(panel),
+          (s) => !s?.pairDialog && s.forgetVisible,
+        );
+        await click(panel, 'settings-button', 'Forget pair code');
+        await waitFor(
+          'desktop_pair_forget_retry_dialog',
+          () => state(panel),
+          (s) => s?.pairDialog,
+        );
+        await confirmPairForget(panel);
+        await waitFor(
+          'desktop_pair_forget_retry_removed_key',
+          () => state(panel),
+          (s) => !s?.pairKeyPresent && !s.pairStored && !s.pairForgetError,
+        );
+        assert.equal(
+          (await state(panel)).pairKeyPresent,
+          false,
+          'desktop_pair_forget_key_survived_retry',
+        );
+        passed('Forget retry removes the owned pairing from browser storage', {
+          storage_key_absent: true,
+        });
+        return;
+      }
       if (CASE === 'remaining') {
         stage = 'desktop_port_bounds';
         await savePort(panel, 1);
@@ -971,6 +1072,9 @@ try {
       });
     },
   });
+  if (CASE === 'pair-forget') {
+    assertDesktopPairForgetReportScope(report.cases);
+  }
   assert.equal(hashReleaseTree(extensionDir), receipt.treeSha256, 'desktop_tree_mismatch');
   report.artifacts = run.artifacts;
   report.status = report.cases.some((item) => item.status === 'unverified') ? 'partial' : 'pass';

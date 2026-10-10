@@ -54,11 +54,16 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'desktop-settings-member',
       'visibility-census-member',
       'profile-member',
+      'tab-groups-member',
     ].includes(acceptanceCase) ||
     scrapeMode === 'member'
   ) {
     assert.ok(env.MATRX_HOSTED_MEMBER_LINK_JSON, 'hosted_member_link_secret_required');
-    if (scrapeMode === 'member' || acceptanceCase === 'member-data')
+    if (
+      scrapeMode === 'member' ||
+      acceptanceCase === 'member-data' ||
+      acceptanceCase === 'tab-groups-member'
+    )
       requireSettingsCredential('member', env.MATRX_HOSTED_MEMBER_LINK_JSON);
   }
   if (
