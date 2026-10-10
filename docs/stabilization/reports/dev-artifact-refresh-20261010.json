@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "status": "CURRENT_DEV_PROMOTION_BLOCKED",
+  "main_sha": "755bc9b1b739368d028a3fc73422851c41f655fa",
+  "main_version": "0.2.484",
+  "last_promoted": {
+    "version": "0.2.481",
+    "run_id": 38083507036,
+    "artifact_id": 11681278805,
+    "tree_sha256": "27bb537d9f2d1ad1bca0274f667e12e6952d1fe9c5b1a04b534e41d04f9c7836",
+    "current": false
+  },
+  "verified_import_only": {
+    "schema_version": 1,
+    "eligibleStore": false,
+    "sourceSha": "f85c2930b3745598af1a101bb6d7437b362f2553",
+    "runId": 38086183820,
+    "runAttempt": 1,
+    "artifactId": 11682782634,
+    "githubArtifactDigest": "sha256:b53cc78981b4abe8ea41a71c1c821eb70b61194f081c37ec0e0aaa813e393711",
+    "treeSha256": "f8ad252c7fe41508d78d025552777c95eb1e8757137fdf0ec84d21a9bf8290ed",
+    "ciReceiptSha256": "affca6968df356926ab314591727d2def22d96094e2578ac99aa55f5bf6cdd0c",
+    "provenanceSha256": "5a9cb42730374fcacf31a3427cd650490160ac55d46840d7d6985b7dafdd0be8",
+    "source": {
+      "originMain": "367d1edf34adae4995bc79fec577b9710f260899",
+      "localHead": "367d1edf34adae4995bc79fec577b9710f260899",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "promotion_refusal": "ci_dev_runtime_source_changed",
+  "failed_ci": {
+    "run_id": 38087114272,
+    "source_sha": "29c271cfbd7f802ca3373c754f0b3a59cb89fb54",
+    "conclusion": "failure",
+    "step": "Unit tests",
+    "test_file": "tests/unit/save-never-loses-input.test.tsx",
+    "test": "keeps a reused Source saved and offers a details-only retry when renaming fails",
+    "failure": "Unable to find accessible button /^Saved$/ at line 491",
+    "passed_tests": 2361,
+    "failed_tests": 1,
+    "skipped_tests": 6,
+    "development_artifact_produced": false,
+    "resource_guard_integration": "success"
+  },
+  "repair": "Sol implementation lane repairing save-state test; independent review pending. No product-defect conclusion from this failure alone.",
+  "chrome_loaded_version": "unverified",
+  "chrome_reload": "unverified",
+  "chrome_dev_pin": "unverified",
+  "commands_used": [
+    "node scripts/current-test-artifact.mjs import 38086183820 11682782634",
+    "node scripts/promote-ci-dev-artifact.mjs test-results/ci-artifacts/f85c2930b3745598af1a101bb6d7437b362f2553/38086183820-1/chrome-mv3"
+  ],
+  "limitations": [
+    "Imported historical exact-pushed-source artifact is verified, not current main and not promoted.",
+    "No local build, source/test edit, browser control or Chrome-management workaround.",
+    "Repeated runtime drift superseded v482/v483 attempts; stopped after final v484 CI failure. Hourly automation resumes after green CI."
+  ]
+}
