@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "verdict": "bounded_partial",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38041517954,
+    "run_attempt": 1,
+    "workflow_head_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+    "case": "guest-seo",
+    "job_conclusion": "success",
+    "finished_at": "2026-10-10T09:35:15Z"
+  },
+  "development_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "ci_run_attempt": 1,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459",
+    "source_state_at_import": {
+      "origin_main": "bd17e0396211c41f8cb1a08e1d7f29bbfb526654",
+      "local_head": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+      "tracked_dirty": false,
+      "untracked_runner_inputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11666476880,
+    "name": "hosted-guest-38041517954-1",
+    "digest": "sha256:f80c34e321a2b13d1824d75e7849de5ec18254d77d47ecfa09d47c91c49059b2",
+    "expired": false
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "sha256": "d4b847e41058f41e58c363a5e9b839a85e8ebba0a2b0fa1a7d2dc2e2ef318a62",
+    "status": "partial",
+    "target_count": 19,
+    "passing_target_count": 19,
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"]
+  },
+  "resource_finals": {
+    "hosted-package-38041517954-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "path": "resource-journals/hosted-package-38041517954-1.jsonl",
+      "sha256": "c02be6f1a7ff0b1eb147793afcd0b6429444b371c8b2ccfad7af82c1f7f31c09"
+    },
+    "hosted-browser-38041517954-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "path": "resource-journals/hosted-browser-38041517954-1.jsonl",
+      "sha256": "02799aff02bb5288e101441d4b4f3d3e69420add0b5884dc0219889b2a36eb10"
+    },
+    "hosted-guest-38041517954-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "path": "resource-journals/hosted-guest-38041517954-1.jsonl",
+      "sha256": "59c2be26399228deb771d3a761677be73a06dd4d5f2f0ad0f8dca0dde2386f6b"
+    }
+  },
+  "scope_limit": "Only the 19 recorded guest public-page subtargets across T01/T02/T03/T07/T09/T14 are supported. Deferred criteria remain open, including persistence/history, member/admin roles, other metadata and social states, recommendations and Chat. This is not full SEO coverage, current-main product health, Store-installation evidence, or member/admin evidence.",
+  "sanitization": "Native report retains only selected safe target observations, deferred criteria, bounded build/artifact identity, and restoration booleans. Resource journals were copied with scripts/copy-hosted-resource-journal.mjs; process-attribution rows and opened-event paths are omitted, and all other unsupported fields/events would be refused. No screenshots, credentials, raw auth, private paths, or process-attribution data are included."
+}

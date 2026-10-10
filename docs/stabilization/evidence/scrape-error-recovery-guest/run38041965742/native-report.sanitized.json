@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T14",
+  "auth_mode": "guest",
+  "status": "unverified",
+  "stage": "inputs",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "observations": {
+    "requested_mode": "deep",
+    "denial": null,
+    "retry": null,
+    "dismiss": null,
+    "host_access_preflight_observed": true,
+    "cleanup": {
+      "original_host_access": "ON_ALL_SITES",
+      "host_access": "ON_ALL_SITES",
+      "restored": true
+    },
+    "reload_page": "unverified"
+  },
+  "failure_diagnostic": {
+    "phase": "denial_preflight",
+    "operation": "effective_host_access",
+    "origin_transition_completed": true,
+    "failure_code": "owned_cdp_transport_failed",
+    "transport_failure_class": "command_timeout"
+  },
+  "classification": "The native run observed the effective host-access denial preflight and completed the origin transition, then hit a bounded CDP command timeout before recovery assertions. Denial UI, retry, dismiss, and reload outcomes remain unverified. Original host access was restored. This is diagnostic evidence only, not a product verdict or recovery credit.",
+  "limits": [
+    "No product or recovery acceptance credit is earned.",
+    "The run does not establish the rendered permission-denial state or Try again/Dismiss behavior.",
+    "Reload page remains unverified.",
+    "No page URL, DOM content, screenshot, credential, account or organization data is included."
+  ]
+}

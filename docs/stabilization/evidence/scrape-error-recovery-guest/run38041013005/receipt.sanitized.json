@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38041013005,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38041013005",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "949ad7a1cbd35f4810ec5f427b9d624251fc66ac",
+  "dispatch_ref": "main",
+  "run_attempt": 1,
+  "lane": "B",
+  "runner_label": "macos-15",
+  "acceptance_case": "scrape-error-recovery-guest",
+  "inputs": {
+    "scrape_auth_mode": "guest"
+  },
+  "workflow_conclusion": "failure",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "frozen_product_artifact": true
+  },
+  "native_result": {
+    "native_report_present": true,
+    "classification": "native_test_unverified_cdp_transport_failure_before_recovery_assertions",
+    "failure_stage": "exercise_panel",
+    "failure_code": "owned_cdp_transport_failed",
+    "observation": "The native driver reported a bounded CDP transport failure before denial/retry/dismiss assertions; those observations are null, and original host access was restored.",
+    "product_credit": false,
+    "host_access_restored": true
+  },
+  "resources": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "journal_sanitization": "Exact-run journals copied with scripts/copy-hosted-resource-journal.mjs; process attribution and opened paths removed."
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11665512947,
+    "name": "hosted-guest-38041013005-1",
+    "digest": "sha256:02ae4f42c4bced509f08bac5de1898320c13c58e50ffd8a620707b0d6c1b9153",
+    "expired": false
+  },
+  "evidence_hashes": {
+    "resource-journals/hosted-package-38041013005-1.jsonl": "ea149500f3a20d53178f006cd48b835b9b33bc3911a5c5b560034dfc0fb2a9ff",
+    "resource-journals/hosted-browser-38041013005-1.jsonl": "c521fa970fedaebbf76051274a2372d15e882caf424aec9c6a1663c7d2b15043",
+    "resource-journals/hosted-guest-38041013005-1.jsonl": "0335630b83a6a703c387e8dd489f9ccc8e14349983eff5fda3fdb05e6fe76db1",
+    "native-report.sanitized.json": "c1f2ed63cfed1914deb16c6acbc568251b287d492d99b14f3d70d8f5e25b2419"
+  },
+  "evidence": [
+    "resource-journals/hosted-package-38041013005-1.jsonl",
+    "resource-journals/hosted-browser-38041013005-1.jsonl",
+    "resource-journals/hosted-guest-38041013005-1.jsonl",
+    "native-report.sanitized.json"
+  ],
+  "independent_review": "pending"
+}

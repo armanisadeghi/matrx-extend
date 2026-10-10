@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "case_id": "settings-controls",
+  "hosted_run_id": 38041519886,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38041519886",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "workflow_conclusion": "success",
+  "hosted_result_artifact": {
+    "artifact_id": 11665862988,
+    "name": "hosted-guest-38041519886-1",
+    "digest": "sha256:9e8dbe6b7aba384bbd2f4aea19789d7f63000252780fa5188dc3ebe0ceacce18",
+    "expired": false
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38036029832,
+    "development_artifact_id": 11664077690,
+    "name": "matrx-extend-development-test-129299df0a53a8a795ba1af054752817454357e3-38036029832-1",
+    "digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "inputs": {
+    "acceptance_case": "settings-controls",
+    "scrape_auth_mode": "guest"
+  },
+  "native_report": {
+    "status": "unverified",
+    "cases_observed": 19,
+    "passed_case_ids": [
+      "EXT-F-1003-T04",
+      "EXT-F-1003-T10",
+      "EXT-F-1003-T13",
+      "EXT-F-1003-T22",
+      "EXT-F-1003-T28",
+      "EXT-F-1003-T37",
+      "EXT-F-1003-T46",
+      "EXT-F-1003-T64",
+      "EXT-F-1003-T67",
+      "EXT-F-1003-T73",
+      "EXT-F-1003-T76",
+      "EXT-F-1003-T92"
+    ],
+    "unverified_case_ids": [
+      "EXT-F-1003-T16",
+      "EXT-F-1003-T19",
+      "EXT-F-1003-T31",
+      "EXT-F-1003-T34",
+      "EXT-F-1003-T40",
+      "EXT-F-1003-T63",
+      "EXT-F-1003-T70"
+    ]
+  },
+  "resource": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "sanitization": "Copied through copy-hosted-resource-journal.mjs; process-attribution rows and opened-event paths omitted; other supported events retained."
+  },
+  "verdict": "bounded_guest_settings_observations_overall_unverified",
+  "limitations": [
+    "Workflow success does not establish full Settings acceptance.",
+    "T16, T19, T31 and T34 downstream browser behavior remains unverified.",
+    "T40 background capture remains unverified; persisted preference and extension reload do not prove capture.",
+    "T67 mode preference criteria pass, but its nested downstream capture remains unverified.",
+    "T63 ordinary member denial remains unverified; T63 and T92 cover guest negative access only.",
+    "T70 password-flow API unavailable and update available, throttled, error and API unavailable branches remain unverified.",
+    "Frozen CI development product only; no current-main, Store, member or admin acceptance claim."
+  ],
+  "privacy": {
+    "raw_report_persisted": false,
+    "screenshots_persisted": false,
+    "credential_values_persisted": false,
+    "raw_dom_or_errors_persisted": false
+  },
+  "independent_review": "pending",
+  "evidence_files": [
+    {
+      "path": "hosted-browser-38041519886-1.jsonl",
+      "sha256": "5ed55d1ddc219ad6a88ebbf2515bd48b6b562b80b867227c5b38bd0e97458206"
+    },
+    {
+      "path": "hosted-guest-38041519886-1.jsonl",
+      "sha256": "ab7a7d102142564b584abf19feb19e1c40798dbcfae131df98ae4674ec086eb8"
+    },
+    {
+      "path": "hosted-package-38041519886-1.jsonl",
+      "sha256": "a9f63529729ff855176b4f2312a1e90156fa1ce3c8088dbf0b7c026a60af9049"
+    },
+    {
+      "path": "native-report.sanitized.json",
+      "sha256": "406bdd9bd659c4caf8b494657744b83c2f4754cb1189bc77baf1c88236f8d7b5"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T14",
+  "auth_mode": "guest",
+  "status": "unverified",
+  "stage": "inputs",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "observations": {
+    "requested_mode": "deep",
+    "denial": null,
+    "retry": null,
+    "dismiss": null,
+    "cleanup": {
+      "original_host_access": "ON_ALL_SITES",
+      "host_access": "ON_ALL_SITES",
+      "restored": true
+    },
+    "reload_page": "unverified"
+  },
+  "failure_code": "owned_cdp_transport_failed",
+  "classification": "The native run failed at the exercise_panel boundary with a bounded CDP transport failure before recovery assertions. Denial, retry, dismiss, and reload observations are unverified. Original host access was restored. This is not a product verdict and earns no recovery credit.",
+  "resources": {
+    "package": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "browser": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "acceptance": "child_failed; admitted=true; resourceInvalid=false; exitCode=1"
+  },
+  "sanitization": {
+    "native_report_reduced_to_fixed_safe_allowlist": true,
+    "resource_journals_copied_with": "scripts/copy-hosted-resource-journal.mjs",
+    "process_attribution_and_opened_paths_removed": true,
+    "screenshots_and_other_private_artifacts_excluded": true,
+    "credentials_auth_material_page_text_and_host_urls_present": false
+  },
+  "independent_review": "pending"
+}

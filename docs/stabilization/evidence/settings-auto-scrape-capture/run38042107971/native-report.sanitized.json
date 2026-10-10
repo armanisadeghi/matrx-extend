@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T40",
+  "role": "guest",
+  "scope": "guest auto-scrape preference and capture behavior across warm state, full extension reload, and original-setting restoration in an owned native side panel",
+  "status": "pass",
+  "criteria": [
+    {
+      "name": "ON emits one real capture with the page marker",
+      "status": "pass"
+    },
+    {
+      "name": "OFF emits no capture after the loaded page settles",
+      "status": "pass"
+    },
+    {
+      "name": "initial: original preference matches",
+      "status": "pass"
+    },
+    {
+      "name": "On changes visible and stored preference",
+      "status": "pass"
+    },
+    {
+      "name": "On extension worker and panel were replaced",
+      "status": "pass"
+    },
+    {
+      "name": "On survives full extension reload",
+      "status": "pass"
+    },
+    {
+      "name": "ON survives full extension reload and emits one real capture",
+      "status": "pass"
+    },
+    {
+      "name": "original preference restored before extension reload",
+      "status": "pass"
+    },
+    {
+      "name": "Off extension worker and panel were replaced",
+      "status": "pass"
+    },
+    {
+      "name": "Off survives full extension reload",
+      "status": "pass"
+    },
+    {
+      "name": "OFF survives full extension reload with zero capture calls",
+      "status": "pass"
+    },
+    {
+      "name": "original preference restored after extension reload",
+      "status": "pass"
+    },
+    {
+      "name": "Original OFF baseline restored in UI and chrome.storage",
+      "status": "pass"
+    }
+  ],
+  "build": {
+    "kind": "ci_development_test",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "observed": "All 13 named T40 criteria passed, including ON capture, OFF zero-capture behavior, preference persistence across full extension reload, worker/panel replacement, and restoration of the original OFF baseline.",
+  "limits": [
+    "Acceptance is limited to these 13 guest T40 criteria on the exact frozen development artifact.",
+    "This does not establish other Settings controls or the complete Settings feature.",
+    "This does not establish member/admin behavior, current-main product health, Chrome Web Store installation, or Store acceptance.",
+    "No raw preference values, capture payloads, page URLs, account/organization data, screenshots, or private runner paths are included."
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38041965742,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38041965742",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "59ff0aba1c98d41a5134d4ed460871c49b7ea56b",
+  "dispatch_ref": "main",
+  "run_attempt": 1,
+  "lane": "B",
+  "runner_label": "macos-15",
+  "acceptance_case": "scrape-error-recovery-guest",
+  "inputs": {
+    "scrape_auth_mode": "guest"
+  },
+  "workflow_conclusion": "failure",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "frozen_product_artifact": true
+  },
+  "native_result": {
+    "native_report_present": true,
+    "classification": "native_test_unverified_transport_timeout_after_effective_denial_preflight",
+    "failure_stage": "exercise_panel",
+    "failure_code": "owned_cdp_transport_failed",
+    "transport_failure_class": "command_timeout",
+    "effective_host_access_preflight_observed": true,
+    "origin_transition_completed": true,
+    "host_access_restored": true,
+    "product_credit": false
+  },
+  "resources": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "journal_sanitization": "Exact-run journals copied with scripts/copy-hosted-resource-journal.mjs; process-attribution rows and opened-event paths removed."
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11665534057,
+    "name": "hosted-guest-38041965742-1",
+    "digest": "sha256:f9526f1da541b0386a3165b3dd7b16eff8c916045d2c910cdab9065da28c249e",
+    "expired": false
+  },
+  "evidence_hashes": {
+    "resource-journals/hosted-package-38041965742-1.jsonl": "82cc04437edc5c5454d0db5a5f12f0be876b884e090d9dad91ec0111714a71a5",
+    "resource-journals/hosted-browser-38041965742-1.jsonl": "a3564a70f95f6aa1e91e3ee026b0d5e6a11dd3224c2031445dc511c2f3c0d1c3",
+    "resource-journals/hosted-guest-38041965742-1.jsonl": "fe2cf3bd2a8dfca962b2fb8b03df574d83f4a0a69898ad536ea1a1d7fef6b5e5",
+    "native-report.sanitized.json": "8860e0b22aeb4835cff4a7cf72fad033b56166aeffc9d023ebe91ea3dde0bd98"
+  },
+  "evidence": [
+    "resource-journals/hosted-package-38041965742-1.jsonl",
+    "resource-journals/hosted-browser-38041965742-1.jsonl",
+    "resource-journals/hosted-guest-38041965742-1.jsonl",
+    "native-report.sanitized.json"
+  ],
+  "limits": [
+    "Diagnostic evidence only; no product or recovery acceptance credit is earned.",
+    "Effective host-access denial preflight and origin transition were observed before a bounded CDP command timeout; rendered denial UI and retry/dismiss behavior remain unverified.",
+    "Reload page remains unverified.",
+    "No page URL, DOM content, screenshot, credential, account or organization data is included."
+  ],
+  "independent_review": "pending"
+}

@@ -1,0 +1,575 @@
+{
+  "schema_version": 1,
+  "status": "unverified",
+  "scope": "isolated native side panel; signed-out guest",
+  "build": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "verified": true
+  },
+  "case_counts": {
+    "observed": 19,
+    "pass": 12,
+    "unverified": 7,
+    "fail": 0
+  },
+  "cases": [
+    {
+      "id": "EXT-F-1003-T04",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "Dark changes UI, persisted preference, and applied appearance",
+        "Dark survives panel reload",
+        "Light changes UI, persisted preference, and applied appearance",
+        "Light survives panel reload",
+        "System changes UI, persisted preference, and applied appearance",
+        "System survives panel reload",
+        "Original theme baseline restored after panel reload",
+        "full extension reload: pre-run Theme matches saved baseline",
+        "full extension reload: initial: original preference matches",
+        "full extension reload: Dark changes visible and stored preference",
+        "full extension reload: Dark extension worker and panel were replaced",
+        "full extension reload: Dark survives full extension reload",
+        "full extension reload: Light changes visible and stored preference",
+        "full extension reload: Light extension worker and panel were replaced",
+        "full extension reload: Light survives full extension reload",
+        "full extension reload: original preference restored before extension reload",
+        "full extension reload: System extension worker and panel were replaced",
+        "full extension reload: System survives full extension reload",
+        "full extension reload: original preference restored after extension reload"
+      ],
+      "full_extension_reload": {
+        "status": "pass",
+        "pass_criteria": [
+          "pre-run Theme matches saved baseline",
+          "initial: original preference matches",
+          "Dark changes visible and stored preference",
+          "Dark extension worker and panel were replaced",
+          "Dark survives full extension reload",
+          "Light changes visible and stored preference",
+          "Light extension worker and panel were replaced",
+          "Light survives full extension reload",
+          "original preference restored before extension reload",
+          "System extension worker and panel were replaced",
+          "System survives full extension reload",
+          "original preference restored after extension reload"
+        ]
+      },
+      "panel_document_reload": {
+        "status": "pass",
+        "pass_criteria": [
+          "Dark changes UI, persisted preference, and applied appearance",
+          "Dark survives panel reload",
+          "Light changes UI, persisted preference, and applied appearance",
+          "Light survives panel reload",
+          "System changes UI, persisted preference, and applied appearance",
+          "System survives panel reload",
+          "Original theme baseline restored after panel reload"
+        ]
+      }
+    },
+    {
+      "id": "EXT-F-1003-T10",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "Act without asking changes UI, persisted preference",
+        "Act without asking survives panel reload",
+        "new chat inherits Act without asking",
+        "Ask before acting changes UI, persisted preference",
+        "Ask before acting survives panel reload",
+        "new chat inherits Ask before acting",
+        "full extension reload: pre-run Default mode matches saved baseline",
+        "full extension reload: initial: original preference matches",
+        "full extension reload: Act without asking changes visible and stored preference",
+        "full extension reload: Act without asking extension worker and panel were replaced",
+        "full extension reload: Act without asking survives full extension reload",
+        "full extension reload: new chat inherits Act without asking after extension reload",
+        "full extension reload: original preference restored before extension reload",
+        "full extension reload: Ask before acting extension worker and panel were replaced",
+        "full extension reload: Ask before acting survives full extension reload",
+        "full extension reload: new chat inherits Ask before acting after extension reload",
+        "full extension reload: original preference restored after extension reload"
+      ],
+      "full_extension_reload": {
+        "status": "pass",
+        "pass_criteria": [
+          "pre-run Default mode matches saved baseline",
+          "initial: original preference matches",
+          "Act without asking changes visible and stored preference",
+          "Act without asking extension worker and panel were replaced",
+          "Act without asking survives full extension reload",
+          "new chat inherits Act without asking after extension reload",
+          "original preference restored before extension reload",
+          "Ask before acting extension worker and panel were replaced",
+          "Ask before acting survives full extension reload",
+          "new chat inherits Ask before acting after extension reload",
+          "original preference restored after extension reload"
+        ]
+      },
+      "panel_document_reload": {
+        "status": "pass",
+        "pass_criteria": [
+          "Act without asking changes UI, persisted preference",
+          "Act without asking survives panel reload",
+          "new chat inherits Act without asking",
+          "Ask before acting changes UI, persisted preference",
+          "Ask before acting survives panel reload",
+          "new chat inherits Ask before acting"
+        ]
+      }
+    },
+    {
+      "id": "EXT-F-1003-T13",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "Thinking changes UI, persisted preference",
+        "Thinking survives panel reload",
+        "Fast changes UI, persisted preference",
+        "Fast survives panel reload"
+      ]
+    },
+    {
+      "id": "EXT-F-1003-T16",
+      "role": "guest",
+      "status": "unverified",
+      "pass_criteria": [
+        "Switch off changes visible and stored values",
+        "Switch off survives panel reload",
+        "Switch on changes visible and stored values",
+        "Switch on survives panel reload"
+      ],
+      "unverified_criteria": ["preference changes its downstream browser behavior"]
+    },
+    {
+      "id": "EXT-F-1003-T19",
+      "role": "guest",
+      "status": "unverified",
+      "pass_criteria": [
+        "Switch off changes visible and stored values",
+        "Switch off survives panel reload",
+        "Switch on changes visible and stored values",
+        "Switch on survives panel reload"
+      ],
+      "unverified_criteria": ["preference changes its downstream browser behavior"]
+    },
+    {
+      "id": "EXT-F-1003-T22",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "warm admin section and controls absent",
+        "reload admin section and controls absent"
+      ]
+    },
+    {
+      "id": "EXT-F-1003-T28",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "Account opens with honest content",
+        "Account closes without changing preferences",
+        "Organization opens with honest content",
+        "Organization closes without changing preferences",
+        "Appearance opens with honest content",
+        "Appearance closes without changing preferences",
+        "Chat opens with honest content",
+        "Chat closes without changing preferences",
+        "Privacy opens with honest content",
+        "Privacy closes without changing preferences",
+        "Scrape opens with honest content",
+        "Scrape closes without changing preferences",
+        "Data opens with honest content",
+        "Data closes without changing preferences",
+        "SEO opens with honest content",
+        "SEO closes without changing preferences",
+        "Desktop bridge opens with honest content",
+        "Desktop bridge closes without changing preferences",
+        "Data & reset opens with honest content",
+        "Data & reset closes without changing preferences",
+        "About opens with honest content",
+        "About closes without changing preferences",
+        "Account opens after reload",
+        "Account closes after reload",
+        "Organization opens after reload",
+        "Organization closes after reload",
+        "Appearance opens after reload",
+        "Appearance closes after reload",
+        "Chat opens after reload",
+        "Chat closes after reload",
+        "Privacy opens after reload",
+        "Privacy closes after reload",
+        "Scrape opens after reload",
+        "Scrape closes after reload",
+        "Data opens after reload",
+        "Data closes after reload",
+        "SEO opens after reload",
+        "SEO closes after reload",
+        "Desktop bridge opens after reload",
+        "Desktop bridge closes after reload",
+        "Data & reset opens after reload",
+        "Data & reset closes after reload",
+        "About opens after reload",
+        "About closes after reload",
+        "full extension reload: warm: Account opens with honest content",
+        "full extension reload: warm: Account closes without changing preferences",
+        "full extension reload: warm: Organization opens with honest content",
+        "full extension reload: warm: Organization closes without changing preferences",
+        "full extension reload: warm: Appearance opens with honest content",
+        "full extension reload: warm: Appearance closes without changing preferences",
+        "full extension reload: warm: Chat opens with honest content",
+        "full extension reload: warm: Chat closes without changing preferences",
+        "full extension reload: warm: Privacy opens with honest content",
+        "full extension reload: warm: Privacy closes without changing preferences",
+        "full extension reload: warm: Scrape opens with honest content",
+        "full extension reload: warm: Scrape closes without changing preferences",
+        "full extension reload: warm: Data opens with honest content",
+        "full extension reload: warm: Data closes without changing preferences",
+        "full extension reload: warm: SEO opens with honest content",
+        "full extension reload: warm: SEO closes without changing preferences",
+        "full extension reload: warm: Desktop bridge opens with honest content",
+        "full extension reload: warm: Desktop bridge closes without changing preferences",
+        "full extension reload: warm: Data & reset opens with honest content",
+        "full extension reload: warm: Data & reset closes without changing preferences",
+        "full extension reload: warm: About opens with honest content",
+        "full extension reload: warm: About closes without changing preferences",
+        "full extension reload: reload: Account opens after reload",
+        "full extension reload: reload: Account closes after reload",
+        "full extension reload: reload: Organization opens after reload",
+        "full extension reload: reload: Organization closes after reload",
+        "full extension reload: reload: Appearance opens after reload",
+        "full extension reload: reload: Appearance closes after reload",
+        "full extension reload: reload: Chat opens after reload",
+        "full extension reload: reload: Chat closes after reload",
+        "full extension reload: reload: Privacy opens after reload",
+        "full extension reload: reload: Privacy closes after reload",
+        "full extension reload: reload: Scrape opens after reload",
+        "full extension reload: reload: Scrape closes after reload",
+        "full extension reload: reload: Data opens after reload",
+        "full extension reload: reload: Data closes after reload",
+        "full extension reload: reload: SEO opens after reload",
+        "full extension reload: reload: SEO closes after reload",
+        "full extension reload: reload: Desktop bridge opens after reload",
+        "full extension reload: reload: Desktop bridge closes after reload",
+        "full extension reload: reload: Data & reset opens after reload",
+        "full extension reload: reload: Data & reset closes after reload",
+        "full extension reload: reload: About opens after reload",
+        "full extension reload: reload: About closes after reload"
+      ],
+      "full_extension_reload": {
+        "status": "pass",
+        "pass_criteria": [
+          "warm: Account opens with honest content",
+          "warm: Account closes without changing preferences",
+          "warm: Organization opens with honest content",
+          "warm: Organization closes without changing preferences",
+          "warm: Appearance opens with honest content",
+          "warm: Appearance closes without changing preferences",
+          "warm: Chat opens with honest content",
+          "warm: Chat closes without changing preferences",
+          "warm: Privacy opens with honest content",
+          "warm: Privacy closes without changing preferences",
+          "warm: Scrape opens with honest content",
+          "warm: Scrape closes without changing preferences",
+          "warm: Data opens with honest content",
+          "warm: Data closes without changing preferences",
+          "warm: SEO opens with honest content",
+          "warm: SEO closes without changing preferences",
+          "warm: Desktop bridge opens with honest content",
+          "warm: Desktop bridge closes without changing preferences",
+          "warm: Data & reset opens with honest content",
+          "warm: Data & reset closes without changing preferences",
+          "warm: About opens with honest content",
+          "warm: About closes without changing preferences",
+          "reload: Account opens after reload",
+          "reload: Account closes after reload",
+          "reload: Organization opens after reload",
+          "reload: Organization closes after reload",
+          "reload: Appearance opens after reload",
+          "reload: Appearance closes after reload",
+          "reload: Chat opens after reload",
+          "reload: Chat closes after reload",
+          "reload: Privacy opens after reload",
+          "reload: Privacy closes after reload",
+          "reload: Scrape opens after reload",
+          "reload: Scrape closes after reload",
+          "reload: Data opens after reload",
+          "reload: Data closes after reload",
+          "reload: SEO opens after reload",
+          "reload: SEO closes after reload",
+          "reload: Desktop bridge opens after reload",
+          "reload: Desktop bridge closes after reload",
+          "reload: Data & reset opens after reload",
+          "reload: Data & reset closes after reload",
+          "reload: About opens after reload",
+          "reload: About closes after reload"
+        ]
+      },
+      "panel_document_reload": {
+        "status": "pass",
+        "pass_criteria": [
+          "Account opens with honest content",
+          "Account closes without changing preferences",
+          "Organization opens with honest content",
+          "Organization closes without changing preferences",
+          "Appearance opens with honest content",
+          "Appearance closes without changing preferences",
+          "Chat opens with honest content",
+          "Chat closes without changing preferences",
+          "Privacy opens with honest content",
+          "Privacy closes without changing preferences",
+          "Scrape opens with honest content",
+          "Scrape closes without changing preferences",
+          "Data opens with honest content",
+          "Data closes without changing preferences",
+          "SEO opens with honest content",
+          "SEO closes without changing preferences",
+          "Desktop bridge opens with honest content",
+          "Desktop bridge closes without changing preferences",
+          "Data & reset opens with honest content",
+          "Data & reset closes without changing preferences",
+          "About opens with honest content",
+          "About closes without changing preferences",
+          "Account opens after reload",
+          "Account closes after reload",
+          "Organization opens after reload",
+          "Organization closes after reload",
+          "Appearance opens after reload",
+          "Appearance closes after reload",
+          "Chat opens after reload",
+          "Chat closes after reload",
+          "Privacy opens after reload",
+          "Privacy closes after reload",
+          "Scrape opens after reload",
+          "Scrape closes after reload",
+          "Data opens after reload",
+          "Data closes after reload",
+          "SEO opens after reload",
+          "SEO closes after reload",
+          "Desktop bridge opens after reload",
+          "Desktop bridge closes after reload",
+          "Data & reset opens after reload",
+          "Data & reset closes after reload",
+          "About opens after reload",
+          "About closes after reload"
+        ]
+      }
+    },
+    {
+      "id": "EXT-F-1003-T31",
+      "role": "guest",
+      "status": "unverified",
+      "pass_criteria": [
+        "Switch off changes visible and stored values",
+        "Switch off survives panel reload",
+        "Switch on changes visible and stored values",
+        "Switch on survives panel reload"
+      ],
+      "unverified_criteria": ["preference changes its downstream browser behavior"]
+    },
+    {
+      "id": "EXT-F-1003-T34",
+      "role": "guest",
+      "status": "unverified",
+      "pass_criteria": [
+        "Switch on changes visible and stored values",
+        "Switch on survives panel reload",
+        "Switch off changes visible and stored values",
+        "Switch off survives panel reload"
+      ],
+      "unverified_criteria": ["preference changes its downstream browser behavior"]
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "visible coming-soon hint",
+        "toggle changes state",
+        "state and coming-soon hint persist after reload"
+      ]
+    },
+    {
+      "id": "EXT-F-1003-T40",
+      "role": "guest",
+      "status": "unverified",
+      "pass_criteria": [
+        "Auto-scrape on appears and persists",
+        "Auto-scrape on survives reload",
+        "Auto-scrape off appears and persists",
+        "Auto-scrape off survives reload",
+        "Original Auto-scrape value restored in UI and storage",
+        "full extension reload: warm: Auto-scrape on appears and persists",
+        "full extension reload: reload: Auto-scrape on survives reload",
+        "full extension reload: warm: Auto-scrape off appears and persists",
+        "full extension reload: reload: Auto-scrape off survives reload",
+        "full extension reload: cleanup: Original Auto-scrape value restored in UI and storage"
+      ],
+      "unverified_criteria": ["background capture follows the persisted switch"],
+      "full_extension_reload": {
+        "status": "pass",
+        "pass_criteria": [
+          "warm: Auto-scrape on appears and persists",
+          "reload: Auto-scrape on survives reload",
+          "warm: Auto-scrape off appears and persists",
+          "reload: Auto-scrape off survives reload",
+          "cleanup: Original Auto-scrape value restored in UI and storage"
+        ],
+        "downstream_capture_status": "unverified"
+      },
+      "panel_document_reload": {
+        "status": "unverified",
+        "pass_criteria": [
+          "Auto-scrape on appears and persists",
+          "Auto-scrape on survives reload",
+          "Auto-scrape off appears and persists",
+          "Auto-scrape off survives reload",
+          "Original Auto-scrape value restored in UI and storage"
+        ],
+        "unverified_criteria": ["background capture follows the persisted switch"]
+      }
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "valid port saved",
+        "saved port triggers desktop worker rediscovery",
+        "valid override persists after reload",
+        "boundary port 1 saves and persists after reload",
+        "boundary port 65535 saves and persists after reload",
+        "invalid range shows error and retains saved port",
+        "blank clears override and stale error",
+        "cleared override persists after reload"
+      ]
+    },
+    {
+      "id": "EXT-F-1003-T63",
+      "role": "guest",
+      "status": "unverified",
+      "scope": "guest-negative-access-only",
+      "pass_criteria": [
+        "warm: guest admin section, optional controls and audit actions absent",
+        "reload: guest admin section, optional controls and audit actions absent"
+      ],
+      "unverified_criteria": ["ordinary member denial"]
+    },
+    {
+      "id": "EXT-F-1003-T64",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "Two disposable loopback origins are visible and stored",
+        "First Ask again removes only selected origin",
+        "Unrelated origin remains after panel reload",
+        "Last Ask again hides the empty list",
+        "Empty list remains hidden after panel reload"
+      ]
+    },
+    {
+      "id": "EXT-F-1003-T67",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "Scroll & capture appears and persists",
+        "Scroll & capture survives reload",
+        "Capture appears and persists",
+        "Capture survives reload",
+        "Original Auto-scrape mode restored in UI and storage",
+        "full extension reload: initial: original preference matches",
+        "full extension reload: Scroll & capture changes visible and stored preference",
+        "full extension reload: Scroll & capture extension worker and panel were replaced",
+        "full extension reload: Scroll & capture survives full extension reload",
+        "full extension reload: original preference restored before extension reload",
+        "full extension reload: Capture extension worker and panel were replaced",
+        "full extension reload: Capture survives full extension reload",
+        "full extension reload: original preference restored after extension reload"
+      ],
+      "full_extension_reload": {
+        "status": "pass",
+        "pass_criteria": [
+          "initial: original preference matches",
+          "Scroll & capture changes visible and stored preference",
+          "Scroll & capture extension worker and panel were replaced",
+          "Scroll & capture survives full extension reload",
+          "original preference restored before extension reload",
+          "Capture extension worker and panel were replaced",
+          "Capture survives full extension reload",
+          "original preference restored after extension reload"
+        ],
+        "downstream_capture_status": "unverified"
+      },
+      "panel_document_reload": {
+        "status": "pass",
+        "pass_criteria": [
+          "Scroll & capture appears and persists",
+          "Scroll & capture survives reload",
+          "Capture appears and persists",
+          "Capture survives reload",
+          "Original Auto-scrape mode restored in UI and storage"
+        ]
+      }
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "role": "guest",
+      "status": "unverified",
+      "pass_criteria": [
+        "identity matches running browser, manifest, receipt and runtime ID",
+        "password-flow API readiness label and remedy",
+        "observed browser update result shown accurately",
+        "no-update outcome",
+        "identity and API readiness remain current after reload"
+      ],
+      "unverified_criteria": [
+        "password-flow API unavailable branch",
+        "update available branch",
+        "throttled branch",
+        "update error branch",
+        "update API unavailable branch"
+      ]
+    },
+    {
+      "id": "EXT-F-1003-T73",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "warm: Account unavailable, no Name/role, Sign in footer",
+        "reload: Account unavailable, no Name/role, Sign in footer"
+      ]
+    },
+    {
+      "id": "EXT-F-1003-T76",
+      "role": "guest",
+      "status": "pass",
+      "pass_criteria": [
+        "warm: archive filter absent and no organization read or choice",
+        "reload: archive filter absent and no organization read or choice"
+      ]
+    },
+    {
+      "id": "EXT-F-1003-T92",
+      "role": "guest",
+      "status": "pass",
+      "scope": "guest-negative-access-only",
+      "pass_criteria": [
+        "warm: no archived membership or restoration action",
+        "reload: no archived membership or restoration action"
+      ]
+    }
+  ],
+  "guest_extension_reload": {
+    "managementReloadClicked": true,
+    "oldTargetsRetired": true,
+    "workerReplaced": true,
+    "panelReplaced": true
+  },
+  "guest_reload_boundary_status": "settings_opened",
+  "sanitization": "Fixed case and criterion names/statuses and build/reload scalars only. Steps, evidence payloads, screenshots, DOM, private paths and raw errors omitted."
+}

@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38042107971,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38042107971",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "59ff0aba1c98d41a5134d4ed460871c49b7ea56b",
+  "dispatch_ref": "main",
+  "run_attempt": 1,
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "acceptance_case": "settings-auto-scrape-capture",
+  "inventory_case": "EXT-F-1003-T40",
+  "inputs": {
+    "settings_auth_mode": "guest"
+  },
+  "workflow_conclusion": "success",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "frozen_product_artifact": true,
+    "source_ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11666432969,
+    "name": "hosted-guest-38042107971-1",
+    "digest": "sha256:7f2bbf51000a496ff644243d805013948db3ed028f18b040664bf4ced7e67817",
+    "expired": false
+  },
+  "native_result": {
+    "native_report_present": true,
+    "status": "pass",
+    "passed_criteria": 13,
+    "total_criteria": 13,
+    "product_credit": "guest EXT-F-1003-T40 auto-scrape controls only"
+  },
+  "resource_finals": {
+    "hosted-package-38042107971-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38042107971-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38042107971-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "evidence_hashes": {
+    "resource-journals/hosted-package-38042107971-1.jsonl": "5d9ea230c7c637c44f46c0d45fa822813936e0b4a601303f73a64e4ba4ef8f9b",
+    "resource-journals/hosted-browser-38042107971-1.jsonl": "e8a5c1b5e28afbfa97e7bb35e2040a9170f5299e5e5ea0bace4179cc0a2e96ac",
+    "resource-journals/hosted-guest-38042107971-1.jsonl": "9146e8ad000d6782ef004a6f141b9669c32765f8f30770cdd662ca6dc615e455",
+    "native-report.sanitized.json": "285e54562ee966d97a472f5bb6ef62ea0aacae4512af74f528f1c6f94cca90cd"
+  },
+  "evidence": [
+    "resource-journals/hosted-package-38042107971-1.jsonl",
+    "resource-journals/hosted-browser-38042107971-1.jsonl",
+    "resource-journals/hosted-guest-38042107971-1.jsonl",
+    "native-report.sanitized.json"
+  ],
+  "limits": [
+    "Acceptance is limited to the 13 named guest T40 criteria on the exact frozen development artifact; this is not complete Settings acceptance.",
+    "This does not establish member/admin behavior, current-main product health, Chrome Web Store installation, or Store acceptance.",
+    "No raw preference values, capture payloads, page URLs, account/organization data, screenshots, or private runner paths are included."
+  ],
+  "sanitization": {
+    "native_report_reduced_to_case_labels_status_and_fixed_build_identity": true,
+    "resource_journals_copied_with": "scripts/copy-hosted-resource-journal.mjs",
+    "process_attribution_and_opened_paths_removed": true,
+    "screenshots_and_other_private_artifacts_excluded": true,
+    "credentials_or_auth_material_present": false
+  },
+  "independent_review": "pending"
+}
