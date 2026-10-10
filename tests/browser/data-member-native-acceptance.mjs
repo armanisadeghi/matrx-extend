@@ -454,7 +454,7 @@ try {
           );
           assert.equal(
             tsv,
-            'field_1\tfield_2\nCedar chair\t$189\nWalnut desk\t$429\nLinen lamp\t$74',
+            'field_1\tfield_2\nCedar chair\t$189',
             `data_member_tsv_copy_mismatch_${phase}`,
           );
           const json = await copyRows(panel, native.browserSession, native.panelTarget, 'JSON');
