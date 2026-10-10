@@ -20,6 +20,7 @@ export type MediaCoverage = z.infer<typeof MediaCoverageSchema>;
 
 export const SwipeCaptureReceiptSchema = z.object({
   postId: z.string(),
+  url: z.string().optional(),
   organizationId: z.string(),
   platform: z.string(),
   capturedAt: z.string(),

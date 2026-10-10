@@ -98,6 +98,7 @@ export async function saveToSwipeFile(
   }
   const receipt: SwipeCaptureReceipt = {
     postId: post.post_id,
+    url: target.url,
     organizationId,
     platform: target.platform,
     capturedAt: new Date().toISOString(),
