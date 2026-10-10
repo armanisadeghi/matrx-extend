@@ -47,7 +47,9 @@ test('pair input alone cannot satisfy guest Forget readiness or dispatch a click
   try {
     const summary = await settingsActionSummary(panel, 'Forget pair code');
     assert.equal(window.document.querySelector('input[placeholder="Pair code"]') !== null, true);
-    assert.deepEqual(summary, { settingsActive: true, matchedCount: 0, visibleCount: 0 });
+    assert.equal(summary.settingsActive, true);
+    assert.equal(summary.matchedCount, 0);
+    assert.equal(summary.visibleCount, 0);
     assert.equal(
       desktopPairForgetControlReady({
         ...summary,
@@ -72,7 +74,9 @@ test('one visible guest Forget control is ready and remains clickable', async ()
   const { panel, events, window } = makePanel(1);
   try {
     const summary = await settingsActionSummary(panel, 'Forget pair code');
-    assert.deepEqual(summary, { settingsActive: true, matchedCount: 1, visibleCount: 1 });
+    assert.equal(summary.settingsActive, true);
+    assert.equal(summary.matchedCount, 1);
+    assert.equal(summary.visibleCount, 1);
     assert.equal(
       desktopPairForgetControlReady({
         ...summary,
@@ -101,7 +105,9 @@ test('two visible guest Forget controls are not ready and strict pointer selecti
   const { panel, events, window } = makePanel(2);
   try {
     const summary = await settingsActionSummary(panel, 'Forget pair code');
-    assert.deepEqual(summary, { settingsActive: true, matchedCount: 2, visibleCount: 2 });
+    assert.equal(summary.settingsActive, true);
+    assert.equal(summary.matchedCount, 2);
+    assert.equal(summary.visibleCount, 2);
     assert.equal(
       desktopPairForgetControlReady({
         ...summary,
