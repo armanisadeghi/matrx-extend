@@ -184,7 +184,23 @@ test('a skipped choice fails its assertion and still restarts with the original 
 
 test('wrong stored value after extension restart fails and restores the original UI and storage', async () => {
   const f = fixture({ corruptAfterRestart: true });
-  await assert.rejects(run(f), /full_extension_preference_or_restore_failed/);
+  let caught;
+  await assert.rejects(run(f), (error) => {
+    caught = error;
+    return /full_extension_preference_or_restore_failed/.test(error.message);
+  });
+  assert.deepEqual(caught.safeFirstChoicePostReplacementStages.at(-1), {
+    stage: 'choice_preference_observation',
+    outcome: 'failed',
+    observation: {
+      settingsActive: true,
+      sectionOpen: true,
+      selectedMatches: true,
+      storedMatches: false,
+      preferenceMatches: false,
+    },
+  });
+  assert.doesNotMatch(JSON.stringify(caught.safeFirstChoicePostReplacementStages), /Dark|dark|System|system/);
   assert.equal(f.state.visible, 'System');
   assert.equal(f.state.stored, 'system');
   assert.ok(

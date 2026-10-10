@@ -40,6 +40,18 @@ export const GUEST_EXTENSION_RECHECK_FAILURE_STAGES = Object.freeze([
   'restore_after_reload_callback',
   'restore_final_observation',
 ]);
+export const GUEST_POST_REPLACEMENT_STAGES = Object.freeze([
+  'choice_detach_previous_panel',
+  'choice_settings_reopen',
+  'choice_section_reopen',
+  'choice_preference_observation',
+  'choice_after_reload_callback',
+  'restore_detach_previous_panel',
+  'restore_settings_reopen',
+  'restore_section_reopen',
+  'restore_preference_observation',
+  'restore_after_reload_callback',
+]);
 const LIFECYCLE_FIELDS = [
   'management_reload_clicked',
   'old_targets_retired',
@@ -100,11 +112,13 @@ export async function runGuestChoicesAcrossExtensionRestarts({
   let choiceTransportClass = null;
   let choiceFailureCode = null;
   let choiceReloadBoundary = null;
+  const choicePostReplacementStages = [];
   let restoreFailureStage = null;
   let restoreFailureDetailStage = null;
   let restoreTransportClass = null;
   let restoreFailureCode = null;
   let restoreReloadBoundary = null;
+  const restorePostReplacementStages = [];
   let choiceFailure = false;
   let restoreFailure = false;
 
@@ -145,6 +159,19 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     };
   };
 
+  const safeObservation = (state, value, label) => ({
+    settingsActive:
+      typeof state?.activeSettings === 'boolean'
+        ? state.activeSettings
+        : typeof state?.active === 'boolean'
+          ? state.active
+          : null,
+    sectionOpen: typeof state?.sectionOpen === 'boolean' ? state.sectionOpen : null,
+    selectedMatches: (state?.selected ?? state?.visible) === label,
+    storedMatches: state?.stored === value,
+    preferenceMatches: matches(state, value, label),
+  });
+
   const inspectBaseline = async (stage) => {
     failureDetailStage = 'initial_baseline_settings';
     await settings(activePanel);
@@ -162,6 +189,25 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     const restoring = stage === 'restore_extension_reload';
     const prefix = restoring ? 'restore' : 'choice';
     const previousPanel = activePanel;
+    const stageResults = restoring ? restorePostReplacementStages : choicePostReplacementStages;
+    const runDiagnosticStage = async (diagnosticStage, action, observeResult = () => null) => {
+      const entry = { stage: diagnosticStage, outcome: 'started', observation: null };
+      stageResults.push(entry);
+      try {
+        const result = await action();
+        entry.outcome = 'completed';
+        entry.observation = observeResult(result);
+        return result;
+      } catch {
+        entry.outcome = 'failed';
+        try {
+          entry.observation = observeResult();
+        } catch {
+          entry.observation = null;
+        }
+        throw new Error('post_replacement_stage_failed');
+      }
+    };
     failureDetailStage = `${prefix}_extension_reload`;
     const result = await reloadExtension();
     failureDetailStage = `${prefix}_replacement_validation`;
@@ -177,24 +223,37 @@ export async function runGuestChoicesAcrossExtensionRestarts({
       lifecyclePredicatePassed: result.retirement_evidence.timeline.final_predicate,
     });
     failureDetailStage = `${prefix}_detach_previous_panel`;
-    await detachPanelUnlessRetired(previousPanel, result.old_targets_retired);
+    await runDiagnosticStage(`${prefix}_detach_previous_panel`, () =>
+      detachPanelUnlessRetired(previousPanel, result.old_targets_retired),
+    );
     failureDetailStage = restoring ? 'restore_settings_reopen' : 'choice_settings_reopen';
-    await settings(activePanel);
+    await runDiagnosticStage(`${prefix}_settings_reopen`, () => settings(activePanel));
     failureDetailStage = restoring ? 'restore_section_reopen' : 'choice_section_reopen';
-    await openSection(activePanel, section);
+    await runDiagnosticStage(`${prefix}_section_reopen`, () => openSection(activePanel, section));
     failureDetailStage = restoring
       ? 'restore_preference_observation'
       : 'choice_preference_observation';
-    const state = await driver.waitFor(
-      `${controlLabel}_${value}_after_extension_reload`,
-      () => read(activePanel),
-      (observed) => matches(observed, value, label),
+    let observedState = null;
+    const state = await runDiagnosticStage(
+      `${prefix}_preference_observation`,
+      () =>
+        driver.waitFor(
+          `${controlLabel}_${value}_after_extension_reload`,
+          async () => {
+            observedState = await read(activePanel);
+            return observedState;
+          },
+          (observed) => matches(observed, value, label),
+        ),
+      (result) => safeObservation(observedState ?? result, value, label),
     );
     record(`${label} survives full extension reload`, 'pass', state);
     failureDetailStage = restoring
       ? 'restore_after_reload_callback'
       : 'choice_after_reload_callback';
-    await afterReload({ panel: activePanel, value, label, observation: state });
+    await runDiagnosticStage(`${prefix}_after_reload_callback`, () =>
+      afterReload({ panel: activePanel, value, label, observation: state }),
+    );
     return { state, stage };
   };
 
@@ -321,6 +380,8 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     error.safeRestorationFailureCode = restoreFailure ? restoreFailureCode : 'not_applicable';
     error.safeFirstChoiceReloadBoundary = choiceReloadBoundary;
     error.safeRestorationReloadBoundary = restoreReloadBoundary;
+    error.safeFirstChoicePostReplacementStages = choicePostReplacementStages;
+    error.safeRestorationPostReplacementStages = restorePostReplacementStages;
     throw error;
   }
   return activePanel;

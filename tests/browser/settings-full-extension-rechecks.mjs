@@ -1,6 +1,7 @@
 import { safeTransportFailureClass } from './profile-reload-capture.mjs';
 import {
   GUEST_EXTENSION_RECHECK_FAILURE_STAGES,
+  GUEST_POST_REPLACEMENT_STAGES,
   runGuestChoicesAcrossExtensionRestarts,
 } from './settings-guest-extension-rechecks.mjs';
 import { AUTO_SCRAPE_MODE_FAILURE_STAGES } from './settings-guest-scrape-controls.mjs';
@@ -47,11 +48,43 @@ function safeGuestFailureDiagnostics(error) {
       ? stage
       : 'unavailable';
   const safeTransport = (value) => safeTransportFailureClass(() => value);
+  const safeStages = (stages) =>
+    Array.isArray(stages)
+      ? stages
+          .filter(
+            (entry) =>
+              entry &&
+              GUEST_POST_REPLACEMENT_STAGES.includes(entry.stage) &&
+              ['started', 'completed', 'failed'].includes(entry.outcome),
+          )
+          .map((entry) => ({
+            stage: entry.stage,
+            outcome: entry.outcome,
+            observation:
+              entry.observation && typeof entry.observation === 'object'
+                ? {
+                    settingsActive:
+                      typeof entry.observation.settingsActive === 'boolean'
+                        ? entry.observation.settingsActive
+                        : null,
+                    sectionOpen:
+                      typeof entry.observation.sectionOpen === 'boolean'
+                        ? entry.observation.sectionOpen
+                        : null,
+                    selectedMatches: entry.observation.selectedMatches === true,
+                    storedMatches: entry.observation.storedMatches === true,
+                    preferenceMatches: entry.observation.preferenceMatches === true,
+                  }
+                : null,
+          }))
+      : [];
   return {
     firstChoiceFailureStage: safeStage(error?.safeFirstChoiceFailureStage),
     restorationFailureStage: safeStage(error?.safeRestorationFailureStage),
     firstChoiceTransportClass: safeTransport(error?.safeFirstChoiceTransportClass),
     restorationTransportClass: safeTransport(error?.safeRestorationTransportClass),
+    firstChoicePostReplacementStages: safeStages(error?.safeFirstChoicePostReplacementStages),
+    restorationPostReplacementStages: safeStages(error?.safeRestorationPostReplacementStages),
   };
 }
 
@@ -264,6 +297,10 @@ export async function rerunGuestSettingsAfterExtensionReload({
           error.safeRestorationFailureStage = caughtError?.safeRestorationFailureStage;
           error.safeFirstChoiceTransportClass = caughtError?.safeFirstChoiceTransportClass;
           error.safeRestorationTransportClass = caughtError?.safeRestorationTransportClass;
+          error.safeFirstChoicePostReplacementStages =
+            caughtError?.safeFirstChoicePostReplacementStages;
+          error.safeRestorationPostReplacementStages =
+            caughtError?.safeRestorationPostReplacementStages;
           throw error;
         }
       });
