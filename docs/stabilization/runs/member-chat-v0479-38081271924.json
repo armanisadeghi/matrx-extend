@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "run_id": 38081271924,
+  "status": "bounded_pass",
+  "case_id": "member-chat",
+  "observed_at": "2026-10-10T19:57:16.677675+00:00",
+  "workflow_source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "runner_label": "macos-15",
+  "artifact": {
+    "release_run_id": 38080281242,
+    "artifact_id": 11680078743,
+    "artifact_name": "matrx-extend-v0.2.479",
+    "version": "0.2.479",
+    "product_source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "digest": "sha256:c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+    "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0"
+  },
+  "verification": {
+    "auth": "Existing-user magic-link login; signed-in web and extension; canonical extension admin check matched the extension user and returned HTTP 200 with zero rows.",
+    "chat": "One real assistant reply completed without streaming; native content assertion names Capture/Understand/Use. Result screenshot independently viewed.",
+    "transport": {
+      "start_count": 1,
+      "organization_header_present": true,
+      "start_http_status": 200,
+      "response_matches_request_conversation": true,
+      "backend_request_identity_present": true
+    }
+  },
+  "resource_finals": {
+    "package": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/member-chat-v0479/run38081271924/receipt.sanitized.json",
+    "docs/stabilization/evidence/member-chat-v0479/run38081271924/hosted-package.jsonl",
+    "docs/stabilization/evidence/member-chat-v0479/run38081271924/hosted-browser.jsonl",
+    "docs/stabilization/evidence/member-chat-v0479/run38081271924/hosted-guest.jsonl",
+    "docs/stabilization/evidence/member-chat-v0479/run38081271924/reviewer-chat-result.png",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38081271924"
+  ],
+  "hosted_evidence_artifact_id": 11680179652,
+  "limitations": [
+    "The approved-organization identity comparison and selected permission-mode comparison are not evaluated by this standard member-chat path; their false defaults do not prove a mismatch.",
+    "Bounded release-artifact member Chat evidence only; no tool-action, Store-install, Settings or full-surface coverage.",
+    "Result screenshot is clipped; full stage-content and non-streaming completion claims rely on native DOM assertions.",
+    "No claim of visible structured-content/XML or Tile coverage; those require a separate targeted acceptance."
+  ],
+  "credential_cleanup": {
+    "temporary_github_secret_absent": true,
+    "local_single_use_link_file_absent": true,
+    "verification": "Exact-name GitHub secret metadata check returned zero matches after terminal cleanup."
+  }
+}
