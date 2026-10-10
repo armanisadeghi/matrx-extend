@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-F-1008 controlled guest SEO follow-on",
+  "status": "bounded_native_pass",
+  "owned_attempt": {
+    "run_id": 38016503649,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38016503649",
+    "artifact_id": 11655813575,
+    "artifact_name": "hosted-guest-38016503649-1",
+    "workflow_checkout_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+    "conclusion": "success",
+    "inputs": {
+      "acceptance_lane": "B",
+      "runner_label": "macos-15",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "controlled",
+      "seo_metadata_fixture": "none",
+      "seo_interrupt_after_target": "none",
+      "development_run_id": 38014587032,
+      "development_artifact_id": 11655990379
+    }
+  },
+  "frozen_product": {
+    "ci_run_id": 38014587032,
+    "ci_conclusion": "success",
+    "artifact_id": 11655990379,
+    "artifact_name": "matrx-extend-development-test-987a3e08d811c03aa9fc2b82a92d4e51cd45d29a-38014587032-1",
+    "github_artifact_digest": "sha256:c7134664771003a1a941649c6e20b14aece543d18dfd5e7c9192ce2915315326",
+    "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+    "version": "0.2.457",
+    "tree_sha256": "1626416af2bc5f9656474c4f6bdedd28c8898c3322cd305d33a8450c9196d880",
+    "kind": "local_dev_unpacked",
+    "publish_state": "not_published",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "build_before_after_exact_match": true,
+    "workflow_receipt_source_claim": "exact_pushed_commit_only",
+    "workflow_receipt_tracked_dirty": false
+  },
+  "native_observation": {
+    "receipt_status": "partial",
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "target_entries": 18,
+    "target_failures": 0,
+    "controlled_targets": {
+      "T02_changed_metadata_reaudit": {
+        "status": "pass",
+        "public_title_changed": true,
+        "public_description_changed": true,
+        "old_audit_visible_before_click": true,
+        "trusted_reaudit_click": true,
+        "native_title_matches_changed_dom": true
+      },
+      "T14_social_copy_before_reaudit": {
+        "status": "pass",
+        "copied_tags": 5,
+        "exact_clipboard_match": true,
+        "feedback_observed": true,
+        "clipboard_permission_restored": true
+      },
+      "T14_social_copy_after_reaudit": {
+        "status": "pass",
+        "copied_tags": 6,
+        "exact_clipboard_match": true,
+        "feedback_observed": true,
+        "clipboard_permission_restored": true
+      }
+    },
+    "other_executed_scope": [
+      "T01 navigation to a distinct public title and audit after target reload",
+      "T03 restricted about:blank error state and recovery to a public page",
+      "T07 guest menu role gate and exact text/AI clipboard readback",
+      "T09 bounded sparse/rich metadata grouping and canonical outbound activation"
+    ],
+    "last_safe_stage": "controlled_public_source_restored",
+    "excluded_cases": ["T09 volatile public detail", "T09 optional metadata fixture"]
+  },
+  "resource_decisions": {
+    "hosted_package": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted_browser": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted_guest": "valid; admitted=true; resourceInvalid=false; exitCode=0; CPU recovery completed before final decision"
+  },
+  "originals": {
+    "root": ".research/seo-controlled-followon-38016503649-originals",
+    "selection": "Exact-run SEO receipt, package/browser/guest resource journals, and two workflow screenshots; excluded historical run journals carried in the checkout.",
+    "sha256": {
+      "seo-guest-acceptance.json": "85c71c1bef38ec50dc11d910e457ee4162311ebeec1617c4478ba4bd45f320c2",
+      "hosted-package-38016503649-1.jsonl": "0bfdae574c29c214dba63a81045c9df677fba338186a18cde022ab9489a44802",
+      "hosted-browser-38016503649-1.jsonl": "80949a22e7d89ce233226421ead860dab225311a232ca2a6057c2b866c9a53d0",
+      "hosted-guest-38016503649-1.jsonl": "a17f07e0473b48a4d985891e597b97dbddd365358ffab075124a497a4e687e20",
+      "native-side-panel.png": "8782e6e1032a386852cd91d668a07d2fa9664af2ad9c30e43f825e3ea2dbad2c",
+      "normal-target-after-open.png": "59366cd38e159297a279207d67f9dd46bb47225f289da01dca0669ce17142bc4"
+    }
+  },
+  "limits": [
+    "This is real native-browser evidence on an unpublished frozen development artifact; it does not certify whole SEO or Store behavior.",
+    "The T02 target directly verifies the refreshed title, not the displayed description; later exact T14 clipboard readback is indirect evidence that social snippet data changed.",
+    "T09 volatile detail and optional metadata fixture, database save/history/diff flows, other deferred SEO controls, member/admin modes, and Store remain unverified by this run.",
+    "The workflow screenshots show setup context, not the SEO panel result; behavior credit comes from the run's passed native target assertions.",
+    "Canonical inventory status was not changed by this worker report; the coordinator owns inventory reconciliation."
+  ],
+  "independent_review": {
+    "reviewer": "ci_guest_observer",
+    "status": "approved_bounded_claim",
+    "summary": "Exact artifact name/run/source and digest match the imported receipt; all three exact-run resource journals finalize valid. Receipt supports only its selected controlled guest observations and explicit limits. Screenshots show setup context, not detailed SEO actions."
+  }
+}

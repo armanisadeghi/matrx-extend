@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "review_role": "fresh independent evidence audit; no native relaunch or product authorship",
+  "run_id": 38016503649,
+  "verdict": "approve_bounded_controlled_guest_evidence",
+  "checks": {
+    "artifact_binding": "Imported artifact 11655990379 is successful CI run 38014587032 at source 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; artifact name, digest, run and source match the native receipt.",
+    "build_identity": "Receipt records identical before/after development build version and tree hash.",
+    "resources": "Exact package, browser and guest journals end with RESOURCE_FINAL_DECISION valid and exit code 0. The guest journal records transient CPU pressure and recovery before its valid final decision.",
+    "scope": "Receipt is honestly partial and covers its selected controlled guest T01/T02/T03/T07/T09/T14 observations with explicit deferrals.",
+    "screenshots": "Screenshots show the owned page and generic guest side-panel opening; they do not visually establish detailed SEO actions. Those claims depend on the driver observations."
+  },
+  "limits": [
+    "The hosted workflow checkout at 0d6e69aa is separate from imported product source 987a3e08; this is not current-head product acceptance.",
+    "No Store, member/admin, or deferred SEO behavior is established.",
+    "No mismatch was found within the bounded claim."
+  ],
+  "evidence": ".research/seo-controlled-followon-38016503649.json and .research/seo-controlled-followon-38016503649-originals/"
+}

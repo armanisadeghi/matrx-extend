@@ -56,6 +56,10 @@ const SITE = {
   retriesOnOrganizationSelection: true,
 } as const;
 
+function liveHandoffs() {
+  return mediaDb().from('capture_handoff').select('*').is('deleted_at', null);
+}
+
 /**
  * Every handoff waiting on this browser, across ALL the person's organizations.
  * `waiting` = rung 3 has not run yet; `needs_drive` = rung 3 ran and failed,
@@ -69,11 +73,8 @@ const SITE = {
 export async function listNeedsYou(): Promise<Handoff[]> {
   // Decided by access alone (RLS as the person): every organization the person belongs to,
   // never narrowed by the selected one. Each row carries its own organization_id.
-  const { data, error } = await mediaDb()
-    .from('capture_handoff')
-    .select('*')
+  const { data, error } = await liveHandoffs()
     .in('status', [...NEEDS_YOU_STATUSES])
-    .is('deleted_at', null)
     .order('created_at', { ascending: true });
 
   if (error) failDbCall(SITE, error);
@@ -97,12 +98,7 @@ export async function listNeedsYou(): Promise<Handoff[]> {
 
 /** One handoff by id, as the person can see it; null when it is gone or not theirs. */
 export async function getHandoff(id: string): Promise<Handoff | null> {
-  const { data, error } = await mediaDb()
-    .from('capture_handoff')
-    .select('*')
-    .eq('id', id)
-    .is('deleted_at', null)
-    .maybeSingle();
+  const { data, error } = await liveHandoffs().eq('id', id).maybeSingle();
   if (error) failDbCall(SITE, error);
   if (!data) return null;
   const parsed = handoffSchema.safeParse(data);

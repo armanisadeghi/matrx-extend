@@ -69,7 +69,10 @@ vi.mock('@/features/scrape/DiagnoseCard', () => ({
   DiagnoseLauncher: () => null,
 }));
 vi.mock('@/features/scrape/UnsavedCapturesCard', () => ({ UnsavedCapturesCard: () => null }));
-vi.mock('@/features/scrape/FileSourcePanel', () => ({ FileSourcePanel: () => null }));
+vi.mock('@/features/scrape/FileSourcePanel', () => ({
+  FileSourcePanel: () => null,
+  useMyLibraries: () => ({ libraries: [], error: null }),
+}));
 vi.mock('@/features/seo/SeoDetails', () => ({ SeoDetails: () => null }));
 
 import type { SoupResult } from '@/lib/scrape/pipeline';

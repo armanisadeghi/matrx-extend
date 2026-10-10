@@ -114,6 +114,7 @@ vi.mock('@/features/scrape/DiagnoseCard', () => ({
 }));
 vi.mock('@/features/seo/SeoDetails', () => ({ SeoDetails: () => null }));
 vi.mock('@/features/scrape/FileSourcePanel', () => ({
+  useMyLibraries: () => ({ libraries: [], error: null }),
   FileSourcePanel: ({
     processedDocumentId,
     organizationId,

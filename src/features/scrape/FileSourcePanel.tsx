@@ -52,7 +52,7 @@ function localStore(): Storage | null {
 }
 
 /** The person's media-catalog Libraries (the ones they made), web-capture first. */
-function useMyLibraries(userId: string | null, enabled: boolean) {
+export function useMyLibraries(userId: string | null, enabled: boolean) {
   const [libraries, setLibraries] = useState<LibraryOption[]>([]);
   const [error, setError] = useState<string | null>(null);
   useEffect(() => {
