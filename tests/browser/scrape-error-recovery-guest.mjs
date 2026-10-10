@@ -7,6 +7,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { assertGuestScrapeRecoveryEvidence } from './scrape-error-recovery-guest-oracle.mjs';
 import { updateHostAccessIfExpected } from './scrape-host-access-transition.mjs';
+import { waitForRecoveryOutcome } from './scrape-recovery-failure-diagnostic.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -31,6 +32,7 @@ const report = {
   artifact: null,
   observations: null,
   failure_code: null,
+  failure_diagnostic: null,
   limits:
     'Bounded guest host-permission denial, Try again, deep-mode preservation, and Dismiss only. Reload page remains unverified because the real second-no-receiver-after-injection condition is a runtime/manifest fault, while a genuine permission denial offers Try again only.',
 };
@@ -137,20 +139,27 @@ async function recoveryState(panel) {
     const tab = [...document.querySelectorAll('button[role="tab"][title="Scrape"]')]
       .filter((node) => node.getAttribute('data-state') === 'active');
     const pane = tab.length === 1 ? document.getElementById(tab[0].getAttribute('aria-controls')) : null;
-    if (!pane?.matches('[role="tabpanel"][data-state="active"]')) return { ready: false };
+    const scrapePaneActive = Boolean(pane?.matches('[role="tabpanel"][data-state="active"]'));
+    if (!scrapePaneActive) return { ready: false, scrapeTabActive: tab.length === 1, scrapePaneActive };
     const buttons = [...pane.querySelectorAll('button')];
     const articleTab = [...pane.querySelectorAll('[role="tablist"] [role="tab"]')]
       .find((node) => node.firstChild?.textContent?.trim() === 'Article');
     const article = articleTab ? document.getElementById(articleTab.getAttribute('aria-controls')) : null;
+    const deepButton = buttons.find((node) => (node.getAttribute('title') ?? node.getAttribute('data-matrx-title') ?? '').startsWith('Scroll the page top'));
+    const resultText = article?.getAttribute('data-state') === 'active' ? article.innerText : null;
     return {
       ready: true,
+      scrapeTabActive: true,
+      scrapePaneActive: true,
       error: buttons.some((node) => node.getAttribute('aria-label') === 'Dismiss'),
       permissionMessage: pane.textContent.includes('No permission for this page'),
       tryAgain: buttons.filter((node) => node.textContent.trim() === 'Try again').length,
       reloadPage: buttons.filter((node) => node.textContent.trim() === 'Reload page').length,
       deepTitles: buttons.filter((node) => (node.getAttribute('title') ?? node.getAttribute('data-matrx-title') ?? '').startsWith('Scroll the page top'))
         .map((node) => node.getAttribute('title') ?? node.getAttribute('data-matrx-title')),
-      resultText: article?.getAttribute('data-state') === 'active' ? article.innerText : null,
+      deepCaptureInProgress: Boolean(deepButton && /^Scrolling/.test(deepButton.textContent.trim())),
+      resultPresent: Boolean(resultText?.trim()),
+      resultText,
       fixtureTitle: pane.querySelector('.truncate.text-sm.font-medium')?.textContent?.trim() ?? null,
     };
   })()`,
@@ -276,11 +285,13 @@ async function run() {
           assert.equal(state.ready, true, 'scrape_recovery_panel_lost_after_fixture_reload');
           assert.equal(state.deepTitles.length, 1, 'scrape_recovery_deep_control_not_unique');
           await resourceAction(() => click(panel, 'title', state.deepTitles[0]));
-          state = await waitFor(
-            'scrape_recovery_permission_denial_or_capture',
-            () => recoveryState(panel),
-            (value) => value?.ready && (value.error || Boolean(value.resultText?.trim())),
-          );
+          state = await waitForRecoveryOutcome({
+            readState: () => recoveryState(panel),
+            readObservedHostAccess: () => getHostAccess(page, extensionId),
+            onFailure: (value) => {
+              report.failure_diagnostic = value;
+            },
+          });
           if (!state.error)
             throw new Error(
               'scrape_recovery_fixture_permission_not_denied_active_tab_or_host_access',
