@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T01:03:48+00:00",
+  "updated_at": "2026-10-10T02:25:54.623Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -8663,96 +8663,6 @@
           },
           "result_history": [
             {
-              "mode": "guest",
-              "status": "unverified",
-              "run_id": "38007298161",
-              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
-              "workflow_source_sha": "d9bd66a3957dfc246afc5f76cc4ee68e7d6998a5",
-              "development_ci_run_id": 37998294843,
-              "development_artifact_id": 11647758423,
-              "hosted_result_artifact_id": 11652445172,
-              "build_version": "0.2.456",
-              "resource_valid": true,
-              "failure_stage": "choice_extension_reload",
-              "restoration_failure_stage": "restore_acquire_panel",
-              "detail": "The native switch changed visible and stored preference to ON. During the first reload, the management click resolved and lifecycle evidence reached its full old-worker/old-panel retirement and replacement-worker predicate with no timeline truncation. The reload helper still threw before returning a replacement panel: failure code unclassified, transport none, no context verdict. Recovery then could not acquire a live panel (owned CDP protocol error), and cleanup failed. No post-reload setting observation exists; canonical T40 remains partial from the earlier warm ON/OFF proof. Diagnose the helper interval after lifecycle acceptance and before context verification; do not repeat the same hosted case without a causal repair or new safe diagnostic.",
-              "evidence": [
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38007298161/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38007298161/hosted-package-38007298161-1.jsonl",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38007298161/hosted-browser-38007298161-1.jsonl",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38007298161/hosted-guest-38007298161-1.jsonl"
-              ]
-            },
-            {
-              "mode": "guest",
-              "status": "unverified",
-              "run_id": "38006058872",
-              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
-              "workflow_source_sha": "f88405d22982d31ab9f52ab36cf5ff0c681d6010",
-              "development_ci_run_id": 37998294843,
-              "development_artifact_id": 11647758423,
-              "hosted_result_artifact_id": 11651925876,
-              "build_version": "0.2.456",
-              "resource_valid": true,
-              "failure_stage": "choice_extension_reload",
-              "restoration_failure_stage": "restore_acquire_panel",
-              "detail": "The repaired native switch click changed the visible and stored preference to ON. The first Chrome extension reload then failed before lifecycle replacement was verified (failure code unclassified, transport none). Recovery could not acquire a live panel (owned CDP transport failure, protocol_error), and cleanup also failed. The run gives no post-reload product verdict; canonical T40 remains partial from earlier warm ON/OFF proof.",
-              "evidence": [
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/hosted-package-38006058872-1.jsonl",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/hosted-browser-38006058872-1.jsonl",
-                "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/hosted-guest-38006058872-1.jsonl"
-              ]
-            }
-          ],
-          "linked_defects": [
-            "EXT-D-0087"
-          ],
-          "preparation_history": [
-            {
-              "source_commit": "dbfbb0dc",
-              "focused_ci": "37834349284",
-              "independent_review": "97226f3f",
-              "status": "source-review-findings-repairing-native-pending",
-              "evidence": [
-                ".research/settings-remaining-controls-preparation-20261008.json",
-                ".research/settings-remaining-controls-peer-20261008.json"
-              ],
-              "scope": "T28 visibility/section restoration, T40/T67 toggle+picker storage restoration and real driver guard gaps identified. Source179tests green not sufficient; no native credit."
-            },
-            {
-              "source_commit": "a5c82404",
-              "merge_commit": "70b65e93",
-              "focused_ci": "37835391727",
-              "independent_review": "1d04d0af",
-              "status": "source-repaired-final-failure-test-gap-pending",
-              "evidence": [
-                ".research/settings-controls-restoration-peer-20261008.json"
-              ],
-              "scope": "Rendered section geometry + verified cleanup and UI/storage drift restoration implemented; actual case-runner simulations exercised. T28 changed-state failure cleanup test still being tightened. Native/downstream capture unverified."
-            },
-            {
-              "source_commit": "2d8ff3ff",
-              "scope": "T28 changed-state failure test now starts Account closed, opens it before injected failure and requires exact baseline map plus two opposing clicks. T40/T67 code unchanged from independent restoration review. Actual hosted37836070600 Settings subtests158-161 passed; later full focused37836302781 passed9c4280da. Native still unverified.",
-              "independent_review": "1d04d0af for driver repairs; coordinator inspected final11-line test change",
-              "status": "source-ready-native-pending",
-              "evidence": [
-                ".research/settings-remaining-controls-preparation-20261008.json",
-                ".research/settings-controls-restoration-peer-20261008.json"
-              ]
-            },
-            {
-              "at": "2026-10-08T23:04:33.457617+00:00",
-              "status": "native-adapter-gap-no-new-acceptance",
-              "source_commit": "f36e0832",
-              "evidence": [
-                ".research/settings-auto-scrape-behavior-preparation-20261008.json"
-              ],
-              "scope": "Unsupported model-only helper removed. Next route uses real complete rendered v2 context preview, unique fresh-page ON content and bounded OFF absence; existing results unchanged."
-            }
-          ],
-          "result_history": [
-            {
               "at": "2026-10-08T20:22:52.606857+00:00",
               "mode": "guest",
               "result": {
@@ -8830,6 +8740,52 @@
                 "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
               },
               "reason": "Preserve preceding guest result when recording hosted run 37994579674."
+            }
+          ],
+          "linked_defects": [
+            "EXT-D-0087"
+          ],
+          "preparation_history": [
+            {
+              "source_commit": "dbfbb0dc",
+              "focused_ci": "37834349284",
+              "independent_review": "97226f3f",
+              "status": "source-review-findings-repairing-native-pending",
+              "evidence": [
+                ".research/settings-remaining-controls-preparation-20261008.json",
+                ".research/settings-remaining-controls-peer-20261008.json"
+              ],
+              "scope": "T28 visibility/section restoration, T40/T67 toggle+picker storage restoration and real driver guard gaps identified. Source179tests green not sufficient; no native credit."
+            },
+            {
+              "source_commit": "a5c82404",
+              "merge_commit": "70b65e93",
+              "focused_ci": "37835391727",
+              "independent_review": "1d04d0af",
+              "status": "source-repaired-final-failure-test-gap-pending",
+              "evidence": [
+                ".research/settings-controls-restoration-peer-20261008.json"
+              ],
+              "scope": "Rendered section geometry + verified cleanup and UI/storage drift restoration implemented; actual case-runner simulations exercised. T28 changed-state failure cleanup test still being tightened. Native/downstream capture unverified."
+            },
+            {
+              "source_commit": "2d8ff3ff",
+              "scope": "T28 changed-state failure test now starts Account closed, opens it before injected failure and requires exact baseline map plus two opposing clicks. T40/T67 code unchanged from independent restoration review. Actual hosted37836070600 Settings subtests158-161 passed; later full focused37836302781 passed9c4280da. Native still unverified.",
+              "independent_review": "1d04d0af for driver repairs; coordinator inspected final11-line test change",
+              "status": "source-ready-native-pending",
+              "evidence": [
+                ".research/settings-remaining-controls-preparation-20261008.json",
+                ".research/settings-controls-restoration-peer-20261008.json"
+              ]
+            },
+            {
+              "at": "2026-10-08T23:04:33.457617+00:00",
+              "status": "native-adapter-gap-no-new-acceptance",
+              "source_commit": "f36e0832",
+              "evidence": [
+                ".research/settings-auto-scrape-behavior-preparation-20261008.json"
+              ],
+              "scope": "Unsupported model-only helper removed. Next route uses real complete rendered v2 context preview, unique fresh-page ON content and bounded OFF absence; existing results unchanged."
             }
           ],
           "attempt_history": [
@@ -23988,6 +23944,21 @@
           ],
           "proven": "Named Source 5f25b273-3f3b-4708-808b-b7a290c688cf (EXT-D-0187 Native Save 5 2026-10-10) persisted with full unique URL and captured content; reopening Project 4484ab9c-bb04-4adc-a894-df2e9f18960f Attach sources panel listed that Source, confirming association.",
           "limits": "Only bounded member substeps. Save dialog URL display, scrolling, focus containment/wrap, duplicate, no-destination, refusal/retry, other target flows, Save Source UI changes committed in 3e3c2770c, guest/admin and full T04/T29 remain unverified. EXT-D-0187 remains in-fix."
+        },
+        {
+          "run_id": "38016707554",
+          "mode": "member",
+          "build": "frozen CI development artifact 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; CI run 38014587032 / artifact 11655990379; workflow checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+          "defect_id": "EXT-D-0187",
+          "status": "harness-failure-before-ui",
+          "evidence": "docs/stabilization/evidence/scrape-save-hosted-38016707554/receipt.json; docs/stabilization/evidence/scrape-save-hosted-38016707554/scrape-save-native-acceptance.json",
+          "resource_journals": [
+            "docs/stabilization/resource-journals/hosted-package-38016707554-1.jsonl",
+            "docs/stabilization/resource-journals/hosted-browser-38016707554-1.jsonl",
+            "docs/stabilization/resource-journals/hosted-guest-38016707554-1.jsonl"
+          ],
+          "proven": "Frozen artifact imported with verified tree hash. Package and browser phases had valid final resource decisions; acceptance wrapper ended child_failed with resourceInvalid=false.",
+          "limits": "Driver input assertion compared imported artifact source SHA 987a3e08d with workflow checkout SHA 0d6e69aa7, then stopped before the native callback. No member sign-in, Source query/write, association check, or cleanup operation occurred; cleanup is null. No product behavior verdict or acceptance credit. This run predates Save Source commits da2e314b0 and 21f07fb92."
         }
       ]
     },
@@ -24142,15 +24113,16 @@
                 "one audit per URL",
                 "slow old result cannot overwrite new page"
               ],
-              "run_id": "37995400576",
-              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
-              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
-              "build_version": "0.2.456",
+              "run_id": "38016503649",
+              "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+              "driver_source_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+              "build_version": "0.2.457",
               "evidence": [
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
-              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T01 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred."
             }
           },
           "result_history": [
@@ -24316,6 +24288,30 @@
                 "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred."
               },
               "superseded_at": "2026-10-09T22:12:46Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "new_url_replaces_visible_title",
+                  "reload_audits_current_url"
+                ],
+                "unverified_dimensions": [
+                  "one audit per URL",
+                  "slow old result cannot overwrite new page"
+                ],
+                "run_id": "37995400576",
+                "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+                "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+                "build_version": "0.2.456",
+                "evidence": [
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ],
+                "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              },
+              "superseded_at": "2026-10-10T02:25:54.623Z"
             }
           ],
           "attempt_history": [
@@ -24371,6 +24367,21 @@
                 ".research/seo-full-live-peer-20261008-1610.json"
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
+            },
+            {
+              "at": "2026-10-10T02:25:54.623Z",
+              "run_id": "38016503649",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.457",
+              "evidence": [
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
+              ],
+              "detail": "Re-observed distinct-title URL navigation and target reload/reselection on the controlled guest profile; one-audit-per-URL and the slow stale-result race remain unverified."
             }
           ],
           "revalidation_history": [
@@ -24429,15 +24440,17 @@
                 "displayed description directly matches changed page",
                 "reload"
               ],
-              "run_id": "37995400576",
-              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
-              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
-              "build_version": "0.2.456",
+              "run_id": "38016503649",
+              "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+              "driver_source_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+              "build_version": "0.2.457",
               "evidence": [
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
-              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T02 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred.",
+              "qualification": "The direct re-audit view assertion verifies the changed title, not the displayed description. Exact T14 clipboard readback after re-audit is indirect evidence that the changed social snippet was captured."
             }
           },
           "result_history": [
@@ -24622,6 +24635,33 @@
                 "qualification": "The receipt target is named guest_reaudit_captures_changed_page_metadata, but its direct native-view assertion is title-only. It proves the public title and description changed, old title remained before click, then native title matched the new public title. T14 later clipboard evidence indirectly includes updated social tags; do not credit direct SEO description-display refresh."
               },
               "superseded_at": "2026-10-09T22:12:46Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "manual_button_returns_to_current_page",
+                  "guest_reaudit_captures_changed_page_metadata"
+                ],
+                "unverified_dimensions": [
+                  "running button state",
+                  "stale advice replacement",
+                  "failure report",
+                  "displayed description directly matches changed page",
+                  "reload"
+                ],
+                "run_id": "37995400576",
+                "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+                "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+                "build_version": "0.2.456",
+                "evidence": [
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ],
+                "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              },
+              "superseded_at": "2026-10-10T02:25:54.623Z"
             }
           ],
           "defect_ids": [
@@ -24743,6 +24783,21 @@
                 ".research/seo-full-live-peer-20261008-1610.json"
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
+            },
+            {
+              "at": "2026-10-10T02:25:54.623Z",
+              "run_id": "38016503649",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.457",
+              "evidence": [
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
+              ],
+              "detail": "Re-observed Manual return to the current page and trusted Re-audit after changing public title/description; native title matched the changed DOM. Direct displayed-description parity, stale-advice replacement, running state, failure reporting and reload remain unverified."
             }
           ],
           "revalidation_history": [
@@ -24799,15 +24854,16 @@
                 "other restricted schemes",
                 "reload behavior"
               ],
-              "run_id": "37995400576",
-              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
-              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
-              "build_version": "0.2.456",
+              "run_id": "38016503649",
+              "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+              "driver_source_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+              "build_version": "0.2.457",
               "evidence": [
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
-              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T03 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred."
             }
           },
           "result_history": [
@@ -24980,6 +25036,31 @@
                 "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred."
               },
               "superseded_at": "2026-10-09T22:12:46Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "about_blank_clear_error_without_stale_audit",
+                  "public_page_recovers_after_restricted_url"
+                ],
+                "unverified_dimensions": [
+                  "unreachable HTTP(S)",
+                  "other restricted schemes",
+                  "reload behavior"
+                ],
+                "run_id": "37995400576",
+                "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+                "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+                "build_version": "0.2.456",
+                "evidence": [
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ],
+                "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              },
+              "superseded_at": "2026-10-10T02:25:54.623Z"
             }
           ],
           "attempt_history": [
@@ -25035,6 +25116,21 @@
                 ".research/seo-full-live-peer-20261008-1610.json"
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
+            },
+            {
+              "at": "2026-10-10T02:25:54.623Z",
+              "run_id": "38016503649",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.457",
+              "evidence": [
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
+              ],
+              "detail": "Re-observed the controlled about:blank error state and recovery to a public page; unreachable HTTP(S), other restricted schemes and reload behavior remain unverified."
             }
           ],
           "revalidation_history": [
@@ -25158,9 +25254,9 @@
             "guest": {
               "status": "partial",
               "passed_subtargets": [
-                "guest_menu_offers_text_and_ai_but_hides_json",
                 "guest_actual_clipboard_text_and_ai_page_0",
                 "guest_actual_clipboard_text_and_ai_page_1",
+                "guest_menu_offers_text_and_ai_but_hides_json",
                 "guest_role_gate_after_reload",
                 "guest_actual_clipboard_text_and_ai_reload"
               ],
@@ -25169,16 +25265,16 @@
                 "admin JSON contents",
                 "complete displayed audit field parity"
               ],
-              "qualification": "Trusted copy actions and clipboard readback were asserted; clipboard bytes are not retained. Coverage does not prove complete parity of every displayed audit field.",
-              "run_id": "37995400576",
-              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
-              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
-              "build_version": "0.2.456",
+              "run_id": "38016503649",
+              "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+              "driver_source_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+              "build_version": "0.2.457",
               "evidence": [
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
-              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T07 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred."
             }
           },
           "result_history": [
@@ -25385,6 +25481,35 @@
                 "qualification": "Real trusted copy actions and clipboard readback were asserted. Text checks URL, title, a description line, page stats and an available heading; AI output must wrap the exact summary. This is not complete parity between every displayed audit field and clipboard content."
               },
               "superseded_at": "2026-10-09T22:12:46Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "guest_menu_offers_text_and_ai_but_hides_json",
+                  "guest_actual_clipboard_text_and_ai_page_0",
+                  "guest_actual_clipboard_text_and_ai_page_1",
+                  "guest_role_gate_after_reload",
+                  "guest_actual_clipboard_text_and_ai_reload"
+                ],
+                "unverified_dimensions": [
+                  "member/admin role gates",
+                  "admin JSON contents",
+                  "complete displayed audit field parity"
+                ],
+                "qualification": "Trusted copy actions and clipboard readback were asserted; clipboard bytes are not retained. Coverage does not prove complete parity of every displayed audit field.",
+                "run_id": "37995400576",
+                "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+                "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+                "build_version": "0.2.456",
+                "evidence": [
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ],
+                "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              },
+              "superseded_at": "2026-10-10T02:25:54.623Z"
             }
           ],
           "attempt_history": [
@@ -25440,6 +25565,21 @@
                 ".research/seo-full-live-peer-20261008-1610.json"
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
+            },
+            {
+              "at": "2026-10-10T02:25:54.623Z",
+              "run_id": "38016503649",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.457",
+              "evidence": [
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
+              ],
+              "detail": "Re-observed guest menu role gates and exact Text/AI clipboard readback before and after target reload; member/admin access and complete displayed-audit-field parity remain unverified."
             }
           ],
           "revalidation_history": [
@@ -25520,28 +25660,25 @@
                 "page_1_title_and_headings",
                 "sparse_public_detail_groups",
                 "rich_public_detail_groups_and_canonical_door",
-                "canonical_outbound_opens_expected_public_tab",
-                "guest_manual_link_counts_match_live_dom",
-                "guest_manual_image_alt_counts_match_live_dom",
-                "guest_manual_readability_display_is_populated_and_explained",
-                "guest_manual_performance_reflects_current_navigation"
+                "canonical_outbound_opens_expected_public_tab"
               ],
               "unverified_dimensions": [
                 "hreflang/schema doors: this live public DOM had no unique openable candidates",
                 "broken social preview image",
                 "remaining detail controls",
-                "exact readability calculation"
+                "exact readability calculation",
+                "volatile public-detail and optional metadata-fixture phases excluded by this controlled run"
               ],
-              "qualification": "Readability display was populated and explained, but the exact value remains unverified. This fixture-free run does not replace the separate older Airbnb door evidence preserved in history.",
-              "run_id": "37995400576",
-              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
-              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
-              "build_version": "0.2.456",
+              "run_id": "38016503649",
+              "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+              "driver_source_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+              "build_version": "0.2.457",
               "evidence": [
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
-              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred."
             }
           },
           "result_history": [
@@ -25889,6 +26026,40 @@
                 "qualification": "Readability check proves populated/explained display only, not numeric metric correctness. Airbnb alternate-language/schema links were actually clicked and destinations verified. Wikipedia candidate absence is unverified, not a product failure."
               },
               "superseded_at": "2026-10-09T22:12:46Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "page_0_title_and_headings",
+                  "page_1_title_and_headings",
+                  "sparse_public_detail_groups",
+                  "rich_public_detail_groups_and_canonical_door",
+                  "canonical_outbound_opens_expected_public_tab",
+                  "guest_manual_link_counts_match_live_dom",
+                  "guest_manual_image_alt_counts_match_live_dom",
+                  "guest_manual_readability_display_is_populated_and_explained",
+                  "guest_manual_performance_reflects_current_navigation"
+                ],
+                "unverified_dimensions": [
+                  "hreflang/schema doors: this live public DOM had no unique openable candidates",
+                  "broken social preview image",
+                  "remaining detail controls",
+                  "exact readability calculation"
+                ],
+                "qualification": "Readability display was populated and explained, but the exact value remains unverified. This fixture-free run does not replace the separate older Airbnb door evidence preserved in history.",
+                "run_id": "37995400576",
+                "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+                "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+                "build_version": "0.2.456",
+                "evidence": [
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ],
+                "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              },
+              "superseded_at": "2026-10-10T02:25:54.623Z"
             }
           ],
           "defect_ids": [
@@ -26075,6 +26246,21 @@
                 ".research/seo-full-live-peer-20261008-1610.json"
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
+            },
+            {
+              "at": "2026-10-10T02:25:54.623Z",
+              "run_id": "38016503649",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.457",
+              "evidence": [
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
+              ],
+              "detail": "Re-observed title/headings on two public pages, sparse/rich metadata groups and the canonical outbound door. The volatile public-detail and optional metadata-fixture phases were excluded by controlled scope; remaining detail controls, broken preview image, hreflang/schema candidates and exact readability computation remain unverified."
             }
           ],
           "revalidation_history": [
@@ -26341,6 +26527,21 @@
                 ".research/seo-full-live-peer-20261008-1610.json"
               ],
               "detail": "Full scope + Airbnb;18 controlled checks revalidate and5 addedT09 display/DOM/navigation checks pass. One Wikipedia metadata candidate check unverified; no fullcasepromotion."
+            },
+            {
+              "at": "2026-10-10T02:25:54.623Z",
+              "run_id": "38016503649",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.457",
+              "evidence": [
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
+              ],
+              "detail": "Re-observed trusted social-copy clipboard readback matching five missing tags before and six after Re-audit; other social states, absent-button behavior, reload, member and admin remain unverified."
             }
           ],
           "results": {
@@ -26356,15 +26557,16 @@
                 "reload",
                 "member/admin"
               ],
-              "run_id": "37995400576",
-              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
-              "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
-              "build_version": "0.2.456",
+              "run_id": "38016503649",
+              "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+              "driver_source_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+              "build_version": "0.2.457",
               "evidence": [
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
-                "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ".research/seo-controlled-followon-38016503649.json",
+                ".research/seo-controlled-followon-38016503649-peer.json",
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
-              "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T14 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred."
             }
           },
           "result_history": [
@@ -26445,6 +26647,32 @@
                 "release_scope": "Real guest full-scope native run on frozen unpublished development414.23 targets pass, one target unverified; all three resource journals valid. Full-case/member/admin/latest-main/Store acceptance not inferred."
               },
               "superseded_at": "2026-10-09T22:12:46Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "guest_social_missing_tags_clipboard_before_reaudit",
+                  "guest_social_missing_tags_clipboard_after_reaudit"
+                ],
+                "unverified_dimensions": [
+                  "button absent when no snippet applies",
+                  "other social page states",
+                  "reload",
+                  "member/admin"
+                ],
+                "run_id": "37995400576",
+                "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+                "driver_source_sha": "54cd2de9013efb8c6cff296ae80d7c86b0b27381",
+                "build_version": "0.2.456",
+                "evidence": [
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/receipt.json",
+                  "docs/stabilization/evidence/guest-seo-behavior/run37995400576/seo-guest-acceptance.sanitized.json"
+                ],
+                "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
+              },
+              "superseded_at": "2026-10-10T02:25:54.623Z"
             }
           ],
           "revalidation_history": [
@@ -26500,7 +26728,8 @@
             "37731560399",
             "37800877872",
             "37804374798",
-            "37995400576"
+            "37995400576",
+            "38016503649"
           ],
           "retest_status": "partial"
         },
@@ -27281,6 +27510,116 @@
             }
           ],
           "limits": "Exactly 19 bounded guest subtargets pass across T01/T02/T03/T07/T09, one T09 metadata door remains unverified. Automatic Wikipedia exact-data counts and readability metric correctness are not established. Other case criteria, T04-T06/T08/T10-T14, member/admin, full extension reload, Store, and current-main health remain unverified; no whole case or feature pass."
+        },
+        {
+          "run_id": "38016503649",
+          "mode": "guest",
+          "build": "0.2.457",
+          "status": "partial",
+          "artifact_source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+          "hosted_driver_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+          "artifact_id": 11655990379,
+          "receipt": ".research/seo-controlled-followon-38016503649.json",
+          "independent_review": ".research/seo-controlled-followon-38016503649-peer.json",
+          "resource_valid": true,
+          "resource_journals": [
+            ".research/seo-controlled-followon-38016503649-originals/hosted-package-38016503649-1.jsonl",
+            ".research/seo-controlled-followon-38016503649-originals/hosted-browser-38016503649-1.jsonl",
+            ".research/seo-controlled-followon-38016503649-originals/hosted-guest-38016503649-1.jsonl"
+          ],
+          "case_links": [
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "new_url_replaces_visible_title",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T01",
+              "subtarget": "reload_audits_current_url",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T02",
+              "subtarget": "manual_button_returns_to_current_page",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T02",
+              "subtarget": "guest_reaudit_captures_changed_page_metadata",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "about_blank_clear_error_without_stale_audit",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T03",
+              "subtarget": "public_page_recovers_after_restricted_url",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_role_gate_after_reload",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T07",
+              "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_0_title_and_headings",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "page_1_title_and_headings",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "sparse_public_detail_groups",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "rich_public_detail_groups_and_canonical_door",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T09",
+              "subtarget": "canonical_outbound_opens_expected_public_tab",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T14",
+              "subtarget": "guest_social_missing_tags_clipboard_before_reaudit",
+              "status": "pass"
+            },
+            {
+              "case_id": "EXT-F-1008-T14",
+              "subtarget": "guest_social_missing_tags_clipboard_after_reaudit",
+              "status": "pass"
+            }
+          ],
+          "limits": "Partial controlled guest evidence only. T09 volatile detail and optional metadata fixture excluded. T02 directly verifies changed title, not displayed description. Remaining dimensions, member/admin, current product source and Store remain unverified; no whole-case or feature pass."
         }
       ]
     },
