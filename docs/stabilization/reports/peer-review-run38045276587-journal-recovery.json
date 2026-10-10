@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_resource_journal_recovery_addendum",
+  "reviewer_task": "/root/tracker_peer",
+  "reviewed_at": "2026-10-10T11:00:26Z",
+  "verdict": "bounded_pass",
+  "run": {
+    "run_id": 38045276587,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38045276587",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_source_sha": "eb69d25f20f66dc3f421cd2cf1f55da0327af5a7",
+    "dispatch_ref": "main",
+    "lane": "B",
+    "conclusion": "success",
+    "acceptance_case": "guest-seo",
+    "scope": "full selected case batch; public guest mode"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "version": "0.2.459",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11667158719,
+    "name": "hosted-guest-38045276587-1",
+    "digest": "sha256:8646d5b2ccdaf724313687a6347150684d115452809bf66710848d62208ba3f3",
+    "workflow_run_id": 38045276587,
+    "expired": false
+  },
+  "immutable_prior_review": {
+    "path": "docs/stabilization/reports/peer-review-run38045276587.json",
+    "sha256": "765ef72dcb72fc1f5763a3ed18c9b41b12b72f4e0dd59e9dbf508a72a5aedb8d",
+    "meaning": "This earlier independent review is preserved unchanged and remains bound to the earlier receipt and resource-finals hashes it inspected. This addendum supplements resource-journal review only."
+  },
+  "recovered_evidence": [
+    {
+      "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
+      "sha256": "6a810ef492d0c7ea8bb66ca5faf49f5a36dc198831e715eebe9704931f65d38b"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
+      "sha256": "ccd4805b5e22fa14767196ea9ea1b39b3ad5497894c847d0060ebf64bcda0a43"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
+      "sha256": "d264da0ca0183d1aabf6ae6f5d695b61a24a62c5037af45a3d310b2e4093eeda"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-journal-recovery.sanitized.json",
+      "sha256": "02682d53f26a1f4262779021c8b36a57d3ed6d03953f2fe82b06ebd3f69b6b79"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-journals/hosted-package-38045276587-1.jsonl",
+      "sha256": "1cdf14d5007458b2c63bcb05160ec3d577c56a1a6104840e0dd3e7e89763ea72"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-journals/hosted-browser-38045276587-1.jsonl",
+      "sha256": "07160782fa16020c42e6e448475ccbff4a4e40ded8f8be9896df139e33c4ccbc"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-journals/hosted-guest-38045276587-1.jsonl",
+      "sha256": "170533fab4df1c266117b53558f52f3b37e440e07cc9ffe50ac760f123b70117"
+    }
+  ],
+  "resource_finals": {
+    "hosted-package-38045276587-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38045276587-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38045276587-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "completed_journal_gate": "All three sanitized completed journals are recovered, phase-run IDs match, and each ends in a single matching valid final decision. Evidence content satisfies the PLAN journal requirement; commit-with-report remains a separate pending step."
+  },
+  "product_verdict": {
+    "status": "bounded_partial_unchanged",
+    "native_target_count": 25,
+    "new_targets": {
+      "pass": [
+        "guest_manual_link_counts_match_live_dom",
+        "guest_manual_image_alt_counts_match_live_dom",
+        "guest_manual_readability_display_is_populated_and_explained",
+        "guest_manual_readability_matches_two_known_texts",
+        "guest_manual_performance_reflects_current_navigation"
+      ],
+      "unverified": ["guest_manual_hreflang_and_schema_doors_match_page"]
+    },
+    "prior_controlled_duplicates": 19,
+    "limits": [
+      "The 19 duplicated targets from controlled run 38041517954 receive no additional product credit.",
+      "The five new passing T09 subtargets add only those bounded observations; the unverified hreflang/schema-door target remains open.",
+      "All six selected guest SEO cases and the feature remain partial. No full feature, member/admin, Store, or current-main runtime claim follows."
+    ]
+  },
+  "verified_assertions": [
+    "GitHub confirms hosted artifact 11667158719 belongs to run 38045276587 and is unexpired; frozen CI product artifact metadata matches the receipt.",
+    "Receipt, resource-finals, recovery receipt, and all three recovered journal hashes are internally consistent; journal events have the exact phase IDs, terminal valid decisions, and no resource-invalid final.",
+    "The recovery note's prior peer-review hash matches the existing immutable review, whose recorded receipt/resource-finals hashes match the pre-recovery HEAD contents. The old review must not be rewritten to imply it inspected recovered journals."
+  ],
+  "sanitization": "Review uses sanitized receipts, native report, finals, and journal records only; no credentials, private journal paths, or process attribution are included."
+}

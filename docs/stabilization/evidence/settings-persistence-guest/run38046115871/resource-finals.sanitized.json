@@ -1,0 +1,128 @@
+{
+  "provenance": "Completed sanitized resource-journal files recovered from the hosted result artifact; each preserves the exact admission and terminal decision, omitting process attribution and private journal paths.",
+  "readiness": {
+    "package": {
+      "healthy_samples": 3,
+      "required": 3
+    },
+    "browser": {
+      "healthy_samples": 3,
+      "required": 3
+    },
+    "acceptance": {
+      "healthy_samples": 3,
+      "required": 3
+    }
+  },
+  "phases": [
+    {
+      "phase": "package",
+      "admission": {
+        "at": "2026-10-10T10:49:33.421Z",
+        "admitted": true,
+        "reasons": [],
+        "available_memory_gib": 5.81,
+        "required_memory_gib": 4,
+        "cpu_busy_fraction": 0.09428571428571429,
+        "one_minute_load": 5.21,
+        "logical_cpus": 3,
+        "swap_used_mib": 0,
+        "repository_free_gib": 43.79948806762695
+      },
+      "final": {
+        "at": "2026-10-10T10:49:34.702Z",
+        "run_id": "hosted-package-38046115871-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    },
+    {
+      "phase": "browser",
+      "admission": {
+        "at": "2026-10-10T10:51:29.713Z",
+        "admitted": true,
+        "reasons": [],
+        "available_memory_gib": 5.88,
+        "required_memory_gib": 4,
+        "cpu_busy_fraction": 0.09000000000000001,
+        "one_minute_load": 1.71,
+        "logical_cpus": 3,
+        "swap_used_mib": 0,
+        "repository_free_gib": 43.79559326171875
+      },
+      "final": {
+        "at": "2026-10-10T10:51:36.626Z",
+        "run_id": "hosted-browser-38046115871-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    },
+    {
+      "phase": "guest",
+      "admission": {
+        "at": "2026-10-10T10:53:26.231Z",
+        "admitted": true,
+        "reasons": [],
+        "available_memory_gib": 5.88,
+        "required_memory_gib": 4,
+        "cpu_busy_fraction": 0.07571428571428572,
+        "one_minute_load": 1.2,
+        "logical_cpus": 3,
+        "swap_used_mib": 0,
+        "repository_free_gib": 43.54280090332031
+      },
+      "transient_watch": {
+        "at": "2026-10-10T10:53:42.459Z",
+        "code": "RESOURCE_CPU_PENDING",
+        "reasons": ["RESOURCE_CPU_BUSY"],
+        "cpu_busy_fraction": 0.76
+      },
+      "child_exit": {
+        "at": "2026-10-10T10:53:53.175Z",
+        "exit_code": 0,
+        "recovery_wait_started": true
+      },
+      "recovery_samples": [
+        {
+          "at": "2026-10-10T10:54:09.354Z",
+          "reasons": [],
+          "cpu_busy_fraction": 0.04
+        },
+        {
+          "at": "2026-10-10T10:54:25.524Z",
+          "reasons": [],
+          "cpu_busy_fraction": 0.06
+        },
+        {
+          "at": "2026-10-10T10:54:41.620Z",
+          "reasons": [],
+          "cpu_busy_fraction": 0.02
+        }
+      ],
+      "recovered": {
+        "at": "2026-10-10T10:54:41.620Z",
+        "code": "RESOURCE_CPU_RECOVERED"
+      },
+      "final": {
+        "at": "2026-10-10T10:54:41.740Z",
+        "run_id": "hosted-guest-38046115871-1",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    }
+  ],
+  "completed_journal_evidence": "three_sanitized_journals_recovered_and_validated",
+  "policy_verdict": "resource_valid_all_three_phases; guest phase includes transient CPU-busy sample followed by recovery samples and valid final decision",
+  "product_credit": "native bounded D87 confirmation; defect was already closed and no tracker change is implied",
+  "journal_sha256": {
+    "hosted-browser-38046115871-1.jsonl": "14836e8944a42b569f479c12284666eb2cca32f4f80086435282bd71e0c4e065",
+    "hosted-guest-38046115871-1.jsonl": "bbc11b06b48a589b4915021e704b0f840b33dc2526e6befbd7b4879491860bc8",
+    "hosted-package-38046115871-1.jsonl": "ae8b4760c0ac0a200bd8983c15684061fe358f68593671021fbfb3c6d910cf98"
+  }
+}

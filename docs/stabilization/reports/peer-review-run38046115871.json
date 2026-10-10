@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_acceptance_evidence_review",
+  "reviewer_task": "/root/tracker_peer",
+  "reviewed_at": "2026-10-10T11:00:26Z",
+  "verdict": "bounded_pass",
+  "run": {
+    "run_id": 38046115871,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38046115871",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_source_sha": "5fc0737275cf0c3543949f61e3a908975a27715a",
+    "dispatch_ref": "main",
+    "lane": "B",
+    "conclusion": "success",
+    "acceptance_case": "settings-persistence",
+    "defect_reference": "EXT-D-0087",
+    "role": "guest"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "version": "0.2.459",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11666983847,
+    "name": "hosted-guest-38046115871-1",
+    "digest": "sha256:414c2c7ce7ea3ed4d3d6a1cf1c2d282cdb24e5ffded0fd4e0223cd3ac28815cf",
+    "workflow_run_id": 38046115871,
+    "expired": false
+  },
+  "evidence": [
+    {
+      "path": "docs/stabilization/evidence/settings-persistence-guest/run38046115871/receipt.sanitized.json",
+      "sha256": "7616f8e0f0fd91decf5ea75fac280e38db5001796c4872b02d6811da3dd83b8d"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-persistence-guest/run38046115871/native-report.sanitized.json",
+      "sha256": "1f7d364b9450e38c51284fa854d5a2b27417bb3ad311319308ae0ac6e30fb714"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-persistence-guest/run38046115871/resource-finals.sanitized.json",
+      "sha256": "4a0e5d52fd87b1e3146a229656e87a8baa226c45310ba528afe0ef1bfcb9209c"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-persistence-guest/run38046115871/resource-journals/hosted-package-38046115871-1.jsonl",
+      "sha256": "ae8b4760c0ac0a200bd8983c15684061fe358f68593671021fbfb3c6d910cf98"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-persistence-guest/run38046115871/resource-journals/hosted-browser-38046115871-1.jsonl",
+      "sha256": "14836e8944a42b569f479c12284666eb2cca32f4f80086435282bd71e0c4e065"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-persistence-guest/run38046115871/resource-journals/hosted-guest-38046115871-1.jsonl",
+      "sha256": "bbc11b06b48a589b4915021e704b0f840b33dc2526e6befbd7b4879491860bc8"
+    }
+  ],
+  "resource_finals": {
+    "hosted-package-38046115871-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38046115871-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38046115871-1": "valid; admitted=true; resourceInvalid=false; exitCode=0; one transient CPU-busy event followed by three recovery samples and RESOURCE_CPU_RECOVERED"
+  },
+  "verified_assertions": [
+    "GitHub identifies this as the successful guest Settings persistence workflow on main at the receipt's workflow SHA; the hosted result artifact belongs to this exact run and the frozen product artifact provenance matches CI metadata.",
+    "The native report records all six named D87 criteria as pass: Light choice saved; System choice saved; rejected Dark write visibly offers Retry while stored state remains System; retry persists Dark across Settings-panel reload; latest rapid choice is System; latest rapid choice survives Settings-panel reload.",
+    "Each recovered sanitized journal begins with its exact phase run ID and ends with one matching RESOURCE_FINAL_DECISION valid, admitted=true, resourceInvalid=false, exitCode=0.",
+    "The guest resource watch records a transient CPU-busy pending event, then three recovery samples, RESOURCE_CPU_RECOVERED, and a valid final decision.",
+    "Sanitized native and resource evidence excludes credentials and private paths; journals omit process attribution."
+  ],
+  "limits": [
+    "This is a bounded guest D87 confirmation on frozen development v0.2.459. EXT-D-0087 was already closed; this run does not reopen or close it.",
+    "No member/admin, full Settings, full extension reload, current-main product, Store, or broader feature-role claim follows.",
+    "The native report does not serialize before/after restoration of the disposable profile's original preference."
+  ]
+}

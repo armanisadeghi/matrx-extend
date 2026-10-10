@@ -1,5 +1,5 @@
 {
-  "source": "Selected safe fields from exact RESOURCE_ADMITTED and RESOURCE_FINAL_DECISION events in the hosted GitHub job log; full journal files were absent from the uploaded artifact.",
+  "source": "Completed sanitized resource-journal files recovered from hosted result artifact after identifying nested artifact root; prior safe admission/final values independently match.",
   "phases": [
     {
       "phase": "package",
@@ -70,5 +70,12 @@
         "decision": "valid"
       }
     }
-  ]
+  ],
+  "completed_journal_evidence": "three_sanitized_journals_recovered_and_validated",
+  "journal_sha256": {
+    "hosted-browser-38045276587-1.jsonl": "07160782fa16020c42e6e448475ccbff4a4e40ded8f8be9896df139e33c4ccbc",
+    "hosted-guest-38045276587-1.jsonl": "170533fab4df1c266117b53558f52f3b37e440e07cc9ffe50ac760f123b70117",
+    "hosted-package-38045276587-1.jsonl": "1cdf14d5007458b2c63bcb05160ec3d577c56a1a6104840e0dd3e7e89763ea72"
+  },
+  "policy_verdict": "resource_valid_all_three_phases"
 }

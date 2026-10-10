@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T10:53:18Z",
+  "updated_at": "2026-10-10T11:02:16Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5878,6 +5878,33 @@
                     "status": "pass"
                   },
                   "passed_criteria_count": 19
+                },
+                {
+                  "run_id": 38046115871,
+                  "status": "bounded_confirmation",
+                  "native_case_status": "pass",
+                  "resource_valid": true,
+                  "workflow_source_sha": "5fc0737275cf0c3543949f61e3a908975a27715a",
+                  "product_artifact": "development v0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                  "passed_criteria": [
+                    "Light choice saved",
+                    "System choice saved",
+                    "Rejected Dark write visibly offers Retry while stored state remains System",
+                    "Retry persists Dark across Settings-panel reload",
+                    "Latest rapid choice is System",
+                    "Latest rapid choice survives Settings-panel reload"
+                  ],
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-persistence-guest/run38046115871/receipt.sanitized.json",
+                    "docs/stabilization/evidence/settings-persistence-guest/run38046115871/native-report.sanitized.json",
+                    "docs/stabilization/evidence/settings-persistence-guest/run38046115871/resource-finals.sanitized.json",
+                    "docs/stabilization/evidence/settings-persistence-guest/run38046115871/resource-journals/hosted-package-38046115871-1.jsonl",
+                    "docs/stabilization/evidence/settings-persistence-guest/run38046115871/resource-journals/hosted-browser-38046115871-1.jsonl",
+                    "docs/stabilization/evidence/settings-persistence-guest/run38046115871/resource-journals/hosted-guest-38046115871-1.jsonl",
+                    "docs/stabilization/reports/peer-review-run38046115871.json"
+                  ],
+                  "independent_review": "docs/stabilization/reports/peer-review-run38046115871.json",
+                  "limits": "Bounded guest confirmation of six D87 persistence criteria on frozen development artifact only. EXT-D-0087 was already closed and remains closed. The transient CPU-busy event recovered before valid final decisions. This does not establish full Settings, other roles, full extension reload, current-main runtime, Store behavior, or restoration of the disposable profile original preference."
                 }
               ]
             }
@@ -27601,13 +27628,19 @@
                     "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
                     "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
                     "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
-                    "docs/stabilization/reports/peer-review-run38045276587.json"
+                    "docs/stabilization/reports/peer-review-run38045276587.json",
+                    "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-journal-recovery.sanitized.json",
+                    "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-journals/hosted-package-38045276587-1.jsonl",
+                    "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-journals/hosted-browser-38045276587-1.jsonl",
+                    "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-journals/hosted-guest-38045276587-1.jsonl",
+                    "docs/stabilization/reports/peer-review-run38045276587-journal-recovery.json"
                   ],
                   "independent_review": "docs/stabilization/reports/peer-review-run38045276587.json",
-                  "limits": "Only five new bounded T09 subtargets pass; hreflang/schema door remains unverified. Nineteen exact duplicate targets receive no new credit. Full journals absent; resource classification uses six peer-checked safe GitHub events. No case/feature, other-role, current-main, or Store pass."
+                  "limits": "Only five new bounded T09 subtargets pass; hreflang/schema door remains unverified. Nineteen exact duplicate targets receive no new credit. All three completed sanitized resource journals were later recovered and independently reviewed by the addendum; the immutable original peer review retains its earlier evidence scope. Full guest SEO cases and feature remain partial.",
+                  "journal_recovery_review": "docs/stabilization/reports/peer-review-run38045276587-journal-recovery.json"
                 }
               ],
-              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Full resource journals were absent, with peer verification based on six safe GitHub admission/final events."
+              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed."
             }
           },
           "result_history": [
@@ -28252,7 +28285,7 @@
                 "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",
                 "docs/stabilization/reports/peer-review-run38045276587.json"
               ],
-              "detail": "Five new bounded T09 targets passed; one new hreflang/schema-door target remains unverified. The batch contained 19 exact duplicates of prior controlled run 38041517954; duplicates receive no new credit. Six guest cases and feature remain partial. Full resource journals were absent; peer independently checked six safe admission/final GitHub resource events.",
+              "detail": "Five new bounded T09 targets passed; one new hreflang/schema-door target remains unverified. The batch contained 19 exact duplicates of prior controlled run 38041517954; duplicates receive no new credit. Six guest cases and feature remain partial. Three sanitized completed journals were later recovered and independently reviewed by a separate addendum; the original peer review remains immutable. No product credit changed.",
               "bounded_new_passed_subtargets": [
                 "guest_manual_image_alt_counts_match_live_dom",
                 "guest_manual_link_counts_match_live_dom",
@@ -28780,7 +28813,7 @@
             "38041517954",
             "38045276587"
           ],
-          "retest_status": "Partial surface. Reviewed frozen129 controlled guest run38041517954 passes 19 named subtargets across T01/T02/T03/T07/T09/T14; all deferred criteria remain open. Earlier known-text readability evidence retains its own frozen-artifact provenance. No full SEO/current-main/Store/member/admin promotion. Reviewed run 38045276587 adds five new passing guest T09 targets and one unverified hreflang/schema-door target; its 19 repeated targets are duplicates of 38041517954. No duplicate credit; all six guest SEO cases and feature remain partial. Frozen v0.2.459, not current-main or Store. Full journals absent; peer checked six safe resource events."
+          "retest_status": "Partial surface. Reviewed frozen129 controlled guest run38041517954 passes 19 named subtargets across T01/T02/T03/T07/T09/T14; all deferred criteria remain open. Earlier known-text readability evidence retains its own frozen-artifact provenance. No full SEO/current-main/Store/member/admin promotion. Reviewed run 38045276587 adds five new passing guest T09 targets and one unverified hreflang/schema-door target; its 19 repeated targets are duplicates of 38041517954. No duplicate credit; all six guest SEO cases and feature remain partial. Frozen v0.2.459, not current-main or Store. Three sanitized completed journals were later recovered and independently reviewed by a separate addendum; the original peer review remains immutable."
         },
         "member": {
           "test_status": "unverified",

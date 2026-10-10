@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "case_id": "settings-persistence",
+  "defect_reference": "EXT-D-0087",
+  "role": "guest",
+  "scope": "receipt-bound owned Chrome-for-Testing native Settings panel; guest",
+  "status": "pass",
+  "build": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.459",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "cases": [
+    {
+      "name": "first changed choice saved through UI",
+      "status": "pass",
+      "observation": {
+        "theme": "Light",
+        "storedTheme": "light",
+        "error": false,
+        "retry": false
+      }
+    },
+    {
+      "name": "system choice saved through UI",
+      "status": "pass",
+      "observation": {
+        "theme": "System",
+        "storedTheme": "system",
+        "error": false,
+        "retry": false
+      }
+    },
+    {
+      "name": "rejected write visible with retry",
+      "status": "pass",
+      "observation": {
+        "theme": "Dark",
+        "storedTheme": "system",
+        "error": true,
+        "retry": true
+      }
+    },
+    {
+      "name": "retry persisted after reload",
+      "status": "pass",
+      "observation": {
+        "theme": "Dark",
+        "storedTheme": "dark",
+        "error": false,
+        "retry": false
+      },
+      "before_reload": {
+        "theme": "Dark",
+        "storedTheme": "dark",
+        "error": false,
+        "retry": false
+      }
+    },
+    {
+      "name": "latest rapid choice persisted",
+      "status": "pass",
+      "observation": {
+        "theme": "System",
+        "storedTheme": "system",
+        "error": false,
+        "retry": false
+      }
+    },
+    {
+      "name": "latest rapid choice survives reload",
+      "status": "pass",
+      "observation": {
+        "theme": "System",
+        "storedTheme": "system",
+        "error": false,
+        "retry": false
+      }
+    }
+  ],
+  "failure": null,
+  "criteria_scope": [
+    "Light and System choices were rendered and persisted through Chrome storage.",
+    "A controlled rejected Dark write left the stored choice at System and showed visible error and Retry; retry persisted Dark across Settings-panel reload.",
+    "A controlled held-write sequence required the newer System choice to wait, then verified the latest choice in storage and after Settings-panel reload."
+  ],
+  "limits": [
+    "Guest-only native Settings D87 case. No member/admin, full extension reload, Store, current-main product, or full Settings claim.",
+    "The disposable profile result does not serialize a before/after original preference restoration assertion."
+  ]
+}

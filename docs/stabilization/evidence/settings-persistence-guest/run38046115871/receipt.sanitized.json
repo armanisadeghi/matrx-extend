@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "case_id": "settings-persistence",
+  "defect_reference": "EXT-D-0087",
+  "verdict": "native_pass_resource_valid",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38046115871,
+    "attempt": 1,
+    "dispatch_ref": "main",
+    "workflow_head_sha": "5fc0737275cf0c3543949f61e3a908975a27715a",
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "runner_image": "macos-15-arm64",
+    "acceptance_case": "settings-persistence",
+    "role": "guest",
+    "conclusion": "success",
+    "started_at": "2026-10-10T10:47:23Z",
+    "finished_at": "2026-10-10T10:54:46Z",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38046115871"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38036029832,
+    "ci_attempt": 1,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11666983847,
+    "name": "hosted-guest-38046115871-1",
+    "digest": "sha256:414c2c7ce7ea3ed4d3d6a1cf1c2d282cdb24e5ffded0fd4e0223cd3ac28815cf",
+    "expired": false
+  },
+  "native_report": {
+    "status": "pass",
+    "criteria_count": 6,
+    "criteria_status_counts": {
+      "pass": 6
+    },
+    "raw_report_sha256": "50a4b3943eca9cdf08b7e95da7de359eebc06f0b1bdfd47c762712f453a41236",
+    "sanitized_path": "native-report.sanitized.json",
+    "sanitized_sha256": "1f7d364b9450e38c51284fa854d5a2b27417bb3ad311319308ae0ac6e30fb714",
+    "failure_stage": null,
+    "failure_code": null
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "sha256": "4a0e5d52fd87b1e3146a229656e87a8baa226c45310ba528afe0ef1bfcb9209c",
+    "logged_final_decisions": "three valid; guest phase recovered from one transient CPU-busy sample",
+    "campaign_policy_verdict": "valid: three sanitized completed journals match exact phase run IDs and valid final decisions",
+    "journal_count": 3,
+    "journal_sha256": {
+      "hosted-browser-38046115871-1.jsonl": "14836e8944a42b569f479c12284666eb2cca32f4f80086435282bd71e0c4e065",
+      "hosted-guest-38046115871-1.jsonl": "bbc11b06b48a589b4915021e704b0f840b33dc2526e6befbd7b4879491860bc8",
+      "hosted-package-38046115871-1.jsonl": "ae8b4760c0ac0a200bd8983c15684061fe358f68593671021fbfb3c6d910cf98"
+    }
+  },
+  "disposition": {
+    "defect_state_before_run": "closed",
+    "meaning": "This adds a current frozen-artifact confirmation of D87 behavior; it does not reopen or close the defect.",
+    "product_credit": "current frozen-artifact bounded confirmation only; defect remains closed"
+  },
+  "sanitization": "The native report retains only fixed case names/statuses, theme choice values, storage equality state, bounded artifact identity, and fixed failure fields. Screenshots, credentials, auth values, private paths, raw logs, process attribution, and arbitrary DOM text are excluded."
+}

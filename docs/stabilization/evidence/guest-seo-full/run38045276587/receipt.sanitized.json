@@ -52,15 +52,20 @@
   },
   "resource_finals": {
     "path": "resource-finals.sanitized.json",
-    "sha256": "4ceabcf67e24b4de6e10b494ab4dc7576f8be75d3977aa9ce65617fd5414aeb0",
+    "sha256": "d264da0ca0183d1aabf6ae6f5d695b61a24a62c5037af45a3d310b2e4093eeda",
     "all_three_phases_valid": true,
-    "journal_upload_limitation": "Selected safe fields from exact RESOURCE_ADMITTED and RESOURCE_FINAL_DECISION events in the hosted GitHub job log; full journal files were absent from the uploaded artifact."
+    "journal_upload_limitation": "Recovered from nested hosted-result artifact root; all three sanitized journals contain one terminal valid final decision matching logged phase evidence.",
+    "completed_journals": {
+      "hosted-browser-38045276587-1.jsonl": "07160782fa16020c42e6e448475ccbff4a4e40ded8f8be9896df139e33c4ccbc",
+      "hosted-guest-38045276587-1.jsonl": "170533fab4df1c266117b53558f52f3b37e440e07cc9ffe50ac760f123b70117",
+      "hosted-package-38045276587-1.jsonl": "1cdf14d5007458b2c63bcb05160ec3d577c56a1a6104840e0dd3e7e89763ea72"
+    }
   },
   "limitations": [
     "This bounded full-scope run covers six registered guest SEO cases; the native report has deferred dimensions and does not close the feature or other auth modes.",
     "Prior controlled run38041517954 is a duplicate observation of its 19 bounded targets; this run adds six more target checks and confirms the broader full-scope batch, while the earlier run remains separately credited.",
     "Prior Intel run38042618630 remains infrastructure-invalid from high CPU load before product execution and receives zero product credit.",
-    "The hosted artifact omitted the three resource-journal files. The exact safe admission/final events are retained from GitHub job logs; full-journal hashes and process-level evidence are unavailable."
+    "Recovered journal files were not part of the independent review completed before recovery. Resource evidence is now complete, but product credit remains unchanged pending independent re-review and receipt/hash linkage update."
   ],
   "sanitization": "Native report retains only case/subtarget verdicts, bounded assertions and counts, public-page observations, safe build identity, and deferred criteria. Credentials, private paths, unrestricted page text, screenshots, and process attribution are excluded."
 }
