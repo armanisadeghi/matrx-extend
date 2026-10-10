@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { createContext, runInContext } from 'node:vm';
+import { reloadCase } from './native-reload-fixture.mjs';
 import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
 import { captureFailure } from './profile-reload-capture.mjs';
 
@@ -117,8 +119,8 @@ test('member Data refuses an unverified or unchanged replacement before activati
 });
 
 // SUT: the member driver's actual reload invocation/catch and report finalizer.
-// Only native Chrome reload and disk are external doubles; routing, capture,
-// diagnostic refusal, and JSON serialization execute their real implementation.
+// Chrome protocol/worker APIs and disk are external doubles. The real reload
+// helper, installed probe, capture, refusal, and JSON serialization all execute.
 test('member Data persists distinct probe evidence after successful and failed reload invocation', async () => {
   const { refuseDiagnosticAcceptance } = await import('./scrape-reload-open-diagnostic.mjs');
   const finalizerStart = source.lastIndexOf('} finally {') + '} finally {'.length;
@@ -132,35 +134,54 @@ test('member Data persists distinct probe evidence after successful and failed r
      return process.exitCode;`,
   );
   for (const failed of [false, true]) {
-    const probe = {
-      availability: 'ready',
-      perturbation: 'cdp_worker_attach_and_synchronous_open_wrapper',
-      ingress: !failed,
-      open_invoked: !failed,
-      open_settlement: failed ? 'unobserved' : 'resolved',
-      send_response: 'unobservable_without_instrumented_build',
-    };
-    const report = { status: failed ? 'fail' : 'pass', observations: {} };
-    const replacement = { targetId: 'replacement-panel', send: async () => {} };
-    const native = {
-      async reloadExtension() {
-        if (failed) {
-          throw Object.assign(new Error('native_extension_replacement_panel_unverified'), {
-            lifecycleEvidence: { open_panel_diagnostic: probe },
-          });
-        }
-        return {
-          panel: replacement,
-          management_reload_clicked: true,
-          old_targets_retired: true,
-          worker_replaced: true,
-          panel_replaced: true,
-          retirement_evidence: {
-            timeline: { final_predicate: true },
-            open_panel_diagnostic: probe,
+    const listeners = new Set();
+    const worker = createContext({
+      chrome: {
+        runtime: {
+          onMessageExternal: {
+            addListener: (listener) => listeners.add(listener),
+            removeListener: (listener) => listeners.delete(listener),
           },
-        };
+          getContexts: async () => [
+            {
+              contextType: 'SIDE_PANEL',
+              documentUrl: 'chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml/sidepanel.html',
+              tabId: -1,
+            },
+          ],
+        },
+        sidePanel: { open: () => Promise.resolve() },
       },
+    });
+    // The worker's ordinary listener precedes the installed diagnostic listener.
+    // No test writes a diagnostic boolean: real probe code observes delivery/open.
+    const ordinaryListener = (message) => {
+      if (message.action === 'openPanel') worker.chrome.sidePanel.open({ windowId: 7 });
+    };
+    listeners.add(ordinaryListener);
+    const originalOpen = worker.chrome.sidePanel.open;
+    const report = { status: failed ? 'fail' : 'pass', observations: {} };
+    const native = {
+      reloadExtension: () =>
+        reloadCase({
+          initiallyEnabled: true,
+          panelAppears: !failed,
+          expectFailure: failed,
+          openReply: failed ? null : { ok: true, result: { opened: true } },
+          workerRuntime: {
+            evaluate: (expression) => runInContext(expression, worker),
+            click: async () => {
+              if (!failed)
+                for (const listener of [...listeners])
+                  listener({
+                    channel: 'FRONTEND_RPC',
+                    action: 'openPanel',
+                    requestId: 'native-sidepanel-qa',
+                  });
+              await Promise.resolve();
+            },
+          },
+        }),
       transportFailureClass: () => 'none',
     };
     const invocation = adopt(
@@ -172,7 +193,9 @@ test('member Data persists distinct probe evidence after successful and failed r
       safeReloadOperationFailure,
     );
     if (failed) await assert.rejects(invocation, /native_extension_replacement_panel_unverified/);
-    else assert.equal(await invocation, replacement);
+    else assert.equal((await invocation).targetId, 'new-panel');
+    assert.equal(listeners.size, 1, 'probe listener restored');
+    assert.equal(worker.chrome.sidePanel.open, originalOpen, 'open wrapper restored');
     let persisted;
     const exitCode = await finalize(report, refuseDiagnosticAcceptance, async (_path, bytes) => {
       persisted = JSON.parse(bytes);

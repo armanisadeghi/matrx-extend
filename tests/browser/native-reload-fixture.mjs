@@ -23,6 +23,7 @@ export async function reloadCase({
   expectFailure = false,
   failOperation = null,
   cleanupThrows = false,
+  workerRuntime = null,
 }) {
   let developerMode = initiallyEnabled;
   let reloaded = false;
@@ -186,7 +187,13 @@ export async function reloadCase({
   const cdp = {
     on: (event, listener) => events.set(event, listener),
     off: (event) => events.delete(event),
-    async send(method, args) {
+    async send(method, args, sessionId) {
+      if (
+        workerRuntime &&
+        sessionId === 'diagnostic-worker-session' &&
+        method === 'Runtime.evaluate'
+      )
+        return { result: { value: await workerRuntime.evaluate(args.expression) } };
       if (method === 'Target.getTargets') {
         if (opened && failOperation === 'panel_poll') throw new TypeError('private poll');
         if (reloaded && opened && ++postOpenTargetReads === replyDelayTargetReads)
@@ -206,7 +213,12 @@ export async function reloadCase({
       if (method === 'Target.attachToTarget') {
         if (args.targetId === 'new-panel' && failOperation === 'panel_attach')
           throw new ReferenceError('private attach');
-        return { sessionId: 'owned-session' };
+        return {
+          sessionId:
+            workerRuntime && args.targetId === 'new-worker'
+              ? 'diagnostic-worker-session'
+              : 'owned-session',
+        };
       }
       if (method === 'Runtime.evaluate')
         return (
@@ -214,7 +226,11 @@ export async function reloadCase({
             result: { value: [{ contextType: 'SIDE_PANEL', documentUrl: panelUrl, tabId: -1 }] },
           }
         );
-      assert.ok(['Target.setDiscoverTargets', 'Target.detachFromTarget'].includes(method));
+      assert.ok(
+        ['Target.setDiscoverTargets', 'Target.detachFromTarget', 'Page.bringToFront'].includes(
+          method,
+        ),
+      );
       return {};
     },
   };
@@ -263,6 +279,7 @@ export async function reloadCase({
             if (failOperation === 'fixture_open_click') throw new TypeError('private click');
             if (openPanelClickFailure)
               throw new Error('private URL token: panel click interrupted');
+            await workerRuntime?.click();
             opened = panelAppears;
             if (replyDelayTargetReads === 0) publishOpenReply();
           },
@@ -285,6 +302,7 @@ export async function reloadCase({
     },
     extensionId,
     oldPanelId: oldPanel.targetId,
+    scrapeOpenDiagnostic: workerRuntime !== null,
   });
   if (expectFailure) return resultPromise;
   const result = await resultPromise;
