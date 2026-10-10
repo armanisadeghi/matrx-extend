@@ -7,7 +7,7 @@
   "title": "Social media coverage client route is absent from the committed backend route index",
   "severity": "S2: main CI stops before producing the current development artifact or release candidate",
   "priority": "P1: restore CI so exact-main browser testing and release validation can proceed",
-  "state": "fixed",
+  "state": "closed",
   "owner": "root",
   "preconditions": [
     "Main contains the social media-coverage API call introduced by commit 84895262e."
@@ -23,9 +23,10 @@
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38065991010",
     "https://server.app.matrxserver.com/openapi.json",
-    "docs/stabilization/resource-journals/d190-route-index-focused.jsonl"
+    "docs/stabilization/resource-journals/d190-route-index-focused.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38066569800"
   ],
-  "fix_commit": null,
+  "fix_commit": "136359f28",
   "transition_history": [
     {
       "at": "2026-10-10T16:08:00Z",
@@ -50,12 +51,25 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "The resource-valid focused backend-path guard passes 2/2 after the index correction; full CI retest pending."
+    },
+    {
+      "at": "2026-10-10T16:15:00Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "CI 38066569800 passed on exact fix source 136359f28, including the full backend-path guard and development-artifact production; independent peer reviewed the route correction."
+    },
+    {
+      "at": "2026-10-10T16:15:01Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Original missing-path guard no longer reproduces; sibling route guard and surrounding unit suite pass. Infrastructure-only closure; no product behavior credited."
     }
   ],
   "verification": [
     "Live deployed /openapi.json has GET /social/posts/{post_id}/media-coverage with no request body content types.",
     "Resource-valid focused test d190-route-index-focused passed 2/2; no product behavior credited.",
-    "Fresh Luna peer independently checked the live schema, caller, generated ordering and 2/2 focused guard; review passed with no material questions."
+    "Fresh Luna peer independently checked the live schema, caller, generated ordering and 2/2 focused guard; review passed with no material questions.",
+    "CI 38066569800 passed on exact fix source 136359f28, including the full route guard, unit suite and development artifact. Subsequent main requires its own CI and browser acceptance."
   ],
   "closure_requirement": "Fresh exact-main CI must pass, including the full backend-path guard and development-artifact production, followed by independent review."
 }
