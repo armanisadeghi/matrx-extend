@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { chmod, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { chmod, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
@@ -75,6 +75,22 @@ test('member organization proof distinguishes load ladder from a device choice',
       /d87_member_organization_(label|storage)_unverified/,
     );
   }
+});
+
+test('member Settings acceptance admits the verified load-ladder organization', async () => {
+  const source = await readFile(
+    new URL('./settings-d87-native-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const signInCall = source.match(
+    /const authentication = await signInSettings\(\{([\s\S]*?)\n\s*\}\);/,
+  );
+  assert.ok(signInCall, 'Settings acceptance must call the shared sign-in driver');
+  assert.match(
+    signInCall[1],
+    /allowLadderOrganization:\s*AUTH_MODE === 'member'/,
+    'member Settings must admit an organization resolved by the load ladder',
+  );
 });
 import { click } from './settings-panel-driver.mjs';
 

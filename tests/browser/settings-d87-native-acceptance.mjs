@@ -369,6 +369,7 @@ try {
             repo: REPO,
             adminCredentialsFile: process.env.MATRX_PREPARE_ADMIN_CREDENTIALS_FILE,
             memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+            allowLadderOrganization: AUTH_MODE === 'member',
             onStage: (value) => {
               operation = value;
             },
