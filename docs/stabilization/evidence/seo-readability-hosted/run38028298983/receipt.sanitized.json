@@ -48,5 +48,6 @@
     "The workflow checkout was cf806d0e1e3095b3a76aceb5c5dbc6a195e1aae2. Changes after the frozen artifact source were D187 test/diagnostic and stabilization documentation changes; no product runtime or dependency-lock changes were present after 723fe3340.",
     "Only the guest readability scope was selected; unrelated T09 checks and T01-T08/T10-T14 were excluded by the driver selection.",
     "The guest run is invalid-resource, not a product failure or pass. Do not promote the pre-stop target status or infer T09 completion. No retry was launched."
-  ]
+  ],
+  "journal_sanitization": "The guest journal omits the RESOURCE_PROCESS_ATTRIBUTION event because it contained raw process identifiers, executable names, and CPU attribution. All other events, including the invalid RESOURCE_FINAL_DECISION, are retained."
 }
