@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "verdict": "partial",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38070400935,
+    "attempt": 1,
+    "workflow_head_sha": "e19580f5317c3e298d9fcd53ffbb55f2d29123cb",
+    "lane": "B",
+    "case": "guest-seo",
+    "conclusion": "success",
+    "finished_at": "2026-10-10T17:14:18Z"
+  },
+  "release_artifact": {
+    "release_run_id": 38067449240,
+    "artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "version": "0.2.469",
+    "source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904",
+    "locally_downloaded_store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904",
+    "digest_match": true,
+    "receipt_tree_sha256": "f588df2c0aa9bfe9696b82a0ad79c240e7758e8bca2e8851d4fc7cfb682a6c99"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11676816525,
+    "name": "hosted-guest-38070400935-1",
+    "artifact_zip_digest": "sha256:ce9cf23619c6417cbb1bcbf4384bb8e36e2844f290588777bb873a4a1ddbc72a",
+    "expired": false,
+    "size_bytes": 84307
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "status": "partial",
+    "target_count": 25,
+    "status_counts": {
+      "pass": 24,
+      "unverified": 1
+    },
+    "sha256": "b52612bf0e5c3e76cd25b9224774ce750820184dd667cd73831209e909aefeaa"
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "all_three_valid": true,
+    "journals": [
+      "resource-journals/hosted-package-38070400935-1.jsonl",
+      "resource-journals/hosted-browser-38070400935-1.jsonl",
+      "resource-journals/hosted-guest-38070400935-1.jsonl"
+    ],
+    "sha256": "27adb00e8ea0412e8578d66096b337d70ace6c6b59fd77dc4e566a4adc91056e"
+  },
+  "screenshot_review": {
+    "included": false,
+    "reviewed_files": ["native-side-panel.png", "normal-target-after-open.png"],
+    "observation": "Screenshots show the generic guest side panel and a generic research-brief target page; neither displays the SEO audit result. SEO-specific behavior credit comes from the native assertion report."
+  },
+  "scope_limit": "Guest public-page checks only. The report has explicit unverified outcomes for large-page readability metric correctness and hreflang/schema door candidates. Deferred coverage includes persistence/history, member/admin modes, recommendations/Chat, additional metadata and social states. This does not establish full feature health or general Store-installation health.",
+  "evidence": {
+    "native_report": "native-report.sanitized.json",
+    "resource_finals": "resource-finals.sanitized.json",
+    "resource_journals": [
+      "resource-journals/hosted-package-38070400935-1.jsonl",
+      "resource-journals/hosted-browser-38070400935-1.jsonl",
+      "resource-journals/hosted-guest-38070400935-1.jsonl"
+    ]
+  },
+  "sanitization": "No credentials, auth data, account details, raw runner logs, process attribution, private paths, page URLs/content, extension ID, or screenshots retained."
+}

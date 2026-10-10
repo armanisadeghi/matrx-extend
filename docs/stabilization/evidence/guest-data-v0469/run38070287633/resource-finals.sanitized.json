@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": 38070287633,
+  "package": {
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid"
+  },
+  "browser": {
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid"
+  },
+  "acceptance": {
+    "admitted": true,
+    "resource_invalid": true,
+    "exit_code": 3,
+    "decision": "invalid",
+    "child_exit_code": 1,
+    "invalid_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+  },
+  "resource_observation": {
+    "at": "2026-10-10T17:11:43Z",
+    "one_minute_load": 4.39,
+    "logical_cpus": 4,
+    "cpu_busy_fraction": 1.0,
+    "available_memory_gib": 12.46,
+    "swap_used_mib": 0
+  },
+  "causality_limit": "The CPU pressure and owned CDP endpoint timeout are contemporaneous. The artifact does not prove CPU pressure caused the timeout."
+}

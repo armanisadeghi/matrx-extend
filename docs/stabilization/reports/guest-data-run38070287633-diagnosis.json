@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "report_type": "hosted_acceptance_failure_diagnosis",
+  "run_id": 38070287633,
+  "reviewed_at": "2026-10-10",
+  "verdict": "hosted_browser_startup_failure_with_resource_invalidation",
+  "failed_stage": "native input / CDP connection",
+  "first_failure": {
+    "code": "owned_cdp_endpoint_timeout",
+    "elapsed_ms": 8017,
+    "spawn_observed": true,
+    "devtools_listening": false,
+    "evidence": "Native report says failure_stage=input and native_stage=cdp_connect; hosted log records owned_cdp_endpoint_timeout and DATA_GUEST_ACCEPTANCE_FAILED input."
+  },
+  "provenance": {
+    "release_run_id": 38067449240,
+    "version": "0.2.469",
+    "source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904",
+    "result": "D193 release artifact selection/adaptation completed; selected bytes match expected v0.2.469 provenance."
+  },
+  "resource_finals": {
+    "package": "valid",
+    "browser": "valid",
+    "acceptance": "invalid due to RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY"
+  },
+  "classification": "No D193 routing failure and no product behavior verdict. Acceptance failed before DevTools attachment/product assertions; concurrent runner CPU pressure invalidated the acceptance resource gate. Whether that pressure caused the CDP timeout is unproven.",
+  "evidence": [
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/failure-log.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/resource-journals/hosted-package-38070287633-1.jsonl",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/resource-journals/hosted-browser-38070287633-1.jsonl",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/resource-journals/hosted-guest-38070287633-1.jsonl"
+  ],
+  "limits": [
+    "No DevTools endpoint was reached; no Data UI, extraction, preview, sign-in gate, or persistence assertion ran.",
+    "No screenshots were present in the downloaded artifact.",
+    "No product pass or product defect is inferred."
+  ],
+  "next_action": "Rerun the exact-release guest-data lane when the hosted macOS runner is stable; require valid package, browser and acceptance resource finals and capture native UI assertions before awarding product credit."
+}

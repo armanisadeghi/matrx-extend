@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "run_id": 38070400935,
+  "observed_at": "2026-10-10T17:14:18Z",
+  "case_id": "guest-seo",
+  "lane": "B",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "e19580f5317c3e298d9fcd53ffbb55f2d29123cb",
+  "outcome": {
+    "status": "partial",
+    "workflow_conclusion": "success",
+    "native_subtargets": {
+      "pass": 24,
+      "unverified": 1,
+      "total": 25
+    },
+    "unverified_door": "hreflang/schema candidates were not unique and openable in the public DOM",
+    "metricValueCorrectness": "unverified"
+  },
+  "artifact": {
+    "release_run_id": 38067449240,
+    "artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "version": "0.2.469",
+    "product_source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904",
+    "downloaded_zip_hash_matches_receipt": true
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" }
+  },
+  "screenshots": {
+    "reviewed": true,
+    "limit": "Generic guest side-panel and research-brief screenshots do not show SEO output; SEO credit comes from native assertions."
+  },
+  "limitations": [
+    "Guest public-page assertions only; deferred persistence/history, member/admin, recommendations/Chat, and additional SEO/social coverage remain open.",
+    "This record does not claim full feature health."
+  ],
+  "evidence": [
+    "docs/stabilization/evidence/guest-seo-store/run38070400935/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38070400935/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38070400935/resource-finals.sanitized.json"
+  ]
+}

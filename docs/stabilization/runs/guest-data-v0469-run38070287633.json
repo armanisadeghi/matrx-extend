@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "run_id": 38070287633,
+  "status": "unverified",
+  "case_id": "guest-data",
+  "observed_at": "2026-10-10T17:12:05Z",
+  "workflow_source_sha": "275098970cd5330b5e5b41d05e6644d4af9552ae",
+  "artifact": {
+    "release_run_id": 38067449240,
+    "artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "version": "0.2.469",
+    "product_source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "failure": {
+    "stage": "input",
+    "native_stage": "cdp_connect",
+    "code": "owned_cdp_endpoint_timeout",
+    "browser_process_spawned": true,
+    "product_assertions_reached": false
+  },
+  "resource_finals": {
+    "package": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid",
+      "child_exit_code": 1,
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+    }
+  },
+  "classification": "D193 exact-release routing passed. Hosted browser startup/CDP connection failed while the acceptance resource gate observed high CPU; causality is unproven. No product behavior verdict.",
+  "evidence": [
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/failure-log.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/resource-journals/hosted-package-38070287633-1.jsonl",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/resource-journals/hosted-browser-38070287633-1.jsonl",
+    "docs/stabilization/evidence/guest-data-v0469/run38070287633/resource-journals/hosted-guest-38070287633-1.jsonl",
+    "docs/stabilization/reports/guest-data-run38070287633-diagnosis.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38070287633"
+  ],
+  "limitations": [
+    "The DevTools endpoint was never observed, so product assertions did not begin.",
+    "No screenshots were included in the downloaded workflow artifact.",
+    "Guest Data remains unverified on exact release v0.2.469."
+  ],
+  "next_action": "Rerun exact-release guest-data on a healthy hosted runner and require valid resource finals plus observed Data behavior."
+}

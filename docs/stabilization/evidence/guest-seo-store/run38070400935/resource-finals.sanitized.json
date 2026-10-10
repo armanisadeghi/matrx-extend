@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "all_three_valid": true,
+  "resources": {
+    "hosted-package-38070400935-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sha256": "f25cddc6b0ad42d295687c7a805cfdafcf3af7aa499a1fa227d95c1772caf1cc"
+    },
+    "hosted-browser-38070400935-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sha256": "b58032859353ef2dbfb0a93df9360bd2f8b14a43ac7159498e829b2c6e6e7e0b"
+    },
+    "hosted-guest-38070400935-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sha256": "f40909bd91cb33fa6ce930793c9157672f321114c3579137c1ac254ff371bd29"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "run_id": 38070287633,
+  "selected_log_lines": [
+    "HOSTED_BROWSER_READY 1194 acceptance",
+    "BROWSER_STARTUP_FAILURE {\"failureCode\":\"owned_cdp_endpoint_timeout\",\"elapsedMs\":8017,\"exitCode\":null,\"signalCode\":null,\"launchFailed\":false,\"spawnObserved\":true,\"stderrFlags\":{\"hadStderr\":false,\"codeSignature\":false,\"dynamicLoader\":false,\"permissionDenied\":false,\"sandbox\":false,\"crash\":false,\"devtoolsListening\":false},\"endpointWaitDiagnostic\":{\"polls\":147,\"elapsedMs\":8004,\"longestReadMs\":126}}",
+    "DATA_GUEST_ACCEPTANCE_FAILED input owned_cdp_endpoint_timeout",
+    "AssertionError [ERR_ASSERTION]: native side-panel acceptance exited 1"
+  ],
+  "credentials_removed": true
+}
