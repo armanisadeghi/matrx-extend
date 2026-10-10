@@ -1,0 +1,4 @@
+{"at":"2026-10-10T19:22:14.508Z","code":"RESOURCE_JOURNAL_OPENED"}
+{"at":"2026-10-10T19:23:22.444Z","code":"RESOURCE_ADMITTED","reasons":[]}
+{"at":"2026-10-10T19:23:33.901Z","code":"RESOURCE_JOB_EXIT"}
+{"at":"2026-10-10T19:23:34.077Z","code":"RESOURCE_FINAL_DECISION","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid"}

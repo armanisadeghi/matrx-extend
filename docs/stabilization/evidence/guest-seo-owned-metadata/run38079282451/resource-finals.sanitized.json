@@ -1,0 +1,26 @@
+{
+  "finals": [
+    {
+      "runId": "hosted-package-38079282451-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    {
+      "runId": "hosted-browser-38079282451-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    {
+      "runId": "hosted-guest-38079282451-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    }
+  ],
+  "allValid": true
+}

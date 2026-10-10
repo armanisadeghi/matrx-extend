@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_guest_seo_owned_metadata_run",
+  "run_id": 38079282451,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38079282451",
+  "workflow_head_sha": "93586628d6542075969420b3fb64cea7715eb1e7",
+  "workflow_conclusion": "success",
+  "version": "0.2.476",
+  "source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+  "release_run_id": 38077256885,
+  "release_artifact_id": 11678519586,
+  "scope": "guest owned hreflang and Article schema doors in native side panel; selected T09 subtarget only",
+  "native_batch_status": "partial",
+  "product_verdict": "PASS_BOUNDED: EXT-F-1008-T09/guest_owned_hreflang_article_doors_match_fixture_dom",
+  "evidence_verdict": "PASS_FOR_BOUNDED_ASSERTION_WITH_SCREENSHOT_LIMITATION",
+  "provenance": {
+    "selection": "Exact v0.2.476 published Store ZIP selected by hosted release-artifact workflow path; runtime adaptation adds only matching-version manifest.key for unpacked Chrome.",
+    "store_zip_sha256": "584642d2f27a867f33dd37db7d798112648b03b91b25117367c1e8bb54c881bc",
+    "publisher_tree_sha256": "f0ba0265a00d8252de8f937fb47e5049a3a4f4acd559f4ad697d7852245679fc",
+    "adapted_runtime_tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056",
+    "independent_reconstruction_matched_report_before_and_after": true,
+    "modified_paths": ["manifest.json"]
+  },
+  "assertions": {
+    "ownedFixtureResponse": "HTTP 200; browser remained on controlled source tab",
+    "fixtureDom": "Exact title; one es alternate; one Article JSON-LD type",
+    "nativeSeoPane": "Unique SEO main tab selected; active linked pane loaded audit for fixture title",
+    "nativeRows": "Displayed hreflang and schema counts/types/URLs matched the fixture DOM",
+    "linkSafety": "Both doors asserted target=_blank, rel noopener and noreferrer",
+    "activation": "Stable hit-tested pointer input opened each exact destination in a new tab; original source tab remained open at unchanged URL after each activation"
+  },
+  "resource_finals": "package, browser and acceptance all valid; admitted=true, resourceInvalid=false, exitCode=0",
+  "evidence_folder": "docs/stabilization/evidence/guest-seo-owned-metadata/run38079282451",
+  "peer_review": "docs/stabilization/reports/peer-review-run38079282451.json",
+  "limits": [
+    "Only the selected owned-fixture T09 subtarget is covered; run status is partial by scope.",
+    "Screenshots show the native guest panel and owned fixture page but do not show the SEO pane result; behavioral credit rests on the native assertion report and direct UI inspection path.",
+    "The owned-metadata run 38079282451 is exact v0.2.476, not exact v0.2.478.",
+    "Full SEO remains unverified/partial; public metadata-door coverage and automatic metric correctness are not established by this fixture case.",
+    "Member/admin modes, persistence/history, recommendations, clipboard, social snippets and other deferred SEO behavior are not covered."
+  ],
+  "d193": "No closure change: this supplemental .476 run does not satisfy the recorded paired exact-v0.2.469 guest Data/SEO closure condition; exact-v0.2.469 full SEO run 38070400935 remains partial.",
+  "result_artifact": {
+    "id": 11679886710,
+    "name": "hosted-guest-38079282451-1",
+    "github_digest": "sha256:3e0fec559ac476b17e35e19bee694021f25046cc92f6bdaea7f18bea05491382",
+    "download_sha256": "3e0fec559ac476b17e35e19bee694021f25046cc92f6bdaea7f18bea05491382",
+    "digest_verified": true
+  },
+  "evidence_screenshots": {
+    "native-side-panel.png": "sha256:c5c2895937ccbe6c55e55f9d5d53fae341164c49aac0c1264858f18f5534e1c2",
+    "normal-target-after-open.png": "sha256:b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c"
+  }
+}

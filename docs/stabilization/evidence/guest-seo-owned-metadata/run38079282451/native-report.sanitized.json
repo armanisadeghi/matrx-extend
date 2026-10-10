@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "partial",
+  "scope": "owned guest SEO hreflang and Article schema doors in a native side panel",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_owned_hreflang_article_doors_match_fixture_dom",
+      "status": "pass",
+      "evidence": {
+        "sourcePath": "/seo-metadata-article",
+        "sourceTitleMatched": true,
+        "alternateLanguage": "es",
+        "alternateDoorCount": 1,
+        "schemaType": "Article",
+        "schemaDoorCount": 1,
+        "targetBlankWithNoopenerAndNoreferrer": true,
+        "trustedPointerDestinationsReached": true,
+        "sourcePageRetainedAfterEachDoor": true
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04-T06,T08",
+      "part": "database save, history, and diff flows"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "owned_metadata_bounded_target_complete",
+  "last_safe_observable": {
+    "sourceTitleMatched": true,
+    "alternateLanguage": "es",
+    "schemaType": "Article"
+  },
+  "current_operation": "build_recheck",
+  "build": {
+    "before": {
+      "version": "0.2.476",
+      "treeSha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056"
+    },
+    "after": {
+      "version": "0.2.476",
+      "treeSha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056"
+    }
+  },
+  "imported_artifact": null,
+  "case_selection": {
+    "scope": "metadata",
+    "selected_cases": ["T09"],
+    "selected_subtargets": ["guest_owned_hreflang_article_doors_match_fixture_dom"],
+    "excluded_cases": ["all SEO targets other than the owned T09 metadata door target"]
+  },
+  "resource_diagnostic_enabled": false,
+  "owned_metadata_source": {
+    "titleMatched": true,
+    "alternateCount": 1,
+    "alternateLanguage": "es",
+    "schemaTypeCount": 1,
+    "schemaType": "Article"
+  },
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+}

@@ -1,0 +1,10 @@
+{"at":"2026-10-10T19:24:10.977Z","code":"RESOURCE_JOURNAL_OPENED"}
+{"at":"2026-10-10T19:25:18.674Z","code":"RESOURCE_ADMITTED","reasons":[]}
+{"at":"2026-10-10T19:25:34.890Z","code":"RESOURCE_CPU_PENDING","reasons":["RESOURCE_CPU_BUSY"]}
+{"at":"2026-10-10T19:25:34.936Z","code":"RESOURCE_PROCESS_ATTRIBUTION"}
+{"at":"2026-10-10T19:25:41.548Z","code":"RESOURCE_JOB_EXIT"}
+{"at":"2026-10-10T19:25:41.583Z","code":"RESOURCE_COMPLETION_RECOVERY_PENDING"}
+{"at":"2026-10-10T19:25:57.671Z","code":"RESOURCE_CPU_PENDING","reasons":[]}
+{"at":"2026-10-10T19:26:13.785Z","code":"RESOURCE_CPU_PENDING","reasons":[]}
+{"at":"2026-10-10T19:26:29.827Z","code":"RESOURCE_CPU_RECOVERED","reasons":[]}
+{"at":"2026-10-10T19:26:29.923Z","code":"RESOURCE_FINAL_DECISION","admitted":true,"resourceInvalid":false,"exitCode":0,"decision":"valid"}

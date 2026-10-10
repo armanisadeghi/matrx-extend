@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_seo_owned_metadata_review",
+  "reviewer": "seo_metadata_review",
+  "verdict": "PASS_BOUNDED_GUEST_T09_OWNED_METADATA",
+  "run": {
+    "hosted_run_id": 38079282451,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38079282451",
+    "conclusion": "success",
+    "workflow_head_sha": "93586628d6542075969420b3fb64cea7715eb1e7",
+    "lane": "B",
+    "case": "guest-seo",
+    "scope": "metadata",
+    "release_version": "0.2.476"
+  },
+  "verdict_a_live_behavior": {
+    "status": "PASS_BOUNDED",
+    "target": "EXT-F-1008-T09/guest_owned_hreflang_article_doors_match_fixture_dom",
+    "findings": [
+      "Owned fixture DOM candidates were exact and unique: one es hreflang alternate and one Article schema type.",
+      "The real native SEO pane displayed matching doors and counts; safe-link attributes were asserted.",
+      "Trusted, hit-tested pointer activation reached both exact targets in new tabs while preserving the source tab and URL.",
+      "Package/browser/acceptance resource finals were all valid."
+    ],
+    "unverified": [
+      "No live external page metadata behavior was exercised by this owned fixture.",
+      "No automatic metric correctness, full SEO health, or member/admin behavior is inferred."
+    ]
+  },
+  "verdict_b_evidence_quality": {
+    "status": "PASS_WITH_SCREENSHOT_LIMITATION",
+    "provenance": "Official .476 receipt/Store ZIP independently reprocessed through scripts/hosted-release-artifact.mjs for guest-seo; adapted tree hash exactly matched the hosted native report before and after.",
+    "native_assertions": "Reviewed test driver path and actual UI probes: active SEO tab/pane, visible rows, exact destinations, link safety, pointer hit-testing, outbound tab and source restoration.",
+    "resource_finals": "All three resource journals terminate valid with zero exit and resourceInvalid=false; acceptance had an intermediate CPU-busy pending observation that recovered before valid final.",
+    "screenshots": "Both retained screenshots were inspected. They corroborate the native guest side panel and controlled fixture page but do not show the SEO results pane; the assertions, not the screenshots, support the target pass."
+  },
+  "d193_adjudication": {
+    "status": "KEEP_FIXED_NOT_CLOSED",
+    "reason": "This is a supplemental exact-v0.2.476 target, while D193 closure remains tied to the paired exact-v0.2.469 Data and full-SEO retests. The full SEO .469 run 38070400935 remains partial; this result neither upgrades it nor closes D193."
+  },
+  "checked_files": [
+    "tests/browser/seo-guest-acceptance.mjs",
+    "tests/browser/seo-owned-metadata-fixture.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "scripts/hosted-release-artifact.mjs",
+    "scripts/hosted-seo-route.mjs",
+    "docs/stabilization/runs/guest-seo-v0476-run38078047622.json",
+    "docs/stabilization/reports/hosted-release-v0476-independent-review.json"
+  ],
+  "verification": {
+    "method": "Downloaded hosted result artifact; inspected run JSON, three resource journals and screenshots; reviewed workflow/artifact selection and native assertion code; independently reconstructed the selected release ZIP adaptation and matched the run tree hash.",
+    "tests": "Not run; read-only peer review."
+  },
+  "evidence_folder": "docs/stabilization/evidence/guest-seo-owned-metadata/run38079282451",
+  "run_record": "docs/stabilization/runs/guest-seo-owned-metadata-v0476-run38079282451.json",
+  "result_artifact": {
+    "id": 11679886710,
+    "digest_verified": true
+  }
+}

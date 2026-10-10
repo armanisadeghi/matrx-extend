@@ -1,0 +1,18 @@
+{
+  "hosted_run_id": 38079282451,
+  "release_run_id": 38077256885,
+  "release_artifact_id": 11678519586,
+  "artifact_name": "matrx-extend-v0.2.476",
+  "release_source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+  "version": "0.2.476",
+  "store_zip_sha256": "584642d2f27a867f33dd37db7d798112648b03b91b25117367c1e8bb54c881bc",
+  "publisher_tree_sha256": "f0ba0265a00d8252de8f937fb47e5049a3a4f4acd559f4ad697d7852245679fc",
+  "selected_kind": "store",
+  "selection": "release_receipt_store_zip",
+  "runtime_kind": "native_store_zip_candidate_key_adapted",
+  "runtime_tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056",
+  "runtime_modified_paths": ["manifest.json"],
+  "adaptation": "Temporary matching-version manifest.key added from local ZIP for unpacked Chrome; Store ZIP unchanged.",
+  "independently_recomputed_runtime_tree_matches_run_report": true,
+  "identity_note": "The hosted test report build before/after version and runtime tree exactly match this independently reconstructed v0.2.476 Store ZIP adaptation."
+}
