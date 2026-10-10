@@ -5,8 +5,11 @@ describe('manual CSS patterns without a list root', () => {
   afterEach(() => vi.unstubAllGlobals());
 
   it('extracts one row from the first scalar match for each picked field', () => {
-    const firstName = { innerText: 'Cedar chair', textContent: 'Cedar chair' } as Element;
-    const firstPrice = { innerText: '$189', textContent: '$189' } as Element;
+    const firstName = {
+      innerText: 'Cedar chair',
+      textContent: 'Cedar chair',
+    } as unknown as Element;
+    const firstPrice = { innerText: '$189', textContent: '$189' } as unknown as Element;
     const querySelector = vi.fn((selector: string) => {
       if (selector === '.product-name') return firstName;
       if (selector === '.product-price') return firstPrice;
