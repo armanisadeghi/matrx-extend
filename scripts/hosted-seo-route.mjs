@@ -150,6 +150,11 @@ export function hostedGuestSeoRoute(
   interruptTarget = 'none',
   resourceDiagnostic = '0',
 ) {
+  assert.ok(
+    scope === 'full' || scope === 'controlled' || scope === 'readability',
+    'unknown_seo_case_scope',
+  );
+  assert.ok(scope === 'full' || acceptanceCase === 'guest-seo', 'seo_scope_requires_guest_seo');
   const metadataFixture = hostedSeoMetadataFixture(acceptanceCase, scope, fixture);
   const selectedInterruptTarget = hostedSeoInterruptTarget(
     acceptanceCase,
@@ -159,7 +164,6 @@ export function hostedGuestSeoRoute(
     interruptTarget,
   );
   if (acceptanceCase !== 'guest-seo') return null;
-  assert.ok(scope === 'full' || scope === 'controlled', 'unknown_seo_case_scope');
   assert.equal(artifactMode, 'development', 'hosted_seo_development_mode_required');
   assert.equal(prepared?.kind, 'ci_development_test', 'hosted_seo_ci_receipt_required');
   assert.equal(prepared?.eligibleStore, false, 'hosted_seo_store_artifact_refused');

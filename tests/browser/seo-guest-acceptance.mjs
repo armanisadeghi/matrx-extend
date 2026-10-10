@@ -54,6 +54,12 @@ const NEXT_DETAIL_PAGE = 'https://en.wikipedia.org/wiki/HTML';
 const METADATA_FIXTURE_PAGE = 'https://www.airbnb.com/';
 const RUN_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'airbnb';
 const SEO_CASE_SCOPE = process.env.SEO_GUEST_CASE_SCOPE ?? 'full';
+if (SEO_CASE_SCOPE === 'readability')
+  assert.equal(
+    process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
+    'guest-seo',
+    'readability_scope_requires_guest_seo',
+  );
 const SEO_RESOURCE_DIAGNOSTIC = process.env.MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC === '1';
 const SEO_INTERRUPT_AFTER_TARGET = hostedSeoInterruptTarget(
   'guest-seo',
@@ -76,7 +82,10 @@ const report = {
   feature_id: 'EXT-F-1008',
   mode: 'guest',
   status: 'unverified',
-  scope: 'public-page guest SEO actions in an owned native side panel',
+  scope:
+    SEO_CASE_SCOPE === 'readability'
+      ? 'known-text guest SEO readability in an owned native side panel'
+      : 'public-page guest SEO actions in an owned native side panel',
   targets: [],
   deferred: [
     { case: 'T01', part: 'one audit per URL and slow-old-result race' },
@@ -674,6 +683,62 @@ async function seoNextDetailState(panel) {
   );
 }
 
+async function runKnownReadabilityAcceptance({ page, panel, originalTitle, originalReadability }) {
+  const knownReadabilityResults = await runKnownReadabilityFixtures({
+    page,
+    fixtures: SEO_READABILITY_FIXTURES,
+    step: (phase, fixture) => enter(`known_readability_fixture_${fixture.id}_${phase}`),
+    reaudit: async (fixture) => {
+      enter(`known_readability_fixture_${fixture.id}_reaudit_click`);
+      await click(panel, 'button', 'Re-audit');
+      await waitObserved(
+        `known_readability_fixture_${fixture.id}_running_wait`,
+        () => seoContent(panel),
+        (state) => state?.scopeValid && !state.reAudit,
+      );
+      await waitObserved(
+        `known_readability_fixture_${fixture.id}_settled_wait`,
+        () => seoContent(panel),
+        (state) =>
+          state?.scopeValid && state.title === originalTitle && state.reAudit && !state.error,
+        30000,
+      );
+    },
+    observe: (fixture) =>
+      observe(`known_readability_fixture_${fixture.id}_native_values`, () =>
+        seoNextDetailState(panel),
+      ),
+  });
+
+  enter('known_readability_restored_page_reaudit_click');
+  await click(panel, 'button', 'Re-audit');
+  await waitObserved(
+    'known_readability_restored_page_running_wait',
+    () => seoContent(panel),
+    (state) => state?.scopeValid && !state.reAudit,
+  );
+  await waitObserved(
+    'known_readability_restored_page_settled_wait',
+    () => seoContent(panel),
+    (state) => state?.scopeValid && state.title === originalTitle && state.reAudit && !state.error,
+    30000,
+  );
+  const restoredReadability = await observe('known_readability_restored_page_native_values', () =>
+    seoNextDetailState(panel),
+  );
+  assert.deepEqual(
+    restoredReadability.readability,
+    originalReadability,
+    'native readability returns to the original page values after fixture cleanup',
+  );
+  target('T09', 'guest_manual_readability_matches_two_known_texts', {
+    cases: knownReadabilityResults,
+    pageDomRestored: true,
+    originalPageReadabilityRestored: true,
+  });
+  return knownReadabilityResults;
+}
+
 function displayedCount(value) {
   return value === null || !/^[0-9][0-9,]*$/.test(value) ? null : Number(value.replaceAll(',', ''));
 }
@@ -1149,6 +1214,51 @@ try {
     }),
     exercisePanel: async ({ page, panel, browserSession, panelTarget }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
+      if (SEO_CASE_SCOPE === 'readability') {
+        enter('known_readability_original_page_navigation');
+        const originalResponse = await page.goto(NEXT_DETAIL_PAGE, { waitUntil: 'load' });
+        assert.equal(page.url(), NEXT_DETAIL_PAGE, 'readability source page loaded in owned tab');
+        const originalPage = await observe('known_readability_original_page_inspected', () =>
+          publicNextDetailEvidence(page, originalResponse),
+        );
+        assert.ok(originalPage.title && originalPage.bodyHasText, 'source page has readable copy');
+        const initialSelection = await observe('known_readability_seo_tab_preflight', () =>
+          selectedSeo(panel),
+        );
+        assert.equal(
+          initialSelection.clickCandidateIsMainTab,
+          true,
+          'SEO click candidate is the unique main navigation tab',
+        );
+        enter('known_readability_seo_tab_click');
+        await click(panel, 'title', 'SEO');
+        await waitObserved(
+          'known_readability_seo_tab_ready',
+          () => selectedSeo(panel),
+          (state) => state?.selected && state.linked && state.heading && !state.fallback,
+        );
+        await waitObserved(
+          'known_readability_original_auto_audit_wait',
+          () => seoContent(panel),
+          (state) =>
+            state?.scopeValid &&
+            state.title === originalPage.title &&
+            state.reAudit &&
+            !state.error,
+          30000,
+        );
+        const originalAudit = await observe('known_readability_original_page_native_values', () =>
+          seoNextDetailState(panel),
+        );
+        assert.ok(originalAudit.readability, 'source page has native readability values');
+        await runKnownReadabilityAcceptance({
+          page,
+          panel,
+          originalTitle: originalPage.title,
+          originalReadability: originalAudit.readability,
+        });
+        return;
+      }
       const publicPages = [];
       for (const [index, url] of PAGES.entries()) {
         enter(`public_page_${index}_navigation`);
@@ -1800,64 +1910,11 @@ try {
               'guest_manual_readability_display_is_populated_and_explained',
               'The public body had no text, so populated readability fields could not be exercised.',
             );
-          const knownReadabilityResults = await runKnownReadabilityFixtures({
+          await runKnownReadabilityAcceptance({
             page,
-            fixtures: SEO_READABILITY_FIXTURES,
-            step: (phase, fixture) => enter(`known_readability_fixture_${fixture.id}_${phase}`),
-            reaudit: async (fixture) => {
-              enter(`known_readability_fixture_${fixture.id}_reaudit_click`);
-              await click(panel, 'button', 'Re-audit');
-              await waitObserved(
-                `known_readability_fixture_${fixture.id}_running_wait`,
-                () => seoContent(panel),
-                (state) => state?.scopeValid && !state.reAudit,
-              );
-              await waitObserved(
-                `known_readability_fixture_${fixture.id}_settled_wait`,
-                () => seoContent(panel),
-                (state) =>
-                  state?.scopeValid &&
-                  state.title === manualAfter.title &&
-                  state.reAudit &&
-                  !state.error,
-                30000,
-              );
-            },
-            observe: (fixture) =>
-              observe(`known_readability_fixture_${fixture.id}_native_values`, () =>
-                seoNextDetailState(panel),
-              ),
-          });
-          enter('known_readability_restored_page_reaudit_click');
-          await click(panel, 'button', 'Re-audit');
-          await waitObserved(
-            'known_readability_restored_page_running_wait',
-            () => seoContent(panel),
-            (state) => state?.scopeValid && !state.reAudit,
-          );
-          await waitObserved(
-            'known_readability_restored_page_settled_wait',
-            () => seoContent(panel),
-            (state) =>
-              state?.scopeValid &&
-              state.title === manualAfter.title &&
-              state.reAudit &&
-              !state.error,
-            30000,
-          );
-          const restoredReadability = await observe(
-            'known_readability_restored_page_native_values',
-            () => seoNextDetailState(panel),
-          );
-          assert.deepEqual(
-            restoredReadability.readability,
-            nextDetails.readability,
-            'native readability returns to the original page values after fixture cleanup',
-          );
-          target('T09', 'guest_manual_readability_matches_two_known_texts', {
-            cases: knownReadabilityResults,
-            pageDomRestored: true,
-            originalPageReadabilityRestored: true,
+            panel,
+            originalTitle: manualAfter.title,
+            originalReadability: nextDetails.readability,
           });
           report.next_detail_public_navigation = manualAfter.navigation
             ? {
@@ -2125,6 +2182,8 @@ try {
   assert.deepEqual(after, before, 'build identity remained stable during native run');
   report.build.after = after;
   report.status = report.copy_case_issues?.length ? 'unverified' : 'partial';
+  if (SEO_CASE_SCOPE === 'readability' && report.status === 'partial')
+    report.overall_result = 'bounded_partial';
   if (report.copy_case_issues?.length) process.exitCode = 1;
 } catch (error) {
   report.status = 'unverified';

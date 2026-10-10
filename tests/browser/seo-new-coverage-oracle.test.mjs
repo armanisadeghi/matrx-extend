@@ -42,6 +42,32 @@ test('controlled SEO scope reaches T14 and T02 while excluding volatile detail; 
   assert.deepEqual(observed, []);
 });
 
+test('readability scope runs only its owned fixture lifecycle and records a partial selection', async () => {
+  const observed = [];
+  const unrelated = async () => observed.push('controlled SEO actions');
+  const volatile = async () => observed.push('volatile public details');
+  const readability = async () =>
+    observed.push('two known texts', 'original page restored and re-audited');
+
+  await runSeoCaseSequence(unrelated, volatile, 'readability', readability);
+
+  assert.deepEqual(observed, ['two known texts', 'original page restored and re-audited']);
+  assert.deepEqual(seoCaseSelection('readability'), {
+    scope: 'readability',
+    selected_cases: ['T09'],
+    selected_subtargets: ['guest_manual_readability_matches_two_known_texts'],
+    excluded_cases: ['T01-T08', 'T10-T14', 'all other T09 checks'],
+  });
+  await assert.rejects(
+    () => runSeoCaseSequence(unrelated, volatile, 'readability'),
+    /known_readability_case_required/,
+  );
+  await assert.rejects(
+    () => runSeoCaseSequence(unrelated, volatile, 'unknown'),
+    /unknown_seo_case_scope/,
+  );
+});
+
 test('volatile detail assertion runs after controlled T14 and T02 observations and still fails', async () => {
   const observed = [];
   const unstableSource = new Error('manual_source_stability');

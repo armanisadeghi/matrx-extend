@@ -37,6 +37,22 @@ test('guest SEO passes the selected development artifact and receipt to the exis
   assert.equal(hostedGuestSeoRoute('guest-chat', 'development', selected), null);
 });
 
+test('readability scope routes only through guest SEO and rejects invalid scope selections', () => {
+  const route = hostedGuestSeoRoute('guest-seo', 'development', selected, 'readability');
+  assert.equal(route.env.SEO_GUEST_CASE_SCOPE, 'readability');
+  assert.equal(route.env.SEO_GUEST_METADATA_FIXTURE, undefined);
+  assert.equal(route.env.SEO_GUEST_INTERRUPT_AFTER_TARGET, undefined);
+  assert.equal(hostedGuestSeoRoute('guest-chat', 'development', selected), null);
+  assert.throws(
+    () => hostedGuestSeoRoute('guest-chat', 'development', selected, 'readability'),
+    /seo_scope_requires_guest_seo/,
+  );
+  assert.throws(
+    () => hostedGuestSeoRoute('guest-seo', 'development', selected, 'readability-only'),
+    /unknown_seo_case_scope/,
+  );
+});
+
 test('metadata fixture is explicit, SEO-only, and full-scope', () => {
   assert.equal(hostedSeoMetadataFixture('guest-seo', 'full', 'airbnb'), 'airbnb');
   assert.equal(hostedSeoMetadataFixture('guest-seo', 'full', 'none'), undefined);
@@ -507,6 +523,9 @@ test('hosted workflow admits guest SEO on lane B with one exact development arti
     'utf8',
   );
   assert.match(workflow, /- guest-seo\n/);
+  assert.match(workflow, /- readability\n/);
+  assert.match(workflow, /SEO_CASE_SCOPE" == readability/);
+  assert.match(workflow, /Readability SEO scope requires guest-seo/);
   assert.match(workflow, /guest-chat\|guest-seo\|guest-data\|member-data\|guest-scrape/);
   assert.match(
     workflow,

@@ -143,7 +143,17 @@ export async function runCopyCheckThenRecapture(copyCheck, recapture) {
 // fixture must run only after they have produced their native observations.
 // Errors still propagate so a broken source or lost target fails the run.
 export function seoCaseSelection(scope = 'full') {
-  assert.ok(scope === 'full' || scope === 'controlled', 'unknown_seo_case_scope');
+  assert.ok(
+    scope === 'full' || scope === 'controlled' || scope === 'readability',
+    'unknown_seo_case_scope',
+  );
+  if (scope === 'readability')
+    return {
+      scope,
+      selected_cases: ['T09'],
+      selected_subtargets: ['guest_manual_readability_matches_two_known_texts'],
+      excluded_cases: ['T01-T08', 'T10-T14', 'all other T09 checks'],
+    };
   return {
     scope,
     selected_cases: ['T01', 'T02', 'T03', 'T07', 'T09', 'T14'],
@@ -156,8 +166,14 @@ export async function runSeoCaseSequence(
   runControlledCases,
   runDynamicDetailCases,
   scope = 'full',
+  runReadabilityCases,
 ) {
   seoCaseSelection(scope);
+  if (scope === 'readability') {
+    assert.equal(typeof runReadabilityCases, 'function', 'known_readability_case_required');
+    await runReadabilityCases();
+    return;
+  }
   await runControlledCases();
   if (scope === 'full') await runDynamicDetailCases();
 }

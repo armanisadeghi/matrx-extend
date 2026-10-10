@@ -74,13 +74,14 @@ on:
           - profile-member
           - startup-resource-diagnostic
       seo_case_scope:
-        description: Guest SEO checks to run; controlled keeps the T02/T14 phase and excludes volatile public-detail checks
+        description: Guest SEO checks to run; readability runs only the known-text readability fixture
         required: false
         default: full
         type: choice
         options:
           - full
           - controlled
+          - readability
       seo_metadata_fixture:
         description: Optional live public metadata page for full guest SEO T09
         required: false
@@ -204,7 +205,8 @@ jobs:
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'Member Data requires member auth.' >&2; exit 1; }
           fi
           [[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }
-          [[ "$SEO_CASE_SCOPE" == full || "$SEO_CASE_SCOPE" == controlled ]] || { echo 'Unknown SEO case scope.' >&2; exit 1; }
+          [[ "$SEO_CASE_SCOPE" == full || "$SEO_CASE_SCOPE" == controlled || "$SEO_CASE_SCOPE" == readability ]] || { echo 'Unknown SEO case scope.' >&2; exit 1; }
+          [[ "$SEO_CASE_SCOPE" != readability || "$ACCEPTANCE_CASE" == guest-seo ]] || { echo 'Readability SEO scope requires guest-seo.' >&2; exit 1; }
           [[ "$SEO_CASE_SCOPE" == full || "$ACCEPTANCE_CASE" == guest-seo ]] || { echo 'Controlled SEO scope requires guest-seo.' >&2; exit 1; }
           [[ "$SEO_METADATA_FIXTURE" == none || "$SEO_METADATA_FIXTURE" == airbnb ]] || { echo 'Unknown SEO metadata fixture.' >&2; exit 1; }
           if [[ "$SEO_METADATA_FIXTURE" == airbnb ]]; then

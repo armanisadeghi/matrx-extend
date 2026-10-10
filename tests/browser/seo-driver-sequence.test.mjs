@@ -177,7 +177,7 @@ function inspectDriverSequence(source) {
     callsNamed(dynamic, 'target').some((call) => literal(call, 0) === 'T09'),
     'detail phase retains its original result targets',
   );
-  const readabilityFixtureLoop = callsNamed(dynamic, 'runKnownReadabilityFixtures');
+  const readabilityFixtureLoop = callsNamed(dynamic, 'runKnownReadabilityAcceptance');
   assert.equal(
     readabilityFixtureLoop.length,
     1,
@@ -185,23 +185,35 @@ function inspectDriverSequence(source) {
   );
   assert.ok(
     ts.isAwaitExpression(readabilityFixtureLoop[0].parent),
-    'native fixture loop is awaited',
+    'native readability lifecycle is awaited',
   );
   assertReachable(
     readabilityFixtureLoop[0],
     dynamic,
     'known-text native fixture loop is reachable',
   );
-  const readabilityTarget = callsNamed(dynamic, 'target').find(
+  const readabilityHelper = ast.statements.find(
+    (statement) =>
+      ts.isFunctionDeclaration(statement) &&
+      statement.name?.text === 'runKnownReadabilityAcceptance',
+  );
+  assert.ok(readabilityHelper, 'shared native readability lifecycle is declared');
+  assert.equal(
+    callsNamed(readabilityHelper, 'runKnownReadabilityFixtures').length,
+    1,
+    'readability lifecycle runs both known-text fixtures',
+  );
+  const readabilityTarget = callsNamed(readabilityHelper, 'target').find(
     (call) => literal(call, 1) === 'guest_manual_readability_matches_two_known_texts',
   );
   assert.ok(readabilityTarget, 'T09 records exact known-text readability values');
+  const fixtureLoop = callsNamed(readabilityHelper, 'runKnownReadabilityFixtures')[0];
   assert.ok(
-    readabilityTarget.getStart(ast) > readabilityFixtureLoop[0].getStart(ast),
+    readabilityTarget.getStart(ast) > fixtureLoop.getStart(ast),
     'readability pass is emitted only after all fixture cleanup completes',
   );
   assert.ok(
-    callsNamed(dynamic, 'deepEqual').some(
+    callsNamed(readabilityHelper, 'deepEqual').some(
       (call) =>
         literal(call, 2) ===
         'native readability returns to the original page values after fixture cleanup',
@@ -236,6 +248,30 @@ function inspectDriverSequence(source) {
   );
   return { ast, sequence };
 }
+
+test('readability-only native scope exits before unrelated SEO actions', async () => {
+  const source = await readFile(DRIVER, 'utf8');
+  const ast = ts.createSourceFile('seo-guest-acceptance.mjs', source, ts.ScriptTarget.Latest, true);
+  assert.equal(ast.parseDiagnostics.length, 0);
+  assert.match(source, /readability_scope_requires_guest_seo/);
+  const branchStart = source.indexOf("if (SEO_CASE_SCOPE === 'readability') {");
+  const unrelatedLoop = source.indexOf('const publicPages = [];', branchStart);
+  assert.ok(
+    branchStart >= 0 && unrelatedLoop > branchStart,
+    'readability guard precedes full SEO flow',
+  );
+  const branch = source.slice(branchStart, unrelatedLoop);
+  assert.match(branch, /await runKnownReadabilityAcceptance\(/);
+  assert.match(branch, /return;/);
+  for (const unrelatedAction of [
+    'checkGuestCopyFormats',
+    'runCopyCheckThenRecapture',
+    'brokenSocialPreviewState',
+    'guest_manual_link_counts_match_live_dom',
+    'guest_manual_image_alt_counts_match_live_dom',
+  ])
+    assert.doesNotMatch(branch, new RegExp(unrelatedAction));
+});
 
 test('actual native driver wires independent cases before volatile detail checks', async () => {
   const source = await readFile(DRIVER, 'utf8');
