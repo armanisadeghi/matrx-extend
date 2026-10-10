@@ -88,6 +88,21 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
       acceptanceCase === 'scrape-save-member' || acceptanceCase === 'member-data'
         ? 'member'
         : 'guest';
+    if (acceptanceCase === 'scrape-error-recovery-guest') {
+      assert.notEqual(
+        check('A', acceptanceCase, scrapeAuth).status,
+        0,
+        'guest scrape error recovery is deliberately B-only',
+      );
+      assert.equal(check('B', acceptanceCase, 'guest').status, 0);
+      for (const authMode of ['member', 'admin'])
+        assert.notEqual(
+          check('B', acceptanceCase, authMode).status,
+          0,
+          `guest scrape error recovery refuses ${authMode} auth`,
+        );
+      continue;
+    }
     assert.equal(check('A', acceptanceCase, scrapeAuth).status, 0, acceptanceCase);
     const usesSharedFixture =
       acceptanceCase.endsWith('-admin') ||
