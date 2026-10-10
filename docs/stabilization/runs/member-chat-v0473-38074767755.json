@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "run_id": 38074767755,
+  "status": "invalid-resource",
+  "case_id": "member-chat",
+  "observed_at": "2026-10-10T18:20:40Z",
+  "workflow_source_sha": "ada1e9cc2e66faca20923ce9be251d708b79da84",
+  "artifact": {
+    "release_run_id": 38073804235,
+    "artifact_id": 11678161949,
+    "artifact_name": "matrx-extend-v0.2.473",
+    "version": "0.2.473",
+    "product_source_sha": "3bb7f26921e8c8a9152af64de4dbe6c152543c58",
+    "digest": "sha256:602febf4fa40ec3171ae22824259e45900d543b8353c1352cc87d661a43f1c2b"
+  },
+  "verification": {
+    "authentication_preflight": "passed",
+    "native_member_report_present": false,
+    "member_identity_verified": false,
+    "terminal_reply_verified": false,
+    "org_bearing_request_verified": false
+  },
+  "resource_finals": {
+    "package": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid",
+      "stop_reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+      "signal": "SIGTERM",
+      "watchdog_observations": [
+        {
+          "at": "2026-10-10T18:20:04.387Z",
+          "code": "RESOURCE_CPU_PENDING",
+          "cpu_busy_fraction": 0.83,
+          "one_minute_load": 2.45,
+          "logical_cpus": 4
+        },
+        {
+          "at": "2026-10-10T18:20:20.528Z",
+          "code": "RESOURCE_WATCH_UNSAFE",
+          "cpu_busy_fraction": 0.72,
+          "one_minute_load": 3.18,
+          "logical_cpus": 4
+        }
+      ]
+    }
+  },
+  "evidence": {
+    "workflow": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38074767755",
+    "artifact_id": 11677379602,
+    "artifact_name": "hosted-guest-38074767755-1",
+    "resource_journals": [
+      "hosted-package-38074767755-1.jsonl",
+      "hosted-browser-38074767755-1.jsonl",
+      "hosted-guest-38074767755-1.jsonl"
+    ],
+    "screenshots": ["native-side-panel.png", "normal-target-after-open.png"]
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_absent": true,
+    "verification": "Name-only secret list returned zero exact-name matches after terminal cleanup.",
+    "local_single_use_link_file_absent": true,
+    "password_rotated": false
+  },
+  "limitations": [
+    "Resource-invalid run earns no member Chat acceptance credit and does not establish a product defect.",
+    "No terminal reviewer report exists; member identity, completed reply and accepted organization-bearing request remain unverified for this run.",
+    "No retry dispatched; next candidate and retest are owned by the coordinator."
+  ]
+}
