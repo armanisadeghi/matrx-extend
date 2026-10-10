@@ -84,7 +84,8 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
     assert.notEqual(check(lane, 'guest-chat').status, 0, lane);
   const cases = dispatch.inputs.acceptance_case.options;
   for (const acceptanceCase of cases) {
-    assert.equal(check('A', acceptanceCase).status, 0, acceptanceCase);
+    const scrapeAuth = acceptanceCase === 'scrape-save-member' ? 'member' : 'guest';
+    assert.equal(check('A', acceptanceCase, scrapeAuth).status, 0, acceptanceCase);
     const usesSharedFixture =
       acceptanceCase.endsWith('-admin') ||
       acceptanceCase.endsWith('-member') ||
@@ -92,7 +93,11 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
       acceptanceCase === 'member-data' ||
       acceptanceCase === 'prepare-stale-results' ||
       acceptanceCase.startsWith('showcase-');
-    assert.equal(check('B', acceptanceCase).status === 0, !usesSharedFixture, acceptanceCase);
+    assert.equal(
+      check('B', acceptanceCase, scrapeAuth).status === 0,
+      !usesSharedFixture,
+      acceptanceCase,
+    );
   }
   assert.notEqual(
     check('B', 'records-readonly-admin').status,
