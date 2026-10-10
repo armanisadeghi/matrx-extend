@@ -8,6 +8,7 @@
  * and sends nothing until the person presses Capture.
  */
 
+import { DEFAULT_TIMEOUT_MS } from '@/lib/api/client';
 import {
   type Accumulator,
   type CapturedImageRef,
@@ -19,6 +20,7 @@ import {
   canCapture,
   reduceGuided,
 } from '@/lib/guided-capture/job';
+import { nextSlideControl, scanPost, waitForSlide } from '@/lib/guided-capture/post';
 import {
   GUIDED_PORT,
   type GuidedCapturePayload,
@@ -59,8 +61,12 @@ function pageImages(acc: Accumulator): CapturedImageRef[] {
   return [...out.values()];
 }
 
-export function readPage(acc: Accumulator): GuidedCapturePayload {
-  scan(acc, null);
+export function readPage(
+  acc: Accumulator,
+  post?: { recipe: GuidedRecipe; url: string },
+): GuidedCapturePayload {
+  const observation = post ? scanPost(acc, post.recipe, post.url) : null;
+  if (!post) scan(acc, null);
   let html = document.documentElement.outerHTML;
   if (html.length > MAX_HTML_CHARS) {
     html = html.replace(/<style[\s\S]*?<\/style>/gi, '').slice(0, MAX_HTML_CHARS);
@@ -71,7 +77,15 @@ export function readPage(acc: Accumulator): GuidedCapturePayload {
     text: document.body?.innerText ?? '',
     html,
     itemCount: acc.count(),
-    images: pageImages(acc),
+    images: post ? acc.images() : pageImages(acc),
+    ...(post
+      ? {
+          videos: acc.videos(),
+          mediaNotes: observation?.unavailableVideos
+            ? ['Some videos are browser-only and could not be downloaded.']
+            : [],
+        }
+      : {}),
   };
 }
 
@@ -105,6 +119,49 @@ export function mountGuidedOverlay(): void {
   let root: ShadowRoot | null = null;
   let collapsed = false;
   let retriesLeft = 3;
+  let reveal: AbortController | null = null;
+  let revealNotice = '';
+  let unavailableVideos = 0;
+  let postAvailable = true;
+  const postMode = () =>
+    job?.target === 'post' && recipe && job ? { recipe, url: job.url } : undefined;
+  function stopRevealing() {
+    reveal?.abort();
+    reveal = null;
+  }
+  async function revealSlides() {
+    const post = postMode();
+    if (!post || !acc || reveal) return;
+    const controller = new AbortController();
+    reveal = controller;
+    const signatures = new Set<string>();
+    revealNotice = 'Revealing slides…';
+    render();
+    try {
+      while (!controller.signal.aborted) {
+        const observation = scanPost(acc, post.recipe, post.url);
+        if (!observation.root || !observation.signature || signatures.has(observation.signature))
+          break;
+        signatures.add(observation.signature);
+        const next = nextSlideControl(observation.root);
+        if (!next) break;
+        next.click();
+        const changed = await waitForSlide(
+          () => scanPost(acc!, post.recipe, post.url),
+          observation.signature,
+          DEFAULT_TIMEOUT_MS,
+          controller.signal,
+        );
+        if (!changed) break;
+      }
+    } finally {
+      if (reveal === controller) {
+        reveal = null;
+        revealNotice = 'Swipe through any remaining slides, then Capture.';
+        render();
+      }
+    }
+  }
 
   function send(m: GuidedClientMsg) {
     try {
@@ -149,7 +206,15 @@ export function mountGuidedOverlay(): void {
   function startWatching() {
     const run = () => {
       if (!acc) return;
-      dispatch({ type: 'items', count: scan(acc, recipe) });
+      const post = postMode();
+      if (post) {
+        const observation = scanPost(acc, post.recipe, post.url);
+        postAvailable = !!observation.root;
+        unavailableVideos = observation.unavailableVideos;
+        if (!postAvailable) stopRevealing();
+        dispatch({ type: 'items', count: acc.count() });
+        render();
+      } else dispatch({ type: 'items', count: scan(acc, recipe) });
     };
     run();
     const obs = new MutationObserver(() => {
@@ -159,7 +224,14 @@ export function mountGuidedOverlay(): void {
         run();
       }, 400);
     });
-    obs.observe(document.documentElement, { childList: true, subtree: true });
+    obs.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['src', 'srcset', 'poster', 'aria-label', 'aria-disabled', 'disabled'],
+    });
+    document.addEventListener('load', run, true);
+    document.addEventListener('loadeddata', run, true);
   }
 
   function mount() {
@@ -187,12 +259,24 @@ export function mountGuidedOverlay(): void {
     document.documentElement.appendChild(host);
     root.addEventListener('click', (e) => {
       const id = (e.target as HTMLElement).closest('[data-act]')?.getAttribute('data-act');
-      if (id === 'capture' && canCapture(state) && acc) {
+      if (id === 'reveal') {
+        void revealSlides();
+        return;
+      }
+      if (id === 'stop') {
+        stopRevealing();
+        revealNotice = 'Swipe through every slide, then Capture.';
+        render();
+        return;
+      }
+      if (id === 'capture' && canCapture(state) && acc && postAvailable) {
+        stopRevealing();
         dispatch({ type: 'capture' });
-        send({ t: 'capture', payload: readPage(acc) });
+        send({ t: 'capture', payload: readPage(acc, postMode()) });
       } else if (id === 'retry') dispatch({ type: 'retry' });
       else if (id === 'back') send({ t: 'back' });
       else if (id === 'close') {
+        stopRevealing();
         send({ t: 'finish' });
         host?.remove();
       } else if (id === 'min') {
@@ -206,8 +290,14 @@ export function mountGuidedOverlay(): void {
     const card = root?.querySelector('.card');
     if (!card || !job) return;
     const label = recipe?.label ?? 'this page';
-    const steps = stepsFor(recipe, (job.target as GuidedTarget | null) ?? null, job.rowSteps);
-    const count = countSentence(recipe, state.itemCount);
+    const post = postMode();
+    const steps = post
+      ? ['Open the saved post', 'Swipe through every image and video', 'Press Capture']
+      : stepsFor(recipe, (job.target as GuidedTarget | null) ?? null, job.rowSteps);
+    const count =
+      post && acc
+        ? `${acc.images().length} images · ${acc.videos().length} videos`
+        : countSentence(recipe, state.itemCount);
     const head = `<div class="head"><span>Matrx · ${esc(label)}</span><button class="x" data-act="min" aria-label="${collapsed ? 'Expand guide' : 'Collapse guide'}">${collapsed ? '+' : '–'}</button></div>`;
     if (collapsed) {
       card.innerHTML = head + `<div class="count" role="status">${esc(count)}</div>`;
@@ -223,8 +313,11 @@ export function mountGuidedOverlay(): void {
       body = `<div class="msg bad" role="alert">${esc(state.error ?? 'That did not save.')}</div>
 <div class="row"><button class="b" data-act="retry">Try again</button><button class="b alt" data-act="close">Close</button></div>`;
     } else {
-      body = `${list}<div class="count" role="status" aria-live="polite">${esc(count)} found</div>
-<div class="row"><button class="b" data-act="capture"${state.phase === 'filing' ? ' disabled' : ''}>${state.phase === 'filing' ? 'Saving…' : 'Capture'}</button></div>`;
+      const manual = post
+        ? `<div class="msg" role="status">${esc(!postAvailable ? 'Open the saved post so its slides can be captured.' : revealNotice || 'Reveal slides automatically, or swipe through each one.')}</div>${unavailableVideos ? '<div class="msg bad">Some videos cannot be downloaded from this browser.</div>' : ''}<div class="row"><button class="b alt" data-act="${reveal ? 'stop' : 'reveal'}"${!postAvailable || state.phase === 'filing' ? ' disabled' : ''}>${reveal ? 'Stop' : 'Reveal slides'}</button></div>`
+        : '';
+      body = `${list}<div class="count" role="status" aria-live="polite">${esc(count)} found</div>${manual}
+<div class="row"><button class="b" data-act="capture"${state.phase === 'filing' || !postAvailable || reveal ? ' disabled' : ''}>${state.phase === 'filing' ? 'Saving…' : 'Capture'}</button></div>`;
     }
     card.innerHTML = head + body;
   }

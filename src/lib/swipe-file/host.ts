@@ -18,12 +18,14 @@ export const SWIPE_PORT = 'matrx.swipe-file';
 
 export type SwipeClientMsg =
   | { t: 'list' }
+  | { t: 'capture_slides'; postId: string; organizationId: string; url: string }
   | { t: 'save'; url: string; collectionId: string | null; newCollectionName?: string };
 
 export type SwipeHostMsg =
   | { t: 'collections'; collections: SwipeCollectionRow[]; lastId: string | null }
   | { t: 'collections_error'; reason: string }
   | { t: 'progress'; label: string }
+  | { t: 'capture_started'; ok: boolean; sentence: string; url: string }
   | { t: 'result'; outcome: SwipeOutcome };
 
 export function describeOutcome(o: SwipeOutcome): string {
@@ -90,6 +92,20 @@ export function registerSwipeFileHost(): void {
         } catch (err) {
           post({ t: 'collections_error', reason: (err as Error).message });
         }
+        return;
+      }
+      if (msg.t === 'capture_slides') {
+        const { startSwipeBrowserCapture } = await import('@/lib/swipe-file/browser-capture');
+        const result = await startSwipeBrowserCapture({
+          ...msg,
+          openerTabId: port.sender?.tab?.id ?? null,
+        });
+        post({
+          t: 'capture_started',
+          url: msg.url,
+          ok: result.ok,
+          sentence: result.ok ? 'Swipe through every slide, then press Capture.' : result.sentence,
+        });
         return;
       }
       if (msg.t === 'save') {

@@ -30,6 +30,7 @@ import {
   type GuidedHostMsg,
   type GuidedTabJob,
 } from '@/lib/guided-capture/protocol';
+import { recipeForPlatform, recipeForUrl } from '@/lib/guided-capture/recipes';
 import { getOne, setOne } from '@/lib/storage/chrome-local';
 
 type TabMap = Record<string, GuidedTabJob>;
@@ -94,6 +95,8 @@ export async function openGuidedTab(args: {
     };
   }
   const social = (row.metadata?.social ?? {}) as { platform?: unknown; target?: unknown };
+  if (typeof chrome.tabs?.create !== 'function')
+    return { ok: false, sentence: 'This browser cannot open a capture tab.' };
   const tab = await chrome.tabs.create({ url: row.url, active: true });
   if (typeof tab.id !== 'number') {
     return { ok: false, sentence: 'Your browser would not open the page. Try again.' };
@@ -127,6 +130,17 @@ export async function fileGuidedCapture(
     if (row.status === 'captured') {
       return { t: 'failed', sentence: 'This page was already captured.' };
     }
+    if (row.organization_id !== job.organizationId)
+      return {
+        t: 'failed',
+        sentence: 'This capture belongs to another organization. Start it again.',
+      };
+    const recipe = recipeForPlatform(job.platform) ?? recipeForUrl(job.url);
+    if (
+      job.target === 'post' &&
+      (!recipe?.itemKey(job.url) || recipe.itemKey(payload.finalUrl) !== recipe.itemKey(job.url))
+    )
+      return { t: 'failed', sentence: 'Return to the saved post, then press Capture.' };
     assertRungMatches(row, 'human_drive');
     if (payload.text.trim().length < 40 && payload.itemCount === 0) {
       return {
@@ -135,16 +149,23 @@ export async function fileGuidedCapture(
           'There is nothing on this page to capture yet. Scroll until posts show up, then press Capture again.',
       };
     }
-    const posted = await postCaptureResult(job.handoffId, {
-      ok: true,
-      captured_by_rung: 'human_drive',
-      chars: payload.text.length,
-      title: payload.title || row.title,
-      text: payload.text,
-      html: payload.html,
-      final_url: payload.finalUrl,
-      images: payload.images,
-    });
+    const posted = await postCaptureResult(
+      job.handoffId,
+      {
+        ok: true,
+        captured_by_rung: 'human_drive',
+        chars: payload.text.length,
+        title: payload.title || row.title,
+        text: payload.text,
+        html: payload.html,
+        final_url: payload.finalUrl,
+        images: payload.images,
+        ...(payload.videos ? { videos: payload.videos } : {}),
+        ...(payload.mediaNotes?.length ? { note: payload.mediaNotes.join(' ') } : {}),
+      },
+      undefined,
+      job.organizationId,
+    );
     if (!posted.ok) {
       return {
         t: 'failed',
@@ -192,6 +213,7 @@ export function registerGuidedCaptureHost(): void {
           t: 'job',
           job: {
             handoffId: job.handoffId,
+            url: job.url,
             title: job.title,
             platform: job.platform,
             target: job.target,

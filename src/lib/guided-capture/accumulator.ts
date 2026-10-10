@@ -28,14 +28,26 @@ export interface CapturedImageRef {
   post_ref?: string;
 }
 
+export interface CapturedVideoRef {
+  src: string;
+  post_ref?: string;
+  poster?: string;
+  mime_type?: string;
+}
+
 export interface Accumulator {
   add(anchor: SeenAnchor): boolean;
+  addImage(href: string, image: CapturedImageRef): void;
+  addVideo(href: string, video: CapturedVideoRef): void;
+  videos(): CapturedVideoRef[];
   count(): number;
   images(max?: number): CapturedImageRef[];
 }
 
 export function createAccumulator(recipe: GuidedRecipe): Accumulator {
   const items = new Map<string, CapturedImageRef | null>();
+  const slides = new Map<string, CapturedImageRef>();
+  const videos = new Map<string, CapturedVideoRef>();
   return {
     add(a) {
       const k = recipe.itemKey(a.href);
@@ -55,8 +67,26 @@ export function createAccumulator(recipe: GuidedRecipe): Accumulator {
       }
       return isNew;
     },
+    addImage(href, image) {
+      const post_ref = recipe.itemKey(href);
+      if (!post_ref || !/^https?:/.test(image.src)) return;
+      if (!items.has(post_ref)) items.set(post_ref, null);
+      slides.set(`${post_ref}:${image.src}`, { ...image, post_ref });
+    },
+    addVideo(href, video) {
+      const post_ref = recipe.itemKey(href);
+      if (!post_ref || !/^https?:/.test(video.src)) return;
+      if (!items.has(post_ref)) items.set(post_ref, null);
+      videos.set(`${post_ref}:${video.src}`, { ...video, post_ref });
+    },
+    videos: () => [...videos.values()],
     count: () => items.size,
-    images: (max = 200) =>
-      [...items.values()].filter((v): v is CapturedImageRef => !!v).slice(0, max),
+    images: (max) => {
+      const all = new Map<string, CapturedImageRef>();
+      for (const image of [...items.values(), ...slides.values()]) {
+        if (image) all.set(`${image.post_ref}:${image.src}`, image);
+      }
+      return [...all.values()].slice(0, max);
+    },
   };
 }

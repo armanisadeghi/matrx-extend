@@ -124,6 +124,8 @@ User reaffirmed hourly pull/merge/push on 2026-09-26. Complete a green synchroni
 
 The integration barrier validates the exact candidate SHA/source fingerprint: compile, appropriate regression tests, required repository guards, independent UI retest and evidence validation. Re-read HEAD/source fingerprint before push. If remote or local source moves, invalidate affected evidence, integrate and rerun relevant checks. Retry a rejected push only after reconciling. Never label a different SHA green or push red trunk; if inherited trunk is red, repair the blocking baseline rather than weakening gates.
 
+Before pushing a hosted workflow input or preflight change, run the full `pnpm test:focused-acceptance` suite; route-only tests do not cover every shell-admission fixture.
+
 Push verified code and sanitized records frequently. Refresh @ai-matrx packages to latest and reconcile consumer actions before release as required by this repo. Inspect the current release path and verified behavior before treating past findings as open.
 
 For a release, verify the final regenerated/version-bumped/merged candidate before branch/tag publication using the current release path and host-local admission. A changed remote candidate must be reconstructed and revalidated before retry; a failure must leave publication untouched. Preserve concurrent source changes. Do not rerun a historical repair merely because this plan recorded its original finding.

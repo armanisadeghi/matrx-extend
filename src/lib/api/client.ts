@@ -195,7 +195,7 @@ function bearerFromHeaders(headers: Record<string, string>): string | null {
  * uploads forever (audit P1-2). Callers with longer legitimate work pass
  * their own signal.
  */
-const DEFAULT_TIMEOUT_MS = 30_000;
+export const DEFAULT_TIMEOUT_MS = 30_000;
 
 export async function getApiBaseUrl(): Promise<string> {
   return getBackendUrl();

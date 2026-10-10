@@ -311,12 +311,18 @@ export async function captureCaptions(
         handoff.id,
         { ok: false, captured_by_rung: 'human_drive', note },
         options.signal,
+        handoff.organization_id,
       );
       outcome.posted = posted.ok ? 'result' : 'none';
       outcome.note = note;
       return outcome;
     }
-    const res = await postNeedsDrive(handoff.id, { reason, note }, options.signal);
+    const res = await postNeedsDrive(
+      handoff.id,
+      { reason, note },
+      options.signal,
+      handoff.organization_id,
+    );
     outcome.posted = res.ok ? 'needs_drive' : 'none';
     outcome.note = res.ok
       ? note
@@ -402,6 +408,7 @@ export async function captureCaptions(
         final_url: handoff.url,
       },
       options.signal,
+      handoff.organization_id,
     );
     if (!posted.ok) {
       return await handToPerson(
