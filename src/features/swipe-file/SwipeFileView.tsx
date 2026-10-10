@@ -3,6 +3,7 @@ import {
   addPostToCollection,
   createCollection,
   getPostMedia,
+  getPostMediaCoverage,
 } from '@/lib/api/routes/social';
 import {
   type SwipeCollection,
@@ -20,7 +21,11 @@ import {
   updateSwipeNotes,
 } from '@/lib/swipe-file/library';
 import { swipePostWebUrl } from '@/lib/swipe-file/navigation';
-import { type SwipeCaptureReceipt, readSwipeReceipt } from '@/lib/swipe-file/receipt';
+import {
+  type MediaCoverage,
+  type SwipeCaptureReceipt,
+  readSwipeReceipt,
+} from '@/lib/swipe-file/receipt';
 import { useSwipeFileStore } from '@/state/swipe-file';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { ArrowLeft, Bookmark, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
@@ -50,6 +55,7 @@ export function SwipeFileView() {
   const [transcripts, setTranscripts] = useState<SwipeTranscript[]>([]);
   const [media, setMedia] = useState<SocialPostMedia[]>([]);
   const [mediaLoaded, setMediaLoaded] = useState(false);
+  const [coverage, setCoverage] = useState<MediaCoverage | null>(null);
   const [receipt, setReceipt] = useState<SwipeCaptureReceipt | null>(null);
   const [note, setNote] = useState('');
   const [tags, setTags] = useState('');
@@ -97,6 +103,7 @@ export function SwipeFileView() {
     setMedia([]);
     setTranscripts([]);
     setReceipt(null);
+    setCoverage(null);
     setStatus('');
     if (!selection) return;
     setLoading(true);
@@ -110,14 +117,16 @@ export function SwipeFileView() {
         setStats(details.stats ?? null);
         setTranscripts(details.transcripts);
         if (!organizationId) throw new Error('Choose a collection to open the stored files.');
-        const [files, capture] = await Promise.all([
+        const [files, capture, currentCoverage] = await Promise.all([
           getPostMedia(selection.postId, organizationId),
           readSwipeReceipt(selection.postId),
+          getPostMediaCoverage(selection.postId, organizationId).catch(() => null),
         ]);
         if (generation.current !== id) return;
         setMedia(files);
         setMediaLoaded(true);
         setReceipt(capture);
+        setCoverage(currentCoverage);
       } catch (cause) {
         if (generation.current === id) setError(message(cause));
       } finally {
@@ -245,7 +254,13 @@ export function SwipeFileView() {
                     <span className="rounded bg-muted px-2 py-1">
                       {transcripts.length ? 'Transcript available' : 'No stored transcript'}
                     </span>
-                    <span className="rounded bg-muted px-2 py-1">Coverage unverified</span>
+                    <span className="rounded bg-muted px-2 py-1">
+                      {coverage?.status === 'complete'
+                        ? 'All reported media stored'
+                        : coverage?.expected_items != null
+                          ? `${coverage.stored_items} of ${coverage.expected_items} media items stored`
+                          : 'Coverage unverified'}
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground">Comments excluded</p>
                   {post.platform === 'youtube' && (

@@ -6,6 +6,7 @@ const network = vi.hoisted(() => ({
   post: vi.fn(),
   summary: vi.fn(),
   media: vi.fn(),
+  coverage: vi.fn(),
   notes: vi.fn(),
   remove: vi.fn(),
   receipt: vi.fn(),
@@ -21,6 +22,7 @@ vi.mock('@/lib/swipe-file/library', () => ({
 }));
 vi.mock('@/lib/api/routes/social', () => ({
   getPostMedia: network.media,
+  getPostMediaCoverage: network.coverage,
   addPostToCollection: vi.fn(),
   createCollection: vi.fn(),
   readPostMediaBlob: vi.fn(),
@@ -79,6 +81,7 @@ beforeEach(() => {
       door: '/social/posts/sunrise/media/stored-clip',
     },
   ]);
+  network.coverage.mockResolvedValue(null);
   network.receipt.mockResolvedValue({ mediaNotes: ['Second clip could not be downloaded'] });
   network.notes.mockResolvedValue(undefined);
 });
@@ -115,4 +118,18 @@ it('a media read failure stays unknown instead of displaying a successful empty 
   expect(screen.queryByText('0 stored files')).toBeNull();
   expect(screen.queryByText('No stored files')).toBeNull();
   expect(screen.getByText('Morning light over the ridge')).toBeTruthy();
+});
+
+it('shows current canonical incomplete carousel coverage instead of trusting an older local receipt', async () => {
+  network.coverage.mockResolvedValue({
+    expected_items: 7,
+    observed_items: 7,
+    stored_items: 1,
+    missing_items: 6,
+    status: 'partial',
+  });
+  render(<SwipeFileView />);
+  expect(await screen.findByText('1 of 7 media items stored')).toBeTruthy();
+  expect(screen.queryByText('All reported media stored')).toBeNull();
+  expect(network.coverage).toHaveBeenCalledWith('sunrise', 'studio-west');
 });

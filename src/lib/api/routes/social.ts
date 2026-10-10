@@ -19,9 +19,9 @@ import {
 import { streamFetch } from '@/lib/api/stream';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import {
+  MediaCoverageSchema,
   type SocialPostMedia,
   SocialPostMediaSchema,
-  MediaCoverageSchema,
 } from '@/lib/swipe-file/receipt';
 import { z } from 'zod';
 
@@ -170,6 +170,18 @@ export async function addPostToCollection(
     undefined,
     organizationId ? { organizationId } : undefined,
   );
+}
+
+/** Current canonical coverage, independent of this device's cached save receipt. */
+export async function getPostMediaCoverage(postId: string, organizationId: string) {
+  const { apiGet } = await import('@/lib/api/client');
+  const result = await apiGet<unknown>(
+    `/social/posts/${encodeURIComponent(postId)}/media-coverage`,
+    undefined,
+    { organizationId },
+  );
+  if (!result.ok) throw new Error(result.error);
+  return MediaCoverageSchema.parse(result.data);
 }
 
 export async function getPostMedia(
