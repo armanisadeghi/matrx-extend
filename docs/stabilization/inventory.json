@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T02:25:54.623Z",
+  "updated_at": "2026-10-10T02:46:40Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -37976,7 +37976,30 @@
               ],
               "detail": "Actualfieldpicker/manualCSSsave/Data+Showcase replay JSON/AI/TSV preserve719594charbookfield identicalhash; Data refreshreplaypasses. D53closed; D54quotes/spreadsheetpaste open; ShowcaseAIURLmissingD55; broaderauth/cancel/failurestatesunverified."
             }
-          }
+          },
+          "attempt_history": [
+            {
+              "at": "2026-10-10T02:44:20Z",
+              "mode": "member",
+              "run_id": "38017560881",
+              "status": "fail",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "build_version": "0.2.457",
+              "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+              "workflow_source_sha": "1b33caf29c27cee0d8adc1aba922346f711af8b5",
+              "development_ci_run_id": 38014587032,
+              "development_artifact_id": 11655990379,
+              "evidence": [
+                "docs/stabilization/evidence/member-data-behavior/run38017560881/receipt.json",
+                "docs/stabilization/evidence/member-data-behavior/run38017560881/native-report.json",
+                "docs/stabilization/evidence/member-data-behavior/run38017560881/hosted-package-38017560881-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38017560881/hosted-browser-38017560881-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38017560881/hosted-guest-38017560881-1.jsonl"
+              ],
+              "detail": "Bounded hosted member run passed auth/org checks, two picker previews, selected-org POST 201, exact saved-row lookup/refresh, and exact owned-row cleanup. It failed later in the save_pattern stage with generic native_acceptance_error before any run/copy/cancel/reload assertion was recorded. The exception diagnostic is insufficient to distinguish the failing substep; no product defect is established. Clipboard, cancel, reload and zero-residual follow-up remain unverified. Prior member partial status is unchanged."
+            }
+          ]
         },
         {
           "id": "EXT-F-2005-T04",
