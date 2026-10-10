@@ -2,10 +2,7 @@
   "schema_version": 1,
   "feature_id": "EXT-F-1007",
   "defect_id": "EXT-D-0187",
-  "case_ids": [
-    "EXT-F-1007-T04",
-    "EXT-F-1007-T29"
-  ],
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
   "auth_mode": "member",
   "status": "fail",
   "stage": "inputs",
