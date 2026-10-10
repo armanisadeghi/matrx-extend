@@ -1,7 +1,7 @@
-import { startSwipeBrowserCapture } from '@/lib/swipe-file/browser-capture';
 import { fileGuidedCapture } from '@/lib/guided-capture/host';
-import { writeSwipeReceipt } from '@/lib/swipe-file/receipt';
 import type { GuidedTabJob } from '@/lib/guided-capture/protocol';
+import { startSwipeBrowserCapture } from '@/lib/swipe-file/browser-capture';
+import { writeSwipeReceipt } from '@/lib/swipe-file/receipt';
 import { beforeEach, expect, it, vi } from 'vitest';
 
 const { post, getRow, result } = vi.hoisted(() => ({
