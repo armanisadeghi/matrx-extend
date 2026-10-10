@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_run_id": 38020947337,
+  "workflow_result_artifact_id": 11658786685,
+  "workflow_checkout_sha": "391eb8b52ac999ce41de3f6be1a68fc94663f863",
+  "acceptance_case": "settings-auto-scrape-capture",
+  "lane": "B",
+  "role": "guest",
+  "driver_report": "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/native-report.sanitized.json",
+  "driver_report_status": "pass",
+  "source_boundary": {
+    "artifact_kind": "ci_development_test",
+    "ci_run_id": 38019685913,
+    "ci_artifact_id": 11657971729,
+    "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+    "version": "0.2.458",
+    "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+    "import_log": "PREPARED_DEVELOPMENT dcbda7e028a57aceb56b0792cd73bfb0ab38d40d f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+    "current_main_health_claimed": false
+  },
+  "case_outcome": {
+    "case_id": "EXT-F-1003-T40",
+    "driver_status": "pass",
+    "criteria_passed": 13,
+    "confirmed_behaviors": [
+      "Warm ON generated one successful real scrape:capture-page call for the Harbor Dental intake page, and the captured article contained its unique marker.",
+      "Warm OFF loaded the Harbor Dental follow-up page and emitted zero capture calls during the observation window.",
+      "ON survived a full extension worker/panel replacement and emitted one marker-bearing capture on the fresh intake page.",
+      "OFF survived a full extension worker/panel replacement and emitted zero capture calls on the fresh follow-up page.",
+      "The visible setting and stored preference matched during the tested ON/OFF choices."
+    ],
+    "review_status": "pending_independent_review",
+    "evidence_inconsistency_for_review": "The initial baseline observation reports stored=false and settingPresent=true. The final cleanup criterion is marked pass but its retained evidence reports stored=null and omits settingPresent. The driver code asserts equality with the initial baseline and key/field presence; this discrepancy requires peer adjudication before inventory promotion or a claim of exact baseline restoration."
+  },
+  "resource_journals": [
+    {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-package-38020947337-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "sha256": "fc4459e5578a826cab1d7267e57aaebd36b48d30436dda7cc8cd82db16b078b5"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-browser-38020947337-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "sha256": "67087321b964a481ac45e6d4c48bcc115238ef815416877860a15996142a921d"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/hosted-guest-38020947337-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "sha256": "0da9cfdf91928f3691f9a0680da2599ec92c0ee62c50d5e70e65809df67d1411"
+    }
+  ],
+  "fixture_and_cleanup": "Disposable hosted guest profile and owned local marker pages; no member/admin credentials or shared authenticated fixture. The driver records its local capture observer removed and original setting restoration assertions passed, subject to the evidence discrepancy above.",
+  "limitations": [
+    "Guest-only evidence; member/admin and Store behavior remain unverified.",
+    "No downstream chat/context consumption claim.",
+    "This frozen development artifact result is not current-main health.",
+    "T40 inventory status awaits independent review of the cleanup evidence discrepancy."
+  ],
+  "evidence_hashes": {
+    "native_report_sha256": "daf99aa84fd15ae1f6d6ff58b4a242824b4f4c9a4470b376ca086aceb52839e1"
+  }
+}
