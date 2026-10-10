@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "kind": "ci_development_test",
+  "eligible_store": false,
+  "source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+  "ci_run_id": 38053849002,
+  "ci_artifact_id": 11670818040,
+  "ci_artifact_digest": "sha256:217db2f133ec73c152f871ad300e2dc3d41fb87a7b790db02d5d1511fde8886d",
+  "version": "0.2.465",
+  "tree_sha256": "bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+  "workflow_source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+  "workflow_local_head_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+  "tracked_dirty": false,
+  "untracked_runner_inputs": [],
+  "claim": "exact_pushed_commit_only"
+}

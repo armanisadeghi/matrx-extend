@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_evidence_adjudication",
+  "reviewed_at": "2026-10-10",
+  "reviewer_lane": "guest-seo",
+  "run_id": 38054579156,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38054579156",
+  "verdict": "INDETERMINATE_ZERO_ACCEPTANCE_CREDIT",
+  "scope": "Member duplicate-rename observation for EXT-D-0187; no full T04/T29 closure.",
+  "evidence": {
+    "workflow_result": "failure",
+    "workflow_source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+    "product_artifact": "development v0.2.465; CI 38053849002/artifact 11670818040; tree bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+    "hosted_result_artifact": "11670884139, sha256:dc1d1fc7359f9f38e59e977c1dc3a83d3d26483a8e058a697d5bfa39ea1ce7bd",
+    "native_report": "evidence/scrape-save-member/run38054579156/native-report.sanitized.json",
+    "native_report_sha256": "051d9cc392fd798640d880b4f875fc326cbff23401a363cddf4a9436cd9ed669",
+    "resource_finals": {
+      "package": "valid; admitted; child exit 0",
+      "browser": "valid; admitted; child exit 0",
+      "guest": "child_failed; admitted; resource_valid; child exit 1"
+    },
+    "observed": [
+      "Real member/non-admin authentication and selected organization proof",
+      "Initial custom-named no-destination save, independent Source readback and zero associations",
+      "Same-article duplicate recapture",
+      "Run-owned Source cleanup and association removal"
+    ]
+  },
+  "reasoning": {
+    "failure_stage": "duplicate_save_submit",
+    "failure_code": "scrape_save_duplicate_land_response_failed",
+    "observer_contract": "The observer requires the sole POST /sources/land response status to equal 200, then validates response reuse/same-Source ID and rename.",
+    "missing_evidence": [
+      "Actual observed HTTP status",
+      "Whether response indicated reuse and original Source identity",
+      "Whether the rename request was sent or succeeded",
+      "Post-duplicate readback and UI confirmation"
+    ],
+    "conclusion": "The fail code establishes only that the observer saw a status other than exactly 200. Because the actual status and subsequent outcomes are absent, this record cannot distinguish product/backend rejection from a successful non-200 response that the observer rejects. Neither a product defect nor observer false negative is proven."
+  },
+  "next_action": "Add a bounded status-only observation that records HTTP status (or class) and booleans for reuse/same-row, without retaining identifiers or response text; then adjudicate before any repair or retry.",
+  "limits": [
+    "Initial no-destination behavior receives only its prior bounded credit; this run adds none.",
+    "Duplicate rename remains unverified; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+    "No admin/guest, Library, multi-destination, refusal/retry, or full feature behavior is established.",
+    "No repair or rerun was performed."
+  ],
+  "privacy": "No credential, account identifier, source/project ID, request body, response text, raw log, or runner path retained."
+}

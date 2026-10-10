@@ -21875,6 +21875,30 @@
               ],
               "detail": "Real member/non-admin sign-in and selected organization verified. Saved custom-named Source with no destination; independently read the saved Source and original, reopened UI content matched, zero destination association edges were read, and cleanup was verified. Bounded no-destination substep only; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "independent_review": "docs/stabilization/reports/peer-review-run38044665604.json"
+            },
+            {
+              "at": "2026-10-10T13:08:26Z",
+              "mode": "member",
+              "run_id": "38054579156",
+              "status": "indeterminate-zero-credit",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "destination_mode": "none",
+              "save_scope": "duplicate-rename",
+              "workflow_source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+              "product_artifact": "development 0.2.465; CI 38053849002/artifact 11670818040; source dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9; tree bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+              "failure_stage": "duplicate_save_submit",
+              "failure_code": "scrape_save_duplicate_land_response_failed",
+              "evidence": [
+                "docs/stabilization/evidence/scrape-save-member/run38054579156/receipt.sanitized.json",
+                "docs/stabilization/evidence/scrape-save-member/run38054579156/native-report.sanitized.json",
+                "docs/stabilization/evidence/scrape-save-member/run38054579156/resource-journals/hosted-package-38054579156-1.jsonl",
+                "docs/stabilization/evidence/scrape-save-member/run38054579156/resource-journals/hosted-browser-38054579156-1.jsonl",
+                "docs/stabilization/evidence/scrape-save-member/run38054579156/resource-journals/hosted-guest-38054579156-1.jsonl",
+                "docs/stabilization/reports/peer-review-run38054579156.json"
+              ],
+              "detail": "Initial member no-destination save, independent Source readback, zero associations and duplicate recapture were observed. The observer then failed because its /sources/land status was not exactly 200; the actual status, reuse/same-row result, rename outcome and post-duplicate readback were not retained. Independent review found the failure indeterminate: neither product rejection nor observer false negative is proven. No duplicate acceptance credit; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+              "independent_review": "docs/stabilization/reports/peer-review-run38054579156.json"
             }
           ]
         },
@@ -25209,6 +25233,30 @@
               ],
               "detail": "Real member/non-admin sign-in and selected organization verified. Saved custom-named Source with no destination; independently read the saved Source and original, reopened UI content matched, zero destination association edges were read, and cleanup was verified. Bounded no-destination substep only; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "independent_review": "docs/stabilization/reports/peer-review-run38044665604.json"
+            },
+            {
+              "at": "2026-10-10T13:08:26Z",
+              "mode": "member",
+              "run_id": "38054579156",
+              "status": "indeterminate-zero-credit",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "destination_mode": "none",
+              "save_scope": "duplicate-rename",
+              "workflow_source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+              "product_artifact": "development 0.2.465; CI 38053849002/artifact 11670818040; source dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9; tree bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+              "failure_stage": "duplicate_save_submit",
+              "failure_code": "scrape_save_duplicate_land_response_failed",
+              "evidence": [
+                "docs/stabilization/evidence/scrape-save-member/run38054579156/receipt.sanitized.json",
+                "docs/stabilization/evidence/scrape-save-member/run38054579156/native-report.sanitized.json",
+                "docs/stabilization/evidence/scrape-save-member/run38054579156/resource-journals/hosted-package-38054579156-1.jsonl",
+                "docs/stabilization/evidence/scrape-save-member/run38054579156/resource-journals/hosted-browser-38054579156-1.jsonl",
+                "docs/stabilization/evidence/scrape-save-member/run38054579156/resource-journals/hosted-guest-38054579156-1.jsonl",
+                "docs/stabilization/reports/peer-review-run38054579156.json"
+              ],
+              "detail": "Initial member no-destination save, independent Source readback, zero associations and duplicate recapture were observed. The observer then failed because its /sources/land status was not exactly 200; the actual status, reuse/same-row result, rename outcome and post-duplicate readback were not retained. Independent review found the failure indeterminate: neither product rejection nor observer false negative is proven. No duplicate acceptance credit; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+              "independent_review": "docs/stabilization/reports/peer-review-run38054579156.json"
             }
           ]
         },
@@ -27580,7 +27628,8 @@
                 "Wikipedia hreflang/schema doors remain unverified: its live DOM had no unique openable candidates",
                 "remaining detail controls",
                 "readability calculation beyond the two known-text fixtures",
-                "volatile public-detail and optional metadata-fixture phases excluded by this controlled run"
+                "volatile public-detail and optional metadata-fixture phases excluded by this controlled run",
+                "Full-scope Wikipedia run 38054415137 also found no unique hreflang/schema door candidates; target remains unverified."
               ],
               "run_id": "38016503649",
               "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
@@ -27606,7 +27655,11 @@
                 "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-package-38052238895-1.jsonl",
                 "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-browser-38052238895-1.jsonl",
                 "docs/stabilization/evidence/guest-seo-metadata/run38052238895/resource-journals/hosted-guest-38052238895-1.jsonl",
-                "docs/stabilization/reports/peer-review-run38052238895.json"
+                "docs/stabilization/reports/peer-review-run38052238895.json",
+                "docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/resource-finals.sanitized.json",
+                "docs/stabilization/reports/guest-seo-run38054415137-adjudication.json"
               ],
               "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred. Supplemental bounded result: Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim. Supplemental bounded readability result: hosted run 38034766398 independently reviewed PASS for only guest EXT-F-1008-T09 guest_manual_readability_matches_two_known_texts; exact known-text scores and bands matched, both fixture DOM restorations and original-page re-audit matched. Frozen unpublished development artifact source 22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c (CI 38032654367, artifact 11663251990); workflow checkout 6b286a60787da646a9e35c01eb378f9191ed7e60. Three resource finals valid. Only these two known texts are established; general readability behavior, remaining T09, other cases, current-main, member/admin and Store remain unverified.",
               "bounded_subtarget_evidence": [
@@ -28387,6 +28440,27 @@
                 "guest_manual_hreflang_and_schema_doors_match_page"
               ],
               "batch_duplicate_target_count": 19
+            },
+            {
+              "at": "2026-10-10T13:05:49Z",
+              "mode": "guest",
+              "run_id": "38054415137",
+              "status": "target-unverified",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "scope": "full",
+              "metadata_fixture": "none",
+              "workflow_source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+              "product_artifact": "development 0.2.465; CI 38051368919/artifact 11669294531; source ea92c5645a44fb9812ec34faeea1532500b0bf75; tree bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+              "target": "guest_manual_hreflang_and_schema_doors_match_page",
+              "target_status": "unverified",
+              "evidence": [
+                "docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/resource-finals.sanitized.json",
+                "docs/stabilization/reports/guest-seo-run38054415137-adjudication.json"
+              ],
+              "detail": "Full scope selected the Wikipedia target; native report kept it unverified because its public DOM exposed no unique hreflang/schema door candidates. Workflow and all three resource finals were valid, but no trusted door activation occurred. Re-observed rows receive no new credit; T09 and guest SEO remain partial."
             }
           ],
           "revalidation_history": [

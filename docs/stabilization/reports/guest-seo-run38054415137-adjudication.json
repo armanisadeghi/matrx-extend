@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "review_type": "operator_evidence_adjudication",
+  "reviewed_at": "2026-10-10",
+  "run_id": 38054415137,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38054415137",
+  "verdict": "VALID_RUN_TARGET_UNVERIFIED_NO_NEW_CREDIT",
+  "scope": "One full-scope guest SEO native run on frozen development artifact, assessing only the Wikipedia T09 hreflang/schema-door target.",
+  "evidence": {
+    "workflow_result": "success",
+    "workflow_source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+    "lane": "B",
+    "runner_label": "macos-15-intel",
+    "dispatch": {
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "full",
+      "seo_metadata_fixture": "none"
+    },
+    "product_artifact": "development v0.2.465; CI 38051368919/artifact 11669294531; digest sha256:172e6081a26e5c6022a9a5ac03624aa632ee4379692959aaab5963b74b86a97a; tree bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+    "hosted_result_artifact": "11670499422, sha256:5aad9ef10c923f22178d66a7d5682f728add3163ffa3807c91a22ac4940eb6cb",
+    "target_bundle": "evidence/guest-seo-wikipedia/run38054415137/",
+    "resource_finals": "package, browser and guest all admitted, resource_valid, exit 0"
+  },
+  "observation": {
+    "target": "EXT-F-1008-T09 guest_manual_hreflang_and_schema_doors_match_page",
+    "source": "https://en.wikipedia.org/wiki/HTML",
+    "native_status": "unverified",
+    "reason": "The live public DOM exposed no unique hreflang candidate; although three schema types were observed, no unique openable schema candidate paired with an alternate was available.",
+    "result": "No trusted outbound-door activation took place; no product pass or failure is established."
+  },
+  "limits": [
+    "Run success establishes infrastructure completion, not target acceptance.",
+    "Other target rows are re-observations and receive no new credit.",
+    "The separate Airbnb door pass remains a bounded prior observation and does not satisfy this Wikipedia target.",
+    "T09, all six guest SEO cases, and full guest SEO remain partial; Wikipedia remains unverified.",
+    "No independent peer review is claimed; this is the operator evidence adjudication."
+  ],
+  "privacy": "Allowlisted report and sanitized journals only; no screenshot, runner path, extension ID, account data or raw diagnostics retained."
+}

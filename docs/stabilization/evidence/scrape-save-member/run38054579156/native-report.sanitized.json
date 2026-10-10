@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "report_kind": "sanitized_native_scrape_save_acceptance",
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "auth_mode": "member",
+  "destination_mode": "none",
+  "save_scope": "duplicate-rename",
+  "status": "fail",
+  "stage": "duplicate_save_submit",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+    "run_id": 38053849002,
+    "artifact_id": 11670818040,
+    "tree_sha256": "bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+    "version": "0.2.465"
+  },
+  "authentication": {
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_role_verified": true,
+    "selected_organization_verified": true,
+    "organization_resolution": "load_ladder"
+  },
+  "observations": {
+    "member_logical_organization_request": {
+      "request_observed": true,
+      "authenticated": true,
+      "organization_matches_expected": true,
+      "http_status": 200
+    },
+    "owned_project_fixture_created": false,
+    "capture": {
+      "article_layer_ready": true,
+      "article_title_matches": true,
+      "heading_matches": true,
+      "marker_matches": true,
+      "extractor": "defuddle"
+    },
+    "dialog_opened_from_captured_article": true,
+    "prefilled_name_visible": true,
+    "input_focused_on_open": true,
+    "no_destination_selected_by_default": true,
+    "custom_name_entered_by_trusted_keyboard": true,
+    "tab_and_shift_tab_contained": true,
+    "no_destination_retained_before_save": true,
+    "dialog_closed_after_save": true,
+    "saved_confirmation_visible": true,
+    "source_row_read_from_service": true,
+    "custom_name_persisted": true,
+    "organization_scope_persisted": true,
+    "original_file_id_present": true,
+    "no_destination_associations_persisted": true,
+    "duplicate_recapture_observed": true
+  },
+  "failure": {
+    "stage": "duplicate_save_submit",
+    "code": "scrape_save_duplicate_land_response_failed",
+    "observer_predicate": "The observer requires exactly one POST /sources/land response with HTTP 200 before checking response reuse and same-Source identity.",
+    "missing_observation": "The report does not retain actual response status, reuse/same-ID booleans, rename request/response, or post-duplicate readback; product rejection versus successful non-200 response cannot be distinguished."
+  },
+  "cleanup": {
+    "verified": true,
+    "run_owned_source_soft_deleted": true,
+    "source_associations_removed": true
+  },
+  "limits": "Exact imported CI development artifact, real member sign-in, same-article duplicate landing and custom rename with no destination, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, controlled rename refusal/retry, responsive timing, or full T04/T29 closure.",
+  "privacy": "Removed source/project identifiers, account data, credentials, request/response bodies and raw diagnostics."
+}

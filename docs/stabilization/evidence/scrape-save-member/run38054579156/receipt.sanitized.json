@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "run_id": 38054579156,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38054579156",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+  "lane": "A",
+  "runner_label": "macos-15",
+  "workflow_conclusion": "failure",
+  "dispatch": {
+    "acceptance_case": "scrape-save-member",
+    "auth_mode": "member",
+    "save_scope": "duplicate-rename",
+    "destination_mode": "none"
+  },
+  "product_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+    "ci_run_id": 38053849002,
+    "ci_artifact_id": 11670818040,
+    "ci_artifact_digest": "sha256:217db2f133ec73c152f871ad300e2dc3d41fb87a7b790db02d5d1511fde8886d",
+    "version": "0.2.465",
+    "tree_sha256": "bd7ae5ea47d7cb0d82142e4eb7035194ad0e6cff093e1651ea807a486a213fbf",
+    "workflow_source_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+    "workflow_local_head_sha": "dd80a8daffbe60e8bbfb89ff5f7fe4499cfc65d9",
+    "tracked_dirty": false,
+    "untracked_runner_inputs": [],
+    "claim": "exact_pushed_commit_only"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11670884139,
+    "name": "hosted-guest-38054579156-1",
+    "digest": "sha256:dc1d1fc7359f9f38e59e977c1dc3a83d3d26483a8e058a697d5bfa39ea1ce7bd",
+    "expired": false
+  },
+  "native": {
+    "status": "fail",
+    "stage": "duplicate_save_submit",
+    "failure_code": "scrape_save_duplicate_land_response_failed",
+    "verified_before_failure": [
+      "member/non-admin and selected organization",
+      "initial custom-named no-destination save",
+      "independent Source readback and zero associations",
+      "duplicate recapture observed"
+    ],
+    "not_observed": [
+      "actual duplicate /sources/land HTTP status",
+      "duplicate response reuse/same-row evidence",
+      "rename request/outcome",
+      "post-duplicate readback"
+    ]
+  },
+  "resource_finals": {
+    "package": {
+      "journal": "resource-journals/hosted-package-38054579156-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admission_at": "2026-10-10T13:11:00.934Z",
+      "final_at": "2026-10-10T13:11:03.807Z"
+    },
+    "browser": {
+      "journal": "resource-journals/hosted-browser-38054579156-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admission_at": "2026-10-10T13:12:56.981Z",
+      "final_at": "2026-10-10T13:13:04.408Z"
+    },
+    "guest": {
+      "journal": "resource-journals/hosted-guest-38054579156-1.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed",
+      "admission_at": "2026-10-10T13:14:54.441Z",
+      "final_at": "2026-10-10T13:15:57.420Z"
+    }
+  },
+  "cleanup": {
+    "run_owned_source_soft_deleted": true,
+    "source_associations_removed": true,
+    "temporary_link_and_secret_absence_verified": true,
+    "values_retained": false
+  },
+  "adjudication": {
+    "verdict": "indeterminate_zero_acceptance_credit",
+    "product_failure_proven": false,
+    "observer_false_negative_proven": false,
+    "reason": "Failure code identifies a status != 200 assertion, but the actual response status was not retained; no reuse, rename, or readback evidence follows."
+  },
+  "evidence": {
+    "native_report": "native-report.sanitized.json",
+    "product_artifact": "product-artifact.sanitized.json",
+    "resource_journals": [
+      "resource-journals/hosted-package-38054579156-1.jsonl",
+      "resource-journals/hosted-browser-38054579156-1.jsonl",
+      "resource-journals/hosted-guest-38054579156-1.jsonl"
+    ],
+    "independent_review": "docs/stabilization/reports/peer-review-run38054579156.json"
+  },
+  "limits": [
+    "Initial member no-destination save is bounded passing evidence only; duplicate rename is indeterminate and receives no acceptance credit.",
+    "T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+    "No admin, guest, Library, multi-destination, refusal/retry, full-surface or Store behavior is established."
+  ],
+  "sanitization": "Native report allowlisted; resource journals copied through scripts/copy-hosted-resource-journal.mjs. Omitted screenshots, IDs, paths, account identifiers, credentials, request/response bodies, and raw logs."
+}
