@@ -32,5 +32,20 @@
     "docs/stabilization/evidence/guest-chat-store/run38079946517/guest-chat-same-conversation-followup.png",
     "docs/stabilization/evidence/guest-chat-store/run38079946517/guest-chat-real-followup-answer.png"
   ],
-  "verification": "Reviewed the full native JSON report and all three journey screenshots; verified terminal timelines, content-match assertions, guest conversation sequence, HTTP statuses, server SHA before/after, all resource finals and cleanup; downloaded release artifact and independently verified Store ZIP digest, matching v0.2.478 local key source, and adapted runtime tree. No second browser was launched."
+  "verification": "Reviewed the full native JSON report and all three journey screenshots; verified terminal timelines, content-match assertions, guest conversation sequence, HTTP statuses, server SHA before/after, all resource finals and cleanup; downloaded release artifact and independently verified Store ZIP digest, matching v0.2.478 local key source, and adapted runtime tree. No second browser was launched.",
+  "second_independent_review": {
+    "reviewer": "member_secret_restore",
+    "product_verdict": "PASS_BOUNDED_GUEST_CHAT_V0478",
+    "evidence_verdict": "PASS_WITH_SCREENSHOT_LIMITATION",
+    "checks": [
+      "Downloaded native artifact independently; all three terminal timelines end terminal_answer with streaming false; same-conversation fingerprints match and post-reload fingerprint differs.",
+      "Native content assertions prove unpredictable codes, ordered opening stages, follow-up code and post-reload fixture heading; screenshots independently viewed and confirmed clipped content limitation.",
+      "All three observed AI calls HTTP200; stable server SHA71d98c981c77672de0fb2a7b172962c1f21787dd before and after.",
+      "All three raw resource finals admitted, valid, exit0; corrected one transcription error in package journal SHA256.",
+      "Release artifact API digest matches receipt; independently hashed Store ZIP and extracted/adapted runtime tree match v0.2.478 native build."
+    ],
+    "limitations": [
+      "No new browser launched; this is independent evidence review of the prior-package exact v0.2.478 run, not current candidate acceptance."
+    ]
+  }
 }

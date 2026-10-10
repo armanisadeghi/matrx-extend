@@ -7,7 +7,7 @@
       "resource_invalid": false,
       "exit_code": 0,
       "decision": "valid",
-      "journal_sha256": "0cc782fb03851a1e97e967dc3e461f04b517c0d5d5f9d820ede94e7c7dbf175"
+      "journal_sha256": "0cc782fb03851a1e97e967edc3e461f04b517c0d5d5f9d820ede94e7c7dbf175"
     },
     "browser": {
       "admitted": true,
