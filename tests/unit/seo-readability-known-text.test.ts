@@ -1,10 +1,27 @@
 import { runAudit } from '@/lib/seo/audit';
 import { fleschBand } from '@/lib/seo/flesch-bands';
 import { describe, expect, it } from 'vitest';
-import { SEO_READABILITY_FIXTURES } from '../browser/seo-readability-known-text.mjs';
+
+const independentlyWorkedCases = [
+  {
+    id: 'roof-maintenance',
+    text: 'The caretaker checks the roof. Rain drains from the clean gutters.',
+    expected: { words: 11, sentences: 2, score: 85.89, summary: 'Easy — 6th grade' },
+  },
+  {
+    id: 'winter-repairs',
+    text: 'Routine repairs help. Tenant notices arrive.',
+    expected: {
+      words: 6,
+      sentences: 2,
+      score: 6.39,
+      summary: 'Extremely difficult — professional',
+    },
+  },
+] as const;
 
 describe('known SEO readability copy reaches the real audit formula', () => {
-  for (const fixture of SEO_READABILITY_FIXTURES) {
+  for (const fixture of independentlyWorkedCases) {
     it(`${fixture.id} produces its independently worked native values`, () => {
       const document = new DOMParser().parseFromString('<html><body></body></html>', 'text/html');
       Object.defineProperty(document.body, 'innerText', {
