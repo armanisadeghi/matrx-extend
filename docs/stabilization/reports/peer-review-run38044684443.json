@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_acceptance_evidence_review",
+  "reviewer_task": "/root/tracker_peer",
+  "reviewed_at": "2026-10-10T10:35:40Z",
+  "verdict": "bounded_pass",
+  "run": {
+    "run_id": 38044684443,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38044684443",
+    "workflow": "hosted-guest-acceptance.yml",
+    "workflow_source_sha": "c6ff0838d9014692df7e21de604cc27e07cc7d28",
+    "lane": "B",
+    "conclusion": "success",
+    "acceptance_case": "guest-scrape-development",
+    "case_id": "EXT-F-1007-T08"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "version": "0.2.459",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "evidence": [
+    {
+      "path": "docs/stabilization/evidence/guest-scrape-normal/run38044684443/receipt.sanitized.json",
+      "sha256": "aa76b0d74081fc13f6dfe91324a9a43b297af03da51df5966fb9ffaa392f53aa"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-scrape-normal/run38044684443/native-report.sanitized.json",
+      "sha256": "e626e89b4d6267e68940a8931ec399c77d7b1dbb28f9e23d728a3e76e2c294ee"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-package-38044684443-1.jsonl",
+      "sha256": "b3dc0e2cdcb0cce7f66e7e876ba9685cb2a350ffcb2747f3f1c97d888b17a47a"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-browser-38044684443-1.jsonl",
+      "sha256": "240e00d4ec399c4fc30d1e74f50d481e6de8decdc86e1d51f60ea20f8760532a"
+    },
+    {
+      "path": "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-guest-38044684443-1.jsonl",
+      "sha256": "0f5c679b207a1b4aa334f614578c0e89a96178c786491d9b506253657d9cf71f"
+    }
+  ],
+  "resource_finals": {
+    "hosted-package-38044684443-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38044684443-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38044684443-1": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "verified_assertions": [
+    "The receipt binds the guest run to the frozen development artifact and the sanitized native report records headed Chrome with an owned SIDE_PANEL CDP viewport at 600px warm and after full extension reload.",
+    "Six result panes were populated; empty Article, Images, Video, and Links states were observed.",
+    "Capture identity and exported payload remained unchanged warm and after reload.",
+    "The sanitized report limits acceptance to the named guest T08 observations; other driver cases receive no credit."
+  ],
+  "limitations": [
+    "This is a bounded guest normal-width T08 subtarget on frozen development v0.2.459.",
+    "SEO and Schema empty states, physical browser resize, member/admin, Store, and current-main runtime remain unverified.",
+    "EXT-F-1007-T08 and the guest feature-role cell remain partial; this review does not claim a full case or full feature pass.",
+    "No defect is closed by this evidence."
+  ]
+}
