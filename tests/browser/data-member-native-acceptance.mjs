@@ -20,6 +20,10 @@ import { observePatternWrites } from './data-member-save-observer.mjs';
 import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { captureFailure } from './profile-reload-capture.mjs';
+import {
+  refuseDiagnosticAcceptance,
+  reloadOpenEvidenceClass,
+} from './scrape-reload-open-diagnostic.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import {
   activeTabPanelExpression,
@@ -34,6 +38,7 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const extensionDir = process.env.MATRX_DATA_EXTENSION_DIR;
 const receiptPath = process.env.MATRX_DATA_RECEIPT;
 const output = join('test-results', 'data-member-native-acceptance.json');
+const RELOAD_OPEN_DIAGNOSTIC = process.env.MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC === '1';
 const runId = process.env.GITHUB_RUN_ID;
 const runAttempt = process.env.GITHUB_RUN_ATTEMPT;
 const patternName = `Northline Furnishings catalog member ${runId}-${runAttempt}`;
@@ -52,6 +57,7 @@ const fixture = `<!doctype html><html><head><title>Northline Furnishings catalog
   .join('')}</section></main></body></html>`;
 const report = {
   schema_version: 1,
+  reload_open_diagnostic: reloadOpenEvidenceClass(RELOAD_OPEN_DIAGNOSTIC),
   case_id: 'EXT-F-2005-T03',
   auth_mode: 'member',
   status: 'unverified',
@@ -260,6 +266,7 @@ try {
   });
   await runNativeSidepanelQa({
     headed: true,
+    reloadOpenDiagnostic: RELOAD_OPEN_DIAGNOSTIC,
     extensionDir,
     localDevReceiptPath: receiptPath,
     expectedRelease: receipt,
@@ -557,6 +564,7 @@ try {
         assert.equal(reload?.old_targets_retired, true, 'data_member_old_panel_not_retired');
         assert.equal(reload?.worker_replaced, true, 'data_member_worker_not_replaced');
         assert.equal(reload?.panel_replaced, true, 'data_member_panel_not_replaced');
+        report.reload_open_probe = reload.retirement_evidence?.open_panel_diagnostic ?? null;
         report.stage = 'extension_reload_adopt';
         assert.equal(
           reload?.retirement_evidence?.timeline?.final_predicate,
@@ -652,6 +660,7 @@ try {
   process.exitCode = 1;
   process.stderr.write(`DATA_MEMBER_ACCEPTANCE_FAILED ${report.stage} ${report.error_code}\n`);
 } finally {
+  if (refuseDiagnosticAcceptance(report, RELOAD_OPEN_DIAGNOSTIC)) process.exitCode = 1;
   await mkdir('test-results', { recursive: true });
   await writeFile(output, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
 }

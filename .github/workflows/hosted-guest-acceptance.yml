@@ -139,7 +139,7 @@ on:
         required: false
         type: string
       scrape_reload_open_diagnostic:
-        description: Probe replacement-worker panel open in guest-scrape-development; diagnostic-only, never acceptance credit
+        description: Probe replacement-worker panel open in guest-scrape-development or member-data; diagnostic-only, never acceptance credit
         required: false
         default: false
         type: boolean

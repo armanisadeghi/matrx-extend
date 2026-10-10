@@ -4,9 +4,11 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { hostedScrapeReloadDiagnostic } from './hosted-scrape-reload-diagnostic.mjs';
 
-test('diagnostic flag defaults off and only the development Scrape route accepts opt-in', () => {
+test('diagnostic flag defaults off and only development Scrape and member Data routes accept opt-in', () => {
   assert.equal(hostedScrapeReloadDiagnostic('guest-scrape-development'), '0');
   assert.equal(hostedScrapeReloadDiagnostic('guest-scrape-development', '1'), '1');
+  assert.equal(hostedScrapeReloadDiagnostic('member-data', '1'), '1');
+  assert.equal(hostedScrapeReloadDiagnostic('member-data', '0'), '0');
   for (const [acceptanceCase, value] of [
     ['guest-scrape', '1'],
     ['guest-chat', '1'],
@@ -26,12 +28,18 @@ test('hosted preflight refuses diagnostic on wrong case before resource or brows
         MATRX_HOSTED_ACCEPTANCE_CASE: acceptanceCase,
         MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: flag,
         MATRX_SCRAPE_AUTH_MODE: 'guest',
+        MATRX_HOSTED_MEMBER_LINK_JSON: '',
         MATRX_SCRAPE_WIDTH_MODE: 'normal',
         MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: '600',
       },
     });
   assert.equal(preflight('guest-scrape-development', '0').status, 0);
   assert.equal(preflight('guest-scrape-development', '1').status, 0);
+  // Valid diagnostic routing must reach the unchanged member credential gate.
+  const member = preflight('member-data', '1');
+  assert.notEqual(member.status, 0);
+  assert.match(member.stderr, /hosted_member_link_secret_required/);
+  assert.doesNotMatch(member.stderr, /scrape_reload_diagnostic_requires/);
   for (const [acceptanceCase, flag] of [
     ['guest-scrape', '1'],
     ['guest-chat', '1'],
