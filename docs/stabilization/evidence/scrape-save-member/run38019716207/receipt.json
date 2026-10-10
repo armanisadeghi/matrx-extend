@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "run_id": 38019716207,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38019716207",
+  "lane": "A",
+  "acceptance_case": "scrape-save-native-member",
+  "workflow_checkout_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+    "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+    "ci_run_id": 38017683667,
+    "artifact_id": 11657076101
+  },
+  "result": "resource_invalid_no_acceptance",
+  "native_report": "not produced",
+  "behavior_credit": "none; no Source write or product assertion is credited",
+  "failure_boundary": {
+    "step": "Exercise the selected Chrome side-panel case",
+    "event": "RESOURCE_WATCH_UNSAFE followed by RESOURCE_STOP_AT_SAFE_BOUNDARY",
+    "resource_sample": {
+      "cpu_busy_fraction": 1.0,
+      "one_minute_load": 3.12,
+      "logical_cpus": 4,
+      "reason_codes": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+    },
+    "final_decision": "invalid",
+    "resource_invalid": true,
+    "exit_code": 3
+  },
+  "resource_finals": {
+    "hosted-package-38019716207-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38019716207-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38019716207-1": "invalid; admitted=true; resourceInvalid=true; exitCode=3"
+  },
+  "credential_and_fixture_cleanup": "The temporary member-link repository secret and local one-time link were deleted by the parent task owner; absence was verified. No product acceptance is inferred from the run.",
+  "evidence_files": {
+    "resource_journals": [
+      "docs/stabilization/evidence/scrape-save-member/run38019716207/hosted-package-38019716207-1.jsonl",
+      "docs/stabilization/evidence/scrape-save-member/run38019716207/hosted-browser-38019716207-1.jsonl",
+      "docs/stabilization/evidence/scrape-save-member/run38019716207/hosted-guest-38019716207-1.jsonl"
+    ]
+  },
+  "claims": [
+    "This receipt records only a resource-invalid hosted attempt on the frozen development artifact above.",
+    "It does not claim current-main health, Store behavior, a completed UI assertion, or a product defect/pass."
+  ]
+}
