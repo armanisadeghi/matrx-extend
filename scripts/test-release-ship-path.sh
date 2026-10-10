@@ -596,7 +596,17 @@ FOREVER_STATUS=0; run_release catchup-forever-out || FOREVER_STATUS=$?
 git checkout -q -- release.sh
 rm -f "$SANDBOX/stale-forever" "$SANDBOX/stale-packages" "$SANDBOX/endless-churn-delay"
 ENDLESS_UPDATE_COUNT=$(( $(updates) - ENDLESS_UPDATES_BEFORE ))
-check "endless churn stops at the race budget"         '[[ $FOREVER_STATUS -ne 0 && $ENDLESS_UPDATE_COUNT -ge 4 ]] && grep -Eq "still publishing after|reached the 20s release race budget before its (direct|transitive) update" "$SANDBOX/catchup-forever-out"'
+ENDLESS_STILL_PUBLISHING=0
+grep -q "still publishing after" "$SANDBOX/catchup-forever-out" && ENDLESS_STILL_PUBLISHING=1 || true
+ENDLESS_BUDGET_BEFORE_UPDATE=0
+grep -Eq "reached the 20s release race budget before its (direct|transitive) update" "$SANDBOX/catchup-forever-out" && ENDLESS_BUDGET_BEFORE_UPDATE=1 || true
+if [[ $FOREVER_STATUS -ne 0 && $ENDLESS_UPDATE_COUNT -ge 4 && ( $ENDLESS_STILL_PUBLISHING -eq 1 || $ENDLESS_BUDGET_BEFORE_UPDATE -eq 1 ) ]]; then
+  echo "  ok    endless churn stops at the race budget"
+else
+  printf '  FAIL  endless churn stops at the race budget (status=%s updates=%s still_publishing=%s budget_before_update=%s)\n' \
+    "$FOREVER_STATUS" "$ENDLESS_UPDATE_COUNT" "$ENDLESS_STILL_PUBLISHING" "$ENDLESS_BUDGET_BEFORE_UPDATE"
+  FAILED=1
+fi
 git_q reset -q --hard origin/main
 cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" scripts/; printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
 git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs scripts/await-matrx-latest.mjs; git_q commit -m "lockfile again"
