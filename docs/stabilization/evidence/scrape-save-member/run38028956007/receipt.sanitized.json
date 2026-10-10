@@ -44,7 +44,33 @@
     "reopened_ui_heading_matches": "unknown; native report absent",
     "reopened_ui_marker_matches": "unknown; native report absent"
   },
-  "cleanup": "unverified; native report absent; no cleanup assertion is credited",
+  "cleanup": "native-driver cleanup remains unverified because the report is absent. A separate read-only reconciliation found zero rows for this run's exact Source name, extension run marker, and Project name; no write occurred, and this does not establish global cleanup or association state.",
+  "cleanup_reconciliation": {
+    "observation": "current read-only database queries returned HTTP 200",
+    "source_exact_name": {
+      "table": "docproc.processed_documents",
+      "name": "Northline source acceptance 38028956007-1",
+      "includes_tombstones": true,
+      "matching_rows": 0
+    },
+    "source_extension_canonical_run_marker": {
+      "table": "docproc.processed_documents",
+      "origin_client": "extension",
+      "canonical_identity_marker": "run=38028956007-1",
+      "includes_tombstones": true,
+      "matching_rows": 0
+    },
+    "project_exact_name": {
+      "table": "projects.projects",
+      "name": "Northline acceptance project 38028956007-1",
+      "includes_tombstones": true,
+      "matching_rows": 0
+    },
+    "organization_and_created_by": "not observed because no rows matched the exact selectors",
+    "association_edge": "not queried because no Source row or Source ID was returned",
+    "writes_performed": false,
+    "scope_limit": "This is only a bounded result for the listed exact selectors at the time of read; it does not prove general fixture cleanup or native-stage execution."
+  },
   "credential_cleanup": {
     "temporary_secret_name_count": 0,
     "local_one_time_link_present": false,
