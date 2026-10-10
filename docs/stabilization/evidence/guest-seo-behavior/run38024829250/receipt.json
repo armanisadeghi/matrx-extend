@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 38024829250,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38024829250",
+    "lane": "B",
+    "conclusion": "success",
+    "runner": "macos-15",
+    "checkout_sha": "fbdbff7374a0b4f93c791ffd7036452ff41f4c35"
+  },
+  "acceptance": {
+    "case": "guest-seo",
+    "auth_mode": "guest",
+    "scope": "controlled",
+    "fixture": "temporary public-page title and broken social image metadata; restored in finally",
+    "report_status": "partial",
+    "case_id": "EXT-F-1008-T09",
+    "subtarget": "guest_broken_social_preview_shows_failure_fallback",
+    "product_verdict": "pass",
+    "observed": [
+      "The exact broken social image request returned HTTP 404 in the extension panel target.",
+      "The audit title matched the changed public page.",
+      "The explanatory image-load failure fallback was visible and the no-image fallback was absent.",
+      "The original page title and image metadata were restored before the pass was emitted."
+    ],
+    "limits": [
+      "This is one controlled guest subtarget on the imported frozen development artifact.",
+      "The overall report is partial and retains its other deferred cases and dimensions.",
+      "This does not establish current-main, member/admin, or Store behavior."
+    ]
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.458",
+    "source_sha": "0c1ceda533c2e78e68a006a4a407741d6af8cba1",
+    "ci_run_id": 38023323516,
+    "ci_artifact_id": 11659740949,
+    "github_artifact_digest": "sha256:e7a6aeec01c0a3177b3e3b038bddfad618ce9bdf61c3f451a269bbb939a0ddfc",
+    "tree_sha256": "a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88"
+  },
+  "hosted_run_artifact": {
+    "id": 11660153380,
+    "name": "hosted-guest-38024829250-1",
+    "expired": false
+  },
+  "resource_guards": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "evidence_files": {
+    "native_report": {
+      "path": "docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json",
+      "sha256": "f21f395534495fc48edbd98847f9edd8e08a8678ca17959574d398b8d34bf038"
+    },
+    "resource_journals": [
+      {
+        "path": "docs/stabilization/resource-journals/hosted-package-38024829250-1.jsonl",
+        "sha256": "6599e1adb393f43e4e1b0068d1cc1104e93c94004569d2996fcb798003304c0b"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-browser-38024829250-1.jsonl",
+        "sha256": "814b6ba2e08f3d8e91509d101b5f317ac9556d76b5fb94a0e5958d5fc4fe5424"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-guest-38024829250-1.jsonl",
+        "sha256": "aaceb9ffc029cbede07b60dacba43b2cd831a373f79a873829ddf825aa44cfa7"
+      }
+    ]
+  }
+}
