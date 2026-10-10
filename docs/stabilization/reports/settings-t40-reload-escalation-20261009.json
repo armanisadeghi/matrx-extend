@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T40",
+  "status": "handoff_native_reload_helper_exception_unclassified",
+  "run": {
+    "id": "38007298161",
+    "workflow_sha": "d9bd66a3957dfc246afc5f76cc4ee68e7d6998a5",
+    "lane": "B",
+    "runner": "macos-15-intel",
+    "development_ci_run_id": 37998294843,
+    "development_artifact_id": 11647758423,
+    "frozen_source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "hosted_result_artifact_id": 11652445172,
+    "receipt": "docs/stabilization/evidence/settings-auto-scrape-capture/run38007298161/receipt.sanitized.json"
+  },
+  "resource_finals": {
+    "package": "admitted valid exit 0 resourceInvalid false",
+    "browser": "admitted valid exit 0 resourceInvalid false",
+    "guest": "admitted child_failed exit 1 resourceInvalid false"
+  },
+  "observed": {
+    "warm_on": "one successful capture with unique page marker",
+    "warm_off": "zero captures during settled observation window",
+    "pre_reload": "original OFF baseline and ON visible/stored switch change passed",
+    "first_failure_stage": "choice_extension_reload",
+    "first_failure_code": "unclassified",
+    "first_transport_class": "none",
+    "reload_lifecycle": "management click started and resolved; old worker and panel absent; replacement worker present; final predicate true; last captured phase target_destroyed; timeline not truncated",
+    "context_verdict": null,
+    "restoration": "restore_acquire_panel failed with owned_cdp_transport_failed / protocol_error",
+    "cleanup_also_failed": true,
+    "post_reload_preference": "unverified"
+  },
+  "source_trace": [
+    "tests/browser/native-sidepanel-qa-harness.mjs:789-811: lifecycle predicate accepts one newly created replacement worker and retirement of old worker/panel; this predicate passed in the receipt.",
+    "tests/browser/native-sidepanel-qa-harness.mjs:824-847: helper brings the owned page forward, may start an optional open diagnostic, then clears the reply element and clicks the owned page's open-panel button; any of these can throw before a context sample.",
+    "tests/browser/native-sidepanel-qa-harness.mjs:848-868: helper polls Target.getTargets for a replacement panel. Explicit absence would yield native_extension_replacement_panel_unverified, which was not the recorded code; a generic CDP or other exception remains possible.",
+    "tests/browser/native-sidepanel-qa-harness.mjs:869-879: exact SIDE_PANEL context is sampled. A context query exception attaches contextBoundary, and explicit absence yields native_sidepanel_runtime_context_missing; neither was recorded. A successful context sample followed by a later exception would also leave the failure receipt's context verdict null.",
+    "tests/browser/native-sidepanel-qa-harness.mjs:880-900: helper rechecks management, closes reply/optional diagnostic observation, attaches the replacement panel session, and only then returns it to the Settings recheck.",
+    "tests/browser/native-sidepanel-qa-harness.mjs:902-939: catch/cleanup can await reply and diagnostic close, and finally awaits lifetime close; an exception in those operations could replace an earlier error before captureFailure classifies it. The receipt cannot distinguish that possibility."
+  ],
+  "classification": "The frozen extension reached the required worker-retirement predicate, but the native harness did not return a verified replacement panel to the Settings probe. No post-reload preference was read. This is an unresolved helper/transport boundary, not a demonstrated product persistence defect.",
+  "next_action": "Fresh owner should instrument bounded allowlisted milestones and preserve the original exception through cleanup within the post-predicate helper interval; force red/green tests, obtain independent review, and only then consider one guarded hosted rerun. Do not repeat the same unclassified case without new causal information."
+}
