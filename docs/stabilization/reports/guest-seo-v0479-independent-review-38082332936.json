@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_exact_artifact_guest_seo_review",
+  "reviewer": "member_secret_restore",
+  "run_id": 38082332936,
+  "product_verdict": "PASS_FOR_19_CONTROLLED_SUBTARGETS_PARTIAL_OVERALL",
+  "evidence_verdict": "VALID_RESOURCE_EVIDENCE_WITH_VISUAL_AND_PROVENANCE_JOIN_LIMITS",
+  "artifact": {
+    "release_run_id": 38080281242,
+    "version": "0.2.479",
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "runtime_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "native_artifact_id": 11680962344,
+    "native_artifact_sha256": "3174e52126a6322d7142c361434132be7b8d87957c410a94e7ba464c1dcd7af5"
+  },
+  "verification": [
+    "Downloaded raw artifact independently; native overall status is partial, with 19 pass subtargets across T01/T02/T03/T07/T09/T14.",
+    "Every retained sanitized control assertion matches its raw native target; all three durable resource journals match downloaded bytes and all final summaries match raw decisions.",
+    "Package/browser/guest resource finals all admitted valid, resourceInvalid=false, exitCode=0.",
+    "Real trusted Copy audit clicks and clipboard readback support text/AI wrapper formats before and after reload; guest JSON option remains absent.",
+    "Native assertions cover two distinct page titles/headings, URL replacement/reload, about:blank stale-audit clearing and recovery, sparse/rich details and canonical outbound activation.",
+    "Controlled public DOM edits use production collector/rendering for changed-metadata re-audit, missing-tag clipboard and actual attempted 404 image explanatory fallback; source fixture restoration verified.",
+    "Viewed screenshots: guest startup visible, normal source page visible, no SEO result captured.",
+    "Before/after native version/runtime tree agree with exact v479 member/guest accepted tree and independently recomputed release Store ZIP adaptation."
+  ],
+  "preserved_unknowns": [
+    "Overall SEO remains partial;19target passes do not establish whole-feature health.",
+    "Raw imported_artifact is null; exact provenance depends on external receipt/artifact metadata plus matching native runtime tree.",
+    "No SEO result screenshot; behavior verdict relies on native assertions, not independent visual inspection of finished SEO UI.",
+    "No claim of server SHA stability from this SEO report; no server version record is present.",
+    "One-audit-per-URL/race, broader restricted/unreachable cases, saves/history/diff, member/admin, recommendations/Chat staging, optional metadata and hreflang/schema doors remain deferred.",
+    "Link/image/readability/performance automatic metric correctness is not established.",
+    "Exact v0.2.479 only; no v0.2.480 or later-package acceptance transfer.",
+    "Representative example.org/IANA public pages exercised; named Store reviewer demo was not used."
+  ],
+  "evidence_root": "docs/stabilization/evidence/guest-seo-store/run38082332936",
+  "reviewed_evidence_commit": "adf82d42d8ef3fc93d6559387e2a45bae554de90",
+  "checked_files": [
+    "docs/stabilization/runs/guest-seo-v0479-controlled-run38082332936.json",
+    "docs/stabilization/evidence/guest-seo-store/run38082332936/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38082332936/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38082332936/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38082332936/screenshots/native-side-panel.png",
+    "docs/stabilization/evidence/guest-seo-store/run38082332936/screenshots/normal-target-after-open.png"
+  ]
+}
