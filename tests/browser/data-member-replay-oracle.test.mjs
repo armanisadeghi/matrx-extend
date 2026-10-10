@@ -1,11 +1,19 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { stripTypeScriptTypes } from 'node:module';
 import test from 'node:test';
 import { Window } from 'happy-dom';
 
 const source = await readFile(
   new URL('./data-member-native-acceptance.mjs', import.meta.url),
   'utf8',
+);
+const clipboardSource = await readFile(
+  new URL('../../src/lib/clipboard/copy.ts', import.meta.url),
+  'utf8',
+);
+const { wrapForAgent } = await import(
+  `data:text/javascript;base64,${Buffer.from(stripTypeScriptTypes(clipboardSource)).toString('base64')}`
 );
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 const fixtureStart = source.indexOf('const cards =');
@@ -25,7 +33,7 @@ const replay = new AsyncFunction(
   `${source.slice(replayStart, replayEnd)} await runAndCopy('before_reload');`,
 );
 
-async function runReplay(priceSelector) {
+async function runReplay(priceSelector, aiRows = null) {
   const window = new Window();
   window.document.body.innerHTML = html;
   // Same selected elements as the native picker: first name, second card price.
@@ -47,7 +55,12 @@ async function runReplay(priceSelector) {
   const copyRows = async (_panel, _browser, _target, format) => {
     if (format === 'JSON') return JSON.stringify(rows);
     if (format === 'For AI agent')
-      return 'structured data extracted from a webpage using a saved pattern\nRow count: 1\nCedar chair';
+      return wrapForAgent({
+        description: 'structured data extracted from a webpage using a saved pattern',
+        meta: { rowCount: rows.length },
+        format: 'json',
+        content: JSON.stringify(aiRows ?? rows),
+      });
     return `field_1\tfield_2\n${rows[0].field_1}\t${rows[0].field_2}`;
   };
   try {
@@ -105,5 +118,14 @@ test('member failure refuses arbitrary driver categories and raw messages', () =
       },
     }),
     'native_acceptance_error',
+  );
+});
+
+test('member AI clipboard rejects a corrupted second field despite matching metadata', async () => {
+  await assert.rejects(
+    runReplay('.product-card:nth-of-type(2) .product-price', [
+      { field_1: 'Cedar chair', field_2: '$189' },
+    ]),
+    { message: /^data_member_ai_rows_mismatch_before_reload/ },
   );
 });

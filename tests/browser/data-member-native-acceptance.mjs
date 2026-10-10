@@ -484,9 +484,21 @@ try {
             native.panelTarget,
             'For AI agent',
           );
-          assert.match(ai, /structured data extracted from a webpage using a saved pattern/);
-          assert.match(ai, /Row count: 1/);
-          assert.match(ai, /Cedar chair/);
+          assert.match(
+            ai,
+            /structured data extracted from a webpage using a saved pattern/,
+            `data_member_ai_description_mismatch_${phase}`,
+          );
+          assert.match(ai, /^- Row Count: 1$/m, `data_member_ai_row_count_mismatch_${phase}`);
+          const aiRows = ai.match(/```json\n([\s\S]*?)\n```/);
+          assert.ok(aiRows, `data_member_ai_json_block_missing_${phase}`);
+          let parsedAiRows;
+          try {
+            parsedAiRows = JSON.parse(aiRows[1]);
+          } catch {
+            throw new Error(`data_member_ai_json_invalid_${phase}`);
+          }
+          assert.deepEqual(parsedAiRows, expectedRows, `data_member_ai_rows_mismatch_${phase}`);
           report.observations[`clipboard_${phase}`] = {
             tsv_matches_fixture: true,
             json_matches_fixture: true,
