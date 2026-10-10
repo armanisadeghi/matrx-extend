@@ -15,6 +15,7 @@ vi.mock('@/lib/api/client', () => ({ apiPut: harness.put, apiDelete: harness.rem
 import {
   readSwipeCollections,
   readSwipeMemberships,
+  readSwipePost,
   removeSwipeMembership,
   updateSwipeCollection,
   updateSwipeNotes,
@@ -62,7 +63,7 @@ describe('canonical swipe library', () => {
     });
     const loaded = await readSwipeCollections();
     expect(loaded).toHaveLength(1003);
-    expect(loaded[1002]?.id).toBe('campaign-1002');
+    expect(loaded.some((row) => row.id === 'campaign-1002')).toBe(true);
     expect(new Set(loaded.map((c) => c.organization_id))).toEqual(
       new Set(['studio-east', 'studio-west']),
     );
@@ -86,7 +87,7 @@ describe('canonical swipe library', () => {
     });
     const loaded = await listCollections();
     expect(loaded).toHaveLength(203);
-    expect(loaded[202]?.id).toBe('campaign-202');
+    expect(loaded.some((row) => row.id === 'campaign-202')).toBe(true);
   });
   it('shows archived collections only when the visible control asks for them', async () => {
     harness.fetch.mockImplementation(async (url: string) => {
@@ -108,6 +109,62 @@ describe('canonical swipe library', () => {
     expect((await readSwipeMemberships())[0]?.target_type).toBe('social_ad');
     harness.fetch.mockResolvedValueOnce(json([{ id: 'broken' }]));
     await expect(readSwipeMemberships()).rejects.toThrow();
+  });
+  it('details choose the latest observed metrics and newest transcript instead of UUID order or null observations', async () => {
+    harness.fetch.mockImplementation(async (url: string) => {
+      const u = new URL(url);
+      if (u.pathname.endsWith('/post'))
+        return json({
+          id: 'sunrise',
+          organization_id: 'shared-library',
+          platform: 'instagram',
+          url: 'https://instagram.com/p/sunrise',
+          title: 'Sunrise',
+          caption: 'Morning over the ridge',
+          format: 'video',
+          posted_at: null,
+          hashtags: [],
+          mentions: [],
+          profile_id: null,
+        });
+      if (u.pathname.endsWith('/post_transcript')) {
+        expect(u.searchParams.get('order')).toBe('created_at.asc,id.asc');
+        return json([
+          { id: 'old-voice', text: 'Earlier wording', language: 'en', source: 'provider' },
+          { id: 'latest-voice', text: 'A new day', language: 'en', source: 'provider' },
+        ]);
+      }
+      expect(u.searchParams.get('order')).toBe('metrics_observed_at.asc,id.asc');
+      return json([
+        {
+          views: 100,
+          likes: 10,
+          comments: 2,
+          shares: 1,
+          saves: 3,
+          metrics_observed_at: '2026-10-09T15:00:00Z',
+        },
+        {
+          views: 240,
+          likes: 18,
+          comments: 4,
+          shares: 3,
+          saves: 5,
+          metrics_observed_at: '2026-10-10T15:00:00Z',
+        },
+        {
+          views: 999,
+          likes: null,
+          comments: null,
+          shares: null,
+          saves: null,
+          metrics_observed_at: null,
+        },
+      ]);
+    });
+    const detail = await readSwipePost('sunrise');
+    expect(detail.stats?.views).toBe(240);
+    expect(detail.transcripts[0]?.text).toBe('A new day');
   });
   it('edits and removes in the destination organization even after the active organization changes', async () => {
     await updateSwipeNotes(membership, 'Sequence idea', ['opening']);

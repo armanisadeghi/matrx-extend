@@ -85,16 +85,12 @@ const postColumns = [
 ] as const;
 
 export async function readSwipeCollections(includeArchived = false): Promise<SwipeCollection[]> {
-  const rows = await listAll(
-    swipeDb(),
-    swipeCollection,
-    (q) => q.order('updated_at', { ascending: false }),
-    {
-      columns: ['id', 'name', 'organization_id', 'deleted_at'],
-      includeDeleted: includeArchived,
-    },
-  );
-  return z.array(CollectionSchema).parse(rows);
+  const rows = await listAll(swipeDb(), swipeCollection, undefined, {
+    columns: ['id', 'name', 'organization_id', 'deleted_at'],
+    includeDeleted: includeArchived,
+    orderBy: 'updated_at',
+  });
+  return z.array(CollectionSchema).parse(rows).reverse();
 }
 export async function readSwipeMemberships(collectionId?: string): Promise<SwipeMembership[]> {
   const rows = await listAll(
@@ -103,7 +99,7 @@ export async function readSwipeMemberships(collectionId?: string): Promise<Swipe
     (q) => {
       let filter = q.eq('source_type', 'social_swipe_collection');
       if (collectionId) filter = filter.eq('source_id', collectionId);
-      return filter.order('created_at', { ascending: false });
+      return filter;
     },
     {
       columns: [
@@ -115,9 +111,10 @@ export async function readSwipeMemberships(collectionId?: string): Promise<Swipe
         'metadata',
         'created_at',
       ],
+      orderBy: 'created_at',
     },
   );
-  return z.array(MembershipSchema).parse(rows);
+  return z.array(MembershipSchema).parse(rows).reverse();
 }
 /** Row cards do not download transcripts; detail loads those only when opened. */
 export async function readSwipePostSummary(postId: string): Promise<SwipePost> {
@@ -129,16 +126,13 @@ export async function readSwipePost(postId: string) {
   const db = swipeDb();
   const [post, transcripts, stats] = await Promise.all([
     readSwipePostSummary(postId),
-    listAll(
-      db,
-      postTranscript,
-      (q) => q.eq('post_id', postId).order('created_at', { ascending: false }),
-      {
-        columns: ['id', 'text', 'language', 'source'],
-      },
-    ),
+    listAll(db, postTranscript, (q) => q.eq('post_id', postId), {
+      columns: ['id', 'text', 'language', 'source'],
+      orderBy: 'created_at',
+    }),
     listAll(db, postStat, (q) => q.eq('post_id', postId), {
       columns: ['views', 'likes', 'comments', 'shares', 'saves', 'metrics_observed_at'],
+      orderBy: 'metrics_observed_at',
     }),
   ]);
   const profile = post.profile_id
@@ -148,9 +142,13 @@ export async function readSwipePost(postId: string) {
     : null;
   return {
     post,
-    transcripts: z.array(TranscriptSchema).parse(transcripts),
+    transcripts: z.array(TranscriptSchema).parse(transcripts).reverse(),
     profile: profile ? ProfileSchema.parse(profile) : null,
-    stats: stats[0] ? StatsSchema.parse(stats[0]) : null,
+    stats: stats.length
+      ? StatsSchema.parse(
+          stats.filter((row) => row.metrics_observed_at !== null).at(-1) ?? stats.at(-1),
+        )
+      : null,
   };
 }
 export async function updateSwipeCollection(
