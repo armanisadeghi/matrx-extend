@@ -45,5 +45,10 @@
     "docs/stabilization/evidence/guest-chat-v0479/run38081808099/resource-finals.sanitized.json",
     "docs/stabilization/evidence/guest-chat-v0479/run38081808099/receipt.sanitized.json",
     "docs/stabilization/runs/guest-chat-v0479-run38081808099.json"
-  ]
+  ],
+  "reviewer_attestation": {
+    "reviewer": "member_secret_restore",
+    "reviewed_evidence_commit": "f1560944000a3679b261a72efd1389fe34cd4058",
+    "independence": "Report authored independently after direct raw-artifact and durable-evidence cross-checks. Shared-index inclusion in the evidence commit does not change the independent verdict."
+  }
 }
