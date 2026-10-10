@@ -2,7 +2,7 @@
   "schema_version": 1,
   "scope": "Independent read-only review of Notes preparation f018289b5 and grouped plan 5d798de33 before any new hosted run",
   "behavior_verdict": "pass_for_preparation_only",
-  "quality_verdict": "partial_cleanup_plan_mismatch",
+  "quality_verdict": "pass_after_cleanup_receipt_repair",
   "driver_findings": [
     "The native runner checks the imported source commit's package version, manifest version, and exact unpacked tree; existing imported-evidence checks bind the source SHA before and after the run.",
     "The successful created-note response yields one UUID before the runner arms its autosave hold. A held PATCH must be in workbench.notes scope, match that exact owned UUID, be a non-delete request, and have no prior hold pending.",
@@ -13,6 +13,6 @@
     "biome": "passed for the three changed files",
     "new_hosted_notes_run": "none"
   },
-  "open_finding": "The grouped plan says the mode-0600 owned-fixture receipt contains organization context, but the runner's created and deleted receipts contain note ID/title, role, source SHA, and tree digest without an organization identifier. Align the receipt or specify a separately preserved organization recovery source before relying on same-organization exact-ID cleanup after an interrupted run.",
+  "resolved_finding": "Commit 8a7990fe5 reads the selected canonical organization UUID after the UI choice and records it in both created and deleted mode-0600 fixture receipts. The shared constructor refuses a missing or invalid organization ID; four focused contract tests pass. The grouped plan's same-organization exact-ID recovery is now grounded by the receipt.",
   "limits": "Source review and focused tests do not establish a current native product verdict. A run that stops after creation can leave the owned note for exact-ID recovery. The plan excludes adjacent behaviors that its grouped flow does not exercise and does not authorize a third concurrent hosted browser run."
 }
