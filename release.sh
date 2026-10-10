@@ -185,10 +185,11 @@ gate_tree() {  # treeish → prints the tree id of what gates and the build read
 }
 
 # ── Throwaway export of a commit/tree (never this checkout) ─────────────────
-# <root>/matrx-extend holds the files; node_modules and ../aidream are symlinks
-# to the real ones, and the untracked .env files are copied, so every pnpm
-# script behaves as it does here — against exactly the released bytes.
+# <root>/matrx-extend holds the files. Dependencies are installed privately
+# from the frozen candidate inputs and reused only within this release. The
+# sibling aidream source is linked and untracked .env files are copied.
 SNAP_ROOTS=()
+source "$REPO_ROOT/scripts/release-snapshot-dependencies.sh" || hard_stop "could not load private dependency installer"
 cleanup() {
     local d
     declare -F stop_background >/dev/null && stop_background
@@ -223,11 +224,12 @@ export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never ca
         && printf 'node_modules\n' >> .git/info/exclude \
         && git update-ref HEAD "$2" && git read-tree "$gtree" && git update-index -q --refresh ) >> "$RELEASE_LOG_FILE" 2>&1 \
         || { log "export of ${1:0:12}: snapshot git init failed (exit $?)"; return 1; }
-    [[ -d "$REPO_ROOT/node_modules" ]] && ln -s "$REPO_ROOT/node_modules" "$dir/node_modules"
     [[ -d "$REPO_ROOT/../aidream" ]] && ln -s "$(cd "$REPO_ROOT/../aidream" && pwd)" "$root/aidream"
     for f in "$REPO_ROOT"/.env*; do
         [[ -f "$f" && ! -e "$dir/$(basename "$f")" ]] && cp "$f" "$dir/"
     done
+    prepare_snapshot_dependencies "$dir" >> "$RELEASE_LOG_FILE" 2>&1 \
+        || { log "export of ${1:0:12}: private frozen dependency install failed"; return 1; }
     # tsconfig extends .wxt/tsconfig.json (the @/ path alias): generate it.
     if [[ "${3:-}" == prepare ]]; then
         ( cd "$dir" && bounded 120 pnpm -s exec wxt prepare ) >> "$RELEASE_LOG_FILE" 2>&1 \
@@ -237,26 +239,10 @@ export_snapshot() {  # treeish head-commit [prepare] → sets SNAP_DIR (never ca
 }
 
 # ── One release at a time; ownership never expires during checks/builds ──────
-RELEASE_LOCK_DIR="$(git rev-parse --git-path matrx-release-ship.lock 2>/dev/null || echo "$REPO_ROOT/.git/matrx-release-ship.lock")"
-RELEASE_LOCK_HELD=false
-release_lock_cleanup() {
-    if $RELEASE_LOCK_HELD && [[ "$(cat "$RELEASE_LOCK_DIR/pid" 2>/dev/null)" == "$$" ]]; then
-        rm -f -- "$RELEASE_LOCK_DIR/pid"; rmdir -- "$RELEASE_LOCK_DIR" 2>/dev/null
-    fi
-    RELEASE_LOCK_HELD=false
-}
+source "$REPO_ROOT/scripts/release-owner-lock.sh" || hard_stop "could not load release ownership lock"
+release_lock_cleanup() { ship_lock_cleanup; }
 acquire_release_lock() {
-    local owner
-    if mkdir "$RELEASE_LOCK_DIR" 2>/dev/null; then
-        RELEASE_LOCK_HELD=true
-        echo "$$" > "$RELEASE_LOCK_DIR/pid" || hard_stop "could not record release lock ownership at $RELEASE_LOCK_DIR"
-        return 0
-    fi
-    owner="$(cat "$RELEASE_LOCK_DIR/pid" 2>/dev/null)"
-    # A missing PID can be an owner between mkdir and writing its PID. Never
-    # delete an unowned lock here, including one believed stale: two contenders
-    # reclaiming a stale directory can otherwise delete a newly acquired lock.
-    hard_stop "release lock already exists at $RELEASE_LOCK_DIR (owner PID ${owner:-not yet recorded}); retry after its owner finishes; if abandoned, verify no release is running before removing that lock"
+    acquire_ship_lock || hard_stop "sync/release ownership is busy — nothing was published"
 }
 trap cleanup EXIT
 
@@ -325,10 +311,9 @@ process.exit(isDeepStrictEqual(manifest(process.argv[2]), manifest(process.argv[
 NODE
     return 1
 }
-# Snapshots borrow this checkout's node_modules, so every gate and the build run
-# against what pnpm installed for LOCAL_HEAD. A release takes many minutes and
-# main moves meanwhile; when the merged candidate's dependency inputs differ
-# from that install, the candidate would be validated against mismatched bytes.
+# Snapshots install their own frozen dependency graph. Keep the checkout
+# synchronized when main changes dependency inputs so catch-up and import
+# validation also read the merged candidate's inputs.
 # Until 2026-10-07 that STOPPED the release ("refresh packages on the updated
 # main and retry") — and since main moves during every ~17-minute run, every
 # ship-all run stopped the same way (2026-10-07_17-45-01, _18-03-21). Now the
