@@ -200,6 +200,9 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'D187 Save Source requires member auth.' >&2; exit 1; }
           fi
+          if [[ "$ACCEPTANCE_CASE" == member-data ]]; then
+            [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'Member Data requires member auth.' >&2; exit 1; }
+          fi
           [[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }
           [[ "$SEO_CASE_SCOPE" == full || "$SEO_CASE_SCOPE" == controlled ]] || { echo 'Unknown SEO case scope.' >&2; exit 1; }
           [[ "$SEO_CASE_SCOPE" == full || "$ACCEPTANCE_CASE" == guest-seo ]] || { echo 'Controlled SEO scope requires guest-seo.' >&2; exit 1; }
@@ -284,7 +287,9 @@ jobs:
             [[ "$ACCEPTANCE_CASE" == guest-scrape || "$ACCEPTANCE_CASE" == guest-scrape-development ]] || exit 1
             node -e 'const n=Number(process.argv[1]); if (!Number.isFinite(n)||n<=1) process.exit(1)' "$SCRAPE_DIAGNOSTIC_CPU_RATE"
           fi
-          if [[ "$ACCEPTANCE_CASE" != guest-scrape && "$ACCEPTANCE_CASE" != guest-scrape-development && "$ACCEPTANCE_CASE" != scrape-save-member ]]; then
+          if [[ "$ACCEPTANCE_CASE" == member-data ]]; then
+            [[ "$SCRAPE_AUTH_MODE" == member && "$SCRAPE_WIDTH_MODE" == narrow && -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1
+          elif [[ "$ACCEPTANCE_CASE" != guest-scrape && "$ACCEPTANCE_CASE" != guest-scrape-development && "$ACCEPTANCE_CASE" != scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == guest && "$SCRAPE_WIDTH_MODE" == narrow && -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1
           fi
           if [[ "$SCRAPE_WIDTH_MODE" == normal ]]; then

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import { scrapeNativeSelection } from '../tests/browser/scrape-native-selection.mjs';
@@ -7,6 +8,33 @@ import { requireHostedScrapeRoute } from './hosted-scrape-route.mjs';
 
 const development = { kind: 'ci_development_test', eligibleStore: false };
 const store = { kind: 'published_store_zip_adapted' };
+
+function workflowStepScript(workflow, stepName) {
+  const stepStart = workflow.indexOf(`      - name: ${stepName}`);
+  assert.notEqual(stepStart, -1, `workflow step ${stepName} exists`);
+  const runStart = workflow.indexOf('        run: |\n', stepStart);
+  assert.notEqual(runStart, -1, `workflow step ${stepName} has a shell body`);
+  const bodyStart = runStart + '        run: |\n'.length;
+  const lines = workflow.slice(bodyStart).split('\n');
+  const body = [];
+  for (const line of lines) {
+    if (line.startsWith('      - ')) break;
+    if (line.length === 0) {
+      body.push('');
+      continue;
+    }
+    assert.ok(line.startsWith('          '), `unexpected YAML indentation in ${stepName}`);
+    body.push(line.slice(10));
+  }
+  return body.join('\n');
+}
+
+function runWorkflowStep(script, env) {
+  return spawnSync('bash', ['-euo', 'pipefail', '-c', script], {
+    encoding: 'utf8',
+    env: { ...process.env, ...env },
+  });
+}
 
 test('development Scrape requires verified CI development provenance', () => {
   assert.deepEqual(
@@ -139,4 +167,57 @@ test('workflow admits development Scrape only with one complete development sele
     workflow,
     /"\$ACCEPTANCE_CASE" == guest-scrape-development[^\n]*\n\s*\[\[ -z "\$RELEASE_RUN_ID" && -n "\$DEVELOPMENT_RUN_ID" && -n "\$DEVELOPMENT_ARTIFACT_ID" && "\$PUBLISHED_STORE_CRX" != true \]\]/,
   );
+});
+
+test('workflow admits member Data with member auth while preserving guest and D187 routing', async () => {
+  const workflow = await readFile(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  const laneAdmission = workflowStepScript(
+    workflow,
+    'Require bounded lane and isolate shared credentials',
+  );
+  const artifactProvenance = workflowStepScript(
+    workflow,
+    'Require exactly one artifact provenance mode',
+  );
+  const shared = {
+    ACCEPTANCE_LANE: 'A',
+    SEO_CASE_SCOPE: 'full',
+    SEO_METADATA_FIXTURE: 'none',
+    SEO_INTERRUPT_AFTER_TARGET: 'none',
+    DESKTOP_SETTINGS_CASE: 'full',
+    RELEASE_RUN_ID: '',
+    DEVELOPMENT_RUN_ID: '38024593121',
+    DEVELOPMENT_ARTIFACT_ID: '11659157834',
+    PUBLISHED_STORE_CRX: 'false',
+    SCRAPE_DIAGNOSTIC_CPU_RATE: '',
+    SCRAPE_WIDTH_MODE: 'narrow',
+    SCRAPE_NORMAL_WIDTH_PX: '',
+    RUNNER_LABEL: 'macos-15',
+    RUNNER_ARCH: 'ARM64',
+  };
+
+  for (const [acceptanceCase, authMode, laneStatus, provenanceStatus] of [
+    ['member-data', 'member', 0, 0],
+    ['member-data', 'guest', 1, 1],
+    ['guest-chat', 'guest', 0, 0],
+    ['guest-chat', 'member', 0, 1],
+    ['scrape-save-member', 'member', 0, 0],
+    ['scrape-save-member', 'guest', 1, 0],
+  ]) {
+    const env = { ...shared, ACCEPTANCE_CASE: acceptanceCase, SCRAPE_AUTH_MODE: authMode };
+    for (const [scriptName, script, expectedStatus] of [
+      ['lane admission', laneAdmission, laneStatus],
+      ['artifact preflight', artifactProvenance, provenanceStatus],
+    ]) {
+      const result = runWorkflowStep(script, env);
+      assert.equal(
+        result.status,
+        expectedStatus,
+        `${scriptName}: ${acceptanceCase} with ${authMode} auth: ${result.stderr || result.stdout}`,
+      );
+    }
+  }
 });
