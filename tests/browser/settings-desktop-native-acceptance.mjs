@@ -317,34 +317,7 @@ async function setOwnedHttpTransport(attachWorker) {
 }
 
 async function confirmPairForget(panel) {
-  const point = await evaluate(
-    panel,
-    `(() => {
-    const dialog = [...document.querySelectorAll('[role="alertdialog"], [role="dialog"]')]
-      .find((item) => item.textContent.includes('Forget the desktop pair code?'));
-    const button = [...(dialog?.querySelectorAll('button') ?? [])]
-      .find((item) => item.textContent.trim() === 'Forget pair code');
-    if (!button || button.disabled) return null;
-    button.scrollIntoView({ block: 'center', behavior: 'instant' });
-    const r = button.getBoundingClientRect();
-    const x = r.left + r.width / 2, y = r.top + r.height / 2;
-    const hit = document.elementFromPoint(x, y);
-    return hit === button || button.contains(hit) ? { x, y } : null;
-  })()`,
-  );
-  assert.ok(point, 'desktop_pair_confirmation_not_hit_tested');
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mousePressed',
-    ...point,
-    button: 'left',
-    clickCount: 1,
-  });
-  await panel.send('Input.dispatchMouseEvent', {
-    type: 'mouseReleased',
-    ...point,
-    button: 'left',
-    clickCount: 1,
-  });
+  await click(panel, 'desktop-pair-forget-dialog', 'Forget pair code');
 }
 
 async function seedUnsentChatDraft(panel) {
@@ -569,7 +542,7 @@ try {
           () => state(panel),
           (s) => s?.pairDialog,
         );
-        await click(panel, 'dialog', 'Cancel');
+        await click(panel, 'desktop-pair-forget-dialog', 'Cancel');
         await waitFor(
           'desktop_pair_forget_cancel_preserved',
           () => state(panel),

@@ -568,6 +568,10 @@ export async function click(panel, kind, label, onPhase = undefined) {
       .filter((el) => el.querySelector('[data-slot="alert-dialog-title"]')?.textContent.trim() === 'Clear local data?')
       .flatMap((el) => [...el.querySelectorAll('button')])
       .filter((el) => el.textContent.trim() === label);
+    else if (kind === 'desktop-pair-forget-dialog') candidates = [...document.querySelectorAll('[role="alertdialog"], [role="dialog"]')]
+      .filter((el) => el.textContent.includes('Forget the desktop pair code?'))
+      .flatMap((el) => [...el.querySelectorAll('button')])
+      .filter((el) => el.textContent.trim() === label);
     else if (kind === 'scrape-recapture-dialog') candidates = [...document.querySelectorAll('[role="alertdialog"]')]
       .filter((el) => el.querySelector('[data-slot="alert-dialog-title"]')?.textContent.trim() === 'Discard unsaved edits?')
       .flatMap((el) => [...el.querySelectorAll('button')])
