@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": 38071036836,
+  "package": {
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid"
+  },
+  "browser": {
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid"
+  },
+  "acceptance": {
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "child_exit_code": 0,
+    "decision": "valid"
+  },
+  "resource_observation": {
+    "at": "2026-10-10T17:22:48Z",
+    "one_minute_load": 2.8,
+    "logical_cpus": 3,
+    "cpu_busy_fraction": 0.5,
+    "available_memory_gib": 5.74,
+    "swap_used_mib": 0,
+    "reasons": []
+  },
+  "evidence_source": "Hosted workflow log resource final decisions; resource journals were not included in the hosted result artifact."
+}

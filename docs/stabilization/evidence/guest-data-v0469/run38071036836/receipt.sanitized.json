@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "run_id": 38071036836,
+  "case_id": "guest-data",
+  "lane": "A",
+  "workflow_source_sha": "03d342c345ba332f59771e8b87183d1e49231190",
+  "release_artifact": {
+    "release_run_id": 38067449240,
+    "artifact_id": 11675900444,
+    "artifact_name": "matrx-extend-v0.2.469",
+    "version": "0.2.469",
+    "source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "unpacked_tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904",
+    "receipt_kind": "native_store_zip_candidate_key_adapted"
+  },
+  "status": "pass",
+  "native_stage": "exercise_panel",
+  "product_credit": "bounded_guest_EXT-F-2005-T01_only",
+  "screenshots": {
+    "available_in_artifact": true,
+    "data_ui_shown": false,
+    "note": "Screenshots show the generic guest side panel and controlled target page; Data behavior is evidenced by native assertions."
+  },
+  "credential_values_recorded": false
+}

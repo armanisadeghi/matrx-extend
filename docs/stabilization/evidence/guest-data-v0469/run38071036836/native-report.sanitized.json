@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0",
+    "version": "0.2.469",
+    "store_zip_sha256": "8df0a02a7ca9ec08d90e67c4bcdf3150cc76732c638384f74f024e3565b43904"
+  },
+  "observations": {
+    "picker_cancel_without_selection": true,
+    "picker_cancel_selected_fields_unchanged": true,
+    "picker_cancel_pattern_writes": 0,
+    "guest": true,
+    "controlled_rows": 3,
+    "two_distinct_picker_previews": true,
+    "two_selected_fields": true,
+    "pattern_name_absent": true,
+    "save_pattern_absent": true,
+    "sign_in_to_save_present": true,
+    "sign_in_action_used": true,
+    "pattern_write_requests_before_auth": 0
+  },
+  "failure_stage": null,
+  "limits": "Bounded guest native behavior on the selected Store artifact. No signed-in save, persistence, broader Data cases, or published Store-install claim.",
+  "picker_step": "second_field",
+  "picker_field_diagnostic": {
+    "target_count": 3,
+    "viewport": { "width": 601, "height": 498 },
+    "center_hit": "picker_overlay",
+    "chosen_hit": "field"
+  },
+  "picker_second_field_diagnostic": {
+    "target_count": 3,
+    "viewport": { "width": 601, "height": 498 },
+    "center_hit": "field",
+    "chosen_hit": "field"
+  }
+}

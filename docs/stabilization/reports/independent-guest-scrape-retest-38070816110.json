@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "review_id": "independent-guest-scrape-retest-38070816110",
+  "reviewed_at_utc": "2026-10-10",
+  "reviewer": "independent reviewer",
+  "run_id": 38070816110,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38070816110",
+  "workflow": "Native A · guest-scrape",
+  "workflow_conclusion": "success",
+  "workflow_checkout_sha": "03d342c345ba332f59771e8b87183d1e49231190",
+  "artifact": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "channel": "store",
+    "version": "0.2.469",
+    "source_sha": "3ec9eda26c3d8af777f56992985d754880b7e148",
+    "tree_sha256": "10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0",
+    "run_id": null,
+    "artifact_id": null
+  },
+  "harness_verdict": "pass: repaired receipt preflight reached the browser and the real acceptance assertions completed.",
+  "product_verdict": "guest Scrape behavior was observed; this does not establish full T08 coverage.",
+  "guest_account_observed": true,
+  "observed_ui_behaviors": [
+    "All six result tabs were selected: Article, Images, Video, Links, SEO, and Schema.",
+    "Populated panes matched the controlled capture: Article, three named Images with alt text and natural dimensions, two Video URLs, Links, SEO, and Schema.",
+    "Empty Images, Video, Links, and Article panes were observed; Links retained its add control and Article showed its fallback.",
+    "Warm and after full extension reload, the six panes remained unchanged and the exported capture payload identity/content remained unchanged.",
+    "The retained native screenshot visibly shows the Harbor Dental intake Article pane and all six result tabs."
+  ],
+  "t08_guest_cell": {
+    "status": "partial",
+    "bounded_observation": "This exact hosted Store v0.2.469 guest run exercised matching populated panes, four empty-pane states, and capture/export invariance warm and after extension reload.",
+    "remaining": [
+      "Normal-width verification remains unverified.",
+      "Member mode remains unverified.",
+      "Admin mode remains unverified.",
+      "SEO and Schema empty-state behavior is not separately evidenced.",
+      "Physical resize behavior is not established by this run."
+    ],
+    "full_case_pass": false
+  },
+  "d194_verdict": "closed after retest-pass: the exact v0.2.469 hosted Store artifact passed the corrected importer/driver preflight and reached the unchanged Scrape behavior oracle.",
+  "resource_finals": {
+    "hosted-package-38070816110-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "evidence": "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-package-38070816110-1.jsonl"
+    },
+    "hosted-browser-38070816110-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "evidence": "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-browser-38070816110-1.jsonl"
+    },
+    "hosted-guest-38070816110-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "evidence": "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-guest-38070816110-1.jsonl"
+    }
+  },
+  "evidence_files": {
+    "hosted-browser-38070816110-1.jsonl": "d998df8cfb4158da26ac30688ee3be88f833228507a9367e926b04b8a5e00a9e",
+    "hosted-guest-38070816110-1.jsonl": "a8a6f86bb5636fdd5ba4aa6c3ba09e34df23868fedf9f37e12b3b5cd5870109a",
+    "hosted-package-38070816110-1.jsonl": "8bb1a5874daf392995428a47beab6c97811346b4b8411d3a6c4bbc2b0528466a",
+    "receipt.sanitized.json": "9aba1fdf010184310c32eec403180831a4c39a4fcb2e71bfdc0e9f506ff92555",
+    "scrape-fast-article.png": "42202f75f98b462860e131cd618c630540272ee7f371254c33e1e46fca0b4003"
+  },
+  "limits": [
+    "The hosted workflow green is harness evidence; the UI observations above are separately drawn from the native receipt and screenshot.",
+    "No member/admin or full-feature acceptance is claimed.",
+    "Other receipt cases do not receive credit from this T08/D194 review."
+  ]
+}

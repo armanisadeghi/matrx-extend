@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-unverified-target-diagnosis",
+  "run_id": 38070400935,
+  "feature_id": "EXT-F-1008",
+  "related_defect_id": "EXT-D-0193",
+  "status": "diagnosed-no-product-fix-warranted",
+  "classification": {
+    "metadata_doors": "public-source coverage limitation",
+    "large_page_readability": "explicitly unverified numeric coverage; no observed numeric mismatch"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-seo-store/run38070400935/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38070400935/receipt.sanitized.json"
+  ],
+  "hypotheses": [
+    {
+      "cause": "Product drops source metadata",
+      "prediction": "Live DOM exposes unique source candidates while native doors differ",
+      "result": "Not supported: report says source DOM lacked suitable unique candidates; driver compares doors before deciding whether activation is possible"
+    },
+    {
+      "cause": "Public source lacks exercisable paired metadata",
+      "prediction": "Full-scope Wikipedia branch records unverified without claiming trusted door activation",
+      "result": "Supported by report and tests/browser/seo-guest-acceptance.mjs full-scope branch"
+    },
+    {
+      "cause": "No deterministic metadata coverage exists",
+      "prediction": "No owned source path or negative candidate guards exist",
+      "result": "Refuted: metadata scope serves an owned Article fixture and activates both doors; prior frozen v0.2.466 runs are recorded separately"
+    },
+    {
+      "cause": "Readability formula failed",
+      "prediction": "Known text target fails or independently worked numeric values mismatch",
+      "result": "Not supported: native known-text target passes; two real runAudit formula checks pass locally. Uncontrolled large-page values remain unverified"
+    }
+  ],
+  "verification": [
+    {
+      "command": "node --test tests/browser/seo-owned-metadata-fixture.test.mjs tests/browser/seo-readability-known-text.test.mjs scripts/hosted-seo-route.test.mjs",
+      "verdict": "pass",
+      "tests": 22,
+      "scope": "Existing fixture delivery, candidate negatives, native fixture lifecycle and hosted route preflight; no new native evidence"
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/seo-readability-known-text.test.ts --maxWorkers=1",
+      "verdict": "pass",
+      "tests": 2,
+      "scope": "Real runAudit independently worked values; no large-page numeric claim"
+    }
+  ],
+  "repair": {
+    "code_changed": false,
+    "reason": "No red-capable product failure is established; changing product behavior or weakening full-scope selection is unjustified"
+  },
+  "d193_assessment": "Full-scope exact-release run already demonstrates repaired SEO artifact provenance reaches unchanged native assertions with valid resource finals. The public-source unverified row is not the original pre-browser artifact rejection. Independent review and the separate exact-release Data retest remain required by D193.",
+  "next_native_test": {
+    "purpose": "Optional bounded metadata-door confirmation on exact v0.2.469; does not close Wikipedia or uncontrolled numeric coverage",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "dispatch_inputs": {
+      "acceptance_lane": "B",
+      "runner_label": "macos-15-intel",
+      "acceptance_case": "guest-seo",
+      "release_run_id": "38067449240",
+      "seo_case_scope": "metadata",
+      "seo_metadata_fixture": "owned",
+      "published_store_crx": false,
+      "seo_resource_diagnostic": false,
+      "seo_interrupt_after_target": "none"
+    },
+    "omitted_inputs": ["development_run_id", "development_artifact_id"],
+    "expected_artifact_id": 11675900444,
+    "expected_version": "0.2.469",
+    "preflight": "Serialize hosted browser lanes and mutable fixtures; retain resource admission/watchdog and artifact digest verification. Metadata scope requires lane B and owned fixture; source DOM must have exactly one es alternate and Article schema. Trusted pointer activations must reach both expected destinations and retain source page after each.",
+    "acceptance_target": "guest_owned_hreflang_article_doors_match_fixture_dom",
+    "closure": "Independent native evidence review plus all resource finals valid; claim only this bounded target on the exact release artifact"
+  },
+  "limitations": [
+    "No new hosted job launched",
+    "No additional product credit or case/feature closure",
+    "Existing prior metadata evidence retains its own frozen artifact attribution",
+    "Full-scope Wikipedia and large-page numeric correctness remain unverified"
+  ],
+  "open_questions": []
+}
