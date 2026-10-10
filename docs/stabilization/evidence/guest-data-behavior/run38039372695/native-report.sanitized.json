@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "auth_mode": "guest",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "observations": {
+    "guest": true,
+    "controlled_rows": 3,
+    "two_distinct_picker_previews": true,
+    "two_selected_fields": true,
+    "pattern_name_absent": true,
+    "save_pattern_absent": true,
+    "sign_in_to_save_present": true,
+    "sign_in_action_used": true,
+    "pattern_write_requests_before_auth": 0
+  },
+  "failure_stage": null,
+  "limits": [
+    "Only EXT-F-2005-T01 guest extraction and sign-in save gate on the frozen development artifact is covered; no full Data surface claim.",
+    "The zero-write observation covers non-GET requests to the wbx_pattern endpoint from the panel during Sign in to save until its pending state; it is not a database-wide write census.",
+    "The sign-in action entered pending state; completed authentication and signed-in pattern saving were not exercised.",
+    "Picker Done after two selections was exercised. Closing the picker without selecting (EXT-F-2005-C16) was not exercised.",
+    "Saved-pattern runs, reload persistence, clipboard modes, member/admin behavior, current-main product code and actual Store installation remain unverified by this run.",
+    "No screenshots, DOM contents, page URLs, credentials, tokens or raw native report are included."
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "hosted_run_id": 38039372695,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38039372695",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "49c97ab4631ddd14253bef677e115144a9bf0b36",
+  "lane": "A",
+  "runner_label": "macos-15",
+  "acceptance_case": "guest-data",
+  "auth_mode": "guest",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38036029832,
+    "development_artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11665321418,
+    "name": "hosted-guest-38039372695-1",
+    "digest": "sha256:2c8f5eb398180a0e0baf1246dd6f9300d93fa793a620e53eae0b3bfb3a3e5b46",
+    "expired": false
+  },
+  "workflow_conclusion": "success",
+  "native_report_status": "pass",
+  "failure_stage": null,
+  "bounded_observations": {
+    "guest": true,
+    "controlled_rows": 3,
+    "two_distinct_picker_previews": true,
+    "two_selected_fields": true,
+    "pattern_name_absent": true,
+    "save_pattern_absent": true,
+    "sign_in_to_save_present": true,
+    "sign_in_action_used": true,
+    "pattern_write_requests_before_auth": 0
+  },
+  "bounded_control_observations": {
+    "EXT-F-2005-C14": "Page picker entered on controlled active tab.",
+    "EXT-F-2005-C15": "Two distinct field previews and two selected field labels observed.",
+    "EXT-F-2005-C03": "Pattern name absent for guest; entering a name was not exercised.",
+    "EXT-F-2005-C12": "Save pattern absent for guest; persistence was not exercised.",
+    "EXT-F-2005-C13": "Sign in to save used and pending state observed; completed sign-in was not exercised."
+  },
+  "unverified_control_claims": {
+    "EXT-F-2005-C16": "Close picker without selecting was not exercised; Done followed two selections."
+  },
+  "resource_finals": {
+    "hosted-package-38039372695-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38039372695-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38039372695-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "scope_note": "Bounded guest T01 native report passed on the exact frozen development artifact. Independent evidence review is pending; inventory remains unchanged. This is not a full Data surface or current-main/Store acceptance claim.",
+  "limits": [
+    "Only EXT-F-2005-T01 guest extraction and sign-in save gate on the frozen development artifact is covered; no full Data surface claim.",
+    "The zero-write observation covers non-GET requests to the wbx_pattern endpoint from the panel during Sign in to save until its pending state; it is not a database-wide write census.",
+    "The sign-in action entered pending state; completed authentication and signed-in pattern saving were not exercised.",
+    "Picker Done after two selections was exercised. Closing the picker without selecting (EXT-F-2005-C16) was not exercised.",
+    "Saved-pattern runs, reload persistence, clipboard modes, member/admin behavior, current-main product code and actual Store installation remain unverified by this run.",
+    "No screenshots, DOM contents, page URLs, credentials, tokens or raw native report are included."
+  ],
+  "full_data_surface_verified": false,
+  "inventory_updated": false,
+  "evidence_hashes": {
+    "native-report.sanitized.json": "176bb37a97157d9a887a15e613402c3d0694cffd26de7e318a70295a85bf7a63",
+    "resource-journals/hosted-package-38039372695-1.jsonl": "1d5cf1626f318a909f89b401b6e6078510b54268f14970ae5b09fd34191419ef",
+    "resource-journals/hosted-browser-38039372695-1.jsonl": "5bed3f23d4206fb4c4766d5e99b156fdec42746b536db24b6b3165369cc9fff2",
+    "resource-journals/hosted-guest-38039372695-1.jsonl": "10f0078b6a975d241fc2854ae6ece930830294187b79c47260b7f8572e648bfb"
+  },
+  "sanitization": {
+    "native_report_reduced_to_fixed_safe_allowlist": true,
+    "resource_journals_copied_with": "scripts/copy-hosted-resource-journal.mjs",
+    "process_attribution_and_opened_paths_removed": true,
+    "screenshots_and_other_private_artifacts_excluded": true,
+    "credentials_or_auth_material_present": false
+  },
+  "independent_review": "pending"
+}
