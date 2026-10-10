@@ -55,7 +55,7 @@
     "Bounded guest observations on the exact frozen development artifact listed above.",
     "No current-main health, Store, member/admin, or full EXT-F-1007 completion claim."
   ],
-  "review_status": "pending_independent_review",
+  "review_status": "approved",
   "evidence_files": {
     "native_report": {
       "path": "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",

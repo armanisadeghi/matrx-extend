@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T03:44:29Z",
+  "updated_at": "2026-10-10T03:58:06Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -20482,30 +20482,31 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "partial",
               "passed_subtargets": [
-                "Guest fast capture observed the busy state, article content, and result tabs; a separate full extension reload was followed by a successful fast recapture."
+                "Guest fast capture showed the disabled busy state, matching Harbor Dental article, and all six result tabs; fast recapture also succeeded after full extension reload."
               ],
               "unverified": [
-                "Natural capture error and recovery actions remain unverified; member/admin modes were not exercised."
+                "Natural capture error/recovery remains unverified. This run was narrow 360px and guest-only; normal-width and other auth modes were not exercised."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Guest fast capture and post-extension-reload recapture passed on the exact frozen development artifact. The case remains partial because a natural error/recovery path and other roles were not exercised.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "Fast capture and post-full-extension-reload recapture passed on the exact frozen v0.2.458 artifact. The expected natural capture-error/recovery path remains unverified; this run covered only narrow 360px guest behavior."
             },
             "member": {
               "status": "partial",
@@ -20633,6 +20634,36 @@
                 "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Guest fast capture observed the busy state, article content, and result tabs; a separate full extension reload was followed by a successful fast recapture."
+                ],
+                "unverified": [
+                  "Natural capture error and recovery actions remain unverified; member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Guest fast capture and post-extension-reload recapture passed on the exact frozen development artifact. The case remains partial because a natural error/recovery path and other roles were not exercised.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ],
           "attempt_history": [
@@ -20724,30 +20755,31 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "partial",
               "passed_subtargets": [
-                "Warm and post-full-extension-reload deep captures showed scrolling progress and included the lazy-loaded fixture text in the browser and Article result."
+                "Warm and post-full-extension-reload deep captures showed Scrolling progress and included lazy-loaded fixture text in the page and Article pane."
               ],
               "unverified": [
-                "Deep failure retry with deep mode preserved remains unverified; member/admin modes were not exercised."
+                "A natural deep-capture failure followed by Try again with deep mode preserved remains unverified."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Warm and post-extension-reload deep capture passed. The deep failure/retry mode-preservation path remains unverified.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "Warm and post-reload deep capture passed on the exact frozen artifact. Deep failure/retry mode preservation remains unverified."
             },
             "member": {
               "status": "partial",
@@ -20920,6 +20952,36 @@
                 "release_scope": "Guest normal600px frozen development414 only; three current journals valid. Same driver blob as focused30f5c006. No member/admin, Store or later-main product inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Warm and post-full-extension-reload deep captures showed scrolling progress and included the lazy-loaded fixture text in the browser and Article result."
+                ],
+                "unverified": [
+                  "Deep failure retry with deep mode preserved remains unverified; member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Warm and post-extension-reload deep capture passed. The deep failure/retry mode-preservation path remains unverified.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ],
           "native_preparation": {
@@ -21173,30 +21235,31 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "pass",
               "passed_subtargets": [
-                "With sync ON, Article followed the owned page scroll; after Stop, reversing page scroll left Article at its independently established position, both warm and after full extension reload."
+                "With Sync ON, Article followed the owned page scroll; after Stop, reversing page scroll left Article at its independently established position, warm and after full extension reload."
               ],
               "unverified": [
                 "Member/admin modes were not exercised."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Guest scroll-sync behavior passed warm and after full extension reload.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "Guest scroll-sync behavior passed warm and after full extension reload."
             }
           },
           "result_history": [
@@ -21294,6 +21357,36 @@
                 "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "With sync ON, Article followed the owned page scroll; after Stop, reversing page scroll left Article at its independently established position, both warm and after full extension reload."
+                ],
+                "unverified": [
+                  "Member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Guest scroll-sync behavior passed warm and after full extension reload.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ],
           "defect_ids": [
@@ -21388,30 +21481,31 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "partial",
               "passed_subtargets": [
-                "All six result tabs showed matching populated content; Images and Video empty states were observed; capture identity/export remained unchanged warm and after full extension reload."
+                "All six result tabs showed matching populated content; empty Images/Video states and empty Article/Links states were observed; capture identity and exported payload stayed unchanged warm and after full extension reload."
               ],
               "unverified": [
-                "Member/admin modes were not exercised."
+                "Guest-only narrow-width run; member/admin and normal-width dimensions remain unverified."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Guest result tabs, populated and empty states, and capture invariance were observed warm and after full extension reload; other roles remain unverified.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "Guest result tabs, matching populated/empty states, and capture invariance were observed warm and after full extension reload. Other modes and normal width were not exercised."
             },
             "member": {
               "status": "partial",
@@ -21536,6 +21630,36 @@
                 "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "All six result tabs showed matching populated content; Images and Video empty states were observed; capture identity/export remained unchanged warm and after full extension reload."
+                ],
+                "unverified": [
+                  "Member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Guest result tabs, populated and empty states, and capture invariance were observed warm and after full extension reload; other roles remain unverified.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ],
           "attempt_history": [
@@ -21750,30 +21874,31 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "pass",
               "passed_subtargets": [
-                "Native copy menus and clipboard output matched the expected representations for capture and section data on the intake fixture, after navigation to referrals, and after full extension reload."
+                "Native capture/section copy menus and clipboard output matched expected representations for intake, referral navigation, and after full extension reload."
               ],
               "unverified": [
                 "Member/admin modes were not exercised."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Guest copy menu options and current-capture clipboard output passed across warm state, navigation, and full extension reload.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "Guest copy menu options and current-capture output passed across warm state, navigation, and full extension reload."
             }
           },
           "linked_defects": [
@@ -21874,6 +21999,36 @@
                 "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Native copy menus and clipboard output matched the expected representations for capture and section data on the intake fixture, after navigation to referrals, and after full extension reload."
+                ],
+                "unverified": [
+                  "Member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Guest copy menu options and current-capture clipboard output passed across warm state, navigation, and full extension reload.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ],
           "defect_ids": [
@@ -21986,30 +22141,31 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "pass",
               "passed_subtargets": [
-                "Removing each image updated the rendered image set and count through the empty state; a valid image could then be added, warm and after full extension reload."
+                "Image removal through the empty state and valid add were observed warm and after full extension reload; rendered survivors, counts, paths, and alt text matched."
               ],
               "unverified": [
                 "Member/admin modes were not exercised."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Guest image removal and add behavior passed warm and after full extension reload.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "Guest image remove/add behavior passed warm and after full extension reload."
             },
             "member": {
               "status": "partial",
@@ -22128,6 +22284,36 @@
                 "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Removing each image updated the rendered image set and count through the empty state; a valid image could then be added, warm and after full extension reload."
+                ],
+                "unverified": [
+                  "Member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Guest image removal and add behavior passed warm and after full extension reload.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ],
           "attempt_history": [
@@ -22233,30 +22419,31 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "pass",
               "passed_subtargets": [
-                "Blank image add was rejected without adding a row; a valid image appeared; Cancel cleared the draft while preserving the added image, warm and after full extension reload."
+                "Blank image add was rejected, valid image appeared, and Cancel cleared the draft while preserving the added image, warm and after full extension reload."
               ],
               "unverified": [
                 "Member/admin modes were not exercised."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Guest image validation, add, and Cancel behavior passed warm and after full extension reload.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "Guest image validation, add, and Cancel behavior passed warm and after full extension reload."
             },
             "member": {
               "status": "partial",
@@ -22372,6 +22559,36 @@
                 "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Blank image add was rejected without adding a row; a valid image appeared; Cancel cleared the draft while preserving the added image, warm and after full extension reload."
+                ],
+                "unverified": [
+                  "Member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Guest image validation, add, and Cancel behavior passed warm and after full extension reload.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ],
           "attempt_history": [
@@ -22477,30 +22694,31 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "pass",
               "passed_subtargets": [
-                "Video removal and valid add updated the rendered set; blank add did not add a row; opening and clipboard copy/readback matched the fixture URL, warm and after full extension reload."
+                "Video removal and valid add updated the rendered set; open and clipboard copy/readback matched the controlled fixture URL, warm and after full extension reload."
               ],
               "unverified": [
                 "Member/admin modes were not exercised."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Guest video remove/add, blank rejection, open, and copy behavior passed warm and after full extension reload.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "Guest video removal/add, open, and copy behavior passed warm and after full extension reload."
             },
             "member": {
               "status": "partial",
@@ -22635,6 +22853,36 @@
                 "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Video removal and valid add updated the rendered set; blank add did not add a row; opening and clipboard copy/readback matched the fixture URL, warm and after full extension reload."
+                ],
+                "unverified": [
+                  "Member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Guest video remove/add, blank rejection, open, and copy behavior passed warm and after full extension reload.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ],
           "attempt_history": [
@@ -22751,30 +22999,31 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "partial",
               "passed_subtargets": [
-                "Guest link open/copy, remove, blank rejection, valid add, and Cancel behavior were observed warm, after navigation, and after full extension reload."
+                "Guest link open/copy, selective remove, blank rejection, valid add, and Cancel were observed warm and after full extension reload."
               ],
               "unverified": [
                 "Member/admin modes were not exercised."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Guest link actions were observed warm, after navigation, and after full extension reload; retain partial because member/admin coverage was not exercised.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "Guest link actions passed warm and after full extension reload; signed-in modes remain unverified."
             },
             "member": {
               "status": "partial",
@@ -22903,6 +23152,36 @@
                 "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Guest link open/copy, remove, blank rejection, valid add, and Cancel behavior were observed warm, after navigation, and after full extension reload."
+                ],
+                "unverified": [
+                  "Member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Guest link actions were observed warm, after navigation, and after full extension reload; retain partial because member/admin coverage was not exercised.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ],
           "attempt_history": [
@@ -22994,30 +23273,31 @@
           ],
           "results": {
             "guest": {
-              "status": "partial",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "partial",
               "passed_subtargets": [
-                "Restricted chrome://settings navigation was dismissed; no recovery action was available without a naturally occurring browser failure."
+                "Restricted chrome://settings navigation was dismissed. No recovery action was available for that nonrecoverable error."
               ],
               "unverified": [
-                "A natural recoverable error with Reload page/Try again and deep retry-mode preservation remains unverified; member/admin modes were not exercised."
+                "Natural recoverable Reload page/Try again and deep-mode retry behavior remain unverified; member/admin modes were not exercised."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Restricted navigation dismissal was observed, but natural error classification and recovery controls were not triggered; other roles remain unverified.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "A restricted-URL dismissal was observed, but no natural recoverable error occurred to exercise Reload page, Try again, or deep-mode retry."
             }
           },
           "component_evidence": [
@@ -23161,6 +23441,36 @@
                 "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Restricted chrome://settings navigation was dismissed; no recovery action was available without a naturally occurring browser failure."
+                ],
+                "unverified": [
+                  "A natural recoverable error with Reload page/Try again and deep retry-mode preservation remains unverified; member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Restricted navigation dismissal was observed, but natural error classification and recovery controls were not triggered; other roles remain unverified.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ]
         },
@@ -23335,30 +23645,31 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": 38019366328,
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": 38021736744,
+              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+              "development_ci_run_id": 38019685913,
+              "development_artifact_id": 11657971729,
+              "hosted_result_artifact_id": 11658643132,
+              "build_version": "0.2.458",
+              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
               "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+              ],
+              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "status": "pass",
               "passed_subtargets": [
-                "The initial empty state, cleared prior capture after navigation, cleared state before reloading the owned page, and empty state after full extension reload were observed; a new referral capture then showed current content."
+                "Initial empty state, stale capture clearing after navigation, empty state before and after full extension reload, and a fresh referral capture showing current content were observed."
               ],
               "unverified": [
                 "Member/admin modes were not exercised."
               ],
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
-                "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
-              ],
-              "detail": "Guest empty-state and stale-content clearing passed across navigation and extension reload.",
-              "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              "detail": "Guest empty-state and stale-content clearing passed across navigation and full extension reload."
             },
             "member": {
               "status": "partial",
@@ -23509,6 +23820,36 @@
                 "release_scope": "Guest normal600px development414 only; all three resource journals valid. Historical older-build results retained separately. No member/admin, Store or later-main inference."
               },
               "superseded_at": "2026-10-10T03:18:47Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": 38019366328,
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "63e10612feb8a96a6d18e35aa6cf82e798f9b70f",
+                "development_ci_run_id": 38017683667,
+                "development_artifact_id": 11657076101,
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "The initial empty state, cleared prior capture after navigation, cleared state before reloading the owned page, and empty state after full extension reload were observed; a new referral capture then showed current content."
+                ],
+                "unverified": [
+                  "Member/admin modes were not exercised."
+                ],
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38019366328/native-report.json",
+                  "docs/stabilization/resource-journals/hosted-package-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38019366328-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38019366328-1.jsonl"
+                ],
+                "detail": "Guest empty-state and stale-content clearing passed across navigation and extension reload.",
+                "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
+              },
+              "superseded_at": "2026-10-10T03:58:06Z"
             }
           ],
           "attempt_history": [
