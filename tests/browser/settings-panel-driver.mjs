@@ -205,6 +205,9 @@ function pointerFailure(code, location) {
           : code;
   const error = new Error(message);
   const pointer = location?.pointerDiagnostic;
+  const dataTabDiagnostic = location?.dataTabTargetDiagnostic;
+  const safeCount = (value) =>
+    Number.isSafeInteger(value) && value >= 0 && value <= 100 ? value : null;
   error.driverFailure = {
     code,
     sampleStage: location?.sampleFailureStage ?? null,
@@ -220,6 +223,15 @@ function pointerFailure(code, location) {
     toolsCatalogSearchEmpty: location?.toolsCatalogSearchEmpty ?? null,
     toolsCatalogFiltersDefault: location?.toolsCatalogFiltersDefault ?? null,
     dataPanelDiagnostic: location?.dataPanelDiagnostic ?? null,
+    dataTabTargetDiagnostic:
+      dataTabDiagnostic && typeof dataTabDiagnostic === 'object'
+        ? {
+            matching_tab_count: safeCount(dataTabDiagnostic.matching_tab_count),
+            visible_tab_count: safeCount(dataTabDiagnostic.visible_tab_count),
+            active_tab_count: safeCount(dataTabDiagnostic.active_tab_count),
+            active_data_pane_count: safeCount(dataTabDiagnostic.active_data_pane_count),
+          }
+        : null,
     hitTarget: location?.hitTarget === true,
     animating: location?.animating === true,
     stableSamples: location?.stableSamples ?? 0,
@@ -338,9 +350,27 @@ export async function click(panel, kind, label, onPhase = undefined) {
     let toolsViewState = null, toolsCatalogRowCount = null;
     let toolsCatalogSearchEmpty = null, toolsCatalogFiltersDefault = null;
     let dataPanelDiagnostic = null;
+    let dataTabTargetDiagnostic = null;
     // The shared title tooltip temporarily preserves a hovered title in data-matrx-title.
-    if (kind === 'title') candidates = [...document.querySelectorAll('button[title], button[data-matrx-title]')]
-      .filter((el) => (el.getAttribute('title') ?? el.getAttribute('data-matrx-title')) === label);
+    if (kind === 'title') {
+      candidates = [...document.querySelectorAll('button[title], button[data-matrx-title]')]
+        .filter((el) => (el.getAttribute('title') ?? el.getAttribute('data-matrx-title')) === label);
+      if (label === 'Data') {
+        const dataTabs = [...document.querySelectorAll('button[role="tab"][title="Data"], button[role="tab"][data-matrx-title="Data"]')];
+        const visibleDataTabs = dataTabs.filter(visible);
+        const activeDataTabs = visibleDataTabs.filter((tab) =>
+          tab.getAttribute('data-state') === 'active' || tab.getAttribute('aria-selected') === 'true');
+        dataTabTargetDiagnostic = {
+          matching_tab_count: dataTabs.length,
+          visible_tab_count: visibleDataTabs.length,
+          active_tab_count: activeDataTabs.length,
+          active_data_pane_count: activeDataTabs.filter((tab) => {
+            const pane = document.getElementById(tab.getAttribute('aria-controls') ?? '');
+            return pane?.matches('[role="tabpanel"][data-state="active"]') === true;
+          }).length,
+        };
+      }
+    }
     else if (kind === 'active-chat-send') {
       const chatPanel = ${activeTabPanelExpression('Chat')};
       candidates = [...(chatPanel?.querySelectorAll('button[title="Send"], button:not([title])[data-matrx-title="Send"]') ?? [])]
@@ -510,9 +540,9 @@ export async function click(panel, kind, label, onPhase = undefined) {
     sampleFailureStage = 'visibility_filter';
     const matchedCount = candidates.length;
     candidates = candidates.filter(visible);
-    if (candidates.length !== 1) return { count: candidates.length, matchedCount,
+    if (candidates.length !== 1) return { count: candidates.length, matchedCount, sampleFailureStage,
       toolsPanelActive, toolsViewState, toolsCatalogRowCount,
-      toolsCatalogSearchEmpty, toolsCatalogFiltersDefault, dataPanelDiagnostic };
+      toolsCatalogSearchEmpty, toolsCatalogFiltersDefault, dataPanelDiagnostic, dataTabTargetDiagnostic };
     const target = candidates[0];
     // Viewport preparation is not the acceptance action. Reposition on every
     // sample because an expanding section can invalidate a one-shot scroll.
@@ -709,7 +739,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
     }
     return { count: 1, matchedCount, toolsPanelActive, x, y, hitTarget, animating,
       viewport: { width: innerWidth, height: innerHeight },
-      pointerDiagnostic };
+      pointerDiagnostic, dataTabTargetDiagnostic };
     } catch {
       return { sampleFailed: true, sampleFailureStage };
     }
