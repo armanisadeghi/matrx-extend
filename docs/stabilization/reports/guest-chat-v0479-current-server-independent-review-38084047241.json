@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_zero_credit_guest_chat_resource_review",
+  "reviewer": "member_secret_restore",
+  "run_id": 38084047241,
+  "product_verdict": "UNVERIFIED_ZERO_ACCEPTANCE_CREDIT",
+  "classification": "RESOURCE_INVALID_NOT_OBSERVED_PRODUCT_REGRESSION",
+  "artifact": {
+    "hosted_artifact_id": 11681149552,
+    "hosted_artifact_sha256": "aa253e3b97f27ec61cb5ae1612782de5fccd7f2af5ec6bed4257708ce730cab1",
+    "requested_release_run_id": 38080281242,
+    "requested_candidate": "0.2.479"
+  },
+  "verification": [
+    "Independently downloaded matching hosted artifact and inspected current package/browser/guest journals and safe selected runner log lines.",
+    "Package and browser finals admitted valid exit 0; guest final admitted resourceInvalid=true exit 3 decision invalid.",
+    "Guest admitted at CPU 0.013/load0.98; next CPU_PENDING sample fraction1.0; RESOURCE_WATCH_UNSAFE fraction0.75/load5.67 on 4 cores.",
+    "RESOURCE_STOP_AT_SAFE_BOUNDARY at 2026-10-10T20:37:46.445Z with CPU_BUSY/HIGH_LOAD_BUSY; owned group watchdog SIGTERM requested; guest invalid final follows.",
+    "Process attribution led by Chromium 131.8% and Chromium Helpers 56.5%/48.4%, with macOS services contributing.",
+    "Downloaded artifact contains no native guestChat result JSON; no terminal replies, request status, or actual server/version observation can be asserted.",
+    "Runner STAGE logs verify first-answer wait reached20:37:45.107Z, not completed; owner sanitized stages correctly preserve this distinction.",
+    "Owner journals are sanitized projections, not byte-identical raw copies; retained decision/pressure/stop/signal fields independently agree with raw."
+  ],
+  "limits": [
+    "No product regression established; infrastructure invalidates this attempt before a trustworthy product verdict.",
+    "Exact v479 acceptance on newer intended server 908045a2 remains unverified by this run.",
+    "Earlier v479 Chat pass on server 71d98c98 and published v205 pass on server 908045a2 cannot substitute for exact candidate/current server acceptance.",
+    "Do not infer current server SHA from intended target or independent publishedbuild run.",
+    "Submission hold, if required, is due missing current server exact candidate evidence rather than an observed product defect."
+  ],
+  "reviewed_evidence_commit": "dccf0c059",
+  "evidence_root": "docs/stabilization/evidence/guest-chat-v0479-current-server/run38084047241/"
+}
