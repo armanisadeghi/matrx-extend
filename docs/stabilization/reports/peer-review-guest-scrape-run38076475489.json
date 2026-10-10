@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_scrape_evidence_review",
+  "reviewer": "guest_scrape_run38076475489_review",
+  "run": {
+    "hosted_run_id": 38076475489,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38076475489",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_conclusion": "success",
+    "workflow_source_sha": "e8f67d84bd69c5209ce4b693191530b4fad181c1",
+    "lane": "B",
+    "runner": "macos-15-intel / x86_64",
+    "case": "guest-scrape",
+    "auth_mode": "guest",
+    "width_mode": "narrow"
+  },
+  "verdict_a_product_behavior": {
+    "verdict": "PARTIAL",
+    "basis": "Native assertions and screenshots show bounded real guest Scrape behavior on the candidate-key-adapted v0.2.474 Store ZIP. Workflow success alone is not product acceptance.",
+    "cases": {
+      "EXT-F-1007-T01": "PARTIAL: fast capture, busy-disabled observation, lazy-content absence before scrolling, and post-extension-reload fast recapture were asserted. Normal width and member/admin modes remain unverified.",
+      "EXT-F-1007-T02": "PARTIAL: lazy content was observed in the browser and in the deep capture, including after extension reload. Deep failure/retry behavior remains unverified.",
+      "EXT-F-1007-T08": "PARTIAL: six tabs showed matching populated content; empty Images, Video, Links, and Article states were checked; capture/export invariance was checked warm and after extension reload. SEO/Schema empty states, normal width, physical resize, and member/admin remain unverified.",
+      "EXT-F-1007-T07": "PASS for the guest subtarget: article scroll synchronization passed warm and after reload.",
+      "EXT-F-1007-T09": "PASS for the guest subtarget: copy-menu/current-capture output behavior passed warm, after navigation, and after reload.",
+      "EXT-F-1007-T10": "PASS for the guest subtarget: image removal/addition passed warm and after reload.",
+      "EXT-F-1007-T11": "PASS for the guest subtarget: image URL validation, addition, and cancel passed warm and after reload.",
+      "EXT-F-1007-T12": "PASS for the guest subtarget: video remove/add/open/copy behavior passed warm and after reload.",
+      "EXT-F-1007-T13": "PARTIAL overall: guest warm/reload link actions passed; member/admin modes remain unverified.",
+      "EXT-F-1007-T14": "PARTIAL: the expected chrome://settings denial notice and dismissal were observed. Natural recoverable Reload page/Try again flows, including deep retry, were not exercised.",
+      "EXT-F-1007-T20": "PASS: empty state, stale-content clearing on navigation, and clearing across extension reload passed."
+    },
+    "actual_user_visible_failures": [],
+    "expected_restricted_page_ui": "The red capture-denied notice on chrome://settings is expected browser restriction behavior and was dismissed; it is not an unexpected product failure."
+  },
+  "verdict_b_evidence_quality": {
+    "verdict": "PASS_WITH_LIMITS",
+    "findings": [],
+    "provenance": "The hosted job selected release run 38075458740 and required its successful main-branch Hosted release artifact and release receipt. Artifact 11677569836 is matrx-extend-v0.2.474; the receipt binds source SHA 302ab93672e29a3aa5bc3e047feb2c551513bafc, release tree digest 240e3b80794f06c4e4b608cfe706d9950f0eb62cd4ab605f29be640916a2ec4a, and Store ZIP digest 93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02. The hosted artifact metadata digest 83191156ba3f90391aaf983bc12f2867d507c1f55fa6835b99e0162f0a292140 matches the upload log. Native report identifies temporary candidate-key adaptation and unpacked loading; it does not prove a Store-installed copy.",
+    "resource_finals": "Package, browser, and guest resource journals each terminate with admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Only this run’s three matching journal IDs were retained.",
+    "screenshots": "Reviewed native panel, fast Article, deep Article, and restricted-page screenshots. They corroborate guest mode, populated article content, scroll capture, and expected restricted-page denial. Native assertions remain the primary evidence.",
+    "limits": [
+      "Adapted unpacked loading does not establish Chrome Web Store installed-copy acceptance.",
+      "No new browser run or heavy job was started for this review."
+    ]
+  },
+  "comparison": {
+    "prior_bounded_run": "Run 38070816110 on v0.2.469 already established the same bounded T08 guest subset: six populated panes, empty Images/Video/Links/Article, and warm/reload capture-export invariance. Run 38074083116 on v0.2.471 also exercised this same native case suite.",
+    "inventory_effect": "No T08 inventory status change is warranted. It remains Partial because SEO/Schema empty states, normal width, physical resize, and member/admin coverage remain open. No defect status changes are warranted because no unexpected product failure was observed.",
+    "distinct_coverage": "This run adds v0.2.474 package-specific evidence for the native guest case set, but no distinct T08 behavior beyond the prior bounded v0.2.469/v0.2.471 results."
+  },
+  "evidence_directory": "docs/stabilization/evidence/guest-scrape-hosted/run38076475489/"
+}

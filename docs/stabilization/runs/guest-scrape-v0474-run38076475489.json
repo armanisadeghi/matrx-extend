@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "scope": "Hosted native guest Scrape acceptance on the exact v0.2.474 Store ZIP candidate; narrow width, guest role.",
+  "acceptance_run_id": 38076475489,
+  "acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38076475489",
+  "workflow_source_sha": "e8f67d84bd69c5209ce4b693191530b4fad181c1",
+  "release_run_id": 38075458740,
+  "release_artifact_id": 11677569836,
+  "release_artifact_name": "matrx-extend-v0.2.474",
+  "source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+  "release_tree_sha256": "240e3b80794f06c4e4b608cfe706d9950f0eb62cd4ab605f29be640916a2ec4a",
+  "store_zip_sha256": "93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02",
+  "hosted_artifact_id": 11679166870,
+  "hosted_artifact_sha256": "83191156ba3f90391aaf983bc12f2867d507c1f55fa6835b99e0162f0a292140",
+  "artifact_loading": "Candidate-key adapted and loaded unpacked; not a Store-installed copy.",
+  "native_result": "partial",
+  "resource_finals": "All three matching resource journals are valid: admitted, resourceInvalid=false, and child exit 0.",
+  "case_results": {
+    "EXT-F-1007-T20": "pass",
+    "EXT-F-1007-T01": "partial",
+    "EXT-F-1007-T08": "partial",
+    "EXT-F-1007-T10": "pass",
+    "EXT-F-1007-T11": "pass",
+    "EXT-F-1007-T12": "pass",
+    "EXT-F-1007-T13": "partial overall; guest substeps passed",
+    "EXT-F-1007-T02": "partial",
+    "EXT-F-1007-T07": "pass",
+    "EXT-F-1007-T09": "pass",
+    "EXT-F-1007-T14": "partial"
+  },
+  "review": "docs/stabilization/reports/peer-review-guest-scrape-run38076475489.json",
+  "evidence": "docs/stabilization/evidence/guest-scrape-hosted/run38076475489/",
+  "comparison": "Prior bounded exact-v0.2.469 T08 run 38070816110 and exact-v0.2.471 run 38074083116 already covered this same T08 behavior subset. No new T08 case status or defect transition is warranted.",
+  "limits": [
+    "No unexpected user-visible failure was observed.",
+    "Member/admin, normal width, physical resize, SEO/Schema empty panes, and natural recoverable error branches remain unverified.",
+    "This run does not prove Store-installed behavior."
+  ]
+}

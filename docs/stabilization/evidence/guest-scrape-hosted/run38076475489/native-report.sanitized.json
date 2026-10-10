@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "mode": "guest",
+  "status": "partial",
+  "artifact": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "channel": "store",
+    "version": "0.2.474",
+    "source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+    "tree_sha256": "f416ac56eb5159c8720bee8e3e9a28177d91d99c777f38f68b7b1ead91bf2d78",
+    "run_id": null,
+    "artifact_id": null
+  },
+  "guest_account_observed": true,
+  "width_mode": "narrow",
+  "browser_version": "Chrome/141.0.7390.37",
+  "stage": "post_reload_deep_capture",
+  "native_stage": "exercise_panel",
+  "failure": null,
+  "cases": [
+    {
+      "id": "EXT-F-1007-T20",
+      "status": "passed",
+      "assertions": {
+        "initial_empty": true,
+        "initial_url": "http://localhost:49195/intake",
+        "navigation_url": "http://localhost:49195/referrals",
+        "previous_content_cleared": true,
+        "reload_origin_url": "http://localhost:49195/",
+        "previous_content_cleared_before_reload": true,
+        "reload_normal_page_url": "http://localhost:49195/referrals",
+        "reload_title": "Harbor Dental referral hours",
+        "reload_capture_enabled": true,
+        "extension_reload_empty": true
+      }
+    },
+    {
+      "id": "EXT-F-1007-T01",
+      "status": "partial",
+      "assertions": {
+        "busy_disabled": true,
+        "article_title": "Harbor Dental intake guide",
+        "lazy_content_absent": true,
+        "result_tabs": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+        "extension_reload_empty": true,
+        "full_extension_reload_and_post_reload_fast_capture": true
+      },
+      "remaining": [
+        "member/admin modes remain unverified by this receipt.",
+        "Normal-width verification remains unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T02",
+      "status": "partial",
+      "assertions": {
+        "url": "http://localhost:49195/intake",
+        "progress_text": "Scrolling…",
+        "lazy_content_in_browser": true,
+        "lazy_content_in_capture": true,
+        "extension_reload_empty": true,
+        "post_reload_deep": {
+          "lazy_started_absent": true,
+          "lazy_content_in_browser": true,
+          "lazy_content_in_capture": true,
+          "progress_text": "Scrolling…",
+          "screenshot": "/Users/runner/work/matrx-extend/matrx-extend/test-results/native-sidepanel-qa-uisuyh/scrape-reload-deep-article.png"
+        }
+      },
+      "remaining": ["Deep failure retry mode remains unverified."]
+    },
+    {
+      "id": "EXT-F-1007-T08",
+      "status": "partial",
+      "assertions": {
+        "tabs_selected": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+        "populated_panes": {
+          "article": true,
+          "images": {
+            "count": 3,
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+            "alt": ["New patient intake desk", "Appointment card", "Clinic icon"]
+          },
+          "video": {
+            "count": 2,
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+          },
+          "links": true,
+          "seo": true,
+          "schema": true
+        },
+        "empty_panes": {
+          "images": true,
+          "video": true,
+          "links": true,
+          "article": true
+        },
+        "warm_capture_invariance": true,
+        "reload_capture_invariance": true,
+        "post_reload_populated_panes": {
+          "article": true,
+          "links": true,
+          "seo": true,
+          "schema": true,
+          "images": {
+            "state": "matching_content",
+            "count": 3,
+            "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"]
+          },
+          "video": {
+            "state": "matching_content",
+            "count": 2,
+            "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+          }
+        },
+        "post_reload_empty_panes": {
+          "images": "empty",
+          "video": "empty",
+          "links": "empty",
+          "article": "empty"
+        },
+        "extension_reload_empty": true
+      },
+      "remaining": [
+        "member/admin modes remain unverified by this receipt.",
+        "Normal-width verification remains unverified."
+      ]
+    },
+    {
+      "id": "EXT-F-1007-T10",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T11",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T12",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T13",
+      "status": "partial",
+      "remaining": ["member/admin modes remain unverified by this receipt."]
+    },
+    {
+      "id": "EXT-F-1007-T07",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T09",
+      "status": "passed",
+      "remaining": []
+    },
+    {
+      "id": "EXT-F-1007-T14",
+      "status": "partial",
+      "assertions": {
+        "restricted_url": "chrome://settings/",
+        "no_recovery_actions": true,
+        "dismissed": true
+      },
+      "remaining": [
+        "Recoverable Reload page and Try again, including deep retry mode, need a natural browser failure."
+      ]
+    }
+  ],
+  "screenshots": [
+    "screenshots/native-side-panel.png",
+    "screenshots/scrape-fast-article.png",
+    "screenshots/scrape-deep-article.png",
+    "screenshots/scrape-restricted-error.png"
+  ],
+  "limits": [
+    "Member/admin roles and normal width are unverified.",
+    "T08 SEO/Schema empty states and physical panel resize are unverified.",
+    "T02 deep failure retry and T14 natural recoverable error/retry behavior are unverified.",
+    "Candidate-key adaptation and unpacked loading do not prove Store-installed behavior."
+  ]
+}
