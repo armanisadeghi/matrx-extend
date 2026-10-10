@@ -419,7 +419,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
       candidates = [...(pane?.querySelectorAll('[role="tablist"] [role="tab"]') ?? [])]
         .filter((el) => el.firstChild?.textContent?.trim() === label);
     }
-    else if (kind === 'scrape-copy-option') candidates = [...document.querySelectorAll('[data-radix-popper-content-wrapper] button')]
+    else if (kind === 'copy-menu-option' || kind === 'scrape-copy-option') candidates = [...document.querySelectorAll('[data-radix-popper-content-wrapper] button')]
       .filter((el) => el.querySelector('span.truncate')?.textContent.trim() === label);
     else if (kind.startsWith('scrape-media-')) {
       const pane = ${activeTabPanelExpression('Scrape')};
