@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T04:50:06.670236Z",
+  "updated_at": "2026-10-10T05:48:54Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -38861,7 +38861,7 @@
                 "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-browser-38023539449-1.jsonl",
                 "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-guest-38023539449-1.jsonl"
               ],
-              "detail": "The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified."
+              "detail": "The latest bounded member run re-observed identity/org, two previews, selected-org save/refresh, saved-pattern run, clipboard readbacks and Cancel. Reload retired the old panel and activated a replacement worker, but no replacement panel appeared. The exact owned fixture now has a matching tombstone and zero active residuals after post-action readback; the mutation response did not pass its strict verifier. Full reload persistence, admin and Store behavior remain unverified. A later diagnostic-only run (38028339414) repeated the pre-reload member observations but adds no T03 lifecycle credit; replacement-worker instrumentation saw no message ingress, while handler execution and Chrome open settlement remain unobserved. Its native cleanup was unverified; a separately verified exact run-owned soft-delete left one tombstone and zero active rows. T03 remains Partial."
             },
             "admin": {
               "status": "partial",
@@ -38938,6 +38938,30 @@
                 "docs/stabilization/evidence/member-data-behavior/run38023539449/hosted-guest-38023539449-1.jsonl"
               ],
               "detail": "Bounded member run verified member/non-admin identity and selected organization; two picker previews; selected-org HTTP 201 save; exact saved-row lookup/refresh; saved-pattern run; TSV, JSON and AI clipboard readback matching the controlled fixture; and cancel clearing the unsaved selection. On reload, the old worker/panel retired and a replacement worker activated, but no replacement panel was observed, so persistence/reopen assertions did not run. Native cleanup reported unverified; a later exact row/org/owner soft-delete was followed by one matching tombstone and zero active rows, though the mutation response itself was not accepted by the strict verifier. T03 stays Partial; admin and Store remain unverified."
+            },
+            {
+              "at": "2026-10-10T05:48:54Z",
+              "mode": "member",
+              "run_id": "38028339414",
+              "status": "fail",
+              "resource_valid": true,
+              "new_acceptance_credit": false,
+              "diagnostic_only": true,
+              "build_version": "0.2.458",
+              "source_sha": "723fe3340b67fc89fae16779d8b089832fa5f64d",
+              "workflow_source_sha": "cf806d0e1e3095b3a76aceb5c5dbc6a195e1aae2",
+              "development_ci_run_id": 38027647344,
+              "development_artifact_id": 11660648736,
+              "hosted_result_artifact_id": 11660639667,
+              "evidence": [
+                "docs/stabilization/evidence/member-data-behavior/run38028339414/receipt.sanitized.json",
+                "docs/stabilization/evidence/member-data-behavior/run38028339414/native-report.sanitized.json",
+                "docs/stabilization/evidence/member-data-behavior/run38028339414/cleanup.sanitized.json",
+                "docs/stabilization/evidence/member-data-behavior/run38028339414/hosted-package-38028339414-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38028339414/hosted-browser-38028339414-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38028339414/hosted-guest-38028339414-1.jsonl"
+              ],
+              "detail": "Diagnostic-only member run repeated the previously observed authentication/org, picker, save, run, clipboard and cancel behavior. Reload retired the old worker/panel and created an activated replacement worker but no replacement panel. The fixture reports send invoked/returned but callback not entered; CDP observed no replacement-worker message ingress and no handler invocation, while Chrome open settlement was unobserved. No product root cause is established. The native cleanup was unverified; exact run-owned name/org/owner soft-delete and fresh readback verified one tombstone and zero active rows. Resource finals were valid for package and browser; guest child exited 1 with resourceInvalid=false after transient CPU pressure recovered. No new T03 lifecycle acceptance credit; admin, Store and full reload persistence remain open."
             }
           ]
         },

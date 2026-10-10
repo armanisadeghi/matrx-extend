@@ -20,10 +20,11 @@ const runId = process.env.GITHUB_RUN_ID;
 const runAttempt = process.env.GITHUB_RUN_ATTEMPT;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const captureTitle = `Northline source intake ${runId}-${runAttempt}`;
+const captureHeading = `Preparing a Northline appointment ${runId}-${runAttempt}`;
 const sourceName = `Northline source acceptance ${runId}-${runAttempt}`;
 const fixture = `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>${captureTitle}</title>
 <meta name="description" content="A controlled member Save Source acceptance page"></head><body>
-<main><article><h1>${captureTitle}</h1><p>This controlled article has enough real text to become a Source. It describes the intake process, preparation steps, and the information a reader should keep available before an appointment.</p>
+<main><article><h1>${captureHeading}</h1><p>This controlled article has enough real text to become a Source. It describes the intake process, preparation steps, and the information a reader should keep available before an appointment.</p>
 <h2>Preparation</h2><p>Review the appointment details, collect the required forms, and confirm the time before arriving. These instructions are part of the saved article body.</p>
 <h2>Follow up</h2><p>Keep the confirmation with the visit notes so the next person can find the same source and its related project.</p></article></main></body></html>`;
 const report = {
@@ -47,6 +48,44 @@ const report = {
 function safeFailureCode(error) {
   const candidate = String(error?.message ?? 'native_acceptance_error').split(/[:\n]/, 1)[0];
   return /^[a-z][a-z0-9_-]{1,100}$/.test(candidate) ? candidate : 'native_acceptance_error';
+}
+
+const ARTICLE_EXTRACTORS = new Set(['defuddle', 'readability', 'fallback']);
+
+function articleLayerEvidence(layer, expected) {
+  const extractor = ARTICLE_EXTRACTORS.has(layer?.extractor) ? layer.extractor : null;
+  return {
+    article_layer_ready: typeof layer?.title === 'string' && typeof layer?.markdown === 'string',
+    article_title_matches: layer?.title === expected.title,
+    heading_matches:
+      typeof layer?.markdown === 'string' && layer.markdown.includes(expected.heading),
+    marker_matches: typeof layer?.markdown === 'string' && layer.markdown.includes(expected.marker),
+    extractor,
+  };
+}
+
+function renderedContentEvidence(text, expected) {
+  return {
+    heading_matches: typeof text === 'string' && text.includes(expected.heading),
+    marker_matches: typeof text === 'string' && text.includes(expected.marker),
+  };
+}
+
+async function readCaptureArticleLayer(panel, expected) {
+  const observed = await evaluate(
+    panel,
+    `(() => {
+      const pane = ${activeTabPanelExpression('Scrape')};
+      const article = pane?.querySelector('[role="tabpanel"][data-state="active"]');
+      const label = article?.querySelector('span.flex-1.truncate')?.textContent?.trim() ?? '';
+      return {
+        title: pane?.querySelector('.truncate.text-sm.font-medium')?.textContent?.trim() ?? null,
+        markdown: article?.textContent ?? null,
+        extractor: label.match(/^(defuddle|readability|fallback)\\b/)?.[1] ?? null
+      };
+    })()`,
+  );
+  return articleLayerEvidence(observed, expected);
 }
 
 function restUrl(schema, table, filters = {}) {
@@ -88,7 +127,8 @@ async function panelRest(panel, request) {
 
 async function querySources(panel, identity, organizationId, name = sourceName) {
   const filters = {
-    select: 'id,name,organization_id,canonical_identity,origin_client,created_at,deleted_at',
+    select:
+      'id,name,organization_id,canonical_identity,origin_client,created_at,deleted_at,original_file_id',
     organization_id: `eq.${organizationId}`,
     canonical_identity: `eq.${identity}`,
     origin_client: 'eq.extension',
@@ -264,34 +304,111 @@ async function reopenSavedSourceUi(panel, expected, evidence) {
     });
   }
   const detail = await waitFor(
-    'scrape_save_reopened_content_verified',
-    async () => {
-      const state = await evaluate(
+    'scrape_save_reopened_detail_ready',
+    () =>
+      evaluate(
         panel,
         `(() => {
-        const pane = ${activeTabPanelExpression('Saved captures')};
-        const header = pane?.querySelector('header');
-        const article = pane?.querySelector('[role="tabpanel"][data-state="active"]');
-        return {
-          detail_open: [...(header?.querySelectorAll('button') ?? [])].some((button) => button.textContent.trim() === 'Back to saved captures'),
-          name_matches: header?.querySelector('.font-semibold')?.textContent.trim() === ${JSON.stringify(expected.name)},
-          url_matches: [...(header?.querySelectorAll('div') ?? [])].some((node) => node.textContent.trim() === ${JSON.stringify(expected.url)}),
-          captured_heading_matches: article?.textContent.includes(${JSON.stringify(expected.heading)}) === true,
-          captured_marker_matches: article?.textContent.includes(${JSON.stringify(expected.marker)}) === true,
-        };
-      })()`,
-      );
-      evidence.reopen_ui = state;
-      return state;
-    },
-    (state) =>
-      state?.detail_open &&
-      state.name_matches &&
-      state.url_matches &&
-      state.captured_heading_matches &&
-      state.captured_marker_matches,
+          const pane = ${activeTabPanelExpression('Saved captures')};
+          const header = pane?.querySelector('header');
+          return {
+            detail_open: [...(header?.querySelectorAll('button') ?? [])].some((button) => button.textContent.trim() === 'Back to saved captures'),
+            name_matches: header?.querySelector('.font-semibold')?.textContent.trim() === ${JSON.stringify(expected.name)},
+            url_matches: [...(header?.querySelectorAll('div') ?? [])].some((node) => node.textContent.trim() === ${JSON.stringify(expected.url)})
+          };
+        })()`,
+      ),
+    (state) => state?.detail_open === true,
   );
+  evidence.reopen_header = detail;
   assert.equal(detail.detail_open, true, 'scrape_save_ui_reopen_missing');
+
+  await click(panel, 'button-text', 'Details');
+  const originalReady = await waitFor(
+    'scrape_save_original_read_ready',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+          const pane = ${activeTabPanelExpression('Saved captures')};
+          const rows = [...(pane?.querySelectorAll('[role="tabpanel"][data-state="active"] .grid') ?? [])];
+          const original = rows.find((row) => row.firstElementChild?.textContent?.trim() === 'Original');
+          return { ready: original?.lastElementChild?.textContent?.trim() === 'Saved in your files' };
+        })()`,
+      ),
+    (state) => state?.ready === true,
+  );
+  evidence.saved_original_read_ready = originalReady.ready;
+
+  await click(panel, 'button-text', 'Data');
+  const original = await waitFor(
+    'scrape_save_saved_original_content_ready',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+          const pane = ${activeTabPanelExpression('Saved captures')};
+          const raw = pane?.querySelector('[role="tabpanel"][data-state="active"] pre')?.textContent ?? '';
+          try {
+            const soup = JSON.parse(raw);
+            return { title: soup?.article?.title ?? null, markdown: soup?.article?.content_markdown ?? null,
+              extractor: soup?.article?.extractor ?? null, valid: typeof soup?.url === 'string' && Array.isArray(soup?.images) };
+          } catch { return { valid: false }; }
+        })()`,
+      ),
+    (state) => state?.valid === true,
+  );
+  evidence.saved_original = articleLayerEvidence(original, expected);
+
+  await click(panel, 'button-text', 'Article');
+  const rendered = await waitFor(
+    'scrape_save_reopened_article_ready',
+    () =>
+      evaluate(
+        panel,
+        `(() => {
+          const pane = ${activeTabPanelExpression('Saved captures')};
+          const article = pane?.querySelector('[role="tabpanel"][data-state="active"]');
+          return { text: article?.textContent ?? null, present: !!article };
+        })()`,
+      ),
+    (state) => state?.present === true,
+  );
+  evidence.reopen_ui = renderedContentEvidence(rendered.text, expected);
+  assert.equal(detail.name_matches, true, 'scrape_save_reopened_name_not_observed');
+  assert.equal(detail.url_matches, true, 'scrape_save_reopened_url_not_observed');
+  assert.equal(originalReady.ready, true, 'scrape_save_original_read_not_observed');
+  assert.equal(original.valid, true, 'scrape_save_original_content_not_observed');
+  assert.equal(
+    evidence.capture.article_title_matches,
+    true,
+    'scrape_save_capture_title_not_observed',
+  );
+  assert.ok(evidence.capture.extractor, 'scrape_save_capture_extractor_not_allowlisted');
+  assert.equal(
+    evidence.saved_original.article_title_matches,
+    true,
+    'scrape_save_original_title_not_observed',
+  );
+  assert.ok(evidence.saved_original.extractor, 'scrape_save_original_extractor_not_allowlisted');
+  assert.equal(evidence.capture.heading_matches, true, 'scrape_save_capture_heading_not_observed');
+  assert.equal(evidence.capture.marker_matches, true, 'scrape_save_capture_marker_not_observed');
+  assert.equal(
+    evidence.saved_original.heading_matches,
+    true,
+    'scrape_save_original_heading_not_observed',
+  );
+  assert.equal(
+    evidence.saved_original.marker_matches,
+    true,
+    'scrape_save_original_marker_not_observed',
+  );
+  assert.equal(
+    evidence.reopen_ui.heading_matches,
+    true,
+    'scrape_save_reopened_content_verified_not_observed',
+  );
+  assert.equal(evidence.reopen_ui.marker_matches, true, 'scrape_save_reopened_marker_not_observed');
   evidence.saved_source_reopened_in_ui = true;
 }
 
@@ -326,6 +443,7 @@ function verifySourceRows(result, identity, organizationId, expectedName) {
   assert.equal(row.name, expectedName, 'scrape_save_custom_name_mismatch');
   assert.equal(row.origin_client, 'extension', 'scrape_save_origin_mismatch');
   assert.equal(row.deleted_at, null, 'scrape_save_source_not_active');
+  assert.match(row.original_file_id ?? '', UUID, 'scrape_save_original_file_missing');
   assert.match(row.id ?? '', UUID, 'scrape_save_source_id_invalid');
   return row;
 }
@@ -576,7 +694,7 @@ try {
         await resourceAction(() => page.goto(sourceUrl));
         assert.equal(
           await page.locator('main article h1').textContent(),
-          captureTitle,
+          captureHeading,
           'scrape_save_fixture_not_loaded',
         );
         const absent = await querySources(panel, canonicalIdentity, selectedOrganizationId, null);
@@ -608,6 +726,21 @@ try {
           (state) => state?.title === captureTitle && state.save,
           30000,
         );
+
+        await click(panel, 'button-text', 'Article');
+        const captureLayer = await waitFor(
+          'scrape_save_capture_content_ready',
+          () =>
+            readCaptureArticleLayer(panel, {
+              title: captureTitle,
+              heading: captureHeading,
+              marker:
+                'Review the appointment details, collect the required forms, and confirm the time before arriving.',
+            }),
+          (state) => state?.article_layer_ready === true,
+          30000,
+        );
+        report.observations.capture = captureLayer;
 
         report.stage = 'save_dialog';
         await resourceAction(() => click(panel, 'button-text', 'Save'));
@@ -745,6 +878,7 @@ try {
         report.observations.source_row_read_from_service = true;
         report.observations.custom_name_persisted = true;
         report.observations.organization_scope_persisted = true;
+        report.observations.original_file_id_present = true;
         report.observations.source_id = sourceId;
         report.observations.project_id = projectId;
 
@@ -773,7 +907,8 @@ try {
             {
               name: sourceName,
               url: sourceUrl,
-              heading: captureTitle,
+              title: captureTitle,
+              heading: captureHeading,
               marker:
                 'Review the appointment details, collect the required forms, and confirm the time before arriving.',
             },

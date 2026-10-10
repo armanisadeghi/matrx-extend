@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38028956007,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38028956007",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "1da3b0c43bfc7c99fd4abcf1d1d3db6354ce17c1",
+  "lane": "A",
+  "acceptance_case": "scrape-save-member",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "source_sha": "723fe3340b67fc89fae16779d8b089832fa5f64d",
+    "tree_sha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d",
+    "ci_run_id": 38027647344,
+    "artifact_id": 11660648736,
+    "artifact_digest": "sha256:03a5c536f501c930f8927232c1efcc00fb621d9f9e9fdaac0397aa71fc2bd653",
+    "version": "0.2.458"
+  },
+  "hosted_report_artifact": {
+    "artifact_id": 11661905604,
+    "name": "hosted-guest-38028956007-1",
+    "digest": "sha256:3dbf3f14106b3e47f73e0de9aced02700d22c8ab1f01b2531ad64b6d251aafb9",
+    "native_report_present": false,
+    "native_report_path": "test-results/scrape-save-native-acceptance.json"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "unavailable",
+  "resource_valid_acceptance": false,
+  "resource_finals": {
+    "hosted-package-38028956007-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38028956007-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38028956007-1": "invalid; admitted=true; resourceInvalid=true; exitCode=3; watchdog stopped the owned process after CPU busy/high-load unsafe samples"
+  },
+  "native_observations": {
+    "capture_article_title_matches": "unknown; native report absent",
+    "capture_heading_matches": "unknown; native report absent",
+    "capture_marker_matches": "unknown; native report absent",
+    "capture_extractor": "unknown; native report absent",
+    "saved_original_read_ready": "unknown; native report absent",
+    "saved_original_title_matches": "unknown; native report absent",
+    "saved_original_heading_matches": "unknown; native report absent",
+    "saved_original_marker_matches": "unknown; native report absent",
+    "saved_original_extractor": "unknown; native report absent",
+    "reopened_ui_heading_matches": "unknown; native report absent",
+    "reopened_ui_marker_matches": "unknown; native report absent"
+  },
+  "cleanup": "native-driver cleanup remains unverified because the report is absent. A separate read-only reconciliation found zero rows for this run's exact Source name, extension run marker, and Project name; no write occurred, and this does not establish global cleanup or association state.",
+  "cleanup_reconciliation": {
+    "observation": "current read-only database queries returned HTTP 200",
+    "source_exact_name": {
+      "table": "docproc.processed_documents",
+      "name": "Northline source acceptance 38028956007-1",
+      "includes_tombstones": true,
+      "matching_rows": 0
+    },
+    "source_extension_canonical_run_marker": {
+      "table": "docproc.processed_documents",
+      "origin_client": "extension",
+      "canonical_identity_marker": "run=38028956007-1",
+      "includes_tombstones": true,
+      "matching_rows": 0
+    },
+    "project_exact_name": {
+      "table": "projects.projects",
+      "name": "Northline acceptance project 38028956007-1",
+      "includes_tombstones": true,
+      "matching_rows": 0
+    },
+    "organization_and_created_by": "not observed because no rows matched the exact selectors",
+    "association_edge": "not queried because no Source row or Source ID was returned",
+    "writes_performed": false,
+    "scope_limit": "This is only a bounded result for the listed exact selectors at the time of read; it does not prove general fixture cleanup or native-stage execution."
+  },
+  "credential_cleanup": {
+    "temporary_secret_name_count": 0,
+    "local_one_time_link_present": false,
+    "verified_by_member_data_owner": true
+  },
+  "claims": [
+    "Successful CI run 38027647344 produced the selected development artifact 11660648736 for source 723fe3340b67fc89fae16779d8b089832fa5f64d; the hosted importer logged the same source and tree hash before the exercise.",
+    "Workflow checkout was 1da3b0c43bfc7c99fd4abcf1d1d3db6354ce17c1. Intervening changes relative to the frozen artifact were D187 test/diagnostic and stabilization documentation/evidence; package.json and pnpm-lock.yaml were unchanged.",
+    "Hosted artifact 11661905604 did not contain the native acceptance report. Capture, saved-original, reopened UI, extractor, and fixture cleanup observations are unknown.",
+    "Package and browser resource journals ended valid. Guest resource journal ended invalid after CPU busy/high-load unsafe samples; resourceInvalid=true and exitCode=3. The workflow failure receives no product pass/fail credit.",
+    "The temporary member secret and local one-time link were removed and absence verified after terminal. No retry was launched."
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38028339414,
+  "workflow_checkout_sha": "cf806d0e1e3095b3a76aceb5c5dbc6a195e1aae2",
+  "case_id": "EXT-F-2005-T03",
+  "mode": "member",
+  "lane": "A",
+  "acceptance_status": "fail",
+  "verdict": "diagnostic_only_unverified",
+  "source": {
+    "ci_run_id": 38027647344,
+    "artifact_id": 11660648736,
+    "source_sha": "723fe3340b67fc89fae16779d8b089832fa5f64d",
+    "build_version": "0.2.458",
+    "tree_sha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d",
+    "compatibility_note": "Frozen development artifact; later workflow checkout changes were D187 driver/tests and coordinator documentation only. This is not a current-main runtime claim."
+  },
+  "failure": {
+    "stage": "extension_reload",
+    "code": "native_acceptance_error",
+    "product_root_cause": "not established",
+    "diagnostic": {
+      "old_worker_retired": true,
+      "replacement_worker_created_and_activated": true,
+      "old_panel_destroyed": true,
+      "replacement_panel_created": false,
+      "open_panel_click_received": true,
+      "send_invoked": true,
+      "send_returned": true,
+      "callback_entered": false,
+      "reply_observed": false,
+      "last_error_observed": false,
+      "send_threw": false,
+      "replacement_worker_message_ingress": false,
+      "open_panel_handler_invoked": false,
+      "chrome_open_settlement": "unobserved",
+      "send_response_observable_without_instrumented_build": false
+    },
+    "interpretation": "No message ingress was observed at the replacement worker. Handler execution and Chrome open settlement remain unknown; this does not establish a product root cause."
+  },
+  "bounded_observations_before_reload": {
+    "member_nonadmin_authentication_and_selected_organization": true,
+    "two_picker_previews": true,
+    "selected_organization_save_http_201": true,
+    "request_body_organization_matches_selected": true,
+    "exact_saved_row_lookup_and_refresh": true,
+    "saved_pattern_run": true,
+    "tsv_json_ai_clipboard_readback_and_feedback": true,
+    "cancel_cleared_unsaved_selection": true,
+    "request_header_organization_observed": false
+  },
+  "resource": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "transient_cpu_pending_recovered_before_final": true,
+    "journal_sanitization": "The guest journal omits the RESOURCE_PROCESS_ATTRIBUTION row because it contains raw process identifiers, executable names and per-process CPU attribution. All other events, including the child_failed RESOURCE_FINAL_DECISION, are retained."
+  },
+  "fixture_cleanup": {
+    "native_driver_verified": false,
+    "post_run_verified": true,
+    "exact_run_name_org_owner_lookup_count": 1,
+    "scoped_soft_delete_response_verified": true,
+    "matching_tombstone_count": 1,
+    "active_residual_count": 0,
+    "raw_ids_and_organization_values_omitted": true
+  },
+  "credential_handling": {
+    "run_scoped_secret_deleted_before_report_inspection": true,
+    "run_scoped_local_link_deleted_before_report_inspection": true,
+    "credential_values_persisted": false
+  },
+  "evidence": [
+    "docs/stabilization/evidence/member-data-behavior/run38028339414/native-report.sanitized.json",
+    "docs/stabilization/evidence/member-data-behavior/run38028339414/cleanup.sanitized.json",
+    "docs/stabilization/evidence/member-data-behavior/run38028339414/hosted-package-38028339414-1.jsonl",
+    "docs/stabilization/evidence/member-data-behavior/run38028339414/hosted-browser-38028339414-1.jsonl",
+    "docs/stabilization/evidence/member-data-behavior/run38028339414/hosted-guest-38028339414-1.jsonl"
+  ],
+  "limitations": "This diagnostic adds no T03 lifecycle acceptance credit. Reload persistence/reopen, handler outcome and Chrome API result remain unverified. Existing T03 remains Partial; no current-main, admin, Store or full-feature claim."
+}

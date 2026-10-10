@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38028339414,
+  "record_name": "Northline Furnishings catalog member 38028339414-1",
+  "identity_match": {
+    "organization": "sole approved reviewer organization verified",
+    "owner": "designated non-admin reviewer verified"
+  },
+  "initial_lookup": {
+    "exact_name_organization_owner_match_count": 1
+  },
+  "action": "Soft-delete scoped to the unique run-owned ID, organization, exact name, and created_by after native cleanup was unverified.",
+  "mutation_response_verified": true,
+  "post_action_readback": {
+    "exact_owner_org_tombstone_count": 1,
+    "active_residual_count": 0,
+    "verified": true
+  },
+  "scope": "Only the unique run-owned row was targeted; raw row IDs and organization value are omitted."
+}
