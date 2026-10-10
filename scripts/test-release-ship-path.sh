@@ -614,7 +614,10 @@ ENDLESS_TIMEOUT_LIMIT_MATCH=0
 # budget. Accept it only when the reported timeout matches the actual bound,
 # which must be below this fixture's 20s total budget.
 [[ "$ENDLESS_TIMED_OUT_LIMIT" =~ ^[0-9]+$ && "$ENDLESS_TIMED_OUT_LIMIT" == "$ENDLESS_LAST_UPDATE_LIMIT" && "$ENDLESS_TIMED_OUT_LIMIT" -gt 0 && "$ENDLESS_TIMED_OUT_LIMIT" -le 20 ]] && ENDLESS_TIMEOUT_LIMIT_MATCH=1 || true
-if [[ $FOREVER_STATUS -ne 0 && $ENDLESS_UPDATE_COUNT -ge 4 && ( $ENDLESS_STILL_PUBLISHING -eq 1 || $ENDLESS_BUDGET_BEFORE_UPDATE -eq 1 || ( $ENDLESS_UPDATE_TIMED_OUT -eq 1 && $ENDLESS_TIMEOUT_LIMIT_MATCH -eq 1 ) ) ]]; then
+# The wall-clock budget may expire after any of the repeated successful
+# catch-ups on a busy host. The separate four-update case above proves that
+# active publication itself never stops a candidate prematurely.
+if [[ $FOREVER_STATUS -ne 0 && $ENDLESS_UPDATE_COUNT -ge 2 && ( $ENDLESS_STILL_PUBLISHING -eq 1 || $ENDLESS_BUDGET_BEFORE_UPDATE -eq 1 || ( $ENDLESS_UPDATE_TIMED_OUT -eq 1 && $ENDLESS_TIMEOUT_LIMIT_MATCH -eq 1 ) ) ]]; then
   echo "  ok    endless churn stops at the race budget"
 else
   printf '  FAIL  endless churn stops at the race budget (status=%s updates=%s still_publishing=%s budget_before_update=%s update_timed_out=%s timeout_limit_match=%s)\n' \
