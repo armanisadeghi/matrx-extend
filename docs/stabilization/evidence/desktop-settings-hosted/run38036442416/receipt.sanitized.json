@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38036442416,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38036442416",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "9126eef6262a596712b2949d0eb3b1b6bc43e83a",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "acceptance_case": "desktop-settings-guest",
+  "selected_case": "pair-forget",
+  "inventory_case": "EXT-F-1003-T43",
+  "defects": ["EXT-D-0084", "EXT-D-0086"],
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "source_ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "fail",
+  "failure_stage": "desktop_pair_forget_cancel",
+  "failure_code": "pointer_target_not_unique",
+  "classification": "driver target-resolution boundary at first click; source stage ordering places it after the readiness wait, but successful readiness counts were not serialized; click-time cardinality unknown; no product behavior observed",
+  "acceptance_credit": "none",
+  "resource_finals": {
+    "hosted-package-38036442416-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38036442416-1.jsonl": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38036442416-1.jsonl": "child_failed; admitted=true; resourceInvalid=false; exitCode=1"
+  },
+  "evidence_hashes": {
+    "native-report.sanitized.json": "496b8b09852fc1beb9cbedf7a50db6e996d06b9c37371ecd64cb9d6b01ba74e6",
+    "resource-journals/hosted-package-38036442416-1.jsonl": "2db5fc6f13bdc1afa5219e7ff62cc16f175b416fd6e7e031acccb80a64dc2555",
+    "resource-journals/hosted-browser-38036442416-1.jsonl": "2f364922987a38c2f81b42f15dde14cf82cbb778143eb9e96a37a10296872dd8",
+    "resource-journals/hosted-guest-38036442416-1.jsonl": "154a80813cd56e2af21a7656634365e9e9f01450b64ab218092434bc77211289"
+  },
+  "sanitization": {
+    "native_report_reduced_to_fixed_safe_allowlist": true,
+    "resource_journals_copied_with": "scripts/copy-hosted-resource-journal.mjs",
+    "process_attribution_and_opened_paths_removed": true,
+    "screenshots_and_other_private_artifacts_excluded": true,
+    "credentials_or_auth_material_present": false
+  },
+  "independent_review": "pending"
+}
