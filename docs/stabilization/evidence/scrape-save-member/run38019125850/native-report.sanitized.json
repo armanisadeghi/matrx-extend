@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "auth_mode": "member",
+  "status": "fail",
+  "stage": "member_auth",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+    "run_id": 38017683667,
+    "artifact_id": 11657076101,
+    "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+    "version": "0.2.457"
+  },
+  "authentication": null,
+  "observations": {},
+  "cleanup": {
+    "verified": true,
+    "no_write_possible": true
+  },
+  "failure_stage": "member_auth",
+  "limits": "Exact imported CI development artifact, real member sign-in, one custom-named Source with one existing Project association, independent reads, and cleanup; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.",
+  "harness_checkout_sha": "a441d0442ff9afa532d39956e9d4a5b8749f13af",
+  "error_code": "native_acceptance_error"
+}

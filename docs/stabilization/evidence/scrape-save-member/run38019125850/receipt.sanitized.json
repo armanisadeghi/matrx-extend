@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38019125850,
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "a441d0442ff9afa532d39956e9d4a5b8749f13af",
+  "lane": "A",
+  "acceptance_case": "scrape-save-member",
+  "defect_id": "EXT-D-0187",
+  "product_artifact": {
+    "development_ci_run_id": 38017683667,
+    "development_artifact_id": 11657076101,
+    "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+    "version": "0.2.457",
+    "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "fail",
+  "failure_stage": "member_auth",
+  "failure_code": "native_acceptance_error",
+  "classification": "harness-only; member authentication did not complete",
+  "bounded_observations": {
+    "authentication_observed": false,
+    "product_sign_in_or_acceptance_observed": false,
+    "product_write_possible": false,
+    "fixture_cleanup_verified": true
+  },
+  "unverified": [
+    "member authentication and role verification",
+    "all D187 product acceptance behavior, including source save and project association"
+  ],
+  "resource_journals": {
+    "package": "resource-journals/hosted-package-38019125850-1.jsonl",
+    "package_final_decision": "valid",
+    "browser": "resource-journals/hosted-browser-38019125850-1.jsonl",
+    "browser_final_decision": "valid",
+    "guest": "resource-journals/hosted-guest-38019125850-1.jsonl",
+    "guest_final_decision": "child_failed",
+    "guest_child_exit_code": 1,
+    "resource_invalid": false
+  },
+  "diagnostic": "The sanitized native report has stage member_auth, authentication null, empty observations, and no-write-possible cleanup. In settings-native-auth-driver.mjs, the member branch calls onStage unconditionally at member_magic_link, web_identity, and extension_signin; the D187 caller supplies no onStage callback. The exception occurs before memberLinkFile is read. This is a harness failure, not product acceptance evidence.",
+  "limits": "No member identity was established and no Source or Project product operation was attempted. Do not count this run as a D187 product pass or fail. Keep EXT-D-0187 in-fix."
+}
