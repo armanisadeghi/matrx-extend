@@ -2,9 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   buildDataPatternDeleteUrl,
+  buildDataPatternLookupUrl,
   matchesSelectedMemberOrganization,
+  parseDataPatternWriteBody,
   requireExpectedMemberOrganizationId,
   verifyDataPatternDeleteResult,
+  verifyDataPatternLookupResult,
 } from './data-member-pattern-cleanup.mjs';
 
 const patternId = '123e4567-e89b-42d3-a456-426614174000';
@@ -59,5 +62,55 @@ test('cleanup accepts only one returned row matching both observed identifiers',
     { status: 200, rowCount: 1, rowIdMatches: true, organizationMatches: false },
   ]) {
     assert.throws(() => verifyDataPatternDeleteResult(result));
+  }
+});
+
+test('successful write body accepts a single object or one-row representation', () => {
+  assert.deepEqual(parseDataPatternWriteBody(JSON.stringify({ id: patternId })), {
+    patternId,
+    capture: 'body_id_valid',
+  });
+  assert.deepEqual(parseDataPatternWriteBody(JSON.stringify([{ id: patternId }])), {
+    patternId,
+    capture: 'body_id_valid',
+  });
+  assert.deepEqual(parseDataPatternWriteBody('not-json'), {
+    patternId: null,
+    capture: 'body_non_json',
+  });
+  assert.deepEqual(parseDataPatternWriteBody('[]'), {
+    patternId: null,
+    capture: 'body_shape_invalid',
+  });
+});
+
+test('fallback lookup is scoped to exact owned name and observed organization', () => {
+  const name = 'Northline Furnishings catalog member 38009054255-1';
+  const url = new URL(
+    buildDataPatternLookupUrl('https://db.matrxserver.com', name, organizationId),
+  );
+  assert.equal(url.pathname, '/rest/v1/wbx_pattern');
+  assert.equal(url.searchParams.get('name'), `eq.${name}`);
+  assert.equal(url.searchParams.get('organization_id'), `eq.${organizationId}`);
+  assert.equal(url.searchParams.get('select'), 'id,organization_id,name');
+  assert.equal(url.searchParams.get('limit'), '2');
+  assert.deepEqual(
+    verifyDataPatternLookupResult(
+      { status: 200, rows: [{ id: patternId, organization_id: organizationId, name }] },
+      name,
+      organizationId,
+    ),
+    { patternId, organizationId },
+  );
+  for (const rows of [
+    [],
+    [{ id: patternId, organization_id: otherOrganizationId, name }],
+    [{ id: patternId, organization_id: organizationId, name: 'wrong' }],
+    [
+      { id: patternId, organization_id: organizationId, name },
+      { id: patternId, organization_id: organizationId, name },
+    ],
+  ]) {
+    assert.throws(() => verifyDataPatternLookupResult({ status: 200, rows }, name, organizationId));
   }
 });

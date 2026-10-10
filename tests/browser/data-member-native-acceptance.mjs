@@ -10,8 +10,11 @@ import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
 import { clickPickerDone, clickPickerField, pickerText } from './data-guest-picker-driver.mjs';
 import {
   buildDataPatternDeleteUrl,
+  buildDataPatternLookupUrl,
   matchesSelectedMemberOrganization,
+  parseDataPatternWriteBody,
   verifyDataPatternDeleteResult,
+  verifyDataPatternLookupResult,
 } from './data-member-pattern-cleanup.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
@@ -93,7 +96,13 @@ function observePatternWrites(panel, expectedOrganizationId) {
         const organizationId = Object.entries(request.headers ?? {}).find(
           ([name]) => name.toLowerCase() === 'x-organization-id',
         )?.[1];
-        writes.set(requestId, { status: null, failed: false, patternId: null, organizationId });
+        writes.set(requestId, {
+          status: null,
+          failed: false,
+          patternId: null,
+          bodyCapture: 'pending',
+          organizationId,
+        });
       }
     } catch {
       // Unrelated requests are ignored; raw URLs never leave this listener.
@@ -116,31 +125,30 @@ function observePatternWrites(panel, expectedOrganizationId) {
         const text = body.base64Encoded
           ? Buffer.from(body.body, 'base64').toString('utf8')
           : body.body;
-        const parsed = JSON.parse(text);
-        write.patternId = typeof parsed?.id === 'string' ? parsed.id : null;
+        const parsed = parseDataPatternWriteBody(text);
+        write.patternId = parsed.patternId;
+        write.bodyCapture = parsed.capture;
       })
       .catch(() => {
-        write.failed = true;
+        write.bodyCapture = 'body_unavailable';
       });
   });
   return {
     snapshot: () =>
-      [...writes.values()].map(({ status, failed, patternId, organizationId }) => ({
+      [...writes.values()].map(({ status, failed, patternId, bodyCapture, organizationId }) => ({
         status,
         failed,
         patternIdPresent: UUID.test(patternId ?? ''),
+        bodyCapture,
         organizationContextPresent: UUID.test(organizationId ?? ''),
         organizationMatchesSelected: matchesSelectedMemberOrganization(
           organizationId,
           expectedOrganizationId,
         ),
       })),
-    deleteTarget: () => {
+    writeTarget: () => {
       const target = [...writes.values()].find(
-        (write) =>
-          write.status === 201 &&
-          UUID.test(write.patternId ?? '') &&
-          UUID.test(write.organizationId ?? ''),
+        (write) => write.status === 201 && UUID.test(write.organizationId ?? ''),
       );
       return target ? { patternId: target.patternId, organizationId: target.organizationId } : null;
     },
@@ -151,6 +159,39 @@ function observePatternWrites(panel, expectedOrganizationId) {
       offFinished();
     },
   };
+}
+
+async function lookupSavedPattern(panel, name, organizationId) {
+  const supabaseUrl = new URL(process.env.WXT_SUPABASE_URL);
+  const publishableKey = process.env.WXT_SUPABASE_PUBLISHABLE_KEY;
+  assert.equal(
+    supabaseUrl.origin,
+    'https://db.matrxserver.com',
+    'data_member_lookup_origin_refused',
+  );
+  assert.match(
+    publishableKey ?? '',
+    /^sb_publishable_[A-Za-z0-9_-]+$/,
+    'data_member_lookup_key_refused',
+  );
+  return evaluate(
+    panel,
+    `(async () => {
+      const stored = await chrome.storage.local.get(['matrx.auth.accessToken']);
+      const token = stored['matrx.auth.accessToken'];
+      if (typeof token !== 'string' || !token) return { status: 0, rows: null };
+      const response = await fetch(${JSON.stringify(buildDataPatternLookupUrl(supabaseUrl.origin, name, organizationId))}, {
+        headers: {
+          apikey: ${JSON.stringify(publishableKey)},
+          Authorization: 'Bearer ' + token,
+          'X-Organization-Id': ${JSON.stringify(organizationId)},
+          'Accept-Profile': 'extend',
+        },
+      });
+      const rows = await response.json().catch(() => null);
+      return { status: response.status, rows: Array.isArray(rows) ? rows : null };
+    })()`,
+  );
 }
 
 function safeFailureCode(error) {
@@ -336,6 +377,7 @@ try {
       let primaryError;
       let cleanupError;
       let saveAttempted = false;
+      let verifiedTarget = null;
       try {
         saveAttempted = true;
         await click(panel, 'data-save-button', 'Save pattern');
@@ -346,11 +388,35 @@ try {
             state.length === 1 &&
             state[0].status === 201 &&
             !state[0].failed &&
-            state[0].patternIdPresent &&
             state[0].organizationContextPresent,
         );
+        const writeTarget = observer.writeTarget();
+        assert.ok(writeTarget, 'data_member_write_target_unverified');
+        const lookedUp = await waitFor(
+          'data_member_pattern_row_observed',
+          () => lookupSavedPattern(panel, patternName, writeTarget.organizationId),
+          (result) => result?.status === 200 && result.rows?.length === 1,
+          10_000,
+          (result) => ({
+            status: result?.status ?? null,
+            row_count: Array.isArray(result?.rows) ? result.rows.length : null,
+          }),
+        );
+        verifiedTarget = verifyDataPatternLookupResult(
+          lookedUp,
+          patternName,
+          writeTarget.organizationId,
+        );
+        if (UUID.test(writeTarget.patternId ?? ''))
+          assert.equal(
+            writeTarget.patternId,
+            verifiedTarget.patternId,
+            'data_member_write_body_row_mismatch',
+          );
         report.observations.pattern_write_requests = writes.length;
         report.observations.pattern_write_status = writes[0].status;
+        report.observations.pattern_response_body_capture = writes[0].bodyCapture;
+        report.observations.saved_row_lookup_verified = true;
         report.observations.organization_context_sent = writes[0].organizationContextPresent;
         report.observations.organization_context_matched_selected =
           writes[0].organizationMatchesSelected;
@@ -370,19 +436,28 @@ try {
         primaryError = error;
       } finally {
         const snapshot = observer.snapshot();
-        const deleteTarget = observer.deleteTarget();
+        const writeTarget = observer.writeTarget();
+        report.observations.pattern_write_observation = snapshot;
         observer.stop();
         await panel.send('Network.disable').catch(() => {});
         if (saveAttempted) {
           try {
-            if (deleteTarget) report.cleanup = await deleteSavedPattern(panel, deleteTarget);
-            else if (snapshot.some((write) => write.status === 201)) {
+            if (writeTarget) {
+              const target =
+                verifiedTarget ??
+                verifyDataPatternLookupResult(
+                  await lookupSavedPattern(panel, patternName, writeTarget.organizationId),
+                  patternName,
+                  writeTarget.organizationId,
+                );
+              report.cleanup = await deleteSavedPattern(panel, target);
+            } else if (snapshot.some((write) => write.status === 201)) {
               cleanupError = new Error('data_member_cleanup_target_missing');
               report.cleanup = { verified: false, error: 'data_member_cleanup_target_missing' };
             } else report.cleanup = { verified: true, no_successful_write_observed: true };
           } catch (error) {
             cleanupError = error;
-            report.cleanup = { verified: false, error: 'data_member_cleanup_failed' };
+            report.cleanup = { verified: false, error: safeFailureCode(error) };
           }
         }
       }
