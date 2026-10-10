@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "hosted_run": {
+    "run_id": 38077041667,
+    "workflow_source_sha": "16b8cc4250016169457afa32903fcc501411fcd3",
+    "case": "guest-seo",
+    "scope": "full",
+    "lane": "A",
+    "runner": "macos-15 ARM64",
+    "conclusion": "success"
+  },
+  "release_artifact": {
+    "run_id": 38075458740,
+    "artifact_id": 11677569836,
+    "name": "matrx-extend-v0.2.474",
+    "version": "0.2.474",
+    "source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+    "tag_resolves_to_source": true,
+    "store_zip_sha256": "93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02",
+    "store_zip_hash_matches_receipt": true,
+    "receipt_tree_sha256": "240e3b80794f06c4e4b608cfe706d9950f0eb62cd4ab605f29be640916a2ec4a",
+    "artifact_api_digest": "sha256:de9c3328855632872e56cdbf4cf6abf24909a63a7df0c27a139bd3c3b9d14a78"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11678602251,
+    "name": "hosted-guest-38077041667-1",
+    "digest": "sha256:37b3d056955150e188b50cb78df216bd89d2949a2daf517e75393b3e6023851d",
+    "digest_independently_verified": true
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "status": "partial",
+    "target_count": 25,
+    "status_counts": {
+      "pass": 24,
+      "unverified": 1,
+      "fail": 0
+    },
+    "runtime_tree_sha256": "f416ac56eb5159c8720bee8e3e9a28177d91d99c777f38f68b7b1ead91bf2d78",
+    "runtime_tree_unchanged": true
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "all_three_valid": true
+  },
+  "screenshots": {
+    "hosted_artifact_files": ["native-side-panel.png", "normal-target-after-open.png"],
+    "inspected": true,
+    "observation": "Screenshots show generic guest/panel context and a generic research-brief page; neither shows an SEO audit result."
+  },
+  "sanitization": "No credentials, authentication data, account details, raw runner paths, or screenshots copied into this evidence folder."
+}

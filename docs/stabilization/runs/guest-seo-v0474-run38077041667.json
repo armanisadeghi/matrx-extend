@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_guest_seo_store_run",
+  "run_id": 38077041667,
+  "release_version": "0.2.474",
+  "release_source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+  "hosted_workflow_head_sha": "16b8cc4250016169457afa32903fcc501411fcd3",
+  "scope": "full guest-seo acceptance scope",
+  "product_verdict": "PARTIAL: 24/25 assertion rows pass; public-page T09 metadata-door assertion remains unverified.",
+  "evidence_verdict": "PASS_FOR_BOUNDED_EVIDENCE_WITH_LIMITATIONS",
+  "artifacts": "docs/stabilization/evidence/guest-seo-store/run38077041667/",
+  "peer_review": "docs/stabilization/reports/peer-review-run38077041667.json",
+  "d193": "KEEP_FIXED_NOT_CLOSED; exact v0.2.469 paired guest Data/SEO closure condition remains unmet.",
+  "limitations": [
+    "Same 25 target IDs/statuses as v0.2.469 full run 38070400935; no distinct subtargets.",
+    "Live-page readability metric correctness and automatic SEO metric correctness remain unverified.",
+    "Screenshots show generic context and no SEO output.",
+    "Other guest cases and member/admin gates remain deferred."
+  ]
+}

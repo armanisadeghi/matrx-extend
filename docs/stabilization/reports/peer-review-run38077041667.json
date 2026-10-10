@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_seo_full_store_evidence_review",
+  "reviewer": "independent_guest_seo_run_review",
+  "verdict": "PARTIAL_FULL_GUEST_SEO_V0474",
+  "run": {
+    "hosted_run_id": 38077041667,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38077041667",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "conclusion": "success",
+    "workflow_head_sha": "16b8cc4250016169457afa32903fcc501411fcd3",
+    "lane": "A",
+    "case": "guest-seo",
+    "scope": "full",
+    "reviewed_at": "2026-10-10"
+  },
+  "provenance": {
+    "release_run_id": 38075458740,
+    "release_artifact_id": 11677569836,
+    "artifact_name": "matrx-extend-v0.2.474",
+    "version": "0.2.474",
+    "source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+    "store_zip_sha256": "93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02",
+    "zip_digest_matches_receipt": true,
+    "runtime_tree_sha256": "f416ac56eb5159c8720bee8e3e9a28177d91d99c777f38f68b7b1ead91bf2d78",
+    "native_report_tree_hash_matches": true,
+    "hosted_result_artifact_id": 11678602251,
+    "hosted_result_artifact_digest": "sha256:37b3d056955150e188b50cb78df216bd89d2949a2daf517e75393b3e6023851d",
+    "release_artifact_digest": "sha256:de9c3328855632872e56cdbf4cf6abf24909a63a7df0c27a139bd3c3b9d14a78"
+  },
+  "verdict_a_live_behavior": {
+    "status": "PARTIAL",
+    "passed_count": 24,
+    "unverified_count": 1,
+    "target_count": 25,
+    "failed_count": 0,
+    "scope": "Guest public-page SEO actions in the owned native side panel; this is not full SEO feature health.",
+    "verified_behavior": [
+      "Guest navigation and reload title/headings checks passed.",
+      "Guest text and AI copy paths returned observed summaries; JSON remained absent; clipboard readback and permission restoration passed.",
+      "Manual audit preserved the current page; restricted about:blank cleared stale results and offered retry; a later public page recovered.",
+      "Sparse and rich public detail groups matched their page DOM; the canonical link opened the expected destination through trusted input.",
+      "Broken social-preview fallback was explanatory and restored after the controlled page change.",
+      "Manual live link and missing-alt counts matched the DOM; populated performance values matched current navigation.",
+      "Two known readability fixtures matched their words, sentences, score, and grade-band oracle; page restoration and original-page re-audit passed.",
+      "Missing social tags copied exactly before and after re-audit; trusted click, clipboard readback, feedback, and permission restoration passed."
+    ],
+    "unverified": [
+      "EXT-F-1008-T09 guest_manual_hreflang_and_schema_doors_match_page: the public DOM exposed no unique openable hreflang/schema candidates.",
+      "Live-page readability numeric correctness remains unverified. The display is populated/explained and two known-text fixture checks pass, but neither establishes correctness for an uncontrolled live page.",
+      "Automatic SEO metric correctness remains unverified: observed auto vs manual counts differed (links 1781/409 vs 1784/411; images/missing-alt 28/10 vs 30/12). The passing manual-vs-DOM rows do not validate the automatic metrics."
+    ]
+  },
+  "coverage_and_comparison": {
+    "assertion_rows": "See sanitized native-report.sanitized.json for all 25 native target rows and statuses.",
+    "selection": "Selected T01,T02,T03,T07,T09,T14; remaining scoped cases and role/recommendation/chat paths are deferred.",
+    "comparison_to_v0469": {
+      "run_id": 38070400935,
+      "result": "24/25 passed with the same public metadata-door assertion unverified.",
+      "current_run_delta": "The same 25 target IDs and statuses; zero distinct new subtargets. This is a fresh repeat on exact v0.2.474, not new behavior coverage."
+    },
+    "metadata_fixture": {
+      "run_id": 38071754089,
+      "result": "Separate v0.2.469 owned-page metadata fixture target passed.",
+      "current_run": "SEO_METADATA_FIXTURE=none; public-page T09 remains unverified and this run does not repeat or extend the fixture result."
+    }
+  },
+  "verdict_b_doctrine_and_evidence": {
+    "status": "PASS_FOR_BOUNDED_EVIDENCE_WITH_LIMITATIONS",
+    "notes": [
+      "The hosted run selected the exact v0.2.474 Store artifact from release run 38075458740, not a dev artifact or CRX.",
+      "The release ZIP hash matches its receipt; deterministic artifact adaptation reproduced the runtime tree hash reported by the native run.",
+      "Package, browser, and guest resource finals each show admitted=true, resource_invalid=false, exit_code=0, decision=valid.",
+      "Both screenshots were inspected; they show generic guest/panel and research-brief context, with no SEO output, and receive no behavior credit.",
+      "The assertion harness source is unchanged from the earlier full v0.2.469 guest SEO run.",
+      "No browser run, Store action, or heavy test was started for this review."
+    ]
+  },
+  "d193_adjudication": {
+    "status": "KEEP_FIXED_NOT_CLOSED",
+    "reason": "The D193 closure condition remains the paired exact-v0.2.469 guest Data and SEO retests with unchanged behavior passing. Exact-v0.2.469 guest SEO run 38070400935 is 24/25 partial. This supplemental exact-v0.2.474 repeat is also partial and adds no new assertion subtargets.",
+    "required_next_evidence": "Complete the paired exact-v0.2.469 guest Data and SEO retests; guest SEO must pass its unchanged real assertions. Keep live-page readability correctness unverified unless independently established."
+  },
+  "evidence_files": {
+    "run_record": "docs/stabilization/runs/guest-seo-v0474-run38077041667.json",
+    "sanitized_folder": "docs/stabilization/evidence/guest-seo-store/run38077041667",
+    "native_report": "docs/stabilization/evidence/guest-seo-store/run38077041667/native-report.sanitized.json",
+    "resource_finals": "docs/stabilization/evidence/guest-seo-store/run38077041667/resource-finals.sanitized.json"
+  },
+  "verification": {
+    "method": "Inspected hosted workflow metadata/log, downloaded and hash-verified the hosted result artifact, verified the exact release source/tag/receipt/ZIP provenance, replayed deterministic artifact adaptation and runtime-tree hashing, reviewed all 25 native assertion rows and three resource finals, compared target IDs/statuses with the v0.2.469 full run, and inspected both screenshots.",
+    "tests": "No new browser, product, or heavy tests run; this is a bounded independent evidence review."
+  }
+}
