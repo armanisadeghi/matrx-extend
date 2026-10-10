@@ -1,6 +1,8 @@
 /** Shared DOM access for serialized browser tools, including nested open shadow roots. */
 interface ToolDomAccess {
   roots: () => Array<Document | ShadowRoot>;
+  prioritizeViewport: (elements: Element[]) => Element[];
+  readableText: (root: Node) => string;
   querySelectorAll: (selector: string) => Element[];
   querySelector: (selector: string) => Element | null;
   parent: (element: Element) => Element | null;
@@ -136,8 +138,64 @@ function installToolDom(): void {
     }
     return true;
   }
+  function prioritizeViewport(elements: Element[]): Element[] {
+    return elements
+      .map((el, index) => {
+        const rect = el.getBoundingClientRect();
+        const inViewport =
+          visible(el) &&
+          rect.bottom > 0 &&
+          rect.right > 0 &&
+          rect.top < window.innerHeight &&
+          rect.left < window.innerWidth;
+        return { el, index, rank: inViewport ? 0 : 1 };
+      })
+      .sort((a, b) => a.rank - b.rank || a.index - b.index)
+      .map(({ el }) => el);
+  }
+  function readableText(root: Node): string {
+    const pieces: string[] = [];
+    const drop =
+      'nav, aside, header, footer, script, style, noscript, [aria-hidden="true"], [hidden]';
+    const block =
+      /^(ADDRESS|ARTICLE|BLOCKQUOTE|BR|DIV|H[1-6]|HR|LI|MAIN|P|SECTION|TABLE|TR|UL|OL)$/;
+    function walk(node: Node): void {
+      if (node.nodeType === Node.TEXT_NODE) {
+        pieces.push((node.textContent ?? '').replace(/\s+/g, ' '));
+        return;
+      }
+      if (node instanceof Element) {
+        if (node.matches(drop) || !visible(node, false)) return;
+        if (block.test(node.tagName)) pieces.push('\n');
+        // Read the composed tree once: slots stand in for their assigned light
+        // children; a host's shadow tree replaces its light children.
+        const assigned =
+          node instanceof HTMLSlotElement ? node.assignedNodes({ flatten: true }) : [];
+        const children =
+          node instanceof HTMLSlotElement
+            ? assigned.length
+              ? assigned
+              : Array.from(node.childNodes)
+            : node.shadowRoot
+              ? Array.from(node.shadowRoot.childNodes)
+              : Array.from(node.childNodes);
+        for (const child of children) walk(child);
+        if (block.test(node.tagName)) pieces.push('\n');
+        return;
+      }
+      for (const child of node.childNodes) walk(child);
+    }
+    walk(root);
+    return pieces
+      .join('')
+      .replace(/[ \t]*\n[ \t]*/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
   window.__matrxToolDom = {
     roots,
+    prioritizeViewport,
+    readableText,
     querySelectorAll,
     querySelector: (selector) => querySelectorAll(selector)[0] ?? null,
     parent,

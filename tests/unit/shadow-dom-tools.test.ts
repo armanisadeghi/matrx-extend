@@ -7,7 +7,7 @@ import {
   inspect_element,
 } from '@/lib/tools/handlers/inspect';
 import { focus_element, press_keys } from '@/lib/tools/handlers/keyboard';
-import { find, read_page } from '@/lib/tools/handlers/page-refs';
+import { find, get_page_text, read_page } from '@/lib/tools/handlers/page-refs';
 import { query_elements } from '@/lib/tools/handlers/read';
 import type { ToolContext, ToolHandler } from '@/lib/tools/types';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -34,6 +34,7 @@ describe('browser tools on injected open shadow controls', () => {
   let save: HTMLButtonElement;
   let caption: HTMLInputElement;
   beforeEach(() => {
+    for (const host of document.querySelectorAll('#matrx-swipe-pill')) host.remove();
     document.body.innerHTML =
       '<button id="page-save">Save draft</button><div id="matrx-swipe-pill"></div>';
     const outer = document.querySelector('#matrx-swipe-pill')!.attachShadow({ mode: 'open' });
@@ -276,5 +277,105 @@ describe('browser tools on injected open shadow controls', () => {
     expect(await run(find_text_on_page, { query: 'Saved to launch collection' })).toMatchObject({
       count: 1,
     });
+  });
+  it('get_page_text includes visible nested shadow text under its chosen article', async () => {
+    const main = document.createElement('main');
+    main.innerHTML = '<p>Launch campaign inspiration from this creator.</p>';
+    document.body.prepend(main);
+    main.appendChild(document.querySelector('#matrx-swipe-pill')!);
+    const result = await run(get_page_text, {});
+    expect(result.text).toContain('Save to swipe file');
+    expect(result.text).toContain('Launch campaign inspiration');
+    expect(result.text.split('Save to swipe file')).toHaveLength(2);
+  });
+
+  it('get_page_text includes the visible injected pill outside the chosen main', async () => {
+    const main = document.createElement('main');
+    main.innerHTML = '<p>Launch campaign inspiration from this creator.</p>';
+    document.body.prepend(main);
+    document.documentElement.appendChild(document.querySelector('#matrx-swipe-pill')!);
+    const result = await run(get_page_text, {});
+    expect(result.text).toContain('Save to swipe file');
+    expect(result.text).toContain('Launch campaign inspiration');
+    expect(result.text.split('Save to swipe file')).toHaveLength(2);
+    document.querySelector('#matrx-swipe-pill')!.remove();
+  });
+
+  it('get_page_text does not expose controls hidden by an outer shadow host', async () => {
+    const host = document.querySelector('#matrx-swipe-pill') as HTMLElement;
+    host.style.display = 'none';
+    const result = await run(get_page_text, {});
+    expect(result.text).not.toContain('Save to swipe file');
+    expect(result.text).toContain('Save draft');
+  });
+
+  it('query_elements prioritizes visible shadow controls before its broad-query cap', async () => {
+    const host = document.querySelector('#matrx-swipe-pill')!;
+    for (let i = 0; i < 80; i++) {
+      const button = document.createElement('button');
+      button.textContent = 'Earlier post action';
+      button.getBoundingClientRect = () => ({
+        x: 0,
+        y: -400,
+        width: 120,
+        height: 32,
+        top: -400,
+        bottom: -368,
+        left: 0,
+        right: 120,
+        toJSON: () => ({}),
+      });
+      document.body.insertBefore(button, host);
+    }
+    const result = await run(query_elements, { selector: 'button, a', limit: 50 });
+    expect(result.total).toBe(82);
+    expect(result.returned).toBe(50);
+    expect(result.items.map((e: any) => e.text)).toContain('Save to swipe file');
+  });
+  it('composed page text includes slotted content once and excludes hidden light children', async () => {
+    const host = document.querySelector('#matrx-swipe-pill')!;
+    host.innerHTML =
+      '<p slot="caption">Launch notes from the creator</p><p>Unassigned hidden light text</p>';
+    host.shadowRoot!.innerHTML = '<slot name="caption"></slot><button>Save to swipe file</button>';
+    const result = await run(get_page_text, {});
+    expect(result.text).toContain('Launch notes from the creator');
+    expect(result.text.split('Launch notes from the creator')).toHaveLength(2);
+    expect(result.text).not.toContain('Unassigned hidden light text');
+  });
+
+  it('query_elements ranked results preserve the nth index for actions', async () => {
+    const offscreen = document.querySelector('#page-save') as HTMLElement;
+    offscreen.getBoundingClientRect = () => ({
+      x: 0,
+      y: -400,
+      width: 120,
+      height: 32,
+      top: -400,
+      bottom: -368,
+      left: 0,
+      right: 120,
+      toJSON: () => ({}),
+    });
+    const result = await run(query_elements, { selector: 'button', limit: 1 });
+    expect(result.items[0]).toMatchObject({ index: 1, text: 'Save to swipe file' });
+    let saved = 0;
+    save.addEventListener('click', () => saved++);
+    expect(
+      await run(click_element, { selector: 'button', nth: result.items[0].index }),
+    ).toMatchObject({ ok: true });
+    expect(saved).toBe(1);
+    expect(await run(inspect_element, { selector: result.items[0].selector })).toMatchObject({
+      ok: true,
+      text: 'Save to swipe file',
+    });
+  });
+  it('selected articles inside nested shadow roots are not repeated as supplemental content', async () => {
+    const host = document.querySelector('#matrx-swipe-pill')!;
+    host.shadowRoot!.innerHTML =
+      '<main><p>Campaign performance insights</p><button>Save campaign reference</button></main>';
+    const result = await run(get_page_text, {});
+    expect(result.text).toContain('Campaign performance insights');
+    expect(result.text.split('Campaign performance insights')).toHaveLength(2);
+    expect(result.text.split('Save campaign reference')).toHaveLength(2);
   });
 });

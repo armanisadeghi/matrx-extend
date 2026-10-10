@@ -502,7 +502,8 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
             }
           }
           const out: Array<Record<string, unknown>> = [];
-          const list = window.__matrxToolDom.querySelectorAll(selector);
+          const originalOrder = window.__matrxToolDom.querySelectorAll(selector);
+          const list = window.__matrxToolDom.prioritizeViewport(originalOrder);
           const total = list.length;
           for (let i = 0; i < Math.min(list.length, limit); i++) {
             const el = list[i] as HTMLElement;
@@ -512,7 +513,8 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
               window.__matrx_generation_target_registry__?.isSensitive(el) === true ||
               (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'password');
             const item: Record<string, unknown> = {
-              index: i,
+              index: originalOrder.indexOf(el),
+              selector: window.__matrxToolDom.selector(el),
               tag: el.tagName.toLowerCase(),
               text: (el.innerText ?? '').slice(0, 240),
             };

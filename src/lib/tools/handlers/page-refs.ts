@@ -281,21 +281,11 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           const stale = window.__matrxToolDom.querySelectorAll('[data-matrx-ref]');
           for (const el of Array.from(stale)) el.removeAttribute('data-matrx-ref');
 
-          const candidates = window.__matrxToolDom.querySelectorAll(
-            interactiveOnly ? INTERACTIVE : READABLE,
-          );
           // A long feed must not consume the cap before a visible injected
           // control is reached. Keep document order within viewport/offscreen groups.
-          const inViewport = (el: Element): number => {
-            const r = el.getBoundingClientRect();
-            return r.bottom > 0 &&
-              r.right > 0 &&
-              r.top < window.innerHeight &&
-              r.left < window.innerWidth
-              ? 0
-              : 1;
-          };
-          candidates.sort((a, b) => inViewport(a) - inViewport(b));
+          const candidates = window.__matrxToolDom.prioritizeViewport(
+            window.__matrxToolDom.querySelectorAll(interactiveOnly ? INTERACTIVE : READABLE),
+          );
 
           function isVisible(el: Element): boolean {
             return window.__matrxToolDom.visible(el);
@@ -725,14 +715,6 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
           // Lightweight Readability-style extraction: prefer <main>, <article>,
           // largest text container, then fall back to body. Strip nav/aside/
           // header/footer/script/style.
-          function gather(root: Element): string {
-            const clone = root.cloneNode(true) as Element;
-            const drop = clone.querySelectorAll(
-              'nav, aside, header, footer, script, style, noscript, [aria-hidden="true"], [hidden]',
-            );
-            for (const el of Array.from(drop)) el.remove();
-            return ((clone as HTMLElement).innerText ?? '').replace(/\s+\n/g, '\n').trim();
-          }
           let target: Element | null = window.__matrxToolDom.querySelector(
             'main, article, [role="main"]',
           );
@@ -748,7 +730,44 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
             }
             target = best?.el ?? document.body;
           }
-          let text = gather(target);
+          // The chosen article may exclude floating controls appended beside
+          // body/main. Include visible open-shadow surfaces as supplemental text,
+          // before the article cap, while omitting nested roots already covered.
+          const outside = window.__matrxToolDom.roots().filter((root): root is ShadowRoot => {
+            if (!(root instanceof ShadowRoot) || !window.__matrxToolDom.visible(root.host, false))
+              return false;
+            for (
+              let node: Element | null = root.host;
+              node;
+              node = window.__matrxToolDom.parent(node)
+            ) {
+              if (node === target) return false;
+            }
+            // If the selected article lives inside this root, gathering the
+            // root again would duplicate the article and unrelated surrounding UI.
+            for (
+              let node: Element | null = target;
+              node;
+              node = window.__matrxToolDom.parent(node)
+            ) {
+              if (node === root.host) return false;
+            }
+            return true;
+          });
+          const supplemental = outside
+            .filter((root) => {
+              let ancestor = root.host.getRootNode();
+              while (ancestor instanceof ShadowRoot) {
+                if (outside.includes(ancestor)) return false;
+                ancestor = ancestor.host.getRootNode();
+              }
+              return true;
+            })
+            .map((root) => window.__matrxToolDom.readableText(root))
+            .filter(Boolean);
+          let text = [...supplemental, window.__matrxToolDom.readableText(target)]
+            .filter(Boolean)
+            .join('\n\n');
           if (text.length > maxChars) text = `${text.slice(0, maxChars)}…`;
           const meta = (s: string) =>
             document
