@@ -52,7 +52,7 @@
     "postinstall": "node scripts/check-matrx-packages.mjs --duplicates",
     "check:package-twins": "node scripts/check-package-twins.mjs --strict",
     "check:package-twins:self-test": "node scripts/check-package-twins.mjs --self-test",
-    "check:db-doors": "node ../aidream/apps/shared/scripts/check-db-doors.mjs --repo matrx-extend --strict",
+    "check:db-doors": "node ../aidream/apps/shared/scripts/check-db-doors.mjs --repo matrx-extend --repo-dir . --strict",
     "check:archived-items-law": "tsx scripts/check-archived-items-law.ts",
     "check:archived-items-law:self-test": "tsx scripts/check-archived-items-law.ts --self-test",
     "check:canonical-pickers": "tsx scripts/check-canonical-pickers.ts",
