@@ -26,6 +26,7 @@ function fixture() {
   git(root, 'init', '-q');
   git(root, 'config', 'user.email', 'ci-dev@test.invalid');
   git(root, 'config', 'user.name', 'CI development test');
+  writeFileSync(join(root, '.git/info/exclude'), '/test-results/\n/.output/\n');
   const sha = commit(root, 'src/panel.js', 'source build');
   git(root, 'update-ref', 'refs/remotes/origin/main', sha);
   const source = join(root, 'test-results', 'ci-artifacts', sha, '37986090931-1', 'chrome-mv3');
@@ -167,15 +168,13 @@ test('refuses a symlinked stable destination', () => {
   }
 });
 
-test('accepts a forward resource journal commit despite unrelated dirty working-tree files', () => {
+test('accepts a forward resource journal commit with only pending safe evidence', () => {
   const f = fixture();
   try {
     const journal = 'docs/stabilization/resource-journals/native-run.jsonl';
     const mainSha = commit(f.root, journal, '{"event":"completed"}\n');
     git(f.root, 'update-ref', 'refs/remotes/origin/main', mainSha);
-    writeFileSync(join(f.root, 'src/panel.js'), 'uncommitted working-tree edit');
-    mkdirSync(join(f.root, 'tests/browser'), { recursive: true });
-    writeFileSync(join(f.root, 'tests/browser/pending.mjs'), 'untracked runner input');
+    writeFileSync(join(f.root, journal), 'pending journal update');
     const before = hashReleaseTree(f.destination);
     assert.throws(
       () =>
@@ -195,7 +194,7 @@ test('accepts a forward resource journal commit despite unrelated dirty working-
           originMain: mainSha,
           localHead: mainSha,
           trackedDirty: true,
-          untrackedRunnerInputs: ['tests/browser/pending.mjs'],
+          untrackedRunnerInputs: [],
         },
       },
       repoRoot: f.root,
@@ -323,6 +322,126 @@ test('refuses an artifact source outside current main ancestry', () => {
         }),
       /ci_dev_source_not_ancestor/,
     );
+  } finally {
+    rmSync(f.root, { recursive: true, force: true });
+  }
+});
+
+for (const path of [
+  'docs/stabilization/STATUS.md',
+  'docs/stabilization/STATUS.html',
+  'docs/stabilization/inventory.json',
+  'docs/stabilization/defects/EXT-D-0187.json',
+  'docs/stabilization/reports/hosted-review.json',
+  'docs/stabilization/evidence/settings-controls/receipt.sanitized.json',
+  'docs/stabilization/evidence/settings-controls/screenshot.png',
+]) {
+  test(`accepts documentation-only history at ${path} without changing imported bytes`, () => {
+    const f = fixture();
+    try {
+      commit(f.root, path, 'first evidence');
+      const mainSha = commit(f.root, path, 'reviewed evidence');
+      git(f.root, 'update-ref', 'refs/remotes/origin/main', mainSha);
+      const result = promoteVerifiedCiDevArtifact({
+        sourceDir: f.source,
+        evidence: {
+          ...f.evidence,
+          source: { ...f.evidence.source, originMain: mainSha, localHead: mainSha },
+        },
+        repoRoot: f.root,
+      });
+      assert.equal(result.compatibility, 'runtime-equivalent');
+      assert.equal(hashReleaseTree(f.destination), f.evidence.treeSha256);
+      assert.deepEqual(JSON.parse(readFileSync(result.receiptPath, 'utf8')).allowedDiffPaths, [
+        path,
+      ]);
+    } finally {
+      rmSync(f.root, { recursive: true, force: true });
+    }
+  });
+}
+
+for (const path of [
+  'src/config/env.ts',
+  'wxt.config.ts',
+  'package.json',
+  'pnpm-lock.yaml',
+  '.github/workflows/ci.yml',
+  'release.sh',
+  'scripts/build.mjs',
+  'scripts/promote-ci-dev-artifact.mjs',
+  'scripts/promote-ci-dev-artifact.test.mjs',
+  'docs/stabilization/resource-policy.json',
+  'docs/stabilization/evidence/runtime.js',
+]) {
+  test(`refuses build or operational input history at ${path} even if later restored`, () => {
+    const f = fixture();
+    try {
+      commit(f.root, path, 'initial input');
+      commit(f.root, path, 'changed input');
+      const mainSha = commit(f.root, path, 'initial input');
+      git(f.root, 'update-ref', 'refs/remotes/origin/main', mainSha);
+      const before = hashReleaseTree(f.destination);
+      assert.throws(
+        () =>
+          promoteVerifiedCiDevArtifact({
+            sourceDir: f.source,
+            evidence: f.evidence,
+            repoRoot: f.root,
+          }),
+        /ci_dev_runtime_source_changed/,
+      );
+      assert.equal(hashReleaseTree(f.destination), before);
+    } finally {
+      rmSync(f.root, { recursive: true, force: true });
+    }
+  });
+}
+
+for (const [path, tracked, staged] of [
+  ['src/panel.js', true, false],
+  ['src/new-runtime.js', false, false],
+  ['src/panel.js', true, true],
+  ['tests/browser/pending.mjs', false, false],
+]) {
+  test(`refuses pending code ${path} (tracked=${tracked}, staged=${staged}) without modifying it`, () => {
+    const f = fixture();
+    try {
+      mkdirSync(join(f.root, path, '..'), { recursive: true });
+      writeFileSync(join(f.root, path), 'pending collaborator code');
+      if (staged) git(f.root, 'add', '--', path);
+      const before = hashReleaseTree(f.destination);
+      assert.throws(
+        () =>
+          promoteVerifiedCiDevArtifact({
+            sourceDir: f.source,
+            evidence: f.evidence,
+            repoRoot: f.root,
+          }),
+        /ci_dev_pending_runtime_source/,
+      );
+      assert.equal(hashReleaseTree(f.destination), before);
+      assert.equal(readFileSync(join(f.root, path), 'utf8'), 'pending collaborator code');
+    } finally {
+      rmSync(f.root, { recursive: true, force: true });
+    }
+  });
+}
+
+test('allows untracked safe stabilization evidence without claiming it is bundled', () => {
+  const f = fixture();
+  try {
+    const path = 'docs/stabilization/evidence/pending/receipt.json';
+    mkdirSync(join(f.root, path, '..'), { recursive: true });
+    writeFileSync(join(f.root, path), 'pending evidence');
+    const result = promoteVerifiedCiDevArtifact({
+      sourceDir: f.source,
+      evidence: f.evidence,
+      repoRoot: f.root,
+    });
+    assert.equal(result.compatibility, 'exact-source');
+    assert.equal(hashReleaseTree(f.destination), f.evidence.treeSha256);
+    assert.equal(readFileSync(join(f.root, path), 'utf8'), 'pending evidence');
   } finally {
     rmSync(f.root, { recursive: true, force: true });
   }

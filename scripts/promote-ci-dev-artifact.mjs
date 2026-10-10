@@ -9,7 +9,11 @@ import { hashReleaseTree, promoteUnpackedReleaseToMany } from './sync-unpacked-r
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const IMPORTED = /^test-results\/ci-artifacts\/([a-f0-9]{40})\/([1-9]\d*)-([1-9]\d*)\/chrome-mv3$/;
-const RUNTIME_EQUIVALENT_PATH = /^docs\/stabilization\/resource-journals\/[^/]+\.jsonl$/;
+// WXT bundles src/ plus public assets; these stabilization records are not imported
+// by src/ or wxt.config.ts. Keep operational policy and executable files excluded.
+// Changes to this promoter or its tests require a new successful CI artifact.
+const RUNTIME_EQUIVALENT_PATH =
+  /^docs\/stabilization\/(?:resource-journals\/[^/]+\.jsonl|[^/]+\.(?:md|html|txt)|inventory\.json|(?:defects|reports|evidence)\/(?:[^/]+\/)*[^/]+\.(?:json|jsonl|md|html|txt|log|png|jpg|jpeg|webp))$/;
 
 function git(root, ...args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8' }).trim();
@@ -59,6 +63,15 @@ function assertCurrentMain(root, mainSha) {
     git(root, 'rev-parse', 'origin/main') !== mainSha
   )
     throw new Error('ci_dev_main_changed_during_promotion');
+  // Recheck before staging and committing too: another writer may add pending code.
+  const pendingPaths = [
+    ['diff', '--no-renames', '--name-only', '-z', 'HEAD'],
+    ['ls-files', '--others', '--exclude-standard', '-z'],
+  ].flatMap((args) =>
+    execFileSync('git', args, { cwd: root, encoding: 'utf8' }).split('\0').filter(Boolean),
+  );
+  if (pendingPaths.some((path) => !RUNTIME_EQUIVALENT_PATH.test(path)))
+    throw new Error('ci_dev_pending_runtime_source');
 }
 
 function assertNoSymlinkParents(path, root) {

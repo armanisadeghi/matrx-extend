@@ -124,7 +124,7 @@ async function copyRows(panel, browserSession, panelTarget, label) {
       ),
     (open) => open === true,
   );
-  await click(panel, 'button-text', label);
+  await click(panel, 'copy-menu-option', label);
   await waitFor(
     'data_member_copy_feedback',
     () => evaluate(panel, `!!document.querySelector('svg[aria-label="Copied"]')`),

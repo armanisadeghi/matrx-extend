@@ -468,6 +468,11 @@
    "application/json"
   ]
  },
+ "/agent-messages/post": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/agent-messages/wake": {
   "post": [
    "application/json"
@@ -5457,6 +5462,21 @@
  "/pinpoint/public/status": {
   "get": []
  },
+ "/pinterest-integrations/attach": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/pinterest-integrations/data": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/pinterest-integrations/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/pipedream/public/status": {
   "get": []
  },
@@ -7416,10 +7436,140 @@
  "/smugmug/public/status": {
   "get": []
  },
+ "/social-oauth/bluesky/authorize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/bluesky/client-metadata.json": {
+  "get": []
+ },
+ "/social-oauth/bluesky/complete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/bluesky/config": {
+  "get": []
+ },
+ "/social-oauth/bluesky/disconnect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/bluesky/discover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/bluesky/read": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/bluesky/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/bluesky/select": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/x/attach": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/x/authorize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/x/complete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/x/config": {
+  "get": []
+ },
+ "/social-oauth/x/disconnect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/x/discover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/x/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/x/select": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/x/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/{provider}/attach": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/{provider}/authorize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/{provider}/complete": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/{provider}/config": {
+  "get": []
+ },
+ "/social-oauth/{provider}/disconnect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/{provider}/discover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/{provider}/read": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/{provider}/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/social-oauth/{provider}/select": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/social/ads/search": {
   "post": [
    "application/json"
   ]
+ },
+ "/social/ads/{ad_id}/image": {
+  "get": []
  },
  "/social/capabilities": {
   "get": []
@@ -7812,8 +7962,49 @@
  "/tidio/public/status": {
   "get": []
  },
+ "/tiktok-integrations/attach": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tiktok-integrations/authorize": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tiktok-integrations/disconnect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tiktok-integrations/discover": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tiktok-integrations/finish": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tiktok-integrations/oauth/callback": {
+  "get": []
+ },
  "/tiktok-integrations/public-video-metadata": {
   "get": []
+ },
+ "/tiktok-integrations/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tiktok-integrations/sync": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/tiktok-integrations/webhooks": {
+  "post": []
  },
  "/timeapi/public/current-time": {
   "get": []
@@ -9040,6 +9231,12 @@
  },
  "/workflows/comparisons/{comparison_id}/arms/{arm_index}/rerun": {
   "post": []
+ },
+ "/workflows/system/{key}/runs": {
+  "post": [
+   "application/json"
+  ],
+  "get": []
  },
  "/workflows/validate": {
   "post": [

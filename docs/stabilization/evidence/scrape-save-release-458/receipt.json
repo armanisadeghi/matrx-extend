@@ -1,0 +1,16 @@
+{
+  "defect_id": "EXT-D-0187",
+  "workflow_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38018774125",
+  "workflow_conclusion": "success",
+  "artifact_id": 11657477270,
+  "artifact_name": "matrx-extend-v0.2.458",
+  "version": "0.2.458",
+  "release_source_sha": "991a70bee4f06c3e9f93254b9c1679e4f4259a08",
+  "source_contains_ui_commit": "3e3c2770c",
+  "tree_sha256": "21fb44ab0904fe1defd4268541e064518f5f5504508b3ad685384a474ca7a9c0",
+  "file_count": 1957,
+  "store_zip_sha256": "263519333ce4e34e7965dca5a537c45e73a2e9090e82ed28fb532ce92e504c70",
+  "local_zip_sha256": "1d28586e041aeaff05008c8089a615f2f941f2e538c8c4592bfd3a92ae02c359",
+  "chrome_web_store_submission": false,
+  "native_acceptance_on_this_release": "unverified; native-6 tested imported CI source af13274c35ee16e28014e90b1e50c73ad433d348"
+}
