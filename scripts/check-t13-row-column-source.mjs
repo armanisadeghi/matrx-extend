@@ -41,14 +41,64 @@ import { fileURLToPath } from 'node:url';
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const BASELINE = join(ROOT, 'scripts', 't13-row-column-source-baseline.json');
 const WORD = 'visi' + 'bility';
+const QUOTE = `["'${String.fromCharCode(96)}]`;
 const ROW = new RegExp(`(?<![A-Za-z0-9_\\-])${WORD}(?![A-Za-z0-9_\\-])`);
+// Remove only the recognized occurrence, never its entire source line. A CSS
+// property or diagnostic label must not conceal a database field beside it.
 const NOISE = [
-  new RegExp(`${WORD}\\s*[:=]\\s*["'\`]?(hidden|visible|collapse|inherit|initial|unset|revert)\\b`),
-  new RegExp(`style(\\.|\\[["'])${WORD}`),
-  new RegExp(`${WORD}\\s*:\\s*\\$\\{`),
-  new RegExp(`transition[^;\\n]*${WORD}`),
-  new RegExp(`ai[_-]${WORD}`),
-  new RegExp(`document\\.${WORD}`),
+  new RegExp(
+    `\\b(?:[A-Za-z_$][\\w$]*\\.)?(?:style|[A-Za-z_$][\\w$]*Style)\\s*(?:\\.\\s*${WORD}\\b|\\[\\s*${QUOTE}${WORD}${QUOTE}\\s*\\])`,
+    'g',
+  ),
+  new RegExp(`getComputedStyle\\s*\\([^)]*\\)\\.${WORD}\\b`, 'g'),
+  // Bare s/cs aliases may be database rows. A comparison to a CSS-only
+  // computed-style value is safe to ignore; a bare read remains counted.
+  new RegExp(
+    `\\b(?:s|cs)\\s*\\.\\s*${WORD}\\s*(?:===|!==|==|!=)\\s*['"](?:hidden|visible|collapse)['"]`,
+    'g',
+  ),
+  new RegExp(
+    `${WORD}\\s*:\\s*${QUOTE}?(?:hidden|visible|collapse|inherit|initial|unset|revert)\\b`,
+    'g',
+  ),
+  new RegExp(`${WORD}\\s*:\\s*\\$\\{`, 'g'),
+  new RegExp(`ai[_-]${WORD}`, 'g'),
+  new RegExp(`\\bconsole\\.log\\(\\s*(["'])(?:(?!\\1).)*${WORD}(?:(?!\\1).)*\\1`, 'g'),
+  new RegExp(`document\\.${WORD}\\b`, 'g'),
+  new RegExp(`\\b${WORD}\\s*:\\s*["'](?:other|unsupported)["']`, 'g'),
+  new RegExp(`\\b(?:test|describe)\\s*\\(\\s*(["'])(?:(?!\\1).)*${WORD}(?:(?!\\1).)*\\1`, 'g'),
+];
+// These unqualified identifiers describe native panel state only in files that
+// actually observe browser visibility. Unknown object/payload shorthand stays
+// counted; callback returns and event destructuring have explicit syntax below.
+const BROWSER_STATE = new RegExp(`observePanelVisibility|document\\.${WORD}State|${WORD}change`);
+const BROWSER_NOISE = [
+  new RegExp(
+    `\\b${WORD}\\s*:\\s*[A-Za-z_$][\\w$]*\\s*(?:<|>|===|!==|==|!=)\\s*\\d+\\s*\\?\\s*(['"])(?:visible|hidden)\\1\\s*:\\s*(['"])(?:visible|hidden)\\2`,
+    'g',
+  ),
+  new RegExp(
+    `\\b${WORD}\\s*:\\s*(?:\\[[^\\]\\n]*\\]\\.includes\\()?document\\.${WORD}State\\b`,
+    'g',
+  ),
+  new RegExp(
+    `\\b${WORD}\\s*:\\s*${WORD}\\s*===\\s*['"]unsupported['"]\\s*\\?\\s*['"]other['"]\\s*:\\s*${WORD}\\b`,
+    'g',
+  ),
+  new RegExp(`\\b${WORD}\\.(?:measured|${WORD})\\b`, 'g'),
+  new RegExp(`\\b(?:event|events)\\.${WORD}\\b(?!\\s*=(?!=))`, 'g'),
+  new RegExp(`\\b(?:const|let|var)\\s+${WORD}\\s*=`, 'g'),
+  new RegExp(`\\b${WORD}State\\s*:\\s*${WORD}\\b`, 'g'),
+  new RegExp(`\\[\\s*${WORD}\\s*,\\s*focus\\b`, 'g'),
+  new RegExp(`\\breturn\\s+${WORD}\\s*;`, 'g'),
+  new RegExp(`(?<![.\\w])${WORD}\\s*=\\s*${WORD}\\s*===`, 'g'),
+  new RegExp(`(?<![.\\w])${WORD}\\s*=\\s*["'](?:visible|hidden)["']`, 'g'),
+  new RegExp(`\\bstate\\?\\.${WORD}\\b`, 'g'),
+  new RegExp(`\\basync\\s*\\(\\s*\\)\\s*=>\\s*\\(\\{\\s*${WORD}\\s*\\}\\)`, 'g'),
+  new RegExp(
+    `\\(\\{\\s*kind\\s*,\\s*${WORD}\\s*\\}\\)\\s*=>\\s*\\[\\s*kind\\s*,\\s*${WORD}\\s*\\]`,
+    'g',
+  ),
 ];
 const CODE = /\.(py|ts|tsx|js|jsx|mjs|cjs|sql|rs|svelte|vue)$/;
 const SKIP =
@@ -81,17 +131,123 @@ function files() {
   return [...out].filter((p) => CODE.test(p) && !SKIP.test(p)).sort();
 }
 
+// Keep strings (including embedded SQL/test source) and line positions intact.
+// A commented database reference is not an executable reader or writer.
+function withoutComments(text) {
+  let output = '';
+  // A Node shebang starts with #!, not JavaScript division. Starting the
+  // regex scanner at its slash can swallow a later import and expose comments.
+  let start = 0;
+  if (text.startsWith('#!')) {
+    const end = text.indexOf('\n');
+    if (end < 0) return ' '.repeat(text.length);
+    output = ' '.repeat(end);
+    start = end;
+  }
+  let quote = null;
+  let block = false;
+  let line = false;
+  let escaped = false;
+  let regex = false;
+  let regexClass = false;
+  let regexEscaped = false;
+  const regexCanStart = () => {
+    const before = output.trimEnd();
+    const previous = before.at(-1);
+    if (!previous) return true;
+    if (previous === ')' && /\b(?:if|while|for|with|switch|catch)\s*\([^()]*\)\s*$/.test(before))
+      return true;
+    if ('([{=:;,!?&|+-*%^~<>'.includes(previous)) return true;
+    return /\b(?:return|throw|case|delete|void|typeof|instanceof|in|of|yield|await|else|do)\s*$/.test(
+      before,
+    );
+  };
+  for (let i = start; i < text.length; i++) {
+    const char = text[i];
+    const next = text[i + 1];
+    if (regex) {
+      if (char === '\n') output += '\n';
+      else output += ' ';
+      if (regexEscaped) regexEscaped = false;
+      else if (char === '\\') regexEscaped = true;
+      else if (char === '[') regexClass = true;
+      else if (char === ']') regexClass = false;
+      else if (char === '/' && !regexClass) {
+        regex = false;
+        while (/[A-Za-z]/.test(text[i + 1] ?? '')) {
+          output += ' ';
+          i++;
+        }
+      }
+    } else if (line) {
+      if (char === '\n') line = false;
+      output += char === '\n' ? '\n' : ' ';
+    } else if (block) {
+      if (char === '*' && next === '/') {
+        output += '  ';
+        i++;
+        block = false;
+      } else output += char === '\n' ? '\n' : ' ';
+    } else if (quote) {
+      // Template literals can embed executable source (for example, CDP
+      // expressions). Strip a comment-only line there too, while preserving
+      // arbitrary template text and every line boundary for the source census.
+      if (
+        quote === '`' &&
+        char === '/' &&
+        (next === '/' || next === '*') &&
+        /^[\t ]*$/.test(text.slice(text.lastIndexOf('\n', i - 1) + 1, i))
+      ) {
+        block = next === '*';
+        line = next === '/';
+        output += '  ';
+        i++;
+        continue;
+      }
+      output += char;
+      if (escaped) escaped = false;
+      else if (char === '\\') escaped = true;
+      else if (char === quote) quote = null;
+    } else if (char === '"' || char === "'" || char.charCodeAt(0) === 96) {
+      quote = char;
+      output += char;
+    } else if (quote === null && char === '/' && next !== '/' && next !== '*' && regexCanStart()) {
+      regex = true;
+      regexClass = false;
+      regexEscaped = false;
+      output += ' ';
+    } else if (char === '/' && (next === '/' || next === '*')) {
+      block = next === '*';
+      line = next === '/';
+      output += '  ';
+      i++;
+    } else output += char;
+  }
+  return output;
+}
+
 export function matchingLines(text) {
   const hits = [];
-  text.split('\n').forEach((line, i) => {
-    if (ROW.test(line) && !NOISE.some((n) => n.test(line))) hits.push([i + 1, line.trim()]);
+  const source = withoutComments(text);
+  const originalLines = text.split('\n');
+  const browserState = BROWSER_STATE.test(source);
+  source.split('\n').forEach((line, i) => {
+    let remainder = line;
+    // Test/SQL strings deliberately remain visible to the census. Only known
+    // CSS/browser occurrences are erased, preserving every sibling reference.
+    for (const pattern of NOISE) remainder = remainder.replace(pattern, '');
+    if (browserState)
+      for (const pattern of BROWSER_NOISE) remainder = remainder.replace(pattern, '');
+    if (ROW.test(remainder)) hits.push([i + 1, originalLines[i].trim()]);
   });
   return hits;
 }
 
 export function scan(overrides = {}) {
   const found = {};
-  for (const rel of [...new Set([...files(), ...Object.keys(overrides)])].sort()) {
+  for (const rel of [...new Set([...files(), ...Object.keys(overrides)])]
+    .filter((path) => path !== GUARD_FILE)
+    .sort()) {
     let text;
     if (rel in overrides) text = overrides[rel];
     else {
@@ -168,6 +324,13 @@ function selfTest() {
   const someFile = Object.keys(baseline)[0];
   const real = readFileSync(join(ROOT, someFile), 'utf8');
   const plantNew = 'src/__t13_selftest_plant__.ts';
+  const embeddedComment = (statement) =>
+    [
+      'const expression = `(() => {',
+      `  // diagnostic ${WORD} state`,
+      `  ${statement}`,
+      '})()`;',
+    ].join('\n');
   const cases = [
     ['real tree, no plant', {}, false],
     [
@@ -183,10 +346,118 @@ function selfTest() {
     [
       'planted CSS/DOM lines only (must not fire)',
       {
-        [plantNew]: `el.style.${WORD} = "hidden";\nconst css = "${WORD}: hidden;";\nconst ai_${WORD}_panel = 1;\n`,
+        [plantNew]: `el.style.${WORD} = "hidden";\nconst css = "${WORD}: hidden;";\nconst style = getComputedStyle(el);\nstyle.${WORD} !== "hidden";\nconst ai_${WORD}_panel = 1;\n`,
       },
       false,
     ],
+    [
+      'planted browser diagnostic state only (must not fire)',
+      {
+        [plantNew]: `const visibility = await observePanelVisibility(panel);\nif (!visibility.measured || visibility.visibility !== "visible") return;\nconst event = { visibility: "hidden" };\nreturn event.visibility;\n`,
+      },
+      false,
+    ],
+    [
+      'planted browser panel checkpoint labels only (must not fire)',
+      {
+        [plantNew]: `const phases = observePanelVisibility(panel);\nconst entry = { ${WORD}: index < 3 ? 'visible' : 'hidden' };\n`,
+      },
+      false,
+    ],
+    [
+      'comment in embedded browser source only (must not fire)',
+      { [plantNew]: embeddedComment('return true;') },
+      false,
+    ],
+    [
+      'shebang followed by import and ordinary comments (must not fire)',
+      {
+        [plantNew]: `#!/usr/bin/env node\nimport 'node:fs';\n/** ${WORD} comment */\n// ${WORD} comment\n`,
+      },
+      false,
+    ],
+    [
+      'embedded source query remains counted after comment',
+      { [plantNew]: embeddedComment(`query.eq('${WORD}', 'internal');`) },
+      true,
+    ],
+    ...[
+      ['query field', `query.eq('${WORD}', 'internal');`, true],
+      [
+        'escaped-slash regex leaves following query visible',
+        `const scheme = /https?:\\/\\//; query.eq('${WORD}', 'internal');`,
+        true,
+      ],
+      [
+        'regex character class does not start a comment',
+        `/[/*]/; query.eq('${WORD}', 'internal');`,
+        true,
+      ],
+      [
+        'regex after control condition does not start a comment',
+        `if (ready) /[/*]/.test(value); query.eq('${WORD}', 'internal');`,
+        true,
+      ],
+      [
+        'regex after return leaves following query visible',
+        `return /https?:\\/\\//; query.eq('${WORD}', 'internal');`,
+        true,
+      ],
+      ['row payload', `const body = { ${WORD}: 'internal' };`, true],
+      ['payload shorthand', `const body = { ${WORD} };`, true],
+      ['variable-valued payload', `const body = { ${WORD}: ${WORD} };`, true],
+      ['expression-valued payload', `const body = { ${WORD}: ${WORD} === 'public' };`, true],
+      ['expression-valued property write', `row.${WORD} = ${WORD} === 'visible';`, true],
+      ['property write', `row.${WORD} = 'public';`, true],
+      ['bare s row read', `const row = s.${WORD};`, true],
+      ['bare cs row read', `const row = cs.${WORD};`, true],
+      [
+        'computed style s comparison',
+        `const s = getComputedStyle(el); s.${WORD} !== 'hidden';`,
+        false,
+      ],
+      [
+        'computed style cs comparison',
+        `const cs = getComputedStyle(el); cs.${WORD} === 'visible';`,
+        false,
+      ],
+      [
+        'query assigned to diagnostic-named variable',
+        `const ${WORD} = query.eq('${WORD}', 'internal');`,
+        true,
+      ],
+      ['mixed CSS and query', `style.${WORD} === 'hidden'; query.eq('${WORD}', 'internal');`, true],
+      [
+        'mixed console label and query',
+        `console.log('${WORD}', query.eq('${WORD}', 'internal'));`,
+        true,
+      ],
+      ['mixed browser event and row write', `event.${WORD}; row.${WORD} = 'public';`, true],
+      ['browser event property write is not noise', `event.${WORD} = 'public';`, true],
+      ['CSS property comparison', `style.${WORD} === 'hidden';`, false],
+      ['CSS property write', `element.style.${WORD} = 'hidden';`, false],
+      ['CSS bracket property write', `element.style['${WORD}'] = 'hidden';`, false],
+      [
+        'mixed CSS bracket property and query',
+        `element.style['${WORD}'] = 'hidden'; query.eq('${WORD}', 'internal');`,
+        true,
+      ],
+      ['computed CSS comparison', `getComputedStyle(element).${WORD} === 'visible';`, false],
+      ['browser callback result', `async () => ({ ${WORD} }),`, false],
+      [
+        'browser event destructuring',
+        `result.events.map(({ kind, ${WORD} }) => [kind, ${WORD}]);`,
+        false,
+      ],
+      ['inline commented query', `style.display; // query.eq('${WORD}', 'internal');`, false],
+      ['block commented query', `/* disabled\nquery.eq('${WORD}', 'internal');\n*/`, false],
+      ['comment followed by live query', `/* disabled */ query.eq('${WORD}', 'internal');`, true],
+      ['commented query', `// query.eq('${WORD}', 'internal');`, false],
+    ].map(([name, text, wantFail]) => [
+      `isolated ${name}`,
+      { [plantNew]: `const state = document.${WORD}State;\n${text}\n` },
+      wantFail,
+    ]),
   ];
   let ok = true;
   const splitPlant = 'scripts/__t13_selftest_split__.ts';

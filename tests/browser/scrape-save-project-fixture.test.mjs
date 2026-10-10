@@ -8,10 +8,19 @@ const fixture = {
   ownerId: '33333333-3333-4333-8333-333333333333',
   name: 'owned run project',
 };
-test('fixture write carries selected organization and leaves actor stamping to database', () => {
+test('fixture write uses T-13 fields, selected organization, and database actor stamping', () => {
   const request = projectFixtureRequest(fixture, 'POST');
   assert.equal(request.body.organization_id, fixture.organizationId);
   assert.equal(request.body.id, fixture.id);
+  assert.equal(request.body.shown_to, null);
+  assert.equal(request.body.published_to_web, false);
+  assert.deepEqual(Object.keys(request.body).sort(), [
+    'id',
+    'name',
+    'organization_id',
+    'published_to_web',
+    'shown_to',
+  ]);
   assert.equal(Object.hasOwn(request.body, 'created_by'), false);
 });
 test('cleanup binds exact id, organization, actor and run name and verifies absence', async () => {

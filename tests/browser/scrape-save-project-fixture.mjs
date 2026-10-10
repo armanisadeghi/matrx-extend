@@ -22,7 +22,15 @@ export function projectFixtureRequest(fixture, method = 'GET') {
     organizationId,
     method,
     ...(method === 'POST'
-      ? { body: { id, organization_id: organizationId, name, visibility: 'internal' } }
+      ? {
+          body: {
+            id,
+            organization_id: organizationId,
+            name,
+            shown_to: null,
+            published_to_web: false,
+          },
+        }
       : {}),
     ...(method === 'PATCH' ? { body: { deleted_at: new Date().toISOString() } } : {}),
   };
