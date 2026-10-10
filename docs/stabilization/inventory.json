@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T11:02:16Z",
+  "updated_at": "2026-10-10T11:10:10Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -13415,9 +13415,10 @@
           ],
           "run_ids": [
             "settings-mounted-member-full6-20261003-01",
+            "38046648854",
             "desktop-settings-member-20261003-independent01"
           ],
-          "retest_status": "not-run"
+          "retest_status": "Latest bounded member attempt 38046648854 failed member organization storage resolution before authenticated identity verification or any Settings case, and its acceptance resource final is invalid. Zero product credit; member Settings remains unverified. See reports/peer-review-run38046648854.json."
         },
         "admin": {
           "test_status": "unverified",
@@ -13603,6 +13604,16 @@
           "report": "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
           "proven": "19 bounded guest case rows: 12 pass, 7 unverified; per-criterion truth retained in native report.",
           "limits": "T16/T19/T31/T34 downstream behavior; T40 capture; T63 member denial; T70 update/API branches remain unverified in this run. T67 nested capture unverified. No full Settings/current-main/Store/member/admin claim."
+        },
+        {
+          "run_id": 38046648854,
+          "mode": "member",
+          "status": "zero_credit_resource_invalid_precondition",
+          "native_status": "authentication-stage assertion failed before authenticated identity verification; zero Settings cases observed",
+          "build": "0.2.459",
+          "report": "docs/stabilization/reports/peer-review-run38046648854.json",
+          "proven": "Hosted workflow and frozen product artifact identity/digests match GitHub metadata; package and browser resource journals end valid.",
+          "limits": "Acceptance journal ends resourceInvalid=true after CPU-busy pending and child exit 1. Member organization storage resolution failed before member identity verification. Zero product credit; no Settings behavior verdict. Cleanup of the local one-time link is executor-reported only."
         }
       ],
       "source_audit_sha": "6f4e9d0211315949f50a3d11b35dfa732822abec"

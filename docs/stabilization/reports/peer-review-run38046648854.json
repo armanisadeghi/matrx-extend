@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_acceptance_evidence_review",
+  "reviewer_task": "/root/member_run_peer",
+  "reviewed_at": "2026-10-10T11:10:10Z",
+  "verdict": "zero_credit_resource_invalid_precondition",
+  "run": {
+    "run_id": 38046648854,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38046648854",
+    "workflow": "hosted-guest-acceptance.yml",
+    "workflow_source_sha": "88dcf41baa2f50f0d4af9af6a5d6338b4ec54451",
+    "dispatch_ref": "main",
+    "lane": "A",
+    "conclusion": "failure",
+    "acceptance_case": "settings-persistence-member",
+    "role": "member"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "version": "0.2.459",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11666664848,
+    "name": "hosted-guest-38046648854-1",
+    "digest": "sha256:daf4aefcc4dd0593b548984747ad7078196c272a6b1b6866c0e088dea5da5cf8",
+    "workflow_run_id": 38046648854,
+    "expired": false
+  },
+  "evidence": [
+    {
+      "path": "docs/stabilization/evidence/settings-controls-member/run38046648854/receipt.sanitized.json",
+      "sha256": "bd1909bf5357314d28c4ea4ff164f3052b95db0d5737230cd32262cdc0f4f39b"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-controls-member/run38046648854/native-report.sanitized.json",
+      "sha256": "f6c46139dc2202d970ff870ef94b1141c696170c782f85e29a5248d5de0b247e"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-controls-member/run38046648854/cleanup.sanitized.json",
+      "sha256": "6fbd8761bbd78ce66fffcc74c5eb7905b4adb36e1ead965517c101024c1c38cc"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-controls-member/run38046648854/hosted-package-38046648854-1.jsonl",
+      "sha256": "41d990c61b3efb9c684fc24d0b7851cf5ff8127213f15549a95742063e85b46d"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-controls-member/run38046648854/hosted-browser-38046648854-1.jsonl",
+      "sha256": "3ade93b6c7e6c5c9855237721e9cc2f131dae6f83cdd987cc16146328ca44549"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-controls-member/run38046648854/hosted-guest-38046648854-1.jsonl",
+      "sha256": "4d4ce551902fb30207ae908d4b6428eca48857d9f70be29e08fe6afffc804c0a"
+    }
+  ],
+  "resource_finals": {
+    "hosted-package-38046648854-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38046648854-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38046648854-1": "invalid; admitted=true; resourceInvalid=true; exitCode=3; CPU-busy pending sample preceded child exit 1"
+  },
+  "verified_assertions": [
+    "GitHub reports run 38046648854 as the failed member Settings workflow on main at source 88dcf41baa2f50f0d4af9af6a5d6338b4ec54451. The workflow result artifact ID, name, run association, expiry state and digest match the receipt; hashing the downloaded GitHub artifact archive yielded the same SHA-256 digest.",
+    "GitHub CI metadata binds frozen development product artifact 11664077690 to source 129299df0a53a8a795ba1af054752817454357e3. Its artifact digest, version, and tree hash agree with the receipt. Exact-source CI 38046564856 is now successful at the workflow checkout SHA.",
+    "The hosted archive contains the native acceptance JSON and all three raw resource journals. The native JSON matches the sanitized report's Settings-active/no-guest-marker observation and member_organization_storage_resolution_assertion_failed before authenticated identity verification; zero Settings cases ran. The failure does not establish whether the assertion reflects product behavior or a member precondition/oracle issue. No product defect is demonstrated.",
+    "All three sanitized journals match their run IDs and receipt SHA-256 values. Raw archive journal hashes also match those sanitized copies for package and browser; the guest journal has expected privacy-redaction differences. Package and browser phases have valid exit-0 finals. The acceptance phase records CPU-busy pending, child exit 1, and resourceInvalid=true with final exit code 3; this run is resource-invalid and earns zero product credit.",
+    "The cleanup record labels secret deletion and local one-time-link absence as executor-reported, not independently attested. A separate post-run GitHub secret-name query found the named repository secret absent; this does not prove the local temporary-file claim or independently attest its state at terminal time.",
+    "The sanitized files contain no credential values, account email, or private local paths. Journals omit process attribution and opened paths. The repository secret's name appears in the cleanup record, but no secret value appears."
+  ],
+  "limits": [
+    "No member identity was verified and no Settings persistence, retry, or reload case ran. The failure is an authentication-stage member-organization storage assertion, with product cause unclassified.",
+    "The invalid acceptance resource final independently disqualifies the attempt from product credit, even if the authentication-stage assertion were treated as a product observation.",
+    "Cleanup evidence is partly self-reported. Current absence of the repository secret was checked after the run; local one-time-link cleanup remains unverified by this peer review.",
+    "This run does not change member Settings status. Admin, Store, current-main product runtime, and full Settings remain outside scope."
+  ],
+  "next_action": "Resolve why member_organization_storage_resolution failed and establish the real signed-in member and organization storage precondition. After that precondition is independently observable, rerun the bounded member Settings acceptance against the already-green exact-source workflow; do not classify this attempt as a product failure or acceptance pass."
+}

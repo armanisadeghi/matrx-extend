@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "case_id": "settings-persistence-member",
+  "hosted_run_id": 38046648854,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38046648854",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "88dcf41baa2f50f0d4af9af6a5d6338b4ec54451",
+  "dispatch_ref": "main",
+  "lane": "A",
+  "runner": {
+    "label": "macos-15",
+    "chrome_version": "141.0.7390.37"
+  },
+  "created_at_utc": "2026-10-10T10:56:23Z",
+  "started_at_utc": "2026-10-10T10:56:23Z",
+  "completed_at_utc": "2026-10-10T11:03:14Z",
+  "acceptance_case": "settings-persistence-member",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "artifact_sha256": "388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "frozen_product_artifact": true
+  },
+  "native_result": {
+    "status": "fail",
+    "failure_stage": "authentication",
+    "failure_operation": "member_organization_storage_resolution",
+    "failure_code": "member_organization_storage_resolution_assertion_failed",
+    "cases_observed": 0,
+    "authenticated_identity_verified": false,
+    "interpretation": "The native runner observed Settings active and a non-guest marker but failed the member organization-storage resolution assertion before authenticated identity verification or any Settings save/retry/reload case. No product behavior conclusion is justified."
+  },
+  "resources": {
+    "package": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid"
+    }
+  },
+  "resource_invalid_any": true,
+  "credential_handling": {
+    "evidence_class": "executor-reported terminal checks; not independently attested",
+    "cleanup_record": "cleanup.sanitized.json",
+    "credential_values_persisted": false
+  },
+  "evidence": [
+    {
+      "path": "native-report.sanitized.json",
+      "sha256": "f6c46139dc2202d970ff870ef94b1141c696170c782f85e29a5248d5de0b247e"
+    },
+    {
+      "path": "hosted-package-38046648854-1.jsonl",
+      "sha256": "41d990c61b3efb9c684fc24d0b7851cf5ff8127213f15549a95742063e85b46d"
+    },
+    {
+      "path": "hosted-browser-38046648854-1.jsonl",
+      "sha256": "3ade93b6c7e6c5c9855237721e9cc2f131dae6f83cdd987cc16146328ca44549"
+    },
+    {
+      "path": "hosted-guest-38046648854-1.jsonl",
+      "sha256": "4d4ce551902fb30207ae908d4b6428eca48857d9f70be29e08fe6afffc804c0a"
+    },
+    {
+      "path": "cleanup.sanitized.json",
+      "sha256": "6fbd8761bbd78ce66fffcc74c5eb7905b4adb36e1ead965517c101024c1c38cc"
+    }
+  ],
+  "limitations": "Acceptance resource ended invalid with RESOURCE_CPU_BUSY and exit code 3; package and browser resource finals were valid. The authentication-stage assertion may reflect product or oracle/precondition behavior, but this infrastructure-invalid attempt earns zero product credit. No Settings save, rejection/retry, or reload assertions ran; admin, current-main, Store and full Settings remain open.",
+  "hosted_result_artifact": {
+    "artifact_id": 11666664848,
+    "name": "hosted-guest-38046648854-1",
+    "digest": "sha256:daf4aefcc4dd0593b548984747ad7078196c272a6b1b6866c0e088dea5da5cf8",
+    "expired": false,
+    "created_at_utc": "2026-10-10T11:03:09Z"
+  }
+}
