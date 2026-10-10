@@ -1,0 +1,72 @@
+{
+  "defect_id": "EXT-D-0193",
+  "classification": "SOURCE_GUARD_RED_GREEN_ONLY",
+  "product_behavior_credit": 0,
+  "baseline_reference": "2acb41f25d1654593d8df66cc36ba4538021fc1e",
+  "baseline_note": "These four baseline blobs are unchanged across the original RED run and this reference; intervening commits concern Scrape diagnostics/evidence only.",
+  "source_blobs": [
+    {
+      "path": "scripts/hosted-release-artifact.mjs",
+      "baseline_git_blob": "db7156b742145fe890e7a01dd200b225786b561a",
+      "repaired_git_blob": "d2d703a5a380a04f27f2118eef4763c5195e4dfa"
+    },
+    {
+      "path": "scripts/hosted-seo-route.mjs",
+      "baseline_git_blob": "0f69fc8a85db0313031a1635f582d440491b55e1",
+      "repaired_git_blob": "96251045912fd53ac4f01947bd68283f0c51af89"
+    },
+    {
+      "path": "tests/browser/data-guest-artifact-contract.mjs",
+      "baseline_git_blob": "eda50a0f7577c91f489c70bae90b9015cf1bd313",
+      "repaired_git_blob": "df7030f53dee50e751b0540a0e878ba487d11f31"
+    },
+    {
+      "path": ".github/workflows/hosted-guest-acceptance.yml",
+      "baseline_git_blob": "2d5ecd952a63e28063d7698d52667ba59bbca17b",
+      "repaired_git_blob": "07cf18968233ebbc5e60f38936723a42537645ef"
+    }
+  ],
+  "red_checks": [
+    {
+      "test_names": [
+        "guest and member Store cases load Store bytes with only manifest.key added",
+        "guest SEO passes exact release Store package to the existing release driver path"
+      ],
+      "command": "node --test scripts/hosted-release-artifact.test.mjs scripts/hosted-seo-route.test.mjs",
+      "exit_status": 1,
+      "status": "RED",
+      "result": "20 tests; 18 pass; 2 fail",
+      "output_snippets": [
+        "actual: published_release; expected: published_store_zip_adapted (guest-data case)",
+        "hosted_seo_development_mode_required; actual: release; expected: development"
+      ]
+    },
+    {
+      "test_names": [
+        "guest Data and SEO admit exact release or complete CI provenance and refuse mixed modes"
+      ],
+      "preparation": "Copied git show HEAD:.github/workflows/hosted-guest-acceptance.yml to scratch and rewrote only the test workflow input URL to that file; shared checkout was never weakened.",
+      "command": "node --test /var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/d193-red-f_a22tor/hosted-public-release-provenance.test.mjs",
+      "exit_status": 1,
+      "status": "RED",
+      "output_snippets": ["guest-data release=38065000000 dev=/ crx=false: false !== true"]
+    },
+    {
+      "test_names": ["release selection accepts only matching adapted Store provenance"],
+      "preparation": "Copied git show HEAD:tests/browser/data-guest-artifact-contract.mjs to scratch and rewrote only the test module import to that file; shared checkout was never weakened.",
+      "command": "node --test /var/folders/xp/_2jlqq_j0_z80zn9x0zzk7gr0000gn/T/d193-red-f_a22tor/data-guest-artifact-contract.test.mjs",
+      "exit_status": 1,
+      "status": "RED",
+      "output_snippets": [
+        "data_guest_local_receipt_required; actual: native_store_zip_candidate_key_adapted; expected: local_dev_unpacked"
+      ]
+    }
+  ],
+  "green_check": {
+    "command": "node --test scripts/hosted-scrape-route.test.mjs scripts/hosted-release-artifact.test.mjs scripts/hosted-seo-route.test.mjs scripts/hosted-public-release-provenance.test.mjs tests/browser/data-guest-artifact-contract.test.mjs",
+    "exit_status": 0,
+    "status": "GREEN",
+    "result": "37 tests; 37 pass; 0 fail"
+  },
+  "limits": "Source guards and real ZIP selection only. No browser was launched. Independent peer PASS covers source repair; exact v0.2.469 guest Data and SEO browser acceptance remains required."
+}

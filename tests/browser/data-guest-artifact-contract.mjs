@@ -8,6 +8,64 @@ export function verifyDataGuestArtifact({
   treeSha256,
   manifestVersion,
 }) {
+  if (env.MATRX_DATA_ARTIFACT_MODE === 'release') {
+    assert.equal(
+      localReceipt?.kind,
+      'native_store_zip_candidate_key_adapted',
+      'data_guest_store_receipt_required',
+    );
+    assert.equal(localReceipt.publishState, 'pushed', 'data_guest_release_unpublished');
+    assert.match(
+      env.MATRX_DATA_RELEASE_SOURCE_SHA ?? '',
+      /^[a-f0-9]{40}$/,
+      'data_guest_release_source_required',
+    );
+    assert.equal(
+      localReceipt.sourceSha,
+      env.MATRX_DATA_RELEASE_SOURCE_SHA,
+      'data_guest_release_source_mismatch',
+    );
+    assert.equal(treeSha256, localReceipt.treeSha256, 'data_guest_tree_mismatch');
+    assert.equal(manifestVersion, localReceipt.version, 'data_guest_version_mismatch');
+    const selected = localReceipt.artifactSelection;
+    assert.equal(
+      selected?.source,
+      'release_receipt_store_zip',
+      'data_guest_store_selection_required',
+    );
+    assert.equal(
+      selected.selectedZipSha256,
+      localReceipt.storeZip?.sha256,
+      'data_guest_store_zip_mismatch',
+    );
+    assert.match(
+      selected.selectedZipSha256 ?? '',
+      /^[a-f0-9]{64}$/,
+      'data_guest_store_hash_required',
+    );
+    assert.equal(selected.runtimeTreeSha256, treeSha256, 'data_guest_runtime_tree_mismatch');
+    assert.equal(
+      selected.runtimeExtensionDir,
+      env.MATRX_DATA_EXTENSION_DIR,
+      'data_guest_runtime_path_mismatch',
+    );
+    assert.deepEqual(
+      selected.modifiedPaths,
+      ['manifest.json'],
+      'data_guest_store_adaptation_refused',
+    );
+    return {
+      kind: localReceipt.kind,
+      source_sha: localReceipt.sourceSha,
+      tree_sha256: treeSha256,
+      version: manifestVersion,
+      store_zip_sha256: selected.selectedZipSha256,
+    };
+  }
+  assert.ok(
+    env.MATRX_DATA_ARTIFACT_MODE === undefined || env.MATRX_DATA_ARTIFACT_MODE === 'development',
+    'data_guest_artifact_mode_refused',
+  );
   assert.equal(localReceipt?.kind, 'local_dev_unpacked', 'data_guest_local_receipt_required');
   assert.equal(
     localReceipt?.publish_state,

@@ -173,9 +173,21 @@ export function hostedGuestSeoRoute(
     interruptTarget,
   );
   if (acceptanceCase !== 'guest-seo') return null;
-  assert.equal(artifactMode, 'development', 'hosted_seo_development_mode_required');
-  assert.equal(prepared?.kind, 'ci_development_test', 'hosted_seo_ci_receipt_required');
-  assert.equal(prepared?.eligibleStore, false, 'hosted_seo_store_artifact_refused');
+  assert.ok(
+    artifactMode === 'development' || artifactMode === 'release',
+    'hosted_seo_artifact_mode_required',
+  );
+  if (artifactMode === 'development') {
+    assert.equal(prepared?.kind, 'ci_development_test', 'hosted_seo_ci_receipt_required');
+    assert.equal(prepared?.eligibleStore, false, 'hosted_seo_store_artifact_refused');
+  } else {
+    assert.equal(
+      prepared?.kind,
+      'published_store_zip_adapted',
+      'hosted_seo_store_receipt_required',
+    );
+    assert.equal(selectedInterruptTarget, undefined, 'seo_interrupt_requires_development_artifact');
+  }
   assert.ok(prepared.extensionDir?.startsWith('/'), 'hosted_seo_extension_dir_required');
   assert.ok(prepared.relocatedReceipt?.startsWith('/'), 'hosted_seo_receipt_path_required');
   assert.equal(
@@ -183,12 +195,20 @@ export function hostedGuestSeoRoute(
     dirname(prepared.relocatedReceipt),
     'hosted_seo_selected_artifact_mismatch',
   );
-  assert.equal(prepared.extensionDir, join(dirname(prepared.relocatedReceipt), 'chrome-mv3'));
+  assert.equal(
+    prepared.extensionDir,
+    join(
+      dirname(prepared.relocatedReceipt),
+      artifactMode === 'release' ? 'chrome-mv3-store' : 'chrome-mv3',
+    ),
+  );
   return {
     driver: 'tests/browser/seo-guest-acceptance.mjs',
     env: {
       SEO_GUEST_EXTENSION_DIR: prepared.extensionDir,
-      SEO_GUEST_DEV_BUILD_RECEIPT: prepared.relocatedReceipt,
+      ...(artifactMode === 'release'
+        ? { SEO_GUEST_RELEASE_RECEIPT: prepared.relocatedReceipt }
+        : { SEO_GUEST_DEV_BUILD_RECEIPT: prepared.relocatedReceipt }),
       SEO_GUEST_CASE_SCOPE: scope,
       SEO_GUEST_METADATA_FIXTURE: metadataFixture,
       SEO_GUEST_INTERRUPT_AFTER_TARGET: selectedInterruptTarget,

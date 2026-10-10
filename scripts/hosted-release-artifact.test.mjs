@@ -53,7 +53,13 @@ async function fixture(label) {
 
 test('guest and member Store cases load Store bytes with only manifest.key added', async () => {
   const { artifactDir, receipt, store, storeZip } = await fixture('store-cases');
-  for (const acceptanceCase of ['guest-chat', 'guest-scrape', 'member-chat']) {
+  for (const acceptanceCase of [
+    'guest-chat',
+    'guest-scrape',
+    'member-chat',
+    'guest-data',
+    'guest-seo',
+  ]) {
     const output = join(root, `output-${acceptanceCase}`);
     await mkdir(output);
     const prepared = await prepareHostedReleaseArtifact(

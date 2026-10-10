@@ -326,7 +326,6 @@ async function run(prepared, artifactMode) {
   )
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
   if (
-    acceptanceCase === 'guest-data' ||
     acceptanceCase === 'member-data' ||
     acceptanceCase === 'scrape-save-member' ||
     acceptanceCase === 'tab-groups-member' ||
@@ -334,7 +333,8 @@ async function run(prepared, artifactMode) {
   )
     assert.equal(kind, 'ci_development_test', 'This acceptance requires CI development receipt');
   const guestDataCiReceiptPath =
-    acceptanceCase === 'guest-data' || acceptanceCase === 'member-data'
+    (acceptanceCase === 'guest-data' || acceptanceCase === 'member-data') &&
+    kind === 'ci_development_test'
       ? join(
           dirname(relocatedReceipt),
           `guest-data-ci-receipt-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}.json`,
@@ -629,10 +629,15 @@ async function run(prepared, artifactMode) {
       ? {
           MATRX_DATA_EXTENSION_DIR: extensionDir,
           MATRX_DATA_RECEIPT: relocatedReceipt,
-          MATRX_DATA_CI_RECEIPT: guestDataCiReceiptPath,
-          MATRX_DATA_CI_SOURCE_SHA: prepared.sourceSha,
-          MATRX_DATA_CI_RUN_ID: String(prepared.runId),
-          MATRX_DATA_CI_ARTIFACT_ID: String(prepared.artifactId),
+          MATRX_DATA_ARTIFACT_MODE: artifactMode,
+          ...(kind === 'ci_development_test'
+            ? {
+                MATRX_DATA_CI_RECEIPT: guestDataCiReceiptPath,
+                MATRX_DATA_CI_SOURCE_SHA: prepared.sourceSha,
+                MATRX_DATA_CI_RUN_ID: String(prepared.runId),
+                MATRX_DATA_CI_ARTIFACT_ID: String(prepared.artifactId),
+              }
+            : { MATRX_DATA_RELEASE_SOURCE_SHA: process.env.MATRX_HOSTED_RELEASE_SHA }),
         }
       : {}),
     ...(kind === 'ci_development_test'

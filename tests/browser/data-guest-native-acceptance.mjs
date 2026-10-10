@@ -43,7 +43,7 @@ const report = {
   observations: {},
   failure_stage: null,
   limits:
-    'Guest native behavior on exact imported development artifact; no signed-in save or Store claim.',
+    'Guest native behavior on the selected imported artifact; no signed-in save or published Store claim.',
 };
 
 async function capturePickerDiagnostic(panel, artifacts) {
@@ -97,8 +97,9 @@ try {
   assert.ok(extensionDir && receiptPath, 'data_guest_artifact_inputs_missing');
   const receipt = JSON.parse(await readFile(receiptPath, 'utf8'));
   const ciReceiptPath = process.env.MATRX_DATA_CI_RECEIPT;
-  assert.ok(ciReceiptPath, 'data_guest_ci_receipt_path_required');
-  const ciReceipt = JSON.parse(await readFile(ciReceiptPath, 'utf8'));
+  const releaseArtifact = process.env.MATRX_DATA_ARTIFACT_MODE === 'release';
+  if (!releaseArtifact) assert.ok(ciReceiptPath, 'data_guest_ci_receipt_path_required');
+  const ciReceipt = ciReceiptPath ? JSON.parse(await readFile(ciReceiptPath, 'utf8')) : undefined;
   const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
   report.artifact = verifyDataGuestArtifact({
     localReceipt: receipt,
@@ -110,7 +111,9 @@ try {
   await runNativeSidepanelQa({
     headed: true,
     extensionDir,
-    localDevReceiptPath: receiptPath,
+    ...(releaseArtifact
+      ? { releaseReceiptPath: receiptPath }
+      : { localDevReceiptPath: receiptPath }),
     expectedRelease: receipt,
     artifactRoot: join(process.env.RUNNER_TEMP ?? tmpdir(), 'guest-acceptance'),
     ownedPages: { '/products': fixture },

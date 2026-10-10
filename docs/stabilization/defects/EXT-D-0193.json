@@ -1,0 +1,55 @@
+{
+  "id": "EXT-D-0193",
+  "feature_id": "EXT-F-0001",
+  "case_ids": ["EXT-F-2005-T01", "EXT-F-1008-T01"],
+  "surface": "Hosted acceptance artifact provenance and native guest Data/SEO dispatch",
+  "auth_mode": "guest; infrastructure repair, zero product behavior credit",
+  "title": "Exact release Store package cannot reach guest Data and SEO acceptance",
+  "severity": "S2: release candidate guest coverage is blocked before browser assertions",
+  "priority": "P1: unblock exact v0.2.469 guest Data and SEO verification",
+  "state": "fixed",
+  "owner": "root",
+  "preconditions": [
+    "Select the exact v0.2.469 release artifact using release_run_id for guest-data or guest-seo."
+  ],
+  "reproduction": [
+    "Dispatch hosted acceptance with guest-data or guest-seo and only release_run_id set.",
+    "Observe Require exactly one artifact provenance mode rejects the selection before browser setup; recorded run 38069675622."
+  ],
+  "expected": "Exact release selection loads the selected Store ZIP through the existing manifest.key-only adaptation and executes the existing guest Data/SEO assertions; mixed, incomplete and CRX provenance is refused.",
+  "actual": "Workflow required CI development provenance; Data setup and receipt verification and SEO routing repeated the development-only restriction. Release importer would otherwise select local ZIP bytes for both cases.",
+  "cause": "Guest Data and SEO were added as development-only acceptance cases and omitted from the existing release Store ZIP case set.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38069675622",
+    "docs/stabilization/reports/d193-red-proof.json"
+  ],
+  "fix_commit": null,
+  "verification": [
+    "Baseline importer and SEO routing tests failed before repair; baseline workflow mode matrix and Data receipt tests failed in scratch copies.",
+    "37 focused tests pass after repair, including actual ZIP payload selection, executable workflow mode matrix and negative source/tree/version/selection provenance.",
+    "Focused Biome, Node syntax and diff checks pass; independent peer PASS. No browser run and zero product behavior credit."
+  ],
+  "closure_requirement": "Independent review, then fresh guarded hosted guest-data and guest-seo runs selecting exact v0.2.469 release bytes must reach and pass their unchanged real behavior assertions with valid resource finals. Record both retests before retest-pass and closed. No CI-development substitute or product credit from source tests.",
+  "transition_history": [
+    {
+      "from": null,
+      "to": "open",
+      "reason": "Run 38069675622 rejects release provenance before guest acceptance."
+    },
+    {
+      "from": "open",
+      "to": "triaged",
+      "reason": "Workflow, dispatch, importer and native receipt paths contain development-only restrictions."
+    },
+    {
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Source repair and focused red/green checks prepared; independent review and exact-candidate browser retest pending."
+    },
+    {
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair independently reviewed PASS; durable baseline RED and repaired GREEN proof recorded. Fresh exact-v0.2.469 guest Data and SEO browser retests pending."
+    }
+  ]
+}

@@ -78,3 +78,58 @@ test('refuses a CI proof in place of the imported unpacked build receipt', () =>
     /data_guest_local_receipt_required/,
   );
 });
+
+test('release selection accepts only matching adapted Store provenance', () => {
+  const storeReceipt = {
+    kind: 'native_store_zip_candidate_key_adapted',
+    publishState: 'pushed',
+    sourceSha: 'd'.repeat(40),
+    version: '0.2.469',
+    treeSha256: 'e'.repeat(64),
+    storeZip: { sha256: 'f'.repeat(64) },
+    artifactSelection: {
+      source: 'release_receipt_store_zip',
+      selectedZipSha256: 'f'.repeat(64),
+      runtimeTreeSha256: 'e'.repeat(64),
+      runtimeExtensionDir: '/tmp/store-candidate/chrome-mv3-store',
+      modifiedPaths: ['manifest.json'],
+    },
+  };
+  const releaseEnv = {
+    MATRX_DATA_ARTIFACT_MODE: 'release',
+    MATRX_DATA_RELEASE_SOURCE_SHA: 'd'.repeat(40),
+    MATRX_DATA_EXTENSION_DIR: '/tmp/store-candidate/chrome-mv3-store',
+  };
+  const verify = (receipt = storeReceipt, selectedEnv = releaseEnv) =>
+    verifyDataGuestArtifact({
+      localReceipt: receipt,
+      env: selectedEnv,
+      treeSha256: 'e'.repeat(64),
+      manifestVersion: '0.2.469',
+    });
+  assert.deepEqual(verify(), {
+    kind: 'native_store_zip_candidate_key_adapted',
+    source_sha: 'd'.repeat(40),
+    version: '0.2.469',
+    tree_sha256: 'e'.repeat(64),
+    store_zip_sha256: 'f'.repeat(64),
+  });
+  for (const changed of [
+    { ...storeReceipt, sourceSha: 'a'.repeat(40) },
+    { ...storeReceipt, treeSha256: 'a'.repeat(64) },
+    { ...storeReceipt, version: '0.2.468' },
+    { ...storeReceipt, kind: 'local_dev_unpacked' },
+    {
+      ...storeReceipt,
+      artifactSelection: { ...storeReceipt.artifactSelection, source: 'release_receipt_local_zip' },
+    },
+    {
+      ...storeReceipt,
+      artifactSelection: { ...storeReceipt.artifactSelection, modifiedPaths: ['background.js'] },
+    },
+  ])
+    assert.throws(() => verify(changed));
+  assert.throws(() =>
+    verify(storeReceipt, { ...releaseEnv, MATRX_DATA_ARTIFACT_MODE: 'published-crx' }),
+  );
+});

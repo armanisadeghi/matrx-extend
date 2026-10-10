@@ -535,7 +535,23 @@ test('selected target survives the real progress writer before driver SIGTERM', 
   }
 });
 
-test('guest SEO refuses release, Store, and mismatched development selection', () => {
+test('guest SEO passes exact release Store package to the existing release driver path', () => {
+  const prepared = {
+    kind: 'published_store_zip_adapted',
+    extensionDir: '/tmp/release/chrome-mv3-store',
+    relocatedReceipt: '/tmp/release/release-receipt.json',
+  };
+  const route = hostedGuestSeoRoute('guest-seo', 'release', prepared);
+  assert.equal(route.env.SEO_GUEST_RELEASE_RECEIPT, prepared.relocatedReceipt);
+  assert.equal(route.env.SEO_GUEST_EXTENSION_DIR, prepared.extensionDir);
+  assert.equal(route.env.SEO_GUEST_DEV_BUILD_RECEIPT, undefined);
+  assert.throws(() =>
+    hostedGuestSeoRoute('guest-seo', 'release', { ...prepared, kind: 'published_release' }),
+  );
+  assert.throws(() => hostedGuestSeoRoute('guest-seo', 'published-crx', prepared));
+});
+
+test('guest SEO refuses mismatched release and development selection or CRX mode', () => {
   for (const [mode, prepared] of [
     ['release', selected],
     ['published-crx', selected],
@@ -560,10 +576,6 @@ test('hosted workflow admits guest SEO on lane B with one exact development arti
   assert.match(workflow, /SEO_CASE_SCOPE" == readability/);
   assert.match(workflow, /Readability SEO scope requires guest-seo/);
   assert.match(workflow, /guest-chat\|guest-seo\|guest-data\|member-data\|guest-scrape/);
-  assert.match(
-    workflow,
-    /"\$ACCEPTANCE_CASE" == guest-seo[^\n]*\n\s*\[\[ -z "\$RELEASE_RUN_ID" && -n "\$DEVELOPMENT_RUN_ID" && -n "\$DEVELOPMENT_ARTIFACT_ID" && "\$PUBLISHED_STORE_CRX" != true \]\]/,
-  );
   assert.match(workflow, /test-results\/seo-guest-acceptance\.json/);
   assert.match(workflow, /seo_resource_diagnostic:\n[\s\S]*?default: false\n\s*type: boolean/);
   assert.match(workflow, /seo_interrupt_after_target:\n[\s\S]*?default: none\n\s*type: choice/);

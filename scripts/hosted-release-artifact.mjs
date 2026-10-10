@@ -5,7 +5,13 @@ import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { hashReleaseTree } from './sync-unpacked-release.mjs';
 
-const STORE_CASES = new Set(['guest-chat', 'guest-scrape', 'member-chat']);
+const STORE_CASES = new Set([
+  'guest-chat',
+  'guest-scrape',
+  'member-chat',
+  'guest-data',
+  'guest-seo',
+]);
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex');
 
 function zipEntries(path) {
