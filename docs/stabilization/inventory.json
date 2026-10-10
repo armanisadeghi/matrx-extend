@@ -40226,6 +40226,35 @@
           "results": {
             "guest": {
               "status": "pass",
+              "run_id": "38072894998",
+              "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+              "workflow_source_sha": "207509bd703d6d7e1fd1631ccd19a821807daa6b",
+              "release_run_id": 38071981003,
+              "release_artifact_id": 11676918768,
+              "hosted_result_artifact_id": 11677626880,
+              "build_version": "0.2.471",
+              "build_kind": "native_store_zip_candidate_key_adapted",
+              "tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+              "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+              "resource_valid": true,
+              "independent_review": "docs/stabilization/reports/peer-review-run38072894998.json",
+              "evidence": [
+                "docs/stabilization/evidence/guest-data-v0471/run38072894998/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-data-v0471/run38072894998/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-data-v0471/run38072894998/resource-finals.sanitized.json",
+                "docs/stabilization/evidence/guest-data-v0471/run38072894998/screenshots/native-side-panel.png",
+                "docs/stabilization/evidence/guest-data-v0471/run38072894998/screenshots/normal-target-after-open.png",
+                "docs/stabilization/evidence/guest-data-v0471/run38072894998/resource-journals/hosted-package-38072894998-1.jsonl",
+                "docs/stabilization/evidence/guest-data-v0471/run38072894998/resource-journals/hosted-browser-38072894998-1.jsonl",
+                "docs/stabilization/evidence/guest-data-v0471/run38072894998/resource-journals/hosted-guest-38072894998-1.jsonl",
+                "docs/stabilization/reports/peer-review-run38072894998.json"
+              ],
+              "detail": "Independently reviewed bounded guest EXT-F-2005-T01 pass on exact v0.2.471 Store ZIP candidate with temporary key adaptation: empty-picker Cancel preserved selection and made zero pattern writes; two distinct previews and fields selected; guest save controls withheld, Sign in to save present and used; zero pattern writes before authentication. Full guest Data remains unverified; no signed-in persistence, member/admin, or published Store-installed credit."
+            }
+          },
+          "result_history": [
+            {
+              "status": "pass",
               "run_id": "38050967096",
               "source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
               "workflow_source_sha": "8d2f8ca2cbdb0c44d5c85e97c4bcbdad524d2741",
@@ -40247,9 +40276,7 @@
                 "docs/stabilization/reports/peer-review-run38050967096.json"
               ],
               "detail": "Independently reviewed bounded guest pass on exact frozen v0.2.464 artifact. C16: opened the empty field picker, used a trusted Cancel pointer after CDP confirmed the exact button hit target, observed overlay dismissal, zero selected markers before/after, and zero non-GET /wbx_pattern writes. Existing two-field preview/Done path and guest Sign in to save gate also passed with zero pre-auth pattern writes. This updates only T01 guest and the bounded C16 behavior; signed-in save/persistence, other cases, roles, Store, and full Data remain unverified."
-            }
-          },
-          "result_history": [
+            },
             {
               "mode": "guest",
               "status": "pass",
@@ -40675,13 +40702,14 @@
             "38002259163",
             "38049410816",
             "38050967096",
-            "38071036836"
+            "38071036836",
+            "38072894998"
           ],
-          "retest_status": "Independently reviewed hosted run 38071036836 passes bounded guest EXT-F-2005-T01 picker, two-field preview/selection, and save-gate behavior on exact Store v0.2.469. Earlier run 38050967096 supports bounded C16 empty-picker Cancel. The guest Data feature cell remains unverified because other controls/cases, signed-in persistence, and broader dimensions remain open. D193 stays fixed pending completion of the paired SEO retest; run 38070400935 is partial.",
+          "retest_status": "Independently reviewed hosted run 38072894998 passes bounded guest EXT-F-2005-T01 on exact v0.2.471 Store ZIP candidate with temporary key adaptation. Native assertions verify Cancel without changed selection or pattern writes, two distinct previews/selections, and the unauthenticated save gate with zero pre-auth pattern writes. Guest Data feature remains unverified; signed-in persistence, other cases/controls, member/admin and published Store installation remain open.",
           "retest_evidence": {
-            "run_id": "38071036836",
-            "report": "docs/stabilization/reports/peer-review-run38071036836.json",
-            "scope": "Independent PASS for bounded guest EXT-F-2005-T01 on exact Store v0.2.469; no full Guest Data, authenticated persistence, member/admin, or published Store-install credit."
+            "run_id": "38072894998",
+            "report": "docs/stabilization/reports/peer-review-run38072894998.json",
+            "scope": "Bounded guest EXT-F-2005-T01 only; exact v0.2.471 Store ZIP candidate key-adapted and loaded unpacked. No full Guest Data, persistence, member/admin or published Store-install credit."
           }
         },
         "member": {

@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "acceptance_resource_detail": "CPU pressure briefly entered pending during the guest lane, then recovered before child exit; final decision valid.",
+  "journals": [
+    "resource-journals/hosted-package-38072894998-1.jsonl",
+    "resource-journals/hosted-browser-38072894998-1.jsonl",
+    "resource-journals/hosted-guest-38072894998-1.jsonl"
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_data_evidence_review",
+  "reviewer": "guest_data_run38072894998_review",
+  "verdict": "PASS_BOUNDED_GUEST_NATIVE_OBSERVATION",
+  "run": {
+    "hosted_run_id": 38072894998,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38072894998",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "conclusion": "success",
+    "workflow_source_sha": "207509bd703d6d7e1fd1631ccd19a821807daa6b",
+    "lane": "B",
+    "runner_label": "macos-15",
+    "runner_arch": "ARM64",
+    "case": "guest-data"
+  },
+  "provenance": {
+    "hosted_result_artifact": {
+      "id": 11677626880,
+      "name": "hosted-guest-38072894998-1",
+      "digest": "sha256:9b5923c2a358f401cda907345e398c71b70bf45aa2e903a7959fb574f8eec033",
+      "expired": false
+    },
+    "release_run_id": 38071981003,
+    "release_artifact": {
+      "id": 11676918768,
+      "name": "matrx-extend-v0.2.471",
+      "digest": "sha256:674432715dd8338fdbd4d919e2e1f8aeb7e6591d8e85688eb3bbfe2297883e3a",
+      "version": "0.2.471",
+      "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+      "tree_sha256": "a86844610bc4d3009bbb537ca0971f8b173109d8129dd616cbca5d08405410ac",
+      "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+      "expired": false
+    }
+  },
+  "observations": {
+    "guest_confirmed": true,
+    "controlled_rows": 3,
+    "empty_picker_cancel_dismissed": true,
+    "selection_unchanged_on_cancel": true,
+    "pattern_writes_during_cancel": 0,
+    "distinct_picker_previews": 2,
+    "two_fields_selected": true,
+    "pattern_name_and_save_controls_absent": true,
+    "sign_in_to_save_present": true,
+    "sign_in_action_used": true,
+    "pattern_writes_before_auth": 0,
+    "native_assertion_status": "pass"
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "case_verdict": "Guest EXT-F-2005-T01 passes on the exact v0.2.471 Store ZIP with temporary candidate-key adaptation. This is bounded guest picker/preview/selection/save-gate evidence.",
+  "credit_limits": {
+    "full_guest_data": "Unverified: other controls and cases remain open.",
+    "signed_in_persistence": "Not exercised.",
+    "member_admin": "No credit.",
+    "published_store_install": "No credit; the artifact was loaded unpacked after key adaptation."
+  },
+  "screenshot_review": {
+    "files": [
+      "screenshots/native-side-panel.png",
+      "screenshots/normal-target-after-open.png"
+    ],
+    "data_interaction_visible": false,
+    "assessment": "Screenshots corroborate guest profile side-panel and controlled page setup; they do not independently show Data behavior."
+  },
+  "verification": {
+    "full_result_artifact_downloaded_and_inspected": true,
+    "release_receipt_downloaded_and_zip_digest_recomputed": true,
+    "resource_journals_copied_through_sanitizer": true,
+    "tests_or_new_browser_runs": "Not run; review-only."
+  },
+  "evidence": [
+    "receipt.sanitized.json",
+    "native-report.sanitized.json",
+    "resource-finals.sanitized.json",
+    "screenshots/native-side-panel.png",
+    "screenshots/normal-target-after-open.png",
+    "resource-journals/hosted-package-38072894998-1.jsonl",
+    "resource-journals/hosted-browser-38072894998-1.jsonl",
+    "resource-journals/hosted-guest-38072894998-1.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38072894998",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38071981003"
+  ],
+  "limitations": [
+    "Behavior assertions are from the native result JSON, since screenshots do not display Data.",
+    "Candidate-key adaptation and unpacked loading do not equal Chrome Web Store installed-copy acceptance.",
+    "Transient CPU-pending recovered and all final resource decisions are valid."
+  ]
+}

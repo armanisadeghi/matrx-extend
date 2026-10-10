@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "run_id": 38072894998,
+  "scope": "Guarded hosted native guest Data acceptance, exact Store ZIP v0.2.471; bounded EXT-F-2005-T01.",
+  "mode": "guest",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "207509bd703d6d7e1fd1631ccd19a821807daa6b",
+  "workflow_lane": "B",
+  "runner": {
+    "label": "macos-15",
+    "architecture": "ARM64"
+  },
+  "started_at": "2026-10-10T17:43:32Z",
+  "finished_at": "2026-10-10T17:51:20Z",
+  "outcome": "pass_bounded",
+  "build": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "release_run_id": 38071981003,
+    "artifact_id": 11676918768,
+    "artifact_name": "matrx-extend-v0.2.471",
+    "version": "0.2.471",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f"
+  },
+  "hosted_result_artifact": {
+    "id": 11677626880,
+    "name": "hosted-guest-38072894998-1",
+    "digest": "sha256:9b5923c2a358f401cda907345e398c71b70bf45aa2e903a7959fb574f8eec033",
+    "expired": false
+  },
+  "case_results": {
+    "EXT-F-2005-T01": {
+      "guest": "pass_bounded",
+      "observations": [
+        "Empty picker cancel left selection unchanged and produced zero pattern writes.",
+        "Two distinct field previews and two selected fields were observed.",
+        "Guest Pattern name and Save pattern were absent while Sign in to save was present and used.",
+        "Zero non-GET pattern writes occurred before authentication."
+      ],
+      "resource_valid": true,
+      "independent_review": "docs/stabilization/reports/peer-review-run38072894998.json"
+    }
+  },
+  "resource_admission": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-data-v0471/run38072894998/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0471/run38072894998/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0471/run38072894998/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-data-v0471/run38072894998/screenshots/native-side-panel.png",
+    "docs/stabilization/evidence/guest-data-v0471/run38072894998/screenshots/normal-target-after-open.png",
+    "docs/stabilization/evidence/guest-data-v0471/run38072894998/resource-journals/hosted-package-38072894998-1.jsonl",
+    "docs/stabilization/evidence/guest-data-v0471/run38072894998/resource-journals/hosted-browser-38072894998-1.jsonl",
+    "docs/stabilization/evidence/guest-data-v0471/run38072894998/resource-journals/hosted-guest-38072894998-1.jsonl",
+    "docs/stabilization/reports/peer-review-run38072894998.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38072894998",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38071981003"
+  ],
+  "limits": [
+    "Only bounded guest T01 picker/preview/selection and unauthenticated save-gate behavior is credited.",
+    "No signed-in persistence, other Data controls/cases, member/admin behavior, or published Store install was exercised.",
+    "Screenshots do not show Data behavior; native assertion JSON supplies that evidence."
+  ]
+}

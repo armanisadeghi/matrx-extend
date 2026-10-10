@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "run_id": 38072894998,
+  "case_id": "guest-data",
+  "lane": "B",
+  "workflow_source_sha": "207509bd703d6d7e1fd1631ccd19a821807daa6b",
+  "hosted_result_artifact": {
+    "id": 11677626880,
+    "name": "hosted-guest-38072894998-1",
+    "digest": "sha256:9b5923c2a358f401cda907345e398c71b70bf45aa2e903a7959fb574f8eec033",
+    "expired": false
+  },
+  "release_run_id": 38071981003,
+  "release_artifact": {
+    "id": 11676918768,
+    "name": "matrx-extend-v0.2.471",
+    "digest": "sha256:674432715dd8338fdbd4d919e2e1f8aeb7e6591d8e85688eb3bbfe2297883e3a",
+    "version": "0.2.471",
+    "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "tree_sha256": "a86844610bc4d3009bbb537ca0971f8b173109d8129dd616cbca5d08405410ac",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "expired": false
+  },
+  "status": "pass",
+  "native_stage": "exercise_panel",
+  "product_credit": "bounded_guest_EXT-F-2005-T01_only",
+  "screenshots": {
+    "available_in_artifact": true,
+    "data_ui_shown": false,
+    "note": "Screenshots show the generic guest side panel and controlled target page; native assertions provide the Data interaction evidence."
+  },
+  "credential_values_recorded": false,
+  "limits": [
+    "No signed-in save or persistence, other Data cases, member/admin behavior, or published Store-installed behavior is established."
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+    "version": "0.2.471",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76"
+  },
+  "observations": {
+    "picker_cancel_without_selection": true,
+    "picker_cancel_selected_fields_unchanged": true,
+    "picker_cancel_pattern_writes": 0,
+    "guest": true,
+    "controlled_rows": 3,
+    "two_distinct_picker_previews": true,
+    "two_selected_fields": true,
+    "pattern_name_absent": true,
+    "save_pattern_absent": true,
+    "sign_in_to_save_present": true,
+    "sign_in_action_used": true,
+    "pattern_write_requests_before_auth": 0
+  },
+  "failure_stage": null,
+  "picker_step": "second_field",
+  "limits": "Bounded guest behavior on the selected imported Store ZIP candidate; no signed-in save or published Store installation claim.",
+  "evidence_note": "The screenshots do not show the Data panel interaction; these assertions come from the native acceptance JSON in the hosted artifact."
+}
