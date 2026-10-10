@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "build": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publishState": "not_published",
+    "version": "0.2.458",
+    "treeSha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d",
+    "verified": true
+  },
+  "preconditions": [
+    "Owned disposable profile",
+    "Extension receipt and tree hash verified",
+    "Guest panel settled before interaction"
+  ],
+  "cases": [
+    {
+      "id": "EXT-F-1003-T04",
+      "role": "guest",
+      "status": "pass",
+      "steps": [
+        {
+          "phase": "warm",
+          "action": "Original theme selection and storage observed",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Original theme rendering observed",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Dark theme and computed appearance observed",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Dark",
+            "stored": "dark",
+            "storedPresent": true,
+            "storagePresent": true,
+            "darkClass": true,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(39, 39, 42)",
+              "body": "rgb(39, 39, 42)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Light theme and computed appearance observed",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Light",
+            "stored": "light",
+            "storedPresent": true,
+            "storagePresent": true,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "System theme and computed appearance observed",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": "system",
+            "storedPresent": true,
+            "storagePresent": true,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Original theme selection and storage restored",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "phase": "warm",
+          "action": "Original theme rendering restored",
+          "observation": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        }
+      ],
+      "criteria": [
+        {
+          "name": "Original theme selection and storage observed",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "name": "Original theme rendering observed",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "name": "Dark theme and computed appearance observed",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Dark",
+            "stored": "dark",
+            "storedPresent": true,
+            "storagePresent": true,
+            "darkClass": true,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(39, 39, 42)",
+              "body": "rgb(39, 39, 42)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "name": "Light theme and computed appearance observed",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "Light",
+            "stored": "light",
+            "storedPresent": true,
+            "storagePresent": true,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "name": "System theme and computed appearance observed",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": "system",
+            "storedPresent": true,
+            "storagePresent": true,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "name": "Original theme selection and storage restored",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        },
+        {
+          "name": "Original theme rendering restored",
+          "status": "pass",
+          "evidence": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          }
+        }
+      ],
+      "fullExtensionReload": {
+        "status": "missing",
+        "criteria": []
+      },
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.458",
+        "treeSha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d",
+        "verified": true
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": "runner-local evidence directory omitted during sanitization"
+    }
+  ],
+  "status": "pass",
+  "scope_boundary": "The settings-theme-rendering route exercised warm guest theme choices and restored the original theme baseline. It does not call the full-extension recheck helper or reload the panel; fullExtensionReload remains missing. This is no D186 post-replacement diagnostic or reload acceptance."
+}
