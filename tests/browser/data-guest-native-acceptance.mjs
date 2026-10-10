@@ -68,7 +68,10 @@ async function dataState(panel) {
     `(() => {
       const root = ${activeTabPanelExpression('Data')};
       if (!root) return { active: false };
-      const buttons = [...root.querySelectorAll('button')].filter((button) => !button.disabled);
+      const allButtons = [...root.querySelectorAll('button')];
+      const buttons = allButtons.filter((button) => !button.disabled);
+      const pickerButtons = allButtons.filter((button) =>
+        button.textContent.trim() === 'Pick fields on this page');
       const text = root.textContent ?? '';
       return {
         active: true,
@@ -76,6 +79,8 @@ async function dataState(panel) {
           text.includes('field_1:') && text.includes('field_2:'),
         selectedFieldMarkers: (text.match(/field_\\d+:/g) ?? []).length,
         pickerButton: buttons.filter((button) => button.textContent.trim() === 'Pick fields on this page').length,
+        pickerButtonPresent: pickerButtons.length,
+        pickerButtonDisabled: pickerButtons.filter((button) => button.disabled).length,
         cancelSelection: buttons.filter((button) => button.textContent.trim() === 'Cancel').length,
         signInToSave: buttons.filter((button) => button.textContent.trim() === 'Sign in to save').length,
         signInPending: [...root.querySelectorAll('button')].some((button) =>
@@ -138,13 +143,18 @@ try {
       report.stage = 'picker';
       report.observations.picker_cancel_without_selection = false;
       report.stage = 'picker_cancel';
-      await verifyEmptyPickerDismissal({
-        page,
-        panel,
-        readState: () => dataState(panel),
-        openPicker: () => click(panel, 'data-picker-button', 'Pick fields on this page'),
-        waitForState: waitFor,
-      });
+      try {
+        await verifyEmptyPickerDismissal({
+          page,
+          panel,
+          readState: () => dataState(panel),
+          openPicker: () => click(panel, 'data-picker-button', 'Pick fields on this page'),
+          waitForState: waitFor,
+        });
+      } catch (error) {
+        report.picker_diagnostic = await capturePickerDiagnostic(panel, artifacts);
+        throw error;
+      }
       report.observations.picker_cancel_without_selection = true;
       report.observations.picker_cancel_selected_fields_unchanged = true;
       report.observations.picker_cancel_pattern_writes = 0;

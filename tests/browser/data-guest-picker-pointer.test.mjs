@@ -132,6 +132,14 @@ test('Data tab readiness waits for the lazy picker control instead of its active
 
     const loadedState = await dataPanelDiagnostic(loaded.panel);
     assert.equal(dataPickerControlReady(loadedState), true);
+    assert.equal(
+      dataPickerControlReady({
+        ...loadedState,
+        buttons: loadedState.buttons.map((button) => ({ ...button, disabled: true })),
+      }),
+      false,
+      'a visible but disabled picker is not ready for native input',
+    );
   } finally {
     fallback.window.happyDOM.abort();
     loaded.window.happyDOM.abort();

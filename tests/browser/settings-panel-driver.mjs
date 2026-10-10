@@ -341,7 +341,10 @@ export function dataPickerControlReady(state) {
   return (
     state?.pane_active === true &&
     state.buttons?.some(
-      (button) => button.label === 'Pick fields on this page' && button.visible === true,
+      (button) =>
+        button.label === 'Pick fields on this page' &&
+        button.visible === true &&
+        button.disabled === false,
     ) === true
   );
 }

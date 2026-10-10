@@ -9,9 +9,13 @@ export async function verifyEmptyPickerDismissal({
   openPicker,
   waitForState,
 }) {
-  const before = await readState();
+  const before = await waitForState(
+    'data_guest_cancel_baseline_picker_enabled',
+    readState,
+    (state) => state?.pickerButtonPresent === 1 && state.pickerButton === 1,
+  );
   assert.equal(before.selectedFieldMarkers, 0, 'data_guest_cancel_baseline_has_fields');
-  assert.equal(before.pickerButton, 1, 'data_guest_cancel_baseline_picker_missing');
+  assert.equal(before.pickerButton, 1, 'data_guest_cancel_baseline_picker_not_enabled');
   await panel.send('Network.enable');
   const writes = [];
   const stopNetwork = panel.on('Network.requestWillBeSent', ({ request }) => {

@@ -1,0 +1,44 @@
+{
+  "status": "PASS",
+  "verdict_a": {
+    "result": "PASS",
+    "finding": "The repair waits until the Data picker control is both present and enabled before beginning C16. It does not claim the control exists when absent or disabled indefinitely. The existing two-field extraction path continues after cancellation verification."
+  },
+  "verdict_b": {
+    "result": "PASS",
+    "finding": "The driver retains trusted pointer input and the C16 assertions for dismissed picker, unchanged empty selection, and zero non-GET /wbx_pattern requests. The changed files are limited to the guest Data harness/readiness tests and helper; no product implementation was changed."
+  },
+  "prior_run": {
+    "hosted_run_id": 38049410816,
+    "source_sha": "63425796f26a26e57c327bb01212d04c4f37b3d0",
+    "boundary": "Native stage picker_cancel failed before openPicker or Cancel with data_guest_cancel_baseline_picker_missing. The old baseline counted only enabled buttons and asserted immediately, so it conflated a temporarily disabled button with a missing button. The two-field path and C16 cancellation were not reached; the run is zero credit. Resource journals show child_failed with resource_invalid=false.",
+    "provenance_note": "The hosted receipt binds run 38049410816. Its imported development artifact came from CI run 38048498559; the native report run_id field also carries 38048498559, matching product-artifact ci_run_id. Use the receipt run_id as the hosted attempt identity."
+  },
+  "guard_review": {
+    "transient_disabled": "PASS. The new guard waits for pickerButtonPresent=1 and pickerButton=1, and the unit test models a disabled control becoming enabled on a later poll. Readiness also requires visible=true and disabled=false before the later pointer action.",
+    "absent_control": "PASS. The absent control never satisfies the readiness predicate; the test requires the baseline wait to reject and asserts openPicker was not called.",
+    "cancellation_and_writes": "PASS. Trusted Cancel, detached picker overlay, no selected-field change, and empty observed pattern-write list remain asserted. Existing negative fixtures still reject ignored Cancel, changed selection, and a pattern write.",
+    "pre_post_proof": "PASS. Running the new cancellation test against the pre-fix HEAD implementation in a disposable scratch copy exits 1 at data_guest_cancel_baseline_picker_missing for the transient-disabled input. The current implementation passes the focused suite. The scratch copy was removed; no shared source was mutated.",
+    "private_values": "PASS. The new diagnostic uses fixed labels, booleans and counts; it does not serialize arbitrary page text, URLs, storage values, names, emails, or tokens. Sanitized prior-run bundle contains no credential-like values or personal paths. Screenshot capture on diagnostic failure uses the existing controlled guest fixture flow; the run verifies extension token/profile absence before navigation."
+  },
+  "verification": [
+    "Nine focused test files: 21/21 tests pass.",
+    "pnpm compile: pass.",
+    "Targeted Biome check on all five changed source/test files: pass.",
+    "git diff --check on changed files: pass.",
+    "Pre-fix scratch reproduction: expected baseline assertion fails for transient-disabled control."
+  ],
+  "files_checked": [
+    "tests/browser/data-guest-native-acceptance.mjs",
+    "tests/browser/data-guest-picker-cancel.mjs",
+    "tests/browser/data-guest-picker-cancel.test.mjs",
+    "tests/browser/data-guest-picker-pointer.test.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "docs/stabilization/evidence/guest-data-behavior/run38049410816/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38049410816/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38049410816/product-artifact.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38049410816/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-data-behavior/run38049410816/cleanup.sanitized.json"
+  ],
+  "limits": "Source/guard review only; no browser rerun and no product acceptance credit. The prior receipt remains a terminal precondition failure, not a C16 pass."
+}
