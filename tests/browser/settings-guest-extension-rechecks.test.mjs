@@ -200,7 +200,10 @@ test('wrong stored value after extension restart fails and restores the original
       preferenceMatches: false,
     },
   });
-  assert.doesNotMatch(JSON.stringify(caught.safeFirstChoicePostReplacementStages), /Dark|dark|System|system/);
+  assert.doesNotMatch(
+    JSON.stringify(caught.safeFirstChoicePostReplacementStages),
+    /Dark|dark|System|system/,
+  );
   assert.equal(f.state.visible, 'System');
   assert.equal(f.state.stored, 'system');
   assert.ok(
