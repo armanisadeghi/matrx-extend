@@ -1,0 +1,115 @@
+{
+  "schema": "matrx-extend.hosted-release-independent-review.v1",
+  "reviewedAt": "2026-10-10",
+  "status": "RELEASE_INTEGRITY_PASS_PRODUCT_ACCEPTANCE_PENDING",
+  "release": {
+    "version": "0.2.479",
+    "runId": "38080281242",
+    "runUrl": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38080281242",
+    "workflowHeadSha": "ba76e0bb0125dfe85d1192dc37ad0a865b11a7ff",
+    "artifactId": "11680078743",
+    "artifactName": "matrx-extend-v0.2.479",
+    "artifactApiSha256": "c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+    "artifactDigestVerified": true,
+    "tag": "v0.2.479",
+    "sourceSha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "tagResolvesToSourceSha": true,
+    "receiptPublishState": "pushed",
+    "storeZipSha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "localZipSha256": "b8f7f7dbec299137bde029e1889088ec482ba0cd846b73675310d35b6394c710",
+    "receiptTreeSha256": "c1f031c444892d84422ffa4e4c6c4edbbaf49ca9b93ef64304c69c0fd3c292e8",
+    "treeHashIndependentlyRecomputedFromLocalZip": true,
+    "fileCount": 2002,
+    "storeZipRetainedAt": "/private/tmp/runtime-v0479-review/.output/matrx-extend-0.2.479-store.zip"
+  },
+  "verdicts": {
+    "releaseIntegrity": "PASS",
+    "productAcceptance": "PENDING_EXACT_V0479_VISIBLE_FLOW_ACCEPTANCE_FOR_RUNTIME_DELTAS",
+    "storeSubmissionDespitePostReleaseLockDrift": "LOCK_DRIFT_ALONE_DOES_NOT_REQUIRE_V0480; HOLD_SUBMISSION_UNTIL_PRODUCT_ACCEPTANCE",
+    "storeSubmission": "NOT_PERFORMED"
+  },
+  "gates": {
+    "workflowConclusion": "success",
+    "releaseContractAndArtifactIdentity": "success",
+    "typecheck": "exit 0",
+    "lint": "exit 0",
+    "unitTests": "335 files passed, 2 skipped; 2363 passed, 5 skipped",
+    "schemaRouting": "exit 0",
+    "packageTwins": "exit 0; existing censused debt remains reported",
+    "dbDoors": "exit 0",
+    "canonicalPickers": "exit 0",
+    "archivedItemsAndSelfTest": "exit 0",
+    "orgDefaultBanAndSelfTest": "exit 0",
+    "swallowedRefusals": "exit 0",
+    "migrations": "exit 0",
+    "toolDatabaseDrift": "exit 0",
+    "mandateReferences": "exit 0, advisory/nonblocking",
+    "storePackageValidation": "passed; no development key or toolbar popup",
+    "storeApprovalRisk": "passed; approved 0.2.205 manifest policy surface matches and no forbidden runtime-code path found"
+  },
+  "storePolicyReview": {
+    "baselineVersion": "0.2.205",
+    "baselineSourceCommit": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "manifestPolicyFieldsMatch": true,
+    "comparisonDetail": "Compared emitted manifest policy fields against the approved baseline; only version differs. No permission, host, content-script, external-connectability, CSP, or web-accessible-resource policy expansion was observed.",
+    "semanticClassification": "No manifest policy expansion; refreshed shared package runtime code is present in the emitted tree and requires product acceptance before Store submission.",
+    "dashboardState": "Not independently checked in this review."
+  },
+  "emittedArtifactComparison": {
+    "baseline": "v0.2.478, Store ZIP SHA-256 4feb50b44707b3e82788091b5dfa7f0df3d53df85deb81a8d6dece7329cca5b7",
+    "manifestNonVersionPolicyDifferenceCount": 0,
+    "contentIr": {
+      "version": "0.24.11 -> 0.24.12",
+      "emittedSource": true,
+      "observedJsDelta": "source.js adds a guard rejecting trailing same-line non-whitespace after an opening XML tag before classifying the remaining text as an XML container.",
+      "reachability": "Bundle source maps contain package-internal source-parser callers, but extension src imports content-ir /core and /wire and has no direct /source or tokenizer call. Execution of this changed branch through a current extension UI path is not established."
+    },
+    "designSystem": {
+      "version": "0.86.84 -> 0.86.85",
+      "emittedSource": true,
+      "observedJsDelta": "controls.js adds Tile dimmed handling and data-dimmed output.",
+      "reachability": "Tile code is emitted, but extension src has no shared Tile consumer and no dimmed prop usage; this new state is not shown reachable from an extension UI path."
+    },
+    "contentIrReact": "0.25.65 -> 0.25.67; this review did not identify a distinct directly exercised extension behavior delta.",
+    "overall": "The .478 and .479 emitted Store trees are not byte-equivalent. The two inspected package changes are present in the artifact; their execution by a currently exercised extension-visible flow remains unverified."
+  },
+  "postReleaseMainLockDrift": {
+    "commits": ["c3148c481", "54306323f"],
+    "scope": "pnpm-lock.yaml only",
+    "packages": {
+      "@ai-matrx/agents": "0.59.50 -> 0.59.51",
+      "@ai-matrx/alchemy": "0.23.24 -> 0.23.25",
+      "@ai-matrx/records-ui": "0.115.26 -> 0.115.27"
+    },
+    "packedJavaScriptComparison": {
+      "agents": "90 files each; two changed files are mandates/index.js and mandates/index.cjs",
+      "alchemy": "56 files each; zero JavaScript files changed",
+      "recordsUi": "10 files each; zero JavaScript files changed"
+    },
+    "agentsDelta": "The two changed mandate files update only MANDATE_KEYS_META aidreamRevision and packageVersion; CHANGELOG marks the republish metadata-only/no consumer action. Extension imports MANDATE_KEYS, not MANDATE_KEYS_META.",
+    "emittedReachability": "Search of v0.2.479 emitted JavaScript/source maps found neither old/new revision identifiers nor package version metadata; the updated metadata is tree-shaken from emitted code.",
+    "recommendation": "This subsequent lock-only drift does not justify a new release on runtime-behavior grounds, so it should not by itself force v0.2.480. v0.2.479 is an immutable earlier-main artifact; if another release is made, the repository latest-package gate requires refreshing to current npm latest first."
+  },
+  "acceptanceBoundary": {
+    "exactCandidateProductAcceptance": "Not established by this release review. Package code presence is not proof that a changed branch executes in an extension-visible flow.",
+    "seo": "No exact-v0.479 SEO acceptance is asserted here; earlier SEO evidence remains bounded to its own candidate and must not be promoted to full SEO health.",
+    "freshness": "Post-release main lockfile commits exist. This report assesses whether that drift changes emitted behavior; it does not claim v0.2.479 is the latest package state at current main."
+  },
+  "evidence": {
+    "download": "Downloaded GitHub Actions artifact 11680078743; independent SHA-256 matched the GitHub artifact API digest. Receipt Store/local ZIP digests matched the extracted files.",
+    "tree": "Recomputed hashReleaseTree from the extracted local ZIP using scripts/sync-unpacked-release.mjs; matched receipt tree hash and file count.",
+    "source": "Fetched v0.2.479 tag; it resolves to receipt source SHA 47a9b1c9c8e966bcbf4bb27a07542a795420c80e.",
+    "gates": "Inspected the completed hosted run and exact artifact release log; required gates passed, with mandate-reference findings explicitly advisory.",
+    "manifest": "Compared emitted manifest to config/chrome-web-store-approved-baseline.json and confirmed the approval-risk gate result.",
+    "runtime": "Compared source-map embedded package sources in emitted .478/.479 Store ZIPs; compared packed JavaScript files for post-release package versions; checked extension source imports and searched emitted content for mandate metadata."
+  },
+  "independentPeerReview": {
+    "reviewer": "v471_guest_scrape_review",
+    "result": "CONFIRMED_NARROWED_REACHABILITY",
+    "finding": "Emission and package-internal callers are visible in source maps, but the extension's own source does not import the changed content-ir /source API; execution through an extension UI remains unproven. Tile dimmed remains unconsumed by extension source."
+  },
+  "openQuestions": [
+    "Which hosted visible extension flow can exercise the .479 content-ir tokenizer delta, if any, through an actual extension caller?",
+    "Product acceptance for exact v0.2.479 remains pending; no Store submission should occur based on release-integrity evidence alone."
+  ]
+}
