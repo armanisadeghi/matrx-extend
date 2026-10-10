@@ -7,6 +7,10 @@ import {
   startPanelTransitionRecorder,
   traceOrganizationPointers,
 } from './panel-transition-recorder.mjs';
+import {
+  observeMemberExtensionIdentity,
+  runMemberAuthBoundary,
+} from './settings-member-auth-diagnostic.mjs';
 
 const scrapeSource = await readFile(
   new URL('./scrape-guest-native-acceptance.mjs', import.meta.url),
@@ -506,6 +510,8 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       supabaseOrigin: async () => '',
       selectOrganization: null,
       signInAdminSettings: async () => identity,
+      observeMemberExtensionIdentity,
+      runMemberAuthBoundary,
     };
     deps.selectOrganization = new Function(
       ...Object.keys(deps),
@@ -534,7 +540,13 @@ test('real Scrape auth caller records first member selection, skip, identity, an
       requireResourceHealth: async () => {},
       resourceAction: async (action) => action(),
     };
-    if (failAdmin) await assert.rejects(run(args), /admin observer failed/);
+    if (failAdmin)
+      await assert.rejects(run(args), (error) => {
+        assert.equal(error.message, 'member_auth_boundary_failed');
+        assert.equal(error.memberAuthBoundary, 'member_nonadmin_role_observation');
+        assert.equal(error.memberAuthFailureCode, 'member_nonadmin_role_observation_failed');
+        return true;
+      });
     else await run(args);
     return { report, inputs, cleanup };
   }
