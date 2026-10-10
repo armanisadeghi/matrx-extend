@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "auth_mode": "member",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "dc249bf913beb31be5498093af1e080d9f39661a",
+    "run_id": 38023616657,
+    "artifact_id": 11659416379,
+    "tree_sha256": "d20f9cb5fccc2bf4694bd8d2949abe4c8e726cf975191e8a596060b55dc7fc21",
+    "version": "0.2.458"
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_role_verified": true,
+    "selected_organization_verified": true,
+    "organization_resolution": "load_ladder"
+  },
+  "observations": {
+    "owned_project_fixture_created": true,
+    "name_input": {
+      "before_insert": {
+        "count": 1,
+        "focused": true,
+        "value_length": 37,
+        "selection_start": 0,
+        "selection_end": 37,
+        "all_selected": true,
+        "matches_expected": false
+      },
+      "after_insert": {
+        "count": 1,
+        "focused": true,
+        "value_length": 41,
+        "selection_start": 41,
+        "selection_end": 41,
+        "all_selected": false,
+        "matches_expected": true
+      }
+    },
+    "dialog_opened_from_captured_article": true,
+    "prefilled_name_visible": true,
+    "input_focused_on_open": true,
+    "no_destination_selected_by_default": true,
+    "custom_name_entered_by_trusted_keyboard": true,
+    "tab_and_shift_tab_contained": true,
+    "project_picker": {
+      "search_input_count": 1,
+      "candidate_count": 1,
+      "unselected_candidate_count": 1,
+      "loading": false,
+      "load_error": false,
+      "empty": false
+    },
+    "project_selected_in_save_dialog": true,
+    "project_matches_selected_organization": true,
+    "dialog_closed_after_save": true,
+    "saved_confirmation_visible": true,
+    "source_row_read_from_service": true,
+    "custom_name_persisted": true,
+    "organization_scope_persisted": true,
+    "selected_project_edge_persisted": true,
+    "cleanup_verified": true,
+    "source_id_present": true,
+    "project_id_present": true
+  },
+  "cleanup": {
+    "verified": true,
+    "run_owned_source_soft_deleted": true,
+    "source_associations_removed": true
+  },
+  "failure_stage": null,
+  "limits": "Exact imported CI development artifact, real member sign-in, one custom-named Source with one disposable owned Project association, independent reads, and cleanup; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.",
+  "harness_checkout_sha": "8009a5d093df7d044c76966a7d8cdb87df8c7282",
+  "project_cleanup": {
+    "verified": true,
+    "owned_project_absent": true
+  }
+}

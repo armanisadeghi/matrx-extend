@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "run_id": 38024258868,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38024258868",
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_checkout_sha": "8009a5d093df7d044c76966a7d8cdb87df8c7282",
+  "lane": "A",
+  "acceptance_case": "scrape-save-member",
+  "auth_mode": "member",
+  "runner_label": "macos-15",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "dc249bf913beb31be5498093af1e080d9f39661a",
+    "ci_run_id": 38023616657,
+    "artifact_id": 11659416379,
+    "version": "0.2.458",
+    "tree_sha256": "d20f9cb5fccc2bf4694bd8d2949abe4c8e726cf975191e8a596060b55dc7fc21"
+  },
+  "hosted_result_artifact_id": 11659672707,
+  "workflow_conclusion": "success",
+  "native_report_status": "pass",
+  "independent_review": "pending",
+  "bounded_observations": {
+    "member_nonadmin_identity_verified": true,
+    "selected_organization_verified": true,
+    "owned_project_fixture_created_and_read_back": true,
+    "captured_controlled_article": true,
+    "save_dialog_prefilled_and_focused": true,
+    "no_project_selected_by_default": true,
+    "custom_source_name_entered_by_trusted_keyboard": true,
+    "tab_and_shift_tab_contained_in_dialog": true,
+    "one_owned_project_candidate_selected": true,
+    "project_matches_selected_organization": true,
+    "saved_confirmation_visible": true,
+    "source_row_independently_read_from_service": true,
+    "custom_name_organization_and_canonical_identity_verified": true,
+    "selected_project_association_independently_read": true,
+    "association_organization_verified": true,
+    "source_and_association_cleanup_verified": true,
+    "project_fixture_cleanup_verified": true
+  },
+  "cleanup": {
+    "source_soft_deleted_and_absent": true,
+    "source_associations_removed": true,
+    "owned_project_absent": true,
+    "credential_secret_absent": true,
+    "local_one_time_link_absent": true
+  },
+  "resource_journals": {
+    "package": "resource-journals/hosted-package-38024258868-1.jsonl",
+    "browser": "resource-journals/hosted-browser-38024258868-1.jsonl",
+    "guest": "resource-journals/hosted-guest-38024258868-1.jsonl",
+    "all_final_decisions_valid": true,
+    "all_resource_invalid_flags_false": true,
+    "all_child_exit_codes_zero": true
+  },
+  "evidence": {
+    "native_report": "native-report.sanitized.json",
+    "raw_runner_report_sha256": "164ef9adbedf95360b6117874b6b797d2af7b51ba2e03ffc2a111ec2f7358532"
+  },
+  "scope_note": "This records one real member save from the exact unpublished CI development artifact, with one run-owned Project association, independent reads and cleanup. It does not establish admin, guest, Library, multiple-destination, retry, responsive-timing or full T04/T29 closure, current-main product health, or Store behavior. No inventory promotion is made pending independent review."
+}
