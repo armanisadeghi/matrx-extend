@@ -10,6 +10,7 @@ export function StoredMedia({
 }: { media: SocialPostMedia; postId: string; organizationId: string }) {
   const [url, setUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
   const [loading, setLoading] = useState(false);
   useEffect(
     () => () => {
@@ -20,6 +21,7 @@ export function StoredMedia({
   async function load() {
     setLoading(true);
     setError(null);
+    setPreviewFailed(false);
     try {
       setUrl(URL.createObjectURL(await readPostMediaBlob(postId, media.file_id, organizationId)));
     } catch (cause) {
@@ -43,14 +45,26 @@ export function StoredMedia({
         </Button>
       )}
       {url &&
+        !previewFailed &&
         (media.mime_type?.startsWith('image/') ? (
-          <img src={url} alt={media.role} className="w-full rounded object-contain" />
+          <img
+            onError={() => setPreviewFailed(true)}
+            src={url}
+            alt={media.role}
+            className="w-full rounded object-contain"
+          />
         ) : media.mime_type?.startsWith('video/') ? (
-          <video src={url} controls preload="metadata" className="w-full rounded">
+          <video
+            onError={() => setPreviewFailed(true)}
+            src={url}
+            controls
+            preload="metadata"
+            className="w-full rounded"
+          >
             <track kind="captions" />
           </video>
         ) : media.mime_type?.startsWith('audio/') ? (
-          <audio src={url} controls>
+          <audio onError={() => setPreviewFailed(true)} src={url} controls>
             <track kind="captions" />
           </audio>
         ) : (
@@ -58,6 +72,20 @@ export function StoredMedia({
             Download file
           </a>
         ))}
+      {url && previewFailed && (
+        <div className="space-y-2">
+          <p role="alert" className="text-xs text-amber-600">
+            Preview unavailable. Download the stored file.
+          </p>
+          <a
+            href={url}
+            download={`${media.file_id}${media.mime_type === 'image/heic' ? '.heic' : ''}`}
+            className="text-primary underline text-xs"
+          >
+            Download stored file
+          </a>
+        </div>
+      )}
       {error && (
         <p role="alert" className="text-xs text-destructive">
           {error}

@@ -173,6 +173,11 @@ export const DESTRUCTIVE_OPERATIONS: DestructiveOperation[] = [
  */
 export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
   {
+    fn: 'applySwipeIntent',
+    module: 'src/entrypoints/sidepanel/App.tsx',
+    why: 'Consumes only the transient extension-owned Swipe file navigation request after selecting its post in the matching browser window; no saved user content is removed.',
+  },
+  {
     fn: 'clearCapturePagePanel',
     module: 'src/lib/panel/launch-intent.ts',
     why: "After a popup Capture page launch fails, removes only that click's extension-owned, short-lived session route request. It cannot erase a newer click or saved user content.",
