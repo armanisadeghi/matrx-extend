@@ -31,6 +31,20 @@ acquire_ship_lock() {
     fi
     owner="$(cat "$SHIP_LOCK_DIR/pid" 2>/dev/null)"
     ship_lock_inherited "$owner" && return 0
+    # A dead or missing owner (killed run, or a lock left with no pid for over a minute) is
+    # reclaimed once; otherwise every later sweep reports RELEASE SLOT BUSY forever.
+    if { [[ "$owner" =~ ^[0-9]+$ ]] && ! kill -0 "$owner" 2>/dev/null; } || \
+       { [[ -z "$owner" ]] && [[ -n "$(find "$SHIP_LOCK_DIR" -maxdepth 0 -mmin +1 2>/dev/null)" ]]; }; then
+        echo "ship lock: reclaiming stale lock at $SHIP_LOCK_DIR (owner ${owner:-none} is gone)."
+        rm -f -- "$SHIP_LOCK_DIR/pid"
+        rmdir -- "$SHIP_LOCK_DIR" 2>/dev/null
+        if mkdir "$SHIP_LOCK_DIR" 2>/dev/null; then
+            SHIP_LOCK_HELD=true
+            echo "$$" > "$SHIP_LOCK_DIR/pid" || return 1
+            export MATRX_SHIP_LOCK_OWNER="$$"
+            return 0
+        fi
+    fi
     echo "RELEASE SLOT BUSY: sync/release lock already exists at $SHIP_LOCK_DIR (owner PID ${owner:-unknown}); retry after its owner finishes."
     return 75
 }
