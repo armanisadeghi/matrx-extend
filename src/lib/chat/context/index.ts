@@ -76,6 +76,7 @@ export async function buildChatContext(inputs: ContextBuildInputs): Promise<Chat
     values,
     useContextRulesStore.getState().rows,
     capFor(inputs.conversationId),
+    `chrome-extension/${inputs.surface ?? 'assistant'}`,
   );
   return { values, rows, context, withheld };
 }

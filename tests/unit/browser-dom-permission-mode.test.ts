@@ -16,6 +16,7 @@ describe('browser DOM permission mode by surface', () => {
   beforeEach(() => {
     Object.assign(chrome, {
       tabs: { query: async () => [] },
+      permissions: { getAll: async () => ({ permissions: ['debugger', 'storage'] }) },
       runtime: { id: 'maintenance-extension', getManifest: () => ({ version: '0.2.1' }) },
     });
   });
@@ -59,4 +60,17 @@ describe('browser DOM permission mode by surface', () => {
     expect(assistant.permission_mode).toBe('ask');
     expect(pilot.permission_mode).toBe('act');
   });
+});
+
+it('advertises held required and optional permissions without inventing absent grants', async () => {
+  Object.assign(chrome, {
+    permissions: { getAll: async () => ({ permissions: ['debugger', 'tabs', 'cookies'] }) },
+  });
+  const state = await buildBrowserDomState({
+    surface: 'assistant',
+    activeTab: null,
+    pageLang: null,
+  });
+  expect(state.optional_permissions_granted).toEqual(['debugger', 'tabs', 'cookies']);
+  expect(state.optional_permissions_granted).not.toContain('clipboardRead');
 });

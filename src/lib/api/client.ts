@@ -958,8 +958,17 @@ export async function apiPut<T>(
   });
 }
 
-export async function apiDelete<T>(path: string, signal?: AbortSignal): Promise<ApiResult<T>> {
-  return rawRequest<T>({ method: 'DELETE', path, ...(signal !== undefined ? { signal } : {}) });
+export async function apiDelete<T>(
+  path: string,
+  signal?: AbortSignal,
+  opts?: ApiRequestOptions,
+): Promise<ApiResult<T>> {
+  return rawRequest<T>({
+    method: 'DELETE',
+    path,
+    ...(signal !== undefined ? { signal } : {}),
+    ...(opts?.organizationId !== undefined ? { organizationId: opts.organizationId } : {}),
+  });
 }
 
 /**

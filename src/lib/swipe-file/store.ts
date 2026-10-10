@@ -1,7 +1,8 @@
 /**
  * Swipe-file reads (Supabase, RLS) and the last-used collection (device).
  *
- * Writes never happen here — see src/lib/api/routes/social.ts. The last-used
+ * Membership writes use src/lib/api/routes/social.ts; collection metadata uses
+ * direct caller-scoped RLS in library.ts. The last-used
  * collection is per device and per organization, kept in chrome.storage.local.
  */
 
@@ -11,6 +12,7 @@ import { platformDb, socialDb } from '@/lib/supabase/schemas';
 export interface SwipeCollectionRow {
   id: string;
   name: string;
+  organization_id: string;
 }
 
 const LAST_KEY = 'matrx.swipe.last_collection';
@@ -20,7 +22,7 @@ export async function listCollections(): Promise<SwipeCollectionRow[]> {
   // law: the active org is where new things are saved, never a list filter).
   const { data, error } = await socialDb()
     .from('swipe_collection')
-    .select('id,name')
+    .select('id,name,organization_id')
     .is('deleted_at', null)
     .order('updated_at', { ascending: false })
     .limit(200);
@@ -42,15 +44,26 @@ export async function isPostInCollection(collectionId: string, postId: string): 
   return (data ?? []).length > 0;
 }
 
-export async function getLastCollectionId(): Promise<string | null> {
-  const org = await getActiveOrganizationId();
+export async function getCollectionOrganizationId(id: string): Promise<string> {
+  const { data, error } = await socialDb()
+    .from('swipe_collection')
+    .select('organization_id')
+    .eq('id', id)
+    .is('deleted_at', null)
+    .single();
+  if (error || !data?.organization_id) throw new Error(error?.message ?? 'Collection unavailable.');
+  return String(data.organization_id);
+}
+
+export async function getLastCollectionId(organizationId?: string): Promise<string | null> {
+  const org = organizationId ?? (await getActiveOrganizationId());
   const got = await chrome.storage.local.get(LAST_KEY);
   const map = (got[LAST_KEY] ?? {}) as Record<string, string>;
   return org ? (map[org] ?? null) : null;
 }
 
-export async function setLastCollectionId(id: string): Promise<void> {
-  const org = await getActiveOrganizationId();
+export async function setLastCollectionId(id: string, organizationId?: string): Promise<void> {
+  const org = organizationId ?? (await getActiveOrganizationId());
   if (!org) return;
   const got = await chrome.storage.local.get(LAST_KEY);
   const map = (got[LAST_KEY] ?? {}) as Record<string, string>;

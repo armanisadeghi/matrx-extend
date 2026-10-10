@@ -5,6 +5,8 @@
  */
 
 import { log } from '@/lib/debug/log';
+import { openPanel, panelOpenRemedy } from '@/lib/panel/adapter';
+import { SWIPE_OPEN_KEY } from '@/lib/swipe-file/navigation';
 import { type SwipeOutcome, saveToSwipeFile } from '@/lib/swipe-file/save';
 import {
   type SwipeCollectionRow,
@@ -31,6 +33,43 @@ export function describeOutcome(o: SwipeOutcome): string {
 }
 
 export function registerSwipeFileHost(): void {
+  chrome.runtime.onMessage.addListener((message, sender, reply) => {
+    if (message?.channel !== SWIPE_OPEN_KEY) return;
+    if (
+      !sender.tab?.id ||
+      sender.tab.windowId == null ||
+      typeof message.postId !== 'string' ||
+      typeof message.organizationId !== 'string' ||
+      typeof message.collectionId !== 'string'
+    ) {
+      reply({ ok: false, reason: 'Capture unavailable. Open Swipe file from Matrx.' });
+      return;
+    }
+    // Invoke before any await: Chrome requires the initiating click gesture.
+    const opening = openPanel({ tabId: sender.tab.id });
+    if (!opening.promise) {
+      reply({ ok: false, reason: panelOpenRemedy(opening.reason) });
+      return;
+    }
+    const selection = {
+      postId: message.postId,
+      organizationId: message.organizationId,
+      collectionId: message.collectionId,
+      windowId: sender.tab.windowId,
+      at: Date.now(),
+    };
+    Promise.all([opening.promise, chrome.storage.session.set({ [SWIPE_OPEN_KEY]: selection })])
+      .then(() => reply({ ok: true }))
+      .catch((err: unknown) =>
+        reply({
+          ok: false,
+          reason: panelOpenRemedy(
+            err instanceof Error ? err.message : 'Could not open Swipe file.',
+          ),
+        }),
+      );
+    return true;
+  });
   chrome.runtime.onConnect.addListener((port) => {
     if (port.name !== SWIPE_PORT) return;
     const post = (m: SwipeHostMsg) => {
@@ -80,7 +119,7 @@ export async function saveFromMenu(url: string): Promise<void> {
     try {
       await chrome.notifications?.create(`matrx-swipe-${Date.now()}`, {
         type: 'basic',
-        iconUrl: chrome.runtime.getURL('icon-128.png'),
+        iconUrl: chrome.runtime.getURL('icon/128.png'),
         title: 'Swipe file',
         message,
       });

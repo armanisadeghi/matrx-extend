@@ -134,6 +134,7 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
     app: {
       sourceApp: 'matrx-extend',
       sourceFeature: 'browser_chat',
+      surface: 'chrome-extension/assistant',
       // The mandate the extension's own chat runs: a new package chat resolves it, not the web's default.
       defaultChatMandateKey: DEFAULT_CHAT_MANDATE_KEY,
     },

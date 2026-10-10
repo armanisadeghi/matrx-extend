@@ -2,6 +2,7 @@ import type { AutoScrapeRecord } from '@/state/auto-scrape';
 import type { useScrapeStore } from '@/state/scrape';
 
 export interface ContextBuildInputs {
+  surface?: 'assistant' | 'pilot';
   user: {
     id: string;
     email: string | null;

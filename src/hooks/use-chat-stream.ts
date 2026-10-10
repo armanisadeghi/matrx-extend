@@ -913,6 +913,7 @@ export function useChatStream() {
       let built: ChatRequestContext = { values: {}, rows: [], context: undefined, withheld: [] };
       try {
         built = await buildChatContext({
+          surface: opts.surface ?? 'assistant',
           user: user
             ? {
                 id: user.id,
@@ -1063,6 +1064,7 @@ export function useChatStream() {
         // tool schemas in via `ctx.queue_tool_changes(...)`. Smaller surface
         // every turn, full coverage on demand.
         client: {
+          surface: `chrome-extension/${browserDomState.surface}`,
           capabilities: ['browser-dom'],
           state: {
             'browser-dom': browserDomState as unknown as Record<string, unknown>,
@@ -1284,6 +1286,7 @@ export function useChatStream() {
         const manualScrape = useScrapeStore.getState().current;
         const autoScrape = useAutoScrapeStore.getState().current;
         built = await buildChatContext({
+          surface: 'assistant',
           user: user ? { id: user.id, email: user.email, full_name: user.full_name ?? null } : null,
           desktopTransport: desktop.transport,
           scrape: manualScrape,
@@ -1305,6 +1308,7 @@ export function useChatStream() {
         // `/resume` is a ScopedRequest endpoint, so the field lands.
         initiation: 'auto' satisfies RequestInitiation,
         client: {
+          surface: `chrome-extension/${browserDomState.surface}`,
           capabilities: ['browser-dom'],
           state: {
             'browser-dom': browserDomState as unknown as Record<string, unknown>,

@@ -3665,3 +3665,14 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Steps:** Press "Take me there" and read the explainer. Press it again in the dialog. On the new tab scroll the profile; the count rises. Press Capture. Return to the app tab.
 - **Expected:** The guide appears only on that tab (not on other tabs of the same site). After Capture it says "Captured N posts" and offers Back to Matrx; the app dialog shows Done with a link to what was saved. A failure shows one plain sentence and Try again. No extension: the dialog says so with an install link.
 - **Automated:** `node tests/browser/guided-capture-e2e.mjs` (needs `MATRX_PLAYWRIGHT_MODULE`, a running app preview and aidream); unit: `tests/unit/guided-capture.test.ts`.
+
+
+### Swipe file capture and review
+
+- On a supported social post, the bottom-right Matrx control shows its logo, collection picker and Save action. Save into a new or existing collection; progress and the result stay inside the card. Media/transcript warnings remain visible; YouTube says its video is not archived.
+- Choose **View in extension**. Swipe file opens the saved post in the same browser window. Inspect its caption, author/metrics, stored images/videos and transcript; reload the panel and verify canonical content remains available. Use **Open in Matrx** to open the same post with its collection organization carried in the link.
+- In Swipe file, create/rename/archive/restore a collection. Edit a membership note and tags, add the post to another visible collection, remove that membership, then refresh and verify the changes persist. Provider post content is shared and read-only.
+- Select a collection from a different visible organization and switch the active organization while a save is in flight. The save, media requests, notes and app link continue to carry the destination collection's organization.
+- For a partial media download, verify saved membership is reported alongside the missing-file warning, never as a complete archive. Verify an unavailable media read displays an error rather than a zero-file success.
+- Browser agent tools: use `read_page`, `find`, `query_elements`, text search and inspection on the floating control and nested open-shadow controls. References must work for click/type/select/focus; normal page controls still work. Inspecting the host identifies its open shadow root. Closed roots require accessibility/CDP.
+- Discovery must advertise held required permissions (including debugger) along with optional grants; an ungranted optional permission stays absent. Assistant and Pilot start/resume requests carry their declared `client.surface`, with matching context-rule provenance.
