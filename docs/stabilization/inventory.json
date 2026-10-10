@@ -6049,6 +6049,44 @@
                 "scope": "Hosted lane B run 37999970113 on macos-15-intel, signed-out guest; exact frozen CI development artifact 11647758423 (CI run 37998294843), source 7230bb7669582179898fc187e05f1b939562a89e, v0.2.456. No Store/member/admin result; no reload claim."
               },
               "superseded_at": "2026-10-10T03:04:48Z"
+            },
+            {
+              "at": "2026-10-10T22:07:54Z",
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": 38089377803,
+                "source_sha": "6d4d91b2dc14fd1b001f4c3f4e0d712c00c13faf",
+                "workflow_source_sha": "ccdcb2eaf70ac4fd6e13ebde82dffa6da9012aba",
+                "development_ci_run_id": 38083507036,
+                "development_artifact_id": 11681278805,
+                "development_artifact_sha256": "a2d93605850b1aee6a9703dc882873246ae1b55837cacfa744b23e9a083e315e",
+                "hosted_result_artifact_id": 11683313538,
+                "hosted_result_artifact_sha256": "63ffeab32a5bc4d4b82dccf8508192b29d6bf4b37070de957bd0ea1a6e3f89a1",
+                "build_version": "0.2.481",
+                "tree_sha256": "27bb537d9f2d1ad1bca0274f667e12e6952d1fe9c5b1a04b534e41d04f9c7836",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "Native Theme selection produced Dark, Light, and System values with matching stored preference, dark-class state, and computed token/body background for each warm-state choice.",
+                  "The original implicit System state with absent theme/settings keys was restored, with rendered background restored."
+                ],
+                "unverified": [
+                  "Panel-document and full extension reload/reopen persistence.",
+                  "System appearance while the OS prefers dark mode.",
+                  "A serialized visible guest identity assertion for this route."
+                ],
+                "detail": "Independent review accepts bounded warm guest Theme selection/rendering and baseline restoration. Dark, Light, and System each matched stored preference, dark-class state and computed token/body backgrounds. Full T04 remains partial because this run did not test panel or full-extension reload/reopen; dark-OS System appearance and a serialized visible guest identity assertion are also unverified. No product defect established.",
+                "scope": "Frozen unpublished CI development artifact v0.2.481; source 6d4d91b2dc14fd1b001f4c3f4e0d712c00c13faf (CI run 38083507036/artifact 11681278805). Workflow checkout ccdcb2eaf70ac4fd6e13ebde82dffa6da9012aba. No current-main or Store claim.",
+                "evidence": [
+                  "docs/stabilization/evidence/settings-theme-v0481/run38089377803/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-theme-v0481/run38089377803/native-result.sanitized.json",
+                  "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-package-38089377803-1.jsonl",
+                  "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-browser-38089377803-1.jsonl",
+                  "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-guest-38089377803-1.jsonl",
+                  "docs/stabilization/reports/guest-settings-theme-v0481-peer-38089377803.json"
+                ]
+              },
+              "reason": "Preserve the cumulative reviewed v0.2.457 full-reload pass as primary; this v0.2.481 run adds only warm-state behavior and does not transfer reload proof."
             }
           ],
           "attempt_history": [
@@ -13434,7 +13472,8 @@
             "37693743871",
             "37722572578",
             "settings-local397-native-20261008",
-            "38041519886"
+            "38041519886",
+            38089377803
           ],
           "retest_status": "Partial surface. Reviewed frozen129 guest Settings controls run38041519886 observed 12/19 native case passes and seven unverified rows; per-case criteria and stronger historical evidence retain their own provenance. Independent D186 adjudication closes only the guest repeated-target full-extension reload and saved-baseline scope for T04/T10/T67; absent-key restoration remains unverified. T16/T19/T31/T34 downstream behavior, T40 capture in this run, T63 member denial, T70 branches and T67 nested capture remain unverified. No full Settings/current-main/Store/member/admin promotion."
         },
