@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T14",
+  "auth_mode": "guest",
+  "status": "unverified",
+  "stage": "inputs",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "observations": {
+    "requested_mode": "deep",
+    "denial": null,
+    "retry": null,
+    "dismiss": null,
+    "cleanup": {
+      "original_host_access": "ON_ALL_SITES",
+      "host_access": "ON_ALL_SITES",
+      "restored": true
+    },
+    "reload_page": "unverified"
+  },
+  "failure_code": "scrape_recovery_permission_denial_or_capture_not_observed",
+  "classification": "The native wait observed neither a permission-denial state nor a completed capture before timing out. Denial, retry, and dismiss were not established. Host access restoration was observed. This run does not establish a product defect; diagnosis awaits a rerun with bounded failure-state evidence.",
+  "resources": {
+    "package": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "browser": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "acceptance": "child_failed; admitted=true; resourceInvalid=false; exitCode=1"
+  },
+  "evidence_hashes": {
+    "resource-journals/hosted-package-38039120182-1.jsonl": "1bae1289dee6948c37d635f99b5fcd3616dd5edee80aa0a6394bf13608e0045f",
+    "resource-journals/hosted-browser-38039120182-1.jsonl": "372176c1fcaadc6b9b30252e0282b90cdf18b709500740accfcc8fc6efd45c19",
+    "resource-journals/hosted-guest-38039120182-1.jsonl": "61ba88bbc3565d0ae05ef24a24dc214d5520e925973dd2adb49f13b5b97bf9ec"
+  },
+  "sanitization": {
+    "native_report_reduced_to_fixed_safe_allowlist": true,
+    "resource_journals_copied_with": "scripts/copy-hosted-resource-journal.mjs",
+    "process_attribution_and_opened_paths_removed": true,
+    "screenshots_and_other_private_artifacts_excluded": true,
+    "credentials_auth_material_page_text_and_host_urls_present": false
+  },
+  "independent_review": "pending"
+}

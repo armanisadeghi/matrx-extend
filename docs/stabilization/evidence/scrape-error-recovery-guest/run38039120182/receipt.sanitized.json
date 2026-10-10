@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38039120182,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38039120182",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "fed695732bc1c9d01b872851835c7d93f91f28e1",
+  "dispatch_ref": "main",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "acceptance_case": "scrape-error-recovery-guest",
+  "inputs": {
+    "scrape_auth_mode": "guest"
+  },
+  "workflow_conclusion": "failure",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "frozen_product_artifact": true
+  },
+  "native_result": {
+    "native_report_present": true,
+    "classification": "native_test_unverified_timeout_before_denial_or_capture",
+    "failure_stage": "scrape_recovery_permission_denial_or_capture",
+    "failure_code": "scrape_recovery_permission_denial_or_capture_not_observed",
+    "observation": "Native acceptance timed out before recording a permission-denial state or completed capture. Denial, retry, and dismiss observations are null; original ON_ALL_SITES host access was restored.",
+    "product_credit": false,
+    "host_access_restored": true,
+    "diagnosis": "pending_rerun"
+  },
+  "resources": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "journal_sanitization": "Exact-run journals copied with scripts/copy-hosted-resource-journal.mjs; process attribution and opened paths removed."
+  },
+  "evidence_hashes": {
+    "resource-journals/hosted-package-38039120182-1.jsonl": "1bae1289dee6948c37d635f99b5fcd3616dd5edee80aa0a6394bf13608e0045f",
+    "resource-journals/hosted-browser-38039120182-1.jsonl": "372176c1fcaadc6b9b30252e0282b90cdf18b709500740accfcc8fc6efd45c19",
+    "resource-journals/hosted-guest-38039120182-1.jsonl": "61ba88bbc3565d0ae05ef24a24dc214d5520e925973dd2adb49f13b5b97bf9ec",
+    "native-report.sanitized.json": "6c442163b8b63597479761a87adece0a59d7c8a5d68ed437878600169aebe182"
+  },
+  "evidence": [
+    "native-report.sanitized.json",
+    "resource-journals/hosted-package-38039120182-1.jsonl",
+    "resource-journals/hosted-browser-38039120182-1.jsonl",
+    "resource-journals/hosted-guest-38039120182-1.jsonl"
+  ],
+  "independent_review": "pending",
+  "hosted_result_artifact": {
+    "artifact_id": 11665720628,
+    "name": "hosted-guest-38039120182-1",
+    "digest": "sha256:570c743c2a2b8c91ad4ecc0842f4a202e5f783d013dd3834c0ec964b8602b5d7",
+    "expired": false
+  }
+}
