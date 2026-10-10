@@ -6,6 +6,7 @@ import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { verifyDesktopArtifactIdentity } from './desktop-artifact-identity.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { clickDesktopPairForget } from './settings-desktop-pointer-diagnostics.mjs';
 import { assertDesktopPairForgetReportScope } from './settings-desktop-report-scope.mjs';
 import { desktopStorageFaultSource } from './settings-desktop-storage-faults.mjs';
 import {
@@ -562,7 +563,7 @@ try {
         assert.equal(desktopPairForgetControlReady(latestForgetState), true);
 
         stage = 'desktop_pair_forget_cancel';
-        await click(panel, 'settings-button', 'Forget pair code');
+        await clickDesktopPairForget(panel, report, latestForgetState);
         await waitFor(
           'desktop_pair_forget_cancel_dialog',
           () => state(panel),
