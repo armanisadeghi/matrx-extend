@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "task": "daily public no-login Chat regression check",
+  "case_id": "EXT-F-2013-T10",
+  "observed_at_utc": "2026-10-10T16:10:20Z",
+  "published_extension": {
+    "version": "0.2.205",
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg"
+  },
+  "deployed_server_sha": "c2424918c496b82f8d86c66eb87bcf12bcc9740e",
+  "actual_store_installed_native": {
+    "profile": "Arman (armansadeghi.com)",
+    "guest_state": "Fresh Store installation; side panel displayed guest banner, sign-in buttons, and Chat composer.",
+    "demo_page": "https://www.aimatrx.com/matrx-extend-demo",
+    "opening_prompt": "What are the three workflow stages on this page?",
+    "opening_result": "Assistant answered Capture, Understand, and Use with page-grounded descriptions; Send returned, indicating terminal completion.",
+    "same_conversation_prompt": "Which stage produces structured rows, and what can I do with them?",
+    "same_conversation_result": "Assistant answered Use and said the rows can be copied or reused; Send returned, indicating terminal completion.",
+    "observation": "Native Chrome accessibility tree showed chrome-extension://hnfolienncfklkgmdjjmhhegglimlamg/sidepanel.html, guest banner, each user prompt and actual assistant reply; this was not an API-only check.",
+    "limit": "The browser profile has an AI Matrx website session, but this newly installed extension showed guest state. This is not a clean Chrome-profile acceptance or exhaustive guest coverage."
+  },
+  "hosted_clean_guest": {
+    "run": 38066064258,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38066064258",
+    "runner": "macos-15 lane B",
+    "receipt_kind": "published_store_crx_unpacked",
+    "artifact_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "status": "pass",
+    "resource_validity": "package, browser and guest journals all admitted and final valid",
+    "resource_note": "Guest journal had transient CPU-pending events, then recovered and ended valid; do not claim uninterrupted resource health.",
+    "opening": "terminal_answer with unpredictable page code and ordered Capture/Understand/Use stages",
+    "same_conversation_followup": "terminal_answer with the page code and verified conversation identity",
+    "after_panel_reload": "new conversation terminal_answer with page code and fixture heading",
+    "server_sha_before_and_after": "c2424918c496b82f8d86c66eb87bcf12bcc9740e",
+    "evidence_dir": ".research/daily-guest-20261010/evidence",
+    "independent_review": "Luna peer verified current receipt, all three journal finals, conversation identity/terminal results, screenshot scope, and absence of secret patterns; PASS with the stated native-versus-unpacked limits.",
+    "limit": "Downloaded public Store CRX loaded unpacked into clean hosted Chromium; separate from actual Store-installed native observation."
+  },
+  "overall_limit": "These two guest Chat checks do not establish all-feature or all-mode health."
+}

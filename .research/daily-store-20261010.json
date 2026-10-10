@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-10T16:10:20Z",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "schedule_claim": "Oct 10 fallback master ledger at common-docs commit 463adfeb4",
+  "dashboard": {
+    "authenticated_publisher": "Matrx",
+    "profile": "AI (aimatrx.com)",
+    "status": "Published - public",
+    "published_version": "0.2.205",
+    "draft_version": "0.2.205",
+    "pending_version": null,
+    "draft_state": "unpublished",
+    "evidence": "Primary item Package and Status pages read in the authenticated Chrome Web Store Developer Dashboard."
+  },
+  "public_guest": {
+    "result": "pass",
+    "actual_store_installed": true,
+    "clean_hosted_public_crx": true,
+    "server_sha": "c2424918c496b82f8d86c66eb87bcf12bcc9740e",
+    "evidence": ".research/daily-guest-20261010.json"
+  },
+  "arman_chrome_profile": {
+    "name": "Arman (armansadeghi.com)",
+    "store_installed_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "store_installed_version": "0.2.205",
+    "dev_unpacked_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "dev_loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "dev_version_in_chrome": "0.2.467",
+    "both_toolbar_pinned": true,
+    "current_exact_main_dev_claim": "unverified: promotion receipt remains 0.2.464 and current exact-main CI is pending; do not treat visible 0.2.467 as source-proven current."
+  },
+  "release": {
+    "submission": "none",
+    "reason": "CI 38066569800 passed on 136359f28 after EXT-D-0190, but main advanced to release commit 6bd78ee1f (v0.2.468). Current-main release and role acceptance gates were not complete at this observation; no eligible Store candidate was submitted."
+  }
+}

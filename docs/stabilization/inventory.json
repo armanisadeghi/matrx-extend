@@ -144,7 +144,8 @@
             }
           ],
           "defect_ids": [
-            "EXT-D-0028"
+            "EXT-D-0028",
+            "EXT-D-0190"
           ]
         },
         {
@@ -492,7 +493,8 @@
             "EXT-D-0090",
             "EXT-D-0099",
             "EXT-D-0120",
-            "EXT-D-0121"
+            "EXT-D-0121",
+            "EXT-D-0190"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -511,7 +513,8 @@
           "defect_ids": [
             "EXT-D-0007",
             "EXT-D-0077",
-            "EXT-D-0090"
+            "EXT-D-0090",
+            "EXT-D-0190"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -532,7 +535,8 @@
             "EXT-D-0014",
             "EXT-D-0077",
             "EXT-D-0080",
-            "EXT-D-0090"
+            "EXT-D-0090",
+            "EXT-D-0190"
           ],
           "run_ids": [
             "baseline-build-001",
@@ -46021,19 +46025,21 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "37770686993",
-              "build_version": "0.2.205 public CRX adapted unpacked",
+              "run_id": "38066064258",
+              "build_version": "0.2.205 published Store CRX and native Store installation",
               "build_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
-              "server_sha": "32f3a398789e0a56b590089ff47b90aff6abe159",
+              "server_sha": "c2424918c496b82f8d86c66eb87bcf12bcc9740e",
               "resource_valid": true,
               "evidence": [
                 ".research/guest-position-fix-live-retest-20261008.json",
                 ".research/guest-position-native-adjudication-20261008.json",
                 ".research/guest-position-fix-live-peer-20261008.json",
-                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37770686993"
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/37770686993",
+                ".research/daily-guest-20261010.json",
+                "https://github.com/armanisadeghi/matrx-extend/actions/runs/38066064258"
               ],
-              "scope": "bounded original reproduction only",
-              "detail": "Bounded original reproduction passes on the published 0.2.205 CRX loaded as an adapted unpacked extension. Three signed-out guest turns produced distinct page-grounded terminal answers: opening, same-conversation follow-up, and a new conversation after full panel reload. All three current-run resource journals were valid; the artifact tree was unchanged and the live server SHA was stable. The independent adjudication refutes the cross-turn stage-criteria objection: the final diagnostic describes the post-reload code-and-heading prompt, while the stage-order assertion belongs to the separately checked opening turn. This does not establish Chrome Web Store UI installation, whole Chat feature health, or current development 0.2.407 health."
+              "scope": "bounded current live guest Chat path, not whole Chat health",
+              "detail": "On Oct 10, actual Store-installed 0.2.205 in Arman's Chrome profile displayed guest state and completed a page-grounded first answer and same-conversation follow-up with terminal Send state. Separately, resource-valid hosted run 38066064258 used a fresh clean guest profile and Google's public CRX loaded unpacked, with real terminal opening, same-conversation and post-panel-reload answers; all three current journals were valid, the artifact tree was unchanged, and the deployed server SHA matched before/after. The native Store observation does not establish a clean-profile installed acceptance or post-reload path; the hosted run is not a Store UI install. No whole Chat or current development health follows."
             }
           },
           "defect_verification": {
