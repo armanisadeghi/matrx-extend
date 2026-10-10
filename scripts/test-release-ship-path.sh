@@ -133,8 +133,11 @@ case " \$* " in
         "\$(cat "$SANDBOX/fixture-version" 2>/dev/null || echo 1.0.0)" >&2
       exit 1
     fi ;;
-  *" update -r "*" --depth Infinity"*) echo transitive >> "$SANDBOX/depth-passes" ;;
+  *" update -r "*" --depth Infinity"*)
+    [ -f "$SANDBOX/endless-churn-delay" ] && sleep 1
+    echo transitive >> "$SANDBOX/depth-passes" ;;
   *" update -r "*)
+    [ -f "$SANDBOX/endless-churn-delay" ] && sleep 1
     # A sibling package landed on npm: install it, with its CHANGELOG entry.
     from=\$(cat "$SANDBOX/fixture-version" 2>/dev/null || echo 1.0.0)
     to="1.0.\$(( \${from##*.} + 1 ))"
@@ -582,13 +585,18 @@ git fetch -q origin 2>/dev/null || true
 check "publish churn is caught up, never a stop"       '[[ $CHURN_STATUS -eq 0 && $(( $(updates) - UPDATES_BEFORE )) -eq 4 ]] && grep -q "  pushed" "$SANDBOX/catchup-churn-out"'
 check "each catch-up waits for the publish train"      '[[ $(grep -c "run list -R AI-Matrix-Engine/aidream" "$SANDBOX/gh-calls") -ge 4 ]]'
 git_q reset -q --hard origin/main
-# Endless churn still ends at the release's own race budget (shortened here), named.
+# Endless churn still ends at the release's own race budget. The fixture slows
+# each update so this case reaches multiple catch-ups deterministically instead
+# of racing its short budget during unrelated preflight work.
 touch "$SANDBOX/stale-packages" "$SANDBOX/stale-forever"
-perl -pi -e 's/^SHIP_RACE_BUDGET_SECS=\d+/SHIP_RACE_BUDGET_SECS=8/' release.sh
+touch "$SANDBOX/endless-churn-delay"
+perl -pi -e 's/^SHIP_RACE_BUDGET_SECS=\d+/SHIP_RACE_BUDGET_SECS=20/' release.sh
+ENDLESS_UPDATES_BEFORE="$(updates)"
 FOREVER_STATUS=0; run_release catchup-forever-out || FOREVER_STATUS=$?
 git checkout -q -- release.sh
-rm -f "$SANDBOX/stale-forever" "$SANDBOX/stale-packages"
-check "endless churn stops at the race budget"         '[[ $FOREVER_STATUS -ne 0 ]] && grep -q "still publishing after" "$SANDBOX/catchup-forever-out"'
+rm -f "$SANDBOX/stale-forever" "$SANDBOX/stale-packages" "$SANDBOX/endless-churn-delay"
+ENDLESS_UPDATE_COUNT=$(( $(updates) - ENDLESS_UPDATES_BEFORE ))
+check "endless churn stops at the race budget"         '[[ $FOREVER_STATUS -ne 0 && $ENDLESS_UPDATE_COUNT -ge 4 ]] && grep -Eq "still publishing after|reached the 20s release race budget before its (direct|transitive) update" "$SANDBOX/catchup-forever-out"'
 git_q reset -q --hard origin/main
 cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" scripts/; printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
 git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs scripts/await-matrx-latest.mjs; git_q commit -m "lockfile again"
