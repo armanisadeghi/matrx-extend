@@ -1,0 +1,103 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T40",
+  "workflow_run_id": 38010652956,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38010652956",
+  "workflow_source_sha": "e0c2e52ca2d62ac7a89f9aa3fddf3bc9473b9cfc",
+  "hosted_result_artifact_id": 11653009745,
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "development_ci_run_id": 37998294843,
+  "development_artifact_id": 11647758423,
+  "product_source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+  "product_version": "0.2.456",
+  "product_tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+  "product_artifact_verified": true,
+  "resource_journals": {
+    "hosted-package-38010652956-1.jsonl": {
+      "sha256": "06ab94d93d942f8e9e7884c6f23a9163dd30229345601fd1bc21d6988dbddfc4",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38010652956-1.jsonl": {
+      "sha256": "539ed61958d769fe3ce32ff110cdd603b1142d09e40a6836a45a4d1cde233224",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38010652956-1.jsonl": {
+      "sha256": "da8658e6fd8c5ac445071ca16fa57e11659822eaea4d8065724b7be3e8a8dc0e",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "result": {
+    "workflow_conclusion": "failure",
+    "native_case_status": "fail",
+    "observed": {
+      "warm_on": {
+        "status": "pass",
+        "visible": true,
+        "stored": true,
+        "calls": [
+          {
+            "kind": "scrape:capture-page",
+            "ok": true,
+            "unique_marker_present": true
+          }
+        ]
+      },
+      "warm_off": {
+        "status": "pass",
+        "visible": false,
+        "stored": false,
+        "loaded_page_settled": true,
+        "calls": []
+      },
+      "on_switch_before_extension_reload": {
+        "status": "pass",
+        "visible": true,
+        "stored": true
+      },
+      "extension_worker_and_panel_replaced": {
+        "status": "pass",
+        "management_reload_clicked": true,
+        "old_targets_retired": true,
+        "worker_replaced": true,
+        "panel_replaced": true,
+        "replacement_target_changed": true,
+        "lifecycle_predicate_passed": true
+      },
+      "post_reload_setting_persistence": {
+        "status": "unverified",
+        "reason": "Settings could not be reopened after replacement because the owned CDP operation returned protocol_error."
+      },
+      "post_reload_assigned_tab_and_capture": {
+        "status": "unverified",
+        "reason": "The test stopped before collecting a post-reload capture or assigned-tab content observation."
+      },
+      "original_baseline_restoration": {
+        "status": "unverified",
+        "reason": "Restoration could not reacquire the replacement panel after the same transport failure."
+      }
+    },
+    "failure": {
+      "category": "full_extension_preference_or_restore_failed",
+      "first_choice_failure_stage": "choice_settings_reopen",
+      "first_choice_transport": "protocol_error",
+      "first_choice_code": "unclassified",
+      "restoration_failure_stage": "restore_acquire_panel",
+      "restoration_transport": "protocol_error",
+      "restoration_code": "owned_cdp_transport_failed",
+      "cleanup_also_failed": true,
+      "product_defect_inferred": false
+    }
+  },
+  "scope_boundary": "This resource-valid run confirms warm guest ON capture with the unique marker, warm OFF with zero capture traffic on a settled page, and the extension worker/panel replacement predicate. It does not confirm preference persistence, assigned-tab behavior, or cleanup after full extension reload. The stopped assertion is at the native panel reopen/owned-CDP transport boundary, so T40 remains partial and no product failure is inferred. The workflow harness was current main e0c2e52ca; the tested product was the separately verified frozen 0.2.456 artifact from source 7230bb766.",
+  "review_note": "The workflow source includes reviewed owned-fixture opener repair 2a0946d3e; this run did not reach a post-reload fixture scrape assertion."
+}
