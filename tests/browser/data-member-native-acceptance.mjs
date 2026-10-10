@@ -182,9 +182,19 @@ async function lookupSavedPattern(panel, name, organizationId) {
 }
 
 function safeFailureCode(error) {
-  const message = String(error?.message ?? 'native_acceptance_error');
-  const candidate = message.split(':', 1)[0];
-  return /^[a-z][a-z0-9_-]{1,100}$/.test(candidate) ? candidate : 'native_acceptance_error';
+  const pointerCodes = new Set([
+    'pointer_initial_evaluation_failed',
+    'pointer_page_sample_failed',
+    'pointer_target_not_unique',
+    'pointer_followup_evaluation_failed',
+    'pointer_stable_hit_not_observed',
+    'pointer_press_dispatch_failed',
+    'pointer_release_dispatch_failed',
+  ]);
+  if (pointerCodes.has(error?.driverFailure?.code)) return error.driverFailure.code;
+  // Node assertion diffs can contain extracted values; retain only our named category.
+  const candidate = String(error?.message ?? '').split(/[:\n]/, 1)[0];
+  return /^data_member_[a-z0-9_-]{1,88}$/.test(candidate) ? candidate : 'native_acceptance_error';
 }
 
 async function deleteSavedPattern(panel, target) {
@@ -424,9 +434,10 @@ try {
         report.observations.saved_pattern_refreshed = true;
 
         // A manual-css pattern without a list root queries each field once
-        // against the document, so the real product contract is one first-match row.
-        const expectedRows = [{ field_1: 'Cedar chair', field_2: '$189' }];
+        // against the document. The selected second-card price retains its nth-of-type selector.
+        const expectedRows = [{ field_1: 'Cedar chair', field_2: '$429' }];
         const runAndCopy = async (phase) => {
+          report.stage = `run_pattern_${phase}`;
           await click(panel, 'title', 'Run pattern');
           const state = await waitFor(
             `data_member_saved_pattern_rows_${phase}`,
@@ -447,6 +458,7 @@ try {
           assert.deepEqual(rows, expectedRows, `data_member_saved_pattern_rows_mismatch_${phase}`);
           report.observations[`saved_pattern_run_${phase}`] = true;
 
+          report.stage = `copy_tsv_${phase}`;
           const tsv = await copyRows(
             panel,
             native.browserSession,
@@ -455,15 +467,17 @@ try {
           );
           assert.equal(
             tsv,
-            'field_1\tfield_2\nCedar chair\t$189',
+            'field_1\tfield_2\nCedar chair\t$429',
             `data_member_tsv_copy_mismatch_${phase}`,
           );
+          report.stage = `copy_json_${phase}`;
           const json = await copyRows(panel, native.browserSession, native.panelTarget, 'JSON');
           assert.deepEqual(
             JSON.parse(json),
             expectedRows,
             `data_member_json_copy_mismatch_${phase}`,
           );
+          report.stage = `copy_ai_${phase}`;
           const ai = await copyRows(
             panel,
             native.browserSession,

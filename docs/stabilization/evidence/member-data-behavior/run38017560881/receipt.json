@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38017560881,
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "1b33caf29c27cee0d8adc1aba922346f711af8b5",
+  "lane": "A",
+  "acceptance_case": "member-data",
+  "product_artifact": {
+    "development_run_id": 38014587032,
+    "development_artifact_id": 11655990379,
+    "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+    "version": "0.2.457",
+    "tree_sha256": "1626416af2bc5f9656474c4f6bdedd28c8898c3322cd305d33a8450c9196d880"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "fail",
+  "failure_stage": "save_pattern",
+  "failure_code": "native_acceptance_error",
+  "bounded_observations": {
+    "member_auth_and_non_admin_identity_verified": true,
+    "selected_organization_verified": true,
+    "two_picker_previews_observed": true,
+    "save_post_status": 201,
+    "request_body_organization_matches_selected": true,
+    "saved_row_exact_name_and_organization_lookup": true,
+    "saved_pattern_refreshed": true,
+    "cleanup_verified": true,
+    "cleanup_deleted_rows": 1
+  },
+  "unverified": [
+    "saved-pattern run output and value assertion",
+    "TSV, JSON and AI clipboard copy/readback",
+    "cancel behavior",
+    "extension reload and persistence",
+    "zero-residual follow-up query"
+  ],
+  "resource_journals": {
+    "package": "resource-journals/hosted-package-38017560881-1.jsonl",
+    "browser": "resource-journals/hosted-browser-38017560881-1.jsonl",
+    "guest": "resource-journals/hosted-guest-38017560881-1.jsonl",
+    "all_final_decisions_valid": true,
+    "guest_child_exit_code": 1,
+    "guest_cpu_pending_recovered_before_final": true
+  },
+  "diagnostic_limit": "The report's safeFailureCode collapsed the post-save exception to native_acceptance_error. The exact failing substep is not retained; do not infer a product defect or a run/copy/cancel/reload pass from this attempt."
+}
