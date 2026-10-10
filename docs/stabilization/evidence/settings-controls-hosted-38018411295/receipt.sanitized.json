@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_run_id": 38018411295,
+  "workflow_result_artifact_id": 11657092463,
+  "workflow_checkout_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+  "acceptance_case": "settings-controls",
+  "lane": "B",
+  "role": "guest",
+  "driver_report": "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
+  "driver_report_status": "unverified",
+  "source_boundary": {
+    "artifact_kind": "successful CI development artifact",
+    "ci_run_id": 38017683667,
+    "ci_artifact_id": 11657076101,
+    "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+    "source_is_ancestor_of_workflow_checkout": true,
+    "import_log": "PREPARED_DEVELOPMENT 0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.457",
+    "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+    "current_main_health_claimed": false
+  },
+  "case_outcomes": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "driver_status": "pass",
+      "criteria": "19/19 pass including warm, panel reload, and full extension reload for Dark, Light, System; original implicit System baseline restored."
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "driver_status": "pass",
+      "criteria": "17/17 pass including Ask and Act selection, new-chat default inheritance, panel reload, full extension reload, and baseline restoration."
+    },
+    {
+      "case_id": "EXT-F-1003-T28",
+      "driver_status": "pass",
+      "criteria": "88/88 pass across 11 guest Settings sections warm, panel reload, and full extension reload; contents and expand/collapse behavior checked."
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "driver_status": "unverified",
+      "criteria": "10/11 pass: On/Off UI and storage persistence survived panel and full extension reload; original baseline restored. Downstream capture behavior was intentionally unverified in this batch."
+    },
+    {
+      "case_id": "EXT-F-1003-T67",
+      "driver_status": "pass",
+      "criteria": "13/13 pass for both Auto-scrape modes through panel and full extension reload; original baseline restored."
+    }
+  ],
+  "other_unverified_cases": "The batch report overall is unverified because other Settings cases carry explicit downstream behavior/readiness criteria that this batch does not exercise; the report contains no failed case assertions.",
+  "resource_journals": [
+    {
+      "path": "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    }
+  ],
+  "fixture_and_cleanup": "Disposable hosted Chrome-for-Testing guest profile. Driver report records original preference baselines restored for T04, T10, T40 and T67; no member/admin credentials or shared authenticated fixture used.",
+  "limitations": "This is bounded signed-out guest evidence for the exact imported 0735eb7a4 development artifact. It does not establish behavior for later main commits, member/admin roles, Store installation, or T40 downstream consumer behavior."
+}
