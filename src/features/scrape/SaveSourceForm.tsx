@@ -12,10 +12,10 @@ import { useAuthStore } from '@/state/auth';
 import { pushNotice } from '@/state/notices';
 import type { EntityTypeToken } from '@ai-matrx/associations';
 import {
-  AssociationCandidateBody,
   AssociationsProvider,
-  UniversalAssociationPicker,
-  attachedKey,
+  useAssociationCandidates,
+  useAssociationsStore,
+  useUniversalEntitySearch,
 } from '@ai-matrx/associations/react';
 import { Button } from '@ai-matrx/design-system';
 import { Loader2, X } from 'lucide-react';
@@ -25,6 +25,212 @@ interface LibraryOption {
   id: string;
   name: string;
   adapter: string;
+}
+
+const placeLabels: Record<(typeof SAVE_TARGET_TOKENS)[number], string> = {
+  project: 'Projects',
+  task: 'Tasks',
+  scope: 'Scopes',
+  research_topic: 'Research topics',
+  fc_set: 'Flashcard decks',
+  pc_episode: 'Podcast episodes',
+  war_room: 'War rooms',
+  data_store: 'Data stores',
+};
+
+function placeLabel(token: EntityTypeToken): string {
+  return token in placeLabels ? placeLabels[token as keyof typeof placeLabels] : token;
+}
+
+function PlaceResults({
+  placeType,
+  organizationId,
+  staged,
+  setStaged,
+}: {
+  placeType: EntityTypeToken | 'all';
+  organizationId: string;
+  staged: StagedTarget[];
+  setStaged: React.Dispatch<React.SetStateAction<StagedTarget[]>>;
+}) {
+  const [search, setSearch] = useState('');
+  const [creating, setCreating] = useState(false);
+  const [createName, setCreateName] = useState('');
+  const [createError, setCreateError] = useState<string | null>(null);
+  const [createBusy, setCreateBusy] = useState(false);
+  const associations = useAssociationsStore();
+  const entityInfo = associations.registry.getEntityInfo(
+    placeType === 'all' ? 'project' : placeType,
+  );
+  const canCreate =
+    placeType !== 'all' && entityInfo.titleColumn !== null && entityInfo.listCandidates === null;
+  const all = useUniversalEntitySearch({
+    query: search,
+    tokens: [...SAVE_TARGET_TOKENS] as EntityTypeToken[],
+    enabled: placeType === 'all',
+    emptyQueryMode: 'candidates',
+  });
+  const one = useAssociationCandidates({
+    token: placeType === 'all' ? 'project' : placeType,
+    enabled: placeType !== 'all',
+    ...(search.trim() && { search: search.trim() }),
+  });
+  const candidates =
+    placeType === 'all'
+      ? all.results
+      : one.candidates.map((candidate) => ({ ...candidate, token: placeType }));
+  const loading = placeType === 'all' ? all.loading : one.loading;
+  const error = placeType === 'all' ? all.error : one.error;
+
+  const createPlace = async () => {
+    const title = createName.trim();
+    if (!title || !canCreate || createBusy) return;
+    setCreateBusy(true);
+    setCreateError(null);
+    try {
+      const result = await associations.entityRows.createEntityRow(placeType, {
+        title,
+        orgId: organizationId,
+      });
+      if (!result.ok) {
+        setCreateError(result.error);
+        return;
+      }
+      setStaged((prev) =>
+        prev.some((item) => item.token === placeType && item.id === result.data.id)
+          ? prev
+          : [...prev, { token: placeType, id: result.data.id, label: result.data.title }],
+      );
+      setCreating(false);
+      setCreateName('');
+      one.reload();
+    } catch {
+      setCreateError(`Could not create ${entityInfo.label.toLowerCase()}.`);
+    } finally {
+      setCreateBusy(false);
+    }
+  };
+
+  return (
+    <section aria-label="Place results" className="min-h-0 rounded-md border border-border">
+      <input
+        aria-label={placeType === 'all' ? 'Search all places' : `Search ${placeLabel(placeType)}`}
+        placeholder={placeType === 'all' ? 'Search all places' : `Search ${placeLabel(placeType)}`}
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+        className="h-8 w-full border-b border-border bg-background px-2 text-sm outline-none focus:ring-2 focus:ring-inset focus:ring-ring"
+      />
+      <div
+        className="h-40 overflow-y-auto overscroll-contain"
+        onKeyDown={(event) => {
+          if (event.key !== 'PageDown' && event.key !== 'PageUp') return;
+          event.preventDefault();
+          event.currentTarget.scrollTop +=
+            event.currentTarget.clientHeight * (event.key === 'PageDown' ? 1 : -1);
+        }}
+      >
+        {error ? (
+          <div className="px-2 py-2 text-red-600 dark:text-red-400">Could not load places.</div>
+        ) : candidates.length === 0 ? (
+          <div className="px-2 py-2 text-muted-foreground">
+            {loading ? 'Loading…' : 'No places found.'}
+          </div>
+        ) : (
+          <ul>
+            {candidates.map((candidate) => {
+              const selected = staged.some(
+                (item) => item.token === candidate.token && item.id === candidate.id,
+              );
+              return (
+                <li key={`${candidate.token}:${candidate.id}`}>
+                  <button
+                    type="button"
+                    aria-label={candidate.title}
+                    aria-pressed={selected}
+                    title={candidate.title}
+                    onClick={() =>
+                      setStaged((prev) =>
+                        selected
+                          ? prev.filter(
+                              (item) =>
+                                !(item.token === candidate.token && item.id === candidate.id),
+                            )
+                          : [
+                              ...prev,
+                              {
+                                token: candidate.token,
+                                id: candidate.id,
+                                label: candidate.title,
+                              },
+                            ],
+                      )
+                    }
+                    className="flex h-8 w-full items-center gap-2 border-b border-border/50 px-2 text-left text-xs last:border-0 hover:bg-accent focus-visible:bg-accent aria-pressed:bg-accent/70"
+                  >
+                    <span className="min-w-0 flex-1 truncate">{candidate.title}</span>
+                    {placeType === 'all' && (
+                      <span className="shrink-0 text-muted-foreground">
+                        {placeLabel(candidate.token)}
+                      </span>
+                    )}
+                    {selected && <span className="shrink-0 font-medium">Selected</span>}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
+      {canCreate &&
+        (creating ? (
+          <div className="flex items-center gap-1 border-t border-border p-1">
+            <input
+              aria-label={`New ${entityInfo.label} name`}
+              value={createName}
+              onChange={(event) => setCreateName(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') void createPlace();
+                if (event.key === 'Escape') {
+                  event.stopPropagation();
+                  setCreating(false);
+                }
+              }}
+              disabled={createBusy}
+              className="h-8 min-w-0 flex-1 rounded border border-border bg-background px-2 text-xs"
+            />
+            <button
+              type="button"
+              disabled={createBusy || !createName.trim()}
+              onClick={() => void createPlace()}
+              className="px-2 font-medium text-primary disabled:opacity-50"
+            >
+              Create
+            </button>
+            <button
+              type="button"
+              disabled={createBusy}
+              onClick={() => setCreating(false)}
+              className="px-2 text-muted-foreground"
+            >
+              Cancel
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              setCreateName(search.trim());
+              setCreateError(null);
+              setCreating(true);
+            }}
+            className="h-8 w-full border-t border-border px-2 text-left text-xs text-primary hover:bg-accent"
+          >
+            Create new {entityInfo.label.toLowerCase()}
+          </button>
+        ))}
+      {createError && <div className="px-2 pb-1 text-xs text-red-600">{createError}</div>}
+    </section>
+  );
 }
 
 function localStore(): Storage | null {
@@ -38,6 +244,7 @@ function localStore(): Storage | null {
 /** The choices stay local until one landing request saves the name and places together. */
 export function SaveSourceForm({
   initialName,
+  sourceUrl,
   organizationId,
   saving,
   error,
@@ -45,6 +252,7 @@ export function SaveSourceForm({
   onClose,
 }: {
   initialName: string;
+  sourceUrl: string;
   organizationId: string | null;
   saving: boolean;
   error?: string | null;
@@ -106,18 +314,7 @@ export function SaveSourceForm({
     };
   }, [showLibrary, userId]);
 
-  const attachedKeys = new Set(staged.map((t) => attachedKey(t.token, t.id)));
   const attachTo = buildAttachTargets(staged, libraryId);
-  const placeLabels: Record<(typeof SAVE_TARGET_TOKENS)[number], string> = {
-    project: 'Projects',
-    task: 'Tasks',
-    scope: 'Scopes',
-    research_topic: 'Research topics',
-    fc_set: 'Flashcard decks',
-    pc_episode: 'Podcast episodes',
-    war_room: 'War rooms',
-    data_store: 'Data stores',
-  };
 
   return (
     <dialog
@@ -183,6 +380,12 @@ export function SaveSourceForm({
           className="h-8 w-full rounded-md border border-border bg-background px-2 text-sm outline-none focus:ring-2 focus:ring-ring"
         />
       </label>
+      <div className="space-y-1">
+        <span className="font-medium text-muted-foreground">URL</span>
+        <div className="truncate rounded-md bg-muted/40 px-2 py-1.5 text-xs" title={sourceUrl}>
+          {sourceUrl}
+        </div>
+      </div>
       <div className="flex flex-wrap gap-1.5">
         {!showPlaces && (
           <Button
@@ -270,63 +473,13 @@ export function SaveSourceForm({
               }),
           }}
         >
-          <section
-            aria-label="Place results"
-            className="h-48 overflow-y-auto overscroll-contain rounded-md border border-border"
-            onKeyDown={(event) => {
-              if (event.key !== 'PageDown' && event.key !== 'PageUp') return;
-              event.preventDefault();
-              event.currentTarget.scrollTop +=
-                event.currentTarget.clientHeight * (event.key === 'PageDown' ? 1 : -1);
-            }}
-          >
-            {placeType === 'all' ? (
-              <UniversalAssociationPicker
-                key={placeType}
-                orgId={organizationId}
-                tokens={[...SAVE_TARGET_TOKENS] as EntityTypeToken[]}
-                attachedKeys={attachedKeys}
-                onAttach={async (token, id, title) => {
-                  setStaged((prev) =>
-                    prev.some((item) => item.token === token && item.id === id)
-                      ? prev
-                      : [...prev, { token, id, label: title || token }],
-                  );
-                  return { ok: true };
-                }}
-                onDetach={async (token, id) => {
-                  setStaged((prev) =>
-                    prev.filter((item) => !(item.token === token && item.id === id)),
-                  );
-                  return { ok: true };
-                }}
-              />
-            ) : (
-              <AssociationCandidateBody
-                key={placeType}
-                token={placeType}
-                enabled
-                orgId={organizationId}
-                attachedIds={
-                  new Set(staged.filter((item) => item.token === placeType).map((item) => item.id))
-                }
-                onAttach={async (id, title) => {
-                  setStaged((prev) =>
-                    prev.some((item) => item.token === placeType && item.id === id)
-                      ? prev
-                      : [...prev, { token: placeType, id, label: title || placeType }],
-                  );
-                  return { ok: true };
-                }}
-                onDetach={async (id) => {
-                  setStaged((prev) =>
-                    prev.filter((item) => !(item.token === placeType && item.id === id)),
-                  );
-                  return { ok: true };
-                }}
-              />
-            )}
-          </section>
+          <PlaceResults
+            key={placeType}
+            placeType={placeType}
+            organizationId={organizationId}
+            staged={staged}
+            setStaged={setStaged}
+          />
         </AssociationsProvider>
       )}
       {showLibrary && (

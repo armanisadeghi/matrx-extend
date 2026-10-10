@@ -10,6 +10,7 @@ it('keeps keyboard focus in the Save dialog when tabbing past either end', () =>
       <button type="button">Underlying page control</button>
       <SaveSourceForm
         initialName="Article"
+        sourceUrl="https://example.com/article"
         organizationId={null}
         saving={false}
         onSave={vi.fn()}
