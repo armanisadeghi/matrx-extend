@@ -20878,7 +20878,7 @@
           "results": {
             "member": {
               "run_id": "scrape-save-native-5-browser",
-              "build_variant": "development 0.2.457; extension cihdkmcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
+              "build_variant": "development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
               "verified_at": "2026-10-10T01:27:29Z",
               "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl",
               "status": "partial",
@@ -20888,7 +20888,7 @@
               ],
               "remaining_criteria": [
                 "Save without a destination, duplicate-save behavior, precise confirmation latency, controlled refusal/retry, guest/admin behavior, and full T04 coverage remain unverified.",
-                "Current uncommitted Save UI behavior remains unverified; the loaded artifact was v0.2.457 at source 7cf16860846756eb0f50cd6d2595b4d7529dda05.",
+                "Save Source UI changes committed in 3e3c2770c remain unverified; the loaded artifact was v0.2.457 at source 7cf16860846756eb0f50cd6d2595b4d7529dda05.",
                 "Dialog URL display, Project-list scrolling, and Tab/Shift+Tab containment and wrap remain unverified."
               ],
               "detail": "Resource-valid native member run confirmed exact loaded extension identity, saved Source persistence, and persisted Project association after reopening the Project Attach sources panel. These are bounded substeps only; EXT-D-0187 remains in-fix. See the native receipt for evidence limits."
@@ -23512,7 +23512,7 @@
           "results": {
             "member": {
               "run_id": "scrape-save-native-5-browser",
-              "build_variant": "development 0.2.457; extension cihdkmcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
+              "build_variant": "development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
               "verified_at": "2026-10-10T01:27:29Z",
               "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl",
               "status": "partial",
@@ -23522,10 +23522,10 @@
               ],
               "remaining_criteria": [
                 "Scroll behavior remains unverified because the attempted scroll produced no accessibility-state change; keyboard movement to the next row is not proof of focus containment or scroll reachability.",
-                "The dialog did not separately display the URL; URL display in the current uncommitted Save UI is unverified.",
+                "The dialog did not separately display the URL; URL display added in Save Source UI commit 3e3c2770c is unverified on a current exact artifact.",
                 "Duplicate, no-destination, search-to-late-result, multi-target, remove, Library, refusal/retry, File elsewhere, responsive layout, focus containment/wrap, and admin paths remain unverified."
               ],
-              "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or the current uncommitted UI."
+              "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c."
             },
             "admin": {
               "status": "unverified",
@@ -23751,9 +23751,10 @@
             "37263606882",
             "scrape-save-native-3",
             "scrape-save-native-4",
-            "scrape-save-native-5"
+            "scrape-save-native-5",
+            "scrape-save-native-5-browser"
           ],
-          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. Native-5 observed dialog/project list/focus substeps but ended resource-invalid at 19.9955GiB and made no Save/write. Existing hosted development Scrape route lacks Save Source assertions; post-save filing E2E is not a safe substitute. One-click Projects follow-up pending; no full T04/T29 pass. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects/focus/association remain unverified. Hosted-lane feasibility: docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json."
+          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. Initial native-5 ended resource-invalid at 19.9955GiB before Save/write. Follow-up native-5-browser was resource-valid and confirmed named Source persistence plus its Project association, but only bounded substeps passed; dialog URL, scrolling, focus containment, other save routes, and full T04/T29 remain unverified. Save Source UI changes in 3e3c2770c need a current exact-artifact retest. The D187-specific hosted driver is committed at a8839d016/94a281c8f and awaits green exact-source CI and a member-lane run. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects and focus acceptance remain unverified; association has only bounded native-5-browser evidence. Hosted-lane feasibility: docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json."
         },
         "admin": {
           "test_status": "unverified",
@@ -23781,7 +23782,7 @@
             "source-workspace-008",
             "source-workspace-009"
           ],
-          "retest_status": "EXT-D-0187 remains unverified for admin; native-3 bounded member evidence is not admin proof; native-4 loaded-artifact/final focus acceptance blocked. Native-5 ended resource-invalid before save. Existing hosted lane has no D187 Save Source driver; see docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json."
+          "retest_status": "EXT-D-0187 remains unverified for admin; native-3 bounded member evidence is not admin proof; native-4 loaded-artifact/final focus acceptance blocked. The initial native-5 ended resource-invalid before save; follow-up native-5-browser proves only bounded member substeps. Admin remains unverified. The D187 hosted driver is member-only and does not provide admin evidence."
         }
       },
       "inventory_status": "complete",
@@ -23976,7 +23977,7 @@
         {
           "run_id": "scrape-save-native-5-browser",
           "mode": "member",
-          "build": "0.2.457 / cihdkmcdjjckfhjpgoedmgfpoljebaml / 7cf16860846756eb0f50cd6d2595b4d7529dda05 (exact loaded build reloaded)",
+          "build": "0.2.457 / cihdmkcdjjckfhjpgoedmgfpoljebaml / 7cf16860846756eb0f50cd6d2595b4d7529dda05 (exact loaded build reloaded)",
           "defect_id": "EXT-D-0187",
           "status": "bounded-native-substeps-pass",
           "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md",
@@ -23986,7 +23987,7 @@
             "docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl"
           ],
           "proven": "Named Source 5f25b273-3f3b-4708-808b-b7a290c688cf (EXT-D-0187 Native Save 5 2026-10-10) persisted with full unique URL and captured content; reopening Project 4484ab9c-bb04-4adc-a894-df2e9f18960f Attach sources panel listed that Source, confirming association.",
-          "limits": "Only bounded member substeps. Save dialog URL display, scrolling, focus containment/wrap, duplicate, no-destination, refusal/retry, other target flows, current uncommitted UI, guest/admin and full T04/T29 remain unverified. EXT-D-0187 remains in-fix."
+          "limits": "Only bounded member substeps. Save dialog URL display, scrolling, focus containment/wrap, duplicate, no-destination, refusal/retry, other target flows, Save Source UI changes committed in 3e3c2770c, guest/admin and full T04/T29 remain unverified. EXT-D-0187 remains in-fix."
         }
       ]
     },
