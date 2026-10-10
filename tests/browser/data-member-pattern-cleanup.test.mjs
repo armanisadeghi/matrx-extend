@@ -5,6 +5,7 @@ import {
   buildDataPatternLookupUrl,
   matchesSelectedMemberOrganization,
   parseDataPatternWriteBody,
+  parseDataPatternWriteRequestBody,
   requireExpectedMemberOrganizationId,
   verifyDataPatternDeleteResult,
   verifyDataPatternLookupResult,
@@ -81,6 +82,28 @@ test('successful write body accepts a single object or one-row representation', 
   assert.deepEqual(parseDataPatternWriteBody('[]'), {
     patternId: null,
     capture: 'body_shape_invalid',
+  });
+});
+
+test('member save request body carries the exact selected organization and owned name', () => {
+  const name = 'Northline Furnishings catalog member 38009889306-1';
+  assert.deepEqual(
+    parseDataPatternWriteRequestBody(JSON.stringify({ organization_id: organizationId, name })),
+    { organizationId, name, capture: 'request_body_valid' },
+  );
+  const wrong = parseDataPatternWriteRequestBody(
+    JSON.stringify({ organization_id: otherOrganizationId, name }),
+  );
+  assert.equal(matchesSelectedMemberOrganization(wrong.organizationId, organizationId), false);
+  assert.deepEqual(parseDataPatternWriteRequestBody('not-json'), {
+    organizationId: null,
+    name: null,
+    capture: 'request_body_non_json',
+  });
+  assert.deepEqual(parseDataPatternWriteRequestBody('{}'), {
+    organizationId: null,
+    name: null,
+    capture: 'request_body_shape_invalid',
   });
 });
 

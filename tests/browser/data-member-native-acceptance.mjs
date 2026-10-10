@@ -11,11 +11,10 @@ import { clickPickerDone, clickPickerField, pickerText } from './data-guest-pick
 import {
   buildDataPatternDeleteUrl,
   buildDataPatternLookupUrl,
-  matchesSelectedMemberOrganization,
-  parseDataPatternWriteBody,
   verifyDataPatternDeleteResult,
   verifyDataPatternLookupResult,
 } from './data-member-pattern-cleanup.mjs';
+import { observePatternWrites } from './data-member-save-observer.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import {
@@ -80,85 +79,6 @@ async function dataState(panel, name) {
       };
     })()`,
   );
-}
-
-function observePatternWrites(panel, expectedOrganizationId) {
-  const writes = new Map();
-  const origin = new URL(process.env.WXT_SUPABASE_URL).origin;
-  const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
-    try {
-      const url = new URL(request.url);
-      if (
-        url.origin === origin &&
-        url.pathname === '/rest/v1/wbx_pattern' &&
-        request.method === 'POST'
-      ) {
-        const organizationId = Object.entries(request.headers ?? {}).find(
-          ([name]) => name.toLowerCase() === 'x-organization-id',
-        )?.[1];
-        writes.set(requestId, {
-          status: null,
-          failed: false,
-          patternId: null,
-          bodyCapture: 'pending',
-          organizationId,
-        });
-      }
-    } catch {
-      // Unrelated requests are ignored; raw URLs never leave this listener.
-    }
-  });
-  const offResponse = panel.on('Network.responseReceived', ({ requestId, response }) => {
-    const write = writes.get(requestId);
-    if (write) write.status = response.status;
-  });
-  const offFailed = panel.on('Network.loadingFailed', ({ requestId }) => {
-    const write = writes.get(requestId);
-    if (write) write.failed = true;
-  });
-  const offFinished = panel.on('Network.loadingFinished', ({ requestId }) => {
-    const write = writes.get(requestId);
-    if (!write) return;
-    void panel
-      .send('Network.getResponseBody', { requestId })
-      .then((body) => {
-        const text = body.base64Encoded
-          ? Buffer.from(body.body, 'base64').toString('utf8')
-          : body.body;
-        const parsed = parseDataPatternWriteBody(text);
-        write.patternId = parsed.patternId;
-        write.bodyCapture = parsed.capture;
-      })
-      .catch(() => {
-        write.bodyCapture = 'body_unavailable';
-      });
-  });
-  return {
-    snapshot: () =>
-      [...writes.values()].map(({ status, failed, patternId, bodyCapture, organizationId }) => ({
-        status,
-        failed,
-        patternIdPresent: UUID.test(patternId ?? ''),
-        bodyCapture,
-        organizationContextPresent: UUID.test(organizationId ?? ''),
-        organizationMatchesSelected: matchesSelectedMemberOrganization(
-          organizationId,
-          expectedOrganizationId,
-        ),
-      })),
-    writeTarget: () => {
-      const target = [...writes.values()].find(
-        (write) => write.status === 201 && UUID.test(write.organizationId ?? ''),
-      );
-      return target ? { patternId: target.patternId, organizationId: target.organizationId } : null;
-    },
-    stop: () => {
-      offRequest();
-      offResponse();
-      offFailed();
-      offFinished();
-    },
-  };
 }
 
 async function lookupSavedPattern(panel, name, organizationId) {
@@ -373,7 +293,12 @@ try {
       );
       assert.equal(named.nameMatches, true, 'data_member_pattern_name_not_set');
       await panel.send('Network.enable');
-      const observer = observePatternWrites(panel, identity.organizationId);
+      const observer = observePatternWrites(
+        panel,
+        new URL(process.env.WXT_SUPABASE_URL).origin,
+        identity.organizationId,
+        patternName,
+      );
       let primaryError;
       let cleanupError;
       let saveAttempted = false;
@@ -388,7 +313,8 @@ try {
             state.length === 1 &&
             state[0].status === 201 &&
             !state[0].failed &&
-            state[0].organizationContextPresent,
+            state[0].requestOrganizationPresent &&
+            state[0].requestNameMatches,
         );
         const writeTarget = observer.writeTarget();
         assert.ok(writeTarget, 'data_member_write_target_unverified');
@@ -417,13 +343,14 @@ try {
         report.observations.pattern_write_status = writes[0].status;
         report.observations.pattern_response_body_capture = writes[0].bodyCapture;
         report.observations.saved_row_lookup_verified = true;
-        report.observations.organization_context_sent = writes[0].organizationContextPresent;
-        report.observations.organization_context_matched_selected =
-          writes[0].organizationMatchesSelected;
+        report.observations.request_body_organization_present =
+          writes[0].requestOrganizationPresent;
+        report.observations.request_body_organization_matched_selected =
+          writes[0].requestOrganizationMatchesSelected;
         assert.equal(
-          writes[0].organizationMatchesSelected,
+          writes[0].requestOrganizationMatchesSelected,
           true,
-          'data_member_save_organization_mismatch',
+          'data_member_save_request_organization_mismatch',
         );
         const saved = await waitFor(
           'data_member_pattern_refreshed',

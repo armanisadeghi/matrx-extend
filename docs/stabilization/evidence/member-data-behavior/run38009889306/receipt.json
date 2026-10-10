@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "run_id": 38009889306,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38009889306",
+    "lane": "A",
+    "runner": "macos-15",
+    "conclusion": "failure",
+    "checkout_sha": "ac6cda6feb17b718c60d2f77edb98bd4833648f0"
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.456",
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "ci_run_id": 37998294843,
+    "ci_artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b"
+  },
+  "hosted_artifact": {
+    "id": 11652809040,
+    "name": "hosted-guest-38009889306-1"
+  },
+  "resource_guards": {
+    "package": { "admitted": true, "resource_invalid": false, "decision": "valid", "exit_code": 0 },
+    "browser": { "admitted": true, "resource_invalid": false, "decision": "valid", "exit_code": 0 },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "child_failed",
+      "exit_code": 1
+    }
+  },
+  "executed_behavior": {
+    "member_web_and_extension_identity": "verified",
+    "canonical_nonadmin_check": "verified",
+    "selected_organization": "load_ladder_with_independently_verified_expected_uuid",
+    "two_picker_field_clicks_and_previews": "verified",
+    "save_name_and_control": "verified",
+    "save_post_response": "http_201_with_valid_returned_row_id",
+    "save_request_header": "no_organization_uuid_visible_in_requestWillBeSent_headers",
+    "saved_row_ui_refresh": "unverified",
+    "driver_failure_code": "data_member_pattern_write_succeeded_not_observed"
+  },
+  "owned_fixture_cleanup": {
+    "backend_exact_name_match_count_before": 1,
+    "sole_active_member_organization_matched": true,
+    "delete_scoped_by_exact_row_organization_and_name": true,
+    "returned_row_verified": true,
+    "backend_exact_name_match_count_after": 0,
+    "temporary_github_secret_removed": true,
+    "local_single_use_link_removed": true
+  },
+  "classification": "The direct PostgREST save succeeded. The driver incorrectly required X-Organization-Id in the first CDP request event even though this save carries organization_id in its JSON body. The request body was not captured by this run. The saved row matched the reviewer's sole active organization, but final side-panel refresh and native cleanup remain unverified.",
+  "evidence_files": [
+    "native-report.json",
+    "hosted-package-38009889306-1.jsonl",
+    "hosted-browser-38009889306-1.jsonl",
+    "hosted-guest-38009889306-1.jsonl"
+  ]
+}

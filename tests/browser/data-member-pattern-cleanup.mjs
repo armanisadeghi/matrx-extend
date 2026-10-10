@@ -14,6 +14,19 @@ export function matchesSelectedMemberOrganization(observedId, expectedId) {
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const OWNED_NAME = /^Northline Furnishings catalog member [1-9][0-9]*-[1-9][0-9]*$/;
 
+export function parseDataPatternWriteRequestBody(body) {
+  let parsed;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    return { organizationId: null, name: null, capture: 'request_body_non_json' };
+  }
+  const row = Array.isArray(parsed) && parsed.length === 1 ? parsed[0] : parsed;
+  if (!row || !UUID.test(row.organization_id ?? '') || !OWNED_NAME.test(row.name ?? ''))
+    return { organizationId: null, name: null, capture: 'request_body_shape_invalid' };
+  return { organizationId: row.organization_id, name: row.name, capture: 'request_body_valid' };
+}
+
 export function parseDataPatternWriteBody(body) {
   let parsed;
   try {

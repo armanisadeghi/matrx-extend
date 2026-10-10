@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "auth_mode": "member",
+  "status": "fail",
+  "stage": "save_pattern",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "run_id": 37998294843,
+    "artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b",
+    "version": "0.2.456"
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_identity_verified": true,
+    "canonical_nonadmin_check_passed": true,
+    "organization_selected": true,
+    "organization_resolution": "load_ladder",
+    "selected_organization_id_verified": true
+  },
+  "observations": {
+    "picker_field_clicks_landed": true,
+    "two_distinct_previews": true,
+    "save_pattern_visible": true,
+    "pattern_name_visible": true,
+    "pattern_write_observation": [
+      {
+        "status": 201,
+        "failed": false,
+        "patternIdPresent": true,
+        "bodyCapture": "body_id_valid",
+        "organizationContextPresent": false,
+        "organizationMatchesSelected": false
+      }
+    ]
+  },
+  "cleanup": {
+    "verified": false,
+    "error": "data_member_cleanup_target_missing"
+  },
+  "failure_stage": "save_pattern",
+  "limits": "Native member picker and pattern-save behavior on the exact imported development artifact; no admin, Store or guest claim.",
+  "auth_stage": "member_extension_signin",
+  "error_code": "data_member_pattern_write_succeeded_not_observed"
+}
