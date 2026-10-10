@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_seo_full_store_evidence_review",
+  "reviewer": "independent_guest_seo_run_review",
+  "verdict": "PARTIAL_FULL_GUEST_SEO_V0471",
+  "run": {
+    "hosted_run_id": 38073210419,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38073210419",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "conclusion": "success",
+    "workflow_head_sha": "96f64b1a6cdf088bf68ed98154fb44e00f926164",
+    "lane": "A",
+    "case": "guest-seo",
+    "scope": "full",
+    "reviewed_at": "2026-10-10"
+  },
+  "provenance": {
+    "release_run_id": 38071981003,
+    "release_artifact_id": 11676918768,
+    "artifact_name": "matrx-extend-v0.2.471",
+    "version": "0.2.471",
+    "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "zip_digest_matches_receipt": true,
+    "runtime_tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+    "native_report_tree_hash_matches": true,
+    "hosted_result_artifact_id": 11677347467,
+    "hosted_result_artifact_digest": "sha256:b5e6d5c813c9c889ec2ddb07afe782ffa09030bccb9ac8aa59126225eaa670ec",
+    "release_artifact_digest": "sha256:674432715dd8338fdbd4d919e2f8aeb7e6591d8e85688eb3bbfe2297883e3a"
+  },
+  "verdict_a_live_behavior": {
+    "status": "PARTIAL",
+    "passed_count": 24,
+    "unverified_count": 1,
+    "target_count": 25,
+    "verified_behavior": [
+      "Guest navigation and reload title/headings checks passed.",
+      "Guest text and AI copy paths returned exact observed summaries; JSON remained absent; clipboard readback and permission restoration passed.",
+      "Manual audit preserved the current page, restricted about:blank cleared stale results with retry offered, and a later public page recovered.",
+      "Sparse and rich public detail groups matched their page DOM; the canonical link opened the expected destination through trusted input.",
+      "The broken social-preview image fallback was explanatory and restored after the controlled page change.",
+      "Live link and missing-alt counts matched the DOM; the populated performance values matched the current navigation.",
+      "Two known readability fixtures matched their words, sentences, score, and grade-band oracle, with page restoration and original-page re-audit.",
+      "Missing social tags copied exactly before and after re-audit; trusted click, clipboard readback, feedback, and permission restoration passed."
+    ],
+    "unverified": [
+      "guest_manual_hreflang_and_schema_doors_match_page: the public DOM did not expose unique openable candidates.",
+      "The displayed live-page readability value’s numeric correctness remains unverified even though the display is populated and two known text fixtures pass."
+    ]
+  },
+  "verdict_b_doctrine_and_evidence": {
+    "status": "PASS_FOR_EVIDENCE_SCOPE",
+    "notes": [
+      "The run used release_run_id 38071981003, no development artifact or CRX input, and full guest-seo scope.",
+      "Downloaded release receipt and both ZIP hashes validate; the Store ZIP is unkeyed and the hosted adapter adds only the matching local manifest key to the runtime copy.",
+      "Independent replay of scripts/hosted-release-artifact.mjs produced runtime tree hash 923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f, equal to the native report before/after tree hash.",
+      "Package, browser, and guest resource journals each ended valid with admitted=true, resource_invalid=false, exit_code=0.",
+      "Both screenshots were inspected; they are generic and show no SEO output, so they add no SEO behavior credit.",
+      "The target set exactly matches v0.2.469 full run 38070400935; this run adds no distinct subtarget credit. SEO T09 and guest SEO remain partial.",
+      "Evidence is limited to this exact v0.2.471 Store ZIP. Later package refreshes and releases are outside this review."
+    ]
+  },
+  "comparison_to_v0469": {
+    "run_id": 38070400935,
+    "result": "24/25 passed; the same public-DOM hreflang/schema door remained unverified and live-page readability numeric correctness remained unverified.",
+    "current_run_delta": "Same 25 target IDs and same partial status on v0.2.471; the changed live-page values are volatile DOM measurements, not evidence of a regression."
+  },
+  "d193_adjudication": {
+    "status": "KEEP_FIXED_NOT_CLOSED",
+    "reason": "This run verifies the fixed release-artifact route reaches full guest SEO assertions for v0.2.471, but it is not the exact v0.2.469 paired retest required by D193; it is also partial. The exact-v0.2.469 guest SEO run 38070400935 remains 24/25 partial, so the recorded closure requirement is unmet.",
+    "required_next_evidence": "Complete the paired exact-v0.2.469 guest Data and SEO retests under D193; guest SEO must pass its unchanged real assertions. Keep live-page readability correctness unverified unless independently established."
+  },
+  "checked_files": [
+    "docs/stabilization/defects/EXT-D-0193.json",
+    "docs/stabilization/runs/guest-seo-v0469-38070400935.json",
+    "docs/stabilization/evidence/guest-seo-store/run38070400935/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/product-artifact.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/resource-finals.sanitized.json"
+  ],
+  "verification": {
+    "method": "Fetched hosted workflow metadata and job log, downloaded the hosted result and release artifacts, inspected every native assertion, inspected the three final resource decisions, visually inspected both screenshots, verified release receipt/ZIP digests, and reran the artifact selection/adaptation helper to compare runtime and native tree hashes.",
+    "tests": "No new browser, product, or heavy tests run; this was a read-only evidence review plus local deterministic package-hash verification."
+  }
+}

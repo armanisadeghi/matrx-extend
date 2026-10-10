@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "run_id": 38073210419,
+  "observed_at": "2026-10-10T17:55:27Z",
+  "case_id": "guest-seo",
+  "lane": "A",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "96f64b1a6cdf088bf68ed98154fb44e00f926164",
+  "outcome": {
+    "status": "partial",
+    "workflow_conclusion": "success",
+    "native_subtargets": {
+      "pass": 24,
+      "unverified": 1,
+      "total": 25
+    },
+    "unverified_target": "guest_manual_hreflang_and_schema_doors_match_page: public DOM exposed no unique openable candidates",
+    "readability_display": "populated and explained; two known-text oracles passed",
+    "readability_metric_value_correctness": "unverified for the live public page"
+  },
+  "artifact": {
+    "release_run_id": 38071981003,
+    "artifact_id": 11676918768,
+    "artifact_name": "matrx-extend-v0.2.471",
+    "version": "0.2.471",
+    "product_source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "downloaded_zip_hash_matches_receipt": true,
+    "runtime_tree_sha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f",
+    "native_tree_hash_matches": true,
+    "release_artifact_digest": "sha256:674432715dd8338fdbd4d919e2f8aeb7e6591d8e85688eb3bbfe2297883e3a"
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "screenshots": {
+    "reviewed": true,
+    "limit": "Both screenshots show generic guest/panel context and the generic target page; neither shows SEO output. SEO behavior credit comes from the native assertions, not screenshots."
+  },
+  "acceptance_credit": {
+    "distinct_new_subtargets": 0,
+    "reason": "The 25 assertion IDs are identical to full v0.2.469 run 38070400935; this is a bounded repeat on v0.2.471."
+  },
+  "d193": "Supplemental evidence that the fixed release-artifact route reaches unchanged guest SEO assertions on v0.2.471. Does not meet D193 closure: closure explicitly requires paired exact-v0.2.469 Data and SEO retests, and v0.2.469 SEO run 38070400935 remains partial.",
+  "evidence": [
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/product-artifact.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/resource-journals/hosted-package-38073210419-1.jsonl",
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/resource-journals/hosted-browser-38073210419-1.jsonl",
+    "docs/stabilization/evidence/guest-seo-store/run38073210419/resource-journals/hosted-guest-38073210419-1.jsonl"
+  ]
+}

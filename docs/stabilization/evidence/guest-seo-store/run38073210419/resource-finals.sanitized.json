@@ -1,0 +1,33 @@
+{
+  "hosted_run_id": 38073210419,
+  "all_three_valid": true,
+  "resources": [
+    {
+      "run_id": "hosted-package-38073210419-1",
+      "journal": "resource-journals/hosted-package-38073210419-1.jsonl",
+      "journal_sha256": "98f87bc75373ec255ebb86998c92f7c25300ec0f477f2293146a0b63f5aef343",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "run_id": "hosted-browser-38073210419-1",
+      "journal": "resource-journals/hosted-browser-38073210419-1.jsonl",
+      "journal_sha256": "27bd510e53defae004ea31a1a19763f251ce5a7633ff1550fffc2b68aa9cf79e",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "run_id": "hosted-guest-38073210419-1",
+      "journal": "resource-journals/hosted-guest-38073210419-1.jsonl",
+      "journal_sha256": "73e781f97ac459f2baac5dfebe7c074b0ed2b64df770bb6ea5efb331818cab64",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  ]
+}

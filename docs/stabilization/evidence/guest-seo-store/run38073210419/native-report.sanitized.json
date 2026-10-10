@@ -1,0 +1,418 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "partial",
+  "scope": "public-page guest SEO actions in an owned native side panel",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_0_title_and_headings",
+      "status": "pass",
+      "evidence": {
+        "titleMatches": true,
+        "headingsPresenceMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+      "status": "pass",
+      "evidence": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "page_1_title_and_headings",
+      "status": "pass",
+      "evidence": {
+        "titleMatches": true,
+        "headingsPresenceMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+      "status": "pass",
+      "evidence": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "new_url_replaces_visible_title",
+      "status": "pass",
+      "evidence": {
+        "twoDistinctPublicTitles": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "manual_button_returns_to_current_page",
+      "status": "pass",
+      "evidence": {
+        "currentTitlePreserved": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+      "status": "pass",
+      "evidence": {
+        "textChoice": true,
+        "agentChoice": true,
+        "jsonAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T01",
+      "subtarget": "reload_audits_current_url",
+      "status": "pass",
+      "evidence": {
+        "currentTitleMatched": true,
+        "headingsPresenceMatched": true,
+        "reselectedAfterReload": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_role_gate_after_reload",
+      "status": "pass",
+      "evidence": {
+        "textChoice": true,
+        "agentChoice": true,
+        "jsonAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T07",
+      "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+      "status": "pass",
+      "evidence": {
+        "textMatchesPublicPage": true,
+        "aiWrapsExactSummary": true,
+        "trustedCopyClicks": 2,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "subtarget": "about_blank_clear_error_without_stale_audit",
+      "status": "pass",
+      "evidence": {
+        "scopeValid": true,
+        "expectedErrorVisible": true,
+        "staleAuditAbsent": true,
+        "copyAuditAbsent": true,
+        "retryOffered": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T03",
+      "subtarget": "public_page_recovers_after_restricted_url",
+      "status": "pass",
+      "evidence": {
+        "publicTitleMatched": true,
+        "headingsPresenceMatched": true,
+        "auditErrorAbsent": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "sparse_public_detail_groups",
+      "status": "pass",
+      "evidence": {
+        "descriptionAbsent": true,
+        "canonicalAbsent": true,
+        "groupsMatchPublicDom": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "rich_public_detail_groups_and_canonical_door",
+      "status": "pass",
+      "evidence": {
+        "descriptionMatchesPublicDom": true,
+        "canonicalMatchesPublicDom": true,
+        "groupsMatchPublicDom": true,
+        "outboundAnchorSafe": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "canonical_outbound_opens_expected_public_tab",
+      "status": "pass",
+      "evidence": {
+        "trustedInput": true,
+        "destinationMatchesPublicDom": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtarget": "guest_social_missing_tags_clipboard_before_reaudit",
+      "status": "pass",
+      "evidence": {
+        "copiedTags": 5,
+        "exactClipboardMatch": true,
+        "trustedCopyClick": true,
+        "sourceTitleMatches": true,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true,
+        "feedbackObserved": true,
+        "feedbackFailureAbsent": true,
+        "clipboardChanged": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "guest_reaudit_captures_changed_page_metadata",
+      "status": "pass",
+      "evidence": {
+        "publicTitleChanged": true,
+        "publicDescriptionChanged": true,
+        "oldAuditVisibleBeforeClick": true,
+        "nativeTitleMatchesChangedPublicDom": true,
+        "trustedReauditClick": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T14",
+      "subtarget": "guest_social_missing_tags_clipboard_after_reaudit",
+      "status": "pass",
+      "evidence": {
+        "copiedTags": 6,
+        "exactClipboardMatch": true,
+        "trustedCopyClick": true,
+        "sourceTitleMatches": true,
+        "clipboardReadback": true,
+        "observationPermissionRestored": true,
+        "feedbackObserved": true,
+        "feedbackFailureAbsent": true,
+        "clipboardChanged": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_broken_social_preview_shows_failure_fallback",
+      "status": "pass",
+      "evidence": {
+        "publicImageMetadataPresent": true,
+        "attemptedImageReturned404": true,
+        "auditTitleMatchesChangedPage": true,
+        "explanatoryFallbackVisible": true,
+        "noImageFallbackAbsent": true,
+        "titleAndImageMetadataRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_link_counts_match_live_dom",
+      "status": "pass",
+      "evidence": {
+        "internal": 1783,
+        "external": 410
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_image_alt_counts_match_live_dom",
+      "status": "pass",
+      "evidence": {
+        "total": 28,
+        "missingAlt": 10
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_readability_display_is_populated_and_explained",
+      "status": "pass",
+      "evidence": {
+        "publicBodyHasText": true,
+        "displayed": {
+          "words": "10,467",
+          "sentences": "784",
+          "score": "44.51",
+          "summary": "Difficult — college"
+        },
+        "metricValueCorrectness": "unverified"
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_readability_matches_two_known_texts",
+      "status": "pass",
+      "evidence": {
+        "cases": [
+          {
+            "id": "roof-maintenance",
+            "expected": {
+              "words": 11,
+              "sentences": 2,
+              "score": 85.89,
+              "summary": "Easy — 6th grade"
+            },
+            "displayed": {
+              "words": "11",
+              "sentences": "2",
+              "score": "85.89",
+              "summary": "Easy — 6th grade"
+            }
+          },
+          {
+            "id": "winter-repairs",
+            "expected": {
+              "words": 6,
+              "sentences": 2,
+              "score": 6.39,
+              "summary": "Extremely difficult — professional"
+            },
+            "displayed": {
+              "words": "6",
+              "sentences": "2",
+              "score": "6.39",
+              "summary": "Extremely difficult — professional"
+            }
+          }
+        ],
+        "pageDomRestored": true,
+        "originalPageReadabilityRestored": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_performance_reflects_current_navigation",
+      "status": "pass",
+      "evidence": {
+        "pageResponseStatus": 200,
+        "exposedNavigation": {
+          "type": "navigate",
+          "durationMs": 6335,
+          "transferSizeBytes": 123940,
+          "responseStatus": 200
+        },
+        "displayed": {
+          "status": "200",
+          "navigation": "navigate",
+          "duration": "6,335 ms",
+          "transfer": "121 KB"
+        }
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_manual_hreflang_and_schema_doors_match_page",
+      "status": "unverified",
+      "reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
+    }
+  ],
+  "last_safe_stage": "next_manual_detail_batch_observed",
+  "last_safe_observable": {
+    "doorStatus": "unverified"
+  },
+  "current_operation": "build_recheck",
+  "build": {
+    "before": {
+      "version": "0.2.471",
+      "treeSha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f"
+    },
+    "after": {
+      "version": "0.2.471",
+      "treeSha256": "923cef0411d192f5faf18fdcc74c74c73706407558af8f85f8f0cf602fd9fd3f"
+    }
+  },
+  "case_selection": {
+    "scope": "full",
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "excluded_cases": []
+  },
+  "next_detail_public_counts": {
+    "links": {
+      "internal": 1783,
+      "external": 410
+    },
+    "images": {
+      "total": 28,
+      "missingAlt": 10
+    },
+    "bodyHasText": true,
+    "alternateCount": 0,
+    "schemaTypeCount": 3
+  },
+  "next_detail_auto_observed": {
+    "links": {
+      "internal": "1,783",
+      "external": "410",
+      "hint": "2193"
+    },
+    "images": {
+      "total": "28",
+      "missingAlt": "10",
+      "hint": "28"
+    },
+    "performance": {
+      "status": "200",
+      "navigation": "navigate",
+      "transfer": "121 KB"
+    },
+    "exactDataStatus": "unverified"
+  },
+  "next_detail_manual_public": {
+    "before": {
+      "links": {
+        "internal": 1783,
+        "external": 410
+      },
+      "images": {
+        "total": 28,
+        "missingAlt": 10
+      },
+      "bodyHasText": true,
+      "alternateCount": 0,
+      "schemaTypeCount": 3,
+      "navigation": {
+        "type": "navigate",
+        "durationMs": 6335,
+        "transferSizeBytes": 123940,
+        "responseStatus": 200
+      },
+      "responseStatus": 200
+    },
+    "after": {
+      "links": {
+        "internal": 1783,
+        "external": 410
+      },
+      "images": {
+        "total": 28,
+        "missingAlt": 10
+      },
+      "bodyHasText": true,
+      "alternateCount": 0,
+      "schemaTypeCount": 3,
+      "navigation": {
+        "type": "navigate",
+        "durationMs": 6335,
+        "transferSizeBytes": 123940,
+        "responseStatus": 200
+      },
+      "responseStatus": 200
+    }
+  },
+  "next_detail_public_navigation": {
+    "type": "navigate",
+    "durationMs": 6335,
+    "transferSizeBytes": 123940,
+    "responseStatus": 200,
+    "pageResponseStatus": 200
+  }
+}

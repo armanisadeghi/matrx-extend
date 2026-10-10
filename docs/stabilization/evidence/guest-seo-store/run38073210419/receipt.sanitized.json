@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "hosted_run": {
+    "run_id": 38073210419,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38073210419",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_head_sha": "96f64b1a6cdf088bf68ed98154fb44e00f926164",
+    "conclusion": "success",
+    "lane": "A",
+    "case": "guest-seo",
+    "scope": "full",
+    "metadata_fixture": "none",
+    "resource_diagnostic": false,
+    "finished_at": "2026-10-10T17:55:27Z"
+  },
+  "release_artifact": {
+    "run_id": 38071981003,
+    "artifact_id": 11676918768,
+    "artifact_name": "matrx-extend-v0.2.471",
+    "version": "0.2.471",
+    "source_sha": "79a51599e6f39998b64c9a4e4126961044070fca",
+    "store_zip_sha256": "6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76",
+    "hosted_result_artifact_id": 11677347467,
+    "hosted_result_artifact_name": "hosted-guest-38073210419-1",
+    "hosted_result_artifact_digest": "sha256:b5e6d5c813c9c889ec2ddb07afe782ffa09030bccb9ac8aa59126225eaa670ec",
+    "hosted_result_artifact_size_bytes": 84612,
+    "artifact_expired": false,
+    "release_artifact_digest": "sha256:674432715dd8338fdbd4d919e2e1f8aeb7e6591d8e85688eb3bbfe2297883e3a"
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "status": "partial",
+    "target_count": 25,
+    "status_counts": {
+      "pass": 24,
+      "unverified": 1,
+      "fail": 0
+    },
+    "sha256": "a61fffffe640b19d3faef7aeec47733efb32ba342be2dd0ccb0ac99052432cfa",
+    "targets_identical_to_v0469_full_run_38070400935": true,
+    "new_acceptance_credit": false
+  },
+  "product_artifact": {
+    "path": "product-artifact.sanitized.json",
+    "sha256": "39166d8938bccd295aeed02dfc307e9c5ca822f59d0f812830374764d460ce27",
+    "store_zip_digest_matches_receipt": true,
+    "runtime_tree_matches_native_report": true
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "all_three_valid": true,
+    "sha256": "a5f1cacd189dab409114f84c2e5594f4eb9494f2f980b8e754cf05271eb99b4f"
+  },
+  "screenshot_review": {
+    "included": false,
+    "reviewed_files": ["native-side-panel.png", "normal-target-after-open.png"],
+    "observation": "Both screenshots show generic guest/panel context and the generic target page; neither shows SEO output. SEO behavior credit comes from the native assertions, not screenshots."
+  },
+  "comparison": {
+    "v0469_full_run_id": 38070400935,
+    "v0469_result": "partial: 24/25 pass, same hreflang/schema public-DOM door target unverified; large-page readability metric-value correctness also unverified.",
+    "v0471_result": "partial: 24/25 pass, same hreflang/schema public-DOM door target unverified; large-page readability metric-value correctness also unverified.",
+    "interpretation": "The full selected target set is identical to v0.2.469; this run rechecks the same assertions on the exact v0.2.471 Store ZIP and adds no distinct subtarget credit."
+  },
+  "scope_limit": "Guest full-scope native assertions only for this exact v0.2.471 Store ZIP. The two known readability fixtures match their numeric oracles, but the live-page readability value remains unverified. The public page had no unique openable hreflang/schema candidates. Other SEO controls/cases, member/admin, published Store installation, general feature health, and later package refreshes are outside this evidence.",
+  "sanitization": "No credentials, auth data, account details, raw runner logs, private paths, public page URLs/titles/body text, extension ID, or screenshots retained."
+}
