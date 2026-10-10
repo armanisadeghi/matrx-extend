@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_settings_auto_scrape_capture_review",
+  "reviewer": "settings_auto_capture_review",
+  "verdict": "PASS_BOUNDED_GUEST_T40_WITH_MANUAL_CAPTURE_UNVERIFIED",
+  "run": {
+    "hosted_run_id": 38073451744,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38073451744",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "conclusion": "success",
+    "workflow_source_sha": "ba76b7816132832c2efafcf2ce9df40c9040821c",
+    "case": "settings-auto-scrape-capture",
+    "lane": "B"
+  },
+  "verdict_a": {
+    "fresh_guest_auto_capture_default": "PASS: the driver first observes visible=false, settingPresent=true and stored=false; exact runner source creates a newly-created owned browser profile, and the native panel displays signed-out guest UI.",
+    "manual_capture": "UNVERIFIED: no manual Capture action was invoked and no captured result/assertion was recorded. The screenshot is a generic guest landing panel with Analyze current page prompt; it cannot answer whether manual Capture still works.",
+    "automatic_toggle": "PASS: ON causes one successful real scrape:capture-page message with marker; OFF yields no message after a loaded-page observation window.",
+    "full_extension_reload": "PASS: worker and panel replaced; ON and OFF behaviors persisted and were observed after reload.",
+    "cleanup": "PASS: UI and storage restored to original OFF baseline."
+  },
+  "verdict_b": {
+    "evidence_integrity": "PASS: hosted result artifact is run-scoped; native assertions and screenshots correspond to the case; sanitized package/browser/guest journals each terminate admitted=true, resource_invalid=false, exit_code=0, decision=valid.",
+    "provenance": "PASS: CI artifact 11677346776 is exact development artifact from successful main push run 38072429709, provenance records c81477c8, v0.2.471, and tree hash matching the hosted report.",
+    "implementation_doctrine": "NOT_ASSESSED: this is a runtime evidence review, not a code-diff review; no implementation changes are being proposed."
+  },
+  "provenance": {
+    "ci_run_id": 38072429709,
+    "ci_artifact_id": 11677346776,
+    "ci_artifact_sha256": "007f3bdd681a3353f43f3ea75860bc99b7f7dd55b3e7549e3ccbf729807338ea",
+    "product_source_sha": "c81477c80ec4c516c16a4280c7970c060cb840d3",
+    "version": "0.2.471",
+    "tree_sha256": "ab8f31d116557a89b52da3a7c1ea08a838c2bacfd1f2b457c88f9fb573236ce6",
+    "hosted_artifact_id": 11677527693,
+    "hosted_artifact_sha256": "ad78600a44dbdc1dc3d90f4733fe957f47c69213a464bf98328dc3d2512edc7d"
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "screenshots": {
+    "native-side-panel.png": "Generic signed-out guest landing view; no manual Capture action exercised.",
+    "normal-target-after-open.png": "Owned article target; panel opening control only, no Capture assertion."
+  },
+  "limitations": [
+    "CI development artifact only, not Store ZIP/install.",
+    "Shared main advanced to v0.2.473 after tested v0.2.471 artifact; newer @ai-matrx package state is outside this run.",
+    "Guest T40 bounded behavior only; not full Settings, member/admin, downstream Chat/context, or Store.",
+    "Manual Capture behavior remains unverified."
+  ],
+  "evidence": "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/receipt.sanitized.json"
+}

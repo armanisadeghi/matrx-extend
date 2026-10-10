@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T40",
+  "role": "guest",
+  "scope": "real hosted native side panel and owned unique-marker page",
+  "status": "pass",
+  "criteria": [
+    {
+      "name": "ON emits one real capture with the page marker",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": true,
+        "rawValue": "{\"state\":{\"theme\":\"system\",\"scrapeDeepClean\":false,\"defaultAgentId\":\"mandate:extend.browser_chat\",\"chatSurface\":\"default\",\"defaultPermissionMode\":\"ask\",\"defaultChatSpeed\":\"fast\",\"autoFullScrollOnFirstSubmit\":false,\"modelOverrideId\":null,\"sharePageIdentity\":true,\"captureLoginsEnabled\":true,\"offerSavedLoginsEnabled\":true,\"credentialAssistancePresentation\":\"quiet\",\"scrapeAutoOnLoad\":true,\"scrapeAutoMode\":\"capture\"},\"version\":6}",
+        "visible": true,
+        "calls": [
+          {
+            "kind": "scrape:capture-page",
+            "ok": true,
+            "url": "http://localhost:49197/harbor-dental-intake",
+            "markerPresent": true
+          }
+        ],
+        "pageUrl": "http://localhost:49197/harbor-dental-intake"
+      }
+    },
+    {
+      "name": "OFF emits no capture after the loaded page settles",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "rawValue": "{\"state\":{\"theme\":\"system\",\"scrapeDeepClean\":false,\"defaultAgentId\":\"mandate:extend.browser_chat\",\"chatSurface\":\"default\",\"defaultPermissionMode\":\"ask\",\"defaultChatSpeed\":\"fast\",\"autoFullScrollOnFirstSubmit\":false,\"modelOverrideId\":null,\"sharePageIdentity\":true,\"captureLoginsEnabled\":true,\"offerSavedLoginsEnabled\":true,\"credentialAssistancePresentation\":\"quiet\",\"scrapeAutoOnLoad\":false,\"scrapeAutoMode\":\"capture\"},\"version\":6}",
+        "visible": false,
+        "calls": [],
+        "pageLoaded": true,
+        "windowCompleted": true,
+        "pageUrl": "http://localhost:49197/harbor-dental-followup"
+      }
+    },
+    {
+      "name": "initial: original preference matches",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "rawValue": "{\"state\":{\"theme\":\"system\",\"scrapeDeepClean\":false,\"defaultAgentId\":\"mandate:extend.browser_chat\",\"chatSurface\":\"default\",\"defaultPermissionMode\":\"ask\",\"defaultChatSpeed\":\"fast\",\"autoFullScrollOnFirstSubmit\":false,\"modelOverrideId\":null,\"sharePageIdentity\":true,\"captureLoginsEnabled\":true,\"offerSavedLoginsEnabled\":true,\"credentialAssistancePresentation\":\"quiet\",\"scrapeAutoOnLoad\":false,\"scrapeAutoMode\":\"capture\"},\"version\":6}",
+        "visible": false,
+        "calls": []
+      }
+    },
+    {
+      "name": "On changes visible and stored preference",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": true,
+        "rawValue": "{\"state\":{\"theme\":\"system\",\"scrapeDeepClean\":false,\"defaultAgentId\":\"mandate:extend.browser_chat\",\"chatSurface\":\"default\",\"defaultPermissionMode\":\"ask\",\"defaultChatSpeed\":\"fast\",\"autoFullScrollOnFirstSubmit\":false,\"modelOverrideId\":null,\"sharePageIdentity\":true,\"captureLoginsEnabled\":true,\"offerSavedLoginsEnabled\":true,\"credentialAssistancePresentation\":\"quiet\",\"scrapeAutoOnLoad\":true,\"scrapeAutoMode\":\"capture\"},\"version\":6}",
+        "visible": true,
+        "calls": []
+      }
+    },
+    {
+      "name": "On extension worker and panel were replaced",
+      "status": "pass",
+      "evidence": {
+        "managementReloadClicked": true,
+        "oldTargetsRetired": true,
+        "workerReplaced": true,
+        "panelReplaced": true,
+        "replacementTargetChanged": true,
+        "lifecyclePredicatePassed": true
+      }
+    },
+    {
+      "name": "On survives full extension reload",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": true,
+        "rawValue": "{\"state\":{\"theme\":\"system\",\"scrapeDeepClean\":false,\"defaultAgentId\":\"mandate:extend.browser_chat\",\"chatSurface\":\"default\",\"defaultPermissionMode\":\"ask\",\"defaultChatSpeed\":\"fast\",\"autoFullScrollOnFirstSubmit\":false,\"modelOverrideId\":null,\"sharePageIdentity\":true,\"captureLoginsEnabled\":true,\"offerSavedLoginsEnabled\":true,\"credentialAssistancePresentation\":\"quiet\",\"scrapeAutoOnLoad\":true,\"scrapeAutoMode\":\"capture\"},\"version\":6}",
+        "visible": true,
+        "calls": []
+      }
+    },
+    {
+      "name": "ON survives full extension reload and emits one real capture",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": true,
+        "rawValue": "{\"state\":{\"theme\":\"system\",\"scrapeDeepClean\":false,\"defaultAgentId\":\"mandate:extend.browser_chat\",\"chatSurface\":\"default\",\"defaultPermissionMode\":\"ask\",\"defaultChatSpeed\":\"fast\",\"autoFullScrollOnFirstSubmit\":false,\"modelOverrideId\":null,\"sharePageIdentity\":true,\"captureLoginsEnabled\":true,\"offerSavedLoginsEnabled\":true,\"credentialAssistancePresentation\":\"quiet\",\"scrapeAutoOnLoad\":true,\"scrapeAutoMode\":\"capture\"},\"version\":6}",
+        "visible": true,
+        "calls": [
+          {
+            "kind": "scrape:capture-page",
+            "ok": true,
+            "url": "http://localhost:49197/harbor-dental-intake",
+            "markerPresent": true
+          }
+        ],
+        "pageUrl": "http://localhost:49197/harbor-dental-intake"
+      }
+    },
+    {
+      "name": "original preference restored before extension reload",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "rawValue": "{\"state\":{\"theme\":\"system\",\"scrapeDeepClean\":false,\"defaultAgentId\":\"mandate:extend.browser_chat\",\"chatSurface\":\"default\",\"defaultPermissionMode\":\"ask\",\"defaultChatSpeed\":\"fast\",\"autoFullScrollOnFirstSubmit\":false,\"modelOverrideId\":null,\"sharePageIdentity\":true,\"captureLoginsEnabled\":true,\"offerSavedLoginsEnabled\":true,\"credentialAssistancePresentation\":\"quiet\",\"scrapeAutoOnLoad\":false,\"scrapeAutoMode\":\"capture\"},\"version\":6}",
+        "visible": false,
+        "calls": [
+          {
+            "kind": "scrape:capture-page",
+            "ok": true,
+            "url": "http://localhost:49197/harbor-dental-intake",
+            "markerPresent": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "Off extension worker and panel were replaced",
+      "status": "pass",
+      "evidence": {
+        "managementReloadClicked": true,
+        "oldTargetsRetired": true,
+        "workerReplaced": true,
+        "panelReplaced": true,
+        "replacementTargetChanged": true,
+        "lifecyclePredicatePassed": true
+      }
+    },
+    {
+      "name": "Off survives full extension reload",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "rawValue": "{\"state\":{\"theme\":\"system\",\"scrapeDeepClean\":false,\"defaultAgentId\":\"mandate:extend.browser_chat\",\"chatSurface\":\"default\",\"defaultPermissionMode\":\"ask\",\"defaultChatSpeed\":\"fast\",\"autoFullScrollOnFirstSubmit\":false,\"modelOverrideId\":null,\"sharePageIdentity\":true,\"captureLoginsEnabled\":true,\"offerSavedLoginsEnabled\":true,\"credentialAssistancePresentation\":\"quiet\",\"scrapeAutoOnLoad\":false,\"scrapeAutoMode\":\"capture\"},\"version\":6}",
+        "visible": false,
+        "calls": []
+      }
+    },
+    {
+      "name": "OFF survives full extension reload with zero capture calls",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "rawValue": "{\"state\":{\"theme\":\"system\",\"scrapeDeepClean\":false,\"defaultAgentId\":\"mandate:extend.browser_chat\",\"chatSurface\":\"default\",\"defaultPermissionMode\":\"ask\",\"defaultChatSpeed\":\"fast\",\"autoFullScrollOnFirstSubmit\":false,\"modelOverrideId\":null,\"sharePageIdentity\":true,\"captureLoginsEnabled\":true,\"offerSavedLoginsEnabled\":true,\"credentialAssistancePresentation\":\"quiet\",\"scrapeAutoOnLoad\":false,\"scrapeAutoMode\":\"capture\"},\"version\":6}",
+        "visible": false,
+        "calls": [],
+        "pageLoaded": true,
+        "windowCompleted": true,
+        "pageUrl": "http://localhost:49197/harbor-dental-followup"
+      }
+    },
+    {
+      "name": "original preference restored after extension reload",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "rawValue": "{\"state\":{\"theme\":\"system\",\"scrapeDeepClean\":false,\"defaultAgentId\":\"mandate:extend.browser_chat\",\"chatSurface\":\"default\",\"defaultPermissionMode\":\"ask\",\"defaultChatSpeed\":\"fast\",\"autoFullScrollOnFirstSubmit\":false,\"modelOverrideId\":null,\"sharePageIdentity\":true,\"captureLoginsEnabled\":true,\"offerSavedLoginsEnabled\":true,\"credentialAssistancePresentation\":\"quiet\",\"scrapeAutoOnLoad\":false,\"scrapeAutoMode\":\"capture\"},\"version\":6}",
+        "visible": false,
+        "calls": []
+      }
+    },
+    {
+      "name": "Original OFF baseline restored in UI and chrome.storage",
+      "status": "pass",
+      "evidence": {
+        "visible": false,
+        "stored": null
+      }
+    }
+  ],
+  "build": {
+    "version": "0.2.471",
+    "treeSha256": "ab8f31d116557a89b52da3a7c1ea08a838c2bacfd1f2b457c88f9fb573236ce6"
+  },
+  "artifacts": "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/"
+}

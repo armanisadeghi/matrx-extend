@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_run_id": 38073451744,
+  "workflow_result_artifact_id": 11677527693,
+  "workflow_result_artifact_sha256": "ad78600a44dbdc1dc3d90f4733fe957f47c69213a464bf98328dc3d2512edc7d",
+  "workflow_checkout_sha": "ba76b7816132832c2efafcf2ce9df40c9040821c",
+  "acceptance_case": "settings-auto-scrape-capture",
+  "lane": "B",
+  "role": "guest",
+  "driver_report": "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/native-report.sanitized.json",
+  "driver_report_status": "pass",
+  "source_boundary": {
+    "artifact_kind": "ci_development_test",
+    "ci_run_id": 38072429709,
+    "ci_artifact_id": 11677346776,
+    "ci_artifact_sha256": "007f3bdd681a3353f43f3ea75860bc99b7f7dd55b3e7549e3ccbf729807338ea",
+    "source_sha": "c81477c80ec4c516c16a4280c7970c060cb840d3",
+    "version": "0.2.471",
+    "tree_sha256": "ab8f31d116557a89b52da3a7c1ea08a838c2bacfd1f2b457c88f9fb573236ce6",
+    "current_main_at_review": "5061d886f release: v0.2.473 - Refresh shared Chat and design-system packages after v0.2.471 acceptance",
+    "current_main_health_claimed": false
+  },
+  "case_outcome": {
+    "case_id": "EXT-F-1003-T40",
+    "status": "pass",
+    "criteria_passed": 13,
+    "fresh_guest_auto_capture_default": "pass: the native harness creates an owned newly-created browser profile; before changing the setting, visible=false and stored=false with the setting key present.",
+    "manual_capture": "unverified: no manual Capture action or result was invoked/asserted. The landing screenshot shows the generic guest side panel and its Analyze current page prompt; that is not evidence of Capture behavior.",
+    "capture_toggle_behavior": "pass: ON emitted one successful real scrape:capture-page call containing the owned marker; OFF on a loaded fresh page emitted zero calls after the observation window.",
+    "reload_behavior": "pass: ON and OFF persisted through full extension worker/panel replacement; ON emitted one real capture and OFF emitted zero.",
+    "cleanup": "pass: original OFF baseline was restored in visible UI and chrome.storage (report records stored=null after restoration)."
+  },
+  "resource_journals": [
+    {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/hosted-package-38073451744-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "sha256": "8b336986765a0a716bf563fb1c0aaefca9177eb3a10125e4d760b0db39b2bde7"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/hosted-browser-38073451744-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "sha256": "cb83823a6ff4739d2dd73a98461111d597b7e03c3d8e28a46a8bea1d9ba1cf7a"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/hosted-guest-38073451744-1.jsonl",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "sha256": "06d3601d72109c096a5226faa8ea421a938223e9d0a47af41808b3998daf2a74"
+    }
+  ],
+  "limitations": [
+    "This is hosted CI development artifact evidence v0.2.471, not a Store ZIP or Chrome Web Store installation.",
+    "The shared checkout has advanced to v0.2.473/main SHA 5061d886f; this run does not establish runtime behavior for newer shared-package main.",
+    "Guest only; no member/admin behavior, downstream chat/context consumption, broader Settings health, or Store behavior is inferred.",
+    "Manual Capture remains unverified by this run."
+  ],
+  "evidence": {
+    "native_report_sha256": "9eab48cf2bff0a7a078686a75fce57647897195eec6cd508133e881438ba1b24",
+    "screenshots": {
+      "native-side-panel.png": "c5c2895937ccbe6c55e55f9d5d53fae341164c49aac0c1264858f18f5534e1c2",
+      "normal-target-after-open.png": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c2"
+    }
+  }
+}

@@ -9048,9 +9048,10 @@
                 "Independent review confirmed cleanup compared final visible/storage/key/field state with the separately captured pre-probe baseline and passed; the report's `initial` criterion is a later warm-OFF observation, not that original baseline."
               ],
               "unverified": [
+                "Manual Capture action/result is not covered by the automatic page-capture test.",
                 "Member/admin roles, Store behavior, downstream chat/context consumption, and broader Settings feature health are outside this bounded guest T40 result."
               ],
-              "detail": "Independent review approves a bounded guest T40 pass on the exact frozen 0.2.458 development artifact. Warm and post-full-extension-reload ON/OFF capture behavior passed. The report's `initial` criterion is after warm OFF; original pre-probe baseline values were captured separately and key/field equality was asserted during cleanup, though that baseline was not serialized. No current-main, Store, member/admin, or broader feature claim. Reviewed frozen guest run38041519886: 10 passed criteria; native case unverified. Unverified: background capture follows the persisted switch. This persistence-only run does not replace the earlier separately bound capture pass.",
+              "detail": "Independent review approves a bounded guest T40 pass on the exact frozen 0.2.458 development artifact. Warm and post-full-extension-reload ON/OFF capture behavior passed. The report's `initial` criterion is after warm OFF; original pre-probe baseline values were captured separately and key/field equality was asserted during cleanup, though that baseline was not serialized. No current-main, Store, member/admin, or broader feature claim. Reviewed frozen guest run38041519886: 10 passed criteria; native case unverified. Unverified: background capture follows the persisted switch. This persistence-only run does not replace the earlier separately bound capture pass. Newer reviewed run 38073451744 confirms a fresh hosted guest profile starts with the setting visibly/stored OFF, ON/OFF automatic capture behavior through full extension reload, and baseline restoration on exact CI development v0.2.471. This does not test manual Capture; that path remains unverified. CI development artifact only, not Store; shared main/package has advanced to v0.2.473.",
               "evidence": [
                 "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/receipt.json",
                 "docs/stabilization/evidence/settings-auto-scrape-capture/run38020947337/native-report.sanitized.json",
@@ -9090,6 +9091,32 @@
                     "status": "unverified"
                   },
                   "passed_criteria_count": 10
+                },
+                {
+                  "source_sha": "c81477c80ec4c516c16a4280c7970c060cb840d3",
+                  "build_version": "0.2.471",
+                  "development_ci_run_id": 38072429709,
+                  "development_artifact_id": 11677346776,
+                  "tree_sha256": "ab8f31d116557a89b52da3a7c1ea08a838c2bacfd1f2b457c88f9fb573236ce6",
+                  "run_id": 38073451744,
+                  "workflow_source_sha": "ba76b7816132832c2efafcf2ce9df40c9040821c",
+                  "hosted_result_artifact_id": 11677527693,
+                  "status": "pass",
+                  "resource_valid": true,
+                  "passed_subtargets": [
+                    "Fresh owned guest profile began with Auto-scrape on load visibly off and persisted false.",
+                    "Enabling the setting emitted one marker-bearing scrape:capture-page call; disabling it emitted zero calls after page load.",
+                    "ON and OFF behavior persisted through full extension worker/panel replacement, and cleanup restored the OFF baseline."
+                  ],
+                  "unverified": [
+                    "Manual Capture action/result; this run exercised automatic page capture only."
+                  ],
+                  "scope": "Guest T40 only on exact CI development artifact v0.2.471; not Store. Shared main/package state has advanced to v0.2.473.",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/receipt.sanitized.json",
+                    "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/native-report.sanitized.json",
+                    "docs/stabilization/reports/peer-review-run38073451744.json"
+                  ]
                 }
               ]
             }
