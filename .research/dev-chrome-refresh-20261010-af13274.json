@@ -1,0 +1,30 @@
+{
+  "observed_at_utc": "2026-10-10T02:21:00Z",
+  "chrome_profile": "Arman (armansadeghi.com)",
+  "channel": "unpacked development extension",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "displayed_version": "0.2.457",
+  "enabled": true,
+  "pinned_to_toolbar": true,
+  "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "reload_observed": true,
+  "post_reload_sidepanel_rendered": true,
+  "promotion": {
+    "ci_run_id": 38015304181,
+    "artifact_id": 11656536010,
+    "source_sha": "af13274c35ee16e28014e90b1e50c73ad433d348",
+    "main_sha_at_promotion": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+    "compatibility": "runtime-equivalent: intervening commits only contain resource journals",
+    "tree_sha256": "50de2d01ab290dcf8623a2749a56c3a9e799a9afd434ee8556191bfdb0db295e",
+    "local_receipt": "test-results/ci-dev-promotion-receipt.json"
+  },
+  "resource_journal": "docs/stabilization/resource-journals/chrome-dev-refresh-20261010-af13274.jsonl",
+  "resource_final": "valid",
+  "store_extension": {
+    "id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "installed_in_this_profile": false,
+    "public_listing_version": "0.2.205",
+    "installation_permission_prompt": "pending action-time user confirmation"
+  },
+  "limits": "This verifies development installation, source-bound promotion and reload only; no product feature, Store-installed behavior, or overall health claim."
+}
