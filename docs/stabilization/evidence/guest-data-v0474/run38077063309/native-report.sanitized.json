@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+    "tree_sha256": "f416ac56eb5159c8720bee8e3e9a28177d91d99c777f38f68b7b1ead91bf2d78",
+    "version": "0.2.474",
+    "store_zip_sha256": "93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02"
+  },
+  "observations": {
+    "picker_cancel_without_selection": true,
+    "picker_cancel_selected_fields_unchanged": true,
+    "picker_cancel_pattern_writes": 0,
+    "guest": true,
+    "controlled_rows": 3,
+    "two_distinct_picker_previews": true,
+    "two_selected_fields": true,
+    "pattern_name_absent": true,
+    "save_pattern_absent": true,
+    "sign_in_to_save_present": true,
+    "sign_in_action_used": true,
+    "pattern_write_requests_before_auth": 0
+  },
+  "failure_stage": null,
+  "limits": "Guest native behavior on the selected imported artifact; no signed-in save or published Store claim.",
+  "picker_step": "second_field"
+}

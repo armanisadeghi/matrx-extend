@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_data_evidence_review",
+  "reviewer": "guest_data_run38077063309_review",
+  "run": {
+    "hosted_run_id": 38077063309,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38077063309",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_conclusion": "success",
+    "workflow_source_sha": "16b8cc4250016169457afa32903fcc501411fcd3",
+    "lane": "B",
+    "runner": "macos-15-intel / x86_64",
+    "case": "guest-data",
+    "auth_mode": "guest"
+  },
+  "verdict_a_product_behavior": {
+    "verdict": "PASS_BOUNDED_EXT-F-2005-T01_RECONFIRMATION",
+    "observations": {
+      "empty_picker_cancel": "Picker dismissed with no selected fields; selection remained unchanged; zero pattern writes.",
+      "picker_selection": "Three controlled rows; two distinct previews and two fields selected.",
+      "guest_save_gate": "Pattern name and Save pattern absent; Sign in to save present and used; zero pattern write requests before authentication."
+    },
+    "actual_product_failures": [],
+    "coverage_limit": "This is bounded guest picker/preview/selection/save-gate evidence only. It does not establish full Data health, signed-in persistence, other Data cases, or member/admin behavior."
+  },
+  "verdict_b_evidence_quality": {
+    "verdict": "PASS_WITH_LIMITS",
+    "findings": [],
+    "provenance": "Hosted workflow selected successful release run 38075458740 and artifact 11677569836, matrx-extend-v0.2.474. Release receipt identifies source 302ab93672e29a3aa5bc3e047feb2c551513bafc, release tree 240e3b80794f06c4e4b608cfe706d9950f0eb62cd4ab605f29be640916a2ec4a, and Store ZIP SHA-256 93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02. Release artifact ZIP digest matches GitHub metadata; native report independently matches version, source, and Store ZIP digest and records candidate-key adaptation.",
+    "resource_finals": "The matching package, browser, and guest journals each end admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Only this run\u2019s three matching journals were copied.",
+    "screenshots": "Reviewed native-side-panel and normal-target screenshots. They corroborate guest identity and controlled page setup, but do not show the Data interaction; native assertion JSON is the behavior evidence.",
+    "limits": [
+      "Candidate-key adapted unpacked loading is not Store-installed behavior.",
+      "No signed-in save or persistence was exercised.",
+      "No browser or heavy job was started during review.",
+      "A v0.2.475 Hosted release run is in progress; this v0.2.474 run is not latest-package acceptance."
+    ]
+  },
+  "comparison": {
+    "prior_run": "Run 38072894998 on v0.2.471 already passed the same bounded T01 picker, previews, selection, and guest save-gate behavior. Run 38074383561 on v0.2.473 reconfirmed that same behavior. The earlier C16-specific trusted empty-picker Cancel proof was recorded in run 38050967096.",
+    "distinct_coverage": "This exact v0.2.474 package revalidates the existing guest T01 behavior and repeats the empty-picker cancel assertions. It adds package-specific evidence only; it establishes no distinct product behavior beyond the prior T01/C16 evidence.",
+    "tracker_or_defect_change": "No inventory or defect transition is warranted from this reconfirmation. Full guest Data remains unverified beyond this bounded subtarget; no product failure was observed."
+  },
+  "evidence_directory": "docs/stabilization/evidence/guest-data-v0474/run38077063309/"
+}

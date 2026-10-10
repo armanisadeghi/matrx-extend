@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-2005",
+  "scope": "Guarded hosted native guest Data acceptance on exact v0.2.474 Store ZIP candidate; bounded EXT-F-2005-T01.",
+  "acceptance_run_id": 38077063309,
+  "acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38077063309",
+  "workflow_source_sha": "16b8cc4250016169457afa32903fcc501411fcd3",
+  "workflow_lane": "B",
+  "runner": "macos-15-intel / x86_64",
+  "release_run_id": 38075458740,
+  "release_artifact_id": 11677569836,
+  "release_artifact_name": "matrx-extend-v0.2.474",
+  "source_sha": "302ab93672e29a3aa5bc3e047feb2c551513bafc",
+  "release_tree_sha256": "240e3b80794f06c4e4b608cfe706d9950f0eb62cd4ab605f29be640916a2ec4a",
+  "store_zip_sha256": "93abba79c74610c9c3dcf13798c33332bf6fb88a50e2f82ea598448f73174b02",
+  "hosted_artifact_id": 11678882972,
+  "hosted_artifact_sha256": "305dc7216764ef8fe2ba20c51e55a7ce1b9481db565ec72c0c48d63487200d9d",
+  "artifact_loading": "Candidate-key adapted and loaded unpacked; no Store-installed claim.",
+  "native_result": "pass_bounded",
+  "case_results": {
+    "EXT-F-2005-T01": {
+      "guest": "pass_bounded",
+      "observations": [
+        "Empty picker cancel preserved selection and made zero pattern writes.",
+        "Two distinct picker previews and two selected fields were observed.",
+        "Guest pattern name/save controls were absent; Sign in to save was present and used.",
+        "No pattern write request occurred before authentication."
+      ]
+    }
+  },
+  "resource_finals": "Package, browser, and guest decisions valid; admitted=true, resourceInvalid=false, exitCode=0.",
+  "review": "docs/stabilization/reports/peer-review-guest-data-run38077063309.json",
+  "evidence": "docs/stabilization/evidence/guest-data-v0474/run38077063309/",
+  "comparison": "Reconfirms the same bounded T01 behavior as v0.2.471 run 38072894998 and v0.2.473 run 38074383561. Empty-picker Cancel also matches prior C16 evidence from run 38050967096; this run adds no distinct product coverage.",
+  "limits": [
+    "No signed-in save or persistence, other Data cases, or member/admin behavior was tested.",
+    "Screenshots show setup, not Data interaction; native assertions provide the behavior evidence.",
+    "Candidate-key adaptation and unpacked loading do not establish Store-installed behavior.",
+    "A v0.2.475 Hosted release run is in progress; this v0.2.474 run is not latest-package acceptance."
+  ]
+}
