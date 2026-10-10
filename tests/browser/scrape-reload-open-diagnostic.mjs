@@ -13,7 +13,7 @@ export function reloadOpenEvidenceClass(enabled) {
 export function refuseDiagnosticAcceptance(report, enabled) {
   if (!enabled) return false;
   report.status = 'unverified';
-  report.failure ??= { stage: 'extension_reload', code: 'diagnostic_only_perturbed_worker' };
+  report.failure ??= { stage: 'extension_reload', code: 'diagnostic_only_perturbed_lifecycle' };
   return true;
 }
 

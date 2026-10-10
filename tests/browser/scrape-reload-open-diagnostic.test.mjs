@@ -18,7 +18,7 @@ test('worker probe is opt-in and its receipt cannot earn acceptance credit', () 
   assert.equal(refuseDiagnosticAcceptance(diagnostic, true), true);
   assert.deepEqual(diagnostic, {
     status: 'unverified',
-    failure: { stage: 'extension_reload', code: 'diagnostic_only_perturbed_worker' },
+    failure: { stage: 'extension_reload', code: 'diagnostic_only_perturbed_lifecycle' },
   });
 });
 
