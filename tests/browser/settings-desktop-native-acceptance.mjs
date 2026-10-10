@@ -6,7 +6,10 @@ import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { verifyDesktopArtifactIdentity } from './desktop-artifact-identity.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { clickDesktopPairForget } from './settings-desktop-pointer-diagnostics.mjs';
+import {
+  clickDesktopPairFixture,
+  clickDesktopPairForget,
+} from './settings-desktop-pointer-diagnostics.mjs';
 import { assertDesktopPairForgetReportScope } from './settings-desktop-report-scope.mjs';
 import { desktopStorageFaultSource } from './settings-desktop-storage-faults.mjs';
 import {
@@ -497,7 +500,7 @@ try {
           (s) => s?.pairAvailable,
         );
         await replaceInput(panel, 'pair', PAIR_A);
-        await click(panel, 'button', 'Pair');
+        await clickDesktopPairFixture(panel, report, await state(panel));
         await waitFor(
           'desktop_pair_fixture_saved',
           () => state(panel),
