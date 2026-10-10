@@ -63,6 +63,15 @@ function assertCurrentMain(root, mainSha) {
     git(root, 'rev-parse', 'origin/main') !== mainSha
   )
     throw new Error('ci_dev_main_changed_during_promotion');
+  // Recheck before staging and committing too: another writer may add pending code.
+  const pendingPaths = [
+    ['diff', '--no-renames', '--name-only', '-z', 'HEAD'],
+    ['ls-files', '--others', '--exclude-standard', '-z'],
+  ].flatMap((args) =>
+    execFileSync('git', args, { cwd: root, encoding: 'utf8' }).split('\0').filter(Boolean),
+  );
+  if (pendingPaths.some((path) => !RUNTIME_EQUIVALENT_PATH.test(path)))
+    throw new Error('ci_dev_pending_runtime_source');
 }
 
 function assertNoSymlinkParents(path, root) {
