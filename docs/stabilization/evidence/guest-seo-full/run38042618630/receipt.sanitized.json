@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "verdict": "resource_invalid_diagnostic_only",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38042618630,
+    "run_attempt": 1,
+    "workflow_head_sha": "032661cfecb9acad7ff4af2b50821fc5992adb45",
+    "event": "workflow_dispatch",
+    "case": "guest-seo",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "conclusion": "failure",
+    "started_at": "2026-10-10T09:47:14Z",
+    "finished_at": "2026-10-10T09:55:09Z",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38042618630"
+  },
+  "development_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "ci_run_attempt": 1,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11666780009,
+    "name": "hosted-guest-38042618630-1",
+    "digest": "sha256:29f1fd93790b871d27a5657ea4b627868cd30830a6d828a56bff13c3ea165935",
+    "expired": false
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "sha256": "859ec5e2b1d15480a0de0d9bd4488c52fb99ee4da9e1fb112def18e3388f0b0f",
+    "status": "unverified",
+    "last_safe_stage": "build_identity_verified",
+    "completed_target_count": 0
+  },
+  "resource_finals": {
+    "hosted-package-38042618630-1.jsonl": {
+      "path": "resource-journals/hosted-package-38042618630-1.jsonl",
+      "sha256": "9bed61bf90b80d1ded3e999d1ea7650c14402f243aaa07e9724e3401d830da5a",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38042618630-1.jsonl": {
+      "path": "resource-journals/hosted-browser-38042618630-1.jsonl",
+      "sha256": "4b29e6f7f7113ba02aeb9d17b6533670f33fa602a7700136251590c72ace124a",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38042618630-1.jsonl": {
+      "path": "resource-journals/hosted-guest-38042618630-1.jsonl",
+      "sha256": "4e0defad2f7fbbd9f01429e82860613c035b5adc8c8e5aee3dc0f08ee1281bc2",
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid"
+    }
+  },
+  "diagnostic_limit": "Guest SEO execution was stopped at a safe boundary because the host watchdog observed high CPU load; the guest resource journal ended invalid with exit code 3. The attempt reached build identity verification and completed zero product targets. It earns no product pass/fail evidence and does not establish a product defect.",
+  "sanitization": "Native report is an explicit scalar allowlist. Resource journals were copied with scripts/copy-hosted-resource-journal.mjs, which removes private paths and process attribution and rejects unsupported fields/events. No screenshots, credentials, page content, raw logs, or private paths are included."
+}

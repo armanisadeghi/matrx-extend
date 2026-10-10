@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38042718393,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38042718393",
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_checkout_sha": "fc4bd2726f88797c73e27a0113e24c1a2c87013f",
+  "dispatch_ref": "main",
+  "run_attempt": 1,
+  "lane": "B",
+  "acceptance_case": "scrape-error-recovery-guest",
+  "inputs": {
+    "scrape_auth_mode": "guest"
+  },
+  "workflow_conclusion": "failure",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "frozen_product_artifact": true
+  },
+  "native_result": {
+    "native_report_present": true,
+    "classification": "native_test_unverified_effective_host_access_unknown",
+    "failure_stage": "exercise_panel",
+    "failure_code": "scrape_recovery_effective_access_unknown",
+    "effective_host_access_known": false,
+    "host_access_restored": true,
+    "denial_retry_dismiss_observed": false,
+    "reload_page": "unverified",
+    "product_credit": false
+  },
+  "resources": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "journal_sanitization": "Exact-run journals copied with scripts/copy-hosted-resource-journal.mjs; process-attribution rows and opened-event paths removed."
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11665659927,
+    "name": "hosted-guest-38042718393-1",
+    "digest": "sha256:4277f57315d17308c344e93f0c73a988cd587de55f8df0205d72d45fb3c15905",
+    "expired": false
+  },
+  "evidence_hashes": {
+    "resource-journals/hosted-package-38042718393-1.jsonl": "d407f1558e936d590a9ff03a629d3a539138d5c3e5b8aae86f5f0c3783f3fc13",
+    "resource-journals/hosted-browser-38042718393-1.jsonl": "9caa2af2d847970e0e1d5f204c2453265f7c97ce4bd0c55adad29a76ab53a12b",
+    "resource-journals/hosted-guest-38042718393-1.jsonl": "f36946545cc15289736cc36731edbdcb4bc9b07b36b0951ae21f7aa436f51a7b",
+    "native-report.sanitized.json": "28196f056769674e5062e991c54a30bc619ec3293e3a7e68351a94e70e203aab"
+  },
+  "evidence": [
+    "resource-journals/hosted-package-38042718393-1.jsonl",
+    "resource-journals/hosted-browser-38042718393-1.jsonl",
+    "resource-journals/hosted-guest-38042718393-1.jsonl",
+    "native-report.sanitized.json"
+  ],
+  "limits": [
+    "Diagnostic evidence only; no product or recovery acceptance credit is earned.",
+    "Native acceptance stopped at exercise_panel because effective host-access state was unknown; denial, retry and dismiss behavior were not observed.",
+    "The original and final host-access values were both ON_ALL_SITES and cleanup reported restored=true.",
+    "Reload page remains unverified.",
+    "No page URL, DOM content, screenshot, credential, account or organization data is included."
+  ],
+  "independent_review": "pending"
+}

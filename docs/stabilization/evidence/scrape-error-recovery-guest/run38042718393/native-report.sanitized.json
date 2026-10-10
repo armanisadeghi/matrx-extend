@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T14",
+  "auth_mode": "guest",
+  "status": "unverified",
+  "stage": "inputs",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "observations": {
+    "case_id": "EXT-F-1007-T14",
+    "auth_mode": "guest",
+    "requested_mode": "deep",
+    "denial": null,
+    "retry": null,
+    "dismiss": null,
+    "cleanup": {
+      "original_host_access": "ON_ALL_SITES",
+      "host_access": "ON_ALL_SITES",
+      "restored": true
+    },
+    "reload_page": "unverified"
+  },
+  "failure_code": "scrape_recovery_effective_access_unknown",
+  "failure_diagnostic": null,
+  "limits": "Bounded guest host-permission denial, Try again, deep-mode preservation, and Dismiss only. Reload page remains unverified because the real second-no-receiver-after-injection condition is a runtime/manifest fault, while a genuine permission denial offers Try again only."
+}

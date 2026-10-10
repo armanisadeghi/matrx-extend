@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "unverified",
+  "scope": "full public-page guest SEO case selection; no product targets completed",
+  "case_selection": {
+    "scope": "full",
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
+    "excluded_cases": []
+  },
+  "last_safe_stage": "build_identity_verified",
+  "completed_target_count": 0,
+  "receipt_state": "in_progress",
+  "build_before": {
+    "kind": "local_dev_unpacked",
+    "publishState": "not_published",
+    "version": "0.2.459",
+    "treeSha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "resource_diagnostic_enabled": false,
+  "resource_diagnosis": {
+    "classification": "resource_invalid_before_product_verdict",
+    "watch_reason": "RESOURCE_CPU_HIGH_LOAD_BUSY",
+    "sample": {
+      "oneMinuteLoad": 5.89,
+      "logicalCpus": 4,
+      "cpuBusyFraction": 0.64,
+      "availableMemoryGiB": 12.6,
+      "requiredMemoryGiB": 4,
+      "swapUsedMiB": 0
+    },
+    "safe_boundary_stop_observed": true,
+    "watchdog_signal": "SIGTERM",
+    "final_decision": "invalid",
+    "resource_invalid": true,
+    "exit_code": 3
+  },
+  "limits": "This is a resource-invalid attempt stopped before product targets; it provides no guest SEO pass/fail evidence, no current-main or Store claim, and no product-defect verdict."
+}
