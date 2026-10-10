@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": [
+    "EXT-F-1007-T04",
+    "EXT-F-1007-T29"
+  ],
+  "auth_mode": "member",
+  "status": "fail",
+  "stage": "inputs",
+  "native_stage": null,
+  "artifact": null,
+  "authentication": null,
+  "observations": {},
+  "cleanup": null,
+  "failure_stage": "inputs",
+  "limits": "Exact imported CI development artifact, real member sign-in, one custom-named Source with one existing Project association, independent reads, and cleanup; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.",
+  "error_code": "native_acceptance_error"
+}
