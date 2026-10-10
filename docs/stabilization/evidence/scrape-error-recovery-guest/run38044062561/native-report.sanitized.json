@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T14",
+  "mode": "guest",
+  "status": "partial",
+  "requested_mode": "deep",
+  "browser_configuration": {
+    "nondefault_flag_observed": true,
+    "default_chrome": false
+  },
+  "denial": {
+    "site_restricted": true,
+    "page_reloaded_without_access": true,
+    "error_visible": true,
+    "permission_message_visible": true,
+    "try_again_visible": true,
+    "reload_visible": false
+  },
+  "retry": {
+    "site_restricted": false,
+    "clicked": true,
+    "error_cleared": true,
+    "deep_only_marker_visible": true
+  },
+  "dismiss": {
+    "site_restricted": true,
+    "error_visible": true,
+    "permission_message_visible": true,
+    "clicked": true,
+    "error_cleared": true
+  },
+  "cleanup": {
+    "original_site_restricted": false,
+    "site_restricted": false,
+    "site_permitted": false,
+    "restored": true
+  },
+  "reload_page_status": "unverified",
+  "artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "limits": "Non-default Chrome ExtensionsMenuAccessControl feature enabled in the isolated test profile; not default-Chrome or Store acceptance. Bounded guest host-permission denial, Try again, deep-mode preservation, and Dismiss only. Reload page remains unverified because the real second-no-receiver-after-injection condition is a runtime/manifest fault, while a genuine permission denial offers Try again only."
+}

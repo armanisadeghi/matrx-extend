@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T14",
+  "verdict": "bounded_partial",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38044062561,
+    "run_attempt": 1,
+    "workflow_head_sha": "1dfcd73e261a2f43355eadc9a571af309103df98",
+    "event": "workflow_dispatch",
+    "case": "scrape-error-recovery-guest",
+    "lane": "B",
+    "runner_label": "macos-15",
+    "runner_name": "GitHub Actions 1000102226",
+    "conclusion": "success",
+    "started_at": "2026-10-10T10:11:52Z",
+    "finished_at": "2026-10-10T10:18:41Z",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38044062561"
+  },
+  "development_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "ci_run_attempt": 1,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11666606832,
+    "name": "hosted-guest-38044062561-1",
+    "digest": "sha256:3b7bebf01f365d0337be466c9fed63bd2e3e0bf9f11af98f2be742d4490df4d5",
+    "expired": false
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "sha256": "dfd72d9630576491debfbd7c6926eedc06c16b5911f99a4b791439c1ce9b0410",
+    "status": "partial",
+    "case_id": "EXT-F-1007-T14",
+    "reload_page_status": "unverified"
+  },
+  "resource_finals": {
+    "hosted-package-38044062561-1.jsonl": {
+      "path": "resource-journals/hosted-package-38044062561-1.jsonl",
+      "sha256": "d79b913e10e2221c1cc0bf4b3109b00d56f175f827372f32b0e49c1ee15f6147",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38044062561-1.jsonl": {
+      "path": "resource-journals/hosted-browser-38044062561-1.jsonl",
+      "sha256": "3f12553593317a06b4649845bb4299839b6f4bb7af3ab8edbe18f39550804024",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38044062561-1.jsonl": {
+      "path": "resource-journals/hosted-guest-38044062561-1.jsonl",
+      "sha256": "47cd8afce1fbaa6f80e91138d20b26932cf92d20445005f38ba0b853929b8852",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "scope_limit": "This is a bounded guest denial/retry/dismiss partial result on a non-default Chrome profile with ExtensionsMenuAccessControl enabled. It does not establish default-Chrome behavior or Store-installation behavior. Reload page remains unverified; no full T14, full Scrape, member/admin or current-main claim.",
+  "sanitization": "Native report retains fixed boolean observations and exact artifact identity only. Resource journals were copied with scripts/copy-hosted-resource-journal.mjs, which removes private paths and process attribution and refuses unsupported fields/events. No screenshots, credentials, host URLs, page content, or raw process values are included."
+}
