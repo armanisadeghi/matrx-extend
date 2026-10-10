@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "kind": "independent_hosted_release_gate_review",
+  "reviewed_at_utc": "2026-10-10T18:06:00Z",
+  "reviewer": "latest_package_review",
+  "verdict": "release_gates_passed_product_acceptance_pending",
+  "hosted_release": {
+    "run_id": 38073804235,
+    "conclusion": "success",
+    "dispatch_head_sha": "3bb7f26921e8c8a9152af64de4dbe6c152543c58",
+    "published_tag": "v0.2.473",
+    "source_sha": "5061d886fbff8b294a7c16a92b8938ddc0c42796",
+    "aidream_type_source_sha": "ad0730d375eea64fb491022cccf502e9f36d861d",
+    "receipt_publish_state": "pushed"
+  },
+  "artifact": {
+    "id": 11678161949,
+    "outer_zip_sha256": "602febf4fa40ec3171ae22824259e45900d543b8353c1352cc87d661a43f1c2b",
+    "store_zip_sha256": "764ca9401dcc997148ed0f6437948153a21593b8cdc886958ce7f115083c8b59",
+    "local_zip_sha256": "dabc3258ef105d946dd0cebab02cb8c764f6f1f59a9ee4d159d5241ee104f043",
+    "tree_sha256": "d831b21b100c9c50dfeaadf3be74ce0a810d2e57388816adea8023286715b32a",
+    "file_count": 2002,
+    "receipt_hashes_matched_independent_download": true
+  },
+  "gates": {
+    "typecheck": "pass",
+    "lint": "pass",
+    "unit_tests": "pass",
+    "schema_routing": "pass",
+    "migration_ledger": "pass",
+    "tool_db_drift": "pass",
+    "latest_shared_packages": "pass",
+    "store_zip_validation": "pass",
+    "store_approval_risk": "pass; manifest policy surface matches published 0.2.205",
+    "mandate_reference_scan": "six nonblocking findings"
+  },
+  "shared_package_review": {
+    "chat": "0.8.27 to 0.8.28: published dist files byte-identical; no explicit consumer action",
+    "design_system": "0.86.80 to 0.86.81: optional data-table and currency-format runtime changes in subpaths not imported by extension source; no explicit consumer action",
+    "rich_editor": "0.5.72 to 0.5.74: transitive through chat; published runtime changes despite docs-only changelog wording, including editor dialog, formatting-state and prompt UI modules; no direct extension import or explicit consumer action"
+  },
+  "limits": [
+    "This is a package and source gate review, not native product behavior acceptance.",
+    "Fresh v0.2.473 guest Chat and non-admin acceptance remain required before Chrome Web Store submission.",
+    "Chrome Web Store has not received this ZIP."
+  ]
+}
