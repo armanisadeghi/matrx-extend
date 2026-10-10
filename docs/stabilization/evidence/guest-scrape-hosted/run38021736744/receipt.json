@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "run_id": 38021736744,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38021736744",
+  "lane": "B",
+  "acceptance_case": "guest-scrape-development",
+  "authentication_mode": "guest",
+  "workflow_checkout_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.458",
+    "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+    "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+    "ci_run_id": 38019685913,
+    "artifact_id": 11657971729
+  },
+  "result": "partial",
+  "case_outcomes": {
+    "passed": [
+      "EXT-F-1007-T20",
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12",
+      "EXT-F-1007-T07",
+      "EXT-F-1007-T09"
+    ],
+    "partial": [
+      "EXT-F-1007-T01",
+      "EXT-F-1007-T08",
+      "EXT-F-1007-T13",
+      "EXT-F-1007-T02",
+      "EXT-F-1007-T14"
+    ]
+  },
+  "observed_controls_and_actions": [
+    "Guest native side panel opened against an owned Harbor Dental fixture; guest storage remained empty.",
+    "Fast and deep capture, result panes, media/link editing, capture copy/open controls, empty-state rejection, Cancel, and content invariance were exercised warm and after full extension reload.",
+    "Scroll synchronization and restricted chrome://settings refusal were exercised; no natural browser error occurred to exercise T14 recovery."
+  ],
+  "remaining_boundaries": [
+    "T01 and T08 remain partial for normal-width and signed-in mode dimensions.",
+    "T02 deep failure/retry remains unverified.",
+    "T13 guest link actions were exercised; member/admin behavior remains unverified.",
+    "T14 recovery controls require an observable natural browser failure; none occurred in this run.",
+    "This run repeats the guest full-surface driver on a newer exact artifact; it does not close additional registered cases."
+  ],
+  "resource_finals": {
+    "hosted-package-38021736744-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38021736744-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38021736744-1": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "fixture_and_credential_boundary": "Guest-only lane B used an isolated hosted Chrome profile and locally owned Harbor Dental fixture. No member/admin credentials or shared member fixture were used; the hosted runner is ephemeral.",
+  "claims": [
+    "Bounded guest observations on the exact frozen development artifact listed above.",
+    "No current-main health, Store, member/admin, or full EXT-F-1007 completion claim."
+  ],
+  "review_status": "pending_independent_review",
+  "evidence_files": {
+    "native_report": {
+      "path": "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+      "sha256": "d3d97045c99e463b9c3a4df02b6e38a9cde37770a5ddaa971012f2ad93da149c"
+    },
+    "resource_journals": [
+      {
+        "path": "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+        "sha256": "90cee34c0543d635ab996ee47f918533aad62cc7d9cfc9ff53ccf0b589060b42"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+        "sha256": "e26326bfbbfed468be35e503e135b8330bdc5705c202fc2c90cf86ed105372a6"
+      },
+      {
+        "path": "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl",
+        "sha256": "19901efea47fc74d2c6e0c6f495fa30133ce953dd4dd4cfb55bfa073c260b9df"
+      }
+    ]
+  }
+}
