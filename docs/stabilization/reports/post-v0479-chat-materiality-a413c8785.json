@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_post_release_chat_package_materiality",
+  "reviewer": "member_secret_restore",
+  "commit_reviewed": "a413c8785f672f4ace3df3b46a223752b06180e3",
+  "status": "NO_STORE_MATERIAL_RUNTIME_CHANGE",
+  "package": "@ai-matrx/chat",
+  "from": "0.8.29",
+  "to": "0.8.30",
+  "method": "Downloaded exact public npm tarballs and compared every packaged file byte; inspected lockfile diff and published changelog.",
+  "changed_files": ["CHANGELOG.md", "package.json"],
+  "runtime_js_css_changed_files": [],
+  "consumer_action": "Published changelog describes automatic docs/metadata republish with no consumer action.",
+  "conclusion": "This lock-only Chat refresh adds no runtime behavior delta and does not invalidate exact v0.2.479 acceptance or create a specific safety/semantic gate against submitting that immutable candidate.",
+  "limitations": [
+    "No full rebuilt extension ZIP byte-identity claim; no local build performed.",
+    "A future release still follows latest-package checks. This does not grant browser acceptance to an unbuilt later candidate."
+  ]
+}
