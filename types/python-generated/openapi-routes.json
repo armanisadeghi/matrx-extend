@@ -458,6 +458,24 @@
    "application/json"
   ]
  },
+ "/agent-messages/cursor/add": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-messages/cursor/agents": {
+  "get": []
+ },
+ "/agent-messages/cursor/connect": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/agent-messages/cursor/disconnect": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/agent-messages/hook-mail": {
   "post": [
    "application/json"
