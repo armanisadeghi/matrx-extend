@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_chat_evidence_review",
+  "reviewer": "guest_chat_run38074378985_review",
+  "run": {
+    "hosted_run_id": 38074378985,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38074378985",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_conclusion": "success",
+    "workflow_source_sha": "7267b6a13363f86617ce0b16571985be68985dcc",
+    "lane": "B",
+    "runner": "macos-15-intel / x86_64",
+    "case": "guest-chat",
+    "auth_mode": "guest"
+  },
+  "verdict_a_product_behavior": {
+    "verdict": "PASS_BOUNDED_GUEST_CHAT_FLOW",
+    "required_observations": {
+      "first_grounded_terminal_reply": "PASS: first AI transport request was is_new=true; the completed get_page_text result matched the owned fixture and contained its unpredictable codes and heading; the terminal answer included the unpredictable code and named the page stages in order, with no paywall or error.",
+      "same_conversation_followup": "PASS: second AI request was is_new=false, used the same observed conversation identity, completed its page read, and returned the fixture code in a terminal answer.",
+      "post_reload_new_conversation": "PASS: after the panel reload the guest had no prior session, the third request was is_new=true, the page fixture had not been reinstalled, and the terminal answer contained the fixture code and heading.",
+      "server_deployment_stability": "PASS: version endpoint returned HTTP 200 and git SHA 714968a298ea258ef38704eceea2f1cbbad159a1 both before and after the native flow."
+    },
+    "screenshots_reviewed": [
+      "screenshots/guest-chat-real-answer.png",
+      "screenshots/guest-chat-same-conversation-followup.png",
+      "screenshots/guest-chat-real-followup-answer.png"
+    ],
+    "user_visible_failures": [],
+    "scope_limits": [
+      "Guest profile and this controlled page-grounding conversation flow only.",
+      "The CDP transport observer attaches after panel load and cannot prove requests before its attachment.",
+      "The native Store ZIP was key-adapted and loaded unpacked, so the run does not establish a Chrome Web Store installed-copy behavior."
+    ]
+  },
+  "verdict_b_evidence_quality": {
+    "verdict": "PASS_WITH_DOCUMENTED_LIMITS",
+    "findings": [],
+    "provenance": "Hosted inputs and logs select release run 38073804235. The downloaded release receipt is v0.2.473, source 5061d886fbff8b294a7c16a92b8938ddc0c42796, tree d831b21b100c9c50dfeaadf3be74ce0a810d2e57388816adea8023286715b32a, Store ZIP SHA-256 764ca9401dcc997148ed0f6437948153a21593b8cdc886958ce7f115083c8b59. Its release artifact ZIP digest matches GitHub metadata; the native result independently records candidate-key adaptation, loaded-tree identity, and artifact_unchanged=true.",
+    "resource_finals": "Package, browser, and guest journals for run 38074378985 each end admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Unrelated older journals in the upload were excluded.",
+    "diagnostic_field_adjudication": "The native report calls its last UI snapshot failure_observation and contains answerMatchesPublicStages=false. This snapshot is captured after the same-conversation follow-up, whose expected contract is fixture heading/check-code recall; it is not the opening-turn acceptance predicate. The opening turn has separate passing grounded-answer predicates and a screenshot showing its terminal stage list. The snapshot therefore does not contradict the scoped pass.",
+    "limitations": [
+      "No browser was launched during this review.",
+      "Temporary extension-key adaptation and unpacked loading do not equal Store-installed acceptance.",
+      "Transport observation begins after initial panel load."
+    ]
+  },
+  "evidence_directory": "docs/stabilization/evidence/guest-chat-v0473/run38074378985/"
+}

@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-2013-T10 public guest Chat first reply, same-conversation follow-up, and new conversation after reload",
+  "hosted_run_id": 38074378985,
+  "status": "pass",
+  "build": {
+    "version": "0.2.473",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "adapted_loaded_tree_sha256": "aacea433df30f695010eb09d9dc5034836ddedd740e780ac836d1c4c2f6c6491",
+    "artifact_unchanged": true
+  },
+  "server": {
+    "before": {
+      "reachable": true,
+      "status": 200,
+      "git_sha": "714968a298ea258ef38704eceea2f1cbbad159a1"
+    },
+    "after": {
+      "reachable": true,
+      "status": 200,
+      "git_sha": "714968a298ea258ef38704eceea2f1cbbad159a1"
+    },
+    "stable": true
+  },
+  "guest": {
+    "fresh_profile": true,
+    "chat_visible": true,
+    "chat_visible_after_reload": true,
+    "no_session_after_reload": true,
+    "fixture_not_reinstalled_between_turns": true
+  },
+  "initial_grounded_turn": {
+    "terminal": true,
+    "opening_response_count": 1,
+    "unpredictable_page_code_in_answer": true,
+    "names_fixture_stages": true,
+    "stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "tool_result": {
+      "completed_get_page_text_observed": true,
+      "result_url_matches_fixture": true,
+      "result_contains_fixture_codes_and_heading": true
+    }
+  },
+  "same_conversation_followup": {
+    "terminal": true,
+    "completed": true,
+    "same_conversation_identity_verified": true,
+    "answer_contains_fixture_code": true,
+    "completed_read_page_result_matches_fixture": true
+  },
+  "post_reload_new_conversation": {
+    "terminal": true,
+    "completed": true,
+    "new_conversation_fixture_code_and_heading_in_answer": true,
+    "fixture_read_results_match": true,
+    "session_absent_after_reload": true
+  },
+  "transport": {
+    "observer_attached_after_panel_load": true,
+    "observation_scope_limit": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+    "transport_proven": true,
+    "requests": [
+      {
+        "attempt": "opening",
+        "http_status": 200,
+        "is_new": true
+      },
+      {
+        "attempt": "same_conversation_followup",
+        "http_status": 200,
+        "is_new": false
+      },
+      {
+        "attempt": "post_reload_new_conversation",
+        "http_status": 200,
+        "is_new": true
+      }
+    ],
+    "expected_sequence": [
+      "new opening conversation",
+      "same-conversation follow-up",
+      "new conversation after reload"
+    ]
+  },
+  "diagnostic_note": "The native JSON also records failure_observation after the same-conversation follow-up. That snapshot reports answerMatchesPublicStages=false because this follow-up answer describes the fixture heading and check codes rather than restating the opening stage list. The scoped opening-turn predicates above pass; all three turns reach terminal_answer and the screenshots show successful replies. It is not an observed product failure.",
+  "limits": [
+    "The exact release ZIP was key-adapted and loaded unpacked; this is not a Chrome Web Store installed-copy check.",
+    "The CDP observer starts after panel load, so it cannot establish network requests before attachment."
+  ],
+  "screenshots": [
+    "screenshots/guest-chat-real-answer.png",
+    "screenshots/guest-chat-same-conversation-followup.png",
+    "screenshots/guest-chat-real-followup-answer.png"
+  ]
+}

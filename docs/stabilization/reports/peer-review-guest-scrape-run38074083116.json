@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_scrape_evidence_review",
+  "reviewer": "guest_scrape_run38074083116_review",
+  "run": {
+    "hosted_run_id": 38074083116,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38074083116",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_conclusion": "success",
+    "workflow_source_sha": "3caca76307626719cf6b13610390289dc32a280e",
+    "lane": "B",
+    "runner": "macos-15-intel / x86_64",
+    "case": "guest-scrape",
+    "auth_mode": "guest",
+    "width_mode": "narrow"
+  },
+  "verdict_a_product_behavior": {
+    "verdict": "PARTIAL",
+    "basis": "The native assertions reached real guest Scrape UI behavior. The workflow success alone is not product acceptance.",
+    "cases": {
+      "EXT-F-1007-T01": "PARTIAL: fast capture and post-extension-reload fast recapture were asserted; normal width and member/admin modes remain unverified.",
+      "EXT-F-1007-T02": "PARTIAL: deep capture and post-extension-reload deep result were asserted; deep failure/retry mode remains unverified.",
+      "EXT-F-1007-T08": "PARTIAL: six populated panes, empty Images/Video/Links/Article, and capture/export invariance warm and after extension reload were asserted. SEO/Schema empty states, normal width, physical resize, and member/admin remain unverified.",
+      "EXT-F-1007-T07": "PASS for the guest subtarget: article scroll synchronization was asserted warm and after reload.",
+      "EXT-F-1007-T09": "PASS for the guest subtarget: copy menus and current-capture output were asserted warm, after navigation, and after reload.",
+      "EXT-F-1007-T10": "PASS for the guest subtarget: image removal/addition was asserted warm and after reload.",
+      "EXT-F-1007-T11": "PASS for the guest subtarget: image URL validation, addition, and Cancel were asserted warm and after reload.",
+      "EXT-F-1007-T12": "PASS for the guest subtarget: video remove/add/open/copy behavior was asserted warm and after reload.",
+      "EXT-F-1007-T13": "PARTIAL in this full-driver receipt; warm and reload guest actions passed, while member/admin modes remain unverified. The tracker already records the bounded guest subtarget as Pass.",
+      "EXT-F-1007-T14": "PARTIAL: restricted chrome://settings denial and dismissal were observed. Natural recoverable Reload page/Try again branches were not exercised.",
+      "EXT-F-1007-T20": "PASS: empty state, stale-content clearing on navigation, and clearing across extension reload were asserted."
+    },
+    "actual_user_visible_failures": [],
+    "expected_restricted_page_ui": "The red capture-denied notice on chrome://settings is expected browser restriction behavior; the native assertion records denial and dismissal, not an unexpected product failure."
+  },
+  "verdict_b_evidence_quality": {
+    "verdict": "PASS_WITH_LIMITS",
+    "findings": [],
+    "provenance": "Hosted inputs and log identify release run 38071981003. Its successful v0.2.471 artifact receipt matches source 79a51599e6f39998b64c9a4e4126961044070fca, tree digest a86844610bc4d3009bbb537ca0971f8b173109d8129dd616cbca5d08405410ac, and Store ZIP digest 6ef4062664f4d1d51a168895f670162b0d08fd699183d648f87c43205590de76. Release artifact zip digest also matches GitHub artifact metadata. The native report identifies candidate-key adaptation and unpacked loading.",
+    "resource_finals": "Package, browser, and guest resource journals each terminate with admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Only journals whose run IDs match 38074083116 were used; the full uploaded artifact also contained unrelated older journals.",
+    "screenshots": "Reviewed the native panel, fast Article, deep Article, and restricted-page screenshots. They corroborate the displayed states but do not independently prove all assertions; native report assertions are the primary case evidence.",
+    "limits": [
+      "Temporary candidate-key adaptation and unpacked loading do not establish Chrome Web Store installed-copy acceptance.",
+      "The run uses a v0.2.471 artifact. Later v0.2.473 package refresh means this is not exact-latest acceptance.",
+      "No new browser run or heavy test was started for this review."
+    ]
+  },
+  "comparison": {
+    "prior_bounded_run": "38070816110, exact v0.2.469, had already established the same bounded T08 populated-pane, four empty-pane, and warm/reload capture-invariance behavior.",
+    "inventory_effect": "No T08 inventory status change is warranted: it remains Partial because SEO/Schema empty states, normal width, physical resize, and member/admin coverage remain open. T01/T02 remain Partial; T07/T09/T10/T11/T12/T20 do not receive broader role or feature credit from this run. Existing defects are not changed because no new product defect was observed.",
+    "distinct_coverage": "This run adds exact-v0.2.471 provenance for its native case set and independently records guest warm/reload assertions. Its T08 behavior is not a new coverage class beyond the v0.2.469 bounded run."
+  },
+  "evidence_directory": "docs/stabilization/evidence/guest-scrape-hosted/run38074083116/"
+}
