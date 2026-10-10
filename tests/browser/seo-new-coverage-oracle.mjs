@@ -165,17 +165,18 @@ export function seoCaseSelection(scope = 'full') {
 export async function runSeoCaseSequence(
   runControlledCases,
   runDynamicDetailCases,
-  scope = 'full',
+  scope,
   runReadabilityCases,
 ) {
-  seoCaseSelection(scope);
-  if (scope === 'readability') {
+  const selectedScope = scope === undefined ? 'full' : scope;
+  seoCaseSelection(selectedScope);
+  if (selectedScope === 'readability') {
     assert.equal(typeof runReadabilityCases, 'function', 'known_readability_case_required');
     await runReadabilityCases();
     return;
   }
   await runControlledCases();
-  if (scope === 'full') await runDynamicDetailCases();
+  if (selectedScope === 'full') await runDynamicDetailCases();
 }
 
 export function verifyManualRecapture(before, changed, stale, refreshed) {
