@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38018426632,
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+  "lane": "A",
+  "acceptance_case": "member-data",
+  "product_artifact": {
+    "development_run_id": 38017683667,
+    "development_artifact_id": 11657076101,
+    "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+    "version": "0.2.457",
+    "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4"
+  },
+  "workflow_conclusion": "failure",
+  "native_report_status": "fail",
+  "failure_stage": "copy_tsv_before_reload",
+  "failure_code": "pointer_target_not_unique",
+  "bounded_observations": {
+    "member_auth_and_non_admin_identity_verified": true,
+    "selected_organization_verified": true,
+    "two_picker_previews_observed": true,
+    "save_post_status": 201,
+    "request_body_organization_matches_selected": true,
+    "saved_row_exact_name_and_organization_lookup": true,
+    "saved_pattern_refreshed": true,
+    "saved_pattern_run_before_reload": true,
+    "cleanup_verified": true,
+    "cleanup_deleted_rows": 1
+  },
+  "unverified": [
+    "TSV, JSON and AI clipboard copy/readback",
+    "cancel behavior",
+    "extension reload and persistence",
+    "zero-residual follow-up query",
+    "admin and Store behavior"
+  ],
+  "resource_journals": {
+    "package": "resource-journals/hosted-package-38018426632-1.jsonl",
+    "browser": "resource-journals/hosted-browser-38018426632-1.jsonl",
+    "guest": "resource-journals/hosted-guest-38018426632-1.jsonl",
+    "all_final_decisions_valid": true,
+    "guest_child_exit_code": 1,
+    "guest_cpu_pending_recovered_before_final": true
+  },
+  "scope_note": "The saved-pattern run assertion passed before the driver failed to uniquely target Copy rows. This bounded result adds no full T03 lifecycle pass and does not establish a product defect."
+}

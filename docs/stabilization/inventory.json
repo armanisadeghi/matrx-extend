@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T02:46:40Z",
+  "updated_at": "2026-10-10T03:00:06Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -37998,6 +37998,27 @@
                 "docs/stabilization/evidence/member-data-behavior/run38017560881/hosted-guest-38017560881-1.jsonl"
               ],
               "detail": "Bounded hosted member run passed auth/org checks, two picker previews, selected-org POST 201, exact saved-row lookup/refresh, and exact owned-row cleanup. It failed later in the save_pattern stage with generic native_acceptance_error before any run/copy/cancel/reload assertion was recorded. The exception diagnostic is insufficient to distinguish the failing substep; no product defect is established. Clipboard, cancel, reload and zero-residual follow-up remain unverified. Prior member partial status is unchanged."
+            },
+            {
+              "at": "2026-10-10T02:58:06Z",
+              "mode": "member",
+              "run_id": "38018426632",
+              "status": "fail",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "build_version": "0.2.457",
+              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+              "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+              "development_ci_run_id": 38017683667,
+              "development_artifact_id": 11657076101,
+              "evidence": [
+                "docs/stabilization/evidence/member-data-behavior/run38018426632/receipt.json",
+                "docs/stabilization/evidence/member-data-behavior/run38018426632/native-report.json",
+                "docs/stabilization/evidence/member-data-behavior/run38018426632/hosted-package-38018426632-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38018426632/hosted-browser-38018426632-1.jsonl",
+                "docs/stabilization/evidence/member-data-behavior/run38018426632/hosted-guest-38018426632-1.jsonl"
+              ],
+              "detail": "Bounded member run re-observed member identity, selected organization, two picker previews, selected-org HTTP 201 save, exact owned-row lookup/refresh and cleanup. Saved-pattern run assertion passed. The driver then failed to uniquely target Copy rows (`pointer_target_not_unique`) before clipboard behavior was observed. Cancel, extension reload/persistence, zero-residual follow-up, admin and Store remain unverified. This attempt gives only the explicitly recorded save/run subtarget credit; the overall T03 member result remains Partial."
             }
           ]
         },
