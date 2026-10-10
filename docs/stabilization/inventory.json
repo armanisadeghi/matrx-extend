@@ -22999,31 +22999,32 @@
           ],
           "results": {
             "guest": {
-              "run_id": 38021736744,
-              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
-              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
-              "development_ci_run_id": 38019685913,
-              "development_artifact_id": 11657971729,
-              "hosted_result_artifact_id": 11658643132,
+              "status": "pass",
+              "run_id": 38032960562,
+              "source_sha": "d77e461b0f7289ca19122522e153515b807e932a",
+              "workflow_source_sha": "5c274cdcb2a292f1c47c5e4fa569ecc21fb64d68",
+              "development_ci_run_id": 38031871330,
+              "development_artifact_id": 11662856372,
+              "hosted_result_artifact_id": 11662947946,
               "build_version": "0.2.458",
-              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+              "tree_sha256": "db4aecd3a87d865bb97288f9e61b7d71a7045e6b71c51e58cb51d22a7e1e57a2",
               "resource_valid": true,
               "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
-                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+                "docs/stabilization/evidence/guest-scrape-hosted/run38032960562/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38032960562/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38032960562/resource-journals/hosted-package-38032960562-1.jsonl",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38032960562/resource-journals/hosted-browser-38032960562-1.jsonl",
+                "docs/stabilization/evidence/guest-scrape-hosted/run38032960562/resource-journals/hosted-guest-38032960562-1.jsonl"
               ],
-              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
-              "status": "partial",
+              "release_scope": "Hosted lane B, guest, narrow 360px, exact frozen development artifact from CI run 38031871330/artifact 11662856372 (source d77e461b); workflow checkout 5c274cd. Checkout changes since artifact source were documentation/evidence only. No Store, member/admin, or whole-feature claim.",
               "passed_subtargets": [
-                "Guest link open/copy, selective remove, blank rejection, valid add, and Cancel were observed warm and after full extension reload."
+                "Guest link open/copy, selective remove, blank rejection, valid add, and Cancel observed with matching native evidence warm and after verified full extension reload."
               ],
               "unverified": [
                 "Member/admin modes were not exercised."
               ],
-              "detail": "Guest link actions passed warm and after full extension reload; signed-in modes remain unverified."
+              "detail": "T13 guest subtarget passed warm and after reload with zero action failures; overall T13 remains partial for member/admin modes. The full guest Scrape driver result was partial; this update grants only the T13 guest cell.",
+              "verified_at": "2026-10-10T07:09:45Z"
             },
             "member": {
               "status": "partial",
@@ -23182,6 +23183,37 @@
                 "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
               },
               "superseded_at": "2026-10-10T03:58:06Z"
+            },
+            {
+              "mode": "guest",
+              "superseded_at": "2026-10-10T07:09:45Z",
+              "result": {
+                "run_id": 38021736744,
+                "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+                "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+                "development_ci_run_id": 38019685913,
+                "development_artifact_id": 11657971729,
+                "hosted_result_artifact_id": 11658643132,
+                "build_version": "0.2.458",
+                "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+                "resource_valid": true,
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                  "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+                ],
+                "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+                "status": "partial",
+                "passed_subtargets": [
+                  "Guest link open/copy, selective remove, blank rejection, valid add, and Cancel were observed warm and after full extension reload."
+                ],
+                "unverified": [
+                  "Member/admin modes were not exercised."
+                ],
+                "detail": "Guest link actions passed warm and after full extension reload; signed-in modes remain unverified."
+              }
             }
           ],
           "attempt_history": [

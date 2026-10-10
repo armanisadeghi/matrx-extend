@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { recordDataMemberDriverDiagnostic } from './data-member-driver-diagnostic.mjs';
 import {
   refuseDiagnosticAcceptance,
   reloadOpenEvidenceClass,
@@ -36,6 +37,7 @@ async function drive(flag, fail = false, senderFlag = '0') {
     'writeFile',
     'refuseDiagnosticAcceptance',
     'reloadOpenEvidenceClass',
+    'recordDataMemberDriverDiagnostic',
     `
     const extensionDir = '/owned/development', receiptPath = '/owned/receipt', receipt = {}, fixture = '', output = 'owned.json';
     ${source.match(/const RELOAD_OPEN_DIAGNOSTIC = [^;]+;/)?.[0] ?? ''}
@@ -59,6 +61,7 @@ async function drive(flag, fail = false, senderFlag = '0') {
     },
     refuseDiagnosticAcceptance,
     reloadOpenEvidenceClass,
+    recordDataMemberDriverDiagnostic,
   );
   return { options, persisted, exitCode: process.exitCode };
 }

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "auth_mode": "member",
+  "status": "unverified",
+  "stage": "member_auth",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "7c6311e86562051bcaa58de997a248ae40c58bd7",
+    "run_id": 38029218282,
+    "artifact_id": 11661736374,
+    "tree_sha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d",
+    "version": "0.2.458"
+  },
+  "reload_open_diagnostic": {
+    "enabled": true,
+    "evidence_class": "diagnostic_only",
+    "perturbation": "cdp_worker_attach_and_synchronous_open_wrapper"
+  },
+  "reload_sender_document_diagnostic": {
+    "enabled": false,
+    "evidence_class": "acceptance_eligible",
+    "perturbation": "none"
+  },
+  "authentication": null,
+  "observations": {},
+  "cleanup": null,
+  "failure_stage": "member_auth",
+  "auth_stage": "member_web_identity",
+  "error_code": "native_acceptance_error",
+  "failure": {
+    "stage": "extension_reload",
+    "code": "diagnostic_only_perturbed_lifecycle"
+  }
+}

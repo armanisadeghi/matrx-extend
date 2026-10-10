@@ -9,6 +9,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
 import { clickPickerDone, clickPickerField, pickerText } from './data-guest-picker-driver.mjs';
+import { recordDataMemberDriverDiagnostic } from './data-member-driver-diagnostic.mjs';
 import {
   buildDataPatternDeleteUrl,
   buildDataPatternLookupUrl,
@@ -671,6 +672,7 @@ try {
   report.status = 'fail';
   report.failure_stage = report.stage;
   report.error_code = safeFailureCode(error);
+  recordDataMemberDriverDiagnostic(error, report);
   process.exitCode = 1;
   process.stderr.write(`DATA_MEMBER_ACCEPTANCE_FAILED ${report.stage} ${report.error_code}\n`);
 } finally {

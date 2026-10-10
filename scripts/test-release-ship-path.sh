@@ -96,6 +96,11 @@ done
 FIXTURE_REGISTRY="http://127.0.0.1:$(<"$SANDBOX/fixture-registry-port")"
 cat > "$SANDBOX/bin/node" <<STUB
 #!/usr/bin/env bash
+if [[ "\$1" == */scripts/await-matrx-latest.mjs && -f "$SANDBOX/budget-timeout-elapsed" ]]; then
+  # Bash SECONDS is whole seconds; force this one fixture past its first tick
+  # so the assertion tests a reduced remaining budget, not scheduler timing.
+  sleep 2
+fi
 case "\$1" in
   scripts/check-store-package.mjs|scripts/check-cws-release-risk.mjs)
     echo "\$1" >> "$SANDBOX/node-gates"
@@ -128,8 +133,11 @@ case " \$* " in
         "\$(cat "$SANDBOX/fixture-version" 2>/dev/null || echo 1.0.0)" >&2
       exit 1
     fi ;;
-  *" update -r "*" --depth Infinity"*) echo transitive >> "$SANDBOX/depth-passes" ;;
+  *" update -r "*" --depth Infinity"*)
+    [ -f "$SANDBOX/endless-churn-delay" ] && sleep 1
+    echo transitive >> "$SANDBOX/depth-passes" ;;
   *" update -r "*)
+    [ -f "$SANDBOX/endless-churn-delay" ] && sleep 1
     # A sibling package landed on npm: install it, with its CHANGELOG entry.
     from=\$(cat "$SANDBOX/fixture-version" 2>/dev/null || echo 1.0.0)
     to="1.0.\$(( \${from##*.} + 1 ))"
@@ -577,13 +585,30 @@ git fetch -q origin 2>/dev/null || true
 check "publish churn is caught up, never a stop"       '[[ $CHURN_STATUS -eq 0 && $(( $(updates) - UPDATES_BEFORE )) -eq 4 ]] && grep -q "  pushed" "$SANDBOX/catchup-churn-out"'
 check "each catch-up waits for the publish train"      '[[ $(grep -c "run list -R AI-Matrix-Engine/aidream" "$SANDBOX/gh-calls") -ge 4 ]]'
 git_q reset -q --hard origin/main
-# Endless churn still ends at the release's own race budget (shortened here), named.
+# Endless churn still ends at the release's own race budget. The fixture slows
+# each update so this case reaches multiple catch-ups deterministically instead
+# of racing its short budget during unrelated preflight work.
 touch "$SANDBOX/stale-packages" "$SANDBOX/stale-forever"
-perl -pi -e 's/^SHIP_RACE_BUDGET_SECS=\d+/SHIP_RACE_BUDGET_SECS=8/' release.sh
+touch "$SANDBOX/endless-churn-delay"
+perl -pi -e 's/^SHIP_RACE_BUDGET_SECS=\d+/SHIP_RACE_BUDGET_SECS=20/' release.sh
+ENDLESS_UPDATES_BEFORE="$(updates)"
 FOREVER_STATUS=0; run_release catchup-forever-out || FOREVER_STATUS=$?
 git checkout -q -- release.sh
-rm -f "$SANDBOX/stale-forever" "$SANDBOX/stale-packages"
-check "endless churn stops at the race budget"         '[[ $FOREVER_STATUS -ne 0 ]] && grep -q "still publishing after" "$SANDBOX/catchup-forever-out"'
+rm -f "$SANDBOX/stale-forever" "$SANDBOX/stale-packages" "$SANDBOX/endless-churn-delay"
+ENDLESS_UPDATE_COUNT=$(( $(updates) - ENDLESS_UPDATES_BEFORE ))
+ENDLESS_STILL_PUBLISHING=0
+grep -q "still publishing after" "$SANDBOX/catchup-forever-out" && ENDLESS_STILL_PUBLISHING=1 || true
+ENDLESS_BUDGET_BEFORE_UPDATE=0
+grep -Eq "reached the 20s release race budget before its (direct|transitive) update" "$SANDBOX/catchup-forever-out" && ENDLESS_BUDGET_BEFORE_UPDATE=1 || true
+ENDLESS_UPDATE_TIMED_OUT=0
+grep -Eq "(direct|transitive) @ai-matrx update timed out after [0-9]+s during catch-up" "$SANDBOX/catchup-forever-out" && ENDLESS_UPDATE_TIMED_OUT=1 || true
+if [[ $FOREVER_STATUS -ne 0 && $ENDLESS_UPDATE_COUNT -ge 4 && ( $ENDLESS_STILL_PUBLISHING -eq 1 || $ENDLESS_BUDGET_BEFORE_UPDATE -eq 1 ) ]]; then
+  echo "  ok    endless churn stops at the race budget"
+else
+  printf '  FAIL  endless churn stops at the race budget (status=%s updates=%s still_publishing=%s budget_before_update=%s update_timed_out=%s)\n' \
+    "$FOREVER_STATUS" "$ENDLESS_UPDATE_COUNT" "$ENDLESS_STILL_PUBLISHING" "$ENDLESS_BUDGET_BEFORE_UPDATE" "$ENDLESS_UPDATE_TIMED_OUT"
+  FAILED=1
+fi
 git_q reset -q --hard origin/main
 cp "$HARNESS_ROOT/scripts/release-matrx-catchup.mjs" "$HARNESS_ROOT/scripts/await-matrx-latest.mjs" scripts/; printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
 git_q add pnpm-lock.yaml scripts/release-matrx-catchup.mjs scripts/await-matrx-latest.mjs; git_q commit -m "lockfile again"
@@ -610,12 +635,32 @@ check "catch-up timeout is explicit and blocks publication" '[[ $TIMEOUT_STATUS 
 # update before it runs.
 perl -pi -e 's/^SHIP_RACE_BUDGET_SECS=3600$/SHIP_RACE_BUDGET_SECS=60/' release.sh
 touch "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update"
+touch "$SANDBOX/budget-timeout-elapsed"
 rm -f "$SANDBOX/update-timeout-limit" "$SANDBOX/update-timeout-args"
 BUDGET_TIMEOUT_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
 BUDGET_TIMEOUT_STATUS=0; run_release catchup-budget-timeout-out || BUDGET_TIMEOUT_STATUS=$?
-rm -f "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update"
+rm -f "$SANDBOX/stale-packages" "$SANDBOX/timeout-matrx-update" "$SANDBOX/budget-timeout-elapsed"
 git checkout -q -- release.sh
-check "catch-up timeout honors remaining race budget" '[[ $BUDGET_TIMEOUT_STATUS -ne 0 && "$(cat "$SANDBOX/update-timeout-limit")" -gt 0 && "$(cat "$SANDBOX/update-timeout-limit")" -lt 60 && "$BUDGET_TIMEOUT_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && grep -q "^$(cat "$SANDBOX/update-timeout-limit") pnpm update -r @ai-matrx/\\* --latest$" "$SANDBOX/update-timeout-args" && grep -q "direct @ai-matrx update timed out after $(cat "$SANDBOX/update-timeout-limit")s" "$SANDBOX/catchup-budget-timeout-out"'
+BUDGET_TIMEOUT_LIMIT="$(cat "$SANDBOX/update-timeout-limit" 2>/dev/null || true)"
+BUDGET_TIMEOUT_ARGS_MATCH=0
+grep -q "^${BUDGET_TIMEOUT_LIMIT} pnpm update -r @ai-matrx/\\* --latest$" "$SANDBOX/update-timeout-args" && BUDGET_TIMEOUT_ARGS_MATCH=1 || true
+BUDGET_TIMEOUT_MESSAGE_MATCH=0
+grep -q "direct @ai-matrx update timed out after ${BUDGET_TIMEOUT_LIMIT}s" "$SANDBOX/catchup-budget-timeout-out" && BUDGET_TIMEOUT_MESSAGE_MATCH=1 || true
+BUDGET_TIMEOUT_BASE_UNCHANGED=0
+[[ "$BUDGET_TIMEOUT_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] && BUDGET_TIMEOUT_BASE_UNCHANGED=1 || true
+BUDGET_TIMEOUT_NONZERO=0
+[[ $BUDGET_TIMEOUT_STATUS -ne 0 ]] && BUDGET_TIMEOUT_NONZERO=1 || true
+BUDGET_TIMEOUT_LIMIT_POSITIVE=0
+[[ "$BUDGET_TIMEOUT_LIMIT" =~ ^[0-9]+$ ]] && (( BUDGET_TIMEOUT_LIMIT > 0 )) && BUDGET_TIMEOUT_LIMIT_POSITIVE=1 || true
+BUDGET_TIMEOUT_LIMIT_BELOW_NOMINAL=0
+[[ "$BUDGET_TIMEOUT_LIMIT" =~ ^[0-9]+$ ]] && (( BUDGET_TIMEOUT_LIMIT < 60 )) && BUDGET_TIMEOUT_LIMIT_BELOW_NOMINAL=1 || true
+if [[ $BUDGET_TIMEOUT_NONZERO -eq 1 && $BUDGET_TIMEOUT_LIMIT_POSITIVE -eq 1 && $BUDGET_TIMEOUT_LIMIT_BELOW_NOMINAL -eq 1 && $BUDGET_TIMEOUT_BASE_UNCHANGED -eq 1 && $BUDGET_TIMEOUT_ARGS_MATCH -eq 1 && $BUDGET_TIMEOUT_MESSAGE_MATCH -eq 1 ]]; then
+  echo "  ok    catch-up timeout honors remaining race budget"
+else
+  printf '  FAIL  catch-up timeout honors remaining race budget (status=%s limit=%s args_match=%s message_match=%s base_unchanged=%s)\n' \
+    "$BUDGET_TIMEOUT_STATUS" "${BUDGET_TIMEOUT_LIMIT:-missing}" "$BUDGET_TIMEOUT_ARGS_MATCH" "$BUDGET_TIMEOUT_MESSAGE_MATCH" "$BUDGET_TIMEOUT_BASE_UNCHANGED"
+  FAILED=1
+fi
 # An install that lags a lockfile which is already current is not a stop: the
 # update fixes the install and the same candidate is checked again in full.
 # The committed lockfile must be the current one: nothing for a catch-up to commit.

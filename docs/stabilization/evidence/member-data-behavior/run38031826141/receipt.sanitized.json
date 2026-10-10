@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T03",
+  "hosted_run_id": 38031826141,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38031826141",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "cd59220a97a19899982187535a9f55e6dc13461a",
+  "lane": "A",
+  "acceptance_case": "member-data",
+  "workflow_conclusion": "failure",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38029218282,
+    "development_artifact_id": 11661736374,
+    "source_sha": "7c6311e86562051bcaa58de997a248ae40c58bd7",
+    "version": "0.2.458",
+    "tree_sha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d"
+  },
+  "inputs": {
+    "scrape_auth_mode": "member",
+    "scrape_reload_open_diagnostic": true,
+    "reload_sender_document_diagnostic": false
+  },
+  "native_report": {
+    "status": "unverified",
+    "failure_stage": "member_auth",
+    "auth_stage": "member_web_identity",
+    "error_code": "native_acceptance_error",
+    "authentication": null,
+    "observations": {},
+    "cleanup": null,
+    "reload_open_probe": null,
+    "reload_sender_document": null,
+    "report_failure_field": {
+      "stage": "extension_reload",
+      "code": "diagnostic_only_perturbed_lifecycle"
+    },
+    "interpretation": "The report failure field is emitted by the diagnostic-only guard after the earlier member_web_identity failure. The first observed failure is member_auth/member_web_identity; neither reload diagnostic ran."
+  },
+  "resource": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "resource_invalid_any": false
+  },
+  "fixture": {
+    "run_owned_pattern_name": "Northline Furnishings catalog member 38031826141-1",
+    "read_only_exact_name_lookup_count": 0,
+    "lookup_limit": 5,
+    "writes_performed": false,
+    "scope_note": "Auth failed before pattern creation; the bounded exact-name lookup found no row. This does not assert broader account or fixture cleanup."
+  },
+  "credential_handling": {
+    "temporary_secret_name_absent_at_terminal": true,
+    "local_one_time_link_absent_at_terminal": true,
+    "credential_values_persisted": false
+  },
+  "evidence_files": [
+    {
+      "path": "native-report.sanitized.json",
+      "sha256": "18819d249f33528791de1ba73369ba7259c29202065624f5a9bd99dafdbb83de"
+    },
+    {
+      "path": "hosted-package-38031826141-1.jsonl",
+      "sha256": "161069c7ee2e735b78bac1def1112782942f31017fa397e7975a1993267dbc7a"
+    },
+    {
+      "path": "hosted-browser-38031826141-1.jsonl",
+      "sha256": "805485795eed8e33e731f58b7c9bf1293824b73ffe8ddaba1e0442c034e9b1df"
+    },
+    {
+      "path": "hosted-guest-38031826141-1.jsonl",
+      "sha256": "a950aba95ca5d533a61e565f64e7575da0347aba78c2021344647fa3b50b4ce2"
+    }
+  ],
+  "verdict": "diagnostic_only_nondiscriminating",
+  "limitations": "No member authentication, panel interaction, reload probe, sender-document probe, or product write was observed. T03 receives no credit from this run. The resource finals are valid, but the control does not exercise the behavior needed to justify the paired sender-refresh run."
+}

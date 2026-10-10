@@ -50,6 +50,7 @@ on:
           - guest-scrape
           - guest-scrape-development
           - scrape-save-member
+          - tab-groups-member
           - settings-controls
           - settings-theme-rendering
           - settings-auto-scrape-capture
@@ -112,13 +113,14 @@ on:
           - none
           - manual_button_returns_to_current_page
       desktop_settings_case:
-        description: Desktop Settings guest path; remaining covers pair-code forget and reset cancel
+        description: Desktop Settings case; pair-forget covers only guest pairing removal, remaining covers the broader guest path
         required: false
         default: full
         type: choice
         options:
           - full
           - remaining
+          - pair-forget
       d47_response_order:
         description: D47 held HTTP response order for showcase-d47-admin
         required: false
@@ -201,17 +203,20 @@ jobs:
           # BEGIN hosted lane admission
           [[ "$ACCEPTANCE_LANE" == A || "$ACCEPTANCE_LANE" == B ]] || { echo 'Unknown hosted acceptance lane.' >&2; exit 1; }
           case "$ACCEPTANCE_CASE" in
-            guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-save-member|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
+            guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-save-member|tab-groups-member|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
           [[ "${RELOAD_SENDER_DOCUMENT_DIAGNOSTIC:-0}" != 1 || "$ACCEPTANCE_CASE" == member-data ]] || { echo 'Sender document diagnostic requires member-data.' >&2; exit 1; }
           if [[ "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'D187 Save Source requires member auth.' >&2; exit 1; }
           fi
+          if [[ "$ACCEPTANCE_CASE" == tab-groups-member ]]; then
+            [[ "$ACCEPTANCE_LANE" == A ]] || { echo 'Tab groups member acceptance requires lane A.' >&2; exit 1; }
+          fi
           if [[ "$ACCEPTANCE_CASE" == member-data ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'Member Data requires member auth.' >&2; exit 1; }
           fi
-          [[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }
+          [[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining || "$DESKTOP_SETTINGS_CASE" == pair-forget ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }
           [[ "$SEO_CASE_SCOPE" == full || "$SEO_CASE_SCOPE" == controlled || "$SEO_CASE_SCOPE" == readability ]] || { echo 'Unknown SEO case scope.' >&2; exit 1; }
           [[ "$SEO_CASE_SCOPE" != readability || "$ACCEPTANCE_CASE" == guest-seo ]] || { echo 'Readability SEO scope requires guest-seo.' >&2; exit 1; }
           [[ "$SEO_CASE_SCOPE" == full || "$ACCEPTANCE_CASE" == guest-seo ]] || { echo 'Controlled SEO scope requires guest-seo.' >&2; exit 1; }
@@ -224,6 +229,9 @@ jobs:
           fi
           if [[ "$DESKTOP_SETTINGS_CASE" == remaining ]]; then
             [[ "$ACCEPTANCE_CASE" == desktop-settings-guest ]] || { echo 'Remaining Desktop Settings case requires guest.' >&2; exit 1; }
+          fi
+          if [[ "$DESKTOP_SETTINGS_CASE" == pair-forget ]]; then
+            [[ "$ACCEPTANCE_CASE" == desktop-settings-guest ]] || { echo 'Pair-forget Desktop Settings case requires guest.' >&2; exit 1; }
           fi
           if [[ "$ACCEPTANCE_LANE" == B ]]; then
             case "$ACCEPTANCE_CASE" in
@@ -309,7 +317,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == member-chat || "$ACCEPTANCE_CASE" == guest-scrape ]]; then
             [[ -n "$RELEASE_RUN_ID" && -z "$DEVELOPMENT_RUN_ID" && -z "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
+          if [[ "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == scrape-save-member || "$ACCEPTANCE_CASE" == tab-groups-member ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == guest-seo || "$ACCEPTANCE_CASE" == guest-data || "$ACCEPTANCE_CASE" == member-data || "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == visibility-census-guest || "$ACCEPTANCE_CASE" == visibility-census-member || "$ACCEPTANCE_CASE" == visibility-census-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
@@ -455,6 +463,7 @@ jobs:
             test-results/guest-chat-store-*.json
             test-results/scrape-guest-native-*.json
             test-results/scrape-save-native-acceptance.json
+            test-results/tab-groups-member-native-acceptance.json
             test-results/seo-guest-acceptance.json
             test-results/data-guest-native-acceptance.json
             test-results/data-member-native-acceptance.json

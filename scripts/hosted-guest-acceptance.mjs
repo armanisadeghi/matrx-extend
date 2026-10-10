@@ -35,6 +35,7 @@ import {
 } from './hosted-seo-route.mjs';
 import { hostedShowcaseRoute } from './hosted-showcase-route.mjs';
 import { runHostedStartupIntervalDiagnostic } from './hosted-startup-interval-diagnostic.mjs';
+import { hostedTabGroupsRoute } from './hosted-tab-groups-route.mjs';
 import {
   PUBLISHED_STORE_CRX,
   requirePublishedStoreCrxTarget,
@@ -299,6 +300,7 @@ async function run(prepared, artifactMode) {
       'guest-scrape',
       'guest-scrape-development',
       'scrape-save-member',
+      'tab-groups-member',
       'settings-controls',
       'settings-theme-rendering',
       'settings-auto-scrape-capture',
@@ -332,9 +334,10 @@ async function run(prepared, artifactMode) {
   if (
     acceptanceCase === 'guest-data' ||
     acceptanceCase === 'member-data' ||
-    acceptanceCase === 'scrape-save-member'
+    acceptanceCase === 'scrape-save-member' ||
+    acceptanceCase === 'tab-groups-member'
   )
-    assert.equal(kind, 'ci_development_test', 'Data acceptance requires CI development receipt');
+    assert.equal(kind, 'ci_development_test', 'This acceptance requires CI development receipt');
   const guestDataCiReceiptPath =
     acceptanceCase === 'guest-data' || acceptanceCase === 'member-data'
       ? join(
@@ -434,6 +437,14 @@ async function run(prepared, artifactMode) {
       'Guest Chat release requires exact Store ZIP payload',
     );
   const scrapeRoute = requireHostedScrapeRoute(acceptanceCase, artifactMode, prepared);
+  const tabGroupsRoute =
+    acceptanceCase === 'tab-groups-member'
+      ? hostedTabGroupsRoute(acceptanceCase, {
+          ...prepared,
+          extensionDir,
+          relocatedReceipt,
+        })
+      : null;
   const seoRoute = hostedGuestSeoRoute(
     acceptanceCase,
     artifactMode,
@@ -481,7 +492,8 @@ async function run(prepared, artifactMode) {
     (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
     acceptanceCase === 'desktop-settings-member' ||
-    acceptanceCase === 'visibility-census-member';
+    acceptanceCase === 'visibility-census-member' ||
+    acceptanceCase === 'tab-groups-member';
   let adminCredentialsCreated = false;
   if (
     acceptanceCase === 'prepare-stale-results' ||
@@ -533,6 +545,7 @@ async function run(prepared, artifactMode) {
       : {}),
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
+    ...(tabGroupsRoute?.env ?? {}),
     ...(acceptanceCase.startsWith('settings-persistence')
       ? {
           MATRX_D87_EXTENSION_DIR: extensionDir,
@@ -570,7 +583,8 @@ async function run(prepared, artifactMode) {
     (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
     acceptanceCase === 'desktop-settings-member' ||
-    acceptanceCase === 'visibility-census-member'
+    acceptanceCase === 'visibility-census-member' ||
+    acceptanceCase === 'tab-groups-member'
       ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath }
       : {}),
     ...(acceptanceCase === 'prepare-stale-results' ||
@@ -632,50 +646,44 @@ async function run(prepared, artifactMode) {
     }
   }
   try {
-    const child = spawn(
-      process.execPath,
-      [
-        join(
-          repo,
-          [
-            'settings-controls',
-            'settings-theme-rendering',
-            'settings-auto-scrape-capture',
-          ].includes(acceptanceCase)
-            ? acceptanceCase === 'settings-auto-scrape-capture'
-              ? 'tests/browser/settings-auto-scrape-capture-native.mjs'
-              : 'tests/browser/settings-local-controls-acceptance.mjs'
-            : acceptanceCase === 'guest-data'
-              ? 'tests/browser/data-guest-native-acceptance.mjs'
-              : acceptanceCase === 'member-data'
-                ? 'tests/browser/data-member-native-acceptance.mjs'
-                : seoRoute
-                  ? seoRoute.driver
-                  : scrapeRoute
-                    ? scrapeRoute.driver
-                    : acceptanceCase.startsWith('visibility-census-')
-                      ? 'tests/browser/takeover-visible-census.mjs'
-                      : acceptanceCase.startsWith('desktop-settings-')
-                        ? 'tests/browser/settings-desktop-native-acceptance.mjs'
-                        : acceptanceCase === 'audit-key-admin'
-                          ? 'tests/browser/audit-key-native-acceptance.mjs'
-                          : acceptanceCase.startsWith('settings-persistence')
-                            ? 'tests/browser/settings-d87-native-acceptance.mjs'
-                            : showcaseRoute
-                              ? showcaseRoute.driver
-                              : acceptanceCase === 'prepare-stale-results'
-                                ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
-                                : acceptanceCase === 'member-chat'
-                                  ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                                  : 'tests/browser/guest-chat-store-acceptance.mjs',
-        ),
-      ],
-      {
-        cwd: repo,
-        stdio: 'inherit',
-        env: childEnv,
-      },
-    );
+    const driver = [
+      'settings-controls',
+      'settings-theme-rendering',
+      'settings-auto-scrape-capture',
+    ].includes(acceptanceCase)
+      ? acceptanceCase === 'settings-auto-scrape-capture'
+        ? 'tests/browser/settings-auto-scrape-capture-native.mjs'
+        : 'tests/browser/settings-local-controls-acceptance.mjs'
+      : acceptanceCase === 'guest-data'
+        ? 'tests/browser/data-guest-native-acceptance.mjs'
+        : acceptanceCase === 'member-data'
+          ? 'tests/browser/data-member-native-acceptance.mjs'
+          : seoRoute
+            ? seoRoute.driver
+            : scrapeRoute
+              ? scrapeRoute.driver
+              : acceptanceCase.startsWith('visibility-census-')
+                ? 'tests/browser/takeover-visible-census.mjs'
+                : acceptanceCase.startsWith('desktop-settings-')
+                  ? 'tests/browser/settings-desktop-native-acceptance.mjs'
+                  : acceptanceCase === 'audit-key-admin'
+                    ? 'tests/browser/audit-key-native-acceptance.mjs'
+                    : acceptanceCase.startsWith('settings-persistence')
+                      ? 'tests/browser/settings-d87-native-acceptance.mjs'
+                      : showcaseRoute
+                        ? showcaseRoute.driver
+                        : acceptanceCase === 'prepare-stale-results'
+                          ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
+                          : tabGroupsRoute
+                            ? tabGroupsRoute.driver
+                            : acceptanceCase === 'member-chat'
+                              ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                              : 'tests/browser/guest-chat-store-acceptance.mjs';
+    const child = spawn(process.execPath, [join(repo, driver)], {
+      cwd: repo,
+      stdio: 'inherit',
+      env: childEnv,
+    });
     const result = await new Promise((resolveRun, reject) => {
       child.once('error', reject);
       child.once('exit', (code, signal) => resolveRun({ code, signal }));
@@ -691,7 +699,8 @@ async function run(prepared, artifactMode) {
       acceptanceCase === 'member-data' ||
       (scrapeRoute && scrapeSelection.mode === 'member') ||
       acceptanceCase === 'settings-persistence-member' ||
-      acceptanceCase === 'desktop-settings-member'
+      acceptanceCase === 'desktop-settings-member' ||
+      acceptanceCase === 'tab-groups-member'
     )
       await unlink(memberLinkPath);
     if (adminCredentialsCreated) await unlink(adminCredentialsPath);

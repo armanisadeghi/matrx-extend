@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "run_id": 38032960562,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38032960562",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "5c274cdcb2a292f1c47c5e4fa569ecc21fb64d68",
+  "lane": "B",
+  "runner_label": "macos-15",
+  "runner_arch": "ARM64",
+  "acceptance_case": "guest-scrape-development",
+  "case_under_review": "EXT-F-1007-T13",
+  "acceptance_case_scope": "full guest Scrape driver; no per-case selector exists; review claims are restricted to T13 guest link actions",
+  "authentication_mode": "guest",
+  "workflow_conclusion": "success",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "eligible_store": false,
+    "ci_run_id": 38031871330,
+    "artifact_id": 11662856372,
+    "artifact_digest": "sha256:dd0a05d3f93d04df6a1917b21aa7c97a4efde8847e4b297bbca26980d4741c29",
+    "source_sha": "d77e461b0f7289ca19122522e153515b807e932a",
+    "tree_sha256": "db4aecd3a87d865bb97288f9e61b7d71a7045e6b71c51e58cb51d22a7e1e57a2",
+    "version": "0.2.458",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11662947946,
+    "name": "hosted-guest-38032960562-1",
+    "digest": "sha256:8ac1b438c05ed25c3b62c47474fbff8bb932652b22ddb520fd27d4d999bcb1d3",
+    "native_report_present": true
+  },
+  "report_summary": {
+    "driver_status": "partial",
+    "t13_guest_slice": "pass",
+    "t13_modes_remaining": ["member", "admin"],
+    "other_driver_cases_reviewed_or_credited": false,
+    "resource_valid_acceptance": true
+  },
+  "resource_finals": {
+    "hosted-package-38032960562-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38032960562-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38032960562-1": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "resource_journal_provenance": "Sanitized RESOURCE_* rows reconstructed from the exact Actions run logs because the hosted artifact did not include journals. Process-attribution rows and absolute paths were omitted; process-group identifier row omitted. Each journal retains the exact run ID and final decision.",
+  "evidence_files": {
+    "native-report.sanitized.json": {
+      "path": "native-report.sanitized.json",
+      "sha256": "d90f462add09f5f62de3e47043de775a465a8b8726c67cd68ca433a2797980ed"
+    },
+    "resource-journals/hosted-package-38032960562-1.jsonl": {
+      "path": "resource-journals/hosted-package-38032960562-1.jsonl",
+      "sha256": "fa3868516053ee84881c5c76b9bcc5bb22e030f7597019a5b837c796a43f5182"
+    },
+    "resource-journals/hosted-browser-38032960562-1.jsonl": {
+      "path": "resource-journals/hosted-browser-38032960562-1.jsonl",
+      "sha256": "f444a3580f669933fef79f656a4190427ac52e7b7be07bd803b43084a9b7ed4a"
+    },
+    "resource-journals/hosted-guest-38032960562-1.jsonl": {
+      "path": "resource-journals/hosted-guest-38032960562-1.jsonl",
+      "sha256": "e57dcdae603d20197ee609f9d1ee2461f1ba63c45d5f7a30e7eaac8aa2e6082d"
+    }
+  },
+  "source_boundary": "CI artifact source is d77e461b0f7289ca19122522e153515b807e932a. Hosted workflow checkout is 5c274cdcb2a292f1c47c5e4fa569ecc21fb64d68; changes since the artifact source are documentation/evidence only, with no runtime, workflow, or lockfile change. This is not a Store or whole-repository health claim.",
+  "fixture_and_cleanup": "Guest-only, isolated ephemeral ARM hosted runner/profile and locally owned fixture; no shared member credentials or shared database fixture. Reported T13 actions were exercised warm and after extension reload. Native harness finally closes its owned fixture server, stops the owned browser child, and removes its temporary profile; no separate cleanup readback is present.",
+  "claim_limits": "Bounded guest observation for EXT-F-1007-T13 only. T13 overall remains partial for member/admin. Driver result partial. No wider Scrape, current-main binary, Store, member/admin, or full campaign claim. No retry launched.",
+  "review_status": "approved",
+  "independent_review": {
+    "verdict": "PASS",
+    "reviewed_at": "2026-10-10T07:14:11Z",
+    "scope": "Bounded guest EXT-F-1007-T13 native slice and receipt/resource consistency",
+    "summary": "Warm and post-reload link actions match the native report; source/artifact/run binding and all three valid resource finals were confirmed. Member/admin, Store/current-main, and broader Scrape claims remain out of scope."
+  }
+}
