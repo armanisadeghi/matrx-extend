@@ -27,6 +27,7 @@ import { beginStartupProcessInterval } from '../../scripts/startup-process-inter
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { reloadOperationBoundary } from './native-reload-operation-boundary.mjs';
 import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
 import { serveOwnedFixture } from './owned-fixture-server.mjs';
 import { startReloadLifetimeDiagnostic } from './reload-lifetime-diagnostic.mjs';
@@ -71,12 +72,15 @@ function panelOpenReplyCategory(reply) {
   return 'unexpected_reply';
 }
 
-async function beginReloadPanelReplyObservation(page, beforeClick) {
+async function beginReloadPanelReplyObservation(page, beforeClick, mark = () => {}) {
+  mark('fixture_reply_clear');
   const result = page.locator('#result');
   await result.evaluate((element) => {
     element.textContent = '';
   });
+  mark('fixture_open_prepare');
   beforeClick();
+  mark('fixture_open_click');
   await page.locator('#open-panel').click();
   let active = true;
   const outcome = {
@@ -634,6 +638,12 @@ async function reloadOwnedExtension({
   oldPanelId,
   scrapeOpenDiagnostic = false,
 }) {
+  const operation = reloadOperationBoundary();
+  let primaryError;
+  let failed = false;
+  let cleanupError;
+  let result;
+  let observedContext;
   let details;
   let lifetime;
   const destroyedTargets = new Set();
@@ -754,6 +764,7 @@ async function reloadOwnedExtension({
     record('click_started');
     await reload.click(); // Chrome's own extension-management UI, using trusted input.
     record('click_resolved');
+    operation.mark('worker_retirement');
     let replacementWorker;
     let lastSnapshot = '';
     for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
@@ -821,30 +832,37 @@ async function reloadOwnedExtension({
       };
       throw error;
     }
+    operation.mark('fixture_focus');
     await page.bringToFront();
     // Diagnostic-only CDP attachment can perturb worker lifetime and the
     // gesture route. The receipt labels it; it never changes acceptance.
+    operation.mark('open_diagnostic_start');
     openDiagnostic = await maybeStartScrapeReloadOpenDiagnostic(
       cdp,
       replacementWorker.targetId,
       scrapeOpenDiagnostic,
     );
     try {
-      replyObservation = await beginReloadPanelReplyObservation(page, () => {
-        retirementEvidence.open_panel_request = {
-          click_monotonic_ms: Math.round(performance.now()),
-          worker_at_click: workerActivationAtClick(lifetime, replacementWorker.targetId),
-          received: false,
-          ok: null,
-          opened: null,
-          category: 'reply_not_observed',
-        };
-      });
+      replyObservation = await beginReloadPanelReplyObservation(
+        page,
+        () => {
+          retirementEvidence.open_panel_request = {
+            click_monotonic_ms: Math.round(performance.now()),
+            worker_at_click: workerActivationAtClick(lifetime, replacementWorker.targetId),
+            received: false,
+            ok: null,
+            opened: null,
+            category: 'reply_not_observed',
+          };
+        },
+        (stage) => operation.mark(stage),
+      );
     } catch (error) {
       if (retirementEvidence.open_panel_request)
         retirementEvidence.open_panel_request.category = 'click_failed';
       throw error;
     }
+    operation.mark('panel_poll');
     let replacementPanel;
     for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
       const { targetInfos } = await cdp.send('Target.getTargets');
@@ -866,10 +884,12 @@ async function reloadOwnedExtension({
     retirementEvidence.replacement_panel_created_event = createdPanels.has(
       replacementPanel.targetId,
     );
+    operation.mark('context_observation');
     const contextBoundary = await observeSidePanelContext({
       readContexts: () => sidePanelContexts(cdp, replacementWorker.targetId),
       panelUrl,
     });
+    observedContext = contextBoundary;
     // Preserve the first sample as evidence, then use the bounded exact-match verdict.
     if (!contextBoundary.exact_expected_appeared) {
       const error = new Error('native_sidepanel_runtime_context_missing');
@@ -877,17 +897,21 @@ async function reloadOwnedExtension({
       error.lifecycleEvidence = retirementEvidence;
       throw error;
     }
+    operation.mark('management_recheck');
     const managementAfter = await reloadManagementState(details, extensionId);
     requireReloadEnabled(managementAfter);
     retirementEvidence.timeline.final_snapshot = lastOwned;
     retirementEvidence.timeline.dropped_entries = timelineDropped;
     retirementEvidence.reload_lifetime = lifetime.evidence;
+    operation.mark('reply_observation_close');
     Object.assign(retirementEvidence.open_panel_request, await replyObservation.close());
     if (openDiagnostic) {
+      operation.mark('open_diagnostic_close');
       retirementEvidence.open_panel_diagnostic = await openDiagnostic.close();
       openDiagnostic = null;
     }
-    return {
+    operation.mark('panel_attach');
+    result = {
       management_before: managementBefore,
       management_after: managementAfter,
       panel: await attachTargetSession(cdp, replacementPanel.targetId),
@@ -900,15 +924,24 @@ async function reloadOwnedExtension({
       management_reload_clicked: true,
     };
   } catch (error) {
+    primaryError = error;
+    failed = true;
+    operation.capture(error);
+    if (observedContext && error && typeof error === 'object')
+      error.contextBoundary = observedContext;
     if (replyObservation && retirementEvidence?.open_panel_request)
-      Object.assign(retirementEvidence.open_panel_request, await replyObservation.close());
+      await operation.cleanup('reply_observation_close', async () => {
+        Object.assign(retirementEvidence.open_panel_request, await replyObservation.close());
+      });
     if (retirementEvidence)
       retirementEvidence.replacement_panel_created_event = [...createdPanels].some(
         (id) => id !== oldPanelId,
       );
     if (openDiagnostic) {
-      const diagnostic = await openDiagnostic.close();
-      if (retirementEvidence) retirementEvidence.open_panel_diagnostic = diagnostic;
+      await operation.cleanup('open_diagnostic_close', async () => {
+        const diagnostic = await openDiagnostic.close();
+        if (retirementEvidence) retirementEvidence.open_panel_diagnostic = diagnostic;
+      });
       openDiagnostic = null;
     }
     if (error && typeof error === 'object') {
@@ -928,15 +961,46 @@ async function reloadOwnedExtension({
         },
       };
     }
-    throw error;
   } finally {
-    if (openDiagnostic) await openDiagnostic.close();
-    await lifetime?.close();
-    cdp.off('Target.targetDestroyed', onDestroyed);
-    cdp.off('Target.targetCreated', onCreated);
-    cdp.off('Target.targetInfoChanged', onChanged);
-    await details?.close().catch(() => {});
+    for (const [stage, action] of [
+      [
+        'open_diagnostic_close',
+        async () => {
+          if (openDiagnostic) await openDiagnostic.close();
+        },
+      ],
+      [
+        'lifetime_close',
+        async () => {
+          await lifetime?.close();
+        },
+      ],
+      [
+        'listeners_remove',
+        async () => {
+          cdp.off('Target.targetDestroyed', onDestroyed);
+          cdp.off('Target.targetCreated', onCreated);
+          cdp.off('Target.targetInfoChanged', onChanged);
+        },
+      ],
+      [
+        'management_page_close',
+        async () => {
+          await details?.close();
+        },
+      ],
+    ]) {
+      const failure = await operation.cleanup(stage, action);
+      cleanupError ??= failure;
+    }
   }
+  if (failed) throw primaryError;
+  if (cleanupError) {
+    cleanupError.lifecycleEvidence = retirementEvidence;
+    if (observedContext) cleanupError.contextBoundary = observedContext;
+    throw cleanupError;
+  }
+  return result;
 }
 
 async function acquireLiveExtensionPanel({ cdp, page, extensionId }) {

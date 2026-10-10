@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-t40-hard-escalation-20261009",
+  "lane": "bounded reload diagnosis",
+  "status": "instrumentation_ready_pending_review",
+  "feature_ids": [
+    "EXT-F-1003"
+  ],
+  "case_ids": [
+    "EXT-F-1003-T40"
+  ],
+  "summary": "Instrumented fixed post-predicate operation and exception-class evidence; preserved original failures across cleanup. Hosted T40 cause and persistence remain unverified.",
+  "artifact_inspection": {
+    "run_id": "38007298161",
+    "artifact_id": 11652445172,
+    "artifact_name": "hosted-guest-38007298161-1",
+    "downloaded": true,
+    "report_error_is_fixed_summary": true,
+    "report_error_length": 43,
+    "exception_type_retained": false,
+    "stack_retained": false,
+    "rich_lifecycle_retained": false,
+    "safe_receipt": "docs/stabilization/evidence/settings-auto-scrape-capture/run38007298161/receipt.sanitized.json",
+    "previous_receipt": "docs/stabilization/evidence/settings-auto-scrape-capture/run38006058872/receipt.sanitized.json"
+  },
+  "confirmed": [
+    "Warm ON/OFF and pre-reload switch are bounded passes, not full-reload acceptance.",
+    "Lifecycle predicate was true; failure occurred before replacement panel returned.",
+    "The last captured lifecycle event is not an operation boundary.",
+    "The archived report discarded the original exception; downloading it provides no additional causal information.",
+    "The helper catch awaits diagnostic cleanup before attaching evidence, and finally awaits lifetime cleanup; either can replace an earlier exception. This is a source-observed risk, not a proven cause of this run.",
+    "Fault injection proves cleanup masking is a real harness class defect, without proving it caused hosted run 38007298161."
+  ],
+  "hypotheses": [
+    {
+      "cause": "Owned fixture page bringToFront, result clearing, or trusted click throws",
+      "falsifiable_prediction": "A preserved fixed operation stage names one of these boundaries before panel polling begins."
+    },
+    {
+      "cause": "Target polling or replacement-panel attachment fails",
+      "falsifiable_prediction": "Preserved stage identifies poll or attach and an allowlisted transport class; fixture click stage completed."
+    },
+    {
+      "cause": "Context observation or management recheck throws",
+      "falsifiable_prediction": "Preserved stage identifies context or management and retains context verdict where already sampled."
+    },
+    {
+      "cause": "Diagnostic or lifetime cleanup masks primary failure",
+      "falsifiable_prediction": "Fault injection shows original stage replaced today; preserving first failure retains primary stage and separate cleanup flags."
+    }
+  ],
+  "verification": [
+    {
+      "case_id": "EXT-F-1003-T40",
+      "run_id": "38007298161",
+      "verdict": "unverified_full_reload",
+      "evidence": "Exact original result artifact inspected through safe field/type checks; no exception or stack retained."
+    },
+    {
+      "case_id": "harness-error-preservation",
+      "run_id": "local-forcing-red-green",
+      "verdict": "pass",
+      "evidence": "Original helper: four injected tests failed (two absent boundary, two RangeError cleanup masking primary TypeError/ReferenceError). Corrected helper and Settings serialization: 30 targeted tests pass. Real helper return-expected mutant: 13 failures / 14 tests, exit 1."
+    },
+    {
+      "case_id": "compile",
+      "run_id": "t40-operation-boundary-compile-20261009",
+      "verdict": "not_admitted",
+      "evidence": "docs/stabilization/resource-journals/t40-operation-boundary-compile-20261009.jsonl"
+    }
+  ],
+  "changed_product_or_harness_files": [
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/native-reload-operation-boundary.mjs",
+    "tests/browser/settings-guest-extension-rechecks.mjs",
+    "tests/browser/settings-probe-cleanup.mjs"
+  ],
+  "hosted_runs_launched": [],
+  "limitations": [
+    "Hosted failure cause remains unknown; instrumentation is not acceptance.",
+    "Independent review and automatic CI compile pending; local compile guard refused RESOURCE_DISK_LOW (system/safety 19.205 GiB)."
+  ],
+  "open_questions": [],
+  "next_action": "Independent peer review, then coordinate one guarded B/Intel diagnostic run with owner; preserve full-reload unverified unless all actual acceptance assertions pass.",
+  "raw_artifact_cleanup": "Owned downloaded artifact directory removed after safe inspection."
+}

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
 import { captureFailure, safeTransportFailureClass } from './profile-reload-capture.mjs';
 import { click, waitFor } from './settings-panel-driver.mjs';
 
@@ -126,6 +127,7 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     const evidence = captured.retirement_evidence;
     const phases = evidence?.timeline?.entries?.map((entry) => entry.phase) ?? [];
     return {
+      helperFailure: safeReloadOperationFailure(error?.reloadOperationFailure),
       lastCapturedPhase: phases.at(-1) ?? 'unavailable',
       timelineTruncated: evidence?.timeline ? (evidence.timeline.dropped_entries ?? 0) > 0 : null,
       clickStarted: phases.includes('click_started'),

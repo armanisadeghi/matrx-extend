@@ -1,3 +1,4 @@
+import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
 import { GUEST_EXTENSION_RECHECK_FAILURE_STAGES } from './settings-guest-extension-rechecks.mjs';
 
 const TRANSPORT_CLASSES = new Set([
@@ -54,6 +55,7 @@ function reloadBoundary(value) {
   if (!value || typeof value !== 'object') return null;
   const bool = (field) => (typeof value[field] === 'boolean' ? value[field] : null);
   return {
+    helperFailure: safeReloadOperationFailure(value.helperFailure),
     lastCapturedPhase: RELOAD_PHASES.has(value.lastCapturedPhase)
       ? value.lastCapturedPhase
       : 'unavailable',
