@@ -57,6 +57,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'visibility-census-member',
       'profile-member',
       'tab-groups-member',
+      'native-ai-member-probe',
     ].includes(acceptanceCase) ||
     scrapeMode === 'member'
   ) {
@@ -64,7 +65,8 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
     if (
       scrapeMode === 'member' ||
       acceptanceCase === 'member-data' ||
-      acceptanceCase === 'tab-groups-member'
+      acceptanceCase === 'tab-groups-member' ||
+      acceptanceCase === 'native-ai-member-probe'
     )
       requireSettingsCredential('member', env.MATRX_HOSTED_MEMBER_LINK_JSON);
   }

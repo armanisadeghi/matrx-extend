@@ -20,6 +20,7 @@ import {
 import { hostedAcceptanceRoute } from './hosted-acceptance-route.mjs';
 import { hostedDesktopSettingsCase } from './hosted-desktop-settings-route.mjs';
 import { lockedHostedTypeScript } from './hosted-driver-dependencies.mjs';
+import { hostedNativeAiProbeRoute } from './hosted-native-ai-probe-route.mjs';
 import {
   hostedProfileRoute,
   requireHostedAcceptanceCredential,
@@ -320,7 +321,8 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'guest-data' ||
     acceptanceCase === 'member-data' ||
     acceptanceCase === 'scrape-save-member' ||
-    acceptanceCase === 'tab-groups-member'
+    acceptanceCase === 'tab-groups-member' ||
+    acceptanceCase === 'native-ai-member-probe'
   )
     assert.equal(kind, 'ci_development_test', 'This acceptance requires CI development receipt');
   const guestDataCiReceiptPath =
@@ -429,6 +431,10 @@ async function run(prepared, artifactMode) {
           relocatedReceipt,
         })
       : null;
+  const nativeAiProbeRoute =
+    acceptanceCase === 'native-ai-member-probe'
+      ? hostedNativeAiProbeRoute(acceptanceCase, { ...prepared, extensionDir, relocatedReceipt })
+      : null;
   const seoRoute = hostedGuestSeoRoute(
     acceptanceCase,
     artifactMode,
@@ -481,7 +487,8 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'settings-persistence-member' ||
     acceptanceCase === 'desktop-settings-member' ||
     acceptanceCase === 'visibility-census-member' ||
-    acceptanceCase === 'tab-groups-member';
+    acceptanceCase === 'tab-groups-member' ||
+    acceptanceCase === 'native-ai-member-probe';
   let adminCredentialsCreated = false;
   if (
     acceptanceCase === 'prepare-stale-results' ||
@@ -538,6 +545,7 @@ async function run(prepared, artifactMode) {
     MATRX_REVIEWER_EXTENSION_DIR: extensionDir,
     MATRX_REVIEWER_RELEASE_RECEIPT: relocatedReceipt,
     ...(tabGroupsRoute?.env ?? {}),
+    ...(nativeAiProbeRoute?.env ?? {}),
     ...(acceptanceCase.startsWith('settings-persistence')
       ? {
           MATRX_D87_EXTENSION_DIR: extensionDir,
@@ -576,7 +584,8 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'settings-persistence-member' ||
     acceptanceCase === 'desktop-settings-member' ||
     acceptanceCase === 'visibility-census-member' ||
-    acceptanceCase === 'tab-groups-member'
+    acceptanceCase === 'tab-groups-member' ||
+    acceptanceCase === 'native-ai-member-probe'
       ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath }
       : {}),
     ...(acceptanceCase === 'prepare-stale-results' ||
@@ -668,9 +677,11 @@ async function run(prepared, artifactMode) {
                           ? 'tests/browser/prepare-stale-result-native-acceptance.mjs'
                           : tabGroupsRoute
                             ? tabGroupsRoute.driver
-                            : acceptanceCase === 'member-chat'
-                              ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
-                              : 'tests/browser/guest-chat-store-acceptance.mjs';
+                            : nativeAiProbeRoute
+                              ? nativeAiProbeRoute.driver
+                              : acceptanceCase === 'member-chat'
+                                ? 'tests/browser/reviewer-chat-store-acceptance.mjs'
+                                : 'tests/browser/guest-chat-store-acceptance.mjs';
     const child = spawn(process.execPath, [join(repo, driver)], {
       cwd: repo,
       stdio: 'inherit',
@@ -692,7 +703,8 @@ async function run(prepared, artifactMode) {
       (scrapeRoute && scrapeSelection.mode === 'member') ||
       acceptanceCase === 'settings-persistence-member' ||
       acceptanceCase === 'desktop-settings-member' ||
-      acceptanceCase === 'tab-groups-member'
+      acceptanceCase === 'tab-groups-member' ||
+      acceptanceCase === 'native-ai-member-probe'
     )
       await unlink(memberLinkPath);
     if (adminCredentialsCreated) await unlink(adminCredentialsPath);

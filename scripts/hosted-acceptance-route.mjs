@@ -11,6 +11,7 @@ const HOSTED_ACCEPTANCE_CASES = new Set([
   'scrape-error-recovery-guest',
   'scrape-save-member',
   'tab-groups-member',
+  'native-ai-member-probe',
   'settings-controls',
   'settings-theme-rendering',
   'settings-auto-scrape-capture',

@@ -114,6 +114,7 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
       acceptanceCase.endsWith('-member') ||
       acceptanceCase === 'member-chat' ||
       acceptanceCase === 'member-data' ||
+      acceptanceCase === 'native-ai-member-probe' ||
       acceptanceCase === 'prepare-stale-results' ||
       acceptanceCase.startsWith('showcase-');
     assert.equal(
@@ -127,6 +128,8 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
     0,
     'Records admin cannot enter lane B',
   );
+  assert.equal(check('A', 'native-ai-member-probe').status, 0);
+  assert.notEqual(check('B', 'native-ai-member-probe').status, 0);
   for (const unknownCase of ['', 'surprise-guest', 'surprise-admin'])
     assert.notEqual(check('A', unknownCase).status, 0, unknownCase);
   for (const scrapeAuth of ['member', 'admin']) {
