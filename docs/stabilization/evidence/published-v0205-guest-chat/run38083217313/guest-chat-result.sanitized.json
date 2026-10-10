@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "scope": "fresh owned guest profile; unpredictable article fixture in the owned browser tab; real Chat opening, same-conversation follow-up, and post-reload new conversation",
+  "build": {
+    "version": "0.2.205",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "receipt_kind": "published_store_crx_unpacked",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "artifact_unchanged": true
+  },
+  "guest": {
+    "fresh": true,
+    "chat_visible": true,
+    "after_reload": true,
+    "fixture_reinstalled_before_first_send": false,
+    "session_absent_after_reload": true,
+    "fixture_reinstalled_after_reload": false
+  },
+  "server_version_before": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "908045a2d1c74364e9a59cf47fb69cd39de141e0"
+  },
+  "server_version_after": {
+    "reachable": true,
+    "status": 200,
+    "git_sha": "908045a2d1c74364e9a59cf47fb69cd39de141e0"
+  },
+  "server_version_stable": true,
+  "chat": {
+    "opening_question_fingerprint": "8b0041e45eb47431",
+    "fixture_fragment_fingerprint": "9af4f5ef22525e92",
+    "opening_code_fingerprint": "bfb7220c1d739e55",
+    "completed_reply_count": 1,
+    "answer_contains_unpredictable_page_code": true,
+    "answer_names_page_stages": true,
+    "answer_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "followup_completed_after_reload": true,
+    "same_conversation_followup_completed": true,
+    "same_conversation_followup_reply_count": 3,
+    "same_conversation_followup_contains_page_code": true,
+    "same_conversation_identity_verified": true,
+    "followup_question_fingerprint": "be2d5336e111bd21",
+    "followup_code_fingerprint": "90c943157fe53387",
+    "followup_reply_count": 3,
+    "followup_contains_unpredictable_page_code": true,
+    "followup_names_fixture_heading": true
+  },
+  "opening_turn_verdict": "terminal_answer",
+  "same_conversation_turn_verdict": "terminal_answer",
+  "followup_turn_verdict": "terminal_answer",
+  "guest_ai_transport_proven": true,
+  "stage_progress": [
+    "owned_profile",
+    "fresh_guest",
+    "owned_article_page",
+    "page_specific_fixture",
+    "guest_chat_open",
+    "guest_values_chip_open",
+    "guest_question",
+    "real_guest_answer",
+    "same_conversation_followup_question",
+    "real_same_conversation_followup_answer",
+    "real_panel_reload",
+    "guest_followup_composer",
+    "guest_followup_question",
+    "real_guest_followup_answer",
+    "artifact_unchanged"
+  ],
+  "context_rule_read_observation_scope": "CDP observer attaches after panel load and runs through Values chip open, both guest sends, and panel reload; it cannot establish requests before attachment",
+  "context_rule_reads": [],
+  "grounding_diagnostics": {
+    "same_conversation_followup": {
+      "toolEvents": [
+        {
+          "name": "read_page",
+          "phase": "tool_started",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "read_page",
+          "phase": "tool_delegated",
+          "target": "server_event_target_unobserved",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "read_page",
+          "phase": "started",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": null,
+          "resultContainsOpeningCode": null,
+          "resultContainsFollowupCode": null,
+          "resultContainsFixtureHeading": null
+        },
+        {
+          "name": "read_page",
+          "phase": "completed",
+          "target": "assigned_tab_or_non_tab_tool",
+          "resultUrlMatchesFixture": true,
+          "resultContainsOpeningCode": true,
+          "resultContainsFollowupCode": true,
+          "resultContainsFixtureHeading": true
+        }
+      ],
+      "toolBoundaryChecks": [
+        {
+          "eventIndex": 5,
+          "toolName": "read_page",
+          "phase": "tool_started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 6,
+          "toolName": "read_page",
+          "phase": "tool_delegated",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 7,
+          "toolName": "read_page",
+          "phase": "started",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        },
+        {
+          "eventIndex": 8,
+          "toolName": "read_page",
+          "phase": "completed",
+          "readableMarkerPresent": true,
+          "pageUrlMatches": true,
+          "activeTabMatchesFixture": true,
+          "activeUrlMatchesFixture": true,
+          "assignedTabMatchesFixture": null
+        }
+      ],
+      "terminal": {
+        "readableMarkerPresent": true,
+        "pageUrlMatches": true,
+        "activeTabMatchesFixture": true,
+        "activeUrlMatchesFixture": true,
+        "assignedTabMatchesFixture": true
+      }
+    }
+  },
+  "failure_code": null,
+  "failure_stage": null,
+  "guest_ai_requests": [
+    {
+      "status": 200,
+      "conversation_fingerprint": "c9cca7e467581625"
+    },
+    {
+      "status": 200,
+      "conversation_fingerprint": "c9cca7e467581625"
+    },
+    {
+      "status": 200,
+      "conversation_fingerprint": "4b23ace785a801b4"
+    }
+  ]
+}

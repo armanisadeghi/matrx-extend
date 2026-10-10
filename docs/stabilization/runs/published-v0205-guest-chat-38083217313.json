@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "run_id": 38083217313,
+  "status": "bounded_pass",
+  "case_id": "published-v0205-guest-chat",
+  "observed_at": "2026-10-10T20:25:43Z",
+  "workflow_source_sha": "9ffbfd7ba7ddd93bc0a0ba762e85c4fa69cb925c",
+  "runner_label": "macos-15-intel",
+  "artifact": {
+    "kind": "published_store_crx_unpacked",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "artifact_unchanged": true,
+    "published_tag_commit_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23"
+  },
+  "server": {
+    "version_endpoint_status_before": 200,
+    "version_endpoint_status_after": 200,
+    "git_sha_before": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
+    "git_sha_after": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
+    "stable_during_run": true,
+    "request_statuses": [200, 200, 200],
+    "conversation_fingerprints": ["c9cca7e467581625", "c9cca7e467581625", "4b23ace785a801b4"]
+  },
+  "verification": {
+    "identity": "Fresh signed-out guest profile; Chat visible without login or paywall.",
+    "opening_turn": "Real terminal assistant answer grounded in an unpredictable code on the owned public article; answer named the expected page stages in order.",
+    "same_conversation_followup": "A follow-up completed in the same verified conversation identity, with the answer grounded in the article's unique code.",
+    "post_reload": "After reloading the panel, guest session remained absent and a new follow-up produced a terminal answer grounded in the page-specific code and heading.",
+    "transport": "Native instrumentation proved the guest AI transport path; all three turns reached terminal answers.",
+    "runner_result": "pass"
+  },
+  "resource_finals": {
+    "package": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38083217313/receipt.sanitized.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38083217313/guest-chat-result.sanitized.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38083217313/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38083217313/resource-journals/hosted-package.jsonl",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38083217313/resource-journals/hosted-browser.jsonl",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38083217313/resource-journals/hosted-guest.jsonl",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38083217313/screenshots/guest-chat-opening-reply.png",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38083217313/screenshots/guest-chat-same-conversation-followup.png",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38083217313/screenshots/guest-chat-post-reload-reply.png",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38083217313"
+  ],
+  "limitations": [
+    "This proves hosted use of the public 0.2.205 CRX in an unpacked extension profile; it does not prove installation or update behavior through the Chrome Web Store UI.",
+    "The fixture was a public demo page with an unpredictable article marker, not a named Store reviewer fixture.",
+    "Screenshots show the real reply surface but are scrolled/clipped; detailed grounding, conversation identity, and terminal states are supported by the native result assertions.",
+    "No claims about authenticated member/admin Chat, tool actions, SEO, or broader Chat health.",
+    "The public CRX was unpacked for this hosted run; loading preserved its published extension ID through the verified signing key, but did not exercise Google Store installation or update UI."
+  ]
+}
