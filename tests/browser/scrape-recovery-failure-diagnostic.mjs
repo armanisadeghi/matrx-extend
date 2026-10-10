@@ -4,6 +4,56 @@ const hostCategory = (value) =>
   value === 'ON_CLICK' || value === 'ON_ALL_SITES' ? value : 'unknown';
 const flag = (value) => (typeof value === 'boolean' ? value : null);
 
+export async function observeRecoveryPreflight(context, read) {
+  try {
+    return await read();
+  } catch (error) {
+    let transport;
+    try {
+      transport = context.transportFailureClass();
+    } catch {
+      transport = 'unknown';
+    }
+    context.onFailure({
+      phase: 'denial_preflight',
+      operation: ['panel_readiness', 'effective_host_access'].includes(context.operation)
+        ? context.operation
+        : 'unknown',
+      origin_transition_completed: flag(context.originTransitionCompleted),
+      failure_code:
+        error?.message === 'owned_cdp_transport_failed'
+          ? 'owned_cdp_transport_failed'
+          : 'scrape_recovery_preflight_failed',
+      transport_failure_class: [
+        'none',
+        'protocol_shape',
+        'unknown_response',
+        'protocol_error',
+        'response_shape',
+        'listener',
+        'send_after_close',
+        'command_timeout',
+        'send_exception',
+        'socket_error',
+        'unexpected_close',
+        'close_failure',
+      ].includes(transport)
+        ? transport
+        : 'unknown',
+    });
+    throw error;
+  }
+}
+
+// Preserve the driver's existing finally ordering, including a failed preflight.
+export async function withRecoveryHostAccessCleanup(action, cleanup) {
+  try {
+    return await action();
+  } finally {
+    await cleanup();
+  }
+}
+
 export function safeRecoveryFailureSnapshot(state, expectedHostAccess, observedHostAccess) {
   const stage = state?.deepScrollProgressPresent
     ? 'deep_scroll_in_progress'

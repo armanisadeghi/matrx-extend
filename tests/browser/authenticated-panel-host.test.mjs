@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { runMemberAuthBoundary } from './settings-member-auth-diagnostic.mjs';
 
 const source = await readFile(
   new URL('./native-sidepanel-qa-harness.mjs', import.meta.url),
@@ -219,6 +220,7 @@ test('failed optional host observation cannot replace the actual authentication 
     'assert',
     'privateJson',
     'requireSettingsCredential',
+    'runMemberAuthBoundary',
     `${auth.slice(auth.indexOf('export async function signInSettings')).replace('export ', '')}; return signInSettings;`,
   )(
     assert,
@@ -226,6 +228,7 @@ test('failed optional host observation cannot replace the actual authentication 
       throw Error('credential_read_failed');
     },
     () => {},
+    runMemberAuthBoundary,
   );
   await assert.rejects(
     () =>
@@ -240,7 +243,10 @@ test('failed optional host observation cannot replace the actual authentication 
           throw Error('observer_unavailable');
         },
       }),
-    /credential_read_failed/,
+    (error) =>
+      error?.message === 'member_auth_boundary_failed' &&
+      error.memberAuthBoundary === 'member_credential_validation' &&
+      error.memberAuthFailureCode === 'member_credential_validation_failed',
   );
   assert.deepEqual(events, ['close', 'activate']);
 });

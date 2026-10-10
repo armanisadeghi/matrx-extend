@@ -7,6 +7,10 @@ import {
   observeCanonicalAdminCheck,
   supabaseOrigin,
 } from './member-native-auth-proof.mjs';
+import {
+  observeMemberExtensionIdentity,
+  runMemberAuthBoundary,
+} from './settings-member-auth-diagnostic.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const ORIGIN = 'https://www.aimatrx.com';
@@ -582,99 +586,143 @@ export async function signInSettings({
   const web = await page.context().newPage();
   try {
     await observeBoundary('member_web_created').catch(() => {});
-    onStage?.('member_magic_link');
-    const secret = requireSettingsCredential(
-      'member',
-      JSON.stringify(await privateJson(memberLinkFile, 'd87_member_link')),
+    const secret = await runMemberAuthBoundary('member_credential_validation', onStage, async () =>
+      requireSettingsCredential(
+        'member',
+        JSON.stringify(await privateJson(memberLinkFile, 'd87_member_link')),
+      ),
     );
     const expectedOrganizationId = allowLadderOrganization ? secret.organization_id : null;
-    if (allowLadderOrganization)
-      assert.match(
-        expectedOrganizationId ?? '',
-        UUID,
-        'd87_member_expected_organization_unverified',
+    if (allowLadderOrganization) {
+      await runMemberAuthBoundary('member_credential_validation', null, async () =>
+        assert.match(
+          expectedOrganizationId ?? '',
+          UUID,
+          'd87_member_expected_organization_unverified',
+        ),
       );
-    const link = new URL(secret.action_link);
-    await web.goto(link.href, { waitUntil: 'domcontentloaded', timeout: 60_000 });
-    const email = secret.email;
-    onStage?.(`${mode}_web_identity`);
-    const identity = await waitFor(
-      'd87_web_identity',
-      () => authenticatedWebIdentity(web, MEMBER_FINGERPRINT),
-      (value) =>
-        UUID.test(value?.userId ?? '') && value.email?.toLowerCase() === email.toLowerCase(),
-      90_000,
+    }
+    const { email, identity } = await runMemberAuthBoundary(
+      'member_web_identity_observation',
+      onStage,
+      async () => {
+        const link = new URL(secret.action_link);
+        await web.goto(link.href, { waitUntil: 'domcontentloaded', timeout: 60_000 });
+        const memberEmail = secret.email;
+        const memberIdentity = await waitFor(
+          'd87_web_identity',
+          () => authenticatedWebIdentity(web, MEMBER_FINGERPRINT),
+          (value) =>
+            UUID.test(value?.userId ?? '') &&
+            value.email?.toLowerCase() === memberEmail.toLowerCase(),
+          90_000,
+        );
+        return { email: memberEmail, identity: memberIdentity };
+      },
     );
-    await web.goto(`${ORIGIN}/matrx-extend-demo`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 60_000,
+    await runMemberAuthBoundary('member_demo_route_assertion', onStage, async () => {
+      await web.goto(`${ORIGIN}/matrx-extend-demo`, {
+        waitUntil: 'domcontentloaded',
+        timeout: 60_000,
+      });
+      assert.equal(new URL(web.url()).pathname, '/matrx-extend-demo', 'd87_demo_route_unverified');
     });
-    assert.equal(new URL(web.url()).pathname, '/matrx-extend-demo', 'd87_demo_route_unverified');
-    onStage?.(`${mode}_extension_signin`);
-    await click(panel, 'title', 'Settings');
-    await openSection(panel, 'Account');
-    await waitFor(
-      'd87_extension_signin_ready',
-      () => accountIdentity(panel, email),
-      (value) => value?.signInEnabled,
+    await runMemberAuthBoundary('member_extension_signin_ready', onStage, async () => {
+      await click(panel, 'title', 'Settings');
+      await openSection(panel, 'Account');
+      await waitFor(
+        'd87_extension_signin_ready',
+        () => accountIdentity(panel, email),
+        (value) => value?.signInEnabled,
+      );
+    });
+    const adminCheck = await runMemberAuthBoundary(
+      'member_nonadmin_role_observation',
+      onStage,
+      async () => observeCanonicalAdminCheck(panel, await supabaseOrigin(repo)),
     );
-    const adminCheck = observeCanonicalAdminCheck(panel, await supabaseOrigin(repo));
-    await adminCheck.start();
+    await runMemberAuthBoundary('member_nonadmin_role_observation', null, () => adminCheck.start());
     let canonical = null;
     try {
-      await click(panel, 'button', 'Sign in');
-      await openSection(panel, 'Organization');
-      const account = await waitFor(
-        'd87_extension_identity',
-        async () => {
-          await approveConsent(page.context());
-          return { ...(await accountIdentity(panel, email)), ...(await panelIdentity(panel)) };
-        },
-        (value) =>
-          value?.emailMatches &&
-          value.profileId === identity.userId &&
-          value.accessTokenPresent &&
-          value.signOutVisible &&
-          value.isAdmin !== true,
-        90_000,
-      );
+      const account = await observeMemberExtensionIdentity({
+        onStage,
+        clickSignIn: () => click(panel, 'button', 'Sign in'),
+        openOrganization: () => openSection(panel, 'Organization'),
+        waitForIdentity: () =>
+          waitFor(
+            'd87_extension_identity',
+            async () => {
+              await approveConsent(page.context());
+              return { ...(await accountIdentity(panel, email)), ...(await panelIdentity(panel)) };
+            },
+            (value) =>
+              value?.emailMatches &&
+              value.profileId === identity.userId &&
+              value.accessTokenPresent &&
+              value.signOutVisible &&
+              value.isAdmin !== true,
+            90_000,
+          ),
+      });
       await observeBoundary('member_oauth_completed').catch(() => {});
       await onTrace?.('auth_admin_before');
-      canonical = await adminCheck.verify(identity.userId);
+      canonical = await runMemberAuthBoundary('member_nonadmin_role_observation', null, () =>
+        adminCheck.verify(identity.userId),
+      );
       await onTrace?.('auth_admin_after');
       await onTrace?.('auth_org_before');
-      const org = await waitFor(
-        'd87_member_organization',
-        () => accountIdentity(panel, email),
-        (value) => value?.organizationSelected || value?.organizationPickerAvailable,
-        30_000,
+      const org = await runMemberAuthBoundary('member_organization_availability', onStage, () =>
+        waitFor(
+          'd87_member_organization',
+          () => accountIdentity(panel, email),
+          (value) => value?.organizationSelected || value?.organizationPickerAvailable,
+          30_000,
+        ),
       );
       const selectionRequired =
         !org.organizationSelected || org.organizationLabel !== "Matrx's Org";
       await onTrace?.(selectionRequired ? 'auth_org_select' : 'auth_org_skip');
-      if (selectionRequired) await selectOrganization(panel, MEMBER_TEST_ORGANIZATION_NAME);
+      if (selectionRequired) {
+        await runMemberAuthBoundary('member_organization_selection', onStage, () =>
+          selectOrganization(panel, MEMBER_TEST_ORGANIZATION_NAME),
+        );
+      }
       await onTrace?.('auth_org_after');
-      const visibleOrganization = await waitFor(
-        'd87_member_organization_selected',
-        () => accountIdentity(panel, email),
-        (value) => value?.organizationSelected && value.organizationLabel === "Matrx's Org",
-        30_000,
+      const visibleOrganization = await runMemberAuthBoundary(
+        'member_organization_selected',
+        onStage,
+        () =>
+          waitFor(
+            'd87_member_organization_selected',
+            () => accountIdentity(panel, email),
+            (value) => value?.organizationSelected && value.organizationLabel === "Matrx's Org",
+            30_000,
+          ),
       );
-      const selected = await panelIdentity(panel);
-      const organizationResolution = resolveMemberOrganizationSelection(
-        selected,
-        visibleOrganization.organizationLabel,
-        allowLadderOrganization,
-        expectedOrganizationId,
+      let selected;
+      const organizationResolution = await runMemberAuthBoundary(
+        'member_organization_storage_resolution',
+        onStage,
+        async () => {
+          selected = await panelIdentity(panel);
+          return resolveMemberOrganizationSelection(
+            selected,
+            visibleOrganization.organizationLabel,
+            allowLadderOrganization,
+            expectedOrganizationId,
+          );
+        },
       );
       await onTrace?.('auth_identity_before');
-      const rendered = await verifyCurrentSettingsIdentity({
-        panel,
-        mode,
-        email: identity.email,
-        profileId: identity.userId,
-        organizationId: selected.organizationId,
-      });
+      const rendered = await runMemberAuthBoundary('member_rendered_identity', onStage, () =>
+        verifyCurrentSettingsIdentity({
+          panel,
+          mode,
+          email: identity.email,
+          profileId: identity.userId,
+          organizationId: selected.organizationId,
+        }),
+      );
       await onTrace?.('auth_identity_after');
       return {
         mode,
