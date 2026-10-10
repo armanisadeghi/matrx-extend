@@ -96,7 +96,7 @@ done
 FIXTURE_REGISTRY="http://127.0.0.1:$(<"$SANDBOX/fixture-registry-port")"
 cat > "$SANDBOX/bin/node" <<STUB
 #!/usr/bin/env bash
-if [[ "\$1" == */scripts/await-matrx-latest.mjs && -f "$SANDBOX/budget-timeout-elapsed" ]]; then
+if [[ "\${1##*/}" == await-matrx-latest.mjs && -f "$SANDBOX/budget-timeout-elapsed" ]]; then
   # Bash SECONDS is whole seconds; force this one fixture past its first tick
   # so the assertion tests a reduced remaining budget, not scheduler timing.
   touch "$SANDBOX/budget-timeout-elapsed-entered"
