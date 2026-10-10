@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "run_id": 38021353752,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38021353752",
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_checkout_sha": "b5b137e6ef864870758d9155285f0bf716550647",
+  "lane": "A",
+  "acceptance_case": "scrape-save-member",
+  "auth_mode": "member",
+  "runner_label": "macos-15",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+    "ci_run_id": 38019685913,
+    "artifact_id": 11657971729,
+    "version": "0.2.458",
+    "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5"
+  },
+  "result": "fail",
+  "failure": {
+    "stage": "project_association_choice",
+    "error_code": "scrape_save_project_candidate_ready_not_observed",
+    "classification": "The revised typing path observed focused input, full prefilled-text selection, and the expected replacement value. The attempt stopped while waiting for the Projects candidate selector; no save action was reached, so this run gives no Source-save pass or product failure verdict."
+  },
+  "observed": {
+    "member_auth_verified": true,
+    "selected_organization_verified": true,
+    "name_input_focused_before_insert": true,
+    "prefilled_name_fully_selected_before_insert": true,
+    "typed_name_matches_expected": true,
+    "dialog_tab_and_shift_tab_contained": true,
+    "cleanup_verified": true,
+    "no_active_run_row": true
+  },
+  "resource_finals": {
+    "hosted-package-38021353752-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38021353752-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38021353752-1": "child_failed; admitted=true; resourceInvalid=false; exitCode=1"
+  },
+  "credential_cleanup": "Temporary repository secret deleted and name-only absence verified; local one-time link deleted and absence verified before artifact inspection.",
+  "claims": [
+    "This is a bounded attempt against the frozen development artifact listed above.",
+    "It does not establish successful Source save, project association persistence, current-main product health, Store behavior, or defect closure."
+  ],
+  "evidence_files": {
+    "native_report": {
+      "path": "native-report.sanitized.json",
+      "sha256": "9a877c1e3705fafb5aa32bbef091cfa452c90f45d65750d86104689d726e7424"
+    },
+    "resource_journals": [
+      {
+        "path": "resource-journals/hosted-package-38021353752-1.jsonl",
+        "sha256": "0f32229f8083e07126c00b2531bc810cb38ddd8df30930c324423518c0198b77"
+      },
+      {
+        "path": "resource-journals/hosted-browser-38021353752-1.jsonl",
+        "sha256": "f5d87c23adffd7e9c7ac2357370f9469f3a29af1e29fac175155d46904de57e6"
+      },
+      {
+        "path": "resource-journals/hosted-guest-38021353752-1.jsonl",
+        "sha256": "83f3c47c0c57bd8bcdc41680f510a24677fc7f400a9011f7fcbe46ddbf7fc0cb"
+      }
+    ]
+  }
+}

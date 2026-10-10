@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "auth_mode": "member",
+  "status": "fail",
+  "stage": "project_association_choice",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+    "run_id": 38019685913,
+    "artifact_id": 11657971729,
+    "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+    "version": "0.2.458"
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_role_verified": true,
+    "selected_organization_verified": true,
+    "organization_resolution": "load_ladder"
+  },
+  "observations": {
+    "name_input": {
+      "before_insert": {
+        "count": 1,
+        "focused": true,
+        "value_length": 37,
+        "selection_start": 0,
+        "selection_end": 37,
+        "all_selected": true,
+        "matches_expected": false
+      },
+      "after_insert": {
+        "count": 1,
+        "focused": true,
+        "value_length": 41,
+        "selection_start": 41,
+        "selection_end": 41,
+        "all_selected": false,
+        "matches_expected": true
+      }
+    },
+    "dialog_opened_from_captured_article": true,
+    "prefilled_name_visible": true,
+    "input_focused_on_open": true,
+    "no_destination_selected_by_default": true,
+    "custom_name_entered_by_trusted_keyboard": true,
+    "tab_and_shift_tab_contained": true
+  },
+  "cleanup": {
+    "verified": true,
+    "no_active_run_row": true
+  },
+  "failure_stage": "project_association_choice",
+  "limits": "Exact imported CI development artifact, real member sign-in, one custom-named Source with one existing Project association, independent reads, and cleanup; this does not cover admin, guest, Library, multiple destinations, retry, responsive timing, or full T04/T29 closure.",
+  "harness_checkout_sha": "b5b137e6ef864870758d9155285f0bf716550647",
+  "error_code": "scrape_save_project_candidate_ready_not_observed"
+}
