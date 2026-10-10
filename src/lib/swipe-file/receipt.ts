@@ -15,6 +15,15 @@ export const MediaCoverageSchema = z.object({
   stored_items: z.number().int().nonnegative(),
   missing_items: z.number().int().nonnegative().nullable(),
   status: z.enum(['complete', 'partial', 'unknown', 'embed', 'not_requested']),
+  browser_capture: z
+    .object({
+      status: z.enum(['pending', 'complete', 'partial']),
+      observed_items: z.number().int().nonnegative(),
+      stored_items: z.number().int().nonnegative(),
+      failed_items: z.number().int().nonnegative(),
+      notes: z.array(z.string()),
+    })
+    .optional(),
 });
 export type MediaCoverage = z.infer<typeof MediaCoverageSchema>;
 

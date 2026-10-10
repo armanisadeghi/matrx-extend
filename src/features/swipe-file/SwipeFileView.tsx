@@ -5,6 +5,7 @@ import {
   getPostMedia,
   getPostMediaCoverage,
 } from '@/lib/api/routes/social';
+import { DEFAULT_POLL_FLOOR_MS } from '@/lib/capture-ladder/queue';
 import {
   type SwipeCollection,
   type SwipeMembership,
@@ -138,6 +139,31 @@ export function SwipeFileView() {
       generation.current++;
     };
   }, [selection, organizationId]);
+  useEffect(() => {
+    if (!selection || !organizationId || coverage?.browser_capture?.status !== 'pending') return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const refreshPending = async () => {
+      try {
+        const [nextCoverage, files] = await Promise.all([
+          getPostMediaCoverage(selection.postId, organizationId),
+          getPostMedia(selection.postId, organizationId),
+        ]);
+        if (cancelled) return;
+        setCoverage(nextCoverage);
+        setMedia(files);
+        if (nextCoverage.browser_capture?.status === 'pending')
+          timer = setTimeout(() => void refreshPending(), DEFAULT_POLL_FLOOR_MS);
+      } catch (cause) {
+        if (!cancelled) setError(message(cause));
+      }
+    };
+    timer = setTimeout(() => void refreshPending(), DEFAULT_POLL_FLOOR_MS);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [selection, organizationId, coverage?.browser_capture?.status]);
   async function act(work: () => Promise<void>, success: string) {
     setBusy(true);
     setError(null);
@@ -284,6 +310,25 @@ export function SwipeFileView() {
                           : 'Coverage unverified'}
                     </span>
                   </div>
+                  {coverage?.browser_capture && (
+                    <div className="space-y-1 text-xs">
+                      <p>
+                        {coverage.browser_capture.status === 'pending'
+                          ? `Browser capture processing · ${coverage.browser_capture.observed_items} media items observed`
+                          : `${coverage.browser_capture.stored_items} browser media files stored`}
+                      </p>
+                      {coverage.browser_capture.failed_items > 0 && (
+                        <p className="text-amber-600">
+                          {coverage.browser_capture.failed_items} browser media items unavailable
+                        </p>
+                      )}
+                      {coverage.browser_capture.notes.map((note, index) => (
+                        <p key={`${index}-${note}`} className="text-muted-foreground">
+                          {note}
+                        </p>
+                      ))}
+                    </div>
+                  )}
                   <p className="text-xs text-muted-foreground">Comments excluded</p>
                   {post.platform === 'youtube' && (
                     <p className="text-xs text-muted-foreground">
