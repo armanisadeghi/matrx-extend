@@ -6,7 +6,7 @@
 
 Arman's Chrome profile now runs the pinned, enabled unpacked Matrx Extend **v0.2.458** from `.output/chrome-mv3-dev`, ID `cihdmkcdjjckfhjpgoedmgfpoljebaml`; the side panel rendered after a guarded reload. [Exact UI/build receipt](../../.research/dev-chrome-refresh-20261010-dcbda7.json) and [valid resource final](resource-journals/chrome-dev-refresh-20261010-dcbda7-stable.jsonl) supersede the earlier v0.2.457 runtime line below. The official Store extension is still absent from this profile. This is an installation check, not feature acceptance.
 
-The startup volume repeatedly approached zero free space when a user CloudKit temporary download rebuilt itself. Its user launchd service `com.apple.cloudd` is **temporarily disabled** after stopping the process and removing only the closed temporary cache file; do not silently re-enable it while the same download can consume the remaining free space. Restore iCloud user sync once the large download/storage issue is resolved, and keep this local service state visible to Arman. No browser run may bypass the resource guard.
+The startup volume repeatedly approached zero free space when a user CloudKit temporary download rebuilt itself. Root stopped the process and removed only its closed temporary cache file to complete the guarded Chrome reload. A temporary launchd disable did not prevent on-demand relaunch; **both `com.apple.bird` and `com.apple.cloudd` are enabled again** as of 03:58 UTC. Free space was then about 31 GiB, but recurrence remains possible. Do not assume a future local Chrome refresh can run until the resource guard admits it; investigate the sync item or add startup-volume capacity. No browser run may bypass the guard.
 
 ## Current execution boundary (October 10, 03:34 UTC)
 

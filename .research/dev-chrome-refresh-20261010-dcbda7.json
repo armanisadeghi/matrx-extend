@@ -20,9 +20,10 @@
   "resource_final": "valid",
   "local_disk_incident": {
     "cause_observed": "A user CloudKit temporary download repeatedly consumed about 17 GiB and pushed startup volume free space below the 20 GiB browser admission floor.",
-    "remediation": "Stopped the user CloudKit process, disabled its user launchd service temporarily, and removed only its closed temporary cache file. No cloud document was deleted.",
-    "current_user_service_state": "com.apple.cloudd disabled in user launchd; requires restoration after the large download/storage issue is resolved",
-    "rationale": "Restoring immediately had already redownloaded the same large cache and reduced free space to about 1.5 GiB."
+    "remediation": "Stopped the user CloudKit process and removed only its closed temporary cache file when the startup volume approached zero; no cloud document was deleted.",
+    "current_user_service_state": "com.apple.bird and com.apple.cloudd user launchd services enabled; the temporary disable attempt did not prevent on-demand relaunch and was reversed at 03:58 UTC.",
+    "last_observed_free_space_gib": 31.19,
+    "risk": "The same temporary download may recur. Keep the resource guard authoritative and investigate the sync item or add startup-volume capacity before assuming future local Chrome refreshes can run."
   },
   "store_extension": {
     "id": "hnfolienncfklkgmdjjmhhegglimlamg",
