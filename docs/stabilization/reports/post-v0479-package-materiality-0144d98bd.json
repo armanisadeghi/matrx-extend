@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_post_release_package_materiality",
+  "baseline_tag": "v0.2.479",
+  "candidate_commit": "0144d98bda65e6198c75140955d36380fd6b1c7b",
+  "status": "NO_STORE_MATERIAL_BEHAVIOR_CHANGE_FOUND",
+  "method": "Compared exact public npm tarball file bytes for the baseline and refreshed lockfile package versions; inspected changed emitted JavaScript and host imports. No build or browser launched.",
+  "packages": [
+    {
+      "name": "@ai-matrx/media",
+      "from": "0.15.72",
+      "to": "0.15.73",
+      "changed_files": ["CHANGELOG.md", "package.json"],
+      "runtime_js_css_changed": false
+    },
+    {
+      "name": "@ai-matrx/messaging",
+      "from": "0.18.23",
+      "to": "0.18.24",
+      "changed_files": ["CHANGELOG.md", "package.json"],
+      "runtime_js_css_changed": false
+    },
+    {
+      "name": "@ai-matrx/records-ui",
+      "from": "0.115.26",
+      "to": "0.115.27",
+      "changed_files": ["CHANGELOG.md", "package.json"],
+      "runtime_js_css_changed": false
+    },
+    {
+      "name": "@ai-matrx/agents",
+      "from": "0.59.50",
+      "to": "0.59.51",
+      "runtime_changes": "Only MANDATE_KEYS_META aidreamRevision and packageVersion literals in dist/mandates/index.js and index.cjs; mandate keys and logic unchanged. Other changed files are declarations, changelog and package metadata.",
+      "host_consumption": "src/lib/mandates.ts imports MANDATE_KEYS and storedMandateKey; no host MANDATE_KEYS_META reference found."
+    }
+  ],
+  "consumer_action": "All four published changelogs identify automatic docs/metadata republish and no consumer action.",
+  "limitations": [
+    "No whole rebuilt extension ZIP or emitted-tree byte-identity claim; package byte comparison supports a bounded metadata-only materiality conclusion.",
+    "This review does not relax the blocking latest-package release gate or substitute for current candidate browser acceptance."
+  ]
+}
