@@ -1,3 +1,4 @@
+import { executeDomScript } from '@/lib/tools/dom-access';
 /**
  * Canonical tool routers — implements the unified tool shape from
  * `browser_tools_canonical.json` (computer / form_input / navigate / tabs /
@@ -173,7 +174,7 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
         return delegate(focus_element, { ref: args.ref, selector: undefined }, ctx);
       case 'blur':
         // The blur leaf takes only `selector`; `ref` used to be stripped, so every
-        // blur hit document.activeElement instead of the element the agent named.
+        // blur hit the focused element instead of the element the agent named.
         return delegate(
           blur_element,
           {
@@ -207,10 +208,10 @@ export const computer: ToolHandler<ComputerArgs, unknown> = {
 };
 
 async function clickAtCoord(tabId: number, x: number, y: number) {
-  const [r] = await chrome.scripting.executeScript({
+  const [r] = await executeDomScript({
     target: { tabId },
     func: (cx: number, cy: number) => {
-      const el = document.elementFromPoint(cx, cy);
+      const el = window.__matrxToolDom.elementFromPoint(cx, cy);
       if (!(el instanceof HTMLElement)) return { ok: false, reason: 'No element at point' };
       el.click();
       return { ok: true, tag: el.tagName.toLowerCase() };
@@ -221,18 +222,18 @@ async function clickAtCoord(tabId: number, x: number, y: number) {
 }
 
 async function clickWithDetail(tabId: number, args: ComputerArgs, detail: 2 | 3) {
-  const [r] = await chrome.scripting.executeScript({
+  const [r] = await executeDomScript({
     target: { tabId },
     func: (refSel: string | null, coord: [number, number] | null, det: number) => {
       let el: Element | null = null;
       if (refSel) {
-        el = document.querySelector(refSel);
+        el = window.__matrxToolDom.querySelector(refSel);
       } else if (coord) {
-        el = document.elementFromPoint(coord[0], coord[1]);
+        el = window.__matrxToolDom.elementFromPoint(coord[0], coord[1]);
       }
       if (!(el instanceof HTMLElement)) return { ok: false, reason: 'No target' };
       el.scrollIntoView({ block: 'center', behavior: 'instant' });
-      const init = { bubbles: true, cancelable: true, view: window, detail: det };
+      const init = { bubbles: true, composed: true, cancelable: true, view: window, detail: det };
       el.dispatchEvent(new MouseEvent('mousedown', init));
       el.dispatchEvent(new MouseEvent('mouseup', init));
       el.dispatchEvent(new MouseEvent('click', init));
@@ -249,10 +250,10 @@ async function clickWithDetail(tabId: number, args: ComputerArgs, detail: 2 | 3)
 }
 
 async function typeIntoFocused(tabId: number, text: string) {
-  const [r] = await chrome.scripting.executeScript({
+  const [r] = await executeDomScript({
     target: { tabId },
     func: (s: string) => {
-      const el = document.activeElement as HTMLElement | null;
+      const el = window.__matrxToolDom.activeElement() as HTMLElement | null;
       if (!el) return { ok: false, reason: 'No focused element' };
       if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
         const proto = Object.getPrototypeOf(el);
@@ -260,7 +261,7 @@ async function typeIntoFocused(tabId: number, text: string) {
         const setter = desc?.set;
         if (setter) setter.call(el, s);
         else el.value = s;
-        el.dispatchEvent(new Event('input', { bubbles: true }));
+        el.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
         el.dispatchEvent(new Event('change', { bubbles: true }));
         return { ok: true };
       }
@@ -289,15 +290,16 @@ async function scrollAxis(tabId: number, direction: 'left' | 'right', delta: num
 }
 
 async function dragFromTo(tabId: number, from: [number, number], to: [number, number]) {
-  const [r] = await chrome.scripting.executeScript({
+  const [r] = await executeDomScript({
     target: { tabId },
     func: (fx: number, fy: number, tx: number, ty: number) => {
-      const start = document.elementFromPoint(fx, fy);
-      const end = document.elementFromPoint(tx, ty);
+      const start = window.__matrxToolDom.elementFromPoint(fx, fy);
+      const end = window.__matrxToolDom.elementFromPoint(tx, ty);
       if (!(start instanceof HTMLElement))
         return { ok: false, reason: 'No element at start_coordinate' };
       const init = (x: number, y: number) => ({
         bubbles: true,
+        composed: true,
         cancelable: true,
         view: window,
         button: 0,
@@ -393,10 +395,10 @@ export const form_input: ToolHandler<FormInputArgs, unknown> = {
     if (!act.ok) return { ok: false, reason: act.reason };
     // Resolve the element type so we can route to the right specialist.
     const refSelector = `[data-matrx-ref="${args.ref.replace(/^ref:/, '')}"]`;
-    const [probe] = await chrome.scripting.executeScript({
+    const [probe] = await executeDomScript({
       target: { tabId: act.id },
       func: (sel: string) => {
-        const el = document.querySelector(sel);
+        const el = window.__matrxToolDom.querySelector(sel);
         if (!el) return { kind: 'missing' as const };
         const tag = el.tagName.toLowerCase();
         if (tag === 'select') return { kind: 'select' as const };
@@ -737,7 +739,7 @@ async function waitForNetworkIdle(tabId: number, timeoutMs: number) {
 }
 
 async function waitForElement(tabId: number, selector: string, timeoutMs: number, scroll: boolean) {
-  const [r] = await chrome.scripting.executeScript({
+  const [r] = await executeDomScript({
     target: { tabId },
     func: async (sel: string, timeout: number, autoScroll: boolean) => {
       const start = Date.now();
@@ -749,7 +751,7 @@ async function waitForElement(tabId: number, selector: string, timeoutMs: number
         return cs.display !== 'none' && cs.visibility !== 'hidden' && cs.opacity !== '0';
       };
       while (Date.now() - start < timeout) {
-        const el = document.querySelector(sel);
+        const el = window.__matrxToolDom.querySelector(sel);
         if (el && isVisible(el)) {
           return { ok: true, elapsed_ms: Date.now() - start } as const;
         }
@@ -843,10 +845,10 @@ export const upload_file: ToolHandler<UploadFileArgs, unknown> = {
       }
     }
     const refSelector = `[data-matrx-ref="${args.ref.replace(/^ref:/, '')}"]`;
-    const [r] = await chrome.scripting.executeScript({
+    const [r] = await executeDomScript({
       target: { tabId: act.id },
       func: (sel: string, payload: typeof files) => {
-        const input = document.querySelector(sel) as HTMLInputElement | null;
+        const input = window.__matrxToolDom.querySelector(sel) as HTMLInputElement | null;
         if (!input || input.tagName !== 'INPUT' || input.type !== 'file') {
           return { ok: false, reason: 'Target is not an <input type="file">' };
         }
@@ -911,7 +913,7 @@ export const drop_file: ToolHandler<DropFileArgs, unknown> = {
     }
     const base64 = btoa(bin);
     const refSelector = args.ref ? `[data-matrx-ref="${args.ref.replace(/^ref:/, '')}"]` : null;
-    const [r] = await chrome.scripting.executeScript({
+    const [r] = await executeDomScript({
       target: { tabId: act.id },
       func: (
         sel: string | null,
@@ -921,8 +923,8 @@ export const drop_file: ToolHandler<DropFileArgs, unknown> = {
         m: string,
       ) => {
         let target: Element | null = null;
-        if (sel) target = document.querySelector(sel);
-        else if (coord) target = document.elementFromPoint(coord[0], coord[1]);
+        if (sel) target = window.__matrxToolDom.querySelector(sel);
+        else if (coord) target = window.__matrxToolDom.elementFromPoint(coord[0], coord[1]);
         if (!(target instanceof HTMLElement)) return { ok: false, reason: 'No drop target' };
         const binStr = atob(b64);
         const arr = new Uint8Array(binStr.length);
@@ -935,6 +937,7 @@ export const drop_file: ToolHandler<DropFileArgs, unknown> = {
         const cy = coord?.[1] ?? rect.top + rect.height / 2;
         const init = {
           bubbles: true,
+          composed: true,
           cancelable: true,
           dataTransfer: dt,
           clientX: cx,

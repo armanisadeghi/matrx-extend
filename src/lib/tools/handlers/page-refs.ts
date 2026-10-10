@@ -1,3 +1,4 @@
+import { executeDomScript } from '@/lib/tools/dom-access';
 /**
  * Reference-ID-based page-understanding tools.
  *
@@ -220,7 +221,7 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
       }
     }
     try {
-      const [first] = await chrome.scripting.executeScript({
+      const [first] = await executeDomScript({
         target: { tabId },
         func: (
           interactiveOnly: boolean,
@@ -240,7 +241,8 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           const sensitiveEls = new Set<Element>();
           for (const s of sensitiveSelectors) {
             try {
-              for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+              for (const e of Array.from(window.__matrxToolDom.querySelectorAll(s)))
+                sensitiveEls.add(e);
             } catch {
               /* a selector that no longer parses simply matches nothing */
             }
@@ -276,21 +278,27 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
           const READABLE = INTERACTIVE + ', h1, h2, h3, h4, p, label, li, dt, dd, [role="heading"]';
 
           // Wipe stale refs from the previous read.
-          const stale = document.querySelectorAll('[data-matrx-ref]');
+          const stale = window.__matrxToolDom.querySelectorAll('[data-matrx-ref]');
           for (const el of Array.from(stale)) el.removeAttribute('data-matrx-ref');
 
-          const candidates = Array.from(
-            document.querySelectorAll(interactiveOnly ? INTERACTIVE : READABLE),
+          const candidates = window.__matrxToolDom.querySelectorAll(
+            interactiveOnly ? INTERACTIVE : READABLE,
           );
+          // A long feed must not consume the cap before a visible injected
+          // control is reached. Keep document order within viewport/offscreen groups.
+          const inViewport = (el: Element): number => {
+            const r = el.getBoundingClientRect();
+            return r.bottom > 0 &&
+              r.right > 0 &&
+              r.top < window.innerHeight &&
+              r.left < window.innerWidth
+              ? 0
+              : 1;
+          };
+          candidates.sort((a, b) => inViewport(a) - inViewport(b));
 
           function isVisible(el: Element): boolean {
-            if (!(el instanceof HTMLElement)) return false;
-            const rect = el.getBoundingClientRect();
-            if (rect.width === 0 && rect.height === 0) return false;
-            const style = window.getComputedStyle(el);
-            if (style.visibility === 'hidden' || style.display === 'none') return false;
-            if (Number.parseFloat(style.opacity || '1') === 0) return false;
-            return true;
+            return window.__matrxToolDom.visible(el);
           }
           function implicitRole(el: Element): string {
             const tag = el.tagName.toLowerCase();
@@ -324,12 +332,15 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
             if (aria) return aria.trim();
             const labelledBy = el.getAttribute('aria-labelledby');
             if (labelledBy) {
-              const lbl = document.getElementById(labelledBy);
+              const root = el.getRootNode() as Document | ShadowRoot;
+              const lbl = root.getElementById(labelledBy);
               if (lbl?.textContent) return lbl.textContent.trim();
             }
             const id = el.getAttribute('id');
             if (id) {
-              const label = document.querySelector(`label[for="${CSS.escape(id)}"]`);
+              const label = (el.getRootNode() as Document | ShadowRoot).querySelector(
+                `label[for="${CSS.escape(id)}"]`,
+              );
               if (label?.textContent) return label.textContent.trim();
             }
             const title = el.getAttribute('title');
@@ -359,6 +370,8 @@ export const read_page: ToolHandler<ReadPageArgs, unknown> = {
               ref: `ref:${refNum}`,
               role,
             };
+            const hosts = window.__matrxToolDom.shadowHosts(el);
+            if (hosts.length) entry.shadow_hosts = hosts;
 
             // `tag` is redundant when role was implied from it (a↔link,
             // li↔listitem, p↔paragraph, button↔button, label↔label,
@@ -706,7 +719,7 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
     if (!resolved.ok) return { ok: false, reason: resolved.reason };
     const tabId = resolved.id;
     try {
-      const [first] = await chrome.scripting.executeScript({
+      const [first] = await executeDomScript({
         target: { tabId },
         func: (maxChars: number) => {
           // Lightweight Readability-style extraction: prefer <main>, <article>,
@@ -720,11 +733,13 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
             for (const el of Array.from(drop)) el.remove();
             return ((clone as HTMLElement).innerText ?? '').replace(/\s+\n/g, '\n').trim();
           }
-          let target: Element | null = document.querySelector('main, article, [role="main"]');
+          let target: Element | null = window.__matrxToolDom.querySelector(
+            'main, article, [role="main"]',
+          );
           if (!target) {
             // Pick the largest text container.
             const candidates = Array.from(
-              document.querySelectorAll('article, section, div'),
+              window.__matrxToolDom.querySelectorAll('article, section, div'),
             ) as HTMLElement[];
             let best: { el: HTMLElement; len: number } | null = null;
             for (const el of candidates) {
@@ -746,7 +761,7 @@ export const get_page_text: ToolHandler<PageTextArgs, unknown> = {
             byline:
               meta('author') ??
               meta('article:author') ??
-              document.querySelector('[rel="author"]')?.textContent?.trim() ??
+              window.__matrxToolDom.querySelector('[rel="author"]')?.textContent?.trim() ??
               null,
             text,
             char_count: text.length,

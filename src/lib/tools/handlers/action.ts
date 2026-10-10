@@ -1,3 +1,4 @@
+import { executeDomScript } from '@/lib/tools/dom-access';
 /**
  * Tier: ACTION — mutating tools. In "Ask" permission mode they prompt the
  * user; in "Act" mode they run immediately.
@@ -66,10 +67,10 @@ export const click_element: ToolHandler<ClickArgs, unknown> = {
     if (!selector) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (sel: string, nth: number) => {
-        const list = document.querySelectorAll(sel);
+        const list = window.__matrxToolDom.querySelectorAll(sel);
         const el = list[nth] as HTMLElement | undefined;
         if (!el) return { ok: false, reason: `No element at index ${nth} for selector ${sel}` };
         el.scrollIntoView({ block: 'center', behavior: 'instant' });
@@ -111,10 +112,10 @@ export const type_into_element: ToolHandler<TypeArgs, unknown> = {
     if (!selector) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (sel: string, text: string, clear: boolean, dispatchEvents: boolean) => {
-        const el = document.querySelector(sel) as
+        const el = window.__matrxToolDom.querySelector(sel) as
           | HTMLInputElement
           | HTMLTextAreaElement
           | HTMLElement
@@ -139,7 +140,7 @@ export const type_into_element: ToolHandler<TypeArgs, unknown> = {
           return { ok: false, reason: 'Element is not editable' };
         }
         if (dispatchEvents) {
-          el.dispatchEvent(new Event('input', { bubbles: true }));
+          el.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
           el.dispatchEvent(new Event('change', { bubbles: true }));
         }
         return { ok: true, tag: el.tagName.toLowerCase() };
@@ -168,7 +169,7 @@ export const scroll_page: ToolHandler<ScrollArgs, unknown> = {
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
     const sel = resolveRef(args);
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (direction: string, selector: string | null, deltaY: number | null) => {
         if (direction === 'top') {
@@ -177,7 +178,7 @@ export const scroll_page: ToolHandler<ScrollArgs, unknown> = {
           window.scrollTo({ top: document.documentElement.scrollHeight });
         } else if (direction === 'into-view') {
           if (!selector) return { ok: false, reason: 'selector or ref required' };
-          const el = document.querySelector(selector) as HTMLElement | null;
+          const el = window.__matrxToolDom.querySelector(selector) as HTMLElement | null;
           if (!el) return { ok: false, reason: `No element for ${selector}` };
           el.scrollIntoView({ block: 'center', behavior: 'instant' });
         } else if (direction === 'by') {
@@ -213,13 +214,13 @@ export const wait_for: ToolHandler<WaitArgs, unknown> = {
     if (args.ready_state) await waitForLoad(tabId, args.timeout_ms);
     if (args.selector) {
       const remaining = args.timeout_ms - (Date.now() - start);
-      const [first] = await chrome.scripting.executeScript({
+      const [first] = await executeDomScript({
         target: { tabId },
         func: (selector: string, max: number) =>
           new Promise<{ ok: boolean }>((resolve) => {
             const startedAt = Date.now();
             const tick = () => {
-              if (document.querySelector(selector)) return resolve({ ok: true });
+              if (window.__matrxToolDom.querySelector(selector)) return resolve({ ok: true });
               if (Date.now() - startedAt > max) return resolve({ ok: false });
               setTimeout(tick, 100);
             };

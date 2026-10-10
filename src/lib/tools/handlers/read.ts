@@ -1,3 +1,4 @@
+import { executeDomScript } from '@/lib/tools/dom-access';
 /**
  * Tier: READ — informational tools. Run automatically without approval.
  */
@@ -477,7 +478,7 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
     const tab = await getAssignedTab(ctx);
     if (!tab?.id) return { ok: false, reason: 'No active tab' };
     try {
-      const [first] = await chrome.scripting.executeScript({
+      const [first] = await executeDomScript({
         target: { tabId: tab.id },
         func: (
           selector: string,
@@ -494,13 +495,14 @@ export const query_elements: ToolHandler<QueryElementsArgs, unknown> = {
           const sensitiveEls = new Set<Element>();
           for (const s of sensitiveSelectors) {
             try {
-              for (const e of Array.from(document.querySelectorAll(s))) sensitiveEls.add(e);
+              for (const e of Array.from(window.__matrxToolDom.querySelectorAll(s)))
+                sensitiveEls.add(e);
             } catch {
               /* a selector that no longer parses simply matches nothing */
             }
           }
           const out: Array<Record<string, unknown>> = [];
-          const list = document.querySelectorAll(selector);
+          const list = window.__matrxToolDom.querySelectorAll(selector);
           const total = list.length;
           for (let i = 0; i < Math.min(list.length, limit); i++) {
             const el = list[i] as HTMLElement;

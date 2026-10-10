@@ -1,3 +1,4 @@
+import { executeDomScript } from '@/lib/tools/dom-access';
 /**
  * Synthetic keyboard / mouse interactions for cases where click_element +
  * type_into_element aren't enough.
@@ -53,7 +54,7 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
     const sel = resolveRef(args);
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: async (rawKeys: string, targetSelector: string | null, delayMs: number) => {
         const NAMED_KEYS = new Set([
@@ -96,11 +97,11 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
 
         let target: HTMLElement | null = null;
         if (targetSelector) {
-          target = document.querySelector(targetSelector) as HTMLElement | null;
+          target = window.__matrxToolDom.querySelector(targetSelector) as HTMLElement | null;
           if (!target) return { ok: false, reason: `No element at ${targetSelector}` };
           target.focus();
         } else {
-          target = (document.activeElement as HTMLElement | null) ?? document.body;
+          target = (window.__matrxToolDom.activeElement() as HTMLElement | null) ?? document.body;
         }
 
         const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -133,6 +134,7 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
               key: key === 'Space' ? ' ' : key,
               code,
               bubbles: true,
+              composed: true,
               cancelable: true,
               ...mods,
             };
@@ -145,6 +147,7 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
               key,
               code: `Key${key.toUpperCase()}`,
               bubbles: true,
+              composed: true,
               cancelable: true,
               ...mods,
             };
@@ -158,6 +161,7 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
                 key: ch,
                 code: `Key${ch.toUpperCase()}`,
                 bubbles: true,
+                composed: true,
                 cancelable: true,
               };
               target?.dispatchEvent(new KeyboardEvent('keydown', init));
@@ -170,10 +174,10 @@ export const press_keys: ToolHandler<PressKeysArgs, unknown> = {
                 const next = (target.value ?? '') + ch;
                 if (setter) setter.call(target, next);
                 else target.value = next;
-                target.dispatchEvent(new Event('input', { bubbles: true }));
+                target.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
               } else if (target?.isContentEditable) {
                 target.textContent = (target.textContent ?? '') + ch;
-                target.dispatchEvent(new Event('input', { bubbles: true }));
+                target.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
               }
               target?.dispatchEvent(new KeyboardEvent('keyup', init));
               sentEvents.push(ch);
@@ -213,15 +217,16 @@ export const hover_element: ToolHandler<HoverArgs, unknown> = {
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (selector: string) => {
-        const el = document.querySelector(selector) as HTMLElement | null;
+        const el = window.__matrxToolDom.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element at ${selector}` };
         el.scrollIntoView({ block: 'center', behavior: 'instant' });
         const rect = el.getBoundingClientRect();
         const init: MouseEventInit = {
           bubbles: true,
+          composed: true,
           cancelable: true,
           view: window,
           clientX: rect.left + rect.width / 2,
@@ -255,14 +260,14 @@ export const focus_element: ToolHandler<FocusArgs, unknown> = {
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (selector: string) => {
-        const el = document.querySelector(selector) as HTMLElement | null;
+        const el = window.__matrxToolDom.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element at ${selector}` };
         el.scrollIntoView({ block: 'center', behavior: 'instant' });
         el.focus();
-        return { ok: true, focused: document.activeElement === el };
+        return { ok: true, focused: window.__matrxToolDom.activeElement() === el };
       },
       args: [sel],
     });
@@ -285,13 +290,13 @@ export const blur_element: ToolHandler<BlurArgs, unknown> = {
     // (including computer action='blur') with "Value is unserializable"
     // before the script even ran (audit P1-22; the CLAUDE.md convention this
     // file's siblings already follow).
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (selector: string | null) => {
         const el =
           (selector
-            ? (document.querySelector(selector) as HTMLElement | null)
-            : (document.activeElement as HTMLElement | null)) ?? null;
+            ? (window.__matrxToolDom.querySelector(selector) as HTMLElement | null)
+            : (window.__matrxToolDom.activeElement() as HTMLElement | null)) ?? null;
         if (!el || typeof el.blur !== 'function') return { ok: false, reason: 'no focused el' };
         el.blur();
         return { ok: true };
@@ -319,15 +324,16 @@ export const right_click_element: ToolHandler<RightClickArgs, unknown> = {
     if (!sel) return { ok: false, reason: 'must provide selector or ref' };
     const tabId = await getAssignedTabId(ctx);
     if (tabId == null) return { ok: false, reason: 'No active tab' };
-    const [first] = await chrome.scripting.executeScript({
+    const [first] = await executeDomScript({
       target: { tabId },
       func: (selector: string) => {
-        const el = document.querySelector(selector) as HTMLElement | null;
+        const el = window.__matrxToolDom.querySelector(selector) as HTMLElement | null;
         if (!el) return { ok: false, reason: `No element at ${selector}` };
         el.scrollIntoView({ block: 'center', behavior: 'instant' });
         const rect = el.getBoundingClientRect();
         const init: MouseEventInit = {
           bubbles: true,
+          composed: true,
           cancelable: true,
           view: window,
           button: 2,
