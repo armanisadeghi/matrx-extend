@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_guest_chat_store_run",
+  "run_id": 38081808099,
+  "version": "0.2.479",
+  "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "scope": "Bounded guest Chat journey: first grounded terminal answer, same-conversation follow-up, panel reload, and new conversation.",
+  "product_verdict": "PASS_BOUNDED_GUEST_CHAT_V0479",
+  "evidence_verdict": "PASS_WITH_SCREENSHOT_AND_RESPONSE_SERIALIZATION_LIMITS",
+  "evidence_folder": "docs/stabilization/evidence/guest-chat-v0479/run38081808099",
+  "peer_review": "docs/stabilization/reports/guest-chat-v0479-independent-review-38081808099.json",
+  "failed_first_attempt": "docs/stabilization/runs/guest-chat-v0479-run38081256279.json",
+  "comparison": "Repeats the bounded v0.2.478 guest journey on the exact v0.2.479 Store-ZIP candidate. It does not establish broad Chat coverage or a new Chat control; it verifies this candidate's bounded guest journey.",
+  "limitations": [
+    "All three native turns reached terminal_answer and all three observed guest requests returned HTTP 200; full response strings are not serialized in the native report, which stores nonce/heading/stage assertions and fingerprints.",
+    "The opening screenshot visibly shows the ordered Capture, Understand, Use stages but not the page code; both follow-up screenshots show only clipped answer fragments. Native assertions carry the full content checks.",
+    "The observer attaches after panel load, so requests before attachment are outside its observation window.",
+    "Server SHA 71d98c981c77672de0fb2a7b172962c1f21787dd was stable before and after; no owner-table GET was observed.",
+    "A v0.2.480 tag was created afterward without a guarded release artifact. This is exact v0.2.479 candidate evidence, not acceptance of v0.2.480 or a claim of exact-latest package acceptance.",
+    "Member/admin roles, published Store installation, and broader Chat cases remain untested."
+  ]
+}

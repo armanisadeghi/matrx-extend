@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_guest_chat_store_run",
+  "run_id": 38081256279,
+  "version": "0.2.479",
+  "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "scope": "Attempted bounded guest Chat launch; stopped before extension UI interaction.",
+  "product_verdict": "UNVERIFIED_INFRASTRUCTURE_FAILURE_ZERO_PRODUCT_CREDIT",
+  "evidence_verdict": "STARTUP_BOUNDARY_IDENTIFIED_WITH_CAUSE_UNPROVEN",
+  "evidence_folder": "docs/stabilization/evidence/guest-chat-v0479/run38081256279",
+  "controlled_retry": "docs/stabilization/runs/guest-chat-v0479-run38081808099.json",
+  "comparison": "The same v0.2.479 release artifact passed the fresh-runner controlled retry in run 38081808099.",
+  "failure": {
+    "stage": "owned_profile",
+    "code": "owned_cdp_endpoint_timeout",
+    "policy_deadline_ms": 8000,
+    "observed_wait_ms": 8039,
+    "polls": 184,
+    "chrome_spawn_observed": true,
+    "launch_failed": false,
+    "guest_ai_requests": 0,
+    "extension_ui_interaction": false
+  },
+  "server_sha_before_and_after": "71d98c981c77672de0fb2a7b172962c1f21787dd",
+  "limitations": [
+    "Package/pinned-driver and full-Chromium resource decisions were valid; the guest resource final was invalid because startup failed.",
+    "The native artifact has no screenshots or completed resource-journal files.",
+    "Unrelated host processes showed high CPU at failure. This may indicate contention, but the causal link is unproven and completed CPU/memory journals were not uploaded.",
+    "No product behavior is credited from this run."
+  ]
+}

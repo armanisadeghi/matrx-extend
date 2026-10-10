@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_chat_retry_review",
+  "run_id": 38081808099,
+  "product_verdict": "PASS_BOUNDED_GUEST_CHAT_V0479",
+  "evidence_verdict": "PASS_WITH_SCREENSHOT_AND_RESPONSE_SERIALIZATION_LIMITS",
+  "release": {
+    "run_id": 38080281242,
+    "version": "0.2.479",
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "artifact_id": 11680078743,
+    "artifact_sha256": "c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+    "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "runtime_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0"
+  },
+  "native_artifact": {
+    "id": 11681555227,
+    "sha256": "bf2c1e966d3bc0fa66bd154c6ecda496256bd289a4a8880c4e76e5a635527605"
+  },
+  "verification": [
+    "Independently downloaded raw native report and journals and viewed all three journey screenshots.",
+    "Opening answer terminates with one reply, unpredictable page code and ordered Capture/Understand/Use assertions.",
+    "Same-conversation follow-up terminates, matches page code, and retains the opening conversation fingerprint.",
+    "After reload guest session remains absent; new conversation terminates with matching page code and fixture heading.",
+    "All three observed AI requests return HTTP200; first two share identity and is_new becomes false; post-reload identity differs and is_new is true.",
+    "All three terminal timelines end terminal_answer with streaming false; native failure/error codes absent.",
+    "Server git SHA71d98c981c77672de0fb2a7b172962c1f21787dd is HTTP200 before and after.",
+    "All three package/browser/guest resource finals are admitted valid, resourceInvalid=false and exitCode=0.",
+    "Independently rehashed exact release Store ZIP and extracted/key-adapted runtime tree; both match receipt/native version.",
+    "Cross-checked every retained native field against raw report and all three durable screenshot bytes against downloaded originals.",
+    "Sanitized resource final fields and all three journal SHA256 values match downloaded raw journals; artifact/source/ZIP/runtime receipt values match independent release checks."
+  ],
+  "limitations": [
+    "Screenshots show clipped reply fragments; full content claims depend on native DOM assertions and terminal timelines.",
+    "Observer attaches after panel load; preattachment requests are unobserved.",
+    "Bounded exact-v0.2.479 guest evidence only; no later-package, member-role, XML/Tile or broader product coverage.",
+    "Earlier retry38081256279 remains resource-invalid; this pass comes from this independently checked retry.",
+    "Native report does not serialize complete opening and same-conversation response text; content acceptance relies on nonce/stage/heading DOM assertions, fingerprints and clipped screenshots."
+  ],
+  "checked_durable_evidence": [
+    "docs/stabilization/evidence/guest-chat-v0479/run38081808099/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0479/run38081808099/guest-chat-opening-answer.png",
+    "docs/stabilization/evidence/guest-chat-v0479/run38081808099/guest-chat-same-conversation-followup.png",
+    "docs/stabilization/evidence/guest-chat-v0479/run38081808099/guest-chat-post-reload-new-conversation.png",
+    "docs/stabilization/evidence/guest-chat-v0479/run38081808099/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-chat-v0479/run38081808099/receipt.sanitized.json",
+    "docs/stabilization/runs/guest-chat-v0479-run38081808099.json"
+  ]
+}

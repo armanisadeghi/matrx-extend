@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "hosted_acceptance_run_id": 38081808099,
+  "all_required_finals_valid": true,
+  "finals": [
+    {
+      "stage": "package",
+      "resource_run_id": "hosted-package-38081808099-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal_sha256": "dadf8525e8300f3871a766b0253f00177bd09248135959dade29c5ad2a8cf44c"
+    },
+    {
+      "stage": "browser",
+      "resource_run_id": "hosted-browser-38081808099-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal_sha256": "e884c6ce6a08eaf6de1a871c15286a58c381fcbb6a3ea800313958b8ae49c012"
+    },
+    {
+      "stage": "guest_acceptance",
+      "resource_run_id": "hosted-guest-38081808099-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal_sha256": "c84ec7e5ad8ae448f3133a982b4c5b65d5230f74b9e1325320b8b94784155d06"
+    }
+  ],
+  "cleanup": {
+    "runner_ephemeral": true,
+    "native_report_cleanup_failure": null
+  }
+}
