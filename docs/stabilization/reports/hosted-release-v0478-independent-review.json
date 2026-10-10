@@ -1,0 +1,101 @@
+{
+  "schema": "matrx-extend.hosted-release-independent-review.v1",
+  "reviewedAt": "2026-10-10",
+  "status": "RELEASE_INTEGRITY_PASS_PRODUCT_ACCEPTANCE_PENDING",
+  "release": {
+    "version": "0.2.478",
+    "runId": "38079083742",
+    "runUrl": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38079083742",
+    "workflowHeadSha": "30786faabccb1e832245210bfb9602c7b0fd4d60",
+    "artifactId": "11680071460",
+    "artifactName": "matrx-extend-v0.2.478",
+    "artifactApiSha256": "d7de272ee6aa41b879fee32f5b1a6445b323c4997297743453a870cd368c4260",
+    "artifactDigestVerified": true,
+    "tag": "v0.2.478",
+    "sourceSha": "abc53c31322fbaa9358f497298789f87a09719e9",
+    "tagResolvesToSourceSha": true,
+    "receiptPublishState": "pushed",
+    "storeZipSha256": "4feb50b44707b3e82788091b5dfa7f0df3d53df85deb81a8d6dece7329cca5b7",
+    "localZipSha256": "420ec71d719cf0d6833a1e0993286ccffe2b9b01d9cf5835ec22f14e48941c58",
+    "receiptTreeSha256": "7a3557451a2d18fd1d7d463d0cc46ef4ed948b9fe2f2e8f6b0e87a9a15e7cd85",
+    "treeHashIndependentlyRecomputedFromLocalZip": true,
+    "fileCount": 2002,
+    "storeZipRetainedAt": "/tmp/v478-review/release/.output/matrx-extend-0.2.478-store.zip"
+  },
+  "verdicts": {
+    "A_productAcceptance": "PENDING_EXACT_V0478_CHAT_ACCEPTANCE",
+    "B_releaseIntegrity": "PASS",
+    "storeMateriality": "MATERIAL_EXISTING_CHAT_RUNTIME_REFRESH; NO_MANIFEST_POLICY_EXPANSION",
+    "storeSubmission": "NOT_PERFORMED"
+  },
+  "gates": {
+    "workflowConclusion": "success",
+    "releaseContractAndArtifactIdentity": "success",
+    "typecheck": "exit 0",
+    "lint": "exit 0",
+    "unitTests": "335 files passed, 2 skipped; 2363 passed, 5 skipped",
+    "schemaRouting": "exit 0",
+    "packageTwins": "exit 0",
+    "dbDoors": "exit 0",
+    "canonicalPickers": "exit 0",
+    "archivedItemsAndSelfTest": "exit 0",
+    "orgDefaultBanAndSelfTest": "exit 0",
+    "swallowedRefusals": "exit 0",
+    "migrations": "exit 0",
+    "toolDatabaseDrift": "exit 0",
+    "mandateReferences": "exit 0, advisory/nonblocking",
+    "storePackageValidation": "passed; no development key or toolbar popup",
+    "storeApprovalRisk": "passed; manifest policy surface matches published 0.2.205; no forbidden runtime-code path"
+  },
+  "storePolicyReview": {
+    "baselineVersion": "0.2.205",
+    "baselineSourceCommit": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "manifestPolicyFieldsMatch": true,
+    "comparisonDetail": "Every approved policy field matched, including action.default_title; emitted action also includes the expected icon map. Version is 0.2.478. No permission, host, content-script, CSP, external-connectability, or web-accessible-resource policy change was observed.",
+    "semanticClassification": "No Store policy-surface expansion. A transitive shared rich-editor refresh changes existing Chat editing runtime, so exact-candidate Chat acceptance is required before product acceptance; no new purpose or permission was found.",
+    "dashboardState": "Coordinator reports a Draft v0.2.478 and Published v0.2.205 with no submission; not independently verified in this review."
+  },
+  "packageRefresh": {
+    "changedBetweenV0476AndV0478": {
+      "@ai-matrx/chat": "0.8.28 -> 0.8.29",
+      "@ai-matrx/media": "0.15.71 -> 0.15.72",
+      "@ai-matrx/messaging": "0.18.22 -> 0.18.23",
+      "@ai-matrx/rich-content": "0.2.119 -> 0.2.120",
+      "@ai-matrx/rich-editor": "0.5.75 -> 0.5.76"
+    },
+    "changelogClaim": "All five package changelogs say changed-only docs/metadata republish and no consumer action required.",
+    "packedRuntimeInspection": "Packed JS files for chat, media, messaging, and rich-content were byte-identical between adjacent versions. Rich-editor 0.5.76 differs from 0.5.75: block-insert, extensions, markdown-serialize, prompt-fixes, text-insertion, visual-document, RichEditorImpl, prompt-format components, and visual nodes changed; heading-first-line.js and islands/InPlaceSource.js were added. This conflicts with treating the whole refresh as docs/metadata-only.",
+    "consumerReachability": "Extension PackageChatView imports ChatConversationRoom from @ai-matrx/chat. That package imports rich-editor InPlaceEditor/EditInPlace for assistant-message editing and useTextareaFormatting for composer formatting. This reaches Chat and supports a focused exact-v0.2.478 Chat retest. I found no SEO feature source import of rich-editor; this finding alone does not invalidate bounded SEO/Scrape evidence.",
+    "emittedStoreTreeComparisonWithV0476": {
+      "manifestVersions": "0.2.476 -> 0.2.478",
+      "nonVersionManifestDifferences": 0,
+      "filesPerStoreTree": 1987,
+      "samePathAndContentFiles": 1386,
+      "javascriptFilesPerTree": 1036,
+      "javascriptSameContentCount": 811,
+      "javascriptChangedContentCount": 225,
+      "cssSameContentCount": 4,
+      "cssFilesPerTree": 5,
+      "htmlFilesPerTree": 4,
+      "htmlChangedCount": 2,
+      "interpretation": "The ZIPs are not emitted-JS equivalents. Hashed chunk path churn is present and a transitive Chat dependency has real JavaScript changes; exact-v0.478 Chat tests are required. Do not attribute 225 chunk changes solely to rich-editor."
+    }
+  },
+  "evidence": {
+    "download": "Downloaded exact Actions artifact; independent SHA-256 matched artifact API digest. Receipt Store/local ZIP hashes independently matched both extracted ZIPs.",
+    "tree": "Extracted local ZIP and recomputed hashReleaseTree with scripts/sync-unpacked-release.mjs; matched receipt tree hash and 2002 files.",
+    "source": "Fetched tag v0.2.478 resolves to receipt source SHA abc53c31322fbaa9358f497298789f87a09719e9.",
+    "gates": "Inspected exact artifact release log and hosted run; all required release-contract steps and listed blocking checks succeeded.",
+    "manifest": "Compared emitted Store manifest policy projection with approved baseline; version differed as expected, no policy fields changed.",
+    "packageAudit": "Compared packed npm package JavaScript and CHANGELOGs for the five refreshed transitive packages; checked extension imports and Chat component reachability."
+  },
+  "acceptanceBoundary": {
+    "exactV0478UI": "Not exercised by this release-integrity review. Require exact-v0.478 guest/member Chat coverage for in-place answer editing/composer formatting before acceptance.",
+    "seo": "The owned metadata run 38079282451 used exact v0.2.476, not v0.2.478. It is bounded prior evidence only; exact-v0.478 SEO was not tested here.",
+    "fullSeoHealth": "Unverified. Prior full SEO run remains partial and its public metadata doors remain unverified; do not claim full SEO health from the owned metadata run.",
+    "freshness": "Immutable v0.2.478 artifact/source review. Later main commits exist; this report makes no claim that .478 remains latest after those commits."
+  },
+  "openQuestions": [
+    "Exact-v0.478 guest and member Chat acceptance for the changed shared Chat editing/composer paths."
+  ]
+}

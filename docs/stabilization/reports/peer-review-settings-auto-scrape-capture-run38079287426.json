@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "review_id": "settings-auto-scrape-capture-run38079287426",
+  "classification": "pre_product_harness_fixture_selection_failure",
+  "verdicts": {
+    "product_behavior": {
+      "status": "UNMEASURED",
+      "reason": "At scripts/hosted-guest-acceptance.mjs:327, the driver asserted that Settings controls require a ci_development_test receipt; the selected receipt was published_release. It exited before any Settings interaction.",
+      "defect_created": false
+    },
+    "evidence_quality": {
+      "status": "PASS_FOR_FAILURE_CLASSIFICATION_WITH_LIMITATIONS",
+      "basis": "Workflow logs show the exact provenance assertion and selection inputs. The uploaded artifact contains only the three run-specific resource journals; native report/screenshots are absent because the driver stopped before writing them.",
+      "limitations": [
+        "No automatic-capture product assertions were executed.",
+        "No screenshots or native report can substantiate UI behavior for this run."
+      ]
+    }
+  },
+  "resource_outcome": "Package and browser admitted and finalized valid; guest admitted with resource_invalid=false and child_failed only after the assertion exited 1.",
+  "comparison": "The bounded v0.2.471 run 38073451744 passed the guest automatic-capture default, ON/OFF behavior, reload persistence, and cleanup. Run 38079287426 is not a v0.2.476 retest and does not contradict that earlier evidence.",
+  "next_retry": "Select the successful CI development-test run and exact artifact matching the v0.2.476 source/runtime; retain the same bounded guest case, then inspect the native report, screenshots, and resource finals.",
+  "evidence": [
+    "docs/stabilization/evidence/settings-auto-scrape-capture/run38079287426/provenance-failure.sanitized.json",
+    "docs/stabilization/evidence/settings-auto-scrape-capture/run38073451744/receipt.sanitized.json",
+    "docs/stabilization/reports/peer-review-run38073451744.json"
+  ]
+}

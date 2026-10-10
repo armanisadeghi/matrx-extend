@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_guest_settings_auto_scrape_capture_run",
+  "run_id": 38079287426,
+  "version": "0.2.476",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_source_sha": "22d96643d9454f29e06ea6ffe1ac5fc624c2aff3",
+  "candidate": {
+    "artifact_kind": "published_release",
+    "release_run_id": 38077256885,
+    "artifact_id": 11678519586,
+    "artifact_name": "matrx-extend-v0.2.476",
+    "source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db"
+  },
+  "case": "settings-auto-scrape-capture",
+  "lane": "A",
+  "role": "guest",
+  "product_verdict": "UNMEASURED_PRE_PRODUCT_DRIVER_ASSERTION",
+  "evidence_verdict": "PASS_FOR_FAILURE_CLASSIFICATION_WITH_LIMITATIONS",
+  "evidence_folder": "docs/stabilization/evidence/settings-auto-scrape-capture/run38079287426",
+  "peer_review": "docs/stabilization/reports/peer-review-settings-auto-scrape-capture-run38079287426.json",
+  "comparison": "Prior v0.2.471 run 38073451744 passed bounded automatic-capture toggle/reload behavior; this run did not reach product interaction and neither supersedes nor contradicts it.",
+  "limitations": [
+    "No Settings control interaction occurred; this run adds no product coverage.",
+    "The workflow artifact contains no native driver report or screenshots because the driver exited at its provenance assertion.",
+    "This run does not establish v0.2.476 automatic-capture behavior."
+  ]
+}
