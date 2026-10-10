@@ -11,11 +11,70 @@ import {
   currentSettingsIdentityMatches,
   observeOrganizationOption,
   panelIdentity,
+  resolveMemberOrganizationSelection,
   selectOrganization,
   settingsOrganizationSelectionRequired,
   settingsShellReady,
   waitForOrganizationOption,
 } from './settings-native-auth-driver.mjs';
+
+test('member organization proof distinguishes load ladder from a device choice', () => {
+  const id = '123e4567-e89b-42d3-a456-426614174001';
+  const label = MEMBER_TEST_ORGANIZATION_NAME;
+  assert.equal(
+    resolveMemberOrganizationSelection(
+      { organizationId: null, organizationName: null },
+      label,
+      true,
+      id,
+    ),
+    'load_ladder',
+  );
+  assert.throws(
+    () =>
+      resolveMemberOrganizationSelection({ organizationId: null, organizationName: null }, label),
+    /d87_member_organization_uuid_unverified/,
+  );
+  assert.equal(
+    resolveMemberOrganizationSelection(
+      { organizationId: id, organizationName: label },
+      label,
+      true,
+      id,
+    ),
+    'device_choice',
+  );
+  assert.throws(
+    () =>
+      resolveMemberOrganizationSelection(
+        { organizationId: id, organizationName: label },
+        label,
+        true,
+        '123e4567-e89b-42d3-a456-426614174002',
+      ),
+    /d87_member_organization_mismatch/,
+  );
+  assert.throws(
+    () =>
+      resolveMemberOrganizationSelection(
+        { organizationId: null, organizationName: null },
+        label,
+        true,
+      ),
+    /d87_member_expected_organization_unverified/,
+  );
+  for (const [stored, visible] of [
+    [{ organizationId: null, organizationName: null }, 'Other organization'],
+    [{ organizationId: 'invalid', organizationName: label }, label],
+    [{ organizationId: id, organizationName: 'Other organization' }, label],
+    [{ organizationId: null, organizationName: label }, label],
+  ]) {
+    assert.throws(
+      () => resolveMemberOrganizationSelection(stored, visible, true, id),
+      /d87_member_organization_(label|storage)_unverified/,
+    );
+  }
+});
 import { click } from './settings-panel-driver.mjs';
 
 function optionPanel({

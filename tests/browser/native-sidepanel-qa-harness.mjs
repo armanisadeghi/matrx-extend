@@ -30,6 +30,7 @@ import { resolveBrowserRuntime } from './browser-runtime.mjs';
 import { reloadOperationBoundary } from './native-reload-operation-boundary.mjs';
 import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
 import { serveOwnedFixture } from './owned-fixture-server.mjs';
+import { panelOpenerHtml } from './owned-panel-opener.mjs';
 import { startReloadLifetimeDiagnostic } from './reload-lifetime-diagnostic.mjs';
 import { maybeStartScrapeReloadOpenDiagnostic } from './scrape-reload-open-diagnostic.mjs';
 
@@ -1324,34 +1325,7 @@ function stopOwnedChild(child) {
 function testPage(extensionId) {
   return `<!doctype html><meta charset="utf-8"><title>Research brief: product discovery</title>
     <main><article><h1>Research brief: product discovery</h1><p>A short demo article for a real guest Scrape capture.</p><p>Capture the page, review its structure, and identify SEO improvements before sharing the result.</p></article></main>
-    <button id="open-panel">Open panel</button><pre id="result"></pre><pre id="open-trace"></pre>
-    <script>
-      document.querySelector('#open-panel').addEventListener('click', () => {
-        const trace = { click_received: true, send_invoked: false, send_returned: false,
-          callback_entered: false, callback_has_reply: false, callback_last_error: false,
-          send_threw: false };
-        const publish = () => { document.querySelector('#open-trace').textContent = JSON.stringify(trace); };
-        publish();
-        try {
-          trace.send_invoked = true;
-          publish();
-          chrome.runtime.sendMessage(${JSON.stringify(extensionId)}, {
-            channel: 'FRONTEND_RPC', action: 'openPanel', payload: { panelId: 'chat' },
-            requestId: 'native-sidepanel-qa',
-          }, (reply) => {
-            trace.callback_entered = true;
-            trace.callback_has_reply = reply !== undefined;
-            trace.callback_last_error = Boolean(chrome.runtime.lastError);
-            publish();
-            document.querySelector('#result').textContent = JSON.stringify(
-              reply ?? { error: chrome.runtime.lastError?.message ?? 'no reply' },
-            );
-          });
-          trace.send_returned = true;
-          publish();
-        } catch (error) { trace.send_threw = true; publish(); throw error; }
-      });
-    </script>`;
+    ${panelOpenerHtml(extensionId)}`;
 }
 
 function browserDiagnosticFlags(value) {
@@ -1701,6 +1675,7 @@ export async function runNativeSidepanelQa({
         ownedPages,
         ownedAssets,
         rootPage: testPage(expectedExtensionId),
+        ownedPageSuffix: panelOpenerHtml(expectedExtensionId, true),
       });
     });
     await new Promise((resolve, reject) =>

@@ -2,14 +2,14 @@
   "schema_version": 1,
   "task_id": "settings-t40-hard-escalation-20261009",
   "lane": "bounded reload diagnosis",
-  "status": "instrumentation_ready_pending_review",
+  "status": "causal_harness_repair_pending_independent_review",
   "feature_ids": [
     "EXT-F-1003"
   ],
   "case_ids": [
     "EXT-F-1003-T40"
   ],
-  "summary": "Instrumented fixed post-predicate operation and exception-class evidence; preserved original failures across cleanup. Hosted T40 cause and persistence remain unverified.",
+  "summary": "Hosted diagnostic localized fixture_reply_clear TimeoutError. Registered article navigation removed the root-only opener controls. Shared owned-page serving now restores the canonical opener inside a shadow root without navigating or changing extracted content.",
   "artifact_inspection": {
     "run_id": "38007298161",
     "artifact_id": 11652445172,
@@ -29,7 +29,8 @@
     "The last captured lifecycle event is not an operation boundary.",
     "The archived report discarded the original exception; downloading it provides no additional causal information.",
     "The helper catch awaits diagnostic cleanup before attaching evidence, and finally awaits lifetime cleanup; either can replace an earlier exception. This is a source-observed risk, not a proven cause of this run.",
-    "Fault injection proves cleanup masking is a real harness class defect, without proving it caused hosted run 38007298161."
+    "Fault injection proves cleanup masking is a real harness class defect, without proving it caused hosted run 38007298161.",
+    "Run38008708028: fixture_reply_clear TimeoutError, cleanupFailures empty, lifecycle predicate true. T40 navigates the harness page to registered PAGE_ON/PAGE_OFF HTML that lacks #result and #open-panel. Helper assumes root opener UI survives navigation."
   ],
   "hypotheses": [
     {
@@ -67,20 +68,55 @@
       "run_id": "t40-operation-boundary-compile-20261009",
       "verdict": "not_admitted",
       "evidence": "docs/stabilization/resource-journals/t40-operation-boundary-compile-20261009.jsonl"
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "run_id": "38008708028",
+      "verdict": "resource_valid_harness_failure_product_reload_unverified",
+      "evidence": "docs/stabilization/evidence/settings-auto-scrape-capture/run38008708028/receipt.sanitized.json"
+    },
+    {
+      "case_id": "owned-page-opener-regression",
+      "run_id": "local-red-green",
+      "verdict": "pass",
+      "evidence": "Before repair, HTTP registered plain article lacks canonical opener and test fails. After repair, 35 focused tests pass, including actual runScrape article/metadata/media/links/JSON-LD/SEO equivalence (timestamps excluded), unchanged page URL and article marker, unknown route refusal, root opener behavior and reload error preservation. Return-expected and wrong-extension mutants each exit1."
     }
   ],
   "changed_product_or_harness_files": [
     "tests/browser/native-sidepanel-qa-harness.mjs",
     "tests/browser/native-reload-operation-boundary.mjs",
     "tests/browser/settings-guest-extension-rechecks.mjs",
-    "tests/browser/settings-probe-cleanup.mjs"
+    "tests/browser/settings-probe-cleanup.mjs",
+    "tests/browser/owned-panel-opener.mjs",
+    "tests/browser/owned-fixture-server.mjs"
   ],
-  "hosted_runs_launched": [],
+  "hosted_runs_launched": [
+    {
+      "id": 38008708028,
+      "lane": "B",
+      "runner": "macos-15-intel",
+      "workflow_ref": "main",
+      "expected_workflow_sha": "5b47088a43c7d861515eed53df9c2c3648e8c876",
+      "development_run_id": 37998294843,
+      "development_artifact_id": 11647758423,
+      "frozen_source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+      "independent_review": "Owner confirmed source peer PASS for c60b502df before dispatch.",
+      "focused_ci_run_id": 38008565449,
+      "credential_staging": "none",
+      "status": "completed",
+      "conclusion": "failure",
+      "artifact_id": 11652612657,
+      "receipt": "docs/stabilization/evidence/settings-auto-scrape-capture/run38008708028/receipt.sanitized.json"
+    }
+  ],
   "limitations": [
-    "Hosted failure cause remains unknown; instrumentation is not acceptance.",
-    "Independent review and automatic CI compile pending; local compile guard refused RESOURCE_DISK_LOW (system/safety 19.205 GiB)."
+    "Full-extension preference persistence still unverified.",
+    "Causal harness repair needs independent review before any further hosted test.",
+    "DOM-backed forcing guard does not prove native trusted gesture or Chrome rendering.",
+    "Raw HTML byte size includes the inert empty shadow host; content outputs and SEO were compared, byte size was not required equal.",
+    "Local compile previously refused disk guard; automatic CI remains the typecheck path."
   ],
   "open_questions": [],
-  "next_action": "Independent peer review, then coordinate one guarded B/Intel diagnostic run with owner; preserve full-reload unverified unless all actual acceptance assertions pass.",
+  "next_action": "Independent peer reviews repair and forcing guard; owner may authorize a subsequent guarded B/Intel T40 run only after review. No active owned jobs or raw downloads remain.",
   "raw_artifact_cleanup": "Owned downloaded artifact directory removed after safe inspection."
 }

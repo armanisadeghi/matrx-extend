@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "run_id": 38009054255,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38009054255",
+    "lane": "A",
+    "runner": "macos-15",
+    "conclusion": "failure",
+    "checkout_sha": "136865283291f645c01fbf35e18976d41c0dc8f4"
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.456",
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "ci_run_id": 37998294843,
+    "ci_artifact_id": 11647758423,
+    "tree_sha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b"
+  },
+  "hosted_artifact": {
+    "id": 11652573444,
+    "name": "hosted-guest-38009054255-1"
+  },
+  "resource_guards": {
+    "package": { "admitted": true, "resource_invalid": false, "decision": "valid", "exit_code": 0 },
+    "browser": { "admitted": true, "resource_invalid": false, "decision": "valid", "exit_code": 0 },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "decision": "child_failed",
+      "exit_code": 1
+    }
+  },
+  "executed_behavior": {
+    "member_web_and_extension_identity": "verified",
+    "canonical_nonadmin_check": "verified",
+    "selected_organization": "load_ladder_with_independently_verified_expected_uuid",
+    "two_picker_field_clicks_and_previews": "verified",
+    "save_name_and_control": "verified",
+    "save_request": "one_http_201_inferred_from_cleanup_target_missing_and_confirmed_by_exact_owned_backend_row",
+    "saved_row_ui_refresh": "unverified",
+    "driver_failure_code": "data_member_pattern_write_succeeded_not_observed"
+  },
+  "owned_fixture_cleanup": {
+    "backend_exact_name_match_count_before": 1,
+    "sole_active_member_organization_matched": true,
+    "delete_scoped_by_exact_row_organization_and_name": true,
+    "returned_row_verified": true,
+    "backend_exact_name_match_count_after": 0,
+    "temporary_github_secret_removed": true,
+    "local_single_use_link_removed": true
+  },
+  "classification": "Product insert succeeded, but the native CDP observer did not capture a usable returned row ID. Response-body failure mode is unresolved; this run does not establish full member save UI behavior or cleanup through the member UI driver.",
+  "evidence_files": [
+    "native-report.json",
+    "hosted-package-38009054255-1.jsonl",
+    "hosted-browser-38009054255-1.jsonl",
+    "hosted-guest-38009054255-1.jsonl"
+  ]
+}

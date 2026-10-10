@@ -69,6 +69,38 @@ export function settingsOrganizationSelectionRequired(
   return !value?.organizationSelected || value.organizationLabel !== requiredOrganizationName;
 }
 
+/** The product's load ladder can select an organization without a device-choice key. */
+export function resolveMemberOrganizationSelection(
+  stored,
+  visibleLabel,
+  allowLadder = false,
+  expectedOrganizationId = null,
+) {
+  assert.equal(
+    visibleLabel,
+    MEMBER_TEST_ORGANIZATION_NAME,
+    'd87_member_organization_label_unverified',
+  );
+  if (stored?.organizationId === null && stored.organizationName === null) {
+    assert.equal(allowLadder, true, 'd87_member_organization_uuid_unverified');
+    if (allowLadder)
+      assert.match(
+        expectedOrganizationId ?? '',
+        UUID,
+        'd87_member_expected_organization_unverified',
+      );
+    return 'load_ladder';
+  }
+  assert.ok(
+    UUID.test(stored?.organizationId ?? '') &&
+      stored.organizationName === MEMBER_TEST_ORGANIZATION_NAME,
+    'd87_member_organization_storage_unverified',
+  );
+  if (expectedOrganizationId !== null)
+    assert.equal(stored.organizationId, expectedOrganizationId, 'd87_member_organization_mismatch');
+  return 'device_choice';
+}
+
 async function privateJson(file, code) {
   assert.ok(file, `${code}_file_required`);
   const metadata = await stat(file);
@@ -404,6 +436,7 @@ export async function signInSettings({
   repo,
   adminCredentialsFile,
   memberLinkFile,
+  allowLadderOrganization = false,
   onStage,
   onAuthDiagnostic,
   onTrace,
@@ -554,6 +587,13 @@ export async function signInSettings({
       'member',
       JSON.stringify(await privateJson(memberLinkFile, 'd87_member_link')),
     );
+    const expectedOrganizationId = allowLadderOrganization ? secret.organization_id : null;
+    if (allowLadderOrganization)
+      assert.match(
+        expectedOrganizationId ?? '',
+        UUID,
+        'd87_member_expected_organization_unverified',
+      );
     const link = new URL(secret.action_link);
     await web.goto(link.href, { waitUntil: 'domcontentloaded', timeout: 60_000 });
     const email = secret.email;
@@ -614,21 +654,18 @@ export async function signInSettings({
       await onTrace?.(selectionRequired ? 'auth_org_select' : 'auth_org_skip');
       if (selectionRequired) await selectOrganization(panel, MEMBER_TEST_ORGANIZATION_NAME);
       await onTrace?.('auth_org_after');
-      await waitFor(
+      const visibleOrganization = await waitFor(
         'd87_member_organization_selected',
         () => accountIdentity(panel, email),
         (value) => value?.organizationSelected && value.organizationLabel === "Matrx's Org",
         30_000,
       );
       const selected = await panelIdentity(panel);
-      assert.ok(
-        UUID.test(selected.organizationId ?? ''),
-        'd87_member_organization_uuid_unverified',
-      );
-      assert.equal(
-        selected.organizationName,
-        "Matrx's Org",
-        'd87_member_organization_name_unverified',
+      const organizationResolution = resolveMemberOrganizationSelection(
+        selected,
+        visibleOrganization.organizationLabel,
+        allowLadderOrganization,
+        expectedOrganizationId,
       );
       await onTrace?.('auth_identity_before');
       const rendered = await verifyCurrentSettingsIdentity({
@@ -643,7 +680,8 @@ export async function signInSettings({
         mode,
         profileId: identity.userId,
         email: identity.email,
-        organizationId: selected.organizationId,
+        organizationId: expectedOrganizationId ?? selected.organizationId,
+        organization_resolution: organizationResolution,
         account_fingerprint: fingerprint(identity.email),
         web_signed_in: true,
         extension_signed_in: true,

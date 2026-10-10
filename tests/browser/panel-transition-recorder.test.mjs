@@ -361,6 +361,17 @@ test('real Scrape auth caller records first member selection, skip, identity, an
   const authBody = authSource
     .slice(authSource.indexOf('export async function signInSettings('))
     .replace('export async function', 'async function');
+  const organizationResolutionSource = authSource
+    .slice(
+      authSource.indexOf('export function resolveMemberOrganizationSelection('),
+      authSource.indexOf('async function privateJson('),
+    )
+    .replace('export function', 'function');
+  assert.match(
+    organizationResolutionSource,
+    /^function resolveMemberOrganizationSelection\(/,
+    'real organization resolution helper seam missing',
+  );
   const selectSource = authSource
     .slice(
       authSource.indexOf('export async function waitForOrganizationOption('),
@@ -502,7 +513,7 @@ test('real Scrape auth caller records first member selection, skip, identity, an
     )(...Object.values(deps));
     const signInSettings = new Function(
       ...Object.keys(deps),
-      `${authBody}; return signInSettings;`,
+      `${organizationResolutionSource}; ${authBody}; return signInSettings;`,
     )(...Object.values(deps));
     const web = {
       goto: async (url) => {

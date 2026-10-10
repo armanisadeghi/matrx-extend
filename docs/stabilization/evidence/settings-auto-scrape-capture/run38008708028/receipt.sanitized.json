@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T40",
+  "role": "guest",
+  "scope": "real hosted native side panel and owned unique-marker page",
+  "status": "fail",
+  "criteria": [
+    {
+      "name": "ON emits one real capture with the page marker",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": true,
+        "visible": true,
+        "pageLoaded": null,
+        "windowCompleted": null,
+        "managementReloadClicked": null,
+        "oldTargetsRetired": null,
+        "workerReplaced": null,
+        "panelReplaced": null,
+        "replacementTargetChanged": null,
+        "lifecyclePredicatePassed": null,
+        "calls": [
+          {
+            "kind": "scrape:capture-page",
+            "ok": true,
+            "markerPresent": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "OFF emits no capture after the loaded page settles",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "visible": false,
+        "pageLoaded": true,
+        "windowCompleted": true,
+        "managementReloadClicked": null,
+        "oldTargetsRetired": null,
+        "workerReplaced": null,
+        "panelReplaced": null,
+        "replacementTargetChanged": null,
+        "lifecyclePredicatePassed": null,
+        "calls": []
+      }
+    },
+    {
+      "name": "initial: original preference matches",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": false,
+        "visible": false,
+        "pageLoaded": null,
+        "windowCompleted": null,
+        "managementReloadClicked": null,
+        "oldTargetsRetired": null,
+        "workerReplaced": null,
+        "panelReplaced": null,
+        "replacementTargetChanged": null,
+        "lifecyclePredicatePassed": null,
+        "calls": []
+      }
+    },
+    {
+      "name": "On changes visible and stored preference",
+      "status": "pass",
+      "evidence": {
+        "storagePresent": true,
+        "settingPresent": true,
+        "stored": true,
+        "visible": true,
+        "pageLoaded": null,
+        "windowCompleted": null,
+        "managementReloadClicked": null,
+        "oldTargetsRetired": null,
+        "workerReplaced": null,
+        "panelReplaced": null,
+        "replacementTargetChanged": null,
+        "lifecyclePredicatePassed": null,
+        "calls": []
+      }
+    },
+    {
+      "name": "native capture probe completed",
+      "status": "fail",
+      "evidence": {
+        "storagePresent": null,
+        "settingPresent": null,
+        "stored": null,
+        "visible": null,
+        "pageLoaded": null,
+        "windowCompleted": null,
+        "managementReloadClicked": null,
+        "oldTargetsRetired": null,
+        "workerReplaced": null,
+        "panelReplaced": null,
+        "replacementTargetChanged": null,
+        "lifecyclePredicatePassed": null,
+        "calls": []
+      }
+    }
+  ],
+  "reload_failure": {
+    "category": "full_extension_preference_or_restore_failed",
+    "firstChoiceFailureStage": "choice_extension_reload",
+    "restorationFailureStage": "restore_acquire_panel",
+    "firstChoiceTransportClass": "none",
+    "restorationTransportClass": "protocol_error",
+    "firstChoiceFailureCode": "unclassified",
+    "restorationFailureCode": "owned_cdp_transport_failed",
+    "firstChoiceReloadBoundary": {
+      "helperFailure": {
+        "operation": "fixture_reply_clear",
+        "exceptionClass": "TimeoutError",
+        "cleanupFailures": []
+      },
+      "lastCapturedPhase": "target_destroyed",
+      "timelineTruncated": false,
+      "clickStarted": true,
+      "clickResolved": true,
+      "preClickOldWorkerPresent": true,
+      "oldWorkerAbsent": true,
+      "oldPanelAbsent": true,
+      "replacementWorkerPresent": true,
+      "finalPredicate": true,
+      "contextExpectedAppeared": null
+    },
+    "restorationReloadBoundary": null,
+    "cleanupAlsoFailed": true
+  },
+  "build": {
+    "version": "0.2.456",
+    "treeSha256": "230d4629e54b0e8fdc8d41cb3ec7635f8984d045683264f689f56e526c741e4b"
+  }
+}
