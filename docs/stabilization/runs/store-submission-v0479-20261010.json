@@ -1,0 +1,32 @@
+{
+  "recorded_at_utc": "2026-10-10T20:42:00Z",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "publisher": "Matrx",
+  "dashboard_observation": {
+    "observed_at_utc": "2026-10-10T20:22:00Z",
+    "published_version": "0.2.205",
+    "item_status": "Pending review",
+    "pending_package_version": "0.2.479",
+    "confirmation": "Your extension was submitted for review.",
+    "automatic_publication_selected": true
+  },
+  "pending_package": {
+    "release_run_id": 38080281242,
+    "artifact_id": 11680078743,
+    "tag_source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "independent_release_review": "docs/stabilization/reports/hosted-release-v0479-independent-review.json"
+  },
+  "acceptance_at_submission": {
+    "guest_chat": "guarded exact-package first message, same-conversation follow-up and postreload completed against then-live server 71d98c981c77672de0fb2a7b172962c1f21787dd in run 38081808099",
+    "non_admin_chat": "one real terminal assistant reply in run 38081271924",
+    "guest_seo": "19 selected controlled subtargets passed in run 38082332936; whole surface partial",
+    "guest_scrape": "bounded Capture/reload/export passed on one controlled page in run 38082622883; whole surface partial"
+  },
+  "current_server_followup": {
+    "server_sha": "908045a2d1c74364e9a59cf47fb69cd39de141e0",
+    "published_public_crx_result": "three terminal guest Chat turns passed in clean hosted unpacked public CRX run 38083217313; not Store-installed proof",
+    "candidate_result": "run 38084047241 resource-invalid before assistant result; guarded retry 38084666691 running; compatibility unverified"
+  },
+  "next_action": "Preserve pending review; monitor dashboard and candidate current-server retry, then test actual Store-installed version after publication."
+}
