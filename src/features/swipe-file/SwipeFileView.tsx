@@ -319,7 +319,9 @@ export function SwipeFileView() {
                       </p>
                       {coverage.browser_capture.failed_items > 0 && (
                         <p className="text-amber-600">
-                          {coverage.browser_capture.failed_items} browser media items unavailable
+                          {coverage.browser_capture.failed_items} browser media{' '}
+                          {coverage.browser_capture.failed_items === 1 ? 'item' : 'items'}{' '}
+                          unavailable
                         </p>
                       )}
                       {coverage.browser_capture.notes.map((note, index) => (

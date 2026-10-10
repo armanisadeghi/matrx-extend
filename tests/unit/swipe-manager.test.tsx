@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 const network = vi.hoisted(() => ({
   collections: vi.fn(),
@@ -172,4 +172,52 @@ it('repairs saved carousel through the canonical save path and reloads its curre
   );
   expect(await screen.findByText('2 stored files')).toBeTruthy();
   expect(screen.getByText('All reported media stored')).toBeTruthy();
+});
+
+it('keeps asynchronous browser assets pending and refreshes until their bytes are stored', async () => {
+  vi.useFakeTimers();
+  try {
+    network.coverage.mockResolvedValue({
+      expected_items: null,
+      observed_items: 1,
+      stored_items: 1,
+      missing_items: null,
+      status: 'unknown',
+      browser_capture: {
+        status: 'pending',
+        observed_items: 3,
+        stored_items: 0,
+        failed_items: 0,
+        notes: [],
+      },
+    });
+    await act(async () => {
+      render(<SwipeFileView />);
+    });
+    expect(screen.getByText('Browser capture processing · 3 media items observed')).toBeTruthy();
+    expect(screen.queryByText('All reported media stored')).toBeNull();
+    network.coverage.mockResolvedValue({
+      expected_items: null,
+      observed_items: 1,
+      stored_items: 1,
+      missing_items: null,
+      status: 'unknown',
+      browser_capture: {
+        status: 'partial',
+        observed_items: 3,
+        stored_items: 2,
+        failed_items: 1,
+        notes: ['A video could not be downloaded'],
+      },
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(60_000);
+    });
+    expect(screen.getByText('2 browser media files stored')).toBeTruthy();
+    expect(screen.getByText('1 browser media item unavailable')).toBeTruthy();
+    expect(screen.getByText('A video could not be downloaded')).toBeTruthy();
+    expect(screen.queryByText('Browser capture processing · 3 media items observed')).toBeNull();
+  } finally {
+    vi.useRealTimers();
+  }
 });
