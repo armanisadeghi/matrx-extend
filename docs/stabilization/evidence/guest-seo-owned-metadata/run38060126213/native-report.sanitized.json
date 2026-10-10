@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "case_id": "EXT-F-1008-T09",
+  "mode": "guest",
+  "status": "partial",
+  "scope": "one owned metadata T09 target only",
+  "build": {
+    "before_version": "0.2.466",
+    "after_version": "0.2.466",
+    "before_tree_sha256": "3e75d2ada5642ad46dafa5c111f66582ced3edf1fe4edcd282af34c24cf77e20",
+    "after_tree_sha256": "3e75d2ada5642ad46dafa5c111f66582ced3edf1fe4edcd282af34c24cf77e20",
+    "matches_imported_artifact": true
+  },
+  "selection": {
+    "scope": "metadata",
+    "selected_case_ids": ["EXT-F-1008-T09"],
+    "selected_target_ids": ["guest_owned_hreflang_article_doors_match_fixture_dom"],
+    "other_SEO_targets_excluded": true
+  },
+  "target": {
+    "id": "guest_owned_hreflang_article_doors_match_fixture_dom",
+    "status": "pass",
+    "source_title_matched": true,
+    "unique_hreflang_candidate_count": 1,
+    "hreflang_language": "es",
+    "unique_schema_candidate_count": 1,
+    "schema_type": "Article",
+    "target_blank_noopener_noreferrer": true,
+    "trusted_pointer_destinations_reached": true,
+    "source_page_retained_after_each_door": true
+  },
+  "raw_report_sha256": "51b7af5b7a7905ffbc4dfc0ac5692d5df4743832ceb1a03cc780616d71a46edd"
+}

@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "run_id": 38060126213,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38060126213",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "663f8bb2a2644b70d98180f115a8175b4c08614e",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "workflow_conclusion": "success",
+  "dispatch": {
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "metadata",
+    "seo_metadata_fixture": "owned"
+  },
+  "product_artifact": {
+    "ci_run_id": 38059544877,
+    "artifact_id": 11672931022,
+    "version": "0.2.466",
+    "source_sha": "998cfc86af7ce161404a528f59c45958ad75bc43",
+    "tree_sha256": "3e75d2ada5642ad46dafa5c111f66582ced3edf1fe4edcd282af34c24cf77e20",
+    "github_artifact_digest": "sha256:536e6d8bbaf28750e4023e0162580ab28800d95aa2c4864aa838918a28b0d646",
+    "eligible_store": false,
+    "import_claim": "exact_pushed_commit_only",
+    "workflow_source_relation": "Hosted workflow source 663f8bb2 imported the frozen 998cfc86 artifact by exact run/artifact metadata, source SHA and tree hash."
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11673241150,
+    "name": "hosted-guest-38060126213-1",
+    "digest": "sha256:37581b9a8f24dbffb8c4ff4a2ba8a6965894e5fcba8ab653806c5e42557cbe6e",
+    "downloaded_zip_sha256": "37581b9a8f24dbffb8c4ff4a2ba8a6965894e5fcba8ab653806c5e42557cbe6e",
+    "digest_verified": true,
+    "expired": false,
+    "size_in_bytes": 83229
+  },
+  "native": {
+    "status": "partial",
+    "target_count": 1,
+    "pass_count": 1,
+    "unverified_count": 0,
+    "fail_count": 0,
+    "bounded_target": "guest_owned_hreflang_article_doors_match_fixture_dom",
+    "bounded_target_status": "pass",
+    "observation": {
+      "id": "guest_owned_hreflang_article_doors_match_fixture_dom",
+      "status": "pass",
+      "source_title_matched": true,
+      "unique_hreflang_candidate_count": 1,
+      "hreflang_language": "es",
+      "unique_schema_candidate_count": 1,
+      "schema_type": "Article",
+      "target_blank_noopener_noreferrer": true,
+      "trusted_pointer_destinations_reached": true,
+      "source_page_retained_after_each_door": true
+    }
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "all_three_valid": true,
+    "all_admitted": true,
+    "resource_invalid": false,
+    "all_child_exit_codes_zero": true,
+    "guest_cpu_pending_recovered_before_final": false
+  },
+  "cleanup": {
+    "fixture": "run-owned in-memory metadata page on the run-local fixture server; no shared account or backend fixture mutation",
+    "teardown": "native driver completed successfully through its owned browser/server/profile cleanup path",
+    "separate_profile_root_absence_receipt": false
+  },
+  "limitations": [
+    "One bounded owned-fixture T09 target only; all other selected or unselected SEO behaviors remain partial, unverified, or separately evidenced.",
+    "Product source is frozen CI 38059544877 / artifact 11672931022 from 998cfc86; the workflow ran at 663f8bb2. No current-main product or Store behavior is established.",
+    "No Wikipedia/live-public-page metadata, member/admin behavior, full T09, or full guest SEO behavior is established.",
+    "Product credit awaits independent review."
+  ],
+  "evidence": {
+    "native_report": "native-report.sanitized.json",
+    "product_artifact": "product-artifact.sanitized.json",
+    "resource_finals": "resource-finals.sanitized.json",
+    "resource_journals": [
+      "resource-journals/hosted-package-38060126213-1.jsonl",
+      "resource-journals/hosted-browser-38060126213-1.jsonl",
+      "resource-journals/hosted-guest-38060126213-1.jsonl"
+    ]
+  },
+  "sanitization": "Native report reduced to bounded counts, enums and booleans; journals copied through scripts/copy-hosted-resource-journal.mjs. No screenshots, runner paths, process attribution, credentials, account details or raw catalog/tool results retained."
+}

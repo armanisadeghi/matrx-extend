@@ -27671,7 +27671,7 @@
                 "readability calculation beyond the two known-text fixtures",
                 "volatile public-detail and optional metadata-fixture phases excluded by this controlled run",
                 "Full-scope Wikipedia run 38054415137 also found no unique hreflang/schema door candidates; target remains unverified.",
-                "Current-main product behavior at source 6bca remains unverified; this result is bound to frozen source 99bc43a89."
+                "Current-main product behavior at source 663f8bb2 remains unverified; the reviewed run below uses frozen product source 998cfc86."
               ],
               "run_id": "38016503649",
               "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
@@ -27853,7 +27853,7 @@
                   "detail": "Independent peer PASS for this one owned-fixture T09 target. The native source DOM had one hreflang es candidate and one Article schema candidate; the SEO detail values matched, trusted activations reached the expected destinations, and the source page remained unchanged after both doors. All three resource finals are valid. The overall native report remains partial with only this one selected target; Wikipedia and other SEO behavior remain unverified. Frozen product source 99bc43a89 is not current-main source 6bca and establishes no member/admin, Store, or full SEO behavior."
                 }
               ],
-              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed. Reviewed hosted run 38052238895 adds only the bounded Airbnb hreflang/schema-door target; 25 native targets passed and the Wikipedia door target remains unverified. The other selected target rows are re-observations with no new credit. T09, all six guest SEO cases, and the feature remain partial. Independently reviewed run 38058774504 adds one owned-fixture T09 target on frozen v0.2.466 source 99bc43a89: unique hreflang es and Article candidates matched the displayed SEO doors, trusted activations reached expected destinations, and the source page remained unchanged after each. Resource finals valid. This is not current-main 6bca evidence; T09 and guest SEO remain partial, and Wikipedia remains unverified."
+              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed. Reviewed hosted run 38052238895 adds only the bounded Airbnb hreflang/schema-door target; 25 native targets passed and the Wikipedia door target remains unverified. The other selected target rows are re-observations with no new credit. T09, all six guest SEO cases, and the feature remain partial. Independently reviewed run 38058774504 adds one owned-fixture T09 target on frozen v0.2.466 source 99bc43a89: unique hreflang es and Article candidates matched the displayed SEO doors, trusted activations reached expected destinations, and the source page remained unchanged after each. Resource finals valid. This is not current-main 6bca evidence; T09 and guest SEO remain partial, and Wikipedia remains unverified. Independent repeat confirmation: run 38060126213 was reviewed PASS for the same owned-fixture guest T09 target on frozen v0.2.466 product source 998cfc86 (CI 38059544877/artifact 11672931022); workflow source 663f8bb2. All three resource finals are valid. This confirms the existing target on the newer frozen artifact but adds no distinct subtarget credit. Current-main 663 product bytes, Wikipedia, remaining SEO dimensions, other cases, member/admin, and Store behavior remain unverified."
             }
           },
           "result_history": [
@@ -28578,6 +28578,38 @@
                 ".research/seo-normal-after-stop-20261008/report.json"
               ],
               "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
+            },
+            {
+              "at": "2026-10-10T14:34:11Z",
+              "mode": "guest",
+              "run_id": "38060126213",
+              "status": "bounded-confirmation",
+              "new_distinct_subtarget_credit": false,
+              "subtargets": [
+                "EXT-F-1008-T09:guest_owned_hreflang_article_doors_match_fixture_dom=pass (repeat confirmation)"
+              ],
+              "source_sha": "998cfc86af7ce161404a528f59c45958ad75bc43",
+              "workflow_source_sha": "663f8bb2a2644b70d98180f115a8175b4c08614e",
+              "build_version": "0.2.466",
+              "development_ci_run_id": 38059544877,
+              "development_artifact_id": 11672931022,
+              "development_artifact_digest": "sha256:536e6d8bbaf28750e4023e0162580ab28800d95aa2c4864aa838918a28b0d646",
+              "tree_sha256": "3e75d2ada5642ad46dafa5c111f66582ced3edf1fe4edcd282af34c24cf77e20",
+              "hosted_result_artifact_id": 11673241150,
+              "hosted_result_artifact_digest": "sha256:37581b9a8f24dbffb8c4ff4a2ba8a6965894e5fcba8ab653806c5e42557cbe6e",
+              "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38060126213/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38060126213/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38060126213/product-artifact.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38060126213/resource-finals.sanitized.json",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38060126213/resource-journals/hosted-package-38060126213-1.jsonl",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38060126213/resource-journals/hosted-browser-38060126213-1.jsonl",
+                "docs/stabilization/evidence/guest-seo-owned-metadata/run38060126213/resource-journals/hosted-guest-38060126213-1.jsonl",
+                "docs/stabilization/reports/peer-review-run38060126213.json"
+              ],
+              "independent_review": "docs/stabilization/reports/peer-review-run38060126213.json",
+              "scope": "Exact repeat of the already credited owned-fixture T09 target. Confirms that same behavior on frozen product source 998cfc86 only; no new distinct subtarget credit and no current-main 663 product claim. T09 and guest SEO remain partial."
             }
           ]
         },
