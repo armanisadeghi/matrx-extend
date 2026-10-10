@@ -98,28 +98,40 @@ export async function pickerText(session, selector) {
   return outerHTML;
 }
 
-/** A trusted pointer is sent only after the exact CDP hit target matches Done. */
-export async function clickPickerDone(page) {
+/** A trusted pointer is sent only after the exact closed-shadow button owns the hit. */
+async function clickPickerButton(page, buttonId) {
   const session = await page.context().newCDPSession(page);
   try {
     await session.send('DOM.enable');
-    const nodeId = await pickerShadowNode(session, '#done');
+    const nodeId = await pickerShadowNode(session, `#${buttonId}`);
     const { node } = await session.send('DOM.describeNode', { nodeId });
-    assert.equal(node.nodeName, 'BUTTON', 'data_guest_done_not_button');
+    assert.equal(node.nodeName, 'BUTTON', `data_guest_${buttonId}_not_button`);
     const { model } = await session.send('DOM.getBoxModel', { nodeId });
     const [x1, y1, x2, y2, x3, y3, x4, y4] = model?.content ?? [];
     const x = (x1 + x2 + x3 + x4) / 4;
     const y = (y1 + y2 + y3 + y4) / 4;
-    assert.ok(Number.isFinite(x) && Number.isFinite(y), 'data_guest_done_geometry_missing');
+    assert.ok(Number.isFinite(x) && Number.isFinite(y), `data_guest_${buttonId}_geometry_missing`);
     const hit = await session.send('DOM.getNodeForLocation', {
       x: Math.round(x),
       y: Math.round(y),
       includeUserAgentShadowDOM: true,
       ignorePointerEventsNone: false,
     });
-    assert.equal(hit.backendNodeId, node.backendNodeId, 'data_guest_done_hit_target_changed');
+    assert.equal(
+      hit.backendNodeId,
+      node.backendNodeId,
+      `data_guest_${buttonId}_hit_target_changed`,
+    );
     await page.mouse.click(x, y);
   } finally {
     await session.detach();
   }
+}
+
+export async function clickPickerDone(page) {
+  await clickPickerButton(page, 'done');
+}
+
+export async function clickPickerCancel(page) {
+  await clickPickerButton(page, 'cancel');
 }

@@ -6,6 +6,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
+import { verifyEmptyPickerDismissal } from './data-guest-picker-cancel.mjs';
 import { clickPickerDone, clickPickerField, pickerText } from './data-guest-picker-driver.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
@@ -73,6 +74,9 @@ async function dataState(panel) {
         active: true,
         pickedTwo: text.includes('2 fields selected') &&
           text.includes('field_1:') && text.includes('field_2:'),
+        selectedFieldMarkers: (text.match(/field_\\d+:/g) ?? []).length,
+        pickerButton: buttons.filter((button) => button.textContent.trim() === 'Pick fields on this page').length,
+        cancelSelection: buttons.filter((button) => button.textContent.trim() === 'Cancel').length,
         signInToSave: buttons.filter((button) => button.textContent.trim() === 'Sign in to save').length,
         signInPending: [...root.querySelectorAll('button')].some((button) =>
           button.textContent.trim() === 'Sign in to save' && button.disabled),
@@ -131,6 +135,19 @@ try {
         () => dataState(panel),
         (state) => state.active,
       );
+      report.stage = 'picker';
+      report.observations.picker_cancel_without_selection = false;
+      report.stage = 'picker_cancel';
+      await verifyEmptyPickerDismissal({
+        page,
+        panel,
+        readState: () => dataState(panel),
+        openPicker: () => click(panel, 'data-picker-button', 'Pick fields on this page'),
+        waitForState: waitFor,
+      });
+      report.observations.picker_cancel_without_selection = true;
+      report.observations.picker_cancel_selected_fields_unchanged = true;
+      report.observations.picker_cancel_pattern_writes = 0;
       report.stage = 'picker';
       try {
         await waitFor(
@@ -198,6 +215,7 @@ try {
       assert.equal(selected.nameInput, 0, 'data_guest_pattern_name_exposed');
       assert.equal(selected.guestExplanation, true, 'data_guest_save_boundary_missing');
       report.observations = {
+        ...report.observations,
         guest: true,
         controlled_rows: 3,
         two_distinct_picker_previews: true,
@@ -228,6 +246,11 @@ try {
       report.observations.pattern_write_requests_before_auth = 0;
     },
   });
+  assert.equal(
+    report.observations.picker_cancel_without_selection,
+    true,
+    'data_guest_picker_cancel_not_exercised',
+  );
   report.status = 'pass';
   report.stage = 'complete';
 } catch (error) {

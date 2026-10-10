@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { clickPickerDone, clickPickerField } from './data-guest-picker-driver.mjs';
+import {
+  clickPickerCancel,
+  clickPickerDone,
+  clickPickerField,
+} from './data-guest-picker-driver.mjs';
 
 test('Data guest field click uses a visible owned point when the picker covers its center', async () => {
   const previous = {
@@ -106,4 +110,25 @@ test('Data guest Done receives trusted pointer only when exact closed-shadow but
     false,
   );
   assert.equal(covered.calls.at(-1).method, 'detach');
+});
+
+test('C16 Cancel targets the picker exit button and refuses a covered hit', async () => {
+  const exact = ownedPage(74);
+  await clickPickerCancel(exact.page);
+  assert.ok(
+    exact.calls.some(
+      (call) => call.method === 'DOM.querySelector' && call.params.selector === '#cancel',
+    ),
+  );
+  assert.deepEqual(
+    exact.calls.filter((call) => call.method === 'click'),
+    [{ method: 'click', x: 30, y: 30 }],
+  );
+
+  const covered = ownedPage(91);
+  await assert.rejects(clickPickerCancel(covered.page), /data_guest_cancel_hit_target_changed/);
+  assert.equal(
+    covered.calls.some((call) => call.method === 'click'),
+    false,
+  );
 });
