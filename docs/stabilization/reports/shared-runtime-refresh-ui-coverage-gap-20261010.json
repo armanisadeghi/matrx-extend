@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "review_kind": "shared_runtime_refresh_ui_coverage_gap",
+  "observed_at": "2026-10-10",
+  "candidate_release_run_id": 38080281242,
+  "candidate_status_at_review": "in_progress",
+  "package_refresh_commit": "b1493a453",
+  "verdict": "NO_EXTENSION_REACHABLE_RUNTIME_TARGET_ESTABLISHED",
+  "findings": [
+    {
+      "package": "@ai-matrx/content-ir",
+      "locked_version": "0.24.12",
+      "extension_imports": [
+        "@ai-matrx/content-ir/core",
+        "@ai-matrx/content-ir/wire"
+      ],
+      "changed_source_surface": "The inline unclosed-XML tokenization branch is in the package's source parser export, not in the /core or /wire surfaces consumed by this extension.",
+      "reachability": "RenderBlockView consumes render-block envelopes and reconstructs values using /core; conversation copying also uses /core. The extension imports no /source parser entry point and no tokenizer symbol.",
+      "acceptance_gap": "A visible hosted Chat or render_block case cannot be claimed to test this tokenizer behavior through the extension's current package imports. An XML-shaped string in chat text would not prove the changed source parser was called.",
+      "future_requirement": "First establish a production extension caller of the package's source parser, or a server-produced render-block contract that demonstrably routes through it. Then create a deterministic visible fixture that distinguishes trailing same-line prose from a captured XML island."
+    },
+    {
+      "package": "@ai-matrx/design-system",
+      "locked_version": "0.86.85",
+      "changed_source_surface": "Shared pressable Tile dimmed state.",
+      "reachability": "No imports or use of the shared Tile component or its dimmed prop exist under extension src/. The similarly named ImageTile is local scrape/screenshot code.",
+      "acceptance_gap": "There is no extension consumer path where this shared Tile state can be observed. Testing it would require adding a new feature or a test-only rendering surface, neither of which accepts existing extension behavior."
+    }
+  ],
+  "independent_peer_review": {
+    "reviewer": "v471_guest_scrape_review",
+    "result": "CONFIRMED",
+    "finding": "Extension consumes @ai-matrx/content-ir /core and /wire only; no /source tokenizer or shared Tile/dimmed consumer was found under src/."
+  },
+  "artifact_comparison": {
+    "status": "PENDING_RELEASE_ARTIFACT",
+    "note": "The candidate release run is still in progress. Compare its emitted extension JavaScript with v0.2.478 before deciding whether any runtime product delta exists."
+  },
+  "lane_decision": {
+    "browser_run_started": false,
+    "reason": "Release run 38080281242 was in progress; B was reserved for root's exact-candidate guest Chat, and A was assigned to member Chat. The source reachability audit found no valid extension acceptance seam for either requested package change."
+  },
+  "scope_limit": "This is a source import/reachability assessment, not product acceptance, release verdict, or a claim that a package regression is absent.",
+  "checked_files": [
+    "pnpm-lock.yaml",
+    "src/components/kinds/RenderBlockView.tsx",
+    "src/features/chat/copy-conversation.ts",
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "scripts/hosted-guest-acceptance.mjs"
+  ],
+  "verification": {
+    "method": "Read the current lockfile, inspect extension imports and hosted Chat assertions, inspect the tokenizer source path and design-system Tile consumer census, and confirm the extension source has no direct Tile or /source import.",
+    "tests": "Not run; no test or product behavior was changed."
+  }
+}
