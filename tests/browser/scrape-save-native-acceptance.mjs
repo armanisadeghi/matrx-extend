@@ -137,7 +137,20 @@ async function associationRpc(panel, name, organizationId, body) {
   );
 }
 
-async function trustedType(panel, selector, text) {
+async function trustedType(panel, selector, text, evidence = {}) {
+  const observe = () =>
+    evaluate(
+      panel,
+      `(() => {
+    const nodes = [...document.querySelectorAll(${JSON.stringify(selector)})];
+    const node = nodes.length === 1 ? nodes[0] : null;
+    return { count: nodes.length, focused: !!node && document.activeElement === node,
+      value_length: node?.value?.length ?? null,
+      selection_start: node?.selectionStart ?? null, selection_end: node?.selectionEnd ?? null,
+      all_selected: !!node && node.selectionStart === 0 && node.selectionEnd === node.value.length,
+      matches_expected: !!node && node.value === ${JSON.stringify(text)} };
+  })()`,
+    );
   const point = await evaluate(
     panel,
     `(() => {
@@ -148,7 +161,7 @@ async function trustedType(panel, selector, text) {
       });
       if (visible.length !== 1) return { count: visible.length };
       const rect = visible[0].getBoundingClientRect();
-      return { count: 1, x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, value: visible[0].value ?? null };
+      return { count: 1, x: rect.left + rect.width / 2, y: rect.top + rect.height / 2, value_length: visible[0].value?.length ?? null };
     })()`,
   );
   assert.equal(point?.count, 1, 'scrape_save_input_not_unique');
@@ -168,17 +181,22 @@ async function trustedType(panel, selector, text) {
   });
   await panel.send('Input.dispatchKeyEvent', {
     type: 'keyDown',
+    commands: ['selectAll'],
     key: 'A',
     code: 'KeyA',
-    modifiers: 4,
+    modifiers: process.platform === 'darwin' ? 4 : 2,
   });
   await panel.send('Input.dispatchKeyEvent', {
     type: 'keyUp',
     key: 'A',
     code: 'KeyA',
-    modifiers: 4,
+    modifiers: process.platform === 'darwin' ? 4 : 2,
   });
+  evidence.before_insert = await observe();
+  assert.equal(evidence.before_insert.focused, true, 'scrape_save_input_focus_missing');
+  assert.equal(evidence.before_insert.all_selected, true, 'scrape_save_input_selection_missing');
   await panel.send('Input.insertText', { text });
+  evidence.after_insert = await observe();
 }
 
 async function trustedTab(panel, shiftKey = false) {
@@ -475,10 +493,12 @@ try {
         assert.equal(dialog.focusedName, true, 'scrape_save_initial_focus_missing');
         assert.equal(dialog.targetChipCount, 0, 'scrape_save_unexpected_initial_destination');
         assert.equal(dialog.saveButtonCount, 1, 'scrape_save_primary_action_not_unique');
+        report.observations.name_input = {};
         await trustedType(
           panel,
           '[data-testid="save-source-form"] input[aria-label="Source name"]',
           sourceName,
+          report.observations.name_input,
         );
         const typed = await waitFor(
           'scrape_save_custom_name_entered',
@@ -493,6 +513,7 @@ try {
         const reverseTabbed = await dialogState(panel);
         assert.equal(reverseTabbed.focusInside, true, 'scrape_save_shift_tab_escaped_dialog');
         report.observations = {
+          ...report.observations,
           dialog_opened_from_captured_article: true,
           prefilled_name_visible: true,
           input_focused_on_open: true,
