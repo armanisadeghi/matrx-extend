@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-09T23:49:58+00:00",
+  "updated_at": "2026-10-10T01:03:48+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -37561,7 +37561,7 @@
             "admin"
           ],
           "preconditions": [
-            "Signed-in member with selected device organization; controlled page and disposable pattern target."
+            "Signed-in member with a selected active organization, including a valid load-ladder selection; controlled page and disposable pattern target."
           ],
           "steps": [
             "Pick two fields; name and save the pattern; reread saved-pattern list. Run it and copy TSV, JSON, and AI forms. Separately pick fields and cancel."
@@ -37581,6 +37581,24 @@
           ],
           "verification_note": "Shared export helper changes linked via source audit; native JSON/TSV/AI copied bytes and special cells remain unverified in Data.",
           "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "38010692863",
+              "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+              "workflow_source_sha": "9d0d68341bc45bda826be02dca2976be14a4c89f",
+              "development_ci_run_id": 37998294843,
+              "development_artifact_id": 11647758423,
+              "hosted_result_artifact_id": 11653034732,
+              "build_version": "0.2.456",
+              "resource_valid": true,
+              "evidence": [
+                "docs/stabilization/evidence/member-data-behavior/run38010692863/receipt.json",
+                "docs/stabilization/evidence/member-data-behavior/run38010692863/native-report.json",
+                "docs/stabilization/evidence/member-data-behavior/run38010692863/cleanup-check.json",
+                "docs/stabilization/evidence/member-data-behavior/run38010692863/hosted-guest-38010692863-1.jsonl"
+              ],
+              "detail": "Guarded native member run verified real nonadmin identity and selected organization through the load ladder; two trusted picker field hits and distinct previews; named save with one HTTP 201 POST whose JSON organization_id matched the independently verified selection; exact owned-row read and saved-pattern refresh in the side panel; native deletion of the one row and independent zero-residual count. All resource guards finalized valid. Running the saved pattern, TSV/JSON/AI clipboard variants, cancel, reload, admin, and Store behavior remain unverified."
+            },
             "admin": {
               "status": "partial",
               "run_id": "data-picker-long-native-20260928-01",
