@@ -305,6 +305,25 @@ jobs:
         with:
           node-version: 22
 
+      - name: Require a matching CI development artifact for Settings acceptance
+        shell: bash
+        env:
+          ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          RELEASE_RUN_ID: ${{ inputs.release_run_id }}
+          DEVELOPMENT_RUN_ID: ${{ inputs.development_run_id }}
+          DEVELOPMENT_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
+          PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && 'true' || 'false' }}
+        run: |
+          set -euo pipefail
+          case "$ACCEPTANCE_CASE" in
+            settings-controls|settings-theme-rendering|settings-auto-scrape-capture)
+              [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || {
+                echo 'Settings acceptance requires a matching CI development run and artifact; release and Store CRX artifacts are unsupported.' >&2
+                exit 1
+              }
+              ;;
+          esac
+
       - name: Require a successful published release artifact
         id: release
         if: inputs.release_run_id != ''
