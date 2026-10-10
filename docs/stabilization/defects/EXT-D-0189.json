@@ -30,7 +30,11 @@
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38052951198",
     "tests/browser/settings-native-auth-driver.mjs",
     "tests/browser/settings-d87-native-acceptance.mjs",
-    "tests/browser/member-logical-org-proof.mjs"
+    "tests/browser/member-logical-org-proof.mjs",
+    "docs/stabilization/evidence/settings-persistence-member/run38060249381/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38060249381/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-persistence-member/run38060249381/resource-finals.sanitized.json",
+    "docs/stabilization/reports/peer-review-run38060249381.json"
   ],
   "fix_commit": null,
   "transition_history": [
@@ -68,7 +72,7 @@
   "verification": [
     "Run 38051093370 has zero Settings persistence case credit; its artifact predates this uncommitted harness correction.",
     "Focused source guards and read-only request observer tests pass 29/29; compile, Biome, and diff checks pass. A plant.py constant-success mutation produces a named wrong-organization RED and restores byte-identically.",
-    "Fresh independent review passes the bounded D87/D187 harness correction. CI 38052813528 and 38052951198 failed before an accepted artifact; no repaired native run or product verdict exists."
+    "Fresh independent review passes the bounded D87/D187 harness correction. CI 38052813528 and 38052951198 failed before an accepted artifact. Run 38060249381 used a verified frozen v0.2.466 artifact and proved member auth plus the expected request-bound organization GET, then failed d87_settings_shell_not_observed before any Settings case; failure_operation metadata remained stale from the completed organization proof. Its guest resource final is invalid, so the run earns zero product credit and establishes no product defect. See docs/stabilization/reports/peer-review-run38060249381.json and the sanitized evidence bundle."
   ],
   "closure_requirement": "Fresh independent review of exact identity-source propagation and wrong-ID refusal, then a resource-valid native member run reaching the intended Settings cases on a receipt-bound artifact. Close only the infrastructure oracle; product EXT-D-0087 and feature-role cells require their own acceptance."
 }

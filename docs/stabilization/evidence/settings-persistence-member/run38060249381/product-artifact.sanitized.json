@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "kind": "ci_development_test",
+  "eligible_store": false,
+  "repository": "armanisadeghi/matrx-extend",
+  "workflow": ".github/workflows/ci.yml",
+  "source_sha": "998cfc86af7ce161404a528f59c45958ad75bc43",
+  "ci_run_id": 38059544877,
+  "run_attempt": 1,
+  "artifact_id": 11672931022,
+  "github_artifact_digest": "sha256:536e6d8bbaf28750e4023e0162580ab28800d95aa2c4864aa838918a28b0d646",
+  "version": "0.2.466",
+  "tree_sha256": "3e75d2ada5642ad46dafa5c111f66582ced3edf1fe4edcd282af34c24cf77e20",
+  "workflow_source_sha": "663f8bb2a2644b70d98180f115a8175b4c08614e",
+  "claim": "exact_pushed_commit_only",
+  "source_relation": "Hosted workflow used frozen product artifact from 998cfc86 on workflow checkout 663f8bb2; no current-main or Store evidence."
+}

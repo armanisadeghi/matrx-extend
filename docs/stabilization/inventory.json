@@ -13656,6 +13656,34 @@
           ],
           "proven": "GitHub-bound workflow/frozen artifact provenance; real member identity, non-admin role, load-ladder organization and first-party rendered identity matched before Settings readiness; Settings was active and available at failure.",
           "limits": "Zero Settings persistence/retry/reload cases observed. Failure cause is unresolved between settings_ready harness/oracle observation and product behavior; no defect is proven or closed. Member feature-role cell remains unverified; no admin/guest/Store/current-main/full Settings credit."
+        },
+        {
+          "run_id": 38060249381,
+          "mode": "member",
+          "build": "0.2.466",
+          "status": "zero-credit-resource-invalid-baseline-shell-observation",
+          "native_status": "Member authentication, non-admin role, load-ladder organization and read-only expected-organization GET passed. Baseline Settings shell wait failed d87_settings_shell_not_observed before any persistence case; failure_operation remained stale as member_logical_organization_proof.",
+          "workflow_source_sha": "663f8bb2a2644b70d98180f115a8175b4c08614e",
+          "source_sha": "998cfc86af7ce161404a528f59c45958ad75bc43",
+          "development_ci_run_id": 38059544877,
+          "development_artifact_id": 11672931022,
+          "development_artifact_sha256": "536e6d8bbaf28750e4023e0162580ab28800d95aa2c4864aa838918a28b0d646",
+          "hosted_result_artifact_id": 11672429340,
+          "hosted_result_artifact_sha256": "bf350c2ae5edc3ba64de39782ce89edf288446265ea55d1b6cec5304a4dd6d49",
+          "resource_valid": false,
+          "new_acceptance_credit": false,
+          "report": "docs/stabilization/reports/peer-review-run38060249381.json",
+          "evidence": [
+            "docs/stabilization/evidence/settings-persistence-member/run38060249381/receipt.sanitized.json",
+            "docs/stabilization/evidence/settings-persistence-member/run38060249381/native-report.sanitized.json",
+            "docs/stabilization/evidence/settings-persistence-member/run38060249381/product-artifact.sanitized.json",
+            "docs/stabilization/evidence/settings-persistence-member/run38060249381/resource-finals.sanitized.json",
+            "docs/stabilization/evidence/settings-persistence-member/run38060249381/resource-journals/hosted-package-38060249381-1.jsonl",
+            "docs/stabilization/evidence/settings-persistence-member/run38060249381/resource-journals/hosted-browser-38060249381-1.jsonl",
+            "docs/stabilization/evidence/settings-persistence-member/run38060249381/resource-journals/hosted-guest-38060249381-1.jsonl"
+          ],
+          "proven": "The hosted receipt matches the downloaded result artifact digest and imported frozen v0.2.466 development artifact. Package and browser resource finals are valid; guest final is resource-invalid after CPU-pending without recovery. Credential cleanup is recorded in the sanitized receipt.",
+          "limits": "Zero Settings cases ran and no product defect is established. The native failure is a baseline shell-observation failure; failure_operation is stale metadata from the prior organization-proof stage. The Boolean identity diagnostic did not run because its exact gate targets d87_rendered_identity_not_observed at settings_ready. No current-main or Store credit."
         }
       ],
       "source_audit_sha": "6f4e9d0211315949f50a3d11b35dfa732822abec"
