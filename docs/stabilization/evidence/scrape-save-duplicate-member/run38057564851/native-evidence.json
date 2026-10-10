@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "review_state": "evidence_package_ready_pending_independent_product_peer_review",
+  "hosted_run": {
+    "id": 38057564851,
+    "head_sha": "e31be7511a3353901afdfe9237bdcd516d9d9415",
+    "conclusion": "success"
+  },
+  "hosted_artifact": {
+    "id": 11671659646,
+    "name": "hosted-guest-38057564851-1",
+    "sha256": "5825b442bb77bd48330df6173a27a758189bf705371eef3740e154f56c81270b",
+    "source_report_sha256": "09646746c1ef4fd63db1d795eb0f28069c0d0994a437e15f579e9313996ce000"
+  },
+  "development_artifact": {
+    "source_sha": "e31be7511a3353901afdfe9237bdcd516d9d9415",
+    "ci_run_id": 38056819271,
+    "ci_artifact_id": 11671188921,
+    "version": "0.2.466",
+    "tree_sha256": "d6053891bae813bc93894a84fd801e9ef0a2f6ab1fb12ee7c9a5b160e9baf420",
+    "eligible_store": false
+  },
+  "target": {
+    "defect_id": "EXT-D-0187",
+    "feature_id": "EXT-F-1007",
+    "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+    "scope": "duplicate-rename",
+    "destination": "none",
+    "bounded_credit_candidate": "same-article duplicate rename with no destination only",
+    "broader_t04_t29_closure": false
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_role_verified": true,
+    "selected_organization_verified": true,
+    "organization_resolution": "load_ladder"
+  },
+  "logical_organization_prewrite_proof": {
+    "request_observed": true,
+    "authenticated": true,
+    "organization_matches_expected": true,
+    "http_status": 200,
+    "report_contains_no_organization_identifier": true
+  },
+  "behavior": {
+    "original_capture": {
+      "captured_article_layer_ready": true,
+      "article_title_matched": true,
+      "heading_matched": true,
+      "marker_matched": true,
+      "extractor": "defuddle"
+    },
+    "first_save": {
+      "no_destination_selected_by_default": true,
+      "no_destination_retained_before_save": true,
+      "saved_confirmation_visible": true,
+      "independent_source_read_ready": true,
+      "organization_scope_persisted": true,
+      "original_file_id_present": true,
+      "no_destination_associations_persisted": true
+    },
+    "duplicate_rename": {
+      "same_article_recaptured": true,
+      "land_request_count": 1,
+      "land_http_status": 201,
+      "land_transport_finished": true,
+      "land_transport_failed": false,
+      "reused_existing": true,
+      "same_source_id": true,
+      "rename_request_count": 1,
+      "rename_http_status": 200,
+      "rename_target_matches_existing_source": true,
+      "rename_transport_finished": true,
+      "rename_transport_failed": false,
+      "rename_succeeded": true,
+      "renamed_name_persisted": true,
+      "exactly_one_source_row": true,
+      "zero_associations": true,
+      "reopened_source_ui_name_url_and_article_match": true
+    }
+  },
+  "cleanup": {
+    "verified": true,
+    "run_owned_source_soft_deleted": true,
+    "source_associations_removed": true,
+    "no_project_fixture_created": true
+  },
+  "resource_finals_file": "resource-finals.json",
+  "limits": "Exact imported CI development artifact, real member sign-in, same-article duplicate landing and custom rename with no destination, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, controlled rename refusal/retry, responsive timing, or full T04/T29 closure.",
+  "inventory_credit": "none until independent product peer adjudication"
+}
