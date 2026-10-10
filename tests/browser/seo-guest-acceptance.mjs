@@ -30,6 +30,10 @@ import {
   socialCopyButtonObservation,
   verifyManualRecapture,
 } from './seo-new-coverage-oracle.mjs';
+import {
+  SEO_READABILITY_FIXTURES,
+  runKnownReadabilityFixtures,
+} from './seo-readability-known-text.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
@@ -1796,6 +1800,65 @@ try {
               'guest_manual_readability_display_is_populated_and_explained',
               'The public body had no text, so populated readability fields could not be exercised.',
             );
+          const knownReadabilityResults = await runKnownReadabilityFixtures({
+            page,
+            fixtures: SEO_READABILITY_FIXTURES,
+            step: (phase, fixture) => enter(`known_readability_fixture_${fixture.id}_${phase}`),
+            reaudit: async (fixture) => {
+              enter(`known_readability_fixture_${fixture.id}_reaudit_click`);
+              await click(panel, 'button', 'Re-audit');
+              await waitObserved(
+                `known_readability_fixture_${fixture.id}_running_wait`,
+                () => seoContent(panel),
+                (state) => state?.scopeValid && !state.reAudit,
+              );
+              await waitObserved(
+                `known_readability_fixture_${fixture.id}_settled_wait`,
+                () => seoContent(panel),
+                (state) =>
+                  state?.scopeValid &&
+                  state.title === manualAfter.title &&
+                  state.reAudit &&
+                  !state.error,
+                30000,
+              );
+            },
+            observe: (fixture) =>
+              observe(`known_readability_fixture_${fixture.id}_native_values`, () =>
+                seoNextDetailState(panel),
+              ),
+          });
+          enter('known_readability_restored_page_reaudit_click');
+          await click(panel, 'button', 'Re-audit');
+          await waitObserved(
+            'known_readability_restored_page_running_wait',
+            () => seoContent(panel),
+            (state) => state?.scopeValid && !state.reAudit,
+          );
+          await waitObserved(
+            'known_readability_restored_page_settled_wait',
+            () => seoContent(panel),
+            (state) =>
+              state?.scopeValid &&
+              state.title === manualAfter.title &&
+              state.reAudit &&
+              !state.error,
+            30000,
+          );
+          const restoredReadability = await observe(
+            'known_readability_restored_page_native_values',
+            () => seoNextDetailState(panel),
+          );
+          assert.deepEqual(
+            restoredReadability.readability,
+            nextDetails.readability,
+            'native readability returns to the original page values after fixture cleanup',
+          );
+          target('T09', 'guest_manual_readability_matches_two_known_texts', {
+            cases: knownReadabilityResults,
+            pageDomRestored: true,
+            originalPageReadabilityRestored: true,
+          });
           report.next_detail_public_navigation = manualAfter.navigation
             ? {
                 type: manualAfter.navigation.type,

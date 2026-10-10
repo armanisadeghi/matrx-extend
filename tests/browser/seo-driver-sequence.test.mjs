@@ -177,6 +177,37 @@ function inspectDriverSequence(source) {
     callsNamed(dynamic, 'target').some((call) => literal(call, 0) === 'T09'),
     'detail phase retains its original result targets',
   );
+  const readabilityFixtureLoop = callsNamed(dynamic, 'runKnownReadabilityFixtures');
+  assert.equal(
+    readabilityFixtureLoop.length,
+    1,
+    'detail phase runs the complete owned known-text fixture lifecycle',
+  );
+  assert.ok(
+    ts.isAwaitExpression(readabilityFixtureLoop[0].parent),
+    'native fixture loop is awaited',
+  );
+  assertReachable(
+    readabilityFixtureLoop[0],
+    dynamic,
+    'known-text native fixture loop is reachable',
+  );
+  const readabilityTarget = callsNamed(dynamic, 'target').find(
+    (call) => literal(call, 1) === 'guest_manual_readability_matches_two_known_texts',
+  );
+  assert.ok(readabilityTarget, 'T09 records exact known-text readability values');
+  assert.ok(
+    readabilityTarget.getStart(ast) > readabilityFixtureLoop[0].getStart(ast),
+    'readability pass is emitted only after all fixture cleanup completes',
+  );
+  assert.ok(
+    callsNamed(dynamic, 'deepEqual').some(
+      (call) =>
+        literal(call, 2) ===
+        'native readability returns to the original page values after fixture cleanup',
+    ),
+    'cleanup re-audits and restores the source page readability output',
+  );
   assert.equal(
     callsNamed(panel, 'runCopyCheckThenRecapture').length,
     1,
