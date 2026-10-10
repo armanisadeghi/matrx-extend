@@ -75,11 +75,11 @@
   "evidence": [
     {
       "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/receipt.sanitized.json",
-      "sha256": "c0843004c9d40108b42cc759cc43ec29197efb2c19370bcb823fc2f5871f4b74"
+      "sha256": "5378d238318d72f2ac398f52679ac2a3e1baefb037b657237c753307ce98df04"
     },
     {
       "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/native-report.sanitized.json",
-      "sha256": "1757aba5bf2497f1637b8d3dd4aeda1762e15c084f6e9ebaf91b873ee61b644a"
+      "sha256": "ccd4805b5e22fa14767196ea9ea1b39b3ad5497894c847d0060ebf64bcda0a43"
     },
     {
       "path": "docs/stabilization/evidence/guest-seo-full/run38045276587/resource-finals.sanitized.json",

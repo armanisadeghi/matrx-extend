@@ -40,21 +40,14 @@
   "native_report": {
     "source_artifact_path": "test-results/seo-guest-acceptance.json",
     "sanitized_path": "native-report.sanitized.json",
-    "sha256": "1757aba5bf2497f1637b8d3dd4aeda1762e15c084f6e9ebaf91b873ee61b644a",
+    "sha256": "ccd4805b5e22fa14767196ea9ea1b39b3ad5497894c847d0060ebf64bcda0a43",
     "status": "partial",
     "target_count": 25,
     "target_status_counts": {
       "pass": 24,
       "unverified": 1
     },
-    "selected_cases": [
-      "T01",
-      "T02",
-      "T03",
-      "T07",
-      "T09",
-      "T14"
-    ],
+    "selected_cases": ["T01", "T02", "T03", "T07", "T09", "T14"],
     "unverified_reason": "The public DOM did not expose unique hreflang and openable schema door candidates."
   },
   "resource_finals": {
