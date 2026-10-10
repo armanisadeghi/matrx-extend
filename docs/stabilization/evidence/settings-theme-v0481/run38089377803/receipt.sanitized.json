@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "run_id": 38089377803,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38089377803",
+  "hosted_result_artifact_id": 11683313538,
+  "workflow_source_sha": "ccdcb2eaf70ac4fd6e13ebde82dffa6da9012aba",
+  "product_artifact": {
+    "ci_run_id": 38083507036,
+    "ci_artifact_id": 11681278805,
+    "source_sha": "6d4d91b2dc14fd1b001f4c3f4e0d712c00c13faf",
+    "version": "0.2.481",
+    "tree_sha256": "27bb537d9f2d1ad1bca0274f667e12e6952d1fe9c5b1a04b534e41d04f9c7836",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "channel": "unpublished CI development"
+  },
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "status": "pass",
+  "case_id": "EXT-F-1003-T04",
+  "mode": "guest",
+  "criteria": [
+    {
+      "name": "Original theme selection and storage observed",
+      "status": "pass",
+      "evidence": {
+        "activeSettings": true,
+        "count": 1,
+        "selected": "System",
+        "stored": null,
+        "storedPresent": false,
+        "storagePresent": false,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true,
+        "renderedBackgrounds": {
+          "token": "rgb(244, 244, 245)",
+          "body": "rgb(244, 244, 245)",
+          "root": null,
+          "activePanel": "rgba(0, 0, 0, 0)"
+        }
+      }
+    },
+    {
+      "name": "Original theme rendering observed",
+      "status": "pass",
+      "evidence": {
+        "activeSettings": true,
+        "count": 1,
+        "selected": "System",
+        "stored": null,
+        "storedPresent": false,
+        "storagePresent": false,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true,
+        "renderedBackgrounds": {
+          "token": "rgb(244, 244, 245)",
+          "body": "rgb(244, 244, 245)",
+          "root": null,
+          "activePanel": "rgba(0, 0, 0, 0)"
+        }
+      }
+    },
+    {
+      "name": "Dark theme and computed appearance observed",
+      "status": "pass",
+      "evidence": {
+        "activeSettings": true,
+        "count": 1,
+        "selected": "Dark",
+        "stored": "dark",
+        "storedPresent": true,
+        "storagePresent": true,
+        "darkClass": true,
+        "systemDark": false,
+        "renderedBackgroundMatches": true,
+        "renderedBackgrounds": {
+          "token": "rgb(39, 39, 42)",
+          "body": "rgb(39, 39, 42)",
+          "root": null,
+          "activePanel": "rgba(0, 0, 0, 0)"
+        }
+      }
+    },
+    {
+      "name": "Light theme and computed appearance observed",
+      "status": "pass",
+      "evidence": {
+        "activeSettings": true,
+        "count": 1,
+        "selected": "Light",
+        "stored": "light",
+        "storedPresent": true,
+        "storagePresent": true,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true,
+        "renderedBackgrounds": {
+          "token": "rgb(244, 244, 245)",
+          "body": "rgb(244, 244, 245)",
+          "root": null,
+          "activePanel": "rgba(0, 0, 0, 0)"
+        }
+      }
+    },
+    {
+      "name": "System theme and computed appearance observed",
+      "status": "pass",
+      "evidence": {
+        "activeSettings": true,
+        "count": 1,
+        "selected": "System",
+        "stored": "system",
+        "storedPresent": true,
+        "storagePresent": true,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true,
+        "renderedBackgrounds": {
+          "token": "rgb(244, 244, 245)",
+          "body": "rgb(244, 244, 245)",
+          "root": null,
+          "activePanel": "rgba(0, 0, 0, 0)"
+        }
+      }
+    },
+    {
+      "name": "Original theme selection and storage restored",
+      "status": "pass",
+      "evidence": {
+        "activeSettings": true,
+        "count": 1,
+        "selected": "System",
+        "stored": null,
+        "storedPresent": false,
+        "storagePresent": false,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true,
+        "renderedBackgrounds": {
+          "token": "rgb(244, 244, 245)",
+          "body": "rgb(244, 244, 245)",
+          "root": null,
+          "activePanel": "rgba(0, 0, 0, 0)"
+        }
+      }
+    },
+    {
+      "name": "Original theme rendering restored",
+      "status": "pass",
+      "evidence": {
+        "activeSettings": true,
+        "count": 1,
+        "selected": "System",
+        "stored": null,
+        "storedPresent": false,
+        "storagePresent": false,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true,
+        "renderedBackgrounds": {
+          "token": "rgb(244, 244, 245)",
+          "body": "rgb(244, 244, 245)",
+          "root": null,
+          "activePanel": "rgba(0, 0, 0, 0)"
+        }
+      }
+    }
+  ],
+  "steps": [
+    {
+      "phase": "warm",
+      "action": "Original theme selection and storage observed",
+      "observation": {
+        "selected": "System",
+        "stored": null,
+        "storedPresent": false,
+        "storagePresent": false,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true
+      }
+    },
+    {
+      "phase": "warm",
+      "action": "Original theme rendering observed",
+      "observation": {
+        "selected": "System",
+        "stored": null,
+        "storedPresent": false,
+        "storagePresent": false,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true
+      }
+    },
+    {
+      "phase": "warm",
+      "action": "Dark theme and computed appearance observed",
+      "observation": {
+        "selected": "Dark",
+        "stored": "dark",
+        "storedPresent": true,
+        "storagePresent": true,
+        "darkClass": true,
+        "systemDark": false,
+        "renderedBackgroundMatches": true
+      }
+    },
+    {
+      "phase": "warm",
+      "action": "Light theme and computed appearance observed",
+      "observation": {
+        "selected": "Light",
+        "stored": "light",
+        "storedPresent": true,
+        "storagePresent": true,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true
+      }
+    },
+    {
+      "phase": "warm",
+      "action": "System theme and computed appearance observed",
+      "observation": {
+        "selected": "System",
+        "stored": "system",
+        "storedPresent": true,
+        "storagePresent": true,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true
+      }
+    },
+    {
+      "phase": "warm",
+      "action": "Original theme selection and storage restored",
+      "observation": {
+        "selected": "System",
+        "stored": null,
+        "storedPresent": false,
+        "storagePresent": false,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true
+      }
+    },
+    {
+      "phase": "warm",
+      "action": "Original theme rendering restored",
+      "observation": {
+        "selected": "System",
+        "stored": null,
+        "storedPresent": false,
+        "storagePresent": false,
+        "darkClass": false,
+        "systemDark": false,
+        "renderedBackgroundMatches": true
+      }
+    }
+  ],
+  "full_extension_reload": {
+    "status": "missing",
+    "criteria": []
+  },
+  "resource_finals": {
+    "hosted-package-38089377803-1.jsonl": {
+      "schema": 1,
+      "at": "2026-10-10T21:56:08.896Z",
+      "runId": "hosted-package-38089377803-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "hosted-browser-38089377803-1.jsonl": {
+      "schema": 1,
+      "at": "2026-10-10T21:58:12.801Z",
+      "runId": "hosted-browser-38089377803-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "hosted-guest-38089377803-1.jsonl": {
+      "schema": 1,
+      "at": "2026-10-10T22:00:23.729Z",
+      "runId": "hosted-guest-38089377803-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  }
+}

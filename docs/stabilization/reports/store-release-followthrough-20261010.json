@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-10T21:52:53Z",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "public_listing": {
+    "url": "https://chromewebstore.google.com/detail/matrx-extend/hnfolienncfklkgmdjjmhhegglimlamg",
+    "method": "Direct read-only HTTPS public response; no browser interaction or private endpoint",
+    "response_date": "Sat, 10 Oct 2026 21:52:53 GMT",
+    "cache_control": "no-cache, no-store, max-age=0, must-revalidate",
+    "rendered_details_version": "0.2.205",
+    "embedded_manifest_version": "0.2.205",
+    "private_review_state_proven": false
+  },
+  "authenticated_dashboard": {
+    "current_observation": "unavailable",
+    "last_verified_at": "2026-10-10T20:22:00Z",
+    "last_verified_public_version": "0.2.205",
+    "last_verified_pending_version": "0.2.479",
+    "last_verified_auto_publication": true,
+    "last_verified_source": "common-docs/systems/apps/extension/CHROME-WEB-STORE.md prior authenticated dashboard receipt",
+    "limitation": "Browser Use exact primary Package route denied: Not allowed. Existing public Store tab reported: The extensions gallery cannot be scripted. No alternate UI mechanism attempted. No live 2FA challenge observed.",
+    "mutations": "none"
+  },
+  "release_decision": {
+    "action": "preserve last verified pending submission; no replacement, new dispatch or upload",
+    "reason": "No authenticated evidence of approval/rejection; public listing remains prior published version",
+    "approved_baseline_unchanged": "0.2.205",
+    "pending_source": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "pending_store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "local_build_or_release": false
+  },
+  "automation": {
+    "id": "matrx-extend-daily-review-and-update",
+    "kind": "heartbeat",
+    "status": "ACTIVE",
+    "rrule": "FREQ=HOURLY;INTERVAL=1",
+    "target_thread_id": "01a0da76-ddd4-7d10-8729-f2fa8dece918",
+    "updated_at": 1791669752750,
+    "tool_result": "automation_update mode=update succeeded; TOML readback verified",
+    "duplicate_created": false,
+    "daily_store_window_within_hourly_heartbeat": true,
+    "explicit_branches": [
+      "pending preserve/retry next daily window",
+      "published verify public version and update baseline then evaluate latest eligible synchronized main",
+      "rejected read feedback repair/retest/resubmit",
+      "check runtime/source drift immediately before dispatch/adoption/upload/submission",
+      "guarded hosted release only",
+      "no UI bypass for Store scripting refusal"
+    ],
+    "matching_local_automation_count": 1,
+    "official_review_email_check": true,
+    "readback_checks_pass": true,
+    "fresh_daily_release_subagent": {
+      "fresh_release_subagent": true,
+      "release_worker_counts_toward_cap": true,
+      "checkpoint_before_parent_ends": true,
+      "same_one_automation": true,
+      "owner_continues_testing": true
+    },
+    "release_subagent_counts_toward_existing_three_worker_cap": true,
+    "finish_or_durable_checkpoint_before_parent_turn_ends": true
+  },
+  "schedule_claim": {
+    "mcp_available": false,
+    "fallback_ledger": "common-docs/operations/scheduled-tasks.md",
+    "existing_daily_owner": "Codex01a0da76 / local Mac",
+    "updated_existing_window": true,
+    "new_daily_claim": false
+  },
+  "open_items": [
+    "Authenticated review-state refresh when permitted access becomes available",
+    "After verified publication, update approved baseline and evaluate fresh synchronized-main release eligibility",
+    "No actual Store-installed 0.2.479 acceptance while unpublished"
+  ],
+  "overall_health_claim": false,
+  "official_review_mail": {
+    "method": "Authenticated publisher Gmail via permitted Browser Use; no mail sent or changed",
+    "query": "in:anywhere after:2026/10/09 \"Chrome Web Store\"",
+    "result": "No messages matched your search",
+    "observed_at": "2026-10-10T21:57:00Z",
+    "limit": "Mail absence does not establish pending state; broad most-recent result showed October 4 publication notice."
+  },
+  "publisher_api_feasibility": {
+    "docs": [
+      "https://developer.chrome.com/docs/webstore/using-api",
+      "https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/fetchStatus",
+      "https://developer.chrome.com/docs/webstore/api/reference/rest/v2/publishers.items/publish"
+    ],
+    "supported_path": "API v2 fetchStatus returns published/submitted revisions; upload and publish support existing item submission with existing visibility",
+    "auth_required": "chromewebstore OAuth scope (readonly scope also allowed for fetchStatus); publisher account and publisher ID must be verified",
+    "workspace_and_github_secret_names": "No Store-specific OAuth client/refresh credential established; ordinary Google OAuth client keys do not prove required scope",
+    "vault_metadata": "Existing publisher-account Google connection is managed, sealed, Automation only, usable only by trusted server execution. Scope not exposed. No Chrome Web Store-specific item identified among 45 personal credential metadata entries.",
+    "credentials_revealed": false,
+    "api_implemented_or_called": false,
+    "remaining_gap": "Verified Store-scoped authorized token through trusted server execution and verified publisher ID; no new access granted."
+  }
+}

@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "run_id": 38089377803,
+  "feature_id": "EXT-F-1003",
+  "scope": "Bounded hosted guest Settings Theme case (EXT-F-1003-T04), warm-state selection and rendering only.",
+  "acceptance_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38089377803",
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_source_sha": "ccdcb2eaf70ac4fd6e13ebde82dffa6da9012aba",
+  "workflow_conclusion": "success",
+  "workflow_lane": "B",
+  "acceptance_case": "settings-theme-rendering",
+  "auth_mode": "guest",
+  "outcome": "partial",
+  "product_artifact": {
+    "kind": "unpublished_ci_development",
+    "version": "0.2.481",
+    "source_sha": "6d4d91b2dc14fd1b001f4c3f4e0d712c00c13faf",
+    "ci_run_id": 38083507036,
+    "artifact_id": 11681278805,
+    "artifact_digest": "sha256:a2d93605850b1aee6a9703dc882873246ae1b55837cacfa744b23e9a083e315e",
+    "tree_sha256": "27bb537d9f2d1ad1bca0274f667e12e6952d1fe9c5b1a04b534e41d04f9c7836",
+    "tree_hash_independently_recomputed": true,
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "eligible_store": false
+  },
+  "hosted_result_artifact": {
+    "id": 11683313538,
+    "digest": "sha256:63ffeab32a5bc4d4b82dccf8508192b29d6bf4b37070de957bd0ea1a6e3f89a1",
+    "workflow_run_id": 38089377803,
+    "digest_independently_recomputed": true
+  },
+  "case_results": {
+    "EXT-F-1003-T04": {
+      "status": "partial",
+      "mode": "guest",
+      "native_report_status": "pass",
+      "verified_behavior": [
+        "Native Theme selection produced Dark, Light, and System values with matching stored preference, dark-class state, and computed token/body background for each warm-state choice.",
+        "The original implicit System state with absent theme/settings keys was restored, with rendered background restored."
+      ],
+      "unverified": [
+        "Panel-document and full extension reload/reopen persistence.",
+        "System appearance while the OS prefers dark mode.",
+        "A serialized visible guest identity assertion for this route."
+      ],
+      "criteria_passed": 7,
+      "criteria_failed": 0,
+      "criteria_unverified": 0,
+      "product_defect_established": false
+    }
+  },
+  "resource_finals": {
+    "package": {
+      "journal": "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-package-38089377803-1.jsonl",
+      "sha256": "8d2e9996880518d0180c9c80a1ea77652d4c39483c0948475bf1efcd716bcf19",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "journal": "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-browser-38089377803-1.jsonl",
+      "sha256": "faf5f1601c73de43685795e5df6af60b2132de01b0fe6444782dce2534e86d73",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "journal": "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-guest-38089377803-1.jsonl",
+      "sha256": "7f83ae49562162b7d582ed522199ee8324ce98774fe7f2e407b4d8e915d5f816",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "independent_review": "docs/stabilization/reports/guest-settings-theme-v0481-peer-38089377803.json",
+  "review_verdict": {
+    "behavior": "PARTIAL",
+    "evidence_quality": "PARTIAL",
+    "canonical_case": "partial; do not mark complete"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/settings-theme-v0481/run38089377803/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-theme-v0481/run38089377803/native-result.sanitized.json",
+    "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-package-38089377803-1.jsonl",
+    "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-browser-38089377803-1.jsonl",
+    "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-guest-38089377803-1.jsonl",
+    "docs/stabilization/reports/guest-settings-theme-v0481-peer-38089377803.json"
+  ],
+  "limits": [
+    "Frozen v0.2.481 development artifact only; no current-main runtime or Store result.",
+    "EXT-F-1003-T04 remains partial pending reload/reopen persistence proof; C10 and C30 were not exercised.",
+    "The hosted archive contained unrelated historic resource journals; only the three run-matched finals are retained here.",
+    "Uploaded screenshots are generic panel/target captures and do not corroborate Settings behavior."
+  ]
+}

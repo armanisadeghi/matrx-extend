@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_acceptance_evidence_review",
+  "reviewer_task": "/root/theme_case_independent_review",
+  "verdict_a_behavior": "PARTIAL",
+  "verdict_b_evidence_quality": "PARTIAL",
+  "run": {
+    "run_id": 38089377803,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38089377803",
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_source_sha": "ccdcb2eaf70ac4fd6e13ebde82dffa6da9012aba",
+    "workflow_conclusion": "success",
+    "case_id": "EXT-F-1003-T04",
+    "mode": "guest",
+    "bounded_scope": "Warm Settings Theme interactions on an unpublished frozen development artifact"
+  },
+  "product_artifact": {
+    "source_sha": "6d4d91b2dc14fd1b001f4c3f4e0d712c00c13faf",
+    "version": "0.2.481",
+    "ci_run_id": 38083507036,
+    "artifact_id": 11681278805,
+    "artifact_digest": "sha256:a2d93605850b1aee6a9703dc882873246ae1b55837cacfa744b23e9a083e315e",
+    "tree_sha256": "27bb537d9f2d1ad1bca0274f667e12e6952d1fe9c5b1a04b534e41d04f9c7836",
+    "tree_hash_independently_recomputed": true,
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "eligible_store": false
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11683313538,
+    "digest": "sha256:63ffeab32a5bc4d4b82dccf8508192b29d6bf4b37070de957bd0ea1a6e3f89a1",
+    "workflow_run_id": 38089377803,
+    "digest_independently_recomputed": true
+  },
+  "verified_behavior": [
+    "The workflow ran the selected settings-theme-rendering route in its guest job on isolated Chrome-for-Testing; route code calls the native panel driver's visible-target click for the Theme combobox and Dark/Light/System options.",
+    "The native report records warm selection, persisted storage value, dark-class state and computed token/body background match for Dark, Light and System; the System preference matched the runner's light OS setting.",
+    "The report records restoration of the original implicit System baseline, including removal of the theme value and settings storage key, with rendered background restored.",
+    "The three current-run package, browser and guest resource journals each end in a matching RESOURCE_FINAL_DECISION: valid, admitted=true, resourceInvalid=false, exitCode=0."
+  ],
+  "evidence_quality": [
+    "GitHub API run metadata binds the hosted artifact to workflow checkout ccdcb2e and the frozen development artifact to CI run 38083507036/source SHA 6d4d91b2; both artifact IDs/digests match the downloaded archives. The extracted development tree hash recomputes to the receipt value.",
+    "The uploaded hosted-result archive contains 24 unrelated historic resource journals in addition to the three run-specific journals. The sanitized run-scoped bundle excludes those stale journals and retains the exact three current finals.",
+    "The uploaded screenshots are generic panel/target captures and do not show Settings or Theme interaction; they provide no visual corroboration for those assertions. The native structured result plus the matching driver path are the behavior evidence."
+  ],
+  "credit": {
+    "warm_theme_observation": "supported_bounded_credit",
+    "canonical_t04": "partial; do not mark complete",
+    "product_defect_established": false
+  },
+  "limits": [
+    "full_extension_reload and panel-document reload are missing; persistence across reload/reopen is not established in this run.",
+    "System appearance under a dark OS preference is not tested.",
+    "The native report declares guest scope and the workflow ran the guest job, but does not serialize a separate visible signed-out identity assertion in this route.",
+    "No member/admin, Store, or current-main runtime behavior follows from this frozen development artifact."
+  ],
+  "evidence_files": [
+    "docs/stabilization/evidence/settings-theme-v0481/run38089377803/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-theme-v0481/run38089377803/native-result.sanitized.json",
+    "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-package-38089377803-1.jsonl",
+    "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-browser-38089377803-1.jsonl",
+    "docs/stabilization/evidence/settings-theme-v0481/run38089377803/hosted-guest-38089377803-1.jsonl"
+  ],
+  "recommended_action": "Record bounded warm-selection/rendering credit only; leave EXT-F-1003-T04 partial pending an exact-artifact full extension reload/reopen check. Scope hosted result uploads to run-specific journals and provide a Settings-specific screenshot if visual evidence is required."
+}
