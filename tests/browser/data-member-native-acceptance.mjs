@@ -12,6 +12,7 @@ import { clickPickerDone, clickPickerField, pickerText } from './data-guest-pick
 import {
   buildDataPatternDeleteUrl,
   buildDataPatternLookupUrl,
+  cleanupOwnedDataPattern,
   verifyDataPatternDeleteResult,
   verifyDataPatternLookupResult,
 } from './data-member-pattern-cleanup.mjs';
@@ -550,19 +551,34 @@ try {
         await panel.send('Network.disable').catch(() => {});
         if (saveAttempted) {
           try {
-            if (writeTarget) {
-              const target =
-                verifiedTarget ??
-                verifyDataPatternLookupResult(
-                  await lookupSavedPattern(panel, patternName, writeTarget.organizationId),
-                  patternName,
-                  writeTarget.organizationId,
-                );
-              report.cleanup = await deleteSavedPattern(panel, target);
-            } else if (snapshot.some((write) => write.status === 201)) {
-              cleanupError = new Error('data_member_cleanup_target_missing');
-              report.cleanup = { verified: false, error: 'data_member_cleanup_target_missing' };
-            } else report.cleanup = { verified: true, no_successful_write_observed: true };
+            const queryOwnedPattern = async (lookupName, lookupOrganizationId) => {
+              let firstFailure;
+              try {
+                const result = await lookupSavedPattern(panel, lookupName, lookupOrganizationId);
+                if (result?.status === 200 && Array.isArray(result.rows)) return result;
+                firstFailure = new Error('data_member_cleanup_lookup_unavailable');
+              } catch (error) {
+                firstFailure = error;
+              }
+              try {
+                panel = await native.acquireLivePanel();
+                return await lookupSavedPattern(panel, lookupName, lookupOrganizationId);
+              } catch {
+                throw firstFailure;
+              }
+            };
+            report.cleanup = await cleanupOwnedDataPattern({
+              lookup: queryOwnedPattern,
+              remove: (target) => deleteSavedPattern(panel, target),
+              name: patternName,
+              organizationId: identity.organizationId,
+              successfulWriteObserved:
+                snapshot.some((write) => write.status === 201) || verifiedTarget !== null,
+              ...(writeTarget &&
+                UUID.test(writeTarget.patternId ?? '') && {
+                  expectedPatternId: writeTarget.patternId,
+                }),
+            });
           } catch (error) {
             cleanupError = error;
             report.cleanup = { verified: false, error: safeFailureCode(error) };

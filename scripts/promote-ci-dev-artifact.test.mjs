@@ -51,7 +51,7 @@ function fixture() {
     runId: 37986090931,
     runAttempt: 1,
     artifactId: 11643292724,
-    source: { originMain: sha, localHead: sha },
+    source: { originMain: sha, localHead: sha, trackedDirty: false, untrackedRunnerInputs: [] },
     treeSha256: hashReleaseTree(source),
   };
   return { root, source, destination, evidence, sha };
@@ -167,15 +167,37 @@ test('refuses a symlinked stable destination', () => {
   }
 });
 
-test('accepts a forward resource journal commit and records both source revisions', () => {
+test('accepts a forward resource journal commit despite unrelated dirty working-tree files', () => {
   const f = fixture();
   try {
     const journal = 'docs/stabilization/resource-journals/native-run.jsonl';
     const mainSha = commit(f.root, journal, '{"event":"completed"}\n');
     git(f.root, 'update-ref', 'refs/remotes/origin/main', mainSha);
+    writeFileSync(join(f.root, 'src/panel.js'), 'uncommitted working-tree edit');
+    mkdirSync(join(f.root, 'tests/browser'), { recursive: true });
+    writeFileSync(join(f.root, 'tests/browser/pending.mjs'), 'untracked runner input');
+    const before = hashReleaseTree(f.destination);
+    assert.throws(
+      () =>
+        promoteVerifiedCiDevArtifact({
+          sourceDir: f.source,
+          evidence: f.evidence,
+          repoRoot: f.root,
+        }),
+      /ci_dev_evidence_refused/,
+    );
+    assert.equal(hashReleaseTree(f.destination), before);
     const result = promoteVerifiedCiDevArtifact({
       sourceDir: f.source,
-      evidence: f.evidence,
+      evidence: {
+        ...f.evidence,
+        source: {
+          originMain: mainSha,
+          localHead: mainSha,
+          trackedDirty: true,
+          untrackedRunnerInputs: ['tests/browser/pending.mjs'],
+        },
+      },
       repoRoot: f.root,
     });
     const receipt = JSON.parse(readFileSync(result.receiptPath, 'utf8'));

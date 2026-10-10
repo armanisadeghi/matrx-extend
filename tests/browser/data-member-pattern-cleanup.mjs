@@ -60,6 +60,59 @@ export function verifyDataPatternLookupResult(result, name, organizationId) {
   return { patternId: row.id, organizationId };
 }
 
+export function resolveDataPatternCleanupLookup(
+  result,
+  name,
+  organizationId,
+  { successfulWriteObserved = false } = {},
+) {
+  assert.equal(result?.status, 200, 'data_member_cleanup_lookup_http_failed');
+  assert.ok(Array.isArray(result?.rows), 'data_member_cleanup_lookup_rows_missing');
+  if (result.rows.length === 0) {
+    assert.equal(
+      successfulWriteObserved,
+      false,
+      'data_member_cleanup_row_missing_after_successful_write',
+    );
+    return { kind: 'none' };
+  }
+  return {
+    kind: 'delete',
+    target: verifyDataPatternLookupResult(result, name, organizationId),
+  };
+}
+
+export async function cleanupOwnedDataPattern({
+  lookup,
+  remove,
+  name,
+  organizationId,
+  successfulWriteObserved = false,
+  expectedPatternId,
+}) {
+  const result = await lookup(name, organizationId);
+  const resolved = resolveDataPatternCleanupLookup(result, name, organizationId, {
+    successfulWriteObserved,
+  });
+  if (resolved.kind === 'none') {
+    return {
+      verified: true,
+      deleted_rows: 0,
+      exact_owned_name_organization_lookup: true,
+    };
+  }
+  if (expectedPatternId) {
+    assert.equal(
+      resolved.target.patternId,
+      expectedPatternId,
+      'data_member_cleanup_lookup_write_id_mismatch',
+    );
+  }
+  const deletion = await remove(resolved.target);
+  assert.equal(deletion?.verified, true, 'data_member_cleanup_unverified');
+  return { ...deletion, exact_owned_name_organization_lookup: true };
+}
+
 export function buildDataPatternDeleteUrl(origin, patternId, organizationId) {
   assert.match(patternId ?? '', UUID, 'data_member_cleanup_pattern_id_missing');
   assert.match(organizationId ?? '', UUID, 'data_member_cleanup_organization_missing');
