@@ -122,7 +122,8 @@ Never reuse or decrease a version. Do not write `0.2.00`; canonical SemVer is
    for a staged release.
 7. Verify the dashboard reaches **Pending review**. Record exact version,
    artifact SHA-256, classification, changed Store fields, submission time, and
-   auto-publish state in `/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md`; commit and push it.
+   auto-publish state in `/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md`
+   by replacing its current-state entry, never by appending a dated run paragraph; commit and push it.
 8. Monitor the dashboard and Google email until approved, rejected, or action
    is requested. On publication, verify **Published - public**, update the
    approved baseline version/commit/policy surface, and close the record.
