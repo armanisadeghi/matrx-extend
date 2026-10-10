@@ -1,0 +1,10 @@
+{"schema":1,"code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"code":"RESOURCE_ADMITTED"}
+{"schema":1,"code":"RESOURCE_CPU_PENDING","reasons":["RESOURCE_CPU_HIGH_LOAD_BUSY"]}
+{"schema":1,"code":"RESOURCE_PROCESS_ATTRIBUTION"}
+{"schema":1,"code":"RESOURCE_JOB_EXIT"}
+{"schema":1,"code":"RESOURCE_COMPLETION_RECOVERY_PENDING"}
+{"schema":1,"code":"RESOURCE_CPU_PENDING"}
+{"schema":1,"code":"RESOURCE_CPU_PENDING"}
+{"schema":1,"code":"RESOURCE_CPU_RECOVERED"}
+{"schema":1,"code":"RESOURCE_FINAL_DECISION","decision":"valid","admitted":true,"resource_invalid":false,"exit_code":0}

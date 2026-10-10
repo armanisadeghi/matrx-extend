@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "record_kind": "hosted_guest_seo_store_run",
+  "run_id": 38078047622,
+  "version": "0.2.476",
+  "source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+  "scope": "full selected guest SEO acceptance scope",
+  "product_verdict": "PARTIAL: 24/25 target rows pass; public T09 metadata doors remain unverified.",
+  "evidence_verdict": "PASS_FOR_BOUNDED_EVIDENCE_WITH_LIMITATIONS",
+  "evidence_folder": "docs/stabilization/evidence/guest-seo-store/run38078047622",
+  "peer_review": "docs/stabilization/reports/peer-review-run38078047622.json",
+  "comparison": "Same 25 target IDs/statuses as exact-v0.2.474 run 38077041667; 0 distinct new subtargets.",
+  "limitations": [
+    "No full SEO health claim.",
+    "Automatic SEO metrics and live-page readability numeric correctness remain unverified.",
+    "Member/admin modes and deferred cases remain untested."
+  ]
+}

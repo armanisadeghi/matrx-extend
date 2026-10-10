@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_guest_chat_store_evidence_review",
+  "reviewer": "independent_guest_store_run_review",
+  "verdict": "PASS_BOUNDED_GUEST_CHAT_V0476",
+  "run_id": 38078038132,
+  "provenance": {
+    "release_run_id": 38077256885,
+    "release_source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "tag_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "store_zip_sha256": "584642d2f27a867f33dd37db7d798112648b03b91b25117367c1e8bb54c881bc",
+    "runtime_tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056",
+    "hosted_result_artifact_id": 11678633385,
+    "hosted_result_artifact_digest": "sha256:7ca40983e403b76f8d25eb9cd72a03ba33cab3e58762daeb9ca67e30de9cff8f"
+  },
+  "verdict_a_live_behavior": {
+    "status": "PASS_FOR_BOUNDED_GUEST_CHAT",
+    "coverage": [
+      "A fresh guest opened Chat and received a completed answer grounded in an unpredictable page fixture; terminal diagnostics matched the assigned tab and page markers.",
+      "A second grounded turn retained the same conversation identity and reached terminal completion.",
+      "After panel reload, the guest session remained absent and a separate new conversation produced a completed grounded answer.",
+      "All three observed guest AI requests returned HTTP 200; server version was reachable and stable before and after."
+    ],
+    "not_claimed": [
+      "This is a bounded guest-chat journey, not full guest Chat or all role/tool behavior.",
+      "Observer attaches after panel load; it does not establish network requests before attachment."
+    ]
+  },
+  "verdict_b_evidence": {
+    "status": "PASS_WITH_SCREENSHOT_LIMITATION",
+    "notes": [
+      "Release tag, receipt source SHA, Store ZIP hash, runtime tree hash, and hosted report agree; artifacts were downloaded and their API digests independently recomputed.",
+      "All package/browser/guest resource finals are valid.",
+      "The opening-answer screenshot shows an empty composer; the two follow-up screenshots show only clipped answer fragments. Screenshots do not independently show the complete opening reply, so bounded pass rests on native report assertions, grounding diagnostics, request records, and terminal timelines."
+    ]
+  },
+  "checked_files": [
+    "test-results/guest-chat-store-*.json",
+    "test-results/native-sidepanel-qa-*/guest-chat-*.png",
+    "docs/stabilization/resource-journals/hosted-{package,browser,guest}-38078038132-1.jsonl"
+  ],
+  "verification": "Downloaded hosted result and release artifacts, independently checked their SHA-256 digests, replayed exact Store ZIP selection/key adaptation, matched runtime tree to native report, inspected all request and terminal-turn assertions, all resource finals, and all screenshots. No browser launched during this review."
+}

@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "hosted_run": {
+    "run_id": 38078047622,
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "case": "guest-seo",
+    "scope": "full",
+    "conclusion": "success"
+  },
+  "release": {
+    "release_run_id": 38077256885,
+    "release_artifact_id": 11678519586,
+    "release_artifact_name": "matrx-extend-v0.2.476",
+    "release_artifact_api_digest": "sha256:3e1277f1df8692fa252fadcb3ba5a600c386ca00fdb7b958d0189103ba20dde8",
+    "release_artifact_digest_independently_verified": true,
+    "version": "0.2.476",
+    "tag": "v0.2.476",
+    "tag_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "tag_matches_receipt_source": true,
+    "publish_state": "pushed",
+    "store_zip_sha256": "584642d2f27a867f33dd37db7d798112648b03b91b25117367c1e8bb54c881bc",
+    "store_zip_hash_matches_receipt": true,
+    "receipt_tree_sha256": "f0ba0265a00d8252de8f937fb47e5049a3a4f4acd559f4ad697d7852245679fc",
+    "runtime_tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056",
+    "expected_runtime_tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056",
+    "runtime_tree_matches_native": true
+  },
+  "hosted_result_artifact": {
+    "id": 11679643820,
+    "name": "hosted-guest-38078047622-1",
+    "digest": "sha256:8b98f6de7271b134c7144861a2a3d5564fe90f77363d0909b2e3ff306470e91f",
+    "digest_independently_verified": true
+  },
+  "resource_finals": {
+    "path": "resource-finals.sanitized.json",
+    "all_three_valid": true
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "status": "partial",
+    "runtime_tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056"
+  },
+  "sanitization": "Raw URLs, page text, question/code values, account data, fingerprints, runner paths, and screenshots are omitted."
+}
