@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "feature_case": "EXT-F-2005-T01 guest Data picker preview/selection and save gate",
+  "hosted_run_id": 38085419850,
+  "native_status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "version": "0.2.479",
+    "receipt_kind": "native_store_zip_candidate_key_adapted",
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "adapted_loaded_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55"
+  },
+  "guest_behavior": {
+    "empty_picker_cancel_dismissed": true,
+    "cancel_preserved_selected_fields": true,
+    "pattern_writes_during_cancel": 0,
+    "controlled_rows": 3,
+    "two_distinct_previews": true,
+    "preview_values": ["Cedar chair", "$429"],
+    "two_fields_selected": true,
+    "pattern_name_control_absent": true,
+    "save_pattern_control_absent": true,
+    "sign_in_to_save_present": true,
+    "sign_in_action_used": true,
+    "pattern_write_requests_before_auth": 0
+  },
+  "result": "Bounded guest picker cancel, distinct preview/selection, and unauthenticated save-gate assertions passed.",
+  "limits": [
+    "No signed-in pattern save or persistence was tested.",
+    "No member/admin Data behavior or other Data cases were tested.",
+    "The Store ZIP was candidate-key adapted and loaded unpacked; this is not a Store-installed result.",
+    "Screenshots show guest panel and the generic target setup, not Data picker interaction; native assertions provide the behavior evidence."
+  ],
+  "screenshots": ["screenshots/native-side-panel.png", "screenshots/normal-target-after-open.png"]
+}

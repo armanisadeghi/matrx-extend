@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "review_id": "peer-review-guest-data-v0479-run38085419850",
+  "reviewer": "independent peer reviewer",
+  "reviewed_run_id": 38085419850,
+  "review_status": "verified_bounded_pass",
+  "scope": "Exact v0.2.479 candidate guest Data case EXT-F-2005-T01 only.",
+  "independent_checks": {
+    "raw_hosted_artifact_id": 11682586572,
+    "raw_artifact_digest_matches_receipt": true,
+    "workflow_source_sha_matches_run": true,
+    "release_run_artifact_and_source_match": true,
+    "release_store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "candidate_key_adapted_loaded_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+    "native_report_status": "pass",
+    "native_report_stage": "complete",
+    "resource_finals": {
+      "package": "valid, admitted, exit 0; journal hash matches sanitized finals",
+      "browser": "valid, admitted, exit 0; journal hash matches sanitized finals",
+      "guest": "valid, admitted, exit 0; journal hash matches sanitized finals"
+    },
+    "cleanup": "Harness finally block detaches CDP, closes its local server, stops only the child it spawned, and removes the temporary profile root; run completed and all three wrappers finalized."
+  },
+  "behavior_verified": [
+    "Empty picker Cancel dismissed the picker without changing selected-field state; request observation recorded zero pattern writes.",
+    "The three-card controlled page produced two distinct previews (Cedar chair and $429) and two selected fields.",
+    "Guest pattern-name and Save pattern controls were absent; Sign in to save was present and activated.",
+    "Network observation recorded zero pattern-write requests before authentication."
+  ],
+  "resource_note": "The guest journal recorded a transient high-load CPU warning (0.74 busy, load 2.61 on 3 CPUs), then observed recovery and ended with a valid decision; this does not invalidate the run.",
+  "limitations": [
+    "Screenshots show setup only, not the Data interaction; the native result assertions are the behavior evidence.",
+    "Candidate-key adaptation and unpacked loading are not Store-installed proof.",
+    "This repeats bounded T01 behavior previously observed on v0.2.471, v0.2.473, and v0.2.474; it is not a new Data behavior class or broader coverage.",
+    "No authenticated save, persistence, member/admin behavior, or other Data case was exercised; later package versions exist."
+  ],
+  "blocking_corrections": [],
+  "source_test_review": "The run-matched test observes writes at the network boundary for both empty-picker cancellation and the unauthenticated sign-in-to-save action; it asserts no pattern write before authentication. Harness cleanup is real and scoped to owned processes/resources."
+}
