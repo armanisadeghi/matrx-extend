@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38046648854,
+  "case_id": "settings-persistence-member",
+  "status": "self_reported_terminal_checks",
+  "repo_secret": {
+    "secret_name": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+    "deleted_after_workflow_terminal": true,
+    "absence_check_method": "GitHub CLI secret-name listing filtered to the exact name; only the resulting count was retained.",
+    "observed_count": 0,
+    "evidence_class": "executor-reported; not independently attested by a separate reviewer"
+  },
+  "local_one_time_link": {
+    "unlinked_immediately_after_secret_upload": true,
+    "terminal_absence_check_method": "Local temporary-directory scan for the known one-time-link basename; output retained only the aggregate remaining-file count.",
+    "observed_remaining_count": 0,
+    "evidence_class": "executor-reported; not independently attested by a separate reviewer"
+  },
+  "credential_values_in_record": false,
+  "limitations": "These checks were performed by the run executor and recorded from local tool output. No signed or independently generated cleanup attestation exists; this record must not be treated as peer-verifiable proof."
+}

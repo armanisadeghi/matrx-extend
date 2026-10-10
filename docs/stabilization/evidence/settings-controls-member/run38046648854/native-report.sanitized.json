@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "case_id": "settings-persistence-member",
+  "status": "fail",
+  "auth_mode": "member",
+  "failure_stage": "authentication",
+  "failure_operation": "member_organization_storage_resolution",
+  "failure_code": "member_organization_storage_resolution_assertion_failed",
+  "cases_observed": 0,
+  "authentication_observed": false,
+  "failure_observation": {
+    "settings_available": true,
+    "settings_active": true,
+    "theme": "System",
+    "stored_theme": null,
+    "error_visible": false,
+    "retry_visible": false,
+    "guest_marker": false
+  },
+  "interpretation": "The native oracle stopped during member organization-storage resolution before Settings persistence cases or authenticated identity verification; this run provides no Settings behavior verdict."
+}
