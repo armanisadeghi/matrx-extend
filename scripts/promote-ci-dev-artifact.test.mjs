@@ -327,3 +327,74 @@ test('refuses an artifact source outside current main ancestry', () => {
     rmSync(f.root, { recursive: true, force: true });
   }
 });
+
+for (const path of [
+  'docs/stabilization/STATUS.md',
+  'docs/stabilization/STATUS.html',
+  'docs/stabilization/inventory.json',
+  'docs/stabilization/defects/EXT-D-0187.json',
+  'docs/stabilization/reports/hosted-review.json',
+  'docs/stabilization/evidence/settings-controls/receipt.sanitized.json',
+  'docs/stabilization/evidence/settings-controls/screenshot.png',
+]) {
+  test(`accepts documentation-only history at ${path} without changing imported bytes`, () => {
+    const f = fixture();
+    try {
+      commit(f.root, path, 'first evidence');
+      const mainSha = commit(f.root, path, 'reviewed evidence');
+      git(f.root, 'update-ref', 'refs/remotes/origin/main', mainSha);
+      const result = promoteVerifiedCiDevArtifact({
+        sourceDir: f.source,
+        evidence: {
+          ...f.evidence,
+          source: { ...f.evidence.source, originMain: mainSha, localHead: mainSha },
+        },
+        repoRoot: f.root,
+      });
+      assert.equal(result.compatibility, 'runtime-equivalent');
+      assert.equal(hashReleaseTree(f.destination), f.evidence.treeSha256);
+      assert.deepEqual(JSON.parse(readFileSync(result.receiptPath, 'utf8')).allowedDiffPaths, [
+        path,
+      ]);
+    } finally {
+      rmSync(f.root, { recursive: true, force: true });
+    }
+  });
+}
+
+for (const path of [
+  'src/config/env.ts',
+  'wxt.config.ts',
+  'package.json',
+  'pnpm-lock.yaml',
+  '.github/workflows/ci.yml',
+  'release.sh',
+  'scripts/build.mjs',
+  'scripts/promote-ci-dev-artifact.mjs',
+  'scripts/promote-ci-dev-artifact.test.mjs',
+  'docs/stabilization/resource-policy.json',
+  'docs/stabilization/evidence/runtime.js',
+]) {
+  test(`refuses build or operational input history at ${path} even if later restored`, () => {
+    const f = fixture();
+    try {
+      commit(f.root, path, 'initial input');
+      commit(f.root, path, 'changed input');
+      const mainSha = commit(f.root, path, 'initial input');
+      git(f.root, 'update-ref', 'refs/remotes/origin/main', mainSha);
+      const before = hashReleaseTree(f.destination);
+      assert.throws(
+        () =>
+          promoteVerifiedCiDevArtifact({
+            sourceDir: f.source,
+            evidence: f.evidence,
+            repoRoot: f.root,
+          }),
+        /ci_dev_runtime_source_changed/,
+      );
+      assert.equal(hashReleaseTree(f.destination), before);
+    } finally {
+      rmSync(f.root, { recursive: true, force: true });
+    }
+  });
+}
