@@ -26,6 +26,7 @@ import {
   type SwipeCaptureReceipt,
   readSwipeReceipt,
 } from '@/lib/swipe-file/receipt';
+import { saveToSwipeFile } from '@/lib/swipe-file/save';
 import { useSwipeFileStore } from '@/state/swipe-file';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { ArrowLeft, Bookmark, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
@@ -244,7 +245,28 @@ export function SwipeFileView() {
                   </div>
                 </div>
                 <section className="rounded-lg border p-3 space-y-2">
-                  <h3 className="text-xs font-semibold">Capture</h3>
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-xs font-semibold">Capture</h3>
+                    {member && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={busy}
+                        onClick={() =>
+                          void act(async () => {
+                            const result = await saveToSwipeFile(
+                              { url: post.url, collectionId: member.source_id },
+                              setStatus,
+                            );
+                            if (result.status === 'failed') throw new Error(result.reason);
+                            if (selection) select({ ...selection });
+                          }, 'Capture refreshed')
+                        }
+                      >
+                        Refresh capture
+                      </Button>
+                    )}
+                  </div>
                   <div className="flex flex-wrap gap-2 text-xs">
                     <span className="rounded bg-muted px-2 py-1">
                       {mediaLoaded
