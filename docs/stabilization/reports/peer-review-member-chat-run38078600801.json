@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_member_chat_store_evidence_review",
+  "reviewer": "independent_member_chat_run_review",
+  "verdict": "PASS_BOUNDED_NONADMIN_MEMBER_CHAT_V0476",
+  "run": {
+    "hosted_run_id": 38078600801,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38078600801",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_source_sha": "858e6761f9bdda4bfa19cded72bddb4ba4a206f7",
+    "conclusion": "success",
+    "case": "member-chat",
+    "reviewed_at": "2026-10-10"
+  },
+  "product_verdict": {
+    "status": "PASS_FOR_BOUNDED_MEMBER_CHAT",
+    "identity": {
+      "method": "existing_user_magic_link",
+      "web_and_extension_signed_in": true,
+      "same_user_verified": true,
+      "admin_check_http_status": 200,
+      "admin_assignment_rows": 0,
+      "conclusion": "A real signed-in non-admin identity was matched across web and extension; the canonical admin check returned no assignment rows."
+    },
+    "transport": {
+      "valid_organization_header_present": true,
+      "start_http_status": 200,
+      "response_matches_request_conversation": true,
+      "backend_request_identity_present": true,
+      "assistant_answer_completed": true,
+      "answer_names_expected_page_stages": true
+    },
+    "diagnostic_false_fields": {
+      "organization_header_matches_approved": "Unevaluated in this non-admin path: approvedOrganization is null unless the explicit admin lane is enabled. The normal member assertion requires a non-empty fingerprint of a UUID X-Organization-Id header and HTTP 200; this request passed both.",
+      "mode_matches": "Unevaluated in this basic Chat path: observeAuthenticatedTransport is called with expected mode null. The observed ask mode is informational; this comparison is not asserted here.",
+      "successful_create_tab_result_posted": "Not expected for the natural-language question in this bounded run; no tool action was requested or tested."
+    }
+  },
+  "artifact_provenance": {
+    "release_run_id": 38077256885,
+    "release_artifact_id": 11678519586,
+    "release_artifact_api_digest": "sha256:3e1277f1df8692fa252fadcb3ba5a600c386ca00fdb7b958d0189103ba20dde8",
+    "release_artifact_digest_independently_verified": true,
+    "version": "0.2.476",
+    "tag_source_sha": "b0ddaa566cd8c87a68cd234cc3db01b7959181db",
+    "receipt_source_sha_matches_tag": true,
+    "publish_state": "pushed",
+    "store_zip_sha256": "584642d2f27a867f33dd37db7d798112648b03b91b25117367c1e8bb54c881bc",
+    "store_zip_hash_matches_receipt": true,
+    "runtime_tree_sha256": "3a336b69474ce017263091c46c83004b78590316b39bbfb95e609552000da056",
+    "runtime_tree_matches_native_report": true,
+    "hosted_result_artifact_id": 11679945486,
+    "hosted_result_artifact_digest": "sha256:bcbe864c2f7db637dfe0c5708e460e5840e87a4fcefb580e7ca54c9cf517ef6f",
+    "hosted_result_digest_independently_verified": true
+  },
+  "resource_finals": {
+    "package": {"admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid"},
+    "browser": {"admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid"},
+    "guest": {"admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid"}
+  },
+  "screenshot_review": {
+    "result_screenshot_inspected": true,
+    "observation": "The native side-panel screenshot shows a visible assistant answer describing the workflow stages and a ready composer; it is a cropped portion of the conversation, not the full turn."
+  },
+  "secret_cleanup": {
+    "github_secret_name": "MATRX_REVIEWER_MAGIC_LINK_JSON",
+    "name_only_metadata_matches": 0,
+    "local_temporary_directory_prefix": "/private/tmp/matrx-v476-member-arm.*",
+    "matching_local_paths": 0,
+    "values_read": false
+  },
+  "limitations": [
+    "This is bounded acceptance of one natural-language member Chat answer on exact v0.2.476.",
+    "Browser tool actions, result posting, other permission modes, Store installation, Settings, and broader extension surfaces were not tested.",
+    "A later main release is in progress; this record makes no latest-package or newer-candidate acceptance claim."
+  ],
+  "checked_files": [
+    "docs/stabilization/runs/member-chat-v0476-38078600801.json",
+    "docs/stabilization/evidence/member-chat-v0476/run38078600801/receipt.sanitized.json",
+    "docs/stabilization/evidence/member-chat-v0476/run38078600801/hosted-package.jsonl",
+    "docs/stabilization/evidence/member-chat-v0476/run38078600801/hosted-browser.jsonl",
+    "docs/stabilization/evidence/member-chat-v0476/run38078600801/hosted-guest.jsonl",
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "tests/browser/member-native-auth-proof.mjs"
+  ],
+  "verification": "Downloaded hosted result and release artifacts, independently verified their API SHA-256 digests, checked release receipt and Store ZIP hashes, replayed Store ZIP selection/key adaptation and matched the runtime tree to the native report, inspected the non-admin identity and real request assertions in source, verified all three resource finals, visually inspected the result screenshot, checked secret-name metadata and temporary-path existence only. No browser launched during this review."
+}
