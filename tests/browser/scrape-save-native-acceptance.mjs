@@ -43,7 +43,7 @@ const report = {
 };
 
 function safeFailureCode(error) {
-  const candidate = String(error?.message ?? 'native_acceptance_error').split(':', 1)[0];
+  const candidate = String(error?.message ?? 'native_acceptance_error').split(/[:\n]/, 1)[0];
   return /^[a-z][a-z0-9_-]{1,100}$/.test(candidate) ? candidate : 'native_acceptance_error';
 }
 
