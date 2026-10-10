@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "run_id": 38044684443,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38044684443",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "c6ff0838d9014692df7e21de604cc27e07cc7d28",
+  "workflow_conclusion": "success",
+  "lane": "B",
+  "runner_label": "macos-15",
+  "runner_arch": "ARM64",
+  "acceptance_case": "guest-scrape-development",
+  "authentication_mode": "guest",
+  "case_under_review": "EXT-F-1007-T08",
+  "acceptance_case_scope": "Normal 600px owned SIDE_PANEL CDP viewport emulation, warm and after full extension reload. Six populated result tabs; Article/Images/Video/Links empty states; capture/export invariance. No physical resize, other role, or full feature claim.",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.459",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "eligible_store": false
+  },
+  "hosted_result_artifact": {
+    "id": 11666892246,
+    "name": "hosted-guest-38044684443-1",
+    "digest": "sha256:632aa647c296a9e37701efddbe4a16dcbbb9fd3a29abe79dcf278942a51e8e88"
+  },
+  "report_summary": {
+    "driver_status": "partial",
+    "native_case_status": "partial",
+    "bounded_guest_normal_width_observations": "pass_pending_independent_review",
+    "resource_valid_acceptance": true,
+    "product_failure_observed": false,
+    "other_driver_cases_credited": false
+  },
+  "resource_finals": {
+    "hosted-browser-38044684443-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "hosted-guest-38044684443-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "hosted-package-38044684443-1": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    }
+  },
+  "resource_journal_provenance": "Copied exact run artifact journals through scripts/copy-hosted-resource-journal.mjs. Process attribution and opened paths removed; final decisions retained.",
+  "fixture_and_cleanup": "Guest isolated ephemeral hosted profile and owned HTTP fixtures; no shared credentials or database mutations. Native harness finally closes its owned fixture server, stops its browser child and removes its temporary profile; no separate cleanup readback retained. Resource finals are all valid.",
+  "claim_limits": "Frozen unpublished development v0.2.459 only. Native driver and native T08 status remain partial. Named normal-width guest observations only; no whole feature, current-main binary, physical browser resizing, Store, member/admin, or campaign completion claim. SEO/Schema empty-state branches not separately claimed. Other repeated driver checks receive no duplicate credit.",
+  "review_status": "pending_independent_review",
+  "evidence_files": {
+    "native-report.sanitized.json": {
+      "sha256": "e626e89b4d6267e68940a8931ec399c77d7b1dbb28f9e23d728a3e76e2c294ee"
+    },
+    "resource-journals/hosted-browser-38044684443-1.jsonl": {
+      "sha256": "240e00d4ec399c4fc30d1e74f50d481e6de8decdc86e1d51f60ea20f8760532a"
+    },
+    "resource-journals/hosted-guest-38044684443-1.jsonl": {
+      "sha256": "0f5c679b207a1b4aa334f614578c0e89a96178c786491d9b506253657d9cf71f"
+    },
+    "resource-journals/hosted-package-38044684443-1.jsonl": {
+      "sha256": "b3dc0e2cdcb0cce7f66e7e876ba9685cb2a350ffcb2747f3f1c97d888b17a47a"
+    }
+  }
+}

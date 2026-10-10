@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T10:25:00Z",
+  "updated_at": "2026-10-10T10:36:40Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -21736,7 +21736,22 @@
                 "Save Source UI changes committed in 3e3c2770c remain unverified; the loaded artifact was v0.2.457 at source 7cf16860846756eb0f50cd6d2595b4d7529dda05.",
                 "Dialog URL display, Project-list scrolling, and Tab/Shift+Tab containment and wrap remain unverified."
               ],
-              "detail": "Resource-valid native member run confirmed exact loaded extension identity, saved Source persistence, and persisted Project association after reopening the Project Attach sources panel. These are bounded substeps only; EXT-D-0187 remains in-fix. See the native receipt for evidence limits. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified."
+              "detail": "Resource-valid native member run confirmed exact loaded extension identity, saved Source persistence, and persisted Project association after reopening the Project Attach sources panel. These are bounded substeps only; EXT-D-0187 remains in-fix. See the native receipt for evidence limits. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix.",
+              "bounded_subtarget_evidence": [
+                {
+                  "run_id": "38044665604",
+                  "status": "bounded-pass",
+                  "destination_mode": "none",
+                  "evidence": [
+                    "docs/stabilization/evidence/scrape-save-member/run38044665604/receipt.sanitized.json",
+                    "docs/stabilization/evidence/scrape-save-member/run38044665604/native-report.sanitized.json",
+                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-package-38044665604-1.jsonl",
+                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-browser-38044665604-1.jsonl",
+                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
+                  ],
+                  "limits": "Member no-destination substep only; Project/Library/multiple destinations, duplicate/refusal/retry, guest/admin, Store/current-main, and full T04/T29 remain unverified."
+                }
+              ]
             },
             "admin": {
               "status": "unverified",
@@ -21760,6 +21775,26 @@
                 "docs/stabilization/evidence/scrape-save-member/run38043392549/resource-journals/hosted-guest-38043392549-1.jsonl"
               ],
               "detail": "Runner timed out connecting to its owned CDP endpoint before member authentication or Save. No Source/association observation occurred. Guest resource final was invalid (CPU pending, exit 3). This attempt gives no product or no-destination acceptance credit."
+            },
+            {
+              "at": "2026-10-10T10:33:27Z",
+              "mode": "member",
+              "run_id": "38044665604",
+              "status": "bounded-partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "destination_mode": "none",
+              "workflow_source_sha": "c6ff0838d9014692df7e21de604cc27e07cc7d28",
+              "product_artifact": "development 0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+              "evidence": [
+                "docs/stabilization/evidence/scrape-save-member/run38044665604/receipt.sanitized.json",
+                "docs/stabilization/evidence/scrape-save-member/run38044665604/native-report.sanitized.json",
+                "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-package-38044665604-1.jsonl",
+                "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-browser-38044665604-1.jsonl",
+                "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
+              ],
+              "detail": "Real member/non-admin sign-in and selected organization verified. Saved custom-named Source with no destination; independently read the saved Source and original, reopened UI content matched, zero destination association edges were read, and cleanup was verified. Bounded no-destination substep only; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+              "independent_review": "docs/stabilization/reports/peer-review-run38044665604.json"
             }
           ]
         },
@@ -22134,7 +22169,27 @@
               "unverified": [
                 "Guest-only narrow-width run; member/admin and normal-width dimensions remain unverified."
               ],
-              "detail": "Guest result tabs, matching populated/empty states, and capture invariance were observed warm and after full extension reload. Other modes and normal width were not exercised."
+              "detail": "Guest result tabs, matching populated/empty states, and capture invariance were observed warm and after full extension reload. Other modes and normal width were not exercised. Reviewed bounded normal-width guest run 38044684443 verified six populated panes, empty Article/Images/Video/Links states, and capture/export invariance warm and after full extension reload at 600px CDP viewport emulation. SEO/Schema empty-state, physical resize, other roles, and Store/current-main remain unverified; the case remains partial.",
+              "bounded_subtarget_evidence": [
+                {
+                  "run_id": 38044684443,
+                  "status": "bounded-pass",
+                  "mode": "guest",
+                  "viewport": "600px owned SIDE_PANEL CDP emulation; warm and full extension reload",
+                  "workflow_source_sha": "c6ff0838d9014692df7e21de604cc27e07cc7d28",
+                  "product_artifact": "development 0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-scrape-normal/run38044684443/receipt.sanitized.json",
+                    "docs/stabilization/evidence/guest-scrape-normal/run38044684443/native-report.sanitized.json",
+                    "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-package-38044684443-1.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-browser-38044684443-1.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-guest-38044684443-1.jsonl"
+                  ],
+                  "proven": "Six populated panes; empty Article/Images/Video/Links states; capture and exported payload invariance warm and after full extension reload.",
+                  "limits": "SEO/Schema empty-state, physical resize, other roles, Store/current-main, and full feature behavior remain unverified. Other driver cases receive no credit.",
+                  "independent_review": "docs/stabilization/reports/peer-review-run38044684443.json"
+                }
+              ]
             },
             "member": {
               "status": "partial",
@@ -25012,7 +25067,22 @@
                 "The dialog did not separately display the URL; URL display added in Save Source UI commit 3e3c2770c is unverified on a current exact artifact.",
                 "Duplicate, no-destination, search-to-late-result, multi-target, remove, Library, refusal/retry, File elsewhere, responsive layout, focus containment/wrap, and admin paths remain unverified."
               ],
-              "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified."
+              "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix.",
+              "bounded_subtarget_evidence": [
+                {
+                  "run_id": "38044665604",
+                  "status": "bounded-pass",
+                  "destination_mode": "none",
+                  "evidence": [
+                    "docs/stabilization/evidence/scrape-save-member/run38044665604/receipt.sanitized.json",
+                    "docs/stabilization/evidence/scrape-save-member/run38044665604/native-report.sanitized.json",
+                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-package-38044665604-1.jsonl",
+                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-browser-38044665604-1.jsonl",
+                    "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
+                  ],
+                  "limits": "Member no-destination substep only; Project/Library/multiple destinations, duplicate/refusal/retry, guest/admin, Store/current-main, and full T04/T29 remain unverified."
+                }
+              ]
             },
             "admin": {
               "status": "unverified",
@@ -25039,6 +25109,26 @@
                 "docs/stabilization/evidence/scrape-save-member/run38043392549/resource-journals/hosted-guest-38043392549-1.jsonl"
               ],
               "detail": "Runner timed out connecting to its owned CDP endpoint before member authentication or Save. No Source/association observation occurred. Guest resource final was invalid (CPU pending, exit 3). This attempt gives no product or no-destination acceptance credit."
+            },
+            {
+              "at": "2026-10-10T10:33:27Z",
+              "mode": "member",
+              "run_id": "38044665604",
+              "status": "bounded-partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "destination_mode": "none",
+              "workflow_source_sha": "c6ff0838d9014692df7e21de604cc27e07cc7d28",
+              "product_artifact": "development 0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+              "evidence": [
+                "docs/stabilization/evidence/scrape-save-member/run38044665604/receipt.sanitized.json",
+                "docs/stabilization/evidence/scrape-save-member/run38044665604/native-report.sanitized.json",
+                "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-package-38044665604-1.jsonl",
+                "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-browser-38044665604-1.jsonl",
+                "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
+              ],
+              "detail": "Real member/non-admin sign-in and selected organization verified. Saved custom-named Source with no destination; independently read the saved Source and original, reopened UI content matched, zero destination association edges were read, and cleanup was verified. Bounded no-destination substep only; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+              "independent_review": "docs/stabilization/reports/peer-review-run38044665604.json"
             }
           ]
         },
@@ -25225,9 +25315,10 @@
             "37783167613",
             "37783925411",
             "37801787667",
-            "38041013005"
+            "38041013005",
+            "38044684443"
           ],
-          "retest_status": "Partial surface coverage. Frozen407 native37778965029 independently revalidates guest T07/T09/T10/T11/T12/T13/T20 and adds post-reload empty Images/Video evidence; exact conditional-confirmation branch D178 and remaining guest/member/admin cases unverified. Subsequent37783167613 failed runner setup D180 before browser, with zero acceptance credit."
+          "retest_status": "Partial surface coverage. Frozen407 native37778965029 independently revalidates guest T07/T09/T10/T11/T12/T13/T20 and adds post-reload empty Images/Video evidence; exact conditional-confirmation branch D178 and remaining guest/member/admin cases unverified. Subsequent37783167613 failed runner setup D180 before browser, with zero acceptance credit. Latest run 38044684443 (workflow c6ff0838d; frozen development v0.2.459) verified bounded T08 guest normal-width-at-600px CDP-emulated warm/full-reload panes and capture/export invariance. SEO/Schema empty-state, physical resize, other roles, Store/current-main, and full surface remain unverified; feature-role cell stays partial."
         },
         "member": {
           "test_status": "partial",
@@ -25260,9 +25351,10 @@
             "scrape-save-native-4",
             "scrape-save-native-5",
             "scrape-save-native-5-browser",
-            "38043392549"
+            "38043392549",
+            "38044665604"
           ],
-          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. Initial native-5 ended resource-invalid at 19.9955GiB before Save/write. Follow-up native-5-browser was resource-valid and confirmed named Source persistence plus its Project association, but only bounded substeps passed; dialog URL, scrolling, focus containment, other save routes, and full T04/T29 remain unverified. Save Source UI changes in 3e3c2770c need a current exact-artifact retest. The D187-specific hosted driver is committed at a8839d016/94a281c8f and awaits green exact-source CI and a member-lane run. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects and focus acceptance remain unverified; association has only bounded native-5-browser evidence. Hosted-lane feasibility: docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json. Latest EXT-D-0187 hosted member run 38043392549 (workflow source 94d7a148) is infrastructure-invalid with zero product credit: `owned_cdp_endpoint_timeout` at inputs/cdp_connect before auth or Save, destination mode none; guest resource journal ended CPU pending/invalid exit 3. The no-destination path remains unverified."
+          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. Initial native-5 ended resource-invalid at 19.9955GiB before Save/write. Follow-up native-5-browser was resource-valid and confirmed named Source persistence plus its Project association, but only bounded substeps passed; dialog URL, scrolling, focus containment, other save routes, and full T04/T29 remain unverified. Save Source UI changes in 3e3c2770c need a current exact-artifact retest. The D187-specific hosted driver is committed at a8839d016/94a281c8f and awaits green exact-source CI and a member-lane run. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects and focus acceptance remain unverified; association has only bounded native-5-browser evidence. Hosted-lane feasibility: docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json. Latest EXT-D-0187 hosted member run 38043392549 (workflow source 94d7a148) is infrastructure-invalid with zero product credit: `owned_cdp_endpoint_timeout` at inputs/cdp_connect before auth or Save, destination mode none; guest resource journal ended CPU pending/invalid exit 3. The no-destination path remains unverified. Latest run 38044665604 (workflow c6ff0838d; frozen development v0.2.459) independently verified one member no-destination Save: custom-named Source persisted, zero association edges read, original read and reopened content matched, cleanup verified. Bounded substep only; T04/T29 remain partial and EXT-D-0187 remains in-fix."
         },
         "admin": {
           "test_status": "unverified",

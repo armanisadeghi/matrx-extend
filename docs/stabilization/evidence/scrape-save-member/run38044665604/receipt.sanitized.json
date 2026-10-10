@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38044665604,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38044665604",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "c6ff0838d9014692df7e21de604cc27e07cc7d28",
+  "workflow_event": "workflow_dispatch",
+  "lane": "A",
+  "runner_label": "macos-15",
+  "runner": "GitHub Actions 1000102232",
+  "acceptance_case": "scrape-save-member",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "workflow_conclusion": "success",
+  "native_report_status": "pass",
+  "resource_valid_acceptance": true,
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "artifact_digest": "sha256:388cc0d4ceb85f54beb5fcd6c1c83e122ef5e80fd0ea002d8c151438cb89d2d7",
+    "version": "0.2.459"
+  },
+  "hosted_report_artifact": {
+    "artifact_id": 11666972255,
+    "name": "hosted-guest-38044665604-1",
+    "digest": "sha256:f6c20db3df5d598acb4c7a3f7a5cf61654655d4cc158d6075437e5d51b63c3ca",
+    "size_bytes": 92155,
+    "native_report_present": true,
+    "native_report_path": "test-results/scrape-save-native-acceptance.json",
+    "sanitized_report_path": "native-report.sanitized.json",
+    "sanitized_report_sha256": "5d457c3bf90ea7f3b2d268b638255a4a9305e87fca77c33cad9befb55c634bf8"
+  },
+  "resource_finals": {
+    "hosted-package-38044665604-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38044665604-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38044665604-1": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "resource_journal_evidence": {
+    "uploaded_original_journals_present": false,
+    "recovered_from": "Exact Actions job log RESOURCE_* JSON events grouped by run ID and passed through the reviewed journal-copy sanitizer; absolute journal path values were removed from shared copies.",
+    "sanitized_paths": [
+      "resource-journals/hosted-package-38044665604-1.jsonl",
+      "resource-journals/hosted-browser-38044665604-1.jsonl",
+      "resource-journals/hosted-guest-38044665604-1.jsonl"
+    ],
+    "sha256": {
+      "hosted-browser-38044665604-1.jsonl": "6637350b5d2af2cdd547447773f56d0378b87e8b6db2fac7227eb4bfe9ef1e76",
+      "hosted-guest-38044665604-1.jsonl": "12afaa59c7207ce86961ed7a315fb61c4d8b30337d468ab00eeb23e10c94de95",
+      "hosted-package-38044665604-1.jsonl": "01721f34e462b38654308d6c048a1a78fdfb199e4b2cbeb58a0d05041aafcce7"
+    },
+    "attribution_rows_removed": true,
+    "final_decisions_preserved": true
+  },
+  "native_observations": {
+    "authentication": "real member sign-in, extension session, non-admin role, and selected organization verified",
+    "destination_mode": "none",
+    "source_custom_name_persisted": true,
+    "no_destination_associations_persisted": true,
+    "original_read_ready": true,
+    "reopened_ui_content_matches": true,
+    "cleanup_verified": true
+  },
+  "credential_cleanup": {
+    "temporary_secret_absent": true,
+    "private_one_time_link_file_absent": true
+  },
+  "claim_limit": "One controlled member Save Source case using destination none on the frozen development artifact, with custom name persistence, no destination associations, independent original read, reopened content match, and verified cleanup. Does not close EXT-D-0187 or claim Project/Library, multiple destinations, duplicate, refusal/retry, admin, guest, Store, or full-surface behavior."
+}

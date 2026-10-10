@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_acceptance_evidence_review",
+  "reviewer_task": "/root/tracker_peer",
+  "reviewed_at": "2026-10-10T10:35:40Z",
+  "verdict": "bounded_pass",
+  "run": {
+    "run_id": 38044665604,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38044665604",
+    "workflow": "hosted-guest-acceptance.yml",
+    "workflow_source_sha": "c6ff0838d9014692df7e21de604cc27e07cc7d28",
+    "lane": "A",
+    "conclusion": "success",
+    "acceptance_case": "scrape-save-member",
+    "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"]
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "version": "0.2.459",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "ci_run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "evidence": [
+    {
+      "path": "docs/stabilization/evidence/scrape-save-member/run38044665604/receipt.sanitized.json",
+      "sha256": "781cc977247afe10635e3cc82a62a39d03429fe5a9571f072cb4508afe709ea4"
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-save-member/run38044665604/native-report.sanitized.json",
+      "sha256": "5d457c3bf90ea7f3b2d268b638255a4a9305e87fca77c33cad9befb55c634bf8"
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-package-38044665604-1.jsonl",
+      "sha256": "01721f34e462b38654308d6c048a1a78fdfb199e4b2cbeb58a0d05041aafcce7"
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-browser-38044665604-1.jsonl",
+      "sha256": "6637350b5d2af2cdd547447773f56d0378b87e8b6db2fac7227eb4bfe9ef1e76"
+    },
+    {
+      "path": "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl",
+      "sha256": "12afaa59c7207ce86961ed7a315fb61c4d8b30337d468ab00eeb23e10c94de95"
+    }
+  ],
+  "resource_finals": {
+    "hosted-package-38044665604-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38044665604-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38044665604-1": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "verified_assertions": [
+    "Real member sign-in, extension session, non-admin role, and selected organization were verified.",
+    "A custom-named Source was saved with destination mode none.",
+    "The persisted Source and original were independently read; reopened UI content matched.",
+    "No destination association edges were persisted, and run-owned cleanup was verified."
+  ],
+  "limitations": [
+    "This is one bounded member no-destination substep on frozen development v0.2.459.",
+    "EXT-F-1007-T04 and EXT-F-1007-T29 remain partial.",
+    "Project, Library, multiple destinations, duplicate, refusal/retry, guest/admin, Store, and current-main runtime paths remain unverified.",
+    "EXT-D-0187 remains in-fix; this review does not close the defect or claim full-case or full-feature acceptance."
+  ]
+}

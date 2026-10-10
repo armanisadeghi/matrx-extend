@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T08",
+  "mode": "guest",
+  "driver_status": "partial",
+  "native_case_status": "partial",
+  "scoped_verdict": "pass_pending_independent_review",
+  "scope": "Normal 600px owned SIDE_PANEL CDP viewport emulation, warm and after full extension reload. Six populated result tabs; Article/Images/Video/Links empty states; capture/export invariance. No physical resize, other role, or full feature claim.",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.459",
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "run_id": 38036029832,
+    "artifact_id": 11664077690
+  },
+  "runtime": {
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "browser_version": "Chrome/141.0.7390.37",
+    "browser_launch": {
+      "requested_mode": "headed",
+      "observed_mode": "headed",
+      "verified_by": "Browser.getBrowserCommandLine"
+    },
+    "width_mode": "normal",
+    "panel_viewports": [
+      {
+        "phase": "warm",
+        "mode": "normal",
+        "mechanism": "owned_SIDE_PANEL_CDP_viewport_emulation",
+        "observed_px": 600,
+        "minimum_px": 600
+      },
+      {
+        "phase": "reload",
+        "mode": "normal",
+        "mechanism": "owned_SIDE_PANEL_CDP_viewport_emulation",
+        "observed_px": 600,
+        "minimum_px": 600
+      }
+    ],
+    "guest_account_observed": true,
+    "guest_auth_storage": {
+      "hasAccessToken": false,
+      "hasUserProfile": false
+    },
+    "reload_authentication": {
+      "mode": "guest",
+      "guest_storage_empty": true
+    }
+  },
+  "extension_reload": {
+    "observed_at": "2026-10-10T10:29:48.829Z",
+    "management_reload_clicked": true,
+    "old_targets_retired": true,
+    "worker_replaced": true,
+    "panel_replaced": true
+  },
+  "case_evidence": {
+    "tabs_selected": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+    "matching_content": {
+      "article": true,
+      "images": {
+        "pane": "Images",
+        "state": "matching_content",
+        "count": 3,
+        "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+        "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+        "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+      },
+      "video": {
+        "pane": "Video",
+        "state": "matching_content",
+        "count": 2,
+        "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+      },
+      "links": true,
+      "seo": true,
+      "schema": true,
+      "images_empty": {
+        "pane": "Images",
+        "state": "empty",
+        "count": 0,
+        "paths": [],
+        "alt": [],
+        "natural_sizes": []
+      },
+      "video_empty": {
+        "pane": "Video",
+        "state": "empty",
+        "count": 0,
+        "paths": []
+      },
+      "links_empty": {
+        "pane": "Links",
+        "state": "empty",
+        "count": 0,
+        "add_control_visible": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1152,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      },
+      "article_empty": {
+        "pane": "Article",
+        "state": "empty",
+        "fallback_visible": true,
+        "pane_unchanged": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1058,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      }
+    },
+    "capture_invariance": {
+      "warm": {
+        "panes_compared": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+        "unchanged": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 4106,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      },
+      "reload": {
+        "panes_compared": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+        "unchanged": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 4106,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      }
+    },
+    "extension_reload_empty": true,
+    "post_reload_populated_panes": {
+      "article": true,
+      "links": true,
+      "seo": true,
+      "schema": true,
+      "images": {
+        "pane": "Images",
+        "state": "matching_content",
+        "count": 3,
+        "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+        "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+        "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+      },
+      "video": {
+        "pane": "Video",
+        "state": "matching_content",
+        "count": 2,
+        "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+      }
+    },
+    "post_reload_empty_panes": {
+      "images": {
+        "pane": "Images",
+        "state": "empty",
+        "count": 0,
+        "paths": [],
+        "alt": [],
+        "natural_sizes": []
+      },
+      "video": {
+        "pane": "Video",
+        "state": "empty",
+        "count": 0,
+        "paths": []
+      },
+      "links": {
+        "pane": "Links",
+        "state": "empty",
+        "count": 0,
+        "add_control_visible": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1152,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      },
+      "article": {
+        "pane": "Article",
+        "state": "empty",
+        "fallback_visible": true,
+        "pane_unchanged": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1058,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      }
+    }
+  },
+  "native_remaining": ["member/admin modes remain unverified by this receipt."],
+  "failure": null,
+  "driver_failure": null,
+  "other_cases": "Full native driver ran because no per-case selector exists; other cases are regression observations only and receive no new acceptance credit from this bundle.",
+  "raw_report_sha256": "578735c6f46274299248d1c48f561ca81561748420ab517cf5a0fbad2d680c24"
+}

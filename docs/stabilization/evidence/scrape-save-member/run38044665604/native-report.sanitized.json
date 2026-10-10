@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "defect_id": "EXT-D-0187",
+  "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+  "auth_mode": "member",
+  "destination_mode": "none",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "run_id": 38036029832,
+    "artifact_id": 11664077690,
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+    "version": "0.2.459"
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_role_verified": true,
+    "selected_organization_verified": true,
+    "organization_resolution": "load_ladder"
+  },
+  "observations": {
+    "owned_project_fixture_created": false,
+    "dialog_opened_from_captured_article": true,
+    "prefilled_name_visible": true,
+    "input_focused_on_open": true,
+    "no_destination_selected_by_default": true,
+    "no_destination_retained_before_save": true,
+    "custom_name_entered_by_trusted_keyboard": true,
+    "tab_and_shift_tab_contained": true,
+    "dialog_closed_after_save": true,
+    "saved_confirmation_visible": true,
+    "source_row_read_from_service": true,
+    "custom_name_persisted": true,
+    "organization_scope_persisted": true,
+    "original_file_id_present": true,
+    "no_destination_associations_persisted": true,
+    "capture": {
+      "article_layer_ready": true,
+      "article_title_matches": true,
+      "heading_matches": true,
+      "marker_matches": true,
+      "extractor": "defuddle"
+    },
+    "saved_original_read_ready": true,
+    "saved_original": {
+      "article_layer_ready": true,
+      "article_title_matches": true,
+      "heading_matches": true,
+      "marker_matches": true,
+      "extractor": "defuddle"
+    },
+    "reopen_header": {
+      "detail_open": true,
+      "name_matches": true,
+      "url_matches": true
+    },
+    "reopen_ui": {
+      "heading_matches": true,
+      "marker_matches": true
+    },
+    "saved_source_reopened_in_ui": true,
+    "cleanup_verified": true
+  },
+  "cleanup": {
+    "verified": true,
+    "run_owned_source_soft_deleted": true,
+    "source_associations_removed": true
+  },
+  "failure_stage": null,
+  "limits": "One controlled member Save Source case using destination none, with a custom name, independent persisted/original read, reopened captured content, and verified cleanup on the frozen development artifact. This does not close EXT-D-0187 or cover Project, Library, multiple destinations, duplicate, refusal/retry, admin, guest, Store, or full-surface behavior."
+}
