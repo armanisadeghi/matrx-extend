@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { reloadCase } from './native-reload-fixture.mjs';
 import { runGuestChoicesAcrossExtensionRestarts } from './settings-guest-extension-rechecks.mjs';
+import { serializeGuestReloadFailure } from './settings-probe-cleanup.mjs';
 
 function fixture({ skipLabel = null, skipLabels = [], corruptAfterRestart = false } = {}) {
   const state = {
@@ -250,6 +252,7 @@ test('extension reload transport failures retain the first safe choice and resto
   assert.equal(observedError.safeFirstChoiceFailureCode, 'owned_cdp_transport_failed');
   assert.equal(observedError.safeRestorationFailureCode, 'owned_cdp_transport_failed');
   assert.deepEqual(observedError.safeFirstChoiceReloadBoundary, {
+    helperFailure: null,
     lastCapturedPhase: 'click_started',
     timelineTruncated: true,
     clickStarted: true,
@@ -393,3 +396,36 @@ test('switch choices use native switch clicks and restore either baseline across
     );
   }
 });
+
+for (const operation of ['fixture_focus', 'fixture_reply_clear']) {
+  test(`real helper ${operation} diagnostic reaches serialized Settings receipt`, async () => {
+    const f = fixture();
+    f.reloadExtension = () =>
+      reloadCase({
+        initiallyEnabled: true,
+        failOperation: operation,
+        cleanupThrows: true,
+        expectFailure: true,
+      });
+    await assert.rejects(
+      run(f, { safeStages: ['extension_reload', 'restore_extension_reload'] }),
+      (error) => {
+        const receipt = JSON.parse(JSON.stringify(serializeGuestReloadFailure(error)));
+        for (const boundary of [
+          receipt.firstChoiceReloadBoundary,
+          receipt.restorationReloadBoundary,
+        ]) {
+          assert.equal(boundary.helperFailure.operation, operation);
+          assert.equal(
+            boundary.helperFailure.exceptionClass,
+            operation === 'fixture_focus' ? 'TypeError' : 'ReferenceError',
+          );
+          assert.deepEqual(boundary.helperFailure.cleanupFailures, ['lifetime_close']);
+          assert.equal(boundary.finalPredicate, true);
+        }
+        assert.doesNotMatch(JSON.stringify(receipt), /private|chrome-extension|stack/);
+        return true;
+      },
+    );
+  });
+}

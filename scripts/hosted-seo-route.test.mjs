@@ -507,7 +507,7 @@ test('hosted workflow admits guest SEO on lane B with one exact development arti
     'utf8',
   );
   assert.match(workflow, /- guest-seo\n/);
-  assert.match(workflow, /guest-chat\|guest-seo\|guest-data\|guest-scrape/);
+  assert.match(workflow, /guest-chat\|guest-seo\|guest-data\|member-data\|guest-scrape/);
   assert.match(
     workflow,
     /"\$ACCEPTANCE_CASE" == guest-seo[^\n]*\n\s*\[\[ -z "\$RELEASE_RUN_ID" && -n "\$DEVELOPMENT_RUN_ID" && -n "\$DEVELOPMENT_ARTIFACT_ID" && "\$PUBLISHED_STORE_CRX" != true \]\]/,

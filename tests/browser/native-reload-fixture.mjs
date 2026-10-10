@@ -21,6 +21,8 @@ export async function reloadCase({
   expectedCategory = 'opened',
   replyDelayTargetReads = 0,
   expectFailure = false,
+  failOperation = null,
+  cleanupThrows = false,
 }) {
   let developerMode = initiallyEnabled;
   let reloaded = false;
@@ -52,6 +54,10 @@ export async function reloadCase({
     return {};
   };
   independent.detach = async () => {};
+  if (cleanupThrows)
+    independent.off = () => {
+      throw new RangeError('private cleanup');
+    };
   const pageSession = new EventEmitter();
   pageSession.send = async (method) => {
     if (method === 'ServiceWorker.enable' && executionEvidence === 'unavailable')
@@ -97,10 +103,14 @@ export async function reloadCase({
   const details = {
     goto: async () => {},
     close: async () => {},
-    evaluate: async () => ({
-      state: reloaded && disabledAfter ? 'DISABLED' : 'ENABLED',
-      unsupported_developer_extension: reloaded && disabledAfter,
-    }),
+    evaluate: async () => {
+      if (reloaded && failOperation === 'management_recheck')
+        throw new TypeError('private management');
+      return {
+        state: reloaded && disabledAfter ? 'DISABLED' : 'ENABLED',
+        unsupported_developer_extension: reloaded && disabledAfter,
+      };
+    },
     locator(selector) {
       if (selector === 'extensions-toolbar #devMode')
         return {
@@ -176,8 +186,9 @@ export async function reloadCase({
   const cdp = {
     on: (event, listener) => events.set(event, listener),
     off: (event) => events.delete(event),
-    async send(method) {
+    async send(method, args) {
       if (method === 'Target.getTargets') {
+        if (opened && failOperation === 'panel_poll') throw new TypeError('private poll');
         if (reloaded && opened && ++postOpenTargetReads === replyDelayTargetReads)
           publishOpenReply();
         return {
@@ -192,7 +203,11 @@ export async function reloadCase({
               : [oldWorker, oldPanel],
         };
       }
-      if (method === 'Target.attachToTarget') return { sessionId: 'owned-session' };
+      if (method === 'Target.attachToTarget') {
+        if (args.targetId === 'new-panel' && failOperation === 'panel_attach')
+          throw new ReferenceError('private attach');
+        return { sessionId: 'owned-session' };
+      }
       if (method === 'Runtime.evaluate')
         return (
           contextResults?.[Math.min(contextReads++, contextResults.length - 1)] ?? {
@@ -229,12 +244,15 @@ export async function reloadCase({
       newCDPSession: async () => (pageSessionCount++ === 0 ? pageSession : freshSession),
     },
     page: {
-      bringToFront: async () => {},
+      bringToFront: async () => {
+        if (failOperation === 'fixture_focus') throw new TypeError('private focus');
+      },
       locator: (selector) => {
         assert.ok(['#open-panel', '#result'].includes(selector));
         const locator = {
           evaluate: async (mutate) => {
             assert.equal(selector, '#result');
+            if (failOperation === 'fixture_reply_clear') throw new ReferenceError('private clear');
             const element = { textContent: openResult };
             mutate(element);
             openResult = element.textContent;
@@ -242,6 +260,7 @@ export async function reloadCase({
           click: async () => {
             assert.equal(selector, '#open-panel');
             assert.equal(openResult, '', 'reload must clear the initial-open callback');
+            if (failOperation === 'fixture_open_click') throw new TypeError('private click');
             if (openPanelClickFailure)
               throw new Error('private URL token: panel click interrupted');
             opened = panelAppears;

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "scope": "Independent read-only review of member Data hosted gate fix and ephemeral reviewer magic-link procedure",
+  "verdict": "pass_for_preparation_only",
+  "reviewed_files": [
+    "scripts/hosted-seo-route.test.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/hosted-guest-acceptance.mjs",
+    "scripts/hosted-profile-route.mjs",
+    "tests/browser/settings-native-auth-driver.mjs",
+    "tests/browser/prepare-reviewer-magic-link.mjs",
+    ".research/member-release-readiness.json"
+  ],
+  "gate_finding": "The focused change adds member-data to the workflow case-list assertion only. Workflow admission still requires lane A for member-data, an exact CI development artifact, and member-link credential preflight before browser setup. The link validator binds the fixed reviewer fingerprint and first-party magic-link URL shape.",
+  "credential_boundary": "The point-of-use helper validates the existing confirmed, unbanned, nonadmin reviewer and one active designated organization before generating a link. It writes a create-exclusive mode-0600 local file and emits fixed stage messages only. The documented GitHub secret setup reads the file on stdin. The hosted wrapper writes a create-exclusive mode-0600 file, removes the raw secret from the child environment, and unlinks the staged file after the child run. The point-of-use procedure requires deletion of the GitHub secret and local file after the terminal hosted run.",
+  "verification": "Independent hosted SEO/profile focused tests passed 25/25; Biome passed on scripts/hosted-seo-route.test.mjs. No secret value was read, printed, or persisted in this review.",
+  "limit": "No member Data hosted browser run or product behavior was verified by this review. External GitHub secret and local ephemeral file cleanup remains a required point-of-use operator action after the terminal run."
+}

@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 38007316497,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38007316497",
+    "lane": "A",
+    "runner": "macos-15",
+    "conclusion": "failure",
+    "checkout_sha": "7e8f809afc29867708c51e90f3a83ac1e0cff89a"
+  },
+  "acceptance": {
+    "case": "member-data",
+    "case_id": "EXT-F-2005-T01",
+    "auth_mode": "member",
+    "scope": "T01",
+    "fixture": "static synthetic /products catalog",
+    "report_status": "no_native_report",
+    "stage": "credential_preflight",
+    "failure_code": "hosted_member_link_secret_required",
+    "classification": "missing_hosted_member_link_credential",
+    "product_behavior": "unverified",
+    "observations": {},
+    "no_side_panel_or_product_action_observed": true,
+    "fixture_write_or_cleanup": "not_reached"
+  },
+  "selected_product_artifact": {
+    "channel": "ci_development_test",
+    "source_sha": "7230bb7669582179898fc187e05f1b939562a89e",
+    "ci_run_id": 37998294843,
+    "ci_artifact_id": 11647758423,
+    "imported_or_content_verified": false
+  },
+  "hosted_run_artifact": {
+    "id": 11651782607,
+    "name": "hosted-guest-38007316497-1",
+    "sha256": "sha256:feb7f7344c0b535d540a86858c572968745f7b326adaaa4b110e504903bbe87e",
+    "size_bytes": 5648,
+    "contains_native_report": false,
+    "contains_run_specific_resource_journals": false,
+    "unrelated_journal_run_ids": [37105304739, 37724762467]
+  },
+  "admission": {
+    "lane": { "admitted": true, "decision": "valid" },
+    "artifact_mode": { "selection_inputs_accepted": true, "artifact_import_reached": false },
+    "member_credential": { "present": false, "secret_name": "MATRX_REVIEWER_MAGIC_LINK_JSON" },
+    "resource_measurement": { "started": false, "final_decision": "unavailable" },
+    "package": { "admitted": false, "decision": "not_reached" },
+    "browser": { "admitted": false, "decision": "not_reached" },
+    "native_acceptance": { "started": false, "decision": "not_reached" }
+  },
+  "scope_boundary": "The source workflow checkout was 7e8f809afc29867708c51e90f3a83ac1e0cff89a and included member Data route commit d9bd66a39. Lane A admission succeeded and the selected development run/artifact inputs were accepted, but the required member-link secret was empty at credential preflight. No product artifact was imported, resource measurement was started, credential consumed, browser opened, or Data behavior exercised. The uploaded artifact contained only unrelated pre-existing journals from 37105304739 and 37724762467; none are attributed to this run. This run has no product verdict.",
+  "source_gate": {
+    "run_id": 38007290034,
+    "checkout_sha": "d9bd66a3957dfc246afc5f76cc4ee68e7d6998a5",
+    "conclusion": "failure",
+    "failing_test": "hosted workflow admits guest SEO on lane B with one exact development artifact",
+    "classification": "stale_expected_case_list_regex",
+    "local_forcing_result": "pnpm test:focused-acceptance passed 266/266 after adding member-data to expected case list"
+  }
+}

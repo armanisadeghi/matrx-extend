@@ -77,6 +77,7 @@ test('reload failure receipt serializes only allowlisted stage and transport dia
     firstChoiceFailureCode: 'pointer_target_not_unique',
     restorationFailureCode: 'native_extension_replacement_panel_unverified',
     firstChoiceReloadBoundary: {
+      helperFailure: null,
       lastCapturedPhase: 'click_started',
       timelineTruncated: true,
       clickStarted: true,
@@ -119,6 +120,7 @@ test('reload failure receipt replaces unrecognized diagnostics with safe default
     firstChoiceFailureCode: 'unavailable',
     restorationFailureCode: 'owned_cdp_transport_failed',
     firstChoiceReloadBoundary: {
+      helperFailure: null,
       lastCapturedPhase: 'unavailable',
       timelineTruncated: null,
       clickStarted: null,
