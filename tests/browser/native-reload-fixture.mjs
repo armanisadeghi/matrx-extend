@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { EventEmitter } from 'node:events';
+import { runInNewContext } from 'node:vm';
 import { reloadOwnedExtension } from './native-sidepanel-qa-harness.mjs';
 
 const extensionId = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
@@ -24,7 +25,10 @@ export async function reloadCase({
   failOperation = null,
   cleanupThrows = false,
   workerRuntime = null,
+  reloadSenderDocumentDiagnostic = false,
+  senderEvents = [],
 }) {
+  let senderDocument = { location: { href: 'https://www.aimatrx.com/catalog' } };
   let developerMode = initiallyEnabled;
   let reloaded = false;
   let opened = false;
@@ -260,6 +264,17 @@ export async function reloadCase({
       newCDPSession: async () => (pageSessionCount++ === 0 ? pageSession : freshSession),
     },
     page: {
+      evaluate: async (fn, input) => {
+        senderEvents.push('evaluate');
+        senderDocument.input = input;
+        return runInNewContext(`(${fn.toString()})(input)`, senderDocument);
+      },
+      reload: async () => {
+        senderEvents.push('reload');
+        if (failOperation === 'sender_document_prepare')
+          throw new TypeError('private sender reload');
+        senderDocument = { location: senderDocument.location };
+      },
       bringToFront: async () => {
         if (failOperation === 'fixture_focus') throw new TypeError('private focus');
       },
@@ -275,6 +290,7 @@ export async function reloadCase({
           },
           click: async () => {
             assert.equal(selector, '#open-panel');
+            senderEvents.push('open_click');
             assert.equal(openResult, '', 'reload must clear the initial-open callback');
             if (failOperation === 'fixture_open_click') throw new TypeError('private click');
             if (openPanelClickFailure)
@@ -303,6 +319,7 @@ export async function reloadCase({
     extensionId,
     oldPanelId: oldPanel.targetId,
     scrapeOpenDiagnostic: workerRuntime !== null,
+    reloadSenderDocumentDiagnostic,
   });
   if (expectFailure) return resultPromise;
   const result = await resultPromise;

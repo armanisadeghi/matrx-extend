@@ -35,6 +35,13 @@ for candidate in "$ROOT/scripts/release.sh" "$ROOT/release.sh"; do
     [[ -x "$candidate" || -f "$candidate" ]] && { RELEASE="$candidate"; break; }
 done
 
+# Serialize sync and release with direct release.sh callers too.
+source "$ROOT/scripts/release-owner-lock.sh" || exit 1
+trap ship_lock_cleanup EXIT
+if ! $DRY_RUN; then
+    acquire_ship_lock || exit $?
+fi
+
 # ── 1. sync ──────────────────────────────────────────────────────────────────
 if $DRY_RUN; then
     echo "ship.sh: --dry-run, so the sync was skipped (it commits and pushes for real)."

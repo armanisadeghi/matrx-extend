@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38030250703,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38030250703",
+  "workflow": "hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "3e41329fa2d10bd576ab1d05801458fe70d9aff7",
+  "lane": "B",
+  "acceptance_case": "settings-theme-rendering",
+  "case_id": "EXT-F-1003-T04",
+  "mode": "guest",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "7c6311e86562051bcaa58de997a248ae40c58bd7",
+    "source_ci_run_id": 38029218282,
+    "artifact_id": 11661736374,
+    "artifact_digest": "sha256:eda8dbd6fd8a924bdb3554586cd62d2b252a9b29f19fb54a80bd6d074cbac397",
+    "tree_sha256": "ea43f8114195a23cf854ccb7381788f29b711c4b1bf9337a217d93c3c525be4d",
+    "version": "0.2.458",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11661693103,
+    "name": "hosted-guest-38030250703-1",
+    "digest": "sha256:e50d1d98eee3a21d6e50c8e1a05ebedfc58c28404c7ce2fe669edf96896673a8"
+  },
+  "workflow_conclusion": "success",
+  "native_report_status": "pass_bounded_scope",
+  "resource_valid_acceptance": true,
+  "resource_finals": {
+    "hosted-package-38030250703-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-browser-38030250703-1": "valid; admitted=true; resourceInvalid=false; exitCode=0",
+    "hosted-guest-38030250703-1": "valid; admitted=true; resourceInvalid=false; exitCode=0"
+  },
+  "observed": {
+    "signed_out_guest": true,
+    "baseline_theme": "System; no stored theme value",
+    "dark_selected_stored_and_rendered": true,
+    "light_selected_stored_and_rendered": true,
+    "system_selected_stored_and_rendered": true,
+    "original_system_baseline_and_absent_storage_restored": true,
+    "appearance_matches_rendered_background_token_and_body": true
+  },
+  "scope_limit": {
+    "full_extension_reload": "not exercised; native report fullExtensionReload status is missing",
+    "panel_document_reload": "not exercised by this selected theme-rendering route",
+    "d186_post_replacement_diagnostic_credit": false,
+    "t04_full_case_credit": false,
+    "interpretation": "Bounded guest theme control/rendering observation only. The D186 failure boundary after extension replacement and its Settings reacquisition/readback remain untested by this run."
+  },
+  "sanitization": {
+    "stale_journals_from_other_run_ids_excluded": true,
+    "runner_artifact_path_removed_from_report": true,
+    "credentials_or_auth_material_present": false,
+    "process_attribution_event_present_in_source": false,
+    "no_process_identifiers_in_retained_journals": true
+  },
+  "evidence": [
+    "docs/stabilization/evidence/settings-theme-hosted/run38030250703/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-theme-hosted/run38030250703/resource-journals/hosted-package-38030250703-1.jsonl",
+    "docs/stabilization/evidence/settings-theme-hosted/run38030250703/resource-journals/hosted-browser-38030250703-1.jsonl",
+    "docs/stabilization/evidence/settings-theme-hosted/run38030250703/resource-journals/hosted-guest-38030250703-1.jsonl"
+  ]
+}

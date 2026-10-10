@@ -2,6 +2,7 @@
 export const RELOAD_OPERATIONS = Object.freeze([
   'reload_setup',
   'worker_retirement',
+  'sender_document_prepare',
   'fixture_focus',
   'open_diagnostic_start',
   'fixture_reply_clear',

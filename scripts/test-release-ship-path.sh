@@ -34,6 +34,9 @@ git config user.name test; git config user.email test@test; git config core.hook
 cp "$SCRIPT_UNDER_TEST" release.sh
 cp "$HARNESS_ROOT/ship.sh" ship.sh
 printf '{\n  "name": "matrx-extend",\n  "version": "0.1.0",\n  "private": true\n}\n' > package.json
+printf 'lockfileVersion: 9.0\n' > pnpm-lock.yaml
+mkdir -p scripts
+cp "$HARNESS_ROOT/scripts/release-snapshot-dependencies.sh" "$HARNESS_ROOT/scripts/release-owner-lock.sh" scripts/
 mkdir -p types; echo "old catalog" > types/tool-catalog.md
 echo "shared" > shared.txt
 git_q add -A; git_q commit -m "seed"; git_q push origin main
@@ -105,6 +108,13 @@ cat > "$SANDBOX/bin/pnpm" <<STUB
 #!/usr/bin/env bash
 echo "\$*" >> "$SANDBOX/pnpm-calls"
 case " \$* " in
+  *" install --frozen-lockfile --package-import-method=copy "*)
+    mkdir -p node_modules/.bin
+    # The fake installer supplies its diagnostic tool in the private install.
+    if [ -f "$SANDBOX/checkout/node_modules/.bin/biome" ]; then
+      cp "$SANDBOX/checkout/node_modules/.bin/biome" node_modules/.bin/biome
+    fi
+    ;;
   *" update-api-types "*) [ -f "$SANDBOX/fail-generation" ] && exit 1 ;;
   *" catalog:tools:md "*) mkdir -p types; echo "regenerated catalog" > types/tool-catalog.md ;;
   *" check:matrx-packages "*)
@@ -224,6 +234,8 @@ if [[ $STALE_PACKAGES_STATUS -ne 0 ]] \
     && ! grep -q 'exec vitest run' "$SANDBOX/pnpm-calls" \
     && [[ "$REMOTE_BASE" == "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" ]] \
     && ! git ls-remote --tags origin | grep -q 'refs/tags/v0.1.2$'; then
+  [[ $(grep -c '^install --frozen-lockfile --package-import-method=copy$' "$SANDBOX/pnpm-calls") -eq 1 ]] || { echo "FAIL: candidate graph not installed once" >&2; exit 1; }
+  echo '  ok    candidate regen/check/build reuse one private frozen install'
   echo '  ok    stale packages stop before unit tests and publication'
 else
   echo '  FAIL  stale packages stop before unit tests and publication'
@@ -461,15 +473,15 @@ check "version-only retry publishes validated tag" 'git ls-remote --tags origin 
   && git add package.json && git -c user.name=t -c user.email=t@t commit -qm 'change dependency input' \
   && git push -q origin main )
 INPUT_CHANGE_BASE="$(git --git-dir="$SANDBOX/origin.git" rev-parse main)"
-INSTALLS_BEFORE="$(grep -c '^install --frozen-lockfile' "$SANDBOX/pnpm-calls" || true)"
+INSTALLS_BEFORE="$(grep -c '^install --frozen-lockfile$' "$SANDBOX/pnpm-calls" || true)"
 set +e
 PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/dependency-input-out" 2>&1
 INPUT_CHANGE_STATUS=$?
 set -e
-check "dependency input change refreshes the install"   '[[ $(( $(grep -c "^install --frozen-lockfile" "$SANDBOX/pnpm-calls") - INSTALLS_BEFORE )) -eq 1 ]]'
+check "dependency input change refreshes the install"   '[[ $(( $(grep -c "^install --frozen-lockfile$" "$SANDBOX/pnpm-calls") - INSTALLS_BEFORE )) -eq 1 ]]'
 check "dependency input change does not stop the release" '[[ $INPUT_CHANGE_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/dependency-input-out" && ! grep -q "RELEASE STOPPED" "$SANDBOX/dependency-input-out"'
 check "the refreshed candidate is published"            '[[ "$(git --git-dir="$SANDBOX/origin.git" rev-parse main)" != "$INPUT_CHANGE_BASE" ]] && git --git-dir="$SANDBOX/origin.git" show main:package.json | grep -q fixture-new-dependency'
-check "the package gate ran after the refresh"          'tail -n +"$(grep -n "^install --frozen-lockfile" "$SANDBOX/pnpm-calls" | tail -1 | cut -d: -f1)" "$SANDBOX/pnpm-calls" | grep -q "check:matrx-packages"'
+check "the package gate ran after the refresh"          'tail -n +"$(grep -n "^install --frozen-lockfile$" "$SANDBOX/pnpm-calls" | tail -1 | cut -d: -f1)" "$SANDBOX/pnpm-calls" | grep -q "check:matrx-packages"'
 check "the checkout now holds the merged main"          'git merge-base --is-ancestor "$INPUT_CHANGE_BASE" HEAD'
 check "the refresh is reported, never silent"           'grep -q "reinstalled from the merged lockfile" "$SANDBOX/dependency-input-out"'
 

@@ -144,6 +144,11 @@ on:
         required: false
         default: false
         type: boolean
+      reload_sender_document_diagnostic:
+        description: Member Data only; refresh owned sender document before post-reload click. Diagnostic-only; compare with unrefreshed control on the same artifact.
+        required: false
+        default: false
+        type: boolean
       scrape_auth_mode:
         description: Scrape identity to verify through real sign-in
         required: false
@@ -186,6 +191,7 @@ jobs:
         env:
           ACCEPTANCE_LANE: ${{ inputs.acceptance_lane }}
           ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          RELOAD_SENDER_DOCUMENT_DIAGNOSTIC: ${{ inputs.reload_sender_document_diagnostic == true && '1' || '0' }}
           SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
           SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_interrupt_after_target || 'none' }}
@@ -198,6 +204,7 @@ jobs:
             guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-save-member|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
+          [[ "${RELOAD_SENDER_DOCUMENT_DIAGNOSTIC:-0}" != 1 || "$ACCEPTANCE_CASE" == member-data ]] || { echo 'Sender document diagnostic requires member-data.' >&2; exit 1; }
           if [[ "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'D187 Save Source requires member auth.' >&2; exit 1; }
           fi
@@ -332,6 +339,7 @@ jobs:
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: ${{ inputs.scrape_reload_open_diagnostic == true && '1' || '0' }}
+          MATRX_RELOAD_SENDER_DOCUMENT_DIAGNOSTIC: ${{ inputs.reload_sender_document_diagnostic == true && '1' || '0' }}
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           MATRX_SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}
           MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: ${{ inputs.scrape_normal_width_px }}
@@ -407,6 +415,7 @@ jobs:
           MATRX_D47_PUBLIC_RACE_PREFLIGHT: ${{ inputs.d47_public_race_preflight == true && '1' || '0' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: ${{ inputs.scrape_reload_open_diagnostic == true && '1' || '0' }}
+          MATRX_RELOAD_SENDER_DOCUMENT_DIAGNOSTIC: ${{ inputs.reload_sender_document_diagnostic == true && '1' || '0' }}
           MATRX_SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           MATRX_SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}
           MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: ${{ inputs.scrape_normal_width_px }}
