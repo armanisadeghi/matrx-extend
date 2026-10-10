@@ -84,7 +84,10 @@ test('lane admission refuses unknown lanes and isolates shared credentials', () 
     assert.notEqual(check(lane, 'guest-chat').status, 0, lane);
   const cases = dispatch.inputs.acceptance_case.options;
   for (const acceptanceCase of cases) {
-    const scrapeAuth = acceptanceCase === 'scrape-save-member' ? 'member' : 'guest';
+    const scrapeAuth =
+      acceptanceCase === 'scrape-save-member' || acceptanceCase === 'member-data'
+        ? 'member'
+        : 'guest';
     assert.equal(check('A', acceptanceCase, scrapeAuth).status, 0, acceptanceCase);
     const usesSharedFixture =
       acceptanceCase.endsWith('-admin') ||

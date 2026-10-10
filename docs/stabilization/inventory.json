@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T04:27:40Z",
+  "updated_at": "2026-10-10T04:50:06.670236Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -26488,11 +26488,11 @@
                 "page_1_title_and_headings",
                 "sparse_public_detail_groups",
                 "rich_public_detail_groups_and_canonical_door",
-                "canonical_outbound_opens_expected_public_tab"
+                "canonical_outbound_opens_expected_public_tab",
+                "guest_broken_social_preview_shows_failure_fallback"
               ],
               "unverified_dimensions": [
                 "hreflang/schema doors: this live public DOM had no unique openable candidates",
-                "broken social preview image",
                 "remaining detail controls",
                 "exact readability calculation",
                 "volatile public-detail and optional metadata-fixture phases excluded by this controlled run"
@@ -26504,9 +26504,26 @@
               "evidence": [
                 ".research/seo-controlled-followon-38016503649.json",
                 ".research/seo-controlled-followon-38016503649-peer.json",
-                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
+                ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json",
+                "docs/stabilization/evidence/guest-seo-behavior/run38024829250/receipt.json",
+                "docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json"
               ],
-              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred."
+              "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred. Supplemental bounded result: Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim.",
+              "bounded_subtarget_evidence": [
+                {
+                  "subtarget": "guest_broken_social_preview_shows_failure_fallback",
+                  "status": "pass",
+                  "run_id": "38024829250",
+                  "source_sha": "0c1ceda533c2e78e68a006a4a407741d6af8cba1",
+                  "driver_source_sha": "fbdbff7374a0b4f93c791ffd7036452ff41f4c35",
+                  "build_version": "0.2.458",
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-seo-behavior/run38024829250/receipt.json",
+                    "docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json"
+                  ],
+                  "detail": "Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim."
+                }
+              ]
             }
           },
           "result_history": [
@@ -26888,6 +26905,37 @@
                 "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
               },
               "superseded_at": "2026-10-10T02:25:54.623Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "passed_subtargets": [
+                  "page_0_title_and_headings",
+                  "page_1_title_and_headings",
+                  "sparse_public_detail_groups",
+                  "rich_public_detail_groups_and_canonical_door",
+                  "canonical_outbound_opens_expected_public_tab"
+                ],
+                "unverified_dimensions": [
+                  "hreflang/schema doors: this live public DOM had no unique openable candidates",
+                  "broken social preview image",
+                  "remaining detail controls",
+                  "exact readability calculation",
+                  "volatile public-detail and optional metadata-fixture phases excluded by this controlled run"
+                ],
+                "run_id": "38016503649",
+                "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
+                "driver_source_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
+                "build_version": "0.2.457",
+                "evidence": [
+                  ".research/seo-controlled-followon-38016503649.json",
+                  ".research/seo-controlled-followon-38016503649-peer.json",
+                  ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
+                ],
+                "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred."
+              },
+              "superseded_at": "2026-10-10T04:50:06.670236Z"
             }
           ],
           "defect_ids": [
@@ -27089,6 +27137,20 @@
                 ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json"
               ],
               "detail": "Re-observed title/headings on two public pages, sparse/rich metadata groups and the canonical outbound door. The volatile public-detail and optional metadata-fixture phases were excluded by controlled scope; remaining detail controls, broken preview image, hreflang/schema candidates and exact readability computation remain unverified."
+            },
+            {
+              "at": "2026-10-10T04:50:06.670236Z",
+              "run_id": "38024829250",
+              "mode": "guest",
+              "status": "partial",
+              "new_acceptance_credit": true,
+              "resource_valid": true,
+              "build_version": "0.2.458",
+              "evidence": [
+                "docs/stabilization/evidence/guest-seo-behavior/run38024829250/receipt.json",
+                "docs/stabilization/evidence/guest-seo-behavior/run38024829250/native-report.sanitized.json"
+              ],
+              "detail": "Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim."
             }
           ],
           "revalidation_history": [
