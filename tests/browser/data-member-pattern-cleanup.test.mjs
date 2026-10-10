@@ -3,10 +3,12 @@ import test from 'node:test';
 import {
   buildDataPatternDeleteUrl,
   buildDataPatternLookupUrl,
+  cleanupOwnedDataPattern,
   matchesSelectedMemberOrganization,
   parseDataPatternWriteBody,
   parseDataPatternWriteRequestBody,
   requireExpectedMemberOrganizationId,
+  resolveDataPatternCleanupLookup,
   verifyDataPatternDeleteResult,
   verifyDataPatternLookupResult,
 } from './data-member-pattern-cleanup.mjs';
@@ -136,4 +138,102 @@ test('fallback lookup is scoped to exact owned name and observed organization', 
   ]) {
     assert.throws(() => verifyDataPatternLookupResult({ status: 200, rows }, name, organizationId));
   }
+});
+
+test('cleanup fallback treats zero rows as a no-op and deletes only one exact owned match', () => {
+  const name = 'Northline Furnishings catalog member 38013032792-2';
+  assert.deepEqual(
+    resolveDataPatternCleanupLookup({ status: 200, rows: [] }, name, organizationId),
+    { kind: 'none' },
+  );
+  assert.throws(
+    () =>
+      resolveDataPatternCleanupLookup({ status: 200, rows: [] }, name, organizationId, {
+        successfulWriteObserved: true,
+      }),
+    /data_member_cleanup_row_missing_after_successful_write/,
+  );
+  assert.deepEqual(
+    resolveDataPatternCleanupLookup(
+      { status: 200, rows: [{ id: patternId, organization_id: organizationId, name }] },
+      name,
+      organizationId,
+      { successfulWriteObserved: true },
+    ),
+    { kind: 'delete', target: { patternId, organizationId } },
+  );
+  for (const result of [
+    { status: 500, rows: [] },
+    { status: 200, rows: null },
+    {
+      status: 200,
+      rows: [
+        { id: patternId, organization_id: organizationId, name },
+        { id: '123e4567-e89b-42d3-a456-426614174003', organization_id: organizationId, name },
+      ],
+    },
+    { status: 200, rows: [{ id: patternId, organization_id: otherOrganizationId, name }] },
+    { status: 200, rows: [{ id: patternId, organization_id: organizationId, name: 'wrong' }] },
+  ]) {
+    assert.throws(() => resolveDataPatternCleanupLookup(result, name, organizationId));
+  }
+});
+
+test('native cleanup orchestration scopes lookup and fails closed on a missing saved row', async () => {
+  const name = 'Northline Furnishings catalog member 38013032792-3';
+  const lookup = test.mock.fn(async () => ({ status: 200, rows: [] }));
+  const remove = test.mock.fn(async () => ({ verified: true, deleted_rows: 1 }));
+
+  assert.deepEqual(await cleanupOwnedDataPattern({ lookup, remove, name, organizationId }), {
+    verified: true,
+    deleted_rows: 0,
+    exact_owned_name_organization_lookup: true,
+  });
+  assert.deepEqual(lookup.mock.calls[0].arguments, [name, organizationId]);
+  assert.equal(remove.mock.callCount(), 0);
+  await assert.rejects(
+    cleanupOwnedDataPattern({
+      lookup,
+      remove,
+      name,
+      organizationId,
+      successfulWriteObserved: true,
+    }),
+    /data_member_cleanup_row_missing_after_successful_write/,
+  );
+  assert.equal(remove.mock.callCount(), 0);
+
+  const uniqueLookup = async () => ({
+    status: 200,
+    rows: [{ id: patternId, organization_id: organizationId, name }],
+  });
+  assert.deepEqual(
+    await cleanupOwnedDataPattern({ lookup: uniqueLookup, remove, name, organizationId }),
+    { verified: true, deleted_rows: 1, exact_owned_name_organization_lookup: true },
+  );
+  assert.deepEqual(remove.mock.calls[0].arguments, [{ patternId, organizationId }]);
+  await assert.rejects(
+    cleanupOwnedDataPattern({
+      lookup: uniqueLookup,
+      remove,
+      name,
+      organizationId,
+      expectedPatternId: '123e4567-e89b-42d3-a456-426614174003',
+    }),
+    /data_member_cleanup_lookup_write_id_mismatch/,
+  );
+  assert.equal(remove.mock.callCount(), 1);
+
+  const duplicateLookup = async () => ({
+    status: 200,
+    rows: [
+      { id: patternId, organization_id: organizationId, name },
+      { id: '123e4567-e89b-42d3-a456-426614174003', organization_id: organizationId, name },
+    ],
+  });
+  await assert.rejects(
+    cleanupOwnedDataPattern({ lookup: duplicateLookup, remove, name, organizationId }),
+    /data_member_lookup_row_count_mismatch/,
+  );
+  assert.equal(remove.mock.callCount(), 1);
 });
