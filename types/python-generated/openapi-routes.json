@@ -7671,6 +7671,9 @@
  "/social/posts/{post_id}/media": {
   "get": []
  },
+ "/social/posts/{post_id}/media-coverage": {
+  "get": []
+ },
  "/social/posts/{post_id}/media/{file_id}": {
   "get": []
  },
