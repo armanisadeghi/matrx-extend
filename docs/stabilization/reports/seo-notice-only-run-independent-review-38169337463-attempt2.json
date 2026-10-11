@@ -1,0 +1,186 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_seo_notice_only_run_review",
+  "reviewer": "seo_notice_attempt2_peer",
+  "reviewed_at_utc": "2026-10-11T20:03:52Z",
+  "defect_id": "EXT-D-0199",
+  "feature_id": "EXT-F-1008",
+  "hosted_run": {
+    "id": 38169337463,
+    "run_attempt": 2,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38169337463/attempts/2",
+    "status": "completed",
+    "conclusion": "failure",
+    "workflow_source_sha": "98123b8e6dedc7cfa2b1888b451199e61fa401d5",
+    "inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "notice",
+      "seo_metadata_fixture": "none",
+      "seo_resource_diagnostic": "false",
+      "seo_interrupt_after_target": "none"
+    }
+  },
+  "product_provenance": {
+    "status": "verified_exact_main_development_artifact",
+    "ci_run_id": 38168717226,
+    "ci_run_conclusion": "success",
+    "ci_head_sha": "1880fcb06b314704aaa10e0b285ae43275bcfa38",
+    "artifact_id": 11713341619,
+    "artifact_digest": "sha256:a82f264065ece1be7cbbb85ee0532c8ba9226fa7ff66bb956970e5c6b431a2c2",
+    "product_source_sha": "1880fcb06b314704aaa10e0b285ae43275bcfa38",
+    "version": "0.2.502",
+    "tree_sha256": "dde4175c5d0dcc25f12e0195a728139e51e39de68381c0cae3fa3ae5a1423bfa",
+    "publish_state": "not_published"
+  },
+  "result_artifact": {
+    "artifact_id": 11713227418,
+    "artifact_name": "hosted-guest-38169337463-2",
+    "github_digest": "sha256:c9935c15d178548d249637f120723dc470d96e670c48331e050da83d88d25d9f",
+    "downloaded_archive_digest": "sha256:c9935c15d178548d249637f120723dc470d96e670c48331e050da83d88d25d9f",
+    "digest_match": true,
+    "contents": [
+      "docs/stabilization/resource-journals/hosted-package-38169337463-2.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38169337463-2.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38169337463-2.jsonl",
+      "test-results/seo-guest-acceptance.json",
+      "test-results/native-sidepanel-qa-ApQEMk/native-side-panel.png",
+      "test-results/native-sidepanel-qa-ApQEMk/normal-target-after-open.png"
+    ]
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "product_behavior": {
+    "verdict": "PARTIAL_THREE_BOUNDED_T02_SUBTARGETS_PASS_RELOAD_ASSERTION_FAILS",
+    "diagnostic_finding": "The resource-valid guest run confirms the two notice-clearance geometry targets and trusted Re-audit return target. After Dismiss clears the notice, reloading the side-panel document restores it, failing the selected reload assertion. The failure is product behavior against the executable target; it does not establish full T02 or EXT-D-0199 closure.",
+    "observed_click_transition": [
+      {
+        "stage": "before_click",
+        "elapsed_ms": 1,
+        "click_trusted": null,
+        "button_disabled": false,
+        "spinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "click_event",
+        "elapsed_ms": 295,
+        "click_trusted": true,
+        "button_disabled": false,
+        "spinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "dom_transition",
+        "elapsed_ms": 301,
+        "click_trusted": null,
+        "button_disabled": true,
+        "spinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "running_wait",
+        "elapsed_ms": 331,
+        "click_trusted": null,
+        "button_disabled": true,
+        "spinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "dom_transition",
+        "elapsed_ms": 357,
+        "click_trusted": null,
+        "button_disabled": false,
+        "spinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "finished",
+        "elapsed_ms": 379,
+        "click_trusted": null,
+        "button_disabled": false,
+        "spinner": false,
+        "reAudit": true,
+        "error": false
+      }
+    ],
+    "target_results_recorded": [
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "manual_button_returns_to_current_page",
+        "status": "pass"
+      }
+    ],
+    "acceptance_credit": [
+      "The two geometry subtargets repeat their existing bounded credit from run 38167373687.",
+      "manual_button_returns_to_current_page corroborates a subtarget already credited by earlier controlled evidence; no duplicate credit is added.",
+      "No credit for dismissed_notice_stays_clear_after_reload, full T02, or EXT-D-0199 closure."
+    ],
+    "reload_observation": {
+      "stage": "notice_after_panel_reload_hit",
+      "after_dismiss_notice_count": 0,
+      "after_reload_notice_count": 1,
+      "expected_after_reload_notice_count": 0,
+      "assertion": "dismissed in-memory refusal notice stays cleared after panel reload",
+      "result": "failed"
+    },
+    "not_reached_or_unverified": [
+      "Full EXT-F-1008-T02 and remaining T02 dimensions",
+      "Multiple/long notice fixtures",
+      "Member/admin modes",
+      "Store behavior"
+    ],
+    "failure_boundary": {
+      "stage": "notice_after_panel_reload_hit",
+      "classification": "acceptance assertion failed after successful product interactions; resource finals remained valid",
+      "evidence": "The native report records after_dismiss database_refused_notice_count=0 and after_reload count=1. The driver asserts the count remains zero at tests/browser/seo-guest-acceptance.mjs:1776-79. Guest journal ends admitted=true/resourceInvalid=false/exitCode=1/decision=child_failed."
+    }
+  },
+  "evidence": {
+    "source_artifact": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38169337463/artifacts/11713227418",
+    "verified_archive_sha256": "c9935c15d178548d249637f120723dc470d96e670c48331e050da83d88d25d9f",
+    "artifact_contents_reviewed": [
+      "test-results/seo-guest-acceptance.json",
+      "docs/stabilization/resource-journals/hosted-package-38169337463-2.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38169337463-2.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38169337463-2.jsonl"
+    ],
+    "github_log": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38169337463/attempts/2"
+  },
+  "attempt_1_distinction": "Attempt 1 observed the trusted Re-audit transition but its guest final was resource-invalid after a high-load watchdog stop before Dismiss/reload, so no acceptance credit was granted there. Attempt 2 is resource-valid and reaches Dismiss/reload; it confirms three passing observations and exposes the reload assertion failure.",
+  "open_question": "EXT-D-0199 records dismissibility and native hit clearance as expected behavior, while this T02 subtarget also requires dismissal to persist through side-panel reload. Confirm the canonical product requirement before treating reload persistence as a defect beyond this executable acceptance target.",
+  "next_action": "Keep EXT-D-0199 fixed/open. Record only the three bounded passing observations, preserve the reload failure and partial T02 status, and do not promote the full case or close the defect."
+}
