@@ -81,8 +81,14 @@
   ],
   "disposition": "RESOURCE_DISK_LOW remains; no test launched and no retest unblocked claim",
   "gap_to_guard": "approximately 19.83 GiB additional free space required",
+  "follow_up_observation": {
+    "at": "2026-10-11 after 05:49 UTC",
+    "system_settings_storage": "Macintosh HD reported 2 GB available while df reported approximately 330 MiB free on /System/Volumes/Data; neither meets the guard's 20 GiB floor",
+    "icloud_drive": "Sync this Mac, Desktop & Documents Folders, and Optimize Mac Storage were already on in System Settings; no setting was changed",
+    "manual_cloudkit_deletion": "not attempted; the 34 GiB cache has active cloudd database handles and no supported safe purge identified"
+  },
   "next_options": [
-    "Owner-guided review of the 34 GiB CloudKit cache through macOS storage and sync controls; cloudd currently holds cache databases open, so no manual deletion was attempted.",
+    "Review local downloaded iCloud items through Finder's supported Remove Download action only after identifying individual fully synced files; Optimize Mac Storage is already on and did not restore guard capacity.",
     "Owner-guided Docker Desktop review of its 5.3 GiB VM data before any Docker-specific cleanup; the engine was stopped and the canonical groomer could not inspect it.",
     "Free space through a user-selected data cleanup or add available storage; do not delete recent temporary copies until their originating runs are confirmed complete and stale."
   ]
