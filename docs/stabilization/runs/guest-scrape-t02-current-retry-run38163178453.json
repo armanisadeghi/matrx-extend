@@ -4,8 +4,8 @@
   "created_at_utc": "2026-10-11T18:17:23Z",
   "feature_id": "EXT-F-1007",
   "case_id": "EXT-F-1007-T02",
-  "status": "running",
-  "scope": "Guarded hosted lane B real guest Scrape permission-denial/deep retry route, retesting the previously reviewed historical deep-mode preservation subtarget on frozen current-equivalent development v0.2.500. T14 is the route owner; T02 credit requires separate independent cross-case review.",
+  "status": "reviewed_bounded_pass",
+  "scope": "Guest deep capture permission-denial followed by Try again with deep mode preserved, established on frozen current-equivalent development v0.2.500. T14 denial/retry/dismiss is separately recorded as partial; T02 inventory receives only bounded subtarget credit.",
   "hosted_run_id": 38163178453,
   "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38163178453",
   "workflow_source_sha": "c1b3baeda570e86f79e93b10892e5b3fcc9ccabe",
@@ -23,5 +23,29 @@
     "github_digest": "sha256:a1e5fde629f299e6f6c724937dd42aa6e27f9e10bf6a8e4d18c4943cd0c422c6",
     "source_limit": "Subsequent main commits changed documentation and SEO test runner files only, not extension runtime source."
   },
-  "next_action": "Await terminal hosted result, verify exact artifact and all resource finals, then obtain fresh independent T14/T02 cross-case native review before changing coverage. No duplicate pass credit for historical run38044062561."
+  "next_action": "Keep T02 partial. Verify visible scrolling progress and additional failure classes, default Chrome/Store, member/admin, and complete T14 Reload page recovery separately.",
+  "at": "2026-10-11T18:27:43Z",
+  "resource_finals": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid"
+  },
+  "hosted_result_artifact_id": 11711626052,
+  "hosted_result_digest": "sha256:fcfecc15073653fd16d65dcb4eccfc566ec2763a14305c88fe3e76857c284081",
+  "tree_sha256": "a5de6c0095949b6b55a27c7389656188f852c6cd40dd0d21ef600fac5bf2bdf9",
+  "evidence": {
+    "receipt": "docs/stabilization/evidence/scrape-error-recovery-guest/run38163178453/receipt.sanitized.json",
+    "native_report": "docs/stabilization/evidence/scrape-error-recovery-guest/run38163178453/native-report.sanitized.json",
+    "peer_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-current-run38163178453.json"
+  },
+  "passed_subtarget": "The workflow-source-bound driver observed effective host-permission denial before the requested deep capture, required the lazy marker to be absent before retry, restored access, clicked Try again and observed the error clear with the scroll-triggered lazy marker present. Product source at the pinned artifact SHA preserves the selected mode for retry.",
+  "limitations": [
+    "Visible scrolling progress remains unverified, so this is not full T02 acceptance.",
+    "Native report case is T14 and remains partial; reload-page recovery is unverified.",
+    "Non-default Chrome ExtensionsMenuAccessControl profile only; no default Chrome or Store acceptance.",
+    "No retained raw browser action timeline or screenshots; action order and marker absence are asserted by the workflow-source-bound driver."
+  ],
+  "review_verdict": "PASS_BOUNDED_SUBTARGET",
+  "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-current-run38163178453.json",
+  "actual_runner_label_reported": "macos-15"
 }

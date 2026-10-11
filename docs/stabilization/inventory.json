@@ -22255,11 +22255,12 @@
               "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
               "resource_valid": true,
               "passed_subtargets": [
-                "Post-full-extension-reload deep recapture: lazy marker began absent, then appeared in both the owned page DOM and selected Article result; Scrolling progress was observed."
+                "Post-full-extension-reload deep recapture: lazy marker began absent, then appeared in both the owned page DOM and selected Article result; Scrolling progress was observed.",
+                "Frozen current-equivalent v0.2.500 guest deep permission denial followed by Try again preserved deep mode and recovered scroll-triggered lazy content; independently reviewed run 38163178453."
               ],
               "unverified": [
                 "Warm deep capture is not proven by the latest current-equivalent run.",
-                "Visible scrolling progress and current-main deep-failure retry remain unverified; the reviewed retry result is from v0.2.459.",
+                "Visible scrolling progress during the failure/retry branch remains unverified; the current-equivalent retry result covers only the controlled host-permission denial class.",
                 "Other retry failure classes, member/admin, default Chrome, Store-installed, and full T02/Scrape acceptance remain unverified."
               ],
               "evidence": [
@@ -22272,8 +22273,25 @@
                 "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/scrape-reload-deep-article.png"
               ],
               "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-run38105535841.json",
-              "detail": "Latest reviewed run 38105535841 passes the guest post-extension-reload deep recapture subtarget on current-equivalent v0.2.490. Historical run 38044062561 independently supports only the guest deep permission-failure/Try again mode-preservation subtarget on v0.2.459. Warm deep capture, visible progress, current-main retry, other failure classes, and full T02 remain unverified.",
-              "release_scope": "Guest, normal 600px CDP-emulated width, current-equivalent v0.2.490 development artifact. Does not establish warm behavior on this artifact, deep failure/retry, member/admin, Store-installed behavior, or full T02/Scrape acceptance. Separate historical cross-case retry credit applies only to v0.2.459 and does not transfer to current main.",
+              "detail": "Reviewed run 38105535841 passes guest post-extension-reload deep recapture on current-equivalent v0.2.490. Independently reviewed run 38163178453 adds the controlled guest deep permission-denial/Try again mode-preservation subtarget on frozen current-equivalent v0.2.500, replacing historical-only retry evidence from run 38044062561. Warm deep capture on the latest artifact, visible retry progress, other failure classes, and full T02 remain unverified.",
+              "release_scope": "Guest bounded development evidence: post-reload deep recapture on v0.2.490 and controlled deep permission-failure retry on frozen current-equivalent v0.2.500. Neither proves the complete T02 case, member/admin, default Chrome or Store-installed behavior.",
+              "current_retry_subtarget": {
+                "run_id": 38163178453,
+                "status": "bounded-pass",
+                "subtarget": "guest_deep_permission_failure_retry_preserves_deep_mode",
+                "source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+                "workflow_source_sha": "c1b3baeda570e86f79e93b10892e5b3fcc9ccabe",
+                "development_ci_run_id": 38161635790,
+                "development_artifact_id": 11710458741,
+                "build_version": "0.2.500",
+                "resource_valid": true,
+                "evidence": "docs/stabilization/runs/guest-scrape-t02-current-retry-run38163178453.json",
+                "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-current-run38163178453.json",
+                "limitations": [
+                  "Visible scrolling progress on the failure/retry branch was not retained.",
+                  "T14 Reload page recovery, other failure classes, default Chrome, member/admin and Store-installed behavior remain unverified."
+                ]
+              },
               "previous_bounded_result": {
                 "run_id": 38021736744,
                 "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
@@ -26763,9 +26781,10 @@
             "38041013005",
             "38044684443",
             "38111898943",
-            38113131426
+            38113131426,
+            38163178453
           ],
-          "retest_status": "Partial surface coverage. Frozen407 native37778965029 independently revalidates guest T07/T09/T10/T11/T12/T13/T20 and adds post-reload empty Images/Video evidence; exact conditional-confirmation branch D178 and remaining guest/member/admin cases unverified. Subsequent37783167613 failed runner setup D180 before browser, with zero acceptance credit. Latest run 38044684443 (workflow c6ff0838d; frozen development v0.2.459) verified bounded T08 guest normal-width-at-600px CDP-emulated warm/full-reload panes and capture/export invariance. SEO/Schema empty-state, physical resize, other roles, Store/current-main, and full surface remain unverified; feature-role cell stays partial. Additional bounded T08/C08 guest subtarget reviewed on frozen development source cda49523be8fc568616e0205143982426e766c1a, hosted run 38111898943; native-default width 360px, resource-valid. Screenshot set omits target panes (Verdict B PARTIAL). T08 and feature-role cell remain partial; no current-main, Store, release, member/admin, reload, or full-surface claim. Latest frozen development run 38113131426 adds an independently reviewed bounded guest no-signal SEO/empty Schema pass at 600px CDP-emulated width; product source 83cd72b6, workflow checkout 46c31547. Three resource finals are valid. Screenshots omit the target panes and emulation does not establish physical resize. T08 and guest feature-role remain partial; member/admin, reload for this subtarget, Store/current-main/release, and full Scrape acceptance remain unverified."
+          "retest_status": "Partial surface coverage. Frozen407 native37778965029 independently revalidates guest T07/T09/T10/T11/T12/T13/T20 and adds post-reload empty Images/Video evidence; exact conditional-confirmation branch D178 and remaining guest/member/admin cases unverified. Subsequent37783167613 failed runner setup D180 before browser, with zero acceptance credit. Latest run 38044684443 (workflow c6ff0838d; frozen development v0.2.459) verified bounded T08 guest normal-width-at-600px CDP-emulated warm/full-reload panes and capture/export invariance. SEO/Schema empty-state, physical resize, other roles, Store/current-main, and full surface remain unverified; feature-role cell stays partial. Additional bounded T08/C08 guest subtarget reviewed on frozen development source cda49523be8fc568616e0205143982426e766c1a, hosted run 38111898943; native-default width 360px, resource-valid. Screenshot set omits target panes (Verdict B PARTIAL). T08 and feature-role cell remain partial; no current-main, Store, release, member/admin, reload, or full-surface claim. Latest frozen development run 38113131426 adds an independently reviewed bounded guest no-signal SEO/empty Schema pass at 600px CDP-emulated width; product source 83cd72b6, workflow checkout 46c31547. Three resource finals are valid. Screenshots omit the target panes and emulation does not establish physical resize. T08 and guest feature-role remain partial; member/admin, reload for this subtarget, Store/current-main/release, and full Scrape acceptance remain unverified. Independently reviewed frozen current-equivalent v0.2.500 run 38163178453 adds only guest T02 deep permission-denial/Try again mode-preservation with valid resource finals; visible retry progress, other failure classes and full T02 remain unverified."
         },
         "member": {
           "test_status": "partial",
