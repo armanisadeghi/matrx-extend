@@ -176,6 +176,7 @@ export function hostedGuestSeoRoute(
   assert.ok(
     scope === 'full' ||
       scope === 'controlled' ||
+      scope === 'notice' ||
       scope === 'readability' ||
       scope === 'metadata' ||
       scope === 'narrow',

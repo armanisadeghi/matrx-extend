@@ -22,7 +22,9 @@ export function planNoticeViewports(nativeViewport) {
 }
 
 export async function setNoticeViewport(panel, plan, variant, readWidth) {
-  if (variant === 'narrow') {
+  if (variant === 'narrow' && plan.native.width === NARROW_NOTICE_WIDTH) {
+    await panel.send('Emulation.clearDeviceMetricsOverride');
+  } else if (variant === 'narrow') {
     await panel.send('Emulation.setDeviceMetricsOverride', {
       width: NARROW_NOTICE_WIDTH,
       height: plan.native.height,
@@ -45,7 +47,15 @@ export async function setNoticeViewport(panel, plan, variant, readWidth) {
   }
   const width = await readWidth();
   assert.equal(width, variant === 'narrow' ? NARROW_NOTICE_WIDTH : plan.wideWidth);
-  return { width, source: variant === 'narrow' ? 'emulated' : plan.wideSource };
+  return {
+    width,
+    source:
+      variant === 'narrow'
+        ? plan.native.width === NARROW_NOTICE_WIDTH
+          ? 'native'
+          : 'emulated'
+        : plan.wideSource,
+  };
 }
 
 export async function restoreNativeNoticeViewport(panel, plan, readWidth) {

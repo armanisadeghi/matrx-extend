@@ -593,3 +593,19 @@ test('unexpected source failure is not isolated as a clipboard mismatch', async 
   );
   assert.equal(recaptured, false);
 });
+
+test('notice selection excludes clipboard, history credit and full-case acceptance', () => {
+  assert.deepEqual(seoCaseSelection('notice'), {
+    scope: 'notice',
+    selected_cases: ['T02'],
+    selected_subtargets: [
+      'notice_narrow_warm_navigation_reaudit_clearance',
+      'notice_wide_warm_navigation_reaudit_clearance',
+      'manual_button_returns_to_current_page',
+      'dismissed_notice_stays_clear_after_reload',
+    ],
+    excluded_cases: ['all other SEO targets; no full T02 or D199 closure'],
+  });
+  assert.ok(seoCaseSelection('controlled').selected_cases.includes('T07'));
+  assert.throws(() => seoCaseSelection('notice-everything'));
+});

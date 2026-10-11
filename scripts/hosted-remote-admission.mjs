@@ -10,7 +10,7 @@ import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mj
 const OWNER = 'armanisadeghi/matrx-extend';
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
 // Reviewed bytes of this narrow lane's active hosted workflow. Any workflow edit needs review.
-const REVIEWED_WORKFLOW_SHA256 = '1cb3d900ed62405504e6d7c90cf7dab79716299a70f9318bd8005f476b12c75a';
+const REVIEWED_WORKFLOW_SHA256 = 'b51b292f9e0592e2f1c5347784f994ec45c19c5cb0251d691104da8620be95ba';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );

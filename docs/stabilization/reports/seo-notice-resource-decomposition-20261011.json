@@ -1,0 +1,92 @@
+{
+  "id": "seo-notice-resource-decomposition-20261011",
+  "defect_id": "EXT-D-0199",
+  "status": "source_verified_native_pending",
+  "scope": "Bounded notice-only hosted test decomposition; no product or resource-fix claim.",
+  "observations": [
+    {
+      "run_id": 38163808797,
+      "guest_admitted_at": "2026-10-11T18:32:21.688Z",
+      "admission_busy_mean": 0.052857142857142866,
+      "watch_busy": [0.69, 0.93, 0.96],
+      "first_unsafe_seconds_after_admission": 32.386,
+      "final_decision": "invalid",
+      "exit_code": 3,
+      "last_safe_stage": "notice_wide_viewport_width",
+      "operation": "public_page_1_navigation",
+      "wide_viewport_observed_at": "2026-10-11T18:33:09.267Z",
+      "process_attribution": "Chromium and two helpers total 147%; mdbulkimport48.3%; provisioner72.9%; Runner.Worker16.8%; process percentages are per-core instantaneous samples, not whole-host average."
+    },
+    {
+      "run_id": 38159469990,
+      "watch_busy": [0.37, 0.98, 1.0],
+      "first_unsafe_seconds_after_admission": 32.309,
+      "final_decision": "invalid",
+      "exit_code": 3
+    },
+    {
+      "run_id": 38162261133,
+      "duration_seconds_to_child_exit": 22.081,
+      "watch_busy": [0.57],
+      "final_decision": "child_failed",
+      "reason": "viewport preflight rejected native 360 width; exits before comparative 32-second unsafe window"
+    },
+    {
+      "run_id": 38160708149,
+      "duration_seconds_to_child_exit": 38.442,
+      "watch_busy": [0.45, 0.74],
+      "final_decision": "valid",
+      "scope": "prior original obstruction check; no current sibling claim"
+    }
+  ],
+  "hypotheses": [
+    {
+      "cause": "Wide viewport override creates overload",
+      "prediction": "Unsafe CPU starts only after wide override",
+      "result": "contradicted: first unsafe at18:32:54 precedes wide observation18:33:09; original invalid run did not carry current viewport checks"
+    },
+    {
+      "cause": "All hosted runs exceed thresholds due to fixed baseline",
+      "prediction": "38-second prior run also invalid",
+      "result": "contradicted by38160708149; runner load varies"
+    },
+    {
+      "cause": "Latest overload is exclusively SEO renderer",
+      "prediction": "attribution contains no substantial non-browser activity",
+      "result": "contradicted by indexing and provisioning CPU; exact shares over full unsafe window unknown"
+    },
+    {
+      "cause": "Unrelated test work delays targeted notice outcome",
+      "prediction": "notice-only driver reaches widths/re-audit/reload without clipboard callbacks",
+      "result": "source driver execution guard passes; native timing effect unmeasured"
+    }
+  ],
+  "change": "notice scope retains controlled history-request refusal setup as prerequisite, real panel rendering, public navigation, narrow/wide hit tests, trusted Re-audit and Dismiss, panel reload and native viewport restoration. Excludes clipboard execution and unrelated target credit, returns before restricted/social/detail cases. Native dimensions and emulated widths remain separately labeled.",
+  "unchanged": ["resource policy", "watchdog", "concurrency", "product code"],
+  "verification": {
+    "compile": "pass",
+    "notice_driver_tests": "7/7; actual driver with real viewport helpers, captured hit sample; removed-clearance/unwanted-clipboard/empty-driver mutations rejected",
+    "focused_suite": "419/419 pass",
+    "independent_review": "Fresh Luna /root/seo_notice_only_scope_peer source behavior and code-quality PASS after native360 correction; native hosted acceptance pending.",
+    "viewport_red_green": "Native360 expected native source failed before fix (actual emulated), passed after clearing override; native428 narrow remains emulated; constant-return viewport mutant rejected by native428 branch.",
+    "changed_code_biome": "pass at error level; existing unchanged noForEach warnings remain"
+  },
+  "limitations": [
+    "Native notice-only run has not executed. No resource-invalid run earns product credit.",
+    "Controlled refusal intercepts precise native history GET; does not establish live backend failure behavior.",
+    "Long/multiple notices and notice-visible full reload remain unverified.",
+    "Native360 clears override and verifies measured width; any forced360 and wide480 remain explicitly emulated. Success restores native viewport; early failure relies on owned ephemeral browser/profile teardown and never earns a success receipt."
+  ],
+  "next_guarded_run": {
+    "command": "gh workflow run hosted-guest-acceptance.yml --ref main -f acceptance_lane=B -f acceptance_case=guest-seo -f runner_label=macos-15-intel -f development_run_id=38161635790 -f development_artifact_id=11710458741 -f seo_case_scope=notice -f seo_metadata_fixture=none -f seo_resource_diagnostic=false -f seo_interrupt_after_target=none",
+    "preconditions": "fresh peer source PASS, combined workflow/digest pin green and pushed, lane B terminal/unowned, frozen CI artifact revalidated; record new workflow SHA separately",
+    "credit": "Only terminal resource-valid independently reviewed bounded T02 subtargets; no full T02/D199 closure"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/seo-notice-occlusion/run38163808797",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38159469990",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38162261133",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38160708149"
+  ],
+  "integration": "Settings account-popover agent authored and authorized inclusion of reviewed workflow digest pin b51b292f9e0592e2f1c5347784f994ec45c19c5cb0251d691104da8620be95ba in the same coherent commit."
+}

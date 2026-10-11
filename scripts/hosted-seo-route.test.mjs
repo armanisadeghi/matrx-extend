@@ -411,6 +411,7 @@ test('hosted preflight rejects invalid metadata, resource diagnostic, and interr
         MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: interrupt,
       },
     });
+  assert.equal(preflight('guest-seo', 'notice', 'none').status, 0);
   assert.equal(preflight('guest-seo', 'full', undefined).status, 0);
   assert.equal(preflight('guest-seo', 'full', 'airbnb').status, 0);
   assert.equal(preflight('guest-seo', 'full', 'airbnb', '1').status, 0);
@@ -707,4 +708,16 @@ test('SEO progress durably retains safe differing hit outcomes at operation entr
   } finally {
     await rm(directory, { recursive: true, force: true });
   }
+});
+
+test('notice scope routes only bounded refusal checks and rejects unrelated fixture work', () => {
+  assert.equal(
+    hostedGuestSeoRoute('guest-seo', 'development', selected, 'notice').env.SEO_GUEST_CASE_SCOPE,
+    'notice',
+  );
+  for (const fixture of ['airbnb', 'owned'])
+    assert.throws(() =>
+      hostedGuestSeoRoute('guest-seo', 'development', selected, 'notice', fixture),
+    );
+  assert.throws(() => hostedGuestSeoRoute('guest-chat', 'development', selected, 'notice'));
 });

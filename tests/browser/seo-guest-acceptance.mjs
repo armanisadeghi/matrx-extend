@@ -71,6 +71,8 @@ const METADATA_FIXTURE_PAGE = 'https://www.airbnb.com/';
 const RUN_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'airbnb';
 const RUN_OWNED_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'owned';
 const SEO_CASE_SCOPE = process.env.SEO_GUEST_CASE_SCOPE ?? 'full';
+const NOTICE_ONLY = SEO_CASE_SCOPE === 'notice';
+const CHECK_NOTICE = SEO_CASE_SCOPE === 'controlled' || NOTICE_ONLY;
 if (SEO_CASE_SCOPE === 'metadata' || SEO_CASE_SCOPE === 'narrow')
   assert.equal(RUN_OWNED_METADATA_FIXTURE, true, 'owned_metadata_scope_requires_owned_fixture');
 if (RUN_OWNED_METADATA_FIXTURE)
@@ -106,8 +108,9 @@ const report = {
   feature_id: 'EXT-F-1008',
   mode: 'guest',
   status: 'unverified',
-  scope:
-    SEO_CASE_SCOPE === 'readability'
+  scope: NOTICE_ONLY
+    ? 'bounded guest SEO refusal notice widths, trusted Re-audit, Dismiss and reload'
+    : SEO_CASE_SCOPE === 'readability'
       ? 'known-text guest SEO readability in an owned native side panel'
       : SEO_CASE_SCOPE === 'metadata'
         ? 'owned guest SEO hreflang and Article schema doors in a native side panel'
@@ -1330,7 +1333,7 @@ try {
     exercisePanel: async ({ page, panel, browserSession, panelTarget }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
       let noticeViewportPlan = null;
-      if (SEO_CASE_SCOPE === 'controlled') {
+      if (CHECK_NOTICE) {
         const history = await runNativeSeoHistoryRecovery({
           panel,
           page,
@@ -1341,7 +1344,7 @@ try {
             checkpoint();
           },
         });
-        target('T06', 'guest_history_error_retry_fresh_empty_read', history);
+        if (!NOTICE_ONLY) target('T06', 'guest_history_error_retry_fresh_empty_read', history);
         advance('guest_history_recovery_complete', history);
       }
       if (SEO_CASE_SCOPE === 'metadata' || SEO_CASE_SCOPE === 'narrow') {
@@ -1522,7 +1525,7 @@ try {
       const publicPages = [];
       let narrowNoticeViewport = null;
       let wideNoticeViewport = null;
-      if (SEO_CASE_SCOPE === 'controlled') {
+      if (CHECK_NOTICE) {
         const nativeNoticeViewport = await observe('notice_native_viewport_preflight', () =>
           evaluate(panel, '({ width: innerWidth, height: innerHeight })'),
         );
@@ -1539,7 +1542,7 @@ try {
         );
       }
       for (const [index, url] of PAGES.entries()) {
-        if (SEO_CASE_SCOPE === 'controlled' && index === 1) {
+        if (CHECK_NOTICE && index === 1) {
           enter('notice_wide_viewport_set');
           wideNoticeViewport = await setNoticeViewport(panel, noticeViewportPlan, 'wide', () =>
             observe('notice_wide_viewport_width', () => evaluate(panel, 'innerWidth')),
@@ -1587,13 +1590,14 @@ try {
           !!observedPage.heading,
           'SEO headings group agrees with the real page',
         );
-        target('T09', `page_${index}_title_and_headings`, {
-          publicTitle: observedPage.title,
-          titleMatches: true,
-          headingsPresenceMatches: true,
-        });
+        if (!NOTICE_ONLY)
+          target('T09', `page_${index}_title_and_headings`, {
+            publicTitle: observedPage.title,
+            titleMatches: true,
+            headingsPresenceMatches: true,
+          });
         advance(`seo_page_${index}_matched`, { title: observedPage.title });
-        if (SEO_CASE_SCOPE === 'controlled') {
+        if (CHECK_NOTICE) {
           const stage = index === 0 ? 'narrow_warm_navigation' : 'wide_warm_navigation';
           const hit = await observe(`notice_${stage}_hit`, () => observeSeoReauditHit(panel));
           report.reaudit_hit_diagnostics ??= {};
@@ -1609,18 +1613,20 @@ try {
             navigatedTitleMatches: content.title === observedPage.title,
           });
         }
-        await checkGuestCopyFormats(
-          { panel, browserSession, panelTarget },
-          observedPage,
-          `page_${index}`,
-        );
+        if (!NOTICE_ONLY)
+          await checkGuestCopyFormats(
+            { panel, browserSession, panelTarget },
+            observedPage,
+            `page_${index}`,
+          );
       }
       assert.notEqual(
         publicPages[0].title,
         publicPages[1].title,
         'public pages must distinguish stale audits',
       );
-      target('T01', 'new_url_replaces_visible_title', { twoDistinctPublicTitles: true });
+      if (!NOTICE_ONLY)
+        target('T01', 'new_url_replaces_visible_title', { twoDistinctPublicTitles: true });
 
       await observe('manual_reaudit_preflight', () => seoContent(panel));
       report.reaudit_hit_diagnostics ??= {};
@@ -1648,7 +1654,7 @@ try {
       advance('manual_reaudit_settled', { currentTitlePreserved: true });
       report.reaudit_hit_diagnostics.after_click = await observeSeoReauditHit(panel);
       checkpoint();
-      if (SEO_CASE_SCOPE === 'controlled') {
+      if (CHECK_NOTICE) {
         assert.equal(
           report.reaudit_hit_diagnostics.before_click.dismiss_visible,
           true,
@@ -1669,19 +1675,21 @@ try {
         advance('manual_reaudit_notice_dismissed');
       }
 
-      await observe('copy_menu_preflight', () => selectedSeo(panel));
-      const menu = await copyMenu(panel);
-      assert.equal(menu.choices.includes('JSON'), false, 'guest JSON choice is hidden');
-      target('T07', 'guest_menu_offers_text_and_ai_but_hides_json', {
-        textChoice: true,
-        agentChoice: true,
-        jsonAbsent: true,
-      });
-      advance('guest_copy_menu_verified', {
-        textChoice: true,
-        agentChoice: true,
-        jsonAbsent: true,
-      });
+      if (!NOTICE_ONLY) {
+        await observe('copy_menu_preflight', () => selectedSeo(panel));
+        const menu = await copyMenu(panel);
+        assert.equal(menu.choices.includes('JSON'), false, 'guest JSON choice is hidden');
+        target('T07', 'guest_menu_offers_text_and_ai_but_hides_json', {
+          textChoice: true,
+          agentChoice: true,
+          jsonAbsent: true,
+        });
+        advance('guest_copy_menu_verified', {
+          textChoice: true,
+          agentChoice: true,
+          jsonAbsent: true,
+        });
+      }
 
       // The panel document is reloaded in the owned target. React state is
       // gone; a fresh audit must match the actual current browser page.
@@ -1725,7 +1733,7 @@ try {
           !state.error,
         30000,
       );
-      if (SEO_CASE_SCOPE === 'controlled') {
+      if (CHECK_NOTICE) {
         const afterReloadHit = await observe('notice_after_panel_reload_hit', () =>
           observeSeoReauditHit(panel),
         );
@@ -1764,6 +1772,10 @@ try {
           'visible_notice_full_reload_clearance',
           'current reload follows Dismiss and cannot prove clearance while a refusal notice is visible',
         );
+      }
+      if (NOTICE_ONLY) {
+        advance('notice_only_complete', { noticeChecksComplete: true });
+        return;
       }
       target('T01', 'reload_audits_current_url', {
         currentUrl: publicPages[1].url,

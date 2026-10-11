@@ -19,13 +19,13 @@ test('hosted native 360px panel still exercises a distinct wider notice viewport
   const narrow = await setNoticeViewport(panel, plan, 'narrow', () => width);
   const wide = await setNoticeViewport(panel, plan, 'wide', () => width);
   const restored = await restoreNativeNoticeViewport(panel, plan, () => width);
-  assert.deepEqual(narrow, { width: 360, source: 'emulated' });
+  assert.deepEqual(narrow, { width: 360, source: 'native' });
   assert.deepEqual(wide, { width: 480, source: 'emulated' });
   assert.deepEqual(restored, { width: 360, source: 'native' });
   assert.deepEqual(
     commands.map(([method, params]) => [method, params?.width]),
     [
-      ['Emulation.setDeviceMetricsOverride', 360],
+      ['Emulation.clearDeviceMetricsOverride', undefined],
       ['Emulation.setDeviceMetricsOverride', 480],
       ['Emulation.clearDeviceMetricsOverride', undefined],
     ],
@@ -42,7 +42,8 @@ test('hosted panel wider than 360px restores its measured native width', async (
     },
   };
   const plan = planNoticeViewports({ width: 428, height: 700 });
-  await setNoticeViewport(panel, plan, 'narrow', () => width);
+  const narrow = await setNoticeViewport(panel, plan, 'narrow', () => width);
+  assert.deepEqual(narrow, { width: 360, source: 'emulated' });
   const wide = await setNoticeViewport(panel, plan, 'wide', () => width);
   const restored = await restoreNativeNoticeViewport(panel, plan, () => width);
   assert.deepEqual(wide, { width: 428, source: 'native' });
