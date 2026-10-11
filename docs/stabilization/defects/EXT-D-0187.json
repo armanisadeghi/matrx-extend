@@ -70,7 +70,9 @@
     "docs/stabilization/reports/peer-review-run38054579156.json",
     "docs/stabilization/evidence/scrape-save-duplicate-member/run38057564851/native-evidence.json",
     "docs/stabilization/evidence/scrape-save-duplicate-member/run38057564851/resource-finals.json",
-    "docs/stabilization/reports/peer-review-run38057564851.json"
+    "docs/stabilization/reports/peer-review-run38057564851.json",
+    "docs/stabilization/reports/d187-rename-retry-source-peer-20261011.json",
+    "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json"
   ],
   "cause": "Original client path omitted name/attach_to and awaited ancillary SEO audit. Subsequent native retest exposed modal focus escape and incomplete one-type browsing. A separate initial-organization hydration race remounted/dismissed the Save form and caused cumulative 10-second test waits; the builder repaired hydration/switch handling and the focused suite now passes.",
   "fix_commits": ["146a7fc38", "2951e87c3", "ab49bb08e", "4126b60f1", "577af8810", "7cf168608"],
@@ -146,7 +148,7 @@
     }
   ],
   "closure_requirement": "Fresh peer checks product/source behavior; guarded development build is reloaded in installed Chrome; member/admin real-page save proves custom name, no destination, one and multiple destinations, optional Library, refusal/retry, duplicate rename, responsive confirmation, and scrolling/searching to select a project beyond the first visible rows; surrounding Scrape cases remain green. Guest sign-in flow is rechecked.",
-  "next_action": "Continue remaining Save Source coverage: controlled refusal/retry, additional destination and Library/File-elsewhere routes, responsive confirmation timing, Project display, and guest/admin roles. Resolve the earlier captured-heading/readback ambiguity before crediting reopen content. Keep EXT-D-0187 in-fix and EXT-F-1007-T04/T29 partial; do not infer whole-feature or Store behavior from this bounded frozen-artifact run.",
+  "next_action": "Fresh independent native peer must adjudicate guarded member lane A run 38107457332 on exact development v0.2.490, source 5b01a35fd5a15aadbf95062b411e92e833ce0292, CI 38106946361/artifact 11690348157. The runner reports pass for duplicate-rename-retry with destination none: one controlled rename HTTP 503, saved original name/draft retained, real retry HTTP 200, one persisted renamed Source, zero associations, reopened name/URL/content and cleanup. Package/browser/guest resource finals are valid with child exit 0. Temporary GitHub secret and local one-time link are verified absent. This is a candidate for bounded acceptance pending independent native review, not a product fix or full-case closure. Keep EXT-D-0187 in-fix and EXT-F-1007-T04/T29 partial; other refusal paths, destinations/Library, timing, Project display and guest/admin roles remain open. Undocumented scratch mutations receive no credit.",
   "release": {
     "version": "0.2.458",
     "source_sha": "991a70bee4f06c3e9f93254b9c1679e4f4259a08",

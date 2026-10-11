@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_review",
+  "reviewer": "/root/d187_retry_source_peer",
+  "recorded_by": "/root/d187_scrape_save_remaining",
+  "review_provenance": "Exact independent verdict from /root/d187_retry_source_peer relayed by the owning root agent; this report records source readiness, not a native run.",
+  "defect_id": "EXT-D-0187",
+  "case_ids": [
+    "EXT-F-1007-T04",
+    "EXT-F-1007-T29"
+  ],
+  "source_sha": "0d14108054b66a1222ae81bb149455a656b1153a",
+  "verdict": "SOURCE_READY_NATIVE_PENDING",
+  "scope": "One guarded member lane A Save Source acceptance run with destination none and save scope duplicate-rename-retry.",
+  "source_behavior": [
+    "The route admits duplicate-rename-retry only for scrape-save-member with no destination; the workflow choice and driver now agree.",
+    "The native driver targets the first edit request for the run-owned Source with a controlled HTTP 503; later retry requests continue to the real service.",
+    "Acceptance requires Saved with a visible rename error and preserved retry draft, an independent unchanged-name read and zero associations before retry, then HTTP 200 retry, persisted renamed Source, reopened content and cleanup.",
+    "Existing single-save and successful duplicate-rename paths retain their own bounded assertions."
+  ],
+  "checks": {
+    "focused_node_tests": "34/34 passed: route/workflow admission, duplicate response observer, refusal controller, artifact binding and organization admission.",
+    "compile": "Valid guarded compile; child exit 0 and resourceInvalid=false.",
+    "compile_journal": "docs/stabilization/resource-journals/d187-rename-retry-compile.jsonl",
+    "format_and_syntax": "Focused Biome, native-driver syntax and diff checks passed.",
+    "mutation_credit": "None. Claimed scratch mutation runs have no retained durable proof and are not acceptance evidence."
+  },
+  "native_acceptance": "Guarded run 38107457332 reports pass for the bounded member no-destination duplicate-rename-retry subtarget; independent native review is pending, so no acceptance credit is assigned.",
+  "product_fix": "None; this change adds an executable acceptance subtarget and does not establish a current product defect.",
+  "state": "EXT-D-0187 remains in-fix; EXT-F-1007-T04/T29 remain partial.",
+  "limits": [
+    "Source and harness checks do not prove browser behavior, installed or Store acceptance, or full case closure.",
+    "Other refusal paths, additional destinations and Library/File-elsewhere flows, timing, Project display and guest/admin roles remain open."
+  ],
+  "next_action": "Fresh independent native peer must adjudicate run 38107457332 using its sanitized receipt and hashed original artifact. Only the member/none controlled rename refusal and retry subtarget is a candidate for bounded acceptance; retain EXT-D-0187 in-fix and T04/T29 partial. No second run is authorized by this result.",
+  "peer_verdicts": {
+    "behavior_oracle": "PASS for one guarded member lane A run",
+    "code_quality_and_admission": "PASS with limits"
+  },
+  "native_admission": {
+    "verdict": "DISPATCHED_DOCUMENTED_EXISTING_MEMBER_BOOTSTRAP",
+    "ci_run_id": 38106946361,
+    "ci_conclusion": "success",
+    "source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+    "development_artifact_id": 11690348157,
+    "native_run_id": 38107457332,
+    "workflow_conclusion": "success",
+    "private_helper_validation": true,
+    "github_secret_absent_after_terminal": true,
+    "local_ephemeral_link_absent_after_terminal": true,
+    "all_three_resource_finals_valid": true,
+    "source_and_association_cleanup_verified": true,
+    "acceptance_credit": "none pending independent native review",
+    "evidence": "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json"
+  }
+}
