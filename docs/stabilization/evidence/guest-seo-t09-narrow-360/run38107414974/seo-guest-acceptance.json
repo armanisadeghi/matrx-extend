@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "partial",
+  "scope": "owned guest SEO detail links and controls at a 360px native side-panel viewport",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T09",
+      "subtarget": "guest_detail_content_and_controls_reachable_at_360px",
+      "status": "pass",
+      "evidence": {
+        "titleMatches": true,
+        "hreflangMatchesSource": true,
+        "schemaTypeMatchesSource": true
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04-T06,T08",
+      "part": "database save, history, and diff flows"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "narrow_seo_360px_target_complete",
+  "last_safe_observable": null,
+  "current_operation": "build_recheck",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.490",
+      "treeSha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87"
+    },
+    "after": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.490",
+      "treeSha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87"
+    }
+  },
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+    "runId": 38106946361,
+    "runAttempt": 1,
+    "artifactId": 11690348157,
+    "githubArtifactDigest": "sha256:0af4b6dd6d44f278d810c0c82964be46d4f29ef129f29d109f2b4a532957717f",
+    "version": "0.2.490",
+    "treeSha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+    "source": {
+      "originMain": "b4d62d43cc396aa55e6db618ddd78c735fd593a6",
+      "localHead": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "case_selection": {
+    "scope": "narrow",
+    "selected_cases": ["T09"],
+    "selected_subtargets": ["guest_detail_content_and_controls_reachable_at_360px"],
+    "excluded_cases": ["all SEO targets other than the owned T09 narrow-panel dimension"]
+  },
+  "resource_diagnostic_enabled": false,
+  "owned_metadata_source": {
+    "titleMatched": true,
+    "alternateCount": 1,
+    "alternateLanguage": "es",
+    "schemaTypeCount": 1,
+    "schemaType": "Article"
+  },
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+}
