@@ -1533,9 +1533,15 @@ export async function upsertDemoRow(p: SaveDemoRowPayload): Promise<boolean> {
       { onConflict: 'demo_key' },
     );
   if (error) {
-    if (/relation .* does not exist/i.test(error.message)) return false;
-    console.warn('[matrx-extend] upsertDemoRow error', error.message);
-    return false;
+    failDbCall(
+      {
+        table: 'extend.wbx_demo',
+        operation: 'insert',
+        what: 'save this demo',
+        title: 'Demo not saved',
+      },
+      error,
+    );
   }
   return true;
 }
@@ -1549,9 +1555,15 @@ export async function deleteDemoRow(id: string): Promise<boolean> {
     .update({ deleted_at: new Date().toISOString() })
     .eq('demo_key', id);
   if (error) {
-    if (/relation .* does not exist/i.test(error.message)) return false;
-    console.warn('[matrx-extend] deleteDemoRow error', error.message);
-    return false;
+    failDbCall(
+      {
+        table: 'extend.wbx_demo',
+        operation: 'update',
+        what: 'remove this demo',
+        title: 'Demo not removed',
+      },
+      error,
+    );
   }
   return true;
 }
