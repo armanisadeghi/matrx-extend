@@ -4,14 +4,16 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { hostedScrapeReloadDiagnostic } from './hosted-scrape-reload-diagnostic.mjs';
 
-test('diagnostic flag defaults off and only development Scrape and member Data routes accept opt-in', () => {
+test('diagnostic flag defaults off and only development Scrape, member Data and Settings controls routes accept opt-in', () => {
   assert.equal(hostedScrapeReloadDiagnostic('guest-scrape-development'), '0');
   assert.equal(hostedScrapeReloadDiagnostic('guest-scrape-development', '1'), '1');
   assert.equal(hostedScrapeReloadDiagnostic('member-data', '1'), '1');
+  assert.equal(hostedScrapeReloadDiagnostic('settings-controls', '1'), '1');
   assert.equal(hostedScrapeReloadDiagnostic('member-data', '0'), '0');
   for (const [acceptanceCase, value] of [
     ['guest-scrape', '1'],
     ['guest-chat', '1'],
+    ['settings-theme-rendering', '1'],
     ['guest-scrape-development', 'true'],
   ])
     assert.throws(() => hostedScrapeReloadDiagnostic(acceptanceCase, value));
@@ -35,6 +37,7 @@ test('hosted preflight refuses diagnostic on wrong case before resource or brows
     });
   assert.equal(preflight('guest-scrape-development', '0').status, 0);
   assert.equal(preflight('guest-scrape-development', '1').status, 0);
+  assert.equal(preflight('settings-controls', '1').status, 0);
   // Valid diagnostic routing must reach the unchanged member credential gate.
   const member = preflight('member-data', '1');
   assert.notEqual(member.status, 0);
@@ -43,6 +46,7 @@ test('hosted preflight refuses diagnostic on wrong case before resource or brows
   for (const [acceptanceCase, flag] of [
     ['guest-scrape', '1'],
     ['guest-chat', '1'],
+    ['settings-theme-rendering', '1'],
     ['guest-scrape-development', 'yes'],
   ]) {
     const result = preflight(acceptanceCase, flag);

@@ -17,18 +17,30 @@ export function requireSettingsSenderDocumentReceipt(evidence) {
   };
 }
 
-export function finalizeSettingsSenderDocumentDiagnostic(report, enabled) {
-  if (!enabled) return false;
-  try {
-    requireSettingsSenderDocumentReceipt(report.reload_sender_document_diagnostic?.receipt);
-  } catch {
-    report.reload_sender_document_diagnostic.receipt_failure =
-      'native_reload_sender_document_refresh_unverified';
+export function finalizeSettingsSenderDocumentDiagnostic(report, enabled, openEnabled = false) {
+  if (!enabled && !openEnabled) return false;
+  const failedReload = report.guestExtensionReloadFailure;
+  if (failedReload?.failure_code)
     report.failure ??= {
-      stage: 'sender_document_prepare',
-      code: 'native_reload_sender_document_refresh_unverified',
+      stage: report.guestStageFailed ?? 'extension_reload',
+      code: failedReload.failure_code,
     };
-  }
+  if (enabled)
+    try {
+      const diagnostic = report.reload_sender_document_diagnostic;
+      const fromFailure = diagnostic.receipt === undefined;
+      diagnostic.receipt = requireSettingsSenderDocumentReceipt(
+        fromFailure ? failedReload?.retirement_evidence?.sender_document : diagnostic.receipt,
+      );
+      diagnostic.receipt_source = fromFailure ? 'failed_reload' : 'successful_reload';
+    } catch {
+      report.reload_sender_document_diagnostic.receipt_failure =
+        'native_reload_sender_document_refresh_unverified';
+      report.failure ??= {
+        stage: 'sender_document_prepare',
+        code: 'native_reload_sender_document_refresh_unverified',
+      };
+    }
   for (const c of report.cases) {
     c.evidence_class = 'diagnostic_only';
     if (c.status === 'pass') c.status = 'unverified';

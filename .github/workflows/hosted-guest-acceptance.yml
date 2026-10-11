@@ -146,7 +146,7 @@ on:
         required: false
         type: string
       scrape_reload_open_diagnostic:
-        description: Probe replacement-worker panel open in guest-scrape-development or member-data; diagnostic-only, never acceptance credit
+        description: Probe replacement-worker panel open in guest-scrape-development, member-data or settings-controls; diagnostic-only, never acceptance credit
         required: false
         default: false
         type: boolean
@@ -225,6 +225,7 @@ jobs:
           DEVELOPMENT_RUN_ID: ${{ inputs.development_run_id }}
           DEVELOPMENT_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
           PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && 'true' || 'false' }}
+          RELOAD_OPEN_DIAGNOSTIC: ${{ inputs.scrape_reload_open_diagnostic == true && '1' || '0' }}
           RELOAD_SENDER_DOCUMENT_DIAGNOSTIC: ${{ inputs.reload_sender_document_diagnostic == true && '1' || '0' }}
           SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
@@ -242,6 +243,7 @@ jobs:
             guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-error-recovery-guest|scrape-save-member|tab-groups-member|native-ai-member-probe|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
+          [[ "${RELOAD_OPEN_DIAGNOSTIC:-0}" != 1 || "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == member-data || "$ACCEPTANCE_CASE" == settings-controls ]] || { echo 'Worker open diagnostic requires guest-scrape-development, member-data or settings-controls.' >&2; exit 1; }
           [[ "${RELOAD_SENDER_DOCUMENT_DIAGNOSTIC:-0}" != 1 || "$ACCEPTANCE_CASE" == member-data || "$ACCEPTANCE_CASE" == settings-controls ]] || { echo 'Sender document diagnostic requires member-data or settings-controls.' >&2; exit 1; }
           if [[ "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'D187 Save Source requires member auth.' >&2; exit 1; }

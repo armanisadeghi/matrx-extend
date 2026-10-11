@@ -8,7 +8,8 @@ import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-iden
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { captureFailure } from './profile-reload-capture.mjs';
+import { captureFailure, captureLifecycleEvidence } from './profile-reload-capture.mjs';
+import { reloadOpenEvidenceClass } from './scrape-reload-open-diagnostic.mjs';
 import { runGuestChatVersionReopen } from './settings-chat-version-reopen.mjs';
 import {
   FULL_EXTENSION_RECHECK_IDS,
@@ -93,9 +94,11 @@ const THEME_RENDERING_PROBE =
   process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'settings-theme-rendering';
 const RELOAD_SENDER_DOCUMENT_DIAGNOSTIC =
   process.env.MATRX_RELOAD_SENDER_DOCUMENT_DIAGNOSTIC === '1';
+const RELOAD_OPEN_DIAGNOSTIC = process.env.MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC === '1';
 const CASE_IDS = THEME_RENDERING_PROBE ? ['EXT-F-1003-T04'] : IDS;
 const report = {
   schema_version: 1,
+  reload_open_diagnostic: reloadOpenEvidenceClass(RELOAD_OPEN_DIAGNOSTIC),
   reload_sender_document_diagnostic: {
     enabled: RELOAD_SENDER_DOCUMENT_DIAGNOSTIC,
     evidence_class: RELOAD_SENDER_DOCUMENT_DIAGNOSTIC ? 'diagnostic_only' : 'acceptance_eligible',
@@ -547,7 +550,7 @@ async function runCase(c, fn) {
 let observedPort;
 try {
   assert.ok(
-    !RELOAD_SENDER_DOCUMENT_DIAGNOSTIC ||
+    !(RELOAD_SENDER_DOCUMENT_DIAGNOSTIC || RELOAD_OPEN_DIAGNOSTIC) ||
       process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'settings-controls',
     'settings_sender_document_diagnostic_scope_refused',
   );
@@ -587,6 +590,7 @@ try {
   if (!THEME_RENDERING_PROBE) observedPort = await startObservedDeadPort();
   const result = await runNativeSidepanelQa({
     reloadSenderDocumentDiagnostic: RELOAD_SENDER_DOCUMENT_DIAGNOSTIC,
+    reloadOpenDiagnostic: RELOAD_OPEN_DIAGNOSTIC,
     ...(DEV_BUILD_RECEIPT !== undefined && {
       extensionDir: DEV_EXTENSION_DIR,
       expectedRelease: { version: receipt.version, treeSha256: receipt.treeSha256 },
@@ -1103,6 +1107,10 @@ try {
         });
         guestStage = 'extension_reload';
         const replacement = await reloadExtension();
+        if (RELOAD_OPEN_DIAGNOSTIC)
+          report.reload_open_diagnostic.outcome = captureLifecycleEvidence(
+            replacement.retirement_evidence,
+          ).open_panel_diagnostic;
         if (RELOAD_SENDER_DOCUMENT_DIAGNOSTIC)
           report.reload_sender_document_diagnostic.receipt = requireSettingsSenderDocumentReceipt(
             replacement.retirement_evidence?.sender_document,
@@ -1238,6 +1246,7 @@ try {
   const diagnosticOnly = finalizeSettingsSenderDocumentDiagnostic(
     report,
     RELOAD_SENDER_DOCUMENT_DIAGNOSTIC,
+    RELOAD_OPEN_DIAGNOSTIC,
   );
   await mkdir(join(REPO, 'test-results'), { recursive: true });
   await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });

@@ -503,3 +503,44 @@ test('sender refresh diagnostic admits only member Data and Settings controls', 
     assert.equal(result.status, expected, `${acceptanceCase}: ${result.stderr}`);
   }
 });
+
+test('workflow admits worker open diagnostic only on exact three cases', async () => {
+  const workflow = await readFile(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  const admission = workflowStepScript(
+    workflow,
+    'Require bounded lane and isolate shared credentials',
+  );
+  const base = {
+    ACCEPTANCE_LANE: 'B',
+    SCRAPE_SCOPE: 'full',
+    SEO_CASE_SCOPE: 'full',
+    SEO_METADATA_FIXTURE: 'none',
+    SEO_INTERRUPT_AFTER_TARGET: 'none',
+    DESKTOP_SETTINGS_CASE: 'full',
+    SCRAPE_AUTH_MODE: 'guest',
+    RELOAD_SENDER_DOCUMENT_DIAGNOSTIC: '0',
+    RELOAD_OPEN_DIAGNOSTIC: '1',
+    SCRAPE_SAVE_DESTINATION: 'project',
+    SCRAPE_SAVE_SCOPE: 'single',
+  };
+  for (const [acceptanceCase, auth, expected] of [
+    ['settings-controls', 'guest', 0],
+    ['member-data', 'member', 0],
+    ['guest-scrape-development', 'guest', 0],
+    ['settings-theme-rendering', 'guest', 1],
+    ['guest-scrape', 'guest', 1],
+    ['guest-chat', 'guest', 1],
+    ['guest-data', 'guest', 1],
+  ]) {
+    const result = runWorkflowStep(admission, {
+      ...base,
+      ACCEPTANCE_CASE: acceptanceCase,
+      SCRAPE_AUTH_MODE: auth,
+      ACCEPTANCE_LANE: auth === 'member' ? 'A' : 'B',
+    });
+    assert.equal(result.status, expected, `${acceptanceCase}: ${result.stderr}`);
+  }
+});
