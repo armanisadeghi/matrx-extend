@@ -22846,12 +22846,13 @@
               "status": "partial",
               "passed_subtargets": [
                 "All six result tabs showed matching populated content; empty Images/Video states and empty Article/Links states were observed; capture identity and exported payload stayed unchanged warm and after full extension reload.",
-                "On run 38104691870, guest no-signal SEO and empty Schema panes matched the owned fixture at observed 600px CDP-emulated width; capture identity/digest remained unchanged after both pane selections."
+                "On run 38104691870, guest no-signal SEO and empty Schema panes matched the owned fixture at observed 600px CDP-emulated width; capture identity/digest remained unchanged after both pane selections.",
+                "Run 38111898943 independently reviewed a guest T08/C08 no-signal SEO and empty Schema subtarget at 360px native-default width; full-capture export identity/digest remained unchanged after each pane."
               ],
               "unverified": [
                 "Member/admin modes and their SEO/Schema behavior; actual Store-installed behavior; physical resize; reload behavior for this subtarget; full Scrape feature acceptance."
               ],
-              "detail": "Independent review of run 38104691870 confirms a bounded guest pass for no-signal SEO and empty Schema panes on frozen development v0.2.490 at observed 600px CDP-emulated width. A fresh trusted capture reached the active visible Article pane; the expected SEO/Schema values and unchanged capture identity/digest were observed. The readiness state is established by the passing source predicate but is not separately serialized. T08 remains partial because member/admin, actual Store-installed behavior, physical resize, reload behavior for this subtarget, and the rest of full-feature acceptance remain unverified.",
+              "detail": "Guest T08/C08 has bounded subtarget evidence for populated result tabs and empty Article/Images/Video/Links states on earlier runs, plus no-signal SEO and empty Schema on runs 38104691870 (600px CDP emulation) and 38111898943 (360px native-default). Run 38111898943 was bound to frozen development source cda49523be8fc568616e0205143982426e766c1a with workflow checkout 8ca2dc0601f6529b0224e7656f5e364916384063; its resource journal is valid. The target panes are absent from uploaded screenshots, so Verdict B is PARTIAL despite strong native DOM and full-export fingerprint assertions. T08 and the guest feature-role cell remain partial; member/admin, reload for this subtarget, physical resize, current-main, Store-installed, release, and the rest of full Scrape acceptance remain unverified.",
               "bounded_subtarget_evidence": [
                 {
                   "run_id": 38044684443,
@@ -22934,6 +22935,24 @@
                   "article_ready_evidence_note": "The ready state is not separately serialized. Successful completion requires the runner isCaptureReady predicate to pass; that predicate explicitly checks a fresh transition to the selected, active, visible Article result within active Scrape. Independent review confirmed this is adequate for this bounded subtarget.",
                   "limits": "Guest subtarget only. Member/admin, actual Store-installed behavior, physical resize, reload, and full T08 acceptance remain unverified.",
                   "independent_review": "Bounded PASS confirmed by fresh independent review; summary is retained in docs/stabilization/runs/guest-scrape-empty-seo-schema-run38104691870.json."
+                },
+                {
+                  "run_id": 38111898943,
+                  "status": "bounded-pass",
+                  "mode": "guest",
+                  "viewport": "360px narrow native-default panel; no viewport emulation",
+                  "workflow_source_sha": "8ca2dc0601f6529b0224e7656f5e364916384063",
+                  "product_artifact": "development 0.2.492; CI 38111064635/artifact 11691866852; source cda49523be8fc568616e0205143982426e766c1a; tree 0ead3f09fc7a2c9501d563e3405266695a845a109a6eb0c3df94a422054ab152",
+                  "resource_valid": true,
+                  "evidence": [
+                    "docs/stabilization/runs/38111898943.json",
+                    "docs/stabilization/resource-journals/hosted-guest-38111898943-1.jsonl",
+                    "docs/stabilization/reports/scrape-t08-guest-native-peer-20261011.json"
+                  ],
+                  "proven": "Owned guest title-only localhost page: SEO pane showed matching title, empty description and only Title & description/Performance groups; Schema pane showed valid JSON, matching title metadata and absent description/canonical plus zero OG, Twitter, schema types and JSON-LD. Full-capture export identity and SHA-256 digest were unchanged after each pane.",
+                  "independent_review": "docs/stabilization/reports/scrape-t08-guest-native-peer-20261011.json",
+                  "verdict_b": "PARTIAL: uploaded screenshots do not show the exercised Scrape/SEO/Schema panes; native DOM and export assertions provide the behavioral evidence.",
+                  "limits": "This is one guest T08/C08 subtarget on frozen development artifact cda49523be8fc568616e0205143982426e766c1a; workflow checkout was 8ca2dc0601f6529b0224e7656f5e364916384063. No full T08, other roles, reload, other widths, current-main, Store-installed, or release acceptance is claimed."
                 }
               ]
             },
@@ -26368,9 +26387,10 @@
             "37783925411",
             "37801787667",
             "38041013005",
-            "38044684443"
+            "38044684443",
+            "38111898943"
           ],
-          "retest_status": "Partial surface coverage. Frozen407 native37778965029 independently revalidates guest T07/T09/T10/T11/T12/T13/T20 and adds post-reload empty Images/Video evidence; exact conditional-confirmation branch D178 and remaining guest/member/admin cases unverified. Subsequent37783167613 failed runner setup D180 before browser, with zero acceptance credit. Latest run 38044684443 (workflow c6ff0838d; frozen development v0.2.459) verified bounded T08 guest normal-width-at-600px CDP-emulated warm/full-reload panes and capture/export invariance. SEO/Schema empty-state, physical resize, other roles, Store/current-main, and full surface remain unverified; feature-role cell stays partial."
+          "retest_status": "Partial surface coverage. Frozen407 native37778965029 independently revalidates guest T07/T09/T10/T11/T12/T13/T20 and adds post-reload empty Images/Video evidence; exact conditional-confirmation branch D178 and remaining guest/member/admin cases unverified. Subsequent37783167613 failed runner setup D180 before browser, with zero acceptance credit. Latest run 38044684443 (workflow c6ff0838d; frozen development v0.2.459) verified bounded T08 guest normal-width-at-600px CDP-emulated warm/full-reload panes and capture/export invariance. SEO/Schema empty-state, physical resize, other roles, Store/current-main, and full surface remain unverified; feature-role cell stays partial. Additional bounded T08/C08 guest subtarget reviewed on frozen development source cda49523be8fc568616e0205143982426e766c1a, hosted run 38111898943; native-default width 360px, resource-valid. Screenshot set omits target panes (Verdict B PARTIAL). T08 and feature-role cell remain partial; no current-main, Store, release, member/admin, reload, or full-surface claim."
         },
         "member": {
           "test_status": "partial",
