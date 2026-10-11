@@ -67,3 +67,44 @@ describe('carousel capture receipt', () => {
     ).toEqual([]);
   });
 });
+
+describe('plain carousel wording and notes', () => {
+  const base = {
+    postId: 'p',
+    organizationId: 'o',
+    platform: 'instagram',
+    capturedAt: '2026-10-11T00:00:00Z',
+    media: [],
+    mediaNotes: [
+      'Some slides may be missing. Open the post in your browser to capture the remaining slides.',
+      'image_2: could not be downloaded',
+      "The provider did not name the author's account id; the post has no profile link yet.",
+    ],
+    transcript: {
+      status: 'none' as const,
+      notes: [
+        "platform transcript unavailable: We couldn't find that account or post.",
+        'speech-to-text: no stored video for this post',
+      ],
+    },
+    reused: false,
+    format: 'carousel',
+    coverage: {
+      expected_items: 8,
+      observed_items: 8,
+      stored_items: 7,
+      missing_items: 1,
+      status: 'partial' as const,
+    },
+  };
+  it('says "7 of 8 slides saved" and names what is missing without vendor or stage words', () => {
+    expect(captureReceiptSummary(base)).toBe('7 of 8 slides saved');
+    const w = captureReceiptWarnings(base);
+    expect(w).toEqual([
+      'Slide 2 could not be downloaded',
+      '1 slide missing',
+      'Transcript unavailable',
+    ]);
+    expect(w.join(' ')).not.toMatch(/provider|speech|platform transcript/i);
+  });
+});

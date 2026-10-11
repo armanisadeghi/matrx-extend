@@ -141,7 +141,11 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
         captureSlides.hidden =
           !['instagram', 'linkedin', 'x', 'facebook', 'tiktok'].includes(
             outcome.receipt.platform,
-          ) || outcome.receipt.coverage?.status === 'complete';
+          ) ||
+          outcome.receipt.coverage?.status === 'complete' ||
+          // A single video or photo has no slides to fetch; a carousel or an unknown shape can have slides.
+          (!!outcome.receipt.format &&
+            ['video', 'short', 'reel', 'image', 'live', 'story'].includes(outcome.receipt.format));
         send({ t: 'list' });
       }
     }

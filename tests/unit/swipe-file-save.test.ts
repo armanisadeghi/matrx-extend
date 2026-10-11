@@ -135,7 +135,9 @@ it('preserves media/transcript warnings and pins destination organization across
     status: 'saved',
     receipt: { organizationId: 'org-collection', transcript: { status: 'none' } },
   });
-  expect(outcome.status !== 'failed' && outcome.notice).toContain('video: could not be downloaded');
+  expect(outcome.status !== 'failed' && outcome.notice).toContain(
+    'The video could not be downloaded',
+  );
   expect(m.ingestPost.mock.calls[0]?.[3]).toBe('org-collection');
   expect(m.addPostToCollection).toHaveBeenCalledWith(
     'destination',

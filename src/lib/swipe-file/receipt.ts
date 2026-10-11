@@ -41,6 +41,8 @@ export const SwipeCaptureReceiptSchema = z.object({
     notes: z.array(z.string()),
   }),
   reused: z.boolean(),
+  /** The post's shape as the server reads it ("carousel", "video"...). */
+  format: z.string().nullish(),
   coverage: MediaCoverageSchema.optional(),
 });
 export type SwipeCaptureReceipt = z.infer<typeof SwipeCaptureReceiptSchema>;
@@ -58,35 +60,65 @@ export async function readSwipeReceipt(postId: string): Promise<SwipeCaptureRece
   return parsed.success ? parsed.data : null;
 }
 
+const isCarousel = (r: SwipeCaptureReceipt) => r.format === 'carousel';
+
 /** Observations, never a claim that every original asset was archived. */
 export function captureReceiptSummary(receipt: SwipeCaptureReceipt): string {
   if (receipt.platform === 'youtube') return 'YouTube playback · video not archived';
   const coverage = receipt.coverage;
   if (coverage?.expected_items != null)
-    return `${coverage.stored_items} of ${coverage.expected_items} media items stored`;
+    return isCarousel(receipt)
+      ? `${coverage.stored_items} of ${coverage.expected_items} slides saved`
+      : `${coverage.stored_items} of ${coverage.expected_items} media items stored`;
   const media = receipt.media.filter((m) => m.role !== 'thumbnail');
   return media.length
     ? `${media.length} stored ${media.length === 1 ? 'file' : 'files'}`
     : 'No stored media';
 }
 
+/**
+ * A server note in the person's words, or null to drop it. Notes arrive from
+ * the server verbatim and can carry vendor names, internal stage names or
+ * advice that does not apply (arman 2026-10-09: no vendors, no jargon).
+ */
+export function plainReceiptNote(note: string): string | null {
+  const n = note.trim();
+  if (!n) return null;
+  if (/^(platform transcript|speech-to-text)/i.test(n)) return null; // folded into one transcript line
+  if (/^Some slides may be missing/i.test(n)) return null; // the count says it
+  const file = /^(?:image|video)_(\d+): (.*)$/i.exec(n) ?? /^(thumbnail|video): (.*)$/i.exec(n);
+  if (file) {
+    const what = /^\d+$/.test(file[1]!) ? `Slide ${file[1]}` : 'The video';
+    return /stored|file id/i.test(file[2]!)
+      ? `${what} was downloaded but could not be filed`
+      : `${what} could not be downloaded`;
+  }
+  if (/provider|scrapecreators|api key|credential/i.test(n))
+    return /author/i.test(n) ? null : 'Some details of this post could not be read';
+  return n;
+}
+
 export function captureReceiptWarnings(receipt: SwipeCaptureReceipt): string[] {
+  const unit = isCarousel(receipt) ? 'slide' : 'media item';
+  const missing = receipt.coverage?.missing_items;
   return [
-    ...new Set([
-      ...receipt.mediaNotes,
-      ...(receipt.coverage?.status === 'partial'
-        ? [
-            receipt.coverage.missing_items != null
-              ? `${receipt.coverage.missing_items} media ${receipt.coverage.missing_items === 1 ? 'item' : 'items'} missing`
-              : 'Some media could not be captured',
-          ]
-        : []),
-      ...(receipt.coverage?.status === 'unknown'
-        ? ['Full media coverage could not be verified']
-        : []),
-      ...receipt.transcript.notes,
-      ...(receipt.transcript.status === 'none' ? ['Transcript unavailable'] : []),
-      ...(receipt.transcript.status === 'unknown' ? ['Transcript status unavailable'] : []),
-    ]),
+    ...new Set(
+      [
+        ...receipt.mediaNotes.map((n) => plainReceiptNote(n)),
+        ...(receipt.coverage?.status === 'partial'
+          ? [
+              missing != null
+                ? `${missing} ${missing === 1 ? unit : `${unit}s`} missing`
+                : 'Some media could not be captured',
+            ]
+          : []),
+        ...(receipt.coverage?.status === 'unknown'
+          ? ['Full media coverage could not be verified']
+          : []),
+        ...receipt.transcript.notes.map((n) => plainReceiptNote(n)),
+        ...(receipt.transcript.status === 'none' ? ['Transcript unavailable'] : []),
+        ...(receipt.transcript.status === 'unknown' ? ['Transcript status unavailable'] : []),
+      ].filter((n): n is string => !!n),
+    ),
   ];
 }

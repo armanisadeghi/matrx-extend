@@ -41,6 +41,7 @@ export const SocialPostResultSchema = z
     post_id: z.string(),
     platform: z.string().optional(),
     url: z.string().optional(),
+    format: z.string().nullish().catch(undefined),
     title: z.string().nullable().optional(),
     caption: z.string().nullable().optional(),
     handle: z.string().nullable().optional(),
