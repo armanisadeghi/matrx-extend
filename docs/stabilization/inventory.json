@@ -22258,8 +22258,9 @@
                 "Post-full-extension-reload deep recapture: lazy marker began absent, then appeared in both the owned page DOM and selected Article result; Scrolling progress was observed."
               ],
               "unverified": [
-                "Warm deep capture was not re-proven in this run.",
-                "Natural deep-capture failure and retry with deep mode preserved remain unverified."
+                "Warm deep capture is not proven by the latest current-equivalent run.",
+                "Visible scrolling progress and current-main deep-failure retry remain unverified; the reviewed retry result is from v0.2.459.",
+                "Other retry failure classes, member/admin, default Chrome, Store-installed, and full T02/Scrape acceptance remain unverified."
               ],
               "evidence": [
                 "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/receipt.sanitized.json",
@@ -22271,8 +22272,8 @@
                 "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/scrape-reload-deep-article.png"
               ],
               "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-run38105535841.json",
-              "detail": "Independently reviewed bounded pass for the post-extension-reload deep recapture subtarget only. Raw native payload and detailed reload timeline were not retained; warm behavior was not re-proven; deep-failure retry remains unverified. T02 stays partial.",
-              "release_scope": "Guest, normal 600px CDP-emulated width, current-equivalent v0.2.490 development artifact. Does not establish warm behavior on this artifact, deep failure/retry, member/admin, Store-installed behavior, or full T02/Scrape acceptance.",
+              "detail": "Latest reviewed run 38105535841 passes the guest post-extension-reload deep recapture subtarget on current-equivalent v0.2.490. Historical run 38044062561 independently supports only the guest deep permission-failure/Try again mode-preservation subtarget on v0.2.459. Warm deep capture, visible progress, current-main retry, other failure classes, and full T02 remain unverified.",
+              "release_scope": "Guest, normal 600px CDP-emulated width, current-equivalent v0.2.490 development artifact. Does not establish warm behavior on this artifact, deep failure/retry, member/admin, Store-installed behavior, or full T02/Scrape acceptance. Separate historical cross-case retry credit applies only to v0.2.459 and does not transfer to current main.",
               "previous_bounded_result": {
                 "run_id": 38021736744,
                 "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
@@ -22317,6 +22318,25 @@
                     "Deep-failure retry and T14 Reload page recovery remain unverified."
                   ]
                 }
+              },
+              "historical_cross_case_subtarget": {
+                "run_id": 38044062561,
+                "status": "bounded-pass",
+                "subtarget": "guest_deep_permission_failure_retry_preserves_deep_mode",
+                "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+                "workflow_source_sha": "1dfcd73e261a2f43355eadc9a571af309103df98",
+                "development_ci_run_id": 38036029832,
+                "development_artifact_id": 11664077690,
+                "build_version": "0.2.459",
+                "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                "resource_valid": true,
+                "evidence": [
+                  "docs/stabilization/runs/guest-scrape-t02-deep-retry-crosscase-run38044062561.json",
+                  "docs/stabilization/evidence/scrape-error-recovery-guest/run38044062561/native-report.sanitized.json",
+                  "docs/stabilization/evidence/scrape-error-recovery-guest/run38044062561/receipt.sanitized.json"
+                ],
+                "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-crosscase-run38044062561.json",
+                "detail": "The reviewed T14 harness induced a real effective host-permission failure during a requested deep capture, then Try again recovered with the lazy marker in Article. This supports only deep-mode retry for guest on historical v0.2.459; visible progress and current-main behavior remain unverified."
               }
             },
             "member": {

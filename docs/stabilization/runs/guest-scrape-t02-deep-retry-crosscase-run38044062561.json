@@ -1,0 +1,37 @@
+{
+  "id": "guest-scrape-t02-deep-retry-crosscase-run38044062561",
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T02",
+  "at": "2026-10-11T17:50:10Z",
+  "status": "bounded-historical-pass",
+  "scope": "Guest deep capture permission-denial followed by Try again with deep mode preserved, credited cross-case from the reviewed T14 recovery run. This is a historical artifact-specific subtarget only.",
+  "hosted_run_id": 38044062561,
+  "workflow_source_sha": "1dfcd73e261a2f43355eadc9a571af309103df98",
+  "lane": "B",
+  "runner_label": "macos-15",
+  "resource_finals": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid"
+  },
+  "product_artifact": {
+    "development_run_id": 38036029832,
+    "development_artifact_id": 11664077690,
+    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+    "version": "0.2.459",
+    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa"
+  },
+  "evidence": {
+    "native_report": "docs/stabilization/evidence/scrape-error-recovery-guest/run38044062561/native-report.sanitized.json",
+    "receipt": "docs/stabilization/evidence/scrape-error-recovery-guest/run38044062561/receipt.sanitized.json",
+    "peer_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-crosscase-run38044062561.json"
+  },
+  "passed_subtarget": "The requested deep capture was denied by effective host permission; Try again cleared the error and the scroll-triggered lazy marker appeared in the Article result, demonstrating deep-mode retry.",
+  "limitations": [
+    "Visible scrolling progress is not retained or proven by this run.",
+    "No warm/reload acceptance, member/admin behavior, default Chrome, Store installation, current-main behavior, or full T02/Scrape acceptance is established.",
+    "The sanitized report does not retain a raw timeline, screenshot, or explicit initial deep-click event; source-bound driver order and the lazy marker support only this bounded subtarget."
+  ],
+  "review_verdict": "PASS_BOUNDED_SUBTARGET",
+  "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-crosscase-run38044062561.json"
+}
