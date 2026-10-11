@@ -68,6 +68,30 @@ export function requireHostedWorkflowContract(workflow) {
   return true;
 }
 
+export function verifyHostedWorkflowCheckout(run, fetchContent = ghJson) {
+  if (
+    run?.path !== '.github/workflows/hosted-guest-acceptance.yml' ||
+    !SHA.test(run.head_sha ?? '')
+  )
+    refuse('HOSTED_WORKFLOW_CHECKOUT_INVALID');
+  const source = fetchContent(
+    `repos/${OWNER}/contents/.github/workflows/hosted-guest-acceptance.yml?ref=${run.head_sha}`,
+  );
+  if (source?.path !== run.path || source?.type !== 'file' || source?.encoding !== 'base64')
+    refuse('HOSTED_WORKFLOW_SOURCE_MISSING');
+  const encoded = source.content?.replace(/\s/g, '');
+  if (typeof encoded !== 'string' || !/^[A-Za-z0-9+/]+={0,2}$/.test(encoded))
+    refuse('HOSTED_WORKFLOW_SOURCE_INVALID');
+  const bytes = Buffer.from(encoded, 'base64');
+  if (bytes.toString('base64') !== encoded) refuse('HOSTED_WORKFLOW_SOURCE_INVALID');
+  const workflow = bytes.toString('utf8');
+  requireHostedWorkflowContract(workflow);
+  return {
+    workflowSha: run.head_sha,
+    workflowSourceSha256: createHash('sha256').update(bytes).digest('hex'),
+  };
+}
+
 export function planHostedMemberData({
   lane,
   developmentRunId,
@@ -322,6 +346,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         String(run.run_attempt) !== attempt
       )
         refuse('HOSTED_RUN_NOT_SUCCESSFUL');
+      const workflowSource = verifyHostedWorkflowCheckout(run);
       const sourceSha = args.get('--source-sha');
       if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
       const chunks = [];
@@ -340,7 +365,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       });
       const verdict = verifyHostedResourceJournals({ runId, attempt, files });
       process.stdout.write(
-        `${JSON.stringify({ runId, attempt, workflowSha: run.head_sha, archiveDigest, artifact, ...verdict })}\n`,
+        `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...verdict })}\n`,
       );
     } else refuse('HOSTED_MODE_INVALID');
   } catch (error) {

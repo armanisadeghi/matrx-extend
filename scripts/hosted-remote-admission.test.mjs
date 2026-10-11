@@ -6,6 +6,7 @@ import {
   requireExactArchiveJournalSet,
   requireHostedWorkflowContract,
   verifyHostedResourceJournals,
+  verifyHostedWorkflowCheckout,
 } from './hosted-remote-admission.mjs';
 
 test('remote member Data plan carries exact frozen artifact and guarded hosted workflow', () => {
@@ -175,6 +176,43 @@ test('remote plan refuses workflow mutations that remove a hosted guard or fixtu
         developmentArtifactId: '11700000000',
       }),
     /HOSTED_MEMBER_LANE_REFUSED/,
+  );
+});
+
+test('hosted verification refuses a same-name successful run whose exact checkout lacks the resource guard', () => {
+  const workflow = readFileSync(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  const run = {
+    head_sha: '46c31547517484946d16472ecaeab534354f60e1',
+    path: '.github/workflows/hosted-guest-acceptance.yml',
+    name: 'Native A · member-data',
+    event: 'workflow_dispatch',
+    conclusion: 'success',
+    run_attempt: 1,
+  };
+  const endpoint = `repos/armanisadeghi/matrx-extend/contents/.github/workflows/hosted-guest-acceptance.yml?ref=${run.head_sha}`;
+  const response = (source) => ({
+    path: run.path,
+    type: 'file',
+    encoding: 'base64',
+    content: Buffer.from(source).toString('base64'),
+  });
+  const guarded = verifyHostedWorkflowCheckout(run, (requested) => {
+    assert.equal(requested, endpoint);
+    return response(workflow);
+  });
+  assert.equal(guarded.workflowSha, run.head_sha);
+  assert.throws(
+    () =>
+      verifyHostedWorkflowCheckout(run, (requested) => {
+        assert.equal(requested, endpoint);
+        return response(
+          workflow.replaceAll('stabilization-resource.mjs run --run-id "hosted-guest-', 'REMOVED'),
+        );
+      }),
+    /HOSTED_PHASE_GUARD_MISSING/,
   );
 });
 

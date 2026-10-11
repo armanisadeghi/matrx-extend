@@ -10,7 +10,7 @@
   },
   "implementation": {
     "dispatch_path": "scripts/hosted-remote-admission.mjs plan|dispatch is limited to lane A member Data auto-extract and a successful, exact CI development run/artifact/source SHA. It checks the current hosted workflow guard, artifact, fixture, secret, lane, and journal-upload contract; dispatch additionally requires local HEAD to match remote main and a clean workflow/dispatch script.",
-    "verification_path": "scripts/hosted-remote-admission.mjs verify requires the exact GitHub hosted artifact ZIP digest, workflow identity and terminal success, the member Data T08 native report with matching CI artifact provenance, and current-attempt finalized package/browser/guest journals. Each journal must show open, admitted run, watch, successful child exit, and a valid final decision. Missing, pending, foreign, malformed, or invalid journals refuse.",
+    "verification_path": "scripts/hosted-remote-admission.mjs verify fetches the workflow source at the hosted run's exact head SHA and requires the guarded contract there. It also requires the exact GitHub hosted artifact ZIP digest, workflow identity and terminal success, the member Data T08 native report with matching CI artifact provenance, and current-attempt finalized package/browser/guest journals. Each journal must show open, admitted run, successful child exit, and a valid final decision; a watch event is required once work lasts a configured watch interval. Missing, pending, foreign, malformed, or invalid journals refuse.",
     "local_heavy_work": "No local package install, build, browser, resource guard invocation, release, or native run is part of this path. Existing local resource guard behavior and threshold are unchanged.",
     "files": [
       "scripts/hosted-remote-admission.mjs",
@@ -21,10 +21,11 @@
   "verification": {
     "red": "New guard tests initially failed on the planning and journal-verification stubs: missing exact workflow arguments and a missing guest final was incorrectly accepted.",
     "green": "The focused remote guard tests passed after implementation, including individual mutations removing hosted phase guards, fixture serialization, and secret boundary; invalid, pending, foreign, missing-watch, and missing-final journal cases refuse.",
-    "focused_acceptance": "pnpm test:focused-acceptance passed 406 tests with the new guard included in its existing hosted-lane test file.",
+    "peer_gap_red_green": "Fresh independent peer found that a successful historical same-name run could pass without proving its checkout contained the guarded workflow. An adversarial test reproduced this as a missing expected exception. The verifier now fetches .github/workflows/hosted-guest-acceptance.yml using the run's exact head_sha, validates base64 source and the existing guard contract, and refuses missing or weakened source. The test passes after the repair.",
+    "focused_acceptance": "pnpm test:focused-acceptance passed 407 tests with the new guard included in its existing hosted-lane test file.",
     "compile": "pnpm compile passed.",
     "live_read_only_plan": "The remote-only plan command successfully matched historical CI run 38112620925 to artifact 11691669564 and exact product source 83cd72b6c9a0b6cce5887c1f561668539e6d8259. No workflow was dispatched.",
-    "live_read_only_replay": "Streaming the historical hosted artifact ZIP for run 38113237641 through the verifier matched the GitHub archive digest, native member Data T08 source/artifact receipt, and all three finalized resource journals. Its package phase finished in about three seconds before the 15-second watch interval, so the verifier permits that documented short-run case while still refusing missing watch evidence for longer work. This replay creates no new product acceptance credit.",
+    "live_read_only_replay": "Streaming the historical hosted artifact ZIP for run 38113237641 through the verifier matched the GitHub archive digest, exact checkout workflow source SHA-256 1cb3d900ed62405504e6d7c90cf7dab79716299a70f9318bd8005f476b12c75a, native member Data T08 source/artifact receipt, and all three finalized resource journals. Its package phase finished in about three seconds before the 15-second watch interval, so the verifier permits that documented short-run case while still refusing missing watch evidence for longer work. This replay creates no new product acceptance credit.",
     "native": "Not run by instruction; no product acceptance credit."
   },
   "limitations": [
