@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "review": "fresh independent source review of EXT-F-2005-T08 outgoing organization-header oracle",
+  "verdict_a_behavior": {
+    "status": "PASS_WITH_LIMITS",
+    "finding": "The observer reads the outgoing request's X-Organization-Id from the real CDP Network.requestWillBeSent request object and evaluates it against both the captured POST body organization_id and the independently supplied selected organization. The test cases distinguish correct, case-insensitive, wrong, missing, and body/header-agree-but-selected-wrong states. The native acceptance assertion is now immediately after the unique successful owned-write snapshot and before target selection, lookup, or success observations.",
+    "evidence": [
+      "The observer filters requests to the configured Supabase origin, /rest/v1/wbx_pattern, and POST, then captures request headers from Network.requestWillBeSent and obtains a missing inline request body through Network.getRequestPostData.",
+      "Snapshot output contains only presence/match booleans, status, failure state, and bounded capture labels; it does not return the captured organization IDs, pattern ID, name, raw URL, or request headers.",
+      "Native acceptance waits for exactly one successful endpoint POST whose parsed owned name and body organization are present, then asserts body-versus-selected, header-versus-body, and header-versus-selected agreement before target selection or lookup. Any failed assertion leaves the overall native report status fail.",
+      "Focused node:test run passed all 8 observer cases, including correct-header acceptance, missing/wrong-header rejection, case-insensitive header-name acceptance, selected-organization mismatch rejection, and delayed request-body capture."
+    ],
+    "limits": [
+      "No browser or live T08 run was performed, so this review does not establish that the product emits the correct header or that the native journey passes after the transport fix.",
+      "The unit fixture injects CDP-shaped events; it exercises observer logic without a browser-generated Network.requestWillBeSent event."
+    ]
+  },
+  "verdict_b_forcing_guard_and_quality": {
+    "status": "PASS_WITH_LIMITS",
+    "finding": "The original assertion-order finding is ADDRESSED: header/body/selected-org agreement is checked before target selection, lookup, or saved-row success observations. The native acceptance keeps its finally block available for observer shutdown and owned-row cleanup.",
+    "original_finding_disposition": "ADDRESSED",
+    "evidence": [
+      "The test's good and bad header values are supplied as outgoing-event inputs, while the observer independently parses the body and compares both observed values to the selected organization; this is more than a fixture echo.",
+      "The tests explicitly verify wrong and missing headers fail the shared assertion, and that matching wrong body/header values fail the selected-organization condition.",
+      "In the final diff, the acceptance assertion precedes writeTarget, lookupSavedPattern, and saved-row success observations.",
+      "Exact request admission is conservative: all matching endpoint POSTs are collected, the wait requires exactly one, and it requires the owned name. This can fail closed on unrelated concurrent POSTs."
+    ],
+    "required_follow_up": [
+      "For the native acceptance seam, retain the exact-one-request and owned-name checks; ensure the assertion consumes the same unique request proven by that predicate."
+    ],
+    "test_command": "node --test tests/browser/data-member-save-observer.test.mjs",
+    "test_result": "PASS: 12 tests, 0 failures across observer and observer-wiring focused suites after the final diff. No browser-native execution was performed.",
+    "scope": "Read-only re-review and focused test execution. No source edits, builds, release, or browser launch."
+  },
+  "files_inspected": [
+    "tests/browser/data-member-save-observer.mjs",
+    "tests/browser/data-member-save-observer.test.mjs",
+    "tests/browser/data-member-native-acceptance.mjs",
+    "tests/browser/data-member-pattern-cleanup.mjs"
+  ],
+  "files_touched": ["docs/stabilization/reports/data-t08-header-oracle-source-peer-20261011.json"]
+}

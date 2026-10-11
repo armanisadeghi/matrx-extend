@@ -1,4 +1,5 @@
 /** CDP observer for the exact member Data write; reports only bounded facts. */
+import assert from 'node:assert/strict';
 import {
   matchesSelectedMemberOrganization,
   parseDataPatternWriteBody,
@@ -90,6 +91,14 @@ export function observePatternWrites(panel, origin, expectedOrganizationId, owne
           expectedOrganizationId,
         ),
         headerOrganizationPresent: UUID.test(write.headerOrganizationId ?? ''),
+        headerOrganizationMatchesBody:
+          UUID.test(write.headerOrganizationId ?? '') &&
+          UUID.test(write.requestOrganizationId ?? '') &&
+          write.headerOrganizationId === write.requestOrganizationId,
+        headerOrganizationMatchesSelected: matchesSelectedMemberOrganization(
+          write.headerOrganizationId,
+          expectedOrganizationId,
+        ),
       })),
     writeTarget: () => {
       const target = [...writes.values()].find(
@@ -106,4 +115,24 @@ export function observePatternWrites(panel, origin, expectedOrganizationId, owne
       offFinished();
     },
   };
+}
+
+/** Reject a successful insert unless its captured header, body and selected org agree. */
+export function assertPatternWriteOrganization(write) {
+  assert.equal(write?.requestNameMatches, true, 'data_member_save_request_name_mismatch');
+  assert.equal(
+    write?.requestOrganizationMatchesSelected,
+    true,
+    'data_member_save_request_organization_mismatch',
+  );
+  assert.equal(
+    write?.headerOrganizationMatchesBody,
+    true,
+    'data_member_save_header_body_organization_mismatch',
+  );
+  assert.equal(
+    write?.headerOrganizationMatchesSelected,
+    true,
+    'data_member_save_header_selected_organization_mismatch',
+  );
 }
