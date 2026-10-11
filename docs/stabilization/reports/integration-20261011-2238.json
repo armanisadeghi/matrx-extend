@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "sourceUnderTest": "2d443a755e1bf9be68f9e8668c3ee66d434e79e2",
+  "remoteMergedThrough": "1cc4d7fd3",
+  "packageVersion": "0.2.508",
+  "guardedResults": {
+    "install": "integrate-20261011-install-03.jsonl: valid, exit 0",
+    "focusedAcceptance": "integrate-20261011-focused-03.jsonl: valid, 445 passed, 0 failed",
+    "compile": "integrate-20261011-compile-02.jsonl: valid, exit 0",
+    "lint": "integrate-20261011-lint-03.jsonl: valid, exit 0, 854 non-blocking warnings"
+  },
+  "productBoundary": "Source/harness gates only; Data guest C19, Notes member T02, and Settings member account popover still require valid native acceptance and independent runtime review.",
+  "next": "Push after immediate remote comparison; require successful exact-main CI development artifact before hosted acceptance dispatch."
+}
