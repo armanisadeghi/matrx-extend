@@ -53,6 +53,10 @@ vi.mock('@/hooks/use-auth', () => ({
 vi.mock('@/hooks/use-desktop', () => ({
   useDesktopBridge: () => ({ transport: mocks.desktopTransport, health: null }),
 }));
+vi.mock('@/hooks/use-matrx2', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/hooks/use-matrx2')>()),
+  useMatrx2: () => ({ state: null, reconnect: vi.fn() }),
+}));
 vi.mock('@/lib/desktop/discovery', () => ({
   getEnginePortOverride: mocks.getEnginePortOverride,
   setEnginePortOverride: mocks.setEnginePortOverride,
@@ -68,7 +72,7 @@ vi.mock('@/lib/desktop/types', () => ({
 }));
 vi.mock('@ai-matrx/kit/confirm-opener', () => ({ confirm: mocks.confirm }));
 vi.mock('@/lib/mandates', () => ({ DEFAULT_CHAT_MANDATE_KEY: 'test' }));
-vi.mock('@/lib/messaging/native', () => ({ send: mocks.send }));
+vi.mock('@/lib/messaging/native', () => ({ send: mocks.send, on: () => () => undefined }));
 vi.mock('@/lib/messaging/schemas', () => ({ CHANNELS: { DESKTOP_REDISCOVER: 'rediscover' } }));
 vi.mock('@/state/settings', () => ({
   useSettingsStore: () => ({
