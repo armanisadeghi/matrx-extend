@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_seo_notice_retest_review",
+  "reviewer": "seo_notice_retest_peer",
+  "verdict_a_product_behavior": {
+    "verdict": "UNVERIFIED_NO_D199_CREDIT",
+    "reason": "The exact frozen product artifact contains the D199 fix, and the run reached the real side-panel context. The guest resource watchdog then invalidated the run before the manual Re-audit observation/click result was retained. The native report contains no reaudit_hit_diagnostics or click_failure_diagnostic. Therefore the run proves neither a post-fix hit-test pass nor a product failure.",
+    "observed_before_stop": {
+      "completed_report_targets": 14,
+      "all_target_statuses": "pass in the artifact report, but run-level resource invalidation makes these no new acceptance credit",
+      "last_safe_stage": "sparse_seo_details_inspected",
+      "T06": "history refusal, Retry and fresh-empty read are listed pass",
+      "Reaudit": "no retained hit snapshot, trusted click or settled result"
+    },
+    "notice_and_dismiss": {
+      "placement": "unverified",
+      "dismiss_visible": "unverified",
+      "dismiss_effect": "unverified",
+      "why": "The two uploaded screenshots show generic guest Chat and the run-owned fixture page. Neither shows the SEO panel or database refusal notice. No final control snapshot exists."
+    },
+    "surrounding_cases": "The report lists 14 completed controlled targets spanning T06, two page T09 title/headings and copy actions, T01 URL replacement/reload, T07 guest role/menu behavior, T03 restricted URL recovery and sparse details. They are observations from a run later marked resource-invalid and earn no product acceptance credit here.",
+    "limits": [
+      "No member/admin evidence.",
+      "No warm/reload notice behavior.",
+      "No multiple/long notice behavior.",
+      "No current-main runtime or Store evidence."
+    ]
+  },
+  "verdict_b_evidence_and_provenance": {
+    "verdict": "PASS_PROVENANCE_SANITIZATION_WITH_RESOURCE_LIMIT",
+    "verified": [
+      "Run 38159469990 is hosted workflow_dispatch, lane B, guest-seo controlled, macos-15-intel; workflow source is 3063eedc0d60599190ff6e7163786e05d9f8edde.",
+      "Run log ties the imported product to exact CI run 38158831692, artifact 11708654888 and source 5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6; imported tree SHA is dcedb190bb82480dc0832d6c23007c20c502cf088ec1fc8bd01b883274ad5f96, version 0.2.499. CI run succeeded; its artifact digest metadata is sha256:f0ba27bf56a1c4b83d991089e1f4e98683db7568c9487ea49c9c7a003a6c4d9a.",
+      "D199 source fix f3a7f8294805359c619b22571647a0414092c576 is an ancestor of the frozen artifact source. Later lockfile refresh commits 2d2533a47 and d19c30c29 postdate the frozen source and were outside the product tested.",
+      "Hosted result artifact 11710010698 metadata digest sha256:79b8162260ecb6d97fe0c23c268714c19bdc2934d4e11628069bdd5becf281f3 matches the workflow upload log; all six uploaded files were extracted and inspected.",
+      "All three phase journals were recovered and independently passed repository sanitization. Package and browser finals are valid; guest final is invalid (resourceInvalid=true, exit 3)."
+    ],
+    "resource_causality": "Runner readiness and package/browser phases passed. The guest journal recorded 98% CPU busy, then 100% CPU busy with high-load-busy reasons; the watchdog stopped the owned process group at the safe boundary. Process attribution lists Chromium Helper at 63.2% and Chromium at 30.1%, alongside runner/system processes. This establishes why acceptance was invalidated, but does not establish whether CPU saturation came from the product, browser harness, or co-located runner activity.",
+    "privacy": "Native report is the controlled test output. Resource journals were sanitized with the repository allowlist tool, stripping private paths and process attribution. The two deterministic screenshots were visually inspected and contain no apparent account data; they do not depict the notice or Re-audit surface."
+  },
+  "next_action": "Keep EXT-D-0199 fixed and open; do not mark retest-pass or close it. First diagnose the sustained Chromium/runner CPU at the manual Re-audit observation boundary using the run\u2019s preserved journal and harness milestones. Once that cause is resolved, run one fresh guarded hosted retest and retain before/after 9-point hit snapshots, visible notice plus Dismiss control, target-owned hit points, trusted Re-audit success, Dismiss effect, and bounded multiple/long notice plus warm/reload checks. A second resource-invalid run earns no product verdict.",
+  "evidence": {
+    "receipt": "docs/stabilization/evidence/seo-notice-occlusion/run38159469990/receipt.sanitized.json",
+    "native_report": "docs/stabilization/evidence/seo-notice-occlusion/run38159469990/native-report.sanitized.json",
+    "resource_finals": "docs/stabilization/evidence/seo-notice-occlusion/run38159469990/resource-finals.sanitized.json",
+    "run_record": "docs/stabilization/runs/seo-notice-occlusion-run38159469990.json"
+  },
+  "overall": "REOPEN_NO_CLOSURE"
+}

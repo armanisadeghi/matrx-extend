@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0199",
+  "verdict": "resource_invalid_diagnostic_only",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38159469990,
+    "run_attempt": 1,
+    "workflow_head_sha": "3063eedc0d60599190ff6e7163786e05d9f8edde",
+    "event": "workflow_dispatch",
+    "case": "guest-seo",
+    "scope": "controlled",
+    "lane": "B",
+    "runner_label": "macos-15-intel",
+    "conclusion": "failure",
+    "started_at": "2026-10-11T17:23:54Z",
+    "finished_at": "2026-10-11T17:32:24Z",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38159469990"
+  },
+  "development_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6",
+    "ci_run_id": 38158831692,
+    "ci_run_attempt": 1,
+    "artifact_id": 11708654888,
+    "artifact_digest": "sha256:f0ba27bf56a1c4b83d991089e1f4e98683db7568c9487ea49c9c7a003a6c4d9a",
+    "workflow_conclusion": "success",
+    "d199_fix_commit": "f3a7f8294805359c619b22571647a0414092c576",
+    "d199_fix_in_frozen_source": true,
+    "later_lockfile_refresh_commits": ["2d2533a47", "d19c30c29"],
+    "product_used": "The run imported the frozen CI artifact by exact run/artifact metadata and logged its tree SHA; the later pnpm-lock.yaml refresh postdates that product source and was not in the tested artifact."
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11710010698,
+    "name": "hosted-guest-38159469990-1",
+    "digest": "sha256:79b8162260ecb6d97fe0c23c268714c19bdc2934d4e11628069bdd5becf281f3",
+    "downloaded_digest_matches": true,
+    "expired": false
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "sha256": "0a9dc51c315d374be2b48c18958d27fc9419f4cb7f063f450f7793188097b5f1",
+    "status": "unverified",
+    "receipt_state": "in_progress",
+    "last_safe_stage": "sparse_seo_details_inspected",
+    "completed_target_count": 14,
+    "targets_with_pass_status": 14,
+    "notice_hit_diagnostics_present": false,
+    "click_failure_diagnostic_present": false
+  },
+  "screenshots": {
+    "native-side-panel.png": "c5c2895937ccbe6c55e55f9d5d53fae341164c49aac0c1264858f18f5534e1c2",
+    "normal-target-after-open.png": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c"
+  },
+  "diagnostic_limit": "The report marks 14 earlier controlled SEO subtargets pass, including history refusal/retry/fresh-empty and two-page audit/copy checks. Re-audit hit testing and trusted click were not completed; no notice placement or Dismiss visibility evidence exists. Screenshots show guest Chat and the generic fixture page, not the SEO pane or notice. Guest resource watchdog invalidated the run, so there is no D199 pass/fail and no closure credit.",
+  "sanitization": "Report copied from artifact; resource journals passed the repository allowlist sanitizer, which strips process attribution and private paths. Screenshot contents were visually inspected: deterministic test page and guest Chat only. No raw logs or credentials included."
+}

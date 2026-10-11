@@ -1,0 +1,146 @@
+{
+  "id": "seo-notice-occlusion-run38159469990",
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0199",
+  "at": "2026-10-11T17:32:24Z",
+  "status": "unverified",
+  "scope": "Guarded hosted lane B, guest SEO controlled cases on frozen unpublished CI development v0.2.499. Purpose: native D199 notice overlap retest.",
+  "hosted_run": "docs/stabilization/evidence/seo-notice-occlusion/run38159469990/receipt.sanitized.json",
+  "hosted_run_id": 38159469990,
+  "workflow_source_sha": "3063eedc0d60599190ff6e7163786e05d9f8edde",
+  "runner": {
+    "label": "macos-15-intel",
+    "arch": "x86_64"
+  },
+  "resource": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "invalid: RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY; exit 3"
+  },
+  "artifact": {
+    "development_run_id": 38158831692,
+    "development_artifact_id": 11708654888,
+    "source_sha": "5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6",
+    "version": "0.2.499",
+    "tree_sha256": "dcedb190bb82480dc0832d6c23007c20c502cf088ec1fc8bd01b883274ad5f96",
+    "eligible_store": false
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1008-T02",
+      "status": "unverified",
+      "native_case_status": "resource_invalid",
+      "product_assertions_run": false,
+      "unverified_substeps": [
+        "Post-history-recovery manual Re-audit native hit sampling",
+        "Trusted Re-audit click and settled current-page result",
+        "Notice placement while Re-audit remains available",
+        "Visible notice Dismiss control and dismissal effect"
+      ]
+    },
+    {
+      "case_id": "EXT-F-1008-T06",
+      "status": "unverified",
+      "native_case_status": "observed_subtarget_before_resource_invalidation",
+      "product_assertions_run": true,
+      "verified_substeps": [
+        "Controlled guest history refusal, Retry, and fresh empty read completed before watchdog stop"
+      ],
+      "unverified_substeps": [
+        "Notice placement and Dismiss behavior are not asserted by T06 result"
+      ]
+    }
+  ],
+  "surrounding_targets": {
+    "completed_pass_subtargets": 14,
+    "target_list": [
+      {
+        "case_id": "EXT-F-1008-T06",
+        "subtarget": "guest_history_error_retry_fresh_empty_read",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_0_title_and_headings",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_0",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "page_1_title_and_headings",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_page_1",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "new_url_replaces_visible_title",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "manual_button_returns_to_current_page",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_menu_offers_text_and_ai_but_hides_json",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T01",
+        "subtarget": "reload_audits_current_url",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_role_gate_after_reload",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T07",
+        "subtarget": "guest_actual_clipboard_text_and_ai_reload",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "about_blank_clear_error_without_stale_audit",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T03",
+        "subtarget": "public_page_recovers_after_restricted_url",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T09",
+        "subtarget": "sparse_public_detail_groups",
+        "status": "pass"
+      }
+    ],
+    "credit": "Recorded as artifact observations only; this resource-invalid run does not add product acceptance credit."
+  },
+  "failure": {
+    "code": "RESOURCE_FINAL_DECISION_INVALID",
+    "observed": "Guest journal reports resourceInvalid=true, exitCode=3, decision=invalid. CPU watchdog recorded 0.98 busy and later 1.0 busy with high-load/busy reasons and requested process-group SIGTERM.",
+    "product_defect_inference": false
+  },
+  "screenshots": {
+    "native-side-panel": "Generic guest Chat view; no SEO pane or notice.",
+    "normal-target-after-open": "Run-owned synthetic research brief page; no notice or Re-audit target visible."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/seo-notice-occlusion/run38159469990/receipt.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38159469990/native-report.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38159469990/resource-finals.sanitized.json"
+  ],
+  "independent_review": "docs/stabilization/reports/seo-notice-occlusion-independent-review-38159469990.json",
+  "next_action": "Keep EXT-D-0199 fixed but open for native retest; do not close or mark retest-pass. Before one fresh guarded hosted run, address why the guest watchdog reaches sustained 100% CPU during the manual Re-audit observation boundary; then capture the 9-point hit snapshots, verify the notice remains visible with a visible Dismiss control and Re-audit target-owned points, perform trusted Re-audit, dismiss and verify notice removal, and complete bounded multiple/long notice plus warm/reload checks. If resource guard again invalidates, stop and preserve unverified status."
+}
