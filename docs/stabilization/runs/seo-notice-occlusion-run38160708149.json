@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "id": "seo-notice-occlusion-run38160708149",
+  "created_at_utc": "2026-10-11T17:41:44Z",
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0199",
+  "status": "running",
+  "scope": "Guarded hosted lane B native guest SEO retest of notice-owned Re-audit hit points and visible Dismiss, with sanitized progress checkpoints before rich-page navigation. No product credit until terminal resource-valid evidence and independent review.",
+  "hosted_run_id": 38160708149,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38160708149",
+  "workflow_source_sha": "1c5aaecc23c0d1282a177747bc13946be2e1ed0f",
+  "inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": "false",
+    "seo_interrupt_after_target": "none"
+  },
+  "frozen_product": {
+    "development_run_id": 38158831692,
+    "development_artifact_id": 11708654888,
+    "source_sha": "5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6",
+    "version": "0.2.499",
+    "github_digest": "sha256:f0ba27bf56a1c4b83d991089e1f4e98683db7568c9487ea49c9c7a003a6c4d9a"
+  },
+  "next_action": "Await terminal hosted artifact, inspect all resource finals and native progress snapshots, then assign a fresh independent peer verdict before any D199 retest credit or closure."
+}
