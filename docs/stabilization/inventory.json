@@ -27644,23 +27644,25 @@
                 "guest_reaudit_captures_changed_page_metadata",
                 "notice_narrow_warm_navigation_reaudit_clearance",
                 "notice_wide_warm_navigation_reaudit_clearance",
-                "notice_reload_reaudit_clearance"
+                "notice_reload_reaudit_clearance",
+                "visible_notice_full_reload_second_dismiss_at_native_360px"
               ],
               "unverified_dimensions": [
                 "running button states outside the bounded trusted same-page Re-audit sequence",
                 "stale advice replacement",
                 "failure report",
                 "displayed description directly matches changed page",
-                "reload dimensions beyond bounded post-Dismiss Re-audit reachability",
+                "reload dimensions beyond bounded native 360px panel-document reload/refusal/second Dismiss",
                 "Multiple or long notices",
                 "Native normal-width clearance (the 480px observation was emulated)",
-                "Notice-visible full reload"
+                "Full extension/browser reload beyond bounded native 360px panel-document reload and second Dismiss"
               ],
               "run_id": "38016503649",
               "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
               "driver_source_sha": "0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b",
               "build_version": "0.2.457",
               "evidence": [
+                "docs/stabilization/runs/seo-forced-reload-run38177486036.json",
                 ".research/seo-controlled-followon-38016503649.json",
                 ".research/seo-controlled-followon-38016503649-peer.json",
                 ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json",
@@ -27673,7 +27675,13 @@
                 "docs/stabilization/runs/seo-notice-only-run38173576146.json",
                 "docs/stabilization/reports/seo-notice-only-run-independent-review-38173576146.json",
                 "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/native-report.sanitized.json",
-                "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/manifest.json"
+                "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/manifest.json",
+                "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/native-report.sanitized.json",
+                "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/manifest.json",
+                "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-package-38177486036-1.jsonl",
+                "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-browser-38177486036-1.jsonl",
+                "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-guest-38177486036-1.jsonl",
+                "docs/stabilization/reports/seo-forced-reload-independent-review-38177486036.json"
               ],
               "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T02 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred.",
               "qualification": "The direct re-audit view assertion verifies the changed title, not the displayed description. Exact T14 clipboard readback after re-audit is indirect evidence that the changed social snippet was captured.",
@@ -27833,9 +27841,47 @@
                     "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/manifest.json"
                   ],
                   "scope": "Frozen development v0.2.504 only; version/generated-doc-only difference from workflowa494. Full T02/D199/current-main/Store and explicit sibling dimensions remain unverified."
+                },
+                {
+                  "source_sha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+                  "build_version": "0.2.505",
+                  "development_ci_run_id": 38176720271,
+                  "development_artifact_id": 11716531563,
+                  "tree_sha256": "6a7adb872403970a6eb28400b25b3a41ad316a8a707d30abd71f73ab9b5654ba",
+                  "run_id": 38177486036,
+                  "workflow_source_sha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+                  "hosted_result_artifact_id": 11716592501,
+                  "status": "partial",
+                  "resource_valid": true,
+                  "passed_subtargets": [
+                    "notice_narrow_warm_navigation_reaudit_clearance",
+                    "notice_wide_warm_navigation_reaudit_clearance",
+                    "manual_button_returns_to_current_page",
+                    "notice_reload_reaudit_clearance",
+                    "visible_notice_full_reload_second_dismiss_at_native_360px"
+                  ],
+                  "new_acceptance_subtargets": [
+                    "visible_notice_full_reload_second_dismiss_at_native_360px"
+                  ],
+                  "reobserved_existing_subtargets": [
+                    "notice_narrow_warm_navigation_reaudit_clearance",
+                    "notice_wide_warm_navigation_reaudit_clearance",
+                    "manual_button_returns_to_current_page",
+                    "notice_reload_reaudit_clearance"
+                  ],
+                  "evidence": [
+                    "docs/stabilization/runs/seo-forced-reload-run38177486036.json",
+                    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/native-report.sanitized.json",
+                    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/manifest.json",
+                    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-package-38177486036-1.jsonl",
+                    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-browser-38177486036-1.jsonl",
+                    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-guest-38177486036-1.jsonl",
+                    "docs/stabilization/reports/seo-forced-reload-independent-review-38177486036.json"
+                  ],
+                  "scope": "Exact synchronized main at dispatch b348; unpublished development only. Post-dispatch Notes test/docs delta has no runtime/SEO/dependency/workflow change. Full T02/D199 and remaining dimensions stay open; no Store claim."
                 }
               ],
-              "detail": "Independently reviewed guarded run 38173576146 adds only guest T02 notice_reload_reaudit_clearance on frozen unpublished development v0.2.504, product source acb5506d5 (CI 38172909785/artifact 11715051290), workflow a494f08ee. Immediate Dismiss cleared the notice count to 0; panel reload showed count 1 with Dismiss visible, 9/9 Re-audit target hits, 0 notice hits and matching current title. Native 360px/emulated 480px clearance and trusted Re-audit return repeat existing credit; the trusted click at 222ms, running state at 229ms and settled state at 290ms corroborate the bounded manual sequence. All three resource finals are valid and the viewport restored to 360px. Full T02 remains partial and D199 fixed/open. Multiple/long notices, native normal width, a separately forced visible-reload fixture, second post-reload Dismiss, member/admin, current-main and Store remain unverified."
+              "detail": "Independently reviewed guarded run 38177486036 adds only forced visible-refusal full panel-document reload plus trusted second Dismiss at native 360px on unpublished development v0.2.505, exact synchronized product/workflow b3482558b at dispatch (CI 38176720271/artifact 11716531563). One actual current-URL history GET received controlled 403/42501 after document replacement; the visible notice count 1 became 0 after an observed trusted correct-button Dismiss, with 9/9 Re-audit target hits and 0 notice hits before/after. Four existing targets repeat their bounded observations; trusted Re-audit 238ms \u2192 running 244ms \u2192 settled 302ms. All three resource finals valid, including guest completion CPU recovery. Historical targets retain their original source/build boundaries. Full T02 remains partial and D0199 fixed/open; multiple/long notices, native normal width, extension/browser reload, other T02 states, member/admin and Store remain unverified."
             }
           },
           "result_history": [
@@ -28179,6 +28225,136 @@
                   "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/manifest.json"
                 ],
                 "detail": "Independently reviewed guarded run 38173576146 adds only guest T02 notice_reload_reaudit_clearance on frozen unpublished development v0.2.504, product source acb5506d5 (CI 38172909785/artifact 11715051290), workflow a494f08ee. Immediate Dismiss cleared the notice count to 0; panel reload showed count 1 with Dismiss visible, 9/9 Re-audit target hits, 0 notice hits and matching current title. Native 360px/emulated 480px clearance and trusted Re-audit return repeat existing credit; the trusted click at 222ms, running state at 229ms and settled state at 290ms corroborate the bounded manual sequence. All three resource finals are valid and the viewport restored to 360px. Full T02 remains partial and D199 fixed/open. Multiple/long notices, native normal width, a separately forced visible-reload fixture, second post-reload Dismiss, member/admin, current-main and Store remain unverified."
+              }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "source_sha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+                "build_version": "0.2.505",
+                "development_ci_run_id": 38176720271,
+                "development_artifact_id": 11716531563,
+                "tree_sha256": "6a7adb872403970a6eb28400b25b3a41ad316a8a707d30abd71f73ab9b5654ba",
+                "run_id": 38177486036,
+                "workflow_source_sha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+                "hosted_result_artifact_id": 11716592501,
+                "status": "partial",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "notice_narrow_warm_navigation_reaudit_clearance",
+                  "notice_wide_warm_navigation_reaudit_clearance",
+                  "manual_button_returns_to_current_page",
+                  "notice_reload_reaudit_clearance",
+                  "visible_notice_full_reload_second_dismiss_at_native_360px"
+                ],
+                "new_acceptance_subtargets": [
+                  "visible_notice_full_reload_second_dismiss_at_native_360px"
+                ],
+                "reobserved_existing_subtargets": [
+                  "notice_narrow_warm_navigation_reaudit_clearance",
+                  "notice_wide_warm_navigation_reaudit_clearance",
+                  "manual_button_returns_to_current_page",
+                  "notice_reload_reaudit_clearance"
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/seo-forced-reload-run38177486036.json",
+                  "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/native-report.sanitized.json",
+                  "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/manifest.json",
+                  "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-package-38177486036-1.jsonl",
+                  "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-browser-38177486036-1.jsonl",
+                  "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-guest-38177486036-1.jsonl",
+                  "docs/stabilization/reports/seo-forced-reload-independent-review-38177486036.json"
+                ],
+                "scope": "Exact synchronized main at dispatch b348; unpublished development only. Post-dispatch Notes test/docs delta has no runtime/SEO/dependency/workflow change. Full T02/D199 and remaining dimensions stay open; no Store claim.",
+                "observed_subtargets": [
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+                    "status": "pass",
+                    "evidence": {
+                      "viewportWidth": 360,
+                      "viewportSource": "native",
+                      "refusalNoticeVisible": true,
+                      "targetHitPoints": 9,
+                      "noticeHitPoints": 0,
+                      "navigatedTitleMatches": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+                    "status": "pass",
+                    "evidence": {
+                      "viewportWidth": 480,
+                      "viewportSource": "emulated",
+                      "refusalNoticeVisible": true,
+                      "targetHitPoints": 9,
+                      "noticeHitPoints": 0,
+                      "navigatedTitleMatches": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "manual_button_returns_to_current_page",
+                    "status": "pass",
+                    "evidence": {
+                      "currentTitlePreserved": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "notice_reload_reaudit_clearance",
+                    "status": "pass",
+                    "evidence": {
+                      "noticeCount": 1,
+                      "dismissVisible": true,
+                      "targetHitPoints": 9,
+                      "noticeHitPoints": 0,
+                      "currentTitleMatched": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "multiple_and_long_notice_clearance",
+                    "status": "unverified",
+                    "reason": "owned history refusal produces one fixed-length notice; distinct stacked and long notices need a controlled app notice fixture"
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "visible_notice_full_reload_second_dismiss_at_native_360px",
+                    "status": "pass",
+                    "evidence": {
+                      "width": 360,
+                      "source": "native",
+                      "refusedHistoryReads": 1,
+                      "documentChanged": true,
+                      "dismissClick": {
+                        "trusted": true,
+                        "correctButton": true
+                      },
+                      "currentTitleMatched": true,
+                      "visible": {
+                        "active": true,
+                        "target_count": 1,
+                        "target_enabled": true,
+                        "database_refused_notice_count": 1,
+                        "dismiss_visible": true,
+                        "hit_point_count": 9,
+                        "notice_hit_point_count": 0
+                      },
+                      "dismissed": {
+                        "active": true,
+                        "target_count": 1,
+                        "target_enabled": true,
+                        "database_refused_notice_count": 0,
+                        "dismiss_visible": false,
+                        "hit_point_count": 9,
+                        "notice_hit_point_count": 0
+                      }
+                    }
+                  }
+                ],
+                "detail": "Independently reviewed guarded run 38177486036 adds only forced visible-refusal full panel-document reload plus trusted second Dismiss at native 360px on unpublished development v0.2.505, exact synchronized product/workflow b3482558b at dispatch (CI 38176720271/artifact 11716531563). One actual current-URL history GET received controlled 403/42501 after document replacement; the visible notice count 1 became 0 after an observed trusted correct-button Dismiss, with 9/9 Re-audit target hits and 0 notice hits before/after. Four existing targets repeat their bounded observations; trusted Re-audit 238ms \u2192 running 244ms \u2192 settled 302ms. All three resource finals valid, including guest completion CPU recovery. Historical targets retain their original source/build boundaries. Full T02 remains partial and D0199 fixed/open; multiple/long notices, native normal width, extension/browser reload, other T02 states, member/admin and Store remain unverified."
               }
             }
           ],

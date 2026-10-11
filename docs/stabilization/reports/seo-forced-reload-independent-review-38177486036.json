@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "reviewer": "seo_notice_native_peer_1011",
+  "recorded_at_utc": "2026-10-11T21:54:48Z",
+  "receipt_method": "Fresh independent native review verdict forwarded by coordinator; persisted by execution owner.",
+  "hosted_run_id": 38177486036,
+  "verdict_a": {
+    "status": "PASS_BOUNDED",
+    "scope": "visible_notice_full_reload_second_dismiss_at_native_360px",
+    "findings": [
+      "Controlled current-URL history refusal follows distinct full panel-document reload at native 360px.",
+      "Fresh refusal remains dismissible; trusted correct-button second Dismiss clears count 1 to 0.",
+      "Re-audit remains enabled and owns all nine sampled points before/after Dismiss; notice owns zero."
+    ],
+    "case_status": "T02 partial; D0199 fixed/open"
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "findings": [
+      "Downloaded result ZIP digest matches GitHub artifact digest.",
+      "Exact b348 product/workflow provenance and unchanged imported build binding.",
+      "Package/browser/guest final journals are admitted, resource-valid and exit zero; guest completion CPU recovery is final valid."
+    ]
+  },
+  "result_artifact": {
+    "artifact_id": 11716592501,
+    "name": "hosted-guest-38177486036-1",
+    "github_digest": "sha256:62ef195b0304e2178e560cf813aed94d5ffe771ebce07b54b33c9783fa26eb5b",
+    "downloaded_archive_digest_matches": true
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "watch_healthy_samples": 0,
+      "post_admission_duration_seconds": 4.809,
+      "journal": "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-package-38177486036-1.jsonl"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "watch_healthy_samples": 0,
+      "post_admission_duration_seconds": 13.853,
+      "journal": "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-browser-38177486036-1.jsonl"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "watch_healthy_samples": 1,
+      "post_admission_duration_seconds": 48.982,
+      "journal": "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-guest-38177486036-1.jsonl"
+    }
+  },
+  "evidence": [
+    "docs/stabilization/runs/seo-forced-reload-run38177486036.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/native-report.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/manifest.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-package-38177486036-1.jsonl",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-browser-38177486036-1.jsonl",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-guest-38177486036-1.jsonl"
+  ],
+  "limitations": [
+    "Multiple and long notices",
+    "Native normal-width clearance (480px was emulated)",
+    "Full extension/browser reload beyond full panel-document reload",
+    "Other T02 states including stale advice and failure behavior",
+    "Member/admin",
+    "Store"
+  ],
+  "closure": "No full T02/D0199, Store or future-main claim."
+}
