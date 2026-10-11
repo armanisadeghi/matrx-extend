@@ -61,7 +61,8 @@
   ],
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38157769699",
-    "docs/stabilization/evidence/seo-notice-occlusion/run38157769699/native-report.sanitized.json"
+    "docs/stabilization/evidence/seo-notice-occlusion/run38157769699/native-report.sanitized.json",
+    "docs/stabilization/runs/seo-notice-occlusion-run38160708149.json"
   ],
   "build_receipt": {
     "version": "0.2.493",
@@ -78,14 +79,15 @@
     "pnpm compile passed.",
     "Layout guard checks production frame/tray structure and dismissal; happy-dom supplies no layout geometry. This does not prove native pointer clearance.",
     "Final focused notice plus SEO history/navigation regressions: 17/17 passed; full lint --diagnostic-level=error passed; diff check clean.",
-    "Independent seo_notice_fix_peer accepted source correction; guard supports structural layout only. Native browser hit-test, widths, warm/reload and other modes remain pending."
+    "Independent seo_notice_fix_peer accepted source correction; guard supports structural layout only. Native browser hit-test, widths, warm/reload and other modes remain pending.",
+    "Frozen v0.2.499 hosted run 38160708149 passed the original guest obstruction reproduction: five notice-visible snapshots each had 9/9 Re-audit target hits, trusted click settled, and Dismiss cleared the notice; all three resource finals valid. Independent review accepted this bounded result while sibling scenarios remain open."
   ],
-  "original_repro_retest_run": null,
-  "surrounding_case_runs": [],
-  "reviewer": "seo_notice_fix_peer: independent source correction PASS; guard PARTIAL (structural-only), native retest pending",
+  "original_repro_retest_run": 38160708149,
+  "surrounding_case_runs": [38160708149],
+  "reviewer": "seo_notice_fix_peer: source correction PASS, structural guard PARTIAL; seo-notice-occlusion-independent-review-38160708149: original guest reproduction bounded PASS, sibling coverage PARTIAL",
   "closure_requirement": "Fresh guarded exact-source native test must show Re-audit target-owned hit points and successful trusted click while the database refusal notice is visible; independently review history Retry, Dismiss, multiple/long notices, 360px narrow and normal width, warm and reload behavior. Member/admin and Store remain separate unverified boundaries.",
   "release_status": "Source only; no local build/release initiated.",
-  "next_action": "Coordinator links D199 to inventory T02/T06 and runs fresh hosted exact-source native hit-test and surrounding notice acceptance. Source repair is fixed, not retest-pass or closed.",
+  "next_action": "Keep fixed/open. Complete guarded native multiple/long-notice, 360px and normal-width, warm-navigation and full-reload acceptance with independent review before retest-pass or closure. Member/admin, current-main and Store are separate unverified boundaries.",
   "transition_history": [
     {
       "at": "2026-10-11T17:10:20.379233+00:00",
