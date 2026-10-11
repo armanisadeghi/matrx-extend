@@ -106,6 +106,23 @@ test('member T08 latches the rendered running badge across a fast completion', a
   }
 });
 
+test('member T08 does not count a running badge that predates observation', async () => {
+  const stale = panelFor(card('auto', 'Matches this URL'));
+  try {
+    assert.equal((await memberAutoCard(stale, 'Owned T08 pattern')).running, true);
+    assert.deepEqual(await observeMemberAutoRunning(stale, 'Owned T08 pattern', 'install'), {
+      installed: true,
+      seen: false,
+    });
+    stale.replace(card('auto · 1 rows', 'Auto-extracted on page load'));
+    await Promise.resolve();
+    await Promise.resolve();
+    assert.deepEqual(await observeMemberAutoRunning(stale, 'Owned T08 pattern'), { seen: false });
+  } finally {
+    stale.close();
+  }
+});
+
 test('member T08 stays an opt-in scope on the existing hosted member-data route', async () => {
   const [workflow, driver] = await Promise.all([
     readFile(

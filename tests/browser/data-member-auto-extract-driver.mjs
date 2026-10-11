@@ -66,23 +66,28 @@ export async function observeMemberAutoRunning(panel, patternName, operation = '
         const key = ${key};
         const existing = window[key];
         existing?.observer?.disconnect();
-        const state = { seen: false, observer: null };
-        const inspect = () => {
+        const state = { seen: false, lastRunning: false, observer: null };
+        const readRunning = () => {
           const root = ${activeTabPanelExpression('Data')};
-          if (!root) return;
+          if (!root) return false;
           const name = [...root.querySelectorAll('span')]
             .find((node) => node.textContent?.trim() === ${JSON.stringify(patternName)});
           let card = name;
           while (card && !card.classList?.contains('bg-emerald-500/10')) card = card.parentElement;
-          if (card && [...card.querySelectorAll('span')]
-            .some((node) => node.textContent?.trim() === 'auto')) state.seen = true;
+          return Boolean(card && [...card.querySelectorAll('span')]
+            .some((node) => node.textContent?.trim() === 'auto'));
+        };
+        const inspect = () => {
+          const running = readRunning();
+          if (running && !state.lastRunning) state.seen = true;
+          state.lastRunning = running;
         };
         state.observer = new MutationObserver(inspect);
         state.observer.observe(document.documentElement, {
           subtree: true, childList: true, characterData: true,
         });
         window[key] = state;
-        inspect();
+        state.lastRunning = readRunning();
         return { installed: true, seen: state.seen };
       })()`,
     );
