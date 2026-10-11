@@ -19,6 +19,7 @@ import {
 } from '../../scripts/hosted-seo-route.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
+import { clickSeoReaudit } from './guest-seo-click-diagnostic.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
 import { runNativeSeoHistoryRecovery } from './seo-history-native-recovery.mjs';
@@ -1559,7 +1560,7 @@ try {
 
       await observe('manual_reaudit_preflight', () => seoContent(panel));
       enter('manual_reaudit_click');
-      await click(panel, 'button', 'Re-audit');
+      await clickSeoReaudit(panel, report, click);
       advance('manual_reaudit_click_dispatched', { trustedInput: true });
       await waitObserved(
         'manual_reaudit_running_wait',
@@ -2063,7 +2064,7 @@ try {
             'manual audit starts on the selected public URL',
           );
           enter('next_manual_reaudit_click');
-          await click(panel, 'button', 'Re-audit');
+          await clickSeoReaudit(panel, report, click);
           advance('next_manual_reaudit_click_dispatched', { trustedInput: true });
           await waitObserved(
             'next_manual_reaudit_running_wait',

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "subject": "guest SEO controlled native click failure",
+  "run_id": 38118666272,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38118666272",
+  "frozen_product_source_sha": "a98c46a7d01cbf99af88aa90e4cabc296546a46f",
+  "workflow_source_sha": "7d3d9d877eda1da5e32544f61026cdd227a7db18",
+  "verdict": "DIAGNOSTIC_GAP_INSTRUMENTED_CAUSE_UNCONFIRMED",
+  "observed": {
+    "artifact_id": 11694638453,
+    "artifact_size_bytes": 61154,
+    "last_safe_stage": "manual_reaudit_preflight",
+    "last_safe_observable": {
+      "auditButtonPresent": true,
+      "auditButtonDisabled": false,
+      "reAudit": true,
+      "error": false
+    },
+    "failed_operation": "manual_reaudit_click",
+    "click_dispatched_checkpoint_present": false,
+    "child_exit_code": 1,
+    "resource_valid": true,
+    "retained_pointer_failure": false
+  },
+  "diagnostic_gap": "The native click helper emits a structured, content-free driverFailure on pointer errors, but the SEO acceptance catch retained only the operation name. The archived run cannot distinguish target resolution, occlusion, animation, CDP dispatch, or a non-pointer exception. It does not prove a product defect.",
+  "hypotheses_for_next_guarded_run": [
+    {
+      "cause": "Re-audit target was absent or non-unique when the helper sampled it",
+      "prediction": "pointer_target_not_unique with visible_match_count other than 1"
+    },
+    {
+      "cause": "The target was visible but not stably hit-testable",
+      "prediction": "pointer_stable_hit_not_observed with hit_target false, selected_point_available false, or stable_samples below 2"
+    },
+    {
+      "cause": "CDP input dispatch failed after target selection",
+      "prediction": "pointer_press_dispatch_failed or pointer_release_dispatch_failed with the matching click phase"
+    },
+    {
+      "cause": "The click helper raised outside its pointer error classes",
+      "prediction": "other_exception with the last recorded click phase"
+    }
+  ],
+  "change": "Both manual Re-audit call sites now use one helper that records allowlisted click phases and pointer categories in the failure receipt. Arbitrary browser text and raw errors are excluded.",
+  "red_green_loop": "node --test tests/browser/guest-seo-click-diagnostic.test.mjs failed before helper implementation because the diagnostic module was absent; after implementation, the synthetic press failure verifies its exact phase and safe receipt. The test also checks the controlled call site uses the helper.",
+  "next_evidence_needed": "A guarded hosted controlled guest SEO run using the updated workflow driver and the frozen product artifact, coordinated by the run owner. Compare click_failure_diagnostic with its native receipt and resource finals before assigning product, harness, or environment cause. No run was dispatched in this lane.",
+  "limits": [
+    "The archived run did not retain the click exception, so its exact click-helper symptom cannot be replayed locally.",
+    "The synthetic red-green loop proves diagnostic capture behavior, not the archived browser failure or T02 acceptance.",
+    "Product source remains frozen at v0.2.493; no product behavior was changed or credited."
+  ]
+}
