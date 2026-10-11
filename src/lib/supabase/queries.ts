@@ -46,7 +46,7 @@ import {
   hasSupabaseAccessToken,
   supabaseForActor,
 } from '@/lib/supabase/client';
-import { type DbCallSite, failDbCall } from '@/lib/supabase/db-failure';
+import { type DbCallSite, failDbCall, isDbFailureError } from '@/lib/supabase/db-failure';
 import { adminDb, aiDb, docprocDb, extendDb, usersDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
 import { requireOrganizationContext } from '@ai-matrx/agents/matrx';
@@ -1365,8 +1365,15 @@ async function existingRowOrganization(
     .eq(keyColumn, key)
     .maybeSingle();
   if (error) {
-    console.warn('[matrx-extend] could not read the existing row organization', error.message);
-    return null;
+    failDbCall(
+      {
+        table: `extend.${table}`,
+        operation: 'select',
+        what: 'read the saved item organization',
+        title: 'Saved item unavailable',
+      },
+      error,
+    );
   }
   const org = (data as { organization_id?: unknown } | null)?.organization_id;
   return typeof org === 'string' && org ? org : null;
@@ -1509,11 +1516,19 @@ export async function upsertDemoRow(p: SaveDemoRowPayload): Promise<boolean> {
     organizationId =
       (await existingRowOrganization('wbx_demo', 'demo_key', p.demo_key)) ?? requestOrganizationId;
   } catch (error) {
-    console.warn('[matrx-extend] upsertDemoRow refused: missing request organization', error);
-    return false;
+    if (isDbFailureError(error)) throw error;
+    failDbCall(
+      {
+        table: 'extend.wbx_demo',
+        operation: 'insert',
+        what: 'save this demo',
+        title: 'Demo not saved',
+      },
+      { code: 'NO_ORGANIZATION', message: String(error) },
+    );
   }
   const c = getSupabase();
-  const { error } = await c
+  const { data, error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_demo')
     .upsert(
@@ -1531,8 +1546,10 @@ export async function upsertDemoRow(p: SaveDemoRowPayload): Promise<boolean> {
         deleted_at: null,
       },
       { onConflict: 'demo_key' },
-    );
-  if (error) {
+    )
+    .select('demo_key')
+    .maybeSingle();
+  if (error || !data) {
     failDbCall(
       {
         table: 'extend.wbx_demo',
@@ -1549,12 +1566,14 @@ export async function upsertDemoRow(p: SaveDemoRowPayload): Promise<boolean> {
 /** Soft-delete (tombstone) one demo row so other machines' hydrate can apply it. */
 export async function deleteDemoRow(id: string): Promise<boolean> {
   const c = getSupabase();
-  const { error } = await c
+  const { data, error } = await c
     .schema(EXTEND_SCHEMA)
     .from('wbx_demo')
     .update({ deleted_at: new Date().toISOString() })
-    .eq('demo_key', id);
-  if (error) {
+    .eq('demo_key', id)
+    .select('demo_key, deleted_at')
+    .maybeSingle();
+  if (error || !data?.deleted_at) {
     failDbCall(
       {
         table: 'extend.wbx_demo',

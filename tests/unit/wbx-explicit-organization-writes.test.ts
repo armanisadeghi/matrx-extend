@@ -1,11 +1,13 @@
 import { createHighlight } from '@/lib/highlights/queries';
 import {
+  deleteDemoRow,
   savePattern,
   saveScreenshot,
   saveSeoAudit,
   upsertDemoRow,
   upsertGuidanceRow,
 } from '@/lib/supabase/queries';
+import { DbFailureError } from '@/lib/supabase/db-failure';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -126,6 +128,7 @@ function installSupabaseWriteRecorder(): unknown[] {
       payloads.push(payload);
       return chain;
     }),
+    update: vi.fn(() => chain),
     select: vi.fn(() => chain),
     eq: vi.fn(() => chain),
     maybeSingle: vi.fn(async () => ({ data: null, error: null })),
@@ -158,6 +161,19 @@ describe('extend.wbx_* explicit organization writes', () => {
       expect(mocks.getSupabase).not.toHaveBeenCalled();
     });
   }
+
+  it('reports a missing workspace when saving a demo', async () => {
+    mocks.requireRequestOrganizationId.mockRejectedValue(new Error('No request organization'));
+    await expect(writers.find((writer) => writer.name === 'demo')!.run()).rejects.toBeInstanceOf(
+      DbFailureError,
+    );
+    expect(mocks.getSupabase).not.toHaveBeenCalled();
+  });
+
+  it('rejects a demo tombstone when the update returns no row', async () => {
+    installSupabaseWriteRecorder();
+    await expect(deleteDemoRow('demo-example')).rejects.toBeInstanceOf(DbFailureError);
+  });
 
   it('stamps the exact request organization on all six insert/upsert payloads (page saves land through the Sources door)', async () => {
     mocks.requireRequestOrganizationId.mockResolvedValue(ORG_ID);
