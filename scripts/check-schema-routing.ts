@@ -45,7 +45,6 @@ const MOVED_TABLES: Record<string, string> = {
   sch_trigger: 'scheduler',
   sch_agent_task: 'scheduler',
   notes: 'workbench',
-  note_folders: 'workbench',
   udt_datasets: 'workbench',
   udt_dataset_fields: 'workbench',
   conversation: 'chat',

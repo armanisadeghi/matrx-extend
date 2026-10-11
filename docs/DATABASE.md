@@ -48,7 +48,7 @@ const { data } = await extendDb().from('wbx_pattern').select('*');
 |---|---|---|
 | `wbx_*` (pattern, recipe, capture, guidance, screenshot, seo_audit, highlight) | `extend` | `extendDb()` |
 | `sch_task` · `sch_run` · `sch_trigger` · `sch_agent_task` | `scheduler` | `schedulerDb()` |
-| `notes` · `note_folders` · `udt_datasets` · `udt_dataset_fields` | `workbench` | `workbenchDb()` |
+| `notes` · `udt_datasets` · `udt_dataset_fields` | `workbench` | `workbenchDb()` |
 | `conversation` · `message` · `tool_call` | `chat` | `chatDb()` |
 | `user_form_profile` | `users` | `usersDb()` |
 | `admins` | `admin` | `adminDb()` |
@@ -65,8 +65,8 @@ The moved tables adopted a common base-entity template (`organization_id`,
 `created_by`, `updated_by`, `version`, `deleted_at`, `visibility`). **But only
 some tables dropped `user_id`:**
 
-- **`extend.*` and `workbench.notes` / `note_folders` have NO `user_id` anymore** —
-  ownership is **`created_by`**. Filter on that.
+- **`extend.*` and `workbench.notes` have NO `user_id` anymore** —
+  ownership is **`created_by`**. Filter on that. (Notes live in *homes* — `workbench.notes.home_scope_id`; the old `note_folders` table and the `folder_id`/`folder_name` columns are retired.)
 - **`scheduler.sch_task`/`sch_run`/`sch_trigger`, `admin.admins`,
   `users.user_form_profile`, and `workbench.udt_*` KEPT `user_id`.** Do not
   "helpfully" rename it.
