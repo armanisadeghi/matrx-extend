@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-11 01:28 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T01:05:38.231Z. 205 features · 780 cases · 1362 controls · 196 linked defect records.
+Generated 2026-10-11 01:44 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T01:05:38.231Z. 205 features · 780 cases · 1362 controls · 196 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -581,8 +581,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T92 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass. Guest negative access only; no signed-in role credit.
   Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
-- EXT-F-1003-T93 · guest: Unverified. Partial native observations only. After the distinct replacement panel opened, replacement Settings readiness failed with owned_cdp_transport_failed. The reopened selector value, Current choice, and original Current/default restoration were not verified. Keep T93 unverified; do not infer a product defect.
-  Evidence / build / date recorded: 38101188335, ['docs/stabilization/evidence/guest-settings-t93/run38101188335/receipt.sanitized.json', 'docs/stabilization/evidence/guest-settings-t93/run38101188335/native-report.sanitized.json', 'docs/stabilization/evidence/guest-settings-t93/run38101188335/resource-finals.sanitized.json']
+- EXT-F-1003-T93 · guest: Unverified. Frozen v0.2.490 artifact only. Before T93 interaction, extension reload retired the old worker/panel and created a replacement worker; trusted open-panel click/send returned but the callback was not entered and no replacement panel target appeared. The later native_extension_live_panel_unavailable_for_cleanup is a cascading cleanup error. Lockfile @ai-matrx versions differ from the frozen source, so there is no current-main runtime acceptance claim. Keep T93 unverified.
+  Evidence / build / date recorded: 38102203927, ['docs/stabilization/evidence/guest-settings-t93/run38102203927/receipt.sanitized.json', 'docs/stabilization/evidence/guest-settings-t93/run38102203927/native-report.sanitized.json', 'docs/stabilization/evidence/guest-settings-t93/run38102203927/resource-finals.sanitized.json']
 
 
 ## Profile

@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "status": "unverified",
+  "native_suite_status": "fail",
+  "scope": "real native Chrome-for-Testing side panel; signed-out guest; T93 only",
+  "build": {
+    "version": "0.2.490",
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
+    "verified": true,
+    "publish_state": "not_published"
+  },
+  "case": {
+    "id": "EXT-F-1003-T93",
+    "role": "guest",
+    "status": "unverified",
+    "steps": [],
+    "failure_boundary": {
+      "stage": "extension_reload",
+      "failure_code": "native_extension_replacement_panel_unverified",
+      "transport_failure_class": "none",
+      "old_worker_retired": true,
+      "old_panel_retired": true,
+      "replacement_worker_created": true,
+      "trusted_open_panel_click_received": true,
+      "open_panel_send_returned": true,
+      "replacement_worker_callback_entered": false,
+      "replacement_panel_target_created": false
+    },
+    "cascade": {
+      "t93_case_steps": 0,
+      "error": "native_extension_live_panel_unavailable_for_cleanup",
+      "interpretation": "The T93 wrapper could not acquire a live panel after the earlier extension-reload failure. This cleanup error is not a T93 assertion."
+    },
+    "unverified_criteria": [
+      "Original Current/default value observation",
+      "New/package selection and persistence across native panel close/reopen",
+      "Current selection and persistence across native panel close/reopen",
+      "Original preference restoration and reopened verification"
+    ],
+    "interpretation": "No T93 selector interaction or preference restoration was observed. This run earns zero T93 behavior credit and establishes no product defect or pass."
+  },
+  "privacy": {
+    "raw_hosted_report_persisted": false,
+    "screenshots_persisted": false,
+    "credentials_or_auth_values_persisted": false,
+    "raw_dom_or_page_text_persisted": false,
+    "target_ids_or_local_paths_persisted": false
+  }
+}
