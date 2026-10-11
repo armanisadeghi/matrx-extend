@@ -8293,7 +8293,9 @@
   ]
  },
  "/utilities/pdf/clean-content/{doc_id}": {
-  "post": []
+  "post": [
+   "application/json"
+  ]
  },
  "/utilities/pdf/compress": {
   "post": [
