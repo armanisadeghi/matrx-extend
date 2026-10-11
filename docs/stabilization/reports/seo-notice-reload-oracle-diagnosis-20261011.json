@@ -1,0 +1,98 @@
+{
+  "task_id": "EXT-D-0199-reload-oracle",
+  "defect_id": "EXT-D-0199",
+  "status": "source-oracle-fixed-native-rerun-pending",
+  "source_run": {
+    "id": 38169337463,
+    "attempt": 2,
+    "artifact_name": "hosted-guest-38169337463-2",
+    "native_report_path": "matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json",
+    "version": "0.2.502",
+    "tree_sha256": "dde4175c5d0dcc25f12e0195a728139e51e39de68381c0cae3fa3ae5a1423bfa"
+  },
+  "contract": {
+    "source": "src/state/notices.ts",
+    "rule": "Notices are in-memory announcements, not durable records. Dismiss removes the current notice from the current store. No cross-document suppression contract exists.",
+    "defect_expected": "Notices remain visible and dismissible without occupying page/recovery-control hit areas."
+  },
+  "captured_observations": {
+    "after_dismiss": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 0,
+      "dismiss_visible": false,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "after_reload": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    }
+  },
+  "cause": "The browser oracle required zero refusal notices after panel reload, although the notice contract does not suppress subsequent announcements. The scope test double retained dismissed=true across document reload and concealed that unsupported assertion.",
+  "hypotheses": [
+    {
+      "cause": "Original layout regression returns on reload",
+      "prediction": "Notice owns Re-audit hit points after reload",
+      "result": "Ruled out in captured attempt2: target owns 9 points and notice owns 0."
+    },
+    {
+      "cause": "Dismiss did not clear the current announcement",
+      "prediction": "Immediate post-dismiss count remains nonzero",
+      "result": "Ruled out: post-dismiss count 0."
+    },
+    {
+      "cause": "Oracle assumes durable suppression",
+      "prediction": "Captured count1/hit9 fails only the zero-count reload assertion",
+      "result": "Confirmed by red source-driver test; corrected acceptance permits count0 or count1 while requiring unique enabled target and unobstructed hit area."
+    },
+    {
+      "cause": "Reload raised a subsequent refusal",
+      "prediction": "New history request after SEO remount can emit a new announcement",
+      "result": "Source supports the path: SeoView mount calls reloadHistory; controlled history interception is disabled before reload. Native report lacks notice IDs/network provenance, so the exact origin of the post-reload announcement remains unproven and is not required by the layout contract."
+    }
+  ],
+  "sibling_census": [
+    "Single reload zero-count assertion in SEO browser driver.",
+    "Scope selection and expected target-name fixtures carried the same unsupported persistence claim.",
+    "Scope test modeled dismissal across document reload; repaired to replay observed post-reload notice and cover absent notice plus obstruction.",
+    "Historical native artifacts/reviews retain their original verdicts; no retroactive acceptance promotion."
+  ],
+  "change": "Preserve immediate Dismiss verification; rename reload subtarget to notice_reload_reaudit_clearance; verify active pane, one enabled target, nine target-owned points and zero notice-owned points independent of announcement count; retain observed count in report.",
+  "verification": [
+    "RED: old production browser callback rejects captured post-reload count1 as 1 !== 0.",
+    "GREEN: focused scope/oracle tests 42 passed.",
+    "Forcing negative: fresh post-reload obstruction fails even after earlier width checks pass.",
+    "Independent in-memory mutations: removing each reload hit check separately causes its corresponding negative guard to fail; the two checks cannot mask each other.",
+    "Guarded pnpm compile passed; completed resource journal seo-reload-oracle-compile-20261011-2005 is valid (exitCode0/resourceInvalidfalse).",
+    "Guarded full repository error-level Biome check passed (2697 files), completed resource journal seo-reload-oracle-lint-20261011-2006 valid (exitCode0/resourceInvalidfalse)."
+  ],
+  "limitations": [
+    "No new native browser run or release launched; current hosted member lane remains independent.",
+    "Native source binding/final viewport restoration and full D199 sibling coverage still require a fresh guarded run.",
+    "Exact origin of the post-reload notice is not established by count-only native evidence."
+  ],
+  "next_action": "Commit reviewed source oracle/evidence unit. Parent selects a fresh admitted native test slot only after a current-source CI artifact is available. Keep EXT-D-0199 fixed/open; no retroactive target promotion.",
+  "resource_journals": [
+    "docs/stabilization/resource-journals/seo-reload-oracle-compile-20261011-2005.jsonl",
+    "docs/stabilization/resource-journals/seo-reload-oracle-lint-20261011-2006.jsonl"
+  ],
+  "review": {
+    "status": "PASS",
+    "source": "fresh independent B review routed by parent",
+    "scope": [
+      "canonical in-memory notice contract",
+      "captured attempt2 count and hit observations",
+      "immediate Dismiss assertion retained",
+      "reload target and notice-hit assertions",
+      "forcing negative and per-check in-memory mutations"
+    ],
+    "native_retest": "not performed"
+  }
+}
