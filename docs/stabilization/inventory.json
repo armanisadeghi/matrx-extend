@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T02:28:37.474Z",
+  "updated_at": "2026-10-11T02:48:38Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -5918,6 +5918,57 @@
                   ],
                   "independent_review": "docs/stabilization/reports/peer-review-run38046115871.json",
                   "limits": "Bounded guest confirmation of six D87 persistence criteria on frozen development artifact only. EXT-D-0087 was already closed and remains closed. The transient CPU-busy event recovered before valid final decisions. This does not establish full Settings, other roles, full extension reload, current-main runtime, Store behavior, or restoration of the disposable profile original preference."
+                },
+                {
+                  "run_id": 38105457992,
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "resource_valid": true,
+                  "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+                  "development_ci_run_id": 38102137319,
+                  "development_artifact_id": 11688890496,
+                  "hosted_result_artifact_id": 11690340577,
+                  "product_artifact": {
+                    "version": "0.2.490",
+                    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+                    "artifact_digest": "sha256:b3b92f267456770e473d1a3c0afc28da4aa901b0551084f051ced999e6a63b2a",
+                    "runtime_equivalence": "Verified synchronized-main product runtime equivalent at dispatch."
+                  },
+                  "lane": "A",
+                  "runner_label": "macos-15",
+                  "passed_criteria_count": 19,
+                  "passed_subtargets": [
+                    "Dark, Light, and System each rendered with the selected stored preference, theme class, and matching token/body background.",
+                    "Each choice persisted across Settings panel reload and full extension Reload; replacement worker/panel and changed panel target were observed."
+                  ],
+                  "panel_document_reload": {
+                    "status": "pass"
+                  },
+                  "full_extension_reload": {
+                    "status": "pass"
+                  },
+                  "resource_finals": {
+                    "package": "valid",
+                    "browser": "valid",
+                    "guest": "valid"
+                  },
+                  "independent_review": "docs/stabilization/reports/peer-review-run38105457992.json",
+                  "reviewer_task": "/root/settings_t04_run381054_review",
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-settings-theme/run38105457992/receipt.sanitized.json",
+                    "docs/stabilization/evidence/guest-settings-theme/run38105457992/native-result.sanitized.json",
+                    "docs/stabilization/evidence/guest-settings-theme/run38105457992/resource-finals.sanitized.json",
+                    "docs/stabilization/evidence/guest-settings-theme/run38105457992/resource-journals/hosted-package-38105457992-1.jsonl",
+                    "docs/stabilization/evidence/guest-settings-theme/run38105457992/resource-journals/hosted-browser-38105457992-1.jsonl",
+                    "docs/stabilization/evidence/guest-settings-theme/run38105457992/resource-journals/hosted-guest-38105457992-1.jsonl"
+                  ],
+                  "limits": [
+                    "Initial absent theme storage key was restored after warm interaction and panel reload, but final full-extension restoration leaves explicit system stored; restoring absent key after full reload is unproved.",
+                    "System appearance was observed with systemDark=false; dark-OS System behavior remains unverified.",
+                    "Screenshots do not depict the Theme control; selection/rendering evidence comes from native structured assertions and trusted native-driver path.",
+                    "Guest Theme T04 only; overall Settings, member/admin, Store, and full Settings remain unverified."
+                  ]
                 }
               ]
             }

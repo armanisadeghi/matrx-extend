@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_acceptance_evidence_review",
+  "reviewer_task": "/root/settings_t04_run381054_review",
+  "recorded_by": "/root/settings_theme_gap",
+  "verdict": "qualified_pass",
+  "run": {
+    "run_id": 38105457992,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38105457992",
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+    "workflow_conclusion": "success",
+    "case_id": "EXT-F-1003-T04",
+    "mode": "guest",
+    "bounded_scope": "Theme selection, rendered appearance, panel reload, and full extension reload on development v0.2.490",
+    "lane": "A",
+    "runner_label": "macos-15"
+  },
+  "product_artifact": {
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "version": "0.2.490",
+    "ci_run_id": 38102137319,
+    "artifact_id": 11688890496,
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_digest": "sha256:b3b92f267456770e473d1a3c0afc28da4aa901b0551084f051ced999e6a63b2a"
+  },
+  "verified_behavior": [
+    "Independent reviewer confirmed all 19 native T04 criteria passed: real Settings choices for Dark, Light, and System, stored preference, applied theme class and matching token/body background, plus persistence after Settings panel reload.",
+    "Dark, Light, and System each survived a full extension Reload; native evidence records the old targets retiring, a replacement worker and panel, a changed panel target, and the expected visible/stored choice after reopening.",
+    "The initial implicit System choice with no stored theme key was restored after the warm interactions and panel reload. The full-extension phase restored the effective System appearance but left an explicit stored value of system."
+  ],
+  "evidence_quality": [
+    "GitHub metadata confirms the hosted workflow completed successfully and the exact imported development artifact is successful CI run 38102137319, artifact 11688890496, v0.2.490 with the recorded tree digest.",
+    "Package, browser, and guest resource journals each end in a valid final decision: admitted=true, resourceInvalid=false, exitCode=0.",
+    "Uploaded screenshots show the generic guest panel and controlled target, not the Settings Theme interaction; the scoped interaction/rendering evidence comes from the native structured report and the trusted native-driver path."
+  ],
+  "limits": [
+    "Restoration of the initial absent theme key after the final full-extension phase is not proved; an explicit system value remains stored.",
+    "System appearance was tested with a light OS preference (systemDark=false); dark-OS System behavior remains unverified.",
+    "The overall Settings suite is unverified. No member/admin, Store, or full Settings claim follows from this run."
+  ],
+  "evidence_files": [
+    "docs/stabilization/evidence/guest-settings-theme/run38105457992/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-theme/run38105457992/native-result.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-theme/run38105457992/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-theme/run38105457992/resource-journals/hosted-package-38105457992-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-theme/run38105457992/resource-journals/hosted-browser-38105457992-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-theme/run38105457992/resource-journals/hosted-guest-38105457992-1.jsonl"
+  ],
+  "note": "This is a bounded guest Theme T04 result only; the inventory guest cell remains partial until the coordinator reconciles it."
+}

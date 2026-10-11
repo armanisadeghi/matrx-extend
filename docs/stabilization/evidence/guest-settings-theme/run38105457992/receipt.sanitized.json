@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": 38105457992,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38105457992",
+  "hosted_result_artifact_id": 11690340577,
+  "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38102137319,
+    "ci_artifact_id": 11688890496,
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "version": "0.2.490",
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "runtime_equivalence": "Verified against synchronized main at dispatch: changes since product source were workflow, tests, and stabilization records; no product source, package, lockfile, WXT, or asset drift.",
+    "artifact_digest": "sha256:b3b92f267456770e473d1a3c0afc28da4aa901b0551084f051ced999e6a63b2a"
+  },
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "status": "qualified_pass",
+  "case_id": "EXT-F-1003-T04",
+  "mode": "guest",
+  "reviewer_task": "/root/settings_t04_run381054_review",
+  "resource_valid": true,
+  "limitations": [
+    "Initial implicit System selection and absent theme storage key were restored after the warm interaction and panel reload.",
+    "The full-extension phase restores the effective System choice, but leaves an explicit stored value of system; restoration of the original absent key is unproved.",
+    "System appearance was observed with systemDark=false; dark-OS System behavior is unverified.",
+    "Uploaded screenshots show the generic guest panel and controlled target, not the Theme control; native structured assertions and the driver path support interaction and rendering.",
+    "The overall Settings suite is unverified; this record credits only guest Theme T04. Member, admin, Store, and full Settings remain unverified."
+  ],
+  "runner_label": "macos-15"
+}
