@@ -1,0 +1,99 @@
+{
+    "schema_version": 1,
+    "review_type": "independent_native_runtime_review",
+    "reviewer": "/root/data_c19_runtime_peer_1011",
+    "reviewed_at": "2026-10-11",
+    "feature_id": "EXT-F-2005",
+    "target_case_id": "EXT-F-2005-T07",
+    "verdict": "PASS_BOUNDED_GUEST_C19; HARNESS_FAILURE_AFTER_OBSERVATION",
+    "review_scope": "Independent review of the hosted guest native run and exact imported artifact source for the C19 click-to-select observation. No browser was launched by this reviewer.",
+    "provenance": {
+        "hosted_workflow_run_id": 38181924184,
+        "hosted_guest_run_id": "hosted-guest-38181924184-1",
+        "hosted_result_artifact_id": 11718088327,
+        "source_sha": "1b1c400f71e6be024d733d3cfb8bb96eb3f0df55",
+        "source_ci_run_id": 38181243134,
+        "source_ci_artifact_id": 11718336129,
+        "source_tree_sha256": "2f26dd74a7819a03d7f61dc5675e37dfc03843a900b6721da41b6b1d02df7bbe",
+        "build_version": "0.2.508",
+        "native_report_sha256": "45d5cad9d5dbe4aeacccaabe451364b369ee8f649f1e3e708f92e876985b8521"
+    },
+    "observations": {
+        "c19_click_to_select": {
+            "verdict": "pass_bounded_guest",
+            "preview": "Cedar chair",
+            "visible_field": "field_1: body > main > section > article.product-card:nth-of-type(1) > h2.product-name",
+            "selector_unique_matches": 1,
+            "selector_matched_clicked_element": true,
+            "assessment": "The sanitized native report records the selected Cedar chair preview, the returned selector displayed in Data, one DOM match for that selector, and identity with the clicked Cedar chair element. Exact source at the recorded source SHA confirms the picker item was checked before a trusted pointer click on Done; the driver then awaited one returned field and asserted the selector matched exactly one Cedar chair element. This supports only the bounded guest C19 action on this imported artifact."
+        },
+        "earlier_t07_subtargets": {
+            "c18": {
+                "current_run_credit": false,
+                "prior_credit": "Preserve bounded guest C18 credit from run 38109155658 as independently peer-reviewed. In this run, the fail-fast source sequence implies the hover assertions preceded C19, but their values were not serialized in the failed native report."
+            },
+            "c21": {
+                "current_run_credit": false,
+                "prior_credit": "Preserve bounded guest selected-field Cancel credit from run 38109155658 and its independent peer review. C21 was not reached in this run."
+            },
+            "c22": {
+                "current_run_credit": false,
+                "prior_credit": "Preserve bounded guest Clear credit from run 38109155658 and its independent peer review. C22 was not reached in this run."
+            }
+        },
+        "first_failure": {
+            "verdict": "harness_sequence_defect",
+            "code": "pointer_target_not_unique",
+            "stage": "picker_controls_t07",
+            "matched_target_count": 0,
+            "visible_match_count": 0,
+            "assessment": "After Done returns the selected field to Data and the driver records C19, the source immediately asks for the 'Pick fields on this page' button again. At the exact source SHA, DataView conditionally replaces that button whenever hasFields is true; the guest view instead shows Data-level Cancel and Sign in to save. The native failure diagnostic confirms zero picker-button matches, one active Data pane, and a visible Sign in to save button. The requested target is absent by design in the observed post-Done state, so this is a stale harness precondition rather than evidence of a product defect."
+        }
+    },
+    "resource_finals": {
+        "package": {
+            "admitted": true,
+            "resource_invalid": false,
+            "exit_code": 0,
+            "decision": "valid",
+            "journal_sha256": "16c80b9e048bc6958e9a7b3b530a2d2815b5018891f4575f5db44c970156dcd7"
+        },
+        "browser": {
+            "admitted": true,
+            "resource_invalid": false,
+            "exit_code": 0,
+            "decision": "valid",
+            "journal_sha256": "26e2b095957bd31bfc57d402340096691c05629b24db27f6e0376eb64fa5c5f9"
+        },
+        "guest": {
+            "admitted": true,
+            "resource_invalid": false,
+            "exit_code": 1,
+            "decision": "child_failed",
+            "journal_sha256": "00384e2b098bb636f8c9d4c528dac2c7ddd3d6b02bee3e9e421d16ca4386de55"
+        },
+        "assessment": "Resource admission and validity passed for all three jobs. The guest child exited 1 because the acceptance driver failed at the stale picker-button lookup; resource validity does not convert the failed guest job to an overall success."
+    },
+    "repair_recommendation": "After recording C19, explicitly click the Data-level Cancel control to clear the returned field, then wait for selectedFieldValues to be empty and for the Pick fields button to return before entering a fresh picker for Clear/C21. Alternatively, split C19 Done/handoff and Clear/selected-Cancel into independent flows with known initial state. Keep the no-pattern-write observation over the relevant action window. Do not infer that re-entering the picker clears a selected Data draft.",
+    "limits": [
+        "This review supports only bounded guest C19 behavior on the exact imported v0.2.508 artifact and recorded source/tree provenance.",
+        "C18, C21 and C22 receive no new credit from this run; cited prior credits remain bounded to run 38109155658 and its peer-reviewed evidence.",
+        "This is not a full T07 or T01 pass, current-main acceptance, member/admin evidence, backend persistence query, Chrome Web Store installation evidence, or published Store claim.",
+        "The native report and resource journals were inspected from the downloaded workflow artifact; the artifact archive digest was not independently revalidated against GitHub metadata in this review."
+    ],
+    "sources_reviewed": [
+        "Downloaded native report: test-results/data-guest-native-acceptance.json (SHA-256 recorded above).",
+        "Downloaded hosted package, browser and guest resource journals (SHA-256 values recorded above).",
+        "Exact source at 1b1c400f71e6be024d733d3cfb8bb96eb3f0df55: tests/browser/data-guest-native-acceptance.mjs and src/features/data/DataView.tsx.",
+        "Prior bounded T07 evidence and independent peer review: docs/stabilization/evidence/guest-data-t07/run38109155658/receipt.sanitized.json and docs/stabilization/reports/data-t07-native-peer-20261011.json."
+    ],
+    "verification": {
+        "native_report_provenance_and_observations_reviewed": true,
+        "resource_final_journals_reviewed_and_hashed": true,
+        "exact_driver_and_product_source_reviewed_at_recorded_sha": true,
+        "prior_subtarget_attribution_checked": true,
+        "new_browser_run": false,
+        "secrets_or_credentials_included": false,
+        "inventory_edited": false
+    }
+}
