@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_seo_notice_only_run_review",
+  "reviewer": "seo_notice_latest_peer",
+  "reviewed_at_utc": "2026-10-11T20:57:25Z",
+  "verdict": "B_PASS_BOUNDED",
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0199",
+  "hosted_run": {
+    "id": 38173576146,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38173576146",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "event": "workflow_dispatch",
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_source_sha": "a494f08eeaf5c4f6998aac5fab591600cfa22bc8",
+    "inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "notice",
+      "seo_metadata_fixture": "none",
+      "seo_resource_diagnostic": "false",
+      "seo_interrupt_after_target": "none"
+    }
+  },
+  "product_provenance": {
+    "status": "verified",
+    "product_workflow": ".github/workflows/ci.yml",
+    "ci_run_id": 38172909785,
+    "ci_run_conclusion": "success",
+    "product_source_sha": "acb5506d55f972b22619c775b56154adeba694e3",
+    "artifact_id": 11715051290,
+    "artifact_digest": "sha256:e8e77a95c599ec4a6bfd0e49f973d0c0a4903cdbc8d607849bc20127425c4f84",
+    "version": "0.2.504",
+    "tree_sha256": "b9a0d28b32c58dc1fc3f1ec3f941cf6383fad83d297fcc18e1d8fcc4712118cd",
+    "publish_state": "not_published",
+    "source_claim": "frozen exact pushed development artifact; not exact-current-main"
+  },
+  "result_artifact": {
+    "artifact_id": 11715401314,
+    "name": "hosted-guest-38173576146-1",
+    "github_digest": "sha256:cd599a0690fbdb7779304430c45807a9d2450a9e64f0e1e28898af64484ab777",
+    "downloaded_archive_digest_matches": true,
+    "original_extracted_acceptance_report": "/Volumes/Samsung2TB/code/.stabilization-scratch/seo-native-38173576146/hosted-guest-38173576146-1/matrx-extend/matrx-extend/test-results/seo-guest-acceptance.json"
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "bounded_credit": [
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+      "status": "PASS_BOUNDED",
+      "evidence": "Native 360px viewport; refusal notice visible; 9 target-owned and 0 notice-owned Re-audit hit points; navigated title matches."
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+      "status": "PASS_BOUNDED_EMULATED_WIDTH",
+      "evidence": "Emulated 480px viewport; refusal notice visible; 9 target-owned and 0 notice-owned Re-audit hit points; navigated title matches."
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "manual_button_returns_to_current_page",
+      "status": "PASS_BOUNDED",
+      "evidence": "Trusted click observed at 222ms; button became disabled with spinner and reAudit=false at 229ms; settled enabled without spinner and reAudit=true at 290ms; current title preserved."
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_reload_reaudit_clearance",
+      "status": "PASS_BOUNDED",
+      "evidence": "After Dismiss and panel reload, observed notice count 1, visible Dismiss, enabled Re-audit, 9 target-owned and 0 notice-owned hit points, and matching current title."
+    }
+  ],
+  "attempt2_reconciliation": {
+    "attempt2_run_id": 38169337463,
+    "finding": "Attempt 2 observed notice count 1 after reload but failed the old oracle assertion requiring count 0. This run accepts a subsequent refusal while requiring Re-audit hit ownership and visible Dismiss whenever count is positive.",
+    "scope": "Oracle correction/reconciliation; not evidence that attempt 2 product behavior was different."
+  },
+  "explicit_noncredit": [
+    "A second trusted Dismiss after reload was not exercised; only the immediate pre-reload Dismiss was clicked and verified to clear the notice count to 0.",
+    "A separately forced visible-notice full-reload fixture was not exercised; reload followed Dismiss and the subsequent count 1 was observed, not forced as a precondition.",
+    "Multiple or long notices remain unverified.",
+    "Full EXT-F-1008-T02 and all other SEO cases remain unverified.",
+    "Member and admin modes remain unverified.",
+    "Exact-current-main runtime and Store eligibility are not established; this is frozen development v0.2.504.",
+    "EXT-D-0199 remains open; no defect retest-pass or closure credit."
+  ],
+  "evidence_paths": {
+    "sanitized_run_report": "docs/stabilization/runs/seo-notice-only-run38173576146.json",
+    "native_report": "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/native-report.sanitized.json",
+    "resource_journals": [
+      "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/resource-journals/hosted-package-38173576146-1.jsonl",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/resource-journals/hosted-browser-38173576146-1.jsonl",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/resource-journals/hosted-guest-38173576146-1.jsonl"
+    ],
+    "github_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38173576146"
+  },
+  "next_action": "Bounded T02 evidence may be recorded for the four listed subtargets. Keep EXT-D-0199 open; do not promote this result to full T02, exact-current-main, or Store acceptance."
+}

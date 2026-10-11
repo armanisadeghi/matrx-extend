@@ -1,0 +1,355 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "partial",
+  "scope": "bounded guest SEO refusal notice widths, trusted Re-audit, Dismiss and reload",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+      "status": "pass",
+      "evidence": {
+        "viewportWidth": 360,
+        "viewportSource": "native",
+        "refusalNoticeVisible": true,
+        "targetHitPoints": 9,
+        "noticeHitPoints": 0,
+        "navigatedTitleMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+      "status": "pass",
+      "evidence": {
+        "viewportWidth": 480,
+        "viewportSource": "emulated",
+        "refusalNoticeVisible": true,
+        "targetHitPoints": 9,
+        "noticeHitPoints": 0,
+        "navigatedTitleMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "manual_button_returns_to_current_page",
+      "status": "pass",
+      "evidence": {
+        "currentTitlePreserved": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_reload_reaudit_clearance",
+      "status": "pass",
+      "evidence": {
+        "noticeCount": 1,
+        "dismissVisible": true,
+        "targetHitPoints": 9,
+        "noticeHitPoints": 0,
+        "currentTitleMatched": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "multiple_and_long_notice_clearance",
+      "status": "unverified",
+      "reason": "owned history refusal produces one fixed-length notice; distinct stacked and long notices need a controlled app notice fixture"
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "visible_notice_full_reload_clearance",
+      "status": "unverified",
+      "reason": "reload follows Dismiss and does not force a visible notice; any observed post-reload refusal is recorded, not a guaranteed visible-notice fixture"
+    }
+  ],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04,T05,T08",
+      "part": "database save, saved-row history, and diff flows"
+    },
+    {
+      "case": "T06",
+      "part": "guest/member/admin history failure and retry modes"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "notice_only_complete",
+  "last_safe_observable": {
+    "noticeChecksComplete": true
+  },
+  "current_operation": "build_recheck",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.504",
+      "treeSha256": "b9a0d28b32c58dc1fc3f1ec3f941cf6383fad83d297fcc18e1d8fcc4712118cd"
+    },
+    "after": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.504",
+      "treeSha256": "b9a0d28b32c58dc1fc3f1ec3f941cf6383fad83d297fcc18e1d8fcc4712118cd"
+    }
+  },
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "acb5506d55f972b22619c775b56154adeba694e3",
+    "runId": 38172909785,
+    "runAttempt": 1,
+    "artifactId": 11715051290,
+    "githubArtifactDigest": "sha256:e8e77a95c599ec4a6bfd0e49f973d0c0a4903cdbc8d607849bc20127425c4f84",
+    "version": "0.2.504",
+    "treeSha256": "b9a0d28b32c58dc1fc3f1ec3f941cf6383fad83d297fcc18e1d8fcc4712118cd",
+    "source": {
+      "originMain": "fca97c646a6834c673e040b6c14874535d0e9316",
+      "localHead": "a494f08eeaf5c4f6998aac5fab591600cfa22bc8",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "case_selection": {
+    "scope": "notice",
+    "selected_cases": ["T02"],
+    "selected_subtargets": [
+      "notice_narrow_warm_navigation_reaudit_clearance",
+      "notice_wide_warm_navigation_reaudit_clearance",
+      "manual_button_returns_to_current_page",
+      "notice_reload_reaudit_clearance"
+    ],
+    "excluded_cases": ["all other SEO targets; no full T02 or D199 closure"]
+  },
+  "resource_diagnostic_enabled": false,
+  "operation_start_sample": {
+    "at": "2026-10-11T20:52:42.053Z",
+    "user": 2338902,
+    "system": 1074629
+  },
+  "boundary_sample": {
+    "at": "2026-10-11T20:52:41.642Z",
+    "user": 2307493,
+    "system": 968621
+  },
+  "reaudit_hit_diagnostics": {
+    "history_refused": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "history_recovered": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "narrow_warm_navigation": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "wide_warm_navigation": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "before_click": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "after_click": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "after_dismiss": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 0,
+      "dismiss_visible": false,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "after_reload": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    }
+  },
+  "notice_viewport_plan": {
+    "native": {
+      "width": 360,
+      "height": 373
+    },
+    "wideWidth": 480,
+    "wideSource": "emulated"
+  },
+  "reaudit_transition_diagnostic": {
+    "observer_available": true,
+    "sample_count": 8,
+    "dropped_samples": 0,
+    "samples": [
+      {
+        "stage": "before_click",
+        "elapsed_ms": 2,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "click_event",
+        "elapsed_ms": 222,
+        "click_trusted": true,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "dom_transition",
+        "elapsed_ms": 229,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "after_release",
+        "elapsed_ms": 244,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "running_wait",
+        "elapsed_ms": 261,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": true,
+        "auditSpinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "dom_transition",
+        "elapsed_ms": 290,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "settle_wait",
+        "elapsed_ms": 294,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "finished",
+        "elapsed_ms": 314,
+        "click_trusted": null,
+        "scopeValid": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      }
+    ]
+  },
+  "click_phase": "release_returned",
+  "notice_viewport_restored": {
+    "width": 360,
+    "source": "native"
+  },
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+}

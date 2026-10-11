@@ -27642,18 +27642,18 @@
                 "manual_button_returns_to_current_page",
                 "guest_reaudit_captures_changed_page_metadata",
                 "notice_narrow_warm_navigation_reaudit_clearance",
-                "notice_wide_warm_navigation_reaudit_clearance"
+                "notice_wide_warm_navigation_reaudit_clearance",
+                "notice_reload_reaudit_clearance"
               ],
               "unverified_dimensions": [
-                "running button state",
+                "running button states outside the bounded trusted same-page Re-audit sequence",
                 "stale advice replacement",
                 "failure report",
                 "displayed description directly matches changed page",
-                "reload",
+                "reload dimensions beyond bounded post-Dismiss Re-audit reachability",
                 "Multiple or long notices",
                 "Native normal-width clearance (the 480px observation was emulated)",
-                "Notice-visible full reload",
-                "Dismissed notice remains cleared after panel reload: assertion failed in resource-valid run 38169337463 attempt 2; full T02 remains partial"
+                "Notice-visible full reload"
               ],
               "run_id": "38016503649",
               "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
@@ -27668,7 +27668,11 @@
                 "docs/stabilization/reports/seo-notice-only-run-independent-review-38167373687.json",
                 "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/receipt.sanitized.json",
                 "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/native-report.sanitized.json",
-                "docs/stabilization/reports/seo-notice-only-run-independent-review-38169337463-attempt2.json"
+                "docs/stabilization/reports/seo-notice-only-run-independent-review-38169337463-attempt2.json",
+                "docs/stabilization/runs/seo-notice-only-run38173576146.json",
+                "docs/stabilization/reports/seo-notice-only-run-independent-review-38173576146.json",
+                "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/native-report.sanitized.json",
+                "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/manifest.json"
               ],
               "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T02 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred.",
               "qualification": "The direct re-audit view assertion verifies the changed title, not the displayed description. Exact T14 clipboard readback after re-audit is indirect evidence that the changed social snippet was captured.",
@@ -27795,9 +27799,42 @@
                     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38169337463/artifacts/11713227418"
                   ],
                   "scope": "Resource-valid attempt 2 verifies the three listed bounded observations. Dismiss removes the notice, but it returns after panel reload and fails the selected reload assertion. Remaining T02 dimensions, full T02, member/admin, Store and EXT-D-0199 closure are not established."
+                },
+                {
+                  "source_sha": "acb5506d55f972b22619c775b56154adeba694e3",
+                  "build_version": "0.2.504",
+                  "development_ci_run_id": 38172909785,
+                  "development_artifact_id": 11715051290,
+                  "tree_sha256": "b9a0d28b32c58dc1fc3f1ec3f941cf6383fad83d297fcc18e1d8fcc4712118cd",
+                  "run_id": 38173576146,
+                  "workflow_source_sha": "a494f08eeaf5c4f6998aac5fab591600cfa22bc8",
+                  "hosted_result_artifact_id": 11715401314,
+                  "status": "partial",
+                  "resource_valid": true,
+                  "passed_subtargets": [
+                    "notice_narrow_warm_navigation_reaudit_clearance",
+                    "notice_wide_warm_navigation_reaudit_clearance",
+                    "manual_button_returns_to_current_page",
+                    "notice_reload_reaudit_clearance"
+                  ],
+                  "new_acceptance_subtargets": [
+                    "notice_reload_reaudit_clearance"
+                  ],
+                  "reobserved_existing_subtargets": [
+                    "notice_narrow_warm_navigation_reaudit_clearance",
+                    "notice_wide_warm_navigation_reaudit_clearance",
+                    "manual_button_returns_to_current_page"
+                  ],
+                  "evidence": [
+                    "docs/stabilization/runs/seo-notice-only-run38173576146.json",
+                    "docs/stabilization/reports/seo-notice-only-run-independent-review-38173576146.json",
+                    "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/native-report.sanitized.json",
+                    "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/manifest.json"
+                  ],
+                  "scope": "Frozen development v0.2.504 only; version/generated-doc-only difference from workflowa494. Full T02/D199/current-main/Store and explicit sibling dimensions remain unverified."
                 }
               ],
-              "detail": "Resource-valid attempt 2 on exact unpublished development v0.2.502 confirms the two notice-clearance geometry observations (native 360px and emulated 480px; each 9/9 target-owned hit points, 0 notice-owned) and the trusted Re-audit return to the current page. The geometry targets repeat existing bounded credit; the manual-return target corroborates prior credited behavior, so no duplicate credit is added. Dismiss clears the notice, but after panel reload the notice returns (count 1; expected 0), failing dismissed_notice_stays_clear_after_reload. Full T02 remains partial and EXT-D-0199 remains fixed/open."
+              "detail": "Independently reviewed guarded run 38173576146 adds only guest T02 notice_reload_reaudit_clearance on frozen unpublished development v0.2.504, product source acb5506d5 (CI 38172909785/artifact 11715051290), workflow a494f08ee. Immediate Dismiss cleared the notice count to 0; panel reload showed count 1 with Dismiss visible, 9/9 Re-audit target hits, 0 notice hits and matching current title. Native 360px/emulated 480px clearance and trusted Re-audit return repeat existing credit; the trusted click at 222ms, running state at 229ms and settled state at 290ms corroborate the bounded manual sequence. All three resource finals are valid and the viewport restored to 360px. Full T02 remains partial and D199 fixed/open. Multiple/long notices, native normal width, a separately forced visible-reload fixture, second post-reload Dismiss, member/admin, current-main and Store remain unverified."
             }
           },
           "result_history": [
@@ -28061,6 +28098,86 @@
                   "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/native-report.sanitized.json"
                 ],
                 "detail": "Two geometry-only T02 targets pass: native 360px and emulated 480px, each with the refusal notice visible, 9/9 target-owned hit points and zero notice-owned points. Trusted click returned, but Re-audit completion was not observed within the wait; Dismiss/reload were not reached. D199 remains fixed/open; full T02 unverified."
+              }
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "38173576146",
+                "artifact_version": "0.2.504",
+                "artifact_source_sha": "acb5506d55f972b22619c775b56154adeba694e3",
+                "resource_valid": true,
+                "observed_subtargets": [
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+                    "status": "pass",
+                    "evidence": {
+                      "viewportWidth": 360,
+                      "viewportSource": "native",
+                      "refusalNoticeVisible": true,
+                      "targetHitPoints": 9,
+                      "noticeHitPoints": 0,
+                      "navigatedTitleMatches": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+                    "status": "pass",
+                    "evidence": {
+                      "viewportWidth": 480,
+                      "viewportSource": "emulated",
+                      "refusalNoticeVisible": true,
+                      "targetHitPoints": 9,
+                      "noticeHitPoints": 0,
+                      "navigatedTitleMatches": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "manual_button_returns_to_current_page",
+                    "status": "pass",
+                    "evidence": {
+                      "currentTitlePreserved": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "notice_reload_reaudit_clearance",
+                    "status": "pass",
+                    "evidence": {
+                      "noticeCount": 1,
+                      "dismissVisible": true,
+                      "targetHitPoints": 9,
+                      "noticeHitPoints": 0,
+                      "currentTitleMatched": true
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "multiple_and_long_notice_clearance",
+                    "status": "unverified",
+                    "reason": "owned history refusal produces one fixed-length notice; distinct stacked and long notices need a controlled app notice fixture"
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "visible_notice_full_reload_clearance",
+                    "status": "unverified",
+                    "reason": "reload follows Dismiss and does not force a visible notice; any observed post-reload refusal is recorded, not a guaranteed visible-notice fixture"
+                  }
+                ],
+                "new_acceptance_subtargets": [
+                  "notice_reload_reaudit_clearance"
+                ],
+                "evidence": [
+                  "docs/stabilization/runs/seo-notice-only-run38173576146.json",
+                  "docs/stabilization/reports/seo-notice-only-run-independent-review-38173576146.json",
+                  "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/native-report.sanitized.json",
+                  "docs/stabilization/evidence/seo-notice-occlusion/run38173576146/manifest.json"
+                ],
+                "detail": "Independently reviewed guarded run 38173576146 adds only guest T02 notice_reload_reaudit_clearance on frozen unpublished development v0.2.504, product source acb5506d5 (CI 38172909785/artifact 11715051290), workflow a494f08ee. Immediate Dismiss cleared the notice count to 0; panel reload showed count 1 with Dismiss visible, 9/9 Re-audit target hits, 0 notice hits and matching current title. Native 360px/emulated 480px clearance and trusted Re-audit return repeat existing credit; the trusted click at 222ms, running state at 229ms and settled state at 290ms corroborate the bounded manual sequence. All three resource finals are valid and the viewport restored to 360px. Full T02 remains partial and D199 fixed/open. Multiple/long notices, native normal width, a separately forced visible-reload fixture, second post-reload Dismiss, member/admin, current-main and Store remain unverified."
               }
             }
           ],
