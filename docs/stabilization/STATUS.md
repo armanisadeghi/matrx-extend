@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-11 06:09 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T05:59:43Z. 205 features · 792 cases · 1367 controls · 197 linked defect records.
+Generated 2026-10-11 06:22 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T05:59:43Z. 205 features · 792 cases · 1367 controls · 198 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -25,7 +25,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 9 pass · 4 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 35 unverified · 0 deferred; 0/1 full | pass 9, partial 14, fail 0, unverified 75, n/a 0 | 11 |
-| [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 39, n/a 0 | 0 |
+| [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 39, n/a 0 | 1 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
@@ -951,9 +951,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 15. **Controls:** 15.
 
-**Next:** Finish the missing criteria and repeat the partial case in the extension.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0198
 
-**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (closed), [EXT-D-0169](defects/EXT-D-0169.json) (retest-pass), [EXT-D-0170](defects/EXT-D-0170.json) (closed), [EXT-D-0174](defects/EXT-D-0174.json) (closed), [EXT-D-0176](defects/EXT-D-0176.json) (closed), [EXT-D-0183](defects/EXT-D-0183.json) (closed)
+**Linked defects:** [EXT-D-0021](defects/EXT-D-0021.json) (closed), [EXT-D-0076](defects/EXT-D-0076.json) (closed), [EXT-D-0169](defects/EXT-D-0169.json) (retest-pass), [EXT-D-0170](defects/EXT-D-0170.json) (closed), [EXT-D-0174](defects/EXT-D-0174.json) (closed), [EXT-D-0176](defects/EXT-D-0176.json) (closed), [EXT-D-0183](defects/EXT-D-0183.json) (closed), [EXT-D-0198](defects/EXT-D-0198.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
