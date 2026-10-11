@@ -52,6 +52,8 @@ import {
 } from './seo-readability-known-text.mjs';
 import {
   captureReauditWaitFailure,
+  reauditSettledOnCurrentPage,
+  reauditTransitionWitness,
   startSeoReauditTrace,
 } from './seo-reaudit-transition-diagnostic.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -1646,21 +1648,30 @@ try {
           'manual_reaudit_running_wait',
           async () => {
             await reauditTrace.sample('running_wait');
-            return seoContent(panel);
+            return {
+              ...(await seoContent(panel)),
+              ...reauditTransitionWitness(report.reaudit_transition_diagnostic, 10000, 30000),
+            };
           },
-          (state) => state?.scopeValid && state.reAudit === false,
+          (state) => state.runningObserved,
+          10000,
         );
         await waitObserved(
           'manual_reaudit_settle_wait',
           async () => {
             await reauditTrace.sample('settle_wait');
-            return seoContent(panel);
+            const state = await seoContent(panel);
+            return {
+              ...state,
+              settledOnCurrentPage: reauditSettledOnCurrentPage(
+                report.reaudit_transition_diagnostic,
+                state,
+                publicPages[1].title,
+                page.url() === publicPages[1].url,
+              ),
+            };
           },
-          (state) =>
-            state?.scopeValid &&
-            state.title === publicPages[1].title &&
-            state.reAudit &&
-            !state.error,
+          (state) => state.settledOnCurrentPage,
           30000,
         );
       } catch (error) {

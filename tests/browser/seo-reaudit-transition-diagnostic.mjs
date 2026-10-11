@@ -46,6 +46,65 @@ export function safeReauditTrace(trace) {
   };
 }
 
+// A poll can miss a complete DOM commit cycle between pointer release and its
+// first read. Only the preinstalled observer can witness that cycle; a final
+// idle snapshot or an untrusted scripted click cannot substitute for it.
+export function reauditTransitionWitness(trace, runningTimeoutMs, settleTimeoutMs) {
+  const unavailable = { runningObserved: false, settledObserved: false };
+  if (trace?.observer_available !== true) return unavailable;
+  const samples = trace.samples ?? [];
+  let baseline = false;
+  let clickedAt = null;
+  let runningAt = null;
+  let settled = false;
+  let previousTime = -1;
+  for (const sample of samples) {
+    const time = sample.elapsed_ms;
+    if (!Number.isSafeInteger(time) || time < previousTime) return unavailable;
+    previousTime = time;
+    const scoped = sample.scopeValid === true && sample.auditButtonPresent === true;
+    const idle =
+      scoped &&
+      sample.auditButtonDisabled === false &&
+      sample.auditSpinner === false &&
+      sample.reAudit === true &&
+      sample.error === false;
+    if (sample.stage === 'before_click' && idle) baseline = true;
+    if (sample.stage === 'click_event') {
+      if (!baseline || !idle || sample.click_trusted !== true || clickedAt !== null)
+        return unavailable;
+      clickedAt = time;
+    }
+    if (sample.stage !== 'dom_transition' || clickedAt === null) continue;
+    if (
+      runningAt === null &&
+      scoped &&
+      sample.auditButtonDisabled === true &&
+      sample.auditSpinner === true &&
+      sample.reAudit === false &&
+      sample.error === false &&
+      time - clickedAt <= runningTimeoutMs
+    )
+      runningAt = time;
+    else if (runningAt !== null && idle && time - runningAt <= settleTimeoutMs) settled = true;
+  }
+  return { runningObserved: runningAt !== null, settledObserved: settled };
+}
+
+export function reauditSettledOnCurrentPage(trace, state, expectedTitle, pageUrlMatches) {
+  return (
+    reauditTransitionWitness(trace, 10000, 30000).settledObserved &&
+    state?.scopeValid === true &&
+    state.auditButtonPresent === true &&
+    state.auditButtonDisabled === false &&
+    state.auditSpinner === false &&
+    state.reAudit === true &&
+    state.error === false &&
+    state.title === expectedTitle &&
+    pageUrlMatches === true
+  );
+}
+
 export function captureReauditWaitFailure(error, operation, lastState) {
   return {
     operation: OPERATIONS.has(operation) ? operation : null,
@@ -61,7 +120,7 @@ export function captureReauditWaitFailure(error, operation, lastState) {
 
 // Runs in the owned panel. Observe DOM commits before pointer dispatch so a
 // busy->idle transition between the release and first poll remains visible.
-// A trace is evidence only: it cannot satisfy either acceptance predicate.
+// Acceptance consumes ordered transitions plus a separate current-page check.
 export function installReauditObserver() {
   const key = '__matrxSeoReauditTrace';
   globalThis[key]?.observer?.disconnect();

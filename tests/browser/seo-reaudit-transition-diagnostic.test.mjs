@@ -8,6 +8,8 @@ import { writeSeoGuestProgress } from '../../scripts/hosted-seo-route.mjs';
 import { safeSeoClickEvidence } from './guest-seo-click-diagnostic.mjs';
 import {
   captureReauditWaitFailure,
+  reauditSettledOnCurrentPage,
+  reauditTransitionWitness,
   safeReauditState,
   startSeoReauditTrace,
 } from './seo-reaudit-transition-diagnostic.mjs';
@@ -32,7 +34,7 @@ async function scenario(action) {
   const flush = () => new Promise((resolve) => setImmediate(resolve));
   try {
     const trace = await startSeoReauditTrace(panel, report);
-    await action({ button, report, trace, flush });
+    await action({ button, report, trace, flush, window });
     await trace.stop();
     assert.equal(
       window.__matrxSeoReauditTrace,
@@ -49,7 +51,7 @@ async function scenario(action) {
   }
 }
 
-test('observer retains busy then idle before the first post-release poll without granting acceptance', async () => {
+test('observer retains busy then idle before the first post-release poll', async () => {
   const trace = await scenario(async ({ button, trace, flush }) => {
     button.disabled = true;
     await flush();
@@ -192,7 +194,7 @@ test('actual manual click remains inside pre-click observer lifetime and uncondi
   assert.match(block, /try \{[\s\S]*await clickSeoReaudit\(panel, report, click, checkpoint\)/);
   assert.match(
     block,
-    /'manual_reaudit_running_wait',[\s\S]*state\?\.scopeValid && state\.reAudit === false/,
+    /'manual_reaudit_running_wait',[\s\S]*reauditTransitionWitness[\s\S]*state\.runningObserved/,
   );
   assert.match(
     block,
@@ -237,4 +239,139 @@ test('watchdog progress writer durably retains timeout trace as unverified witho
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
+});
+
+// The event transport is external to this SUT. Happy DOM cannot create a native
+// CDP trusted event, so supply only its trust bit; DOM commits, observer delivery,
+// ordering and acceptance decisions remain the real driver implementation.
+async function rapidTransition({ button, trace, flush, window }, trusted = true) {
+  const event = new window.MouseEvent('click', { bubbles: true });
+  Object.defineProperty(event, 'isTrusted', { value: trusted });
+  button.dispatchEvent(event);
+  button.disabled = true;
+  button.innerHTML = 'Re-audit<svg class="animate-spin"></svg>';
+  await flush();
+  button.disabled = false;
+  button.textContent = 'Re-audit';
+  await flush();
+  await trace.sample('after_release');
+}
+const currentPageState = {
+  scopeValid: true,
+  auditButtonPresent: true,
+  auditButtonDisabled: false,
+  auditSpinner: false,
+  reAudit: true,
+  error: false,
+  title: 'IANA-managed Reserved Domains',
+};
+
+test('rapid trusted recapture passes observed transition oracle while old polling misses running', async () => {
+  const trace = await scenario(async (context) => {
+    await rapidTransition(context);
+    await assert.rejects(
+      waitFor(
+        'old_poll_running',
+        async () => currentPageState,
+        (state) => state.scopeValid && state.reAudit === false,
+        0,
+      ),
+      /old_poll_running_not_observed/,
+    );
+  });
+  assert.deepEqual(reauditTransitionWitness(trace, 10000, 30000), {
+    runningObserved: true,
+    settledObserved: true,
+  });
+  assert.equal(
+    reauditSettledOnCurrentPage(trace, currentPageState, 'IANA-managed Reserved Domains', true),
+    true,
+  );
+  for (const [state, title, pageMatches] of [
+    [{ ...currentPageState, error: true }, currentPageState.title, true],
+    [{ ...currentPageState, auditButtonDisabled: true }, currentPageState.title, true],
+    [{ ...currentPageState, auditSpinner: true }, currentPageState.title, true],
+    [{ ...currentPageState, scopeValid: false }, currentPageState.title, true],
+    [currentPageState, 'Example Domain', true],
+    [currentPageState, currentPageState.title, false],
+  ])
+    assert.equal(reauditSettledOnCurrentPage(trace, state, title, pageMatches), false);
+});
+
+test('untrusted rapid recapture cannot earn acceptance from the same observer history', async () => {
+  const trace = await scenario((context) => rapidTransition(context, false));
+  assert.deepEqual(reauditTransitionWitness(trace, 10000, 30000), {
+    runningObserved: false,
+    settledObserved: false,
+  });
+  assert.equal(
+    reauditSettledOnCurrentPage(trace, currentPageState, currentPageState.title, true),
+    false,
+  );
+});
+
+test('missing, reordered, late and unavailable transitions refuse acceptance', async () => {
+  const trace = await scenario(rapidTransition);
+  const copy = () => structuredClone(trace);
+  const mutations = [
+    (value) => {
+      value.observer_available = false;
+    },
+    (value) => {
+      value.samples = value.samples.filter((sample) => sample.stage !== 'click_event');
+    },
+    (value) => {
+      value.samples = value.samples.filter((sample) => !sample.auditSpinner);
+    },
+    (value) => {
+      value.samples = value.samples.filter((sample) => sample.stage !== 'before_click');
+    },
+    (value) => {
+      value.samples.find((sample) => sample.stage === 'click_event').click_trusted = false;
+    },
+    (value) => {
+      value.samples.reverse();
+    },
+    (value) => {
+      for (const sample of value.samples)
+        if (sample.stage !== 'before_click' && sample.stage !== 'click_event')
+          sample.elapsed_ms += 10001;
+    },
+    (value) => {
+      let busy = false;
+      for (const sample of value.samples) {
+        if (busy) sample.elapsed_ms += 30001;
+        if (sample.auditSpinner) busy = true;
+      }
+    },
+  ];
+  for (const mutate of mutations) {
+    const value = copy();
+    mutate(value);
+    assert.equal(
+      reauditSettledOnCurrentPage(value, currentPageState, currentPageState.title, true),
+      false,
+    );
+  }
+});
+
+test('bounded retained history still accepts a witnessed cycle after many identical polls', async () => {
+  const trace = await scenario(async (context) => {
+    await rapidTransition(context);
+    for (let index = 0; index < 80; index++) await context.trace.sample('settle_wait');
+  });
+  assert.equal(trace.samples.length, 64);
+  assert.ok(trace.dropped_samples > 0);
+  assert.equal(
+    reauditSettledOnCurrentPage(trace, currentPageState, currentPageState.title, true),
+    true,
+  );
+  const missingRunning = {
+    ...trace,
+    samples: trace.samples.filter((sample) => !sample.auditSpinner),
+  };
+  assert.equal(
+    reauditSettledOnCurrentPage(missingRunning, currentPageState, currentPageState.title, true),
+    false,
+  );
 });

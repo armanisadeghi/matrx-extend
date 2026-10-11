@@ -8,6 +8,11 @@ import {
   restoreNativeNoticeViewport,
   setNoticeViewport,
 } from './seo-notice-viewport.mjs';
+import {
+  captureReauditWaitFailure,
+  reauditSettledOnCurrentPage,
+  reauditTransitionWitness,
+} from './seo-reaudit-transition-diagnostic.mjs';
 
 // Exercise the actual browser driver's scope decisions; doubles replace browser IO only.
 const source = readFileSync(new URL('./seo-guest-acceptance.mjs', import.meta.url), 'utf8');
@@ -53,6 +58,9 @@ async function run(occluded = false, driver = callback) {
     headings: true,
     title: `source-${index}`,
     reAudit: true,
+    auditButtonPresent: true,
+    auditButtonDisabled: false,
+    auditSpinner: false,
     error: false,
     mainTablists: 1,
     seoTabs: 1,
@@ -86,7 +94,6 @@ async function run(occluded = false, driver = callback) {
     observe: async (_name, read) => read(),
     waitObserved: async (name, read, accept) => {
       const value = await read();
-      if (name === 'manual_reaudit_running_wait') value.reAudit = false;
       assert.ok(accept(value), name);
       return value;
     },
@@ -94,7 +101,31 @@ async function run(occluded = false, driver = callback) {
     click: async (_panel, selector) => {
       if (selector === 'seo-database-refused-dismiss') dismissed = true;
     },
-    clickSeoReaudit: async () => events.push('trusted-reaudit'),
+    captureReauditWaitFailure,
+    reauditTransitionWitness,
+    reauditSettledOnCurrentPage,
+    clickSeoReaudit: async () => {
+      events.push('trusted-reaudit');
+      // Browser IO supplies committed observations; real oracle decisions above
+      // are never replaced by a canned success in this scope orchestration test.
+      context.report.reaudit_transition_diagnostic = {
+        observer_available: true,
+        dropped_samples: 0,
+        samples: [
+          { ...state(), stage: 'before_click', elapsed_ms: 1 },
+          { ...state(), stage: 'click_event', elapsed_ms: 259, click_trusted: true },
+          {
+            ...state(),
+            stage: 'dom_transition',
+            elapsed_ms: 266,
+            auditButtonDisabled: true,
+            auditSpinner: true,
+            reAudit: false,
+          },
+          { ...state(), stage: 'dom_transition', elapsed_ms: 326 },
+        ],
+      };
+    },
     startSeoReauditTrace: async () => ({ sample: async () => {}, stop: async () => {} }),
     waitFor: async (_name, read, accept) => {
       const value = await read();
