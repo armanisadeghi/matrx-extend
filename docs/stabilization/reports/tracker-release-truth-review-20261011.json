@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-11T21:23:45.662993+00:00",
+  "scope": "Independent generator, regression and generated-view verification only; no Store state refresh or product health claim.",
+  "commits": [
+    "e0781f522",
+    "5992cf39e"
+  ],
+  "prior_important_finding": {
+    "finding": "Generated STATUS.html omitted current dated Store observations while Markdown included them.",
+    "verdict": "ADDRESSED",
+    "evidence": "STATUS.html contains Current Store release observations, timestamp 2026-10-11T17:25:49Z, daily record link, public version 0.2.205, authenticated Pending review / Draft 0.2.479 / Published 0.2.205, and bounded-observation caveat."
+  },
+  "verdict_a": {
+    "status": "PASS_WITH_SCOPE_NOTE",
+    "evidence": "Focused regression directly invoked and passed. STATUS.md, CHECKLIST.md and STATUS.html render the latest valid 2026-10-11 daily record; synthetic 0.3.12/0.3.18 reaches all three; unavailable dashboard dated 2026-10-10 renders in all three; no-valid-daily-record refusal renders in all three. Historical audit checkpoint remains explicitly historical in STATUS.md and CHECKLIST.md. STATUS.html omits that checkpoint entirely, so it makes no stale historical release claim."
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_TEST_RUNNER_LIMITATION",
+    "evidence": "Generator routes daily observations to all three outputs and HTML-escapes before markup conversion. Regression now defeats fixed-version hardcoding; covers newer malformed/invalid records, fallback, and no-valid-record boundary. `pytest` and `python3 -m pytest` unavailable; invoking the test function directly passed. `python3 -m py_compile` passed."
+  },
+  "new_breakage": [],
+  "integration_lint": "Full pnpm -s lint passed after SEO owner repaired import order: exit 0; 2714 files checked, 854 warnings, no errors."
+}

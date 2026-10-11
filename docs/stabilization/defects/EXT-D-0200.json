@@ -12,7 +12,7 @@
   "title": "Generated current release truth uses a frozen historical coverage checkpoint",
   "severity": "S2: stale release status misrepresents pending Store review",
   "priority": "P1: stabilization evidence correctness",
-  "state": "fixed",
+  "state": "closed",
   "owner": "tracker_current_release_truth_1011",
   "preconditions": ["October 1 coverage audit and newer dated daily Store records exist."],
   "reproduction": [
@@ -28,25 +28,39 @@
   "evidence": [
     "docs/stabilization/reports/store-release-followthrough-20261011.json",
     "docs/stabilization/reports/coverage-audit-20261001.json",
-    "scripts/test_stabilization_release_truth.py"
+    "scripts/test_stabilization_release_truth.py",
+    "docs/stabilization/reports/tracker-release-truth-review-20261011.json"
   ],
   "verification": [
     "Old generator RED: missing public listing release paragraph assertion.",
     "Real render regression PASS for October 11, October 10 dashboard-unavailable evidence, malformed newer JSON and absence of valid daily records.",
     "In-memory constant and skipped release renderer mutants rejected.",
     "Independent first review found HTML release observations missing; expanded regression failed on HTML before repair and passes all three generated views.",
-    "Alternate synthetic public 0.3.12 / draft 0.3.18 observations reach all three views; dates, provenance and dashboard-unavailable/no-valid-record boundaries covered."
+    "Alternate synthetic public 0.3.12 / draft 0.3.18 observations reach all three views; dates, provenance and dashboard-unavailable/no-valid-record boundaries covered.",
+    "Independent reverify A/B accepted generator and all three views, original newer-daily-record versus historical-audit boundary, unavailable dashboard, no-valid-record, malformed records and varied-version cases; see linked review."
   ],
-  "reviewer": "First peer: Markdown/source PASS, HTML gap repaired; independent reverify pending",
+  "reviewer": "Independent reverify A PASS_WITH_SCOPE_NOTE / B PASS_WITH_TEST_RUNNER_LIMITATION; prior HTML finding ADDRESSED.",
   "closure_requirement": "Independent verification of generator, regression and generated current/historical release sections.",
   "release_status": "Infrastructure documentation generator only; no Store mutation, build or release.",
-  "next_action": "Independent review before closing; Store dashboard and product acceptance out of scope.",
+  "next_action": "Closed for generator/output correctness only; daily Store observations and product acceptance remain separate work.",
   "transition_history": [
     {
       "at": "2026-10-11T21:17:50.674120+00:00",
       "from": null,
       "to": "fixed",
       "reason": "Reproduced stale current claim, repaired shared rendering boundary and verified regression; independent verification pending."
+    },
+    {
+      "at": "2026-10-11T21:23:45.663290+00:00",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Independent reviewer executed real render regression and verified generated Markdown/HTML current observations and historical boundary, including unavailable/no-record neighbors."
+    },
+    {
+      "at": "2026-10-11T21:23:45.663290+00:00",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Independent A/B reverify accepted scoped infrastructure repair; no current Store approval, installation or product health asserted."
     }
   ]
 }

@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-11 21:20 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-11T20:03:52Z.
+Generated 2026-10-11 21:23 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-11T20:03:52Z.
 
 ## Current truth
 
@@ -8,7 +8,7 @@ Generated 2026-10-11 21:20 UTC from inventory.json, defect records, daily Store 
 - Case results: pass 99, partial 92, fail 2, unverified 1066, n/a 2; 138 explicitly unverified and 928 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/396 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 0 missing steps; 0 missing expected outcomes; 1 missing control links.
-- Defect states: closed 127, retest-pass 9, fixed 52, in-fix 10, open 1. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 128, retest-pass 9, fixed 51, in-fix 10, open 1. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current Store release observations
 
@@ -26,7 +26,7 @@ These observations are bounded to their recorded times; source versions and loca
 
 ## Inventory freshness review
 
-Since inventory source `636d00857f774a7b15fe70032dd9c35cef44c015`, **182 `src/` paths changed** through `e0781f52277ea70ad89f1b7be99fc91d3b275adb`. A direct path-anchor comparison matched 24 and left 158 without an exact inventory anchor.
+Since inventory source `636d00857f774a7b15fe70032dd9c35cef44c015`, **182 `src/` paths changed** through `5992cf39e1398d98d319c617dc246c961a7eb488`. A direct path-anchor comparison matched 24 and left 158 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
