@@ -8098,6 +8098,11 @@
    "application/json"
   ]
  },
+ "/tiktok-integrations/videos": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/tiktok-integrations/webhooks": {
   "post": []
  },
