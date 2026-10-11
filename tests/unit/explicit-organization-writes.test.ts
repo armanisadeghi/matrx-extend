@@ -49,8 +49,7 @@ describe('explicit organization writes', () => {
       id: '44444444-4444-4444-8444-444444444444',
       created_by: '55555555-5555-4555-8555-555555555555',
       label: 'Explicit',
-      folder_name: null,
-      folder_id: null,
+      home_scope_id: '66666666-6666-4666-8666-666666666666',
       tags: null,
       updated_at: '2026-08-23T00:00:00Z',
       position: null,
@@ -75,8 +74,6 @@ describe('explicit organization writes', () => {
         organization_id: ORG_ID,
         label: 'Explicit',
         content: '',
-        folder_name: null,
-        folder_id: null,
       },
     ]);
   });
