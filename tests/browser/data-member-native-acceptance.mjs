@@ -9,6 +9,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
 import { clickPickerDone, clickPickerField, pickerText } from './data-guest-picker-driver.mjs';
+import { runMemberAutoExtract } from './data-member-auto-extract-driver.mjs';
 import { recordDataMemberDriverDiagnostic } from './data-member-driver-diagnostic.mjs';
 import {
   buildDataPatternDeleteUrl,
@@ -38,7 +39,15 @@ import {
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const extensionDir = process.env.MATRX_DATA_EXTENSION_DIR;
 const receiptPath = process.env.MATRX_DATA_RECEIPT;
-const output = join('test-results', 'data-member-native-acceptance.json');
+const AUTO_SCOPE = process.env.MATRX_MEMBER_DATA_SCOPE === 'auto-extract';
+assert.ok(
+  ['lifecycle', 'auto-extract'].includes(process.env.MATRX_MEMBER_DATA_SCOPE ?? 'lifecycle'),
+  'data_member_scope_invalid',
+);
+const output = join(
+  'test-results',
+  AUTO_SCOPE ? 'data-member-auto-extract-acceptance.json' : 'data-member-native-acceptance.json',
+);
 const RELOAD_OPEN_DIAGNOSTIC = process.env.MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC === '1';
 const RELOAD_SENDER_DOCUMENT_DIAGNOSTIC =
   process.env.MATRX_RELOAD_SENDER_DOCUMENT_DIAGNOSTIC === '1';
@@ -57,7 +66,11 @@ const fixture = `<!doctype html><html><head><title>Northline Furnishings catalog
     ([name, price]) =>
       `<article class="product-card"><h2 class="product-name">${name}</h2><p class="product-price">${price}</p></article>`,
   )
-  .join('')}</section></main></body></html>`;
+  .join('')}</section></main><script>
+if (new URLSearchParams(location.search).get('auto') === 'empty') {
+  document.getElementById('products').replaceChildren();
+}
+</script></body></html>`;
 const report = {
   schema_version: 1,
   reload_open_diagnostic: reloadOpenEvidenceClass(RELOAD_OPEN_DIAGNOSTIC),
@@ -66,7 +79,7 @@ const report = {
     evidence_class: RELOAD_SENDER_DOCUMENT_DIAGNOSTIC ? 'diagnostic_only' : 'acceptance_eligible',
     perturbation: RELOAD_SENDER_DOCUMENT_DIAGNOSTIC ? 'owned_sender_document_reload' : 'none',
   },
-  case_id: 'EXT-F-2005-T03',
+  case_id: AUTO_SCOPE ? 'EXT-F-2005-T08' : 'EXT-F-2005-T03',
   auth_mode: 'member',
   status: 'unverified',
   stage: 'input',
@@ -76,8 +89,9 @@ const report = {
   observations: {},
   cleanup: null,
   failure_stage: null,
-  limits:
-    'Native member picker, save, run, clipboard, cancel and extension-reload behavior on the exact imported development artifact; no admin or Store claim.',
+  limits: AUTO_SCOPE
+    ? 'Signed-in nonadmin member automatic extraction on an owned page and exact saved row; no admin, guest, or Store claim.'
+    : 'Native member picker, save, run, clipboard, cancel and extension-reload behavior on the exact imported development artifact; no admin or Store claim.',
 };
 
 async function dataState(panel, name) {
@@ -451,6 +465,21 @@ try {
         assert.equal(saved.savedPatternVisible, true, 'data_member_saved_row_not_refreshed');
         report.observations.saved_pattern_refreshed = true;
 
+        if (AUTO_SCOPE) {
+          report.stage = 'auto_extract';
+          report.auto_extract = await runMemberAutoExtract({
+            panel,
+            page,
+            resourceAction,
+            patternName,
+            patternId: verifiedTarget.patternId,
+            organizationId: identity.organizationId,
+            supabaseOrigin: new URL(process.env.WXT_SUPABASE_URL).origin,
+            publishableKey: process.env.WXT_SUPABASE_PUBLISHABLE_KEY,
+          });
+          return;
+        }
+
         // A manual-css pattern without a list root queries each field once
         // against the document. The selected second-card price retains its nth-of-type selector.
         const expectedRows = [{ field_1: 'Cedar chair', field_2: '$429' }];
@@ -666,7 +695,7 @@ try {
       report.observations.member_save_succeeded = true;
     },
   });
-  report.status = 'pass';
+  report.status = AUTO_SCOPE && report.auto_extract?.running !== 'pass' ? 'partial' : 'pass';
   report.stage = 'complete';
 } catch (error) {
   report.status = 'fail';

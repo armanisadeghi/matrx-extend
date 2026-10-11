@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_admission_review",
+  "reviewer": "/root/data_t08_member_source_peer",
+  "reviewed_at": "2026-10-11",
+  "feature_id": "EXT-F-2005",
+  "target_case_id": "EXT-F-2005-T08",
+  "verdict": "GO_FOR_BOUNDED_HOSTED_EXECUTION",
+  "peer_verdicts": {
+    "source_scope_and_cleanup": "PASS_WITH_BOUNDED_MEMBER_SCOPE",
+    "hosted_admission": "PASS_AFTER_IN_REVIEW_WIRING_REPAIR",
+    "automated_guard_strength": "PASS_FOR_SUCCESS_NO_MATCH_AND_ERROR_MUTATIONS",
+    "native_behavior": "UNVERIFIED"
+  },
+  "scope": "Independent source and admission review of the uncommitted member Data auto-extraction driver. No browser or hosted run was launched; no inventory status is promoted.",
+  "source_review": {
+    "hosted_route": "The member_data_scope choice defaults to lifecycle; the guarded member-data route accepts auto-extract and rejects that option for other cases. During review the scope env was missing from the actual Exercise step, which would have run T03. The implementer added it to that step and strengthened the focused guard to inspect that step's environment. Current source wiring routes the selected scope to the actual driver invocation.",
+    "identity_and_organization": "The shared member driver verifies signed-in web and extension identity, non-admin status, and selected organization before creating the pattern. The auto flow receives the created row's exact id and selected organization. Domain reads are checked for the controlled host, bearer authentication, and HTTP 200; the source client does not send X-Organization-Id for those direct Supabase reads. Exact-row root-selector reads and PATCHes filter by both id and organization_id and validate the returned row.",
+    "controlled_outcomes": "The owned loopback fixture has populated and empty variants. Success requires the named Data card badge and exact Cedar chair/$429 JSON rows. No-match requires the named badge, explanation, and no JSON rows. Error is induced by PATCHing only the disposable saved row's list_root_selector to an invalid selector, then requires the named auto-failed badge, nonempty visible failure detail on that card (allowing Chrome to expose its generic extraction-result error), and an enabled manual Extract action.",
+    "cleanup": "The error mutation starts only after exact-row readback confirms the original root selector is null. A finally block restores that exact value and performs readback verification. The outer member driver then performs its existing exact-name, organization-scoped lookup and exact-row deletion in its own finally path, including after auto-flow failure. A failed restore or deletion fails the run. No shared-row mutation or broad delete is present in the reviewed path.",
+    "running_and_status": "Running is sampled with a bounded condition wait. If the transient state is not observed, the result records running=unverified and top-level status=partial; success/no-match/error do not convert that to a full pass. This is appropriate for a transient state, but it remains runtime-unverified.",
+    "guard_strength": "The implementer added a focused Vitest guard that exercises the real useAutoExtract hook and real runPattern/manual_css implementation against an owned DOM fixture, stubbing only the database fetch/health boundary and Chrome executeScript boundary. A safely planted return-empty mutation in runPattern failed at the success row/status assertion; changing the empty-run classifier failed at the no_match assertion; suppressing invalid-root selection failed at the error assertion. Each plant was restored by plant.py, each reported the named assertion red, and the untouched test passed afterward."
+  },
+  "findings": [],
+  "verification": {
+    "focused_test_command": "node --test tests/browser/data-member-auto-extract-driver.test.mjs",
+    "focused_test_result": "4 passed, 0 failed",
+    "git_diff_check": "passed",
+    "hosted_run_launched": false,
+    "native_ui_run": false,
+    "mutation_proof_for_product_path": true,
+    "independent_runtime_verification": false,
+    "product_path_guard": "tests/unit/auto-extract-owned-fixture.test.tsx",
+    "product_path_mutations": [
+      {
+        "mutation": "runPattern returns empty rows instead of extractionRows(result)",
+        "result": "RED at success status/rows assertion; plant.py restored exact file hash"
+      },
+      {
+        "mutation": "classifySavedRun treats empty rows as matched",
+        "result": "RED at no_match status/note assertion; plant.py restored exact file hash"
+      },
+      {
+        "mutation": "manual_css invalid list-root selector returns no rows instead of throwing",
+        "result": "RED at error status/message assertion; plant.py restored exact file hash"
+      }
+    ],
+    "product_path_green_after_restore": "1 focused test passed, 0 failed",
+    "focused_browser_driver_guard": "4 passed, 0 failed",
+    "final_focused_checks": {
+      "vitest": "pnpm exec vitest run tests/unit/auto-extract-owned-fixture.test.tsx \u2014 1 passed, 0 failed",
+      "browser_driver": "node --test tests/browser/data-member-auto-extract-driver.test.mjs \u2014 4 passed, 0 failed",
+      "diff_check": "git diff --check passed"
+    }
+  },
+  "limits": [
+    "This is source and test-admission evidence only. It does not establish any member runtime outcome or a full T08 pass.",
+    "The procedure covers the member identity only. Admin applicability and behavior remain unverified; guest remains not applicable to auto-extraction because the signed-in guard exits before scheduling work.",
+    "The exact imported development artifact, hosted run receipt, live Data UI states, actual organization membership, and post-run database absence were not observed by this reviewer.",
+    "The source records an unobserved running state as partial; its transient runtime state remains unverified until the hosted run observes it."
+  ]
+}

@@ -76,6 +76,14 @@ on:
           - profile-admin
           - profile-member
           - startup-resource-diagnostic
+      member_data_scope:
+        description: Member Data lifecycle T03 or automatic extraction T08 on the same guarded route
+        required: false
+        default: lifecycle
+        type: choice
+        options:
+          - lifecycle
+          - auto-extract
       seo_case_scope:
         description: Guest SEO checks to run; metadata and narrow select bounded owned T09 targets
         required: false
@@ -382,6 +390,9 @@ jobs:
           fi
           if [[ "$ACCEPTANCE_CASE" == member-data ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member && "$SCRAPE_WIDTH_MODE" == narrow && -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1
+            [[ '${{ inputs.member_data_scope }}' == lifecycle || '${{ inputs.member_data_scope }}' == auto-extract ]] || exit 1
+          elif [[ '${{ inputs.member_data_scope }}' != lifecycle ]]; then
+            exit 1
           elif [[ "$ACCEPTANCE_CASE" != guest-scrape && "$ACCEPTANCE_CASE" != guest-scrape-development && "$ACCEPTANCE_CASE" != scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == guest && "$SCRAPE_WIDTH_MODE" == narrow && -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1
           fi
@@ -496,6 +507,7 @@ jobs:
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_HOSTED_ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
           MATRX_HOSTED_ACCEPTANCE_LANE: ${{ inputs.acceptance_lane }}
+          MATRX_MEMBER_DATA_SCOPE: ${{ inputs.member_data_scope }}
           MATRX_HOSTED_SCRAPE_SAVE_DESTINATION: ${{ inputs.scrape_save_destination || 'project' }}
           MATRX_HOSTED_SCRAPE_SAVE_SCOPE: ${{ inputs.scrape_save_scope || 'single' }}
           MATRX_HOSTED_SCRAPE_SCOPE: ${{ inputs.scrape_scope || 'full' }}
@@ -563,6 +575,7 @@ jobs:
             test-results/seo-guest-acceptance.json
             test-results/data-guest-native-acceptance.json
             test-results/data-member-native-acceptance.json
+            test-results/data-member-auto-extract-acceptance.json
             test-results/settings-local-controls-acceptance.json
             test-results/settings-auto-scrape-capture-native.json
             test-results/settings-d87-native-*.json
