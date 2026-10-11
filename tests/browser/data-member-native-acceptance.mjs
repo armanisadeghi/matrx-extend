@@ -18,7 +18,10 @@ import {
   verifyDataPatternDeleteResult,
   verifyDataPatternLookupResult,
 } from './data-member-pattern-cleanup.mjs';
-import { observePatternWrites } from './data-member-save-observer.mjs';
+import {
+  assertPatternWriteOrganization,
+  observePatternWrites,
+} from './data-member-save-observer.mjs';
 import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { captureFailure, captureSenderDocument } from './profile-reload-capture.mjs';
@@ -421,6 +424,7 @@ try {
             state[0].requestOrganizationPresent &&
             state[0].requestNameMatches,
         );
+        assertPatternWriteOrganization(writes[0]);
         const writeTarget = observer.writeTarget();
         assert.ok(writeTarget, 'data_member_write_target_unverified');
         const lookedUp = await waitFor(
@@ -452,11 +456,10 @@ try {
           writes[0].requestOrganizationPresent;
         report.observations.request_body_organization_matched_selected =
           writes[0].requestOrganizationMatchesSelected;
-        assert.equal(
-          writes[0].requestOrganizationMatchesSelected,
-          true,
-          'data_member_save_request_organization_mismatch',
-        );
+        report.observations.request_header_organization_matched_body =
+          writes[0].headerOrganizationMatchesBody;
+        report.observations.request_header_organization_matched_selected =
+          writes[0].headerOrganizationMatchesSelected;
         const saved = await waitFor(
           'data_member_pattern_refreshed',
           () => dataState(panel, patternName),

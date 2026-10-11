@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0197 Data T08 exact organization header retest oracle",
+  "status": "source_verified_independent_peer_pass_with_limits",
+  "changes": [
+    "Real CDP Network.requestWillBeSent observer compares outgoing X-Organization-Id exactly with parsed POST organization_id and independently supplied selected organization.",
+    "Snapshot emits only sanitized headerOrganizationMatchesBody and headerOrganizationMatchesSelected booleans; native report retains corresponding snake_case observations.",
+    "Native acceptance asserts agreement immediately after the unique successful owned POST snapshot, before saved-row lookup and auto-extract exercise.",
+    "Missing/wrong headers reject even with HTTP 201; pending CDP request-body capture reports false until body arrives.",
+    "Existing success/no_match/error/manual extraction and cleanup assertions preserved."
+  ],
+  "verification": {
+    "focused_command": "node --test tests/browser/data-member-save-observer.test.mjs tests/browser/data-member-auto-extract-driver.test.mjs tests/browser/data-member-pattern-cleanup.test.mjs",
+    "focused_result": "21 tests passed, 0 failed",
+    "compile": "pnpm compile: exit 0",
+    "lint": "pnpm -s lint: exit 0; 854 existing warnings",
+    "mutation_proof": [
+      "plant.py: replace captured header/body equality with true: RED on wrong-header case; restored identical SHA.",
+      "plant.py: replace acceptance assertion function with return true: RED on wrong/missing/selected-mismatch cases; restored identical SHA."
+    ],
+    "test_boundary": "Tests drive actual observer callbacks with CDP-shaped external event inputs; no observer, parser, comparison or acceptance assertion is stubbed. No live browser run in this lane.",
+    "native_callback_bindings": "pnpm check:native-callback-bindings: 19 files checked, exit 0"
+  },
+  "peer_review": {
+    "report": "docs/stabilization/reports/data-t08-header-oracle-source-peer-20261011.json",
+    "initial_finding": "Header validation occurred after saved-row lookup.",
+    "resolution": "Moved assertion before writeTarget/lookup, removed accidental duplicate finally invocation, and added exact-one-call/ordering guard; final independent A/B PASS_WITH_LIMITS, original finding ADDRESSED."
+  },
+  "limits": [
+    "No hosted run launched.",
+    "No T08 running-state, case pass, release, Store or admin claim.",
+    "No defect/inventory/D148 evidence modified."
+  ],
+  "files": [
+    "tests/browser/data-member-save-observer.mjs",
+    "tests/browser/data-member-save-observer.test.mjs",
+    "tests/browser/data-member-native-acceptance.mjs",
+    "tests/browser/data-member-auto-extract-driver.test.mjs",
+    "docs/stabilization/reports/data-t08-header-retest-oracle-20261011.json"
+  ],
+  "questions": []
+}

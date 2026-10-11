@@ -92,6 +92,23 @@ test('member T08 stays an opt-in scope on the existing hosted member-data route'
   assert.match(driver, /AUTO_SCOPE \? 'EXT-F-2005-T08' : 'EXT-F-2005-T03'/);
   assert.match(driver, /if \(AUTO_SCOPE\) \{[\s\S]*?await runMemberAutoExtract/);
   assert.match(driver, /finally \{[\s\S]*?cleanupOwnedDataPattern/);
+  assert.equal(driver.match(/assertPatternWriteOrganization\(writes\[0\]\);/g)?.length, 1);
+  assert.match(
+    driver,
+    /assertPatternWriteOrganization\(writes\[0\]\);[\s\S]*?if \(AUTO_SCOPE\) \{[\s\S]*?await runMemberAutoExtract/,
+  );
+  assert.match(
+    driver,
+    /assertPatternWriteOrganization\(writes\[0\]\);\s*const writeTarget = observer\.writeTarget\(\);/,
+  );
+  assert.match(
+    driver,
+    /request_header_organization_matched_body =\s*writes\[0\]\.headerOrganizationMatchesBody/,
+  );
+  assert.match(
+    driver,
+    /request_header_organization_matched_selected =\s*writes\[0\]\.headerOrganizationMatchesSelected/,
+  );
 });
 
 test('auto network proof counts only domain-scoped pattern reads, excluding owned-row cleanup reads', () => {

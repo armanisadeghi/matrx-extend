@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { observePatternWrites } from './data-member-save-observer.mjs';
+import {
+  assertPatternWriteOrganization,
+  observePatternWrites,
+} from './data-member-save-observer.mjs';
 
 const origin = 'https://db.matrxserver.com';
 const selectedOrganizationId = '123e4567-e89b-42d3-a456-426614174001';
@@ -24,14 +27,18 @@ function panelFixture(requestBody) {
   return {
     panel,
     listeners,
-    async write({ inlineBody = false, organizationId = selectedOrganizationId } = {}) {
+    async write({
+      inlineBody = false,
+      organizationId = selectedOrganizationId,
+      headers = {},
+    } = {}) {
       const body = JSON.stringify({ organization_id: organizationId, name });
       listeners.get('Network.requestWillBeSent')({
         requestId: 'owned-write',
         request: {
           url: `${origin}/rest/v1/wbx_pattern`,
           method: 'POST',
-          headers: {},
+          headers,
           ...(inlineBody ? { postData: body } : {}),
         },
       });
@@ -45,7 +52,7 @@ function panelFixture(requestBody) {
   };
 }
 
-test('member save observer verifies request body org and returned row without requiring a header', async () => {
+test('member save observer retains missing-header evidence while capturing body and returned row', async () => {
   const fixture = panelFixture(JSON.stringify({ organization_id: selectedOrganizationId, name }));
   const observer = observePatternWrites(fixture.panel, origin, selectedOrganizationId, name);
   await fixture.write();
@@ -60,6 +67,8 @@ test('member save observer verifies request body org and returned row without re
       requestNameMatches: true,
       requestOrganizationMatchesSelected: true,
       headerOrganizationPresent: false,
+      headerOrganizationMatchesBody: false,
+      headerOrganizationMatchesSelected: false,
     },
   ]);
   assert.deepEqual(observer.writeTarget(), {
@@ -77,4 +86,72 @@ test('member save observer exposes a wrong posted org even when the insert retur
   assert.equal(observer.snapshot()[0].requestOrganizationMatchesSelected, false);
   assert.deepEqual(observer.writeTarget(), { patternId, organizationId: otherOrganizationId });
   observer.stop();
+});
+
+// A wrong/missing header must fail even when PostgREST returns 201 and body org is correct.
+for (const [label, headers, accepted] of [
+  ['correct', { 'X-Organization-Id': selectedOrganizationId }, true],
+  ['case-insensitive name', { 'x-ORGANIZATION-id': selectedOrganizationId }, true],
+  ['wrong', { 'X-Organization-Id': otherOrganizationId }, false],
+  ['missing', {}, false],
+]) {
+  test(`owned POST organization acceptance rejects broken headers: ${label}`, async () => {
+    const fixture = panelFixture(JSON.stringify({ organization_id: selectedOrganizationId, name }));
+    const observer = observePatternWrites(fixture.panel, origin, selectedOrganizationId, name);
+    try {
+      await fixture.write({ headers });
+      const [write] = observer.snapshot();
+      assert.equal(write.headerOrganizationMatchesBody, accepted);
+      assert.equal(write.headerOrganizationMatchesSelected, accepted);
+      if (accepted) assert.doesNotThrow(() => assertPatternWriteOrganization(write));
+      else
+        assert.throws(
+          () => assertPatternWriteOrganization(write),
+          /header_body_organization_mismatch/,
+        );
+      const sanitized = JSON.stringify(observer.snapshot());
+      for (const value of [selectedOrganizationId, otherOrganizationId, patternId, name])
+        assert.equal(sanitized.includes(value), false);
+    } finally {
+      observer.stop();
+    }
+  });
+}
+
+test('matching header and body still reject an organization different from the selected one', async () => {
+  const fixture = panelFixture(JSON.stringify({ organization_id: otherOrganizationId, name }));
+  const observer = observePatternWrites(fixture.panel, origin, selectedOrganizationId, name);
+  try {
+    await fixture.write({ headers: { 'X-Organization-Id': otherOrganizationId } });
+    const [write] = observer.snapshot();
+    assert.equal(write.headerOrganizationMatchesBody, true);
+    assert.equal(write.headerOrganizationMatchesSelected, false);
+    assert.throws(() => assertPatternWriteOrganization(write), /request_organization_mismatch/);
+  } finally {
+    observer.stop();
+  }
+});
+
+test('pending request body reports no header agreement until CDP body capture completes', async () => {
+  let resolveBody;
+  const fixture = panelFixture('');
+  const send = fixture.panel.send;
+  fixture.panel.send = (method, params) =>
+    method === 'Network.getRequestPostData'
+      ? new Promise((resolve) => {
+          resolveBody = resolve;
+        })
+      : send(method, params);
+  const observer = observePatternWrites(fixture.panel, origin, selectedOrganizationId, name);
+  try {
+    await fixture.write({ headers: { 'X-Organization-Id': selectedOrganizationId } });
+    assert.equal(observer.snapshot()[0].requestBodyCapture, 'pending');
+    assert.equal(observer.snapshot()[0].headerOrganizationMatchesBody, false);
+    resolveBody({ postData: JSON.stringify({ organization_id: selectedOrganizationId, name }) });
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(observer.snapshot()[0].headerOrganizationMatchesBody, true);
+    assert.doesNotThrow(() => assertPatternWriteOrganization(observer.snapshot()[0]));
+  } finally {
+    observer.stop();
+  }
 });
