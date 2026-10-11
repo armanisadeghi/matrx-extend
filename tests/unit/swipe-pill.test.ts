@@ -148,3 +148,60 @@ it('offers browser capture for unverified media with the saved destination organ
     url: 'https://www.instagram.com/p/captured-post/',
   });
 });
+
+it('retries exactly the missing slides by saving into the same collection again', () => {
+  mountSwipePill();
+  const root = document.querySelector('#matrx-swipe-pill')!.shadowRoot!;
+  receive({
+    t: 'collections',
+    collections: [{ id: 'collection', name: 'Carousel hooks', organization_id: 'saved-org' }],
+    lastId: 'collection',
+  });
+  root.querySelector<HTMLButtonElement>('#save')!.click();
+  const slide = (i: number) => ({
+    file_id: `f${i}`,
+    role: `image_${i}`,
+    source_index: i,
+    mime_type: 'image/jpeg',
+    size_bytes: 1,
+    door: '/d',
+  });
+  receive({
+    t: 'result',
+    outcome: {
+      status: 'saved',
+      postId: 'saved-post',
+      collectionId: 'collection',
+      title: 'Coast',
+      notice: null,
+      receipt: {
+        postId: 'saved-post',
+        organizationId: 'saved-org',
+        platform: 'instagram',
+        capturedAt: '2026-10-10T12:00:00Z',
+        media: [slide(1), slide(3)],
+        mediaNotes: [],
+        transcript: { status: 'none', notes: [] },
+        reused: false,
+        format: 'carousel',
+        coverage: {
+          expected_items: 3,
+          observed_items: 3,
+          stored_items: 2,
+          missing_items: 1,
+          status: 'partial',
+        },
+      },
+    },
+  });
+  const retry = root.querySelector<HTMLButtonElement>('#retry-slides')!;
+  expect(retry.hidden).toBe(false);
+  expect(retry.textContent).toBe('Retry slide 2');
+  retry.click();
+  expect(posted).toHaveBeenLastCalledWith({
+    t: 'save',
+    url: 'https://www.instagram.com/p/captured-post/',
+    collectionId: 'collection',
+  });
+  expect(retry.hidden).toBe(true);
+});

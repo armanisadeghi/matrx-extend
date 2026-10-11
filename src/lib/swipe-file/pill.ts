@@ -1,7 +1,7 @@
 /** Branded social capture control, isolated from site styles with open shadow DOM. */
 import { SWIPE_PORT, type SwipeClientMsg, type SwipeHostMsg } from '@/lib/swipe-file/host';
 import { SWIPE_OPEN_KEY, swipePostWebUrl } from '@/lib/swipe-file/navigation';
-import { captureReceiptSummary } from '@/lib/swipe-file/receipt';
+import { captureReceiptSummary, missingSlideNumbers } from '@/lib/swipe-file/receipt';
 import type { SwipeOutcome } from '@/lib/swipe-file/save';
 import { swipeTargetFromUrl } from '@/lib/swipe-file/urls';
 
@@ -39,6 +39,7 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
  <div id="feedback" class="feedback" hidden>
   <div class="status" role="status" aria-live="polite"><span id="mark" class="mark" aria-hidden="true"></span><span id="msg" class="msg"></span></div>
   <div id="summary" class="summary" hidden></div><div id="notice" class="notice" hidden></div>
+  <button id="retry-slides" hidden>Retry missing slides</button>
   <button id="capture-slides" hidden>Capture remaining slides</button>
   <div id="links" class="links" hidden><button id="review">View in extension</button><a id="web" target="_blank" rel="noopener noreferrer">Open in Matrx ↗</a></div>
  </div>
@@ -56,6 +57,7 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
   const links = $('links');
   const web = $<HTMLAnchorElement>('web');
   const captureSlides = $<HTMLButtonElement>('capture-slides');
+  const retrySlides = $<HTMLButtonElement>('retry-slides');
   let port: chrome.runtime.Port | null = null;
   let loaded = false;
   let currentUrl: string | null = null;
@@ -71,7 +73,12 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
   }
   function clearResult() {
     saved = null;
-    summary.hidden = notice.hidden = links.hidden = captureSlides.hidden = true;
+    summary.hidden =
+      notice.hidden =
+      links.hidden =
+      captureSlides.hidden =
+      retrySlides.hidden =
+        true;
     captureSlides.disabled = false;
     web.removeAttribute('href');
   }
@@ -141,7 +148,17 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
         captureSlides.hidden =
           !['instagram', 'linkedin', 'x', 'facebook', 'tiktok'].includes(
             outcome.receipt.platform,
-          ) || outcome.receipt.coverage?.status === 'complete';
+          ) ||
+          outcome.receipt.coverage?.status === 'complete' ||
+          // A single video or photo has no slides to fetch; a carousel or an unknown shape can have slides.
+          (!!outcome.receipt.format &&
+            ['video', 'short', 'reel', 'image', 'live', 'story'].includes(outcome.receipt.format));
+        const missing = outcome.receipt.coverage?.missing_items ?? 0;
+        const slides = missingSlideNumbers(outcome.receipt);
+        retrySlides.textContent = slides
+          ? `Retry ${slides.length === 1 ? 'slide' : 'slides'} ${slides.join(', ')}`
+          : `Retry ${missing} missing`;
+        retrySlides.hidden = outcome.receipt.coverage?.status !== 'partial' || missing < 1;
         send({ t: 'list' });
       }
     }
@@ -167,6 +184,16 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
       collectionId: isNew ? null : col.value,
       ...(isNew ? { newCollectionName: name } : {}),
     });
+  });
+  retrySlides.addEventListener('click', () => {
+    // Saving again is the retry: the server only fetches what is still missing.
+    if (!saved || !currentUrl || save.disabled) return;
+    const collectionId = saved.collectionId;
+    clearResult();
+    save.disabled = true;
+    savingUrl = currentUrl;
+    say('Retrying the missing slides…', '', '◌');
+    send({ t: 'save', url: currentUrl, collectionId });
   });
   captureSlides.addEventListener('click', () => {
     if (!saved || !currentUrl || captureSlides.disabled) return;
