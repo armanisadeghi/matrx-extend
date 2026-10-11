@@ -7,10 +7,10 @@
   "title": "Saved Data pattern creation omits the selected organization request header",
   "severity": "S2: the authenticated pattern write violates the repository per-request organization contract even though the body carries the selected organization",
   "priority": "P1: confirm or repair the request contract before promoting member Data T08",
-  "state": "open",
-  "triage_status": "provisional_pending_Sol_implementation_lane_contract_diagnosis",
-  "provisional": true,
-  "owner": "Sol implementation lane",
+  "state": "closed",
+  "triage_status": "confirmed_shared_supabase_transport_contract_repaired_and_native_retested",
+  "provisional": false,
+  "owner": "stabilization coordinator",
   "preconditions": [
     "Use the frozen CI development v0.2.492 artifact and a signed-in non-admin member with a verified selected organization.",
     "Create the disposable pattern through the Data side-panel Save pattern action."
@@ -21,29 +21,81 @@
   ],
   "expected": "Every authenticated backend request carries X-Organization-Id matching the selected organization, and an organization-scoped write carries that same organization_id in its body.",
   "actual": "The captured authenticated pattern-create POST carried the selected organization_id in its body and returned 201, but had no X-Organization-Id header. Exact row readback found the saved pattern under the selected organization, and cleanup deleted that exact row.",
-  "cause": "Source and native observation agree that this Data save path uses the ordinary Supabase client, whose global headers contain X-Client-Info only. Whether this direct PostgREST sink is covered by the per-request header contract is awaiting Sol implementation-lane diagnosis; defect triage remains provisional.",
+  "cause": "Confirmed shared transport defect: the three ordinary authenticated Supabase clients omitted X-Organization-Id on direct PostgREST requests. The Data Save body already carried the selected organization. Commit 4d0c4e58c attaches verified organization context at the shared Supabase HTTP boundary.",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38113237641",
     "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/native-report.sanitized.json",
     "docs/stabilization/runs/data-member-auto-extract-run38113237641.json",
     "docs/stabilization/reports/data-t08-member-native-peer-20261011.json",
-    "Product artifact source 83cd72b6c9a0b6cce5887c1f561668539e6d8259; workflow checkout 46c31547517484946d16472ecaeab534354f60e1."
+    "Product artifact source 83cd72b6c9a0b6cce5887c1f561668539e6d8259; workflow checkout 46c31547517484946d16472ecaeab534354f60e1.",
+    "docs/stabilization/reports/data-org-header-diagnosis-20261011.json",
+    "docs/stabilization/reports/supabase-org-header-source-peer-20261011.json",
+    "docs/stabilization/reports/data-t08-member-run38118648430-peer-20261011.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38118648430"
   ],
-  "fix_commit": null,
+  "fix_commit": "4d0c4e58c9c91509c8a68bcd1d63cd664e7f6920",
   "verification": [
     "Independent native peer inspected the exact hosted artifact and sanitized result; request observation reports body organization matched selected, headerOrganizationPresent=false, and HTTP 201.",
     "Independent source inspection of the exact product artifact confirms the Save pattern path uses savePattern through the ordinary client; the client global headers only add X-Client-Info.",
     "The hosted run remains partial. Automatic success, no_match, error, and manual Extract were observed; running was unverified. All four resource finals were valid; the temporary root selector was restored/read back and the exact owned row was deleted.",
-    "No code fix or rerun was performed in this bookkeeping task. Sol implementation-lane contract diagnosis is pending."
+    "No code fix or rerun was performed in this bookkeeping task. Sol implementation-lane contract diagnosis is pending.",
+    "Shared-client source repair and real-SDK boundary tests independently reviewed; the original null-header reproduction now fails to reproduce.",
+    "Fresh hosted member T08 run 38118648430 on frozen CI development 0.2.493/source a98c46a7d01cbf99af88aa90e4cabc296546a46f captured a POST 201 whose X-Organization-Id, body organization_id and selected organization match.",
+    "Independent A/B peer verified native rendered running, success, no_match, failure and enabled manual Extract, exact saved-row readback/deletion and original selector restoration, exact ZIP digests and three valid hosted resource finals. Screenshots are generic and are not used as Data proof.",
+    "This closes only the header defect and bounded member T08; admin T08, full Data feature, current-main runtime and Store remain unverified."
   ],
-  "closure_requirement": "Sol implementation lane confirms whether direct authenticated PostgREST requests to extend.wbx_pattern must carry X-Organization-Id under the current contract. If required, repair the product path and rerun a controlled member pattern creation/automatic extraction, observing matching request header/body and completing restoration/deletion. If not required, record the authoritative exception and re-evaluate this finding. Keep T08 and the member feature-role cell partial until all applicable dimensions, including running, are verified.",
-  "next_action": "Pending Sol implementation-lane confirmation or refutation of the request-header contract; no code change or T08 promotion is authorized by this record.",
+  "closure_requirement": "Original member saved-pattern write has a matching selected-organization request header and body on fresh hosted retest; surrounding member T08 running, success, no_match, failure and manual action pass; independent peer accepts artifact, resource and cleanup evidence. Admin T08 and full feature remain independent work.",
+  "next_action": "No further work is required for EXT-D-0197 itself. Continue admin T08 and broader Data cases; retest relevant intervening runtime changes before release.",
   "transition_history": [
     {
       "at": "2026-10-11T05:12:57Z",
       "from": null,
       "to": "open",
       "reason": "Fresh independent review of hosted member T08 run 38113237641 found a successful authenticated pattern-create POST with selected organization in the body but no X-Organization-Id header; exact source corroborates. Contract scope is provisional pending Sol diagnosis."
+    },
+    {
+      "at": "2026-10-11T06:48:12.503686Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Backfilled confirmed direct-PostgREST organization-header contract from published shared-client diagnosis; original finding is no longer provisional."
+    },
+    {
+      "at": "2026-10-11T06:48:12.504005Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Backfilled shared Supabase transport repair already implemented at commit 4d0c4e58c."
+    },
+    {
+      "at": "2026-10-11T06:48:12.504007Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Shared authenticated Supabase fetch boundary attaches the verified organization context; source peer and real-SDK regressions passed."
+    },
+    {
+      "at": "2026-10-11T06:48:12.504009Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Hosted run 38118648430 reproduced the original member write and independently observed matching header/body/selected organization plus surrounding T08 states and cleanup."
+    },
+    {
+      "at": "2026-10-11T06:48:12.504010Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Fresh A/B peer accepted product behavior and evidence integrity; defect closure is bounded to the original member header reproduction."
     }
-  ]
+  ],
+  "closure_evidence": {
+    "retest_run_id": 38118648430,
+    "independent_review": "docs/stabilization/reports/data-t08-member-run38118648430-peer-20261011.json",
+    "original_reproduction_no_longer_reproduces": true,
+    "surrounding_member_t08_states_passed": [
+      "running",
+      "success",
+      "no_match",
+      "failure",
+      "manual_extract"
+    ],
+    "fixture_cleanup": "exact owned row deleted and original selector restored/read back",
+    "scope_limit": "frozen member development artifact; admin and full feature remain unverified"
+  }
 }

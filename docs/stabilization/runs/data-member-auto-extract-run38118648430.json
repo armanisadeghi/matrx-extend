@@ -1,0 +1,68 @@
+{
+  "id": "data-member-auto-extract-run38118648430",
+  "feature_id": "EXT-F-2005",
+  "case_id": "EXT-F-2005-T08",
+  "at": "2026-10-11T06:45:06Z",
+  "status": "pass",
+  "scope": "One guarded hosted lane-A member T08 run against frozen CI development v0.2.493; disposable owned pattern and fixtures only.",
+  "hosted_run_id": 38118648430,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38118648430",
+  "hosted_run_attempt": 1,
+  "workflow_source_sha": "7d3d9d877eda1da5e32544f61026cdd227a7db18",
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "product_artifact": {
+    "development_run_id": 38118062600,
+    "development_artifact_id": 11694303227,
+    "source_sha": "a98c46a7d01cbf99af88aa90e4cabc296546a46f",
+    "github_artifact_digest": "sha256:360490be9da6b954ebf27d973a6cd0573b286eeaef7ac70f2d12f079503255fd",
+    "github_artifact_digest_independently_rehashed": true,
+    "version": "0.2.493",
+    "tree_sha256": "96e6ab485117f2c6ca06fea6ac82124e025eae1d607ff8cba632c6d59f1d3b40"
+  },
+  "hosted_evidence_artifact": {
+    "artifact_id": 11693984833,
+    "name": "hosted-guest-38118648430-1",
+    "digest": "sha256:a13b4c7edffec2050d4956cfee8bf26e3db13a78ad2fc7d9d8fb975d70a2d850",
+    "digest_independently_rehashed": true,
+    "admission_verifier": "valid"
+  },
+  "resource": {
+    "hosted-package": "valid",
+    "hosted-browser": "valid",
+    "hosted-guest": "valid"
+  },
+  "native_subtarget": {
+    "member_identity": "signed-in non-admin verified by native report",
+    "selected_organization": "verified by native report",
+    "pattern_setup_write": "One POST returned HTTP 201. Captured request body organization and X-Organization-Id both matched the independently selected organization; exact saved row readback passed.",
+    "success": "pass; rendered success state and exact fixture rows",
+    "no_match": "pass; rendered no-match state and explanation, with no rows",
+    "error": "pass; rendered failure state and detail after owned invalid-selector mutation",
+    "manual_extract_action": "pass; enabled Extract action rendered after automatic error",
+    "running": "pass; MutationObserver latched the rendered auto-running badge",
+    "exact_pattern_reads": "six signed-in domain reads returned HTTP 200",
+    "owned_selector_mutation": "original null selector read; temporary invalid selector write/readback passed; original null selector restored and read back",
+    "fixture_cleanup": "verified exact-name and organization lookup; one owned row deleted"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38118648430/native-report.sanitized.json",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38118648430/hosted-package-38118648430-1.jsonl",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38118648430/hosted-browser-38118648430-1.jsonl",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38118648430/hosted-guest-38118648430-1.jsonl",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38118648430/manifest.json"
+  ],
+  "independent_review": {
+    "status": "reviewed_pass_bounded_member_case",
+    "report": "docs/stabilization/reports/data-t08-member-run38118648430-peer-20261011.json",
+    "behavior_verdict": "PASS for bounded member T08",
+    "evidence_integrity_verdict": "PASS",
+    "reason": "Native rendered-DOM observations cover all five requested states; outgoing organization header/body agreement and owned-fixture cleanup are verified; the ZIP digests and all three finalized resource journals passed independent checks."
+  },
+  "limitations": [
+    "Admin T08 and the full Data feature remain unverified.",
+    "Current-main runtime and Store-installed behavior remain unverified; the tested product was frozen CI v0.2.493.",
+    "The two ancillary screenshots show generic guest Chat and are not evidence for Data states; native rendered-DOM observations support those claims.",
+    "No credential values are retained in the evidence."
+  ]
+}
