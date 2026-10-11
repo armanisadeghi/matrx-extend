@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38160708149,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38160708149",
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_event": "workflow_dispatch",
+  "workflow_source_sha": "1c5aaecc23c0d1282a177747bc13946be2e1ed0f",
+  "workflow_result": "success",
+  "runner": {
+    "label": "macos-15-intel",
+    "arch": "x86_64"
+  },
+  "inputs": {
+    "acceptance_lane": "B",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": false,
+    "seo_interrupt_after_target": "none"
+  },
+  "frozen_product": {
+    "version": "0.2.499",
+    "source_sha": "5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6",
+    "development_run_id": 38158831692,
+    "development_artifact_id": 11708654888,
+    "github_digest": "sha256:f0ba27bf56a1c4b83d991089e1f4e98683db7568c9487ea49c9c7a003a6c4d9a",
+    "tree_sha256": "dcedb190bb82480dc0832d6c23007c20c502cf088ec1fc8bd01b883274ad5f96",
+    "publish_state": "not_published"
+  },
+  "result_artifact": {
+    "id": 11710151456,
+    "name": "hosted-guest-38160708149-1",
+    "github_digest": "sha256:285a33604f2974e338858274a6f7635d3919aa1ddc14d22a120ab37a8a12836e",
+    "extracted_file_count": 6
+  },
+  "reviewed_current_main_sha": "3bc035224de0781c496d2eb6945431feab4168b1",
+  "current_main_runtime_tested": false
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "source": "Final hosted artifact 11710151456; each journal copied through scripts/copy-hosted-resource-journal.mjs and validated for one final decision.",
+  "phases": {
+    "package": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-package-38160708149-1.jsonl",
+      "sha256": "9686b34967a955953e788077b4bff675fc789e8392101a5bd47cdbd51c270555"
+    },
+    "browser": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-browser-38160708149-1.jsonl",
+      "sha256": "3fe5daba0fea2087913259aace2545af5645e73f9fbd28f82fc36d8196ed2d16"
+    },
+    "guest": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-guest-38160708149-1.jsonl",
+      "sha256": "f9d90315d923134e765fa4e2905b4ab7c37fa46b5bb3b0580746a7feecdcaece"
+    }
+  },
+  "policy_verdict": "All three phase journals contain one terminal valid decision, admitted=true, resourceInvalid=false, exitCode=0."
+}

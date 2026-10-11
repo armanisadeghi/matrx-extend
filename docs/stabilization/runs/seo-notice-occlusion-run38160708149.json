@@ -4,7 +4,7 @@
   "created_at_utc": "2026-10-11T17:41:44Z",
   "feature_id": "EXT-F-1008",
   "defect_id": "EXT-D-0199",
-  "status": "running",
+  "status": "reviewed_bounded_pass",
   "scope": "Guarded hosted lane B native guest SEO retest of notice-owned Re-audit hit points and visible Dismiss, with sanitized progress checkpoints before rich-page navigation. No product credit until terminal resource-valid evidence and independent review.",
   "hosted_run_id": 38160708149,
   "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38160708149",
@@ -25,5 +25,103 @@
     "version": "0.2.499",
     "github_digest": "sha256:f0ba27bf56a1c4b83d991089e1f4e98683db7568c9487ea49c9c7a003a6c4d9a"
   },
-  "next_action": "Await terminal hosted artifact, inspect all resource finals and native progress snapshots, then assign a fresh independent peer verdict before any D199 retest credit or closure."
+  "next_action": "Keep EXT-D-0199 fixed and open. The original D199 obstruction is gone on this frozen artifact for the exercised controlled guest sequence. Before retest-pass/closure, verify multiple and long notices, 360px narrow and normal width, and notice behavior through warm navigation and full reload; member/admin and Store remain separate unverified boundaries.",
+  "at": "2026-10-11T18:10:00Z",
+  "hosted_result_artifact_id": 11710151456,
+  "hosted_result_digest": "sha256:285a33604f2974e338858274a6f7635d3919aa1ddc14d22a120ab37a8a12836e",
+  "runner": {
+    "label": "macos-15-intel",
+    "arch": "x86_64"
+  },
+  "terminal": {
+    "workflow_status": "completed",
+    "workflow_conclusion": "success",
+    "job_conclusion": "success",
+    "workflow_source_sha": "1c5aaecc23c0d1282a177747bc13946be2e1ed0f"
+  },
+  "artifact": {
+    "version": "0.2.499",
+    "source_sha": "5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6",
+    "development_run_id": 38158831692,
+    "development_artifact_id": 11708654888,
+    "github_digest": "sha256:f0ba27bf56a1c4b83d991089e1f4e98683db7568c9487ea49c9c7a003a6c4d9a",
+    "tree_sha256": "dcedb190bb82480dc0832d6c23007c20c502cf088ec1fc8bd01b883274ad5f96",
+    "publish_state": "not_published"
+  },
+  "resource_finals": {
+    "package": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-package-38160708149-1.jsonl",
+      "sha256": "9686b34967a955953e788077b4bff675fc789e8392101a5bd47cdbd51c270555"
+    },
+    "browser": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-browser-38160708149-1.jsonl",
+      "sha256": "3fe5daba0fea2087913259aace2545af5645e73f9fbd28f82fc36d8196ed2d16"
+    },
+    "guest": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-guest-38160708149-1.jsonl",
+      "sha256": "f9d90315d923134e765fa4e2905b4ab7c37fa46b5bb3b0580746a7feecdcaece"
+    }
+  },
+  "product_verdict": "BOUNDED_D199_NATIVE_PASS_KEEP_DEFECT_FIXED_OPEN_FOR_REQUIRED_SIBLING_ACCEPTANCE",
+  "cases": {
+    "EXT-F-1008-T02": {
+      "status": "bounded_pass",
+      "native_case_status": "pass_for_D199_original_reproduction",
+      "evidence": "D199 notice hit snapshots before/after history recovery, immediately before/after trusted Re-audit, and after Dismiss. Trusted Re-audit settled on the expected current page while refusal notice remained visible."
+    },
+    "EXT-F-1008-T06": {
+      "status": "bounded_pass",
+      "native_case_status": "pass_for_controlled_guest_subtarget",
+      "evidence": "Controlled refusal was rendered, trusted Retry performed a fresh read, and the expected empty history state rendered."
+    },
+    "surrounding": {
+      "status": "partial",
+      "native_case_status": "reported_subtargets_pass",
+      "reported_target_count": 20,
+      "case_ids": [
+        "EXT-F-1008-T01",
+        "EXT-F-1008-T02",
+        "EXT-F-1008-T03",
+        "EXT-F-1008-T06",
+        "EXT-F-1008-T07",
+        "EXT-F-1008-T09",
+        "EXT-F-1008-T14"
+      ],
+      "coverage_limitations": [
+        "Multiple or long notices.",
+        "360px narrow-width and separate normal-width layout acceptance.",
+        "Notice behavior after warm navigation and full reload.",
+        "Member/admin notice behavior.",
+        "Current-main runtime behavior and Store installation."
+      ]
+    }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/receipt.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/native-report.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/native-progress.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/resource-finals.sanitized.json",
+    "docs/stabilization/reports/seo-notice-occlusion-independent-review-38160708149.json"
+  ],
+  "independent_review": "docs/stabilization/reports/seo-notice-occlusion-independent-review-38160708149.json",
+  "current_main_at_review": "3bc035224de0781c496d2eb6945431feab4168b1",
+  "current_main_runtime_tested": false
 }

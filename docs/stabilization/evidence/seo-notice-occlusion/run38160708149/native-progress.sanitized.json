@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "source": "Bounded sanitized progress summary derived from the final native report; no separate progress checkpoint file was present in hosted artifact 11710151456.",
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "runner_status": "partial",
+  "last_safe_stage": "broken_social_preview_fixture_restored",
+  "case_targets": {
+    "count": 20,
+    "all_reported_pass": true,
+    "cases": [
+      "EXT-F-1008-T01",
+      "EXT-F-1008-T02",
+      "EXT-F-1008-T03",
+      "EXT-F-1008-T06",
+      "EXT-F-1008-T07",
+      "EXT-F-1008-T09",
+      "EXT-F-1008-T14"
+    ]
+  },
+  "d199_notice_hit_snapshots": {
+    "history_refused": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "history_recovered": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "before_click": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "after_click": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "after_dismiss": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 0,
+      "dismiss_visible": false,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    }
+  },
+  "trusted_reaudit": {
+    "click_phase": "release_returned",
+    "controlled_history_retry_fresh_empty": {
+      "errorRendered": true,
+      "retryFreshRead": true,
+      "emptyRendered": true
+    },
+    "manual_reaudit_to_current_page": {
+      "currentTitlePreserved": true
+    },
+    "changed_page_reaudit": {
+      "publicTitleChanged": true,
+      "publicDescriptionChanged": true,
+      "oldAuditVisibleBeforeClick": true,
+      "nativeTitleMatchesChangedPublicDom": true,
+      "trustedReauditClick": true
+    }
+  }
+}

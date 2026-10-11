@@ -1,0 +1,124 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_seo_notice_occlusion_retest_review",
+  "reviewer": "seo_notice_retest_peer",
+  "reviewed_at_utc": "2026-10-11T18:10:00Z",
+  "run_id": 38160708149,
+  "verdict_a_original_reproduction": {
+    "verdict": "GONE_IN_BOUNDED_FROZEN_ARTIFACT_RETEST",
+    "reason": "The D199-specific refusal notice was present and dismissible while all nine sampled Re-audit hit points belonged to the target and zero belonged to the notice before/after history recovery and immediately before/after the trusted Re-audit. The trusted action returned to a settled current-page state while the notice remained visible. Dismiss then removed the refusal notice, leaving all nine Re-audit points target-owned.",
+    "snapshots": {
+      "history_refused": {
+        "active": true,
+        "target_count": 1,
+        "target_enabled": true,
+        "database_refused_notice_count": 1,
+        "dismiss_visible": true,
+        "hit_point_count": 9,
+        "notice_hit_point_count": 0
+      },
+      "history_recovered": {
+        "active": true,
+        "target_count": 1,
+        "target_enabled": true,
+        "database_refused_notice_count": 1,
+        "dismiss_visible": true,
+        "hit_point_count": 9,
+        "notice_hit_point_count": 0
+      },
+      "before_click": {
+        "active": true,
+        "target_count": 1,
+        "target_enabled": true,
+        "database_refused_notice_count": 1,
+        "dismiss_visible": true,
+        "hit_point_count": 9,
+        "notice_hit_point_count": 0
+      },
+      "after_click": {
+        "active": true,
+        "target_count": 1,
+        "target_enabled": true,
+        "database_refused_notice_count": 1,
+        "dismiss_visible": true,
+        "hit_point_count": 9,
+        "notice_hit_point_count": 0
+      },
+      "after_dismiss": {
+        "active": true,
+        "target_count": 1,
+        "target_enabled": true,
+        "database_refused_notice_count": 0,
+        "dismiss_visible": false,
+        "hit_point_count": 9,
+        "notice_hit_point_count": 0
+      }
+    },
+    "trusted_reaudit": {
+      "click_phase": "release_returned",
+      "settled_current_page": {
+        "currentTitlePreserved": true
+      },
+      "changed_metadata_reaudit": {
+        "publicTitleChanged": true,
+        "publicDescriptionChanged": true,
+        "oldAuditVisibleBeforeClick": true,
+        "nativeTitleMatchesChangedPublicDom": true,
+        "trustedReauditClick": true
+      },
+      "click_failure_diagnostic_present": false
+    },
+    "dismiss": {
+      "visible_before": true,
+      "notice_count_after": 0,
+      "visible_after": false
+    }
+  },
+  "verdict_b_surrounding_resource_provenance": {
+    "verdict": "RESOURCE_AND_PROVENANCE_PASS_WITH_COVERAGE_LIMITS",
+    "provenance": "PASS: workflow source 1c5aaecc23c0d1282a177747bc13946be2e1ed0f; frozen product CI run 38158831692/artifact 11708654888, source 5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6, v0.2.499, imported digest matches report metadata; D199 fix f3a7f8294805359c619b22571647a0414092c576 is an ancestor of the frozen source.",
+    "result_artifact": "PASS: downloaded GitHub artifact 11710151456; archive SHA-256 sha256:285a33604f2974e338858274a6f7635d3919aa1ddc14d22a120ab37a8a12836e matches GitHub artifact metadata and upload log; six files enumerated and inspected.",
+    "resource_finals": "PASS: package, browser and guest journals each have exactly one terminal RESOURCE_FINAL_DECISION with admitted=true, resourceInvalid=false, exitCode=0, decision=valid; journals were copied through the repository allowlist sanitizer.",
+    "surrounding_cases": {
+      "reported_target_count": 20,
+      "all_reported_pass": true,
+      "case_ids": [
+        "EXT-F-1008-T01",
+        "EXT-F-1008-T02",
+        "EXT-F-1008-T03",
+        "EXT-F-1008-T06",
+        "EXT-F-1008-T07",
+        "EXT-F-1008-T09",
+        "EXT-F-1008-T14"
+      ],
+      "scope": "Observed subtargets only; report status is partial due explicitly deferred work."
+    },
+    "not_covered": [
+      "Multiple or long notices.",
+      "360px narrow-width and separate normal-width layout acceptance.",
+      "Notice behavior after warm navigation and full reload.",
+      "Member/admin notice behavior.",
+      "Current-main runtime behavior and Store installation."
+    ],
+    "limitations": [
+      "The artifact preserves nine-point aggregate counts (9 target hits, 0 notice hits) rather than nine individual coordinate/owner records.",
+      "The hosted upload contains the final native report; no separate progress checkpoint file was uploaded. A bounded progress summary is derived from that final report.",
+      "The generic runner result label PARTIAL is due deferred SEO subtargets; D199-specific assertions and native observations in this run pass."
+    ]
+  },
+  "current_main_distinction": "The tested product is the frozen unpublished 0.2.499 artifact from source 5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6. The fix commit is an ancestor of that source and current origin/main was 3bc035224de0781c496d2eb6945431feab4168b1 at review. This review establishes no native result for the current-main runtime.",
+  "overall": "BOUNDED_D199_NATIVE_PASS_KEEP_DEFECT_FIXED_OPEN_FOR_REQUIRED_SIBLING_ACCEPTANCE",
+  "next_action": "Keep EXT-D-0199 at fixed and open. Record the bounded native original-repro pass; run remaining multi/long-notice, narrow/normal-width, and notice warm/full-reload checks before retest-pass/closure. Member/admin and Store remain separate boundaries.",
+  "evidence": {
+    "receipt": "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/receipt.sanitized.json",
+    "native_report": "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/native-report.sanitized.json",
+    "native_progress": "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/native-progress.sanitized.json",
+    "resource_finals": "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/resource-finals.sanitized.json",
+    "resource_journals": [
+      "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/resource-journals/hosted-package-38160708149-1.jsonl",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/resource-journals/hosted-browser-38160708149-1.jsonl",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38160708149/resource-journals/hosted-guest-38160708149-1.jsonl"
+    ],
+    "run_record": "docs/stabilization/runs/seo-notice-occlusion-run38160708149.json"
+  }
+}
