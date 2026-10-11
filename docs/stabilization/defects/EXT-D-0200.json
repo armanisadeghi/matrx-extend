@@ -23,7 +23,7 @@
   "actual": "Generator reads only fixed October 1 audit and labels its no-pending-review release claim current despite October 11 authenticated pending review evidence.",
   "cause": "Both Markdown sections source current release text from read_coverage_audit; daily Store records were never read.",
   "sibling_census": [
-    "STATUS.md and CHECKLIST.md share the repaired daily record renderer. STATUS.html had no release paragraph; its coverage matrix remains generated."
+    "STATUS.md, CHECKLIST.md and STATUS.html now render the same daily Store observations; historical audit receipts remain explicitly historical in Markdown."
   ],
   "evidence": [
     "docs/stabilization/reports/store-release-followthrough-20261011.json",
@@ -33,9 +33,11 @@
   "verification": [
     "Old generator RED: missing public listing release paragraph assertion.",
     "Real render regression PASS for October 11, October 10 dashboard-unavailable evidence, malformed newer JSON and absence of valid daily records.",
-    "In-memory constant and skipped release renderer mutants rejected."
+    "In-memory constant and skipped release renderer mutants rejected.",
+    "Independent first review found HTML release observations missing; expanded regression failed on HTML before repair and passes all three generated views.",
+    "Alternate synthetic public 0.3.12 / draft 0.3.18 observations reach all three views; dates, provenance and dashboard-unavailable/no-valid-record boundaries covered."
   ],
-  "reviewer": "pending independent generator/output verification",
+  "reviewer": "First peer: Markdown/source PASS, HTML gap repaired; independent reverify pending",
   "closure_requirement": "Independent verification of generator, regression and generated current/historical release sections.",
   "release_status": "Infrastructure documentation generator only; no Store mutation, build or release.",
   "next_action": "Independent review before closing; Store dashboard and product acceptance out of scope.",

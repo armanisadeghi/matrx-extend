@@ -7,6 +7,7 @@ import collections
 import datetime
 import html
 import json
+import re
 from pathlib import Path
 import subprocess
 
@@ -60,6 +61,18 @@ def current_store_release_lines():
         lines.append("**Authenticated dashboard:** private review state unverified; no authenticated observation recorded.")
     lines.append("These observations are bounded to their recorded times; source versions and local artifacts do not establish Store publication or product acceptance.")
     return lines
+
+
+def current_store_release_html():
+    """Render the same bounded observations as the Markdown views."""
+    paragraphs = []
+    for line in current_store_release_lines():
+        value = esc(line)
+        value = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", value)
+        value = re.sub(r"\[daily Store record\]\((reports/store-release-followthrough-[0-9]{8}\.json)\)",
+                       r'<a href="\1">daily Store record</a>', value)
+        paragraphs.append(f"<p>{value}</p>")
+    return '<section aria-labelledby="store-release"><h2 id="store-release">Current Store release observations</h2>' + ''.join(paragraphs) + '</section>'
 
 
 def inventory_source_delta(inventory):
@@ -440,6 +453,7 @@ def render(inventory, defects):
     page = '''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Extension stabilization status</title>
 <style>:root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#19283c;background:#f5f7fb}*{box-sizing:border-box}body{margin:0}main{max-width:1450px;margin:auto;padding:24px}h1{font-size:2rem;margin:0 0 8px}.lede{max-width:1000px;line-height:1.55;color:#465770}.meta{color:#596a80}a{color:#145ba3}table{border-collapse:collapse;width:100%;background:white}th,td{text-align:left;vertical-align:top;border-bottom:1px solid #dce3ed;padding:10px}thead{background:#eaf0f7}small{display:block;color:#65758a;font-size:.78rem;margin-top:4px;line-height:1.35}.tablewrap{overflow:auto}.summary{border:1px solid #dce3ed;border-radius:12px;overflow:hidden;margin:20px 0}.toolbar{position:sticky;top:0;background:#f5f7fb;padding:12px 0;display:flex;gap:10px;z-index:2;flex-wrap:wrap}input,select{padding:10px;border:1px solid #b9c7d8;border-radius:8px;font:inherit;background:white}input{min-width:min(400px,100%);flex:1}.surface,.feature{background:white;border:1px solid #dce3ed;border-radius:10px;margin:12px 0}.surface>summary,.feature>summary{cursor:pointer;padding:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.surface>summary{font-weight:700;font-size:1.16rem;background:#edf3fb}.surface>summary small{margin-left:auto}.feature>summary strong{font-size:1rem}.featurebody{padding:0 14px 14px}.id{font-size:.75rem;color:#67788e}.rolebadges{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}.badge{display:inline-block;border-radius:6px;padding:3px 7px;background:#e9edf3;color:#35465a;font-size:.78rem;font-weight:600;white-space:nowrap}.pass{background:#dcf4e5;color:#126238}.fail{background:#ffe0dc;color:#9f251e}.partial{background:#fff0c8;color:#805500}.deferred{background:#e9e4fa;color:#55399a}.unverified{background:#e7edf5;color:#44566e}.na{background:#f1f2f4;color:#67717e}.sub{margin-top:12px}.sub summary{cursor:pointer}.hint{padding:0 14px;color:#61738a}.hidden{display:none!important}@media(max-width:700px){main{padding:12px}.surface>summary small,.rolebadges{margin-left:0}.summary td,.summary th{padding:6px}}</style></head><body><main>
 <h1>Extension stabilization status</h1><p class="meta">Generated GENERATED from inventory.json and defects/*.json · Inventory updated DATE · FEATURE features · CASE cases · CONTROL controls · DEFECT defect records</p><p class="lede">INTRO</p>
+STORE_RELEASE
 <div class="toolbar"><input id="search" type="search" placeholder="Search tabs, features, cases, defects" aria-label="Search tracker"><select id="filter" aria-label="Filter feature status"><option value="all">All statuses</option><option value="pass">Pass</option><option value="partial">Partial</option><option value="fail">Fail</option><option value="unverified">Unverified</option><option value="deferred">Deferred</option></select><span id="visible" class="meta"></span></div>
 <div class="tablewrap summary"><table><thead><tr><th>Tab or surface</th><th>Feature records</th><th>Guest</th><th>Member</th><th>Admin</th><th>Active defects</th></tr></thead><tbody>ROWS</tbody></table></div><p class="meta">“Full” means all applicable cases passed and all controls have a mapped case. Case counts exclude N/A roles. Active defects include open, in-fix, and fixed awaiting closure; a zero fail count does not erase these issues.</p>
 SECTIONS
@@ -449,6 +463,7 @@ SECTIONS
             .replace("FEATURE", str(len(features))).replace("CASE", str(total_cases))
             .replace("CONTROL", str(total_controls)).replace("DEFECT", str(len(defects)))
             .replace("INTRO", esc(intro)).replace("ROWS", "".join(table_rows))
+            .replace("STORE_RELEASE", current_store_release_html())
             .replace("SECTIONS", "\n".join(sections)))
     (BASE / "STATUS.html").write_text(page)
 
