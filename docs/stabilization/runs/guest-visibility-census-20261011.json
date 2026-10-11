@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "task_id": "guest-visibility-census-20261011",
+  "status": "running",
+  "scope": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "acceptance_case": "visibility-census-guest",
+    "acceptance_lane": "A",
+    "auth_mode": "guest",
+    "credentialless_guest_acceptance": true,
+    "shared_credentials": false,
+    "fixture_mutation": false,
+    "frozen_product_source_sha": "b53735e2c275dff7c10b752a695b64cb0c64ea1a",
+    "development_run_id": 38126956706,
+    "development_artifact_id": 11697244437,
+    "development_artifact_digest": "sha256:22bdc196eb41b0f6a8c1d8520d603eec67e45eec9d97a79d82b7fe9895fd2b1c"
+  },
+  "preflight": {
+    "latest_eligible_successful_ci_source": "b53735e2c275dff7c10b752a695b64cb0c64ea1a",
+    "artifact_metadata_verified": true,
+    "workflow_source_ref": "main",
+    "active_hosted_acceptance_runs_before_dispatch": 0,
+    "guest_signed_out_state_checked_by_driver": true,
+    "observation_only_driver": true,
+    "http_methods_other_than_get_head_options_blocked": true
+  },
+  "dispatch": {
+    "ref": "main",
+    "workflow_source_sha": "9a3a8b95d202ea78ad7ea12b343e586394ccdd3d",
+    "run_id": 38157797924,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38157797924",
+    "started_at": "2026-10-11T17:00:09Z",
+    "status": "in_progress",
+    "conclusion": null
+  },
+  "result": {
+    "runner_overall_status": "unverified",
+    "bounded_status": "pending",
+    "behavior_credit": "none",
+    "interpretation": "Observation only: inventory visible navigation, visible Settings sections and visible controls across safely opened tabs/sections. This does not test control actions or prove behavior. All behavior cells remain unverified."
+  },
+  "evidence_paths": []
+}
