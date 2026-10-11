@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_review",
+  "reviewer": "/root/d148_runner_diagnostic_peer",
+  "reviewed_at": "2026-10-11",
+  "defect_id": "EXT-D-0148",
+  "target_case_id": "EXT-F-4163-T01",
+  "verdict": "GO_DIAGNOSTIC_REPAIR_SOURCE_ONLY",
+  "verdicts": {
+    "A_requested_live_outcome": "NOT_VERIFIED",
+    "B_diagnostic_repair_quality": "GO"
+  },
+  "scope": "Independent source review of the D148 member runner failure-diagnostic repair. No hosted browser or native runner was launched; no product behavior is credited.",
+  "reviewed_files": [
+    "tests/browser/tab-groups-member-native-acceptance.mjs",
+    "tests/browser/tab-groups-member-failure.mjs",
+    "tests/browser/tab-groups-member-failure.test.mjs"
+  ],
+  "findings": [],
+  "evidence": {
+    "previous_failure_context": "docs/stabilization/reports/d148-tabgroups-member-run38109213892.json records resource-admitted run 38109213892, failure before manual runner opening, and stage overwritten to cleanup before serialization.",
+    "first_failure_preserved": "The final wrapper uses a separate hasPrimaryError flag, so even a promise rejection with undefined is distinguished from success. It captures report.stage, a manual-runner-only step (null otherwise), and a safe failure code when the exercise first throws; cleanup then runs without changing those fields. The outer catch uses nullish assignment and does not leak a stale manual step into non-manual stages.",
+    "cleanup_failure_handling": "A cleanup failure is recorded separately. If exercise already failed, its original Error remains the rejected value and the cleanup error is secondary; after successful exercise, cleanup becomes the failure stage and receives a safe code.",
+    "manual_runner_observation": "On a manual-runner failure, the callback records only normalized selector counts and an active-tab count, with an explicit unavailable sentinel both when the CDP evaluation returns no value and when observation throws. It does not serialize selector text, field values, URLs, credentials, or raw exception messages.",
+    "failure_code_sanitization": "Only known symbolic messages and a fixed allowlist of manual-runner steps are emitted. Unknown exceptions map to unclassified_failure; raw exception content is not included in the report.",
+    "regression_tests": "The focused tests cover first stage/step after cleanup, preservation of the primary error when cleanup also fails, cleanup as a standalone failure, observation failure fallback, and exclusion of unsafe exception text from serialized report data. These assertions would fail under the prior behavior that overwrote the first stage with cleanup.",
+    "verification": {
+      "command": "node --test tests/browser/tab-groups-member-failure.test.mjs",
+      "result": "4 passed, 0 failed"
+    },
+    "syntax": {
+      "command": "node --check tests/browser/tab-groups-member-native-acceptance.mjs && node --check tests/browser/tab-groups-member-failure.mjs",
+      "result": "passed"
+    },
+    "diff_check": {
+      "command": "git diff --check -- tests/browser/tab-groups-member-native-acceptance.mjs tests/browser/tab-groups-member-failure.mjs tests/browser/tab-groups-member-failure.test.mjs",
+      "result": "passed"
+    }
+  },
+  "final_diff_review": {
+    "checked_after_implementer_adjustments": true,
+    "adjustments_reviewed": [
+      "Empty CDP result maps to availability=unavailable.",
+      "A rejection with undefined is still treated as a primary failure.",
+      "failure_step is null outside the manual-runner stage."
+    ],
+    "remaining_findings": []
+  },
+  "limits": [
+    "No hosted rerun was performed. The revised uploaded report and manual-runner failure stage/step/counts remain unobserved.",
+    "The added tests exercise the diagnostic wrapper and report boundary; they do not reproduce Chromium, CDP, authentication, resource throttling, or tab cleanup in a native session.",
+    "No product behavior, including tab_groups creation or manual runner availability, is asserted by this review."
+  ],
+  "recommendation": "The diagnostic repair is suitable for the next authorized hosted diagnostic attempt. Treat its result as diagnostic evidence only unless the full native acceptance succeeds and proves the requested behavior.",
+  "workspace_preservation": "This review added only this report. Existing Data stabilization edits and the implementer's D148 files were left untouched."
+}
