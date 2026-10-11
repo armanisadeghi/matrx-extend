@@ -217,6 +217,7 @@ it('keeps a concurrent manual response out of the saved replay result', async ()
   Object.assign(chrome, {
     runtime: {
       id: 'extension',
+      getManifest: () => ({ version: '0.0.0-test' }),
       sendMessage: runtimeMessage,
       onMessage: { addListener: vi.fn(), removeListener: vi.fn() },
       onConnect: { addListener: vi.fn() },
