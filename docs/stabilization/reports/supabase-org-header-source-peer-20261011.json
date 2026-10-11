@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_peer_review",
+  "reviewer": "/root/supabase_org_header_source_peer",
+  "reviewed_at": "2026-10-11T05:23:23Z",
+  "scope": "Independent review of the current uncommitted Supabase organization-header repair for the authenticated Data pattern POST observed in hosted run 38113237641.",
+  "source_context": {
+    "observed_run": 38113237641,
+    "observed_request": "Authenticated POST /rest/v1/wbx_pattern returned HTTP 201 with body organization_id matching the selected organization and no X-Organization-Id header.",
+    "current_checkout_head": "b08cde49d38bd0e9c926b969a62ac03bff68b669",
+    "reviewed_state": "Uncommitted shared-checkout changes; no product edits made by this reviewer."
+  },
+  "verdicts": {
+    "A_observed_request_contract": {
+      "verdict": "PASS",
+      "evidence": [
+        "The new test invokes the real savePattern caller, which writes through supabaseForActor('person'), the real Supabase JS client, and the configured final fetch. It verifies that X-Organization-Id and the actual serialized organization_id both equal the captured organization after the active organization changes.",
+        "Separate real-SDK cases cover person, agent and machinery clients; the final requests retain their expected actor-tier header. The anonymous catalog read emits no organization header and performs no organization resolution.",
+        "The pre-fix hosted observation supplies the original failure. The current test suite exercises the repaired request boundary. No post-fix hosted/native run was performed in this source-review lane, so the original T08 run remains partial until its captured POST is repeated."
+      ],
+      "limitation": "This verdict is for the real SDK-to-fetch request contract. It does not claim a post-fix browser or hosted observation."
+    },
+    "B_design_and_guard_quality": {
+      "verdict": "PASS",
+      "evidence": [
+        "Ordinary authenticated Supabase requests use organizationFetch, which always obtains an explicit write organization or calls requireActiveOrganizationId before network I/O. The old route-shape exception is gone.",
+        "The pre-selection reads are named resolver operations on a private bootstrap client: fixed membership RPC, organization labels for IDs obtained by the resolver, and current-user account-choice query. Its fetch uses getResolvedActiveOrganizationId only; that accessor reads cached validated state and storage and cannot start the database resolution it supports.",
+        "A test issues the same membership RPC through the ordinary client and confirms it performs the resolver sequence before the request gets an organization header. Other tests reject zero-membership ordinary reads, verify cached headers, ensure nested user data cannot select context, reject conflicting write organizations before fetch, and preserve actor headers.",
+        "The bootstrap rationale is consistent with the owner's Organizations VISION §10 load-time wording ('from then on') and with the observed Supabase PostgREST behavior. The aidream server-side organization gate is a separate transport and remains strict. The extension STATE and local Supabase FEATURE text now state the bounded pre-selection exception; WIRE_CONTRACT contains no conflicting direct-PostgREST rule."
+      ],
+      "finding_dispositions": [
+        {
+          "finding": "The initial route-shape matcher could grant headerless bootstrap behavior to any ordinary request that reproduced a resolver URL shape.",
+          "status": "ADDRESSED",
+          "evidence": "The matcher was removed. Bootstrap reads now use three named resolver helpers on a private client; a real-SDK test sends the exact membership RPC through the ordinary client and observes that it resolves organization context before sending that RPC."
+        },
+        {
+          "finding": "The canonical extension STATE described the organization header as applying to every request without the pre-selection bootstrap described by the owner load-time rule.",
+          "status": "ADDRESSED",
+          "evidence": "STATE rule 16 now limits the bootstrap exception to the three fixed resolver reads before a verified selection and distinguishes direct Supabase from the aidream server gate."
+        },
+        {
+          "finding": "Two legacy unit-test mocks did not expose the new resolver read helpers.",
+          "status": "ADDRESSED",
+          "evidence": "The mocks were adapted to the fixed membership, organization-label and account-choice reads. Existing test assertions remain intact; archive-filter and RPC-argument behavior are still checked."
+        }
+      ],
+      "remaining_limit": "The bootstrap helper operations are exported for the resolver module boundary, but code census found only active-org.ts and tests using them. The underlying client stays private, helpers expose no caller-selected RPC, table, select or write, and ordinary client requests cannot opt into the exception."
+    }
+  },
+  "verification": {
+    "command": "pnpm exec vitest run src/lib/supabase/client.organization.test.ts src/lib/api/client-organization-ladder.test.ts src/lib/api/client-organization-no-memberships.test.ts tests/unit/save-as-pattern-organization-race.test.tsx tests/unit/auth-route.test.ts tests/unit/save-never-loses-input.test.tsx",
+    "result": "PASS — 6 test files, 75 tests",
+    "test_quality": "The boundary cases use the real Supabase JS SDK and capture the final outgoing Request. The Data case traverses savePattern rather than constructing only a transport-level request.",
+    "builder_mutation_evidence": "The implementation lane reports that removing the global fetch wiring caused the new real Data Save caller assertion to fail; it restored the wiring and the test passed. This peer did not repeat that temporary mutation.",
+    "hosted_run": "Not run; explicitly outside this source-peer scope."
+  },
+  "files_reviewed": [
+    "src/lib/supabase/client.ts",
+    "src/lib/supabase/organization-fetch.ts",
+    "src/lib/org/active-org.ts",
+    "src/lib/supabase/schemas.ts",
+    "src/lib/supabase/client.organization.test.ts",
+    "src/lib/supabase/FEATURE.md",
+    "src/lib/api/client-organization-ladder.test.ts",
+    "src/lib/api/client-organization-no-memberships.test.ts",
+    "tests/unit/auth-route.test.ts",
+    "tests/unit/save-never-loses-input.test.tsx",
+    "src/lib/supabase/queries.ts",
+    "../common-docs/systems/apps/extension/STATE.md",
+    "../common-docs/systems/apps/extension/WIRE_CONTRACT.md",
+    "../common-docs/systems/account/organizations/VISION.md"
+  ],
+  "open_items": [
+    "Repeat the owned native Data Save after the repair and confirm the captured authenticated POST has matching X-Organization-Id and body organization_id; keep hosted T08 partial until then."
+  ]
+}

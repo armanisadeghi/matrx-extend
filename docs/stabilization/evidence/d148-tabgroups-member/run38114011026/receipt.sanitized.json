@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 38114011026,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38114011026",
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "checkout_sha": "10b37f5fddfcc5a7e5d81084dc56ec943cb6b440",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "job_conclusion": "failure",
+    "started_at": "2026-10-11T05:12:01Z",
+    "completed_at": "2026-10-11T05:12:22Z"
+  },
+  "acceptance": {
+    "case": "tab-groups-member",
+    "case_id": "EXT-F-4163-T01",
+    "scope": "member Tools > Catalog manual runner; tab_groups create collapsed=true only",
+    "status": "no_product_evidence",
+    "first_failure_boundary": "selected_authentication_preflight",
+    "failure_code": "d87_auth_secret_invalid",
+    "classification": "operator_secret_staging_error",
+    "product_behavior": "unverified",
+    "native_driver_started": false,
+    "canonical_tool_invoked": false,
+    "create_or_readback_observed": false,
+    "fixture_created": false,
+    "resource_admission_started": false,
+    "resource_journals": [],
+    "hosted_result_artifacts": []
+  },
+  "selected_product_artifact": {
+    "kind": "ci_development_test",
+    "ci_run_id": 38112620925,
+    "ci_artifact_id": 11691669564,
+    "source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+    "version": "0.2.492",
+    "artifact_digest": "sha256:09dad80186549b94f08f48090834997cf709801a3628f35f6cc4a28b925aef38",
+    "tree_sha256": "f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "provenance_gate_passed": true,
+    "artifact_import_reached": false
+  },
+  "diagnosis": {
+    "workflow_trace": "The selected-authentication preflight failed in requireSettingsCredential while parsing MATRX_HOSTED_MEMBER_LINK_JSON. The run log reports d87_auth_secret_invalid before package readiness or browser setup.",
+    "confirmed_cause": "The staging invocation used gh secret set MATRX_REVIEWER_MAGIC_LINK_JSON --body - with the local private link file on stdin. This gh version treats --body as the literal body value, so the repository secret was set to a hyphen instead of reading stdin.",
+    "safe_stdin_form": "gh secret set MATRX_REVIEWER_MAGIC_LINK_JSON --repo armanisadeghi/matrx-extend < \"$LINK_FILE\"",
+    "credential_values_recorded": false
+  },
+  "cleanup": {
+    "temporary_repository_secret_deleted": true,
+    "repository_secret_name_absence_verified": true,
+    "local_one_time_link_deleted": true,
+    "local_one_time_link_absence_verified": true
+  },
+  "limits": [
+    "No browser or side-panel behavior ran; this result gives no pass or product-failure credit.",
+    "The selector repair was not exercised by this run.",
+    "This was the single authorized attempt; no relaunch was made."
+  ]
+}

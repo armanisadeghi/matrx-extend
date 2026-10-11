@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "run_id": 38113131426,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_checkout_sha": "46c31547517484946d16472ecaeab534354f60e1",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "ci_run_id": 38112620925,
+    "ci_artifact_id": 11691669564,
+    "source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+    "version": "0.2.492",
+    "artifact_digest": "sha256:09dad80186549b94f08f48090834997cf709801a3628f35f6cc4a28b925aef38",
+    "tree_sha256": "f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "native_acceptance_status": "success",
+  "resource_valid": true,
+  "resource_journals": [
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-package-38113131426-1.jsonl",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-browser-38113131426-1.jsonl",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-guest-38113131426-1.jsonl"
+  ],
+  "evidence": "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/receipt.sanitized.json",
+  "result": {
+    "schema_version": 1,
+    "feature_id": "EXT-F-1007",
+    "case_id": "EXT-F-1007-T08",
+    "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+    "auth_mode": "guest",
+    "status": "pass",
+    "stage": "complete",
+    "native_stage": "exercise_panel",
+    "artifact": {
+      "kind": "ci_development_test",
+      "source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+      "run_id": 38112620925,
+      "artifact_id": 11691669564,
+      "version": "0.2.492",
+      "tree_sha256": "f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c"
+    },
+    "observations": {
+      "case_id": "EXT-F-1007-T08",
+      "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+      "fixture": "owned localhost; title only; no body, SEO metadata, links, images, headings or JSON-LD",
+      "seo": {
+        "visible": true,
+        "selected": "SEO",
+        "title_matches": true,
+        "description_dash": true,
+        "groups": ["Title & description", "Performance"]
+      },
+      "schema": {
+        "visible": true,
+        "selected": "Schema",
+        "json_valid": true,
+        "metadata_title_matches": true,
+        "description_absent": true,
+        "canonical_absent": true,
+        "og_count": 0,
+        "twitter_count": 0,
+        "schema_types_count": 0,
+        "ld_json_count": 0
+      },
+      "export_checks": [
+        {
+          "after_pane": "SEO",
+          "identity_unchanged": true,
+          "digest_unchanged": true
+        },
+        {
+          "after_pane": "Schema",
+          "identity_unchanged": true,
+          "digest_unchanged": true
+        }
+      ],
+      "verdict": {
+        "seo_no_signal_baseline": true,
+        "schema_empty": true,
+        "capture_export_unchanged_after_each_pane": true
+      }
+    },
+    "capture_diagnostic": {
+      "before": {
+        "capture_match_count": 1,
+        "capture_inside_scrape": true,
+        "chat_active": false,
+        "active_scrape_count": 1,
+        "scrape_controls_present": true,
+        "scrape_pane_found": true,
+        "scrape_pane_active": true,
+        "result_tablist_count": 0,
+        "selected_count": 0,
+        "article": false,
+        "selected_inside_scrape": false,
+        "result_controls_present": false,
+        "result_pane_found": false,
+        "result_pane_active": false,
+        "result_pane_inside_scrape": false,
+        "result_pane_visible": false,
+        "title_matches": true
+      },
+      "immediate": {
+        "capture_match_count": 1,
+        "capture_inside_scrape": true,
+        "chat_active": false,
+        "active_scrape_count": 1,
+        "scrape_controls_present": true,
+        "scrape_pane_found": true,
+        "scrape_pane_active": true,
+        "result_tablist_count": 0,
+        "selected_count": 0,
+        "article": false,
+        "selected_inside_scrape": false,
+        "result_controls_present": false,
+        "result_pane_found": false,
+        "result_pane_active": false,
+        "result_pane_inside_scrape": false,
+        "result_pane_visible": false,
+        "title_matches": true
+      },
+      "immediate_events": {
+        "pointerdown": 1,
+        "pointerup": 1,
+        "click": 1,
+        "trusted_click": 1,
+        "capture_click": 1,
+        "trusted_capture_click": 1,
+        "last_target_is_capture": true,
+        "last_target_inside_scrape": true
+      },
+      "timeout": null,
+      "pointer_target": {
+        "target_rect": {
+          "x": 12,
+          "y": 695,
+          "width": 284,
+          "height": 36
+        },
+        "clipped_rect": {
+          "x": 12,
+          "y": 695,
+          "width": 284,
+          "height": 36
+        },
+        "viewport": {
+          "width": 600,
+          "height": 743
+        },
+        "clipping_ancestor_count": 0,
+        "tested_point_count": 9,
+        "center_hit_category": "target",
+        "interior_hit_kinds": [
+          "target",
+          "target",
+          "target",
+          "target",
+          "target",
+          "target",
+          "target",
+          "target",
+          "target"
+        ],
+        "center_occluder": null,
+        "first_interior_occluder": null,
+        "selected_point_available": true,
+        "selected_point": {
+          "x": 154,
+          "y": 713
+        },
+        "target_disabled": false,
+        "target_pointer_events_none": false
+      },
+      "pointer_phase": "release_returned",
+      "pointer_failure": null,
+      "events": {
+        "pointerdown": 1,
+        "pointerup": 1,
+        "click": 1,
+        "trusted_click": 1,
+        "capture_click": 1,
+        "trusted_capture_click": 1,
+        "last_target_is_capture": true,
+        "last_target_inside_scrape": true
+      }
+    },
+    "panel_viewport": {
+      "mode": "normal",
+      "mechanism": "owned_SIDE_PANEL_CDP_viewport_emulation",
+      "observed_px": 600,
+      "minimum_px": 600
+    },
+    "failure_code": null,
+    "limits": "One owned localhost guest page; only T08 no-signal SEO and empty Schema panes. No broader T08, role, width, Store, or current-main claim.",
+    "browser_version": "Chrome/141.0.7390.37"
+  },
+  "review_status": "awaiting_fresh_native_peer; no inventory credit"
+}

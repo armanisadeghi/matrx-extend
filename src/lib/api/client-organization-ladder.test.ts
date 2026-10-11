@@ -35,6 +35,21 @@ vi.mock('@/lib/auth/flow', () => ({
 }));
 vi.mock('@/lib/auth/guest-signature', () => ({ getOrCreateGuestSignature: async () => 'guest' }));
 vi.mock('@/lib/supabase/client', () => ({
+  readOrganizationBootstrapMemberships: async () => ({
+    data: harness.memberships.map((id) => ({ container_id: id, status: 'active' })),
+    error: null,
+  }),
+  readOrganizationBootstrapLabels: async () => ({
+    data: harness.memberships.map((id) => ({ id, name: `Org ${id.slice(0, 4)}` })),
+    error: null,
+  }),
+  readOrganizationBootstrapAccountChoice: async () => ({
+    data: {
+      last_active_organization_id: harness.account.lastActive,
+      startup_organization_id: harness.account.startup,
+    },
+    error: null,
+  }),
   getSupabase: () => ({
     schema: () => ({ rpc: async () => ({ error: null }) }),
     rpc: async () => ({

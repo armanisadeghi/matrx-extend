@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "report_id": "d148-tabgroups-member-run38114011026",
+  "case_id": "EXT-F-4163-T01",
+  "defect_id": "EXT-D-0148",
+  "status": "gated_preflight_failure_no_product_evidence",
+  "workflow_checkout_sha": "10b37f5fddfcc5a7e5d81084dc56ec943cb6b440",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "ci_run_id": 38112620925,
+    "ci_artifact_id": 11691669564,
+    "source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+    "version": "0.2.492",
+    "artifact_digest": "sha256:09dad80186549b94f08f48090834997cf709801a3628f35f6cc4a28b925aef38",
+    "tree_sha256": "f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "provenance_gate_passed": true
+  },
+  "native_run": {
+    "run_id": 38114011026,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38114011026",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "status": "failure",
+    "first_failure_stage": "selected_authentication_preflight",
+    "failure_code": "d87_auth_secret_invalid",
+    "resource_admitted": false,
+    "browser_started": false,
+    "native_driver_started": false,
+    "canonical_tool_invoked": false,
+    "create_readback_cleanup_observed": false
+  },
+  "cause": {
+    "classification": "operator_secret_staging_error",
+    "confirmed": "The command used `gh secret set MATRX_REVIEWER_MAGIC_LINK_JSON --repo armanisadeghi/matrx-extend --body - < \"$LINK_FILE\"`. In the installed gh CLI, `--body` supplies the literal body; stdin is read only when `--body` is omitted. The secret therefore failed the JSON parse at credential preflight.",
+    "safe_corrected_form": "`gh secret set MATRX_REVIEWER_MAGIC_LINK_JSON --repo armanisadeghi/matrx-extend < \"$LINK_FILE\"`",
+    "credential_values_recorded": false
+  },
+  "cleanup": {
+    "temporary_github_secret_deleted": true,
+    "github_secret_absence_verified": true,
+    "local_one_time_link_deleted": true,
+    "local_link_absence_verified": true
+  },
+  "evidence": "docs/stabilization/evidence/d148-tabgroups-member/run38114011026/receipt.sanitized.json",
+  "hosted_result_artifact": null,
+  "resource_journals": [],
+  "next_action": "No relaunch was made under the single-attempt lane. A future attempt requires a new explicit run authorization and must stage the private link through stdin with --body omitted.",
+  "limits": [
+    "The Tools-tab selector repair and tab_groups behavior were not exercised.",
+    "This run supplies no product pass or product-failure evidence and does not change EXT-D-0148 or inventory status.",
+    "No hosted result artifact or run-owned resource journals were uploaded because credential preflight failed before those stages."
+  ]
+}

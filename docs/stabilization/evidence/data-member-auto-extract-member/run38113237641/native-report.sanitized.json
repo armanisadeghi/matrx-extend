@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T08",
+  "auth_mode": "member",
+  "status": "partial",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+    "run_id": 38112620925,
+    "artifact_id": 11691669564,
+    "tree_sha256": "f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c",
+    "version": "0.2.492"
+  },
+  "authentication": {
+    "mode": "member",
+    "web_signed_in": true,
+    "extension_signed_in": true,
+    "non_admin_identity_verified": true,
+    "canonical_nonadmin_check_passed": true,
+    "organization_selected": true,
+    "organization_resolution": "load_ladder",
+    "selected_organization_id_verified": true
+  },
+  "pattern_setup_write": {
+    "status": 201,
+    "request_body_organization_present": true,
+    "request_body_organization_matches_selected": true,
+    "header_organization_present": false
+  },
+  "auto_extract": {
+    "running": "unverified",
+    "success": "pass",
+    "no_match": "pass",
+    "error": "pass",
+    "manual_action": "pass",
+    "pattern_reads": [
+      { "signed_in": true, "status": 200 },
+      { "signed_in": true, "status": 200 },
+      { "signed_in": true, "status": 200 },
+      { "signed_in": true, "status": 200 },
+      { "signed_in": true, "status": 200 },
+      { "signed_in": true, "status": 200 }
+    ],
+    "original_root_read_verified": true,
+    "invalid_root_write_verified": true,
+    "original_root_restored": true
+  },
+  "cleanup": {
+    "verified": true,
+    "deleted_rows": 1,
+    "exact_owned_name_organization_lookup": true
+  },
+  "failure_stage": null,
+  "limits": "Signed-in nonadmin member automatic extraction on an owned page and exact saved row; no admin, guest, or Store claim."
+}

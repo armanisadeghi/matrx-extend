@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_native_peer_review",
+  "reviewer": "/root/data_t08_member_native_peer",
+  "reviewed_at": "2026-10-11",
+  "feature_id": "EXT-F-2005",
+  "case_id": "EXT-F-2005-T08",
+  "hosted_run_id": 38113237641,
+  "source_provenance": {
+    "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38113237641",
+    "workflow_checkout_sha": "46c31547517484946d16472ecaeab534354f60e1",
+    "product_artifact_source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+    "product_artifact_run_id": 38112620925,
+    "product_artifact_id": 11691669564,
+    "product_artifact_digest": "sha256:09dad80186549b94f08f48090834997cf709801a3628f35f6cc4a28b925aef38",
+    "product_tree_sha256": "f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c",
+    "product_version": "0.2.492",
+    "workflow_artifact_id": 11692014833,
+    "workflow_artifact_name": "hosted-guest-38113237641-1",
+    "workflow_artifact_digest": "sha256:31e33036c13914c3817ae159cee0885df618eccd200d8e6b324eb885cc718f1a",
+    "run_conclusion": "success",
+    "workflow_driver_route_equality_checked_between_product_and_workflow_shas": true,
+    "runtime_claim": "Frozen CI development artifact only. This does not establish current-main, release-build, Store-installed, admin, guest, or full Data acceptance."
+  },
+  "verdicts": {
+    "A_behavior_and_evidence": "PARTIAL",
+    "B_harness_and_quality": "PARTIAL"
+  },
+  "behavior_evidence": {
+    "identity": "Hosted native report says web and extension are signed in, canonical non-admin check passed, and a selected organization was resolved through load_ladder. This is member-only evidence.",
+    "success": "PASS: the named rendered Data card reported automatic success and its parsed JSON equaled [{\"field_1\":\"Cedar chair\",\"field_2\":\"$429\"}].",
+    "no_match": "PASS: the named rendered Data card exposed the no-match badge and expected explanation; the empty controlled fixture had zero product cards and no extracted rows were present.",
+    "error": "PASS: after the owned pattern's root selector was set to the invalid selector, the named rendered Data card showed auto failure and nonempty error detail.",
+    "manual_extract": "PASS: the same error card exposed an enabled Extract button.",
+    "running": "UNVERIFIED: the bounded two-second probe did not sample the transient running state. The native report correctly marks the overall run partial.",
+    "screenshots": "The hosted artifact contains native-sidepanel.png and normal-target-after-open.png, but they do not depict the Data exercise: one shows the generic guest Chat side panel, and the other shows an unrelated Research brief fixture page with an Open panel action. They cannot visually corroborate member identity or the T08 states. The rendered-panel DOM assertions in the native result are the behavioral evidence for those states."
+  },
+  "fixture_and_cleanup": {
+    "original_selector": "Read from the exact pattern id and organization before mutation; it was null.",
+    "temporary_selector": "Authenticated PATCH set list_root_selector to '['; HTTP 200 response contained the exact owned id and organization, and a follow-up GET read '[' back.",
+    "restore": "Finally path PATCHed the saved original null value and a follow-up exact-row GET confirmed null; native result marks original_root_restored true.",
+    "owned_row_cleanup": "Verified exact generated name plus organization lookup and exact-row deletion; one row deleted. Cleanup failure would fail the driver.",
+    "temporary_secret_absence": "Run manifest records temporary GitHub secret and local one-time link absent. The downloaded result contains bounded booleans/statuses, not credential values."
+  },
+  "resource_finals": {
+    "local_preflight": "valid: admitted, resourceInvalid=false, exitCode=0, decision=valid",
+    "package": "valid: admitted, resourceInvalid=false, exitCode=0, decision=valid",
+    "browser": "valid: admitted, resourceInvalid=false, exitCode=0, decision=valid",
+    "hosted_exercise_job_named_guest": "valid: admitted, resourceInvalid=false, exitCode=0, decision=valid"
+  },
+  "harness_quality": {
+    "oracle": "The driver reads the rendered Data tab/card, checks exact success JSON, no-match explanation/absence of rows, failure detail, and enabled Extract action. It also checks fixture content at each controlled route and records the pattern reads as signed-in HTTP 200. The authentication result independently gates the member lane before the Data interaction.",
+    "transient_state": "The running observation is explicitly optional after a bounded probe and retained as unverified; the top-level partial status is correct and does not silently turn into pass.",
+    "false_pass_review": "No false pass found for the four reported DOM outcomes: each requires the named card under the active Data panel and the corresponding UI text/rows/action. These assertions are not equivalent to screenshots, and their successful evaluation is only recorded in the sanitized native report.",
+    "organization_header_finding": "FIX REQUIRED: the captured authenticated POST to https://db.matrxserver.com/rest/v1/wbx_pattern returned 201 and its request body organization matched the selected organization, but the native observer recorded headerOrganizationPresent=false. The exact frozen product source corroborates this: DataView calls savePattern with the organization in the body; savePattern uses the ordinary Supabase client; that client sets X-Client-Info only and does not add X-Organization-Id. This conflicts with the repository contract that every authenticated backend request carries X-Organization-Id. The row was correctly read back under the selected organization and then deleted, so this finding does not negate the observed extraction UI states, but it blocks unqualified T08 credit until corrected and re-observed.",
+    "visual_evidence_gap": "The artifact uploaded generic startup QA screenshots rather than Data-state screenshots; the test result has no screenshots tied to its success/no-match/error states. This limits visual review, while not invalidating the reported live DOM assertions.",
+    "secret_handling": "No credential values were found in the downloaded report or screenshots; the run manifest also records temporary-secret cleanup."
+  },
+  "findings": [
+    {
+      "id": "DATA-T08-ORG-HEADER-01",
+      "severity": "fix_required",
+      "scope": "Data member fixture pattern creation POST in the native flow",
+      "evidence": "Native observation headerOrganizationPresent=false; requestOrganizationMatchesSelected=true; HTTP 201. Exact source at product SHA uses getSupabase() global headers with X-Client-Info only.",
+      "effect_on_verdict": "T08 automatic success/no-match/error/manual-action UI observations remain bounded evidence, but do not promote the complete member scenario to pass until the org-header contract is met and retested.",
+      "required_follow_up": "Repair the product request path to carry the selected organization header, then rerun the owned fixture lifecycle and confirm the captured POST header matches the selected organization."
+    },
+    {
+      "id": "DATA-T08-SCREENSHOTS-01",
+      "severity": "evidence_limit",
+      "scope": "Hosted artifact screenshots",
+      "evidence": "The attached images show generic guest Chat and an unrelated Research brief page, with no Data state.",
+      "effect_on_verdict": "DOM observations remain assessable from the native result, but screenshots provide no visual corroboration for T08."
+    }
+  ],
+  "limits": [
+    "This review examined the exact hosted GitHub artifact, sanitized report, run manifest, all four resource journals, screenshots, the run's workflow checkout, and relevant frozen product source. No native run was launched and no product code or inventory status was changed.",
+    "The hosted workflow conclusion is success while its case report status is partial; the distinction is preserved here.",
+    "The exact Data driver and hosted workflow route files were checked equal between the frozen product SHA and workflow checkout SHA. The tested product is still the frozen CI development 0.2.492 artifact; the current shared checkout HEAD and any release build were not exercised.",
+    "The sanitized report does not contain a video or screenshot sequence of Data states. Visual evidence is limited to the non-corresponding images noted above.",
+    "T08 running remains unverified; admin and all non-member acceptance remain unverified."
+  ],
+  "verification": {
+    "artifact_identity": "Matched GitHub run 38113237641 metadata, artifact id, name, digest and downloaded contents.",
+    "resource_journals": "All local preflight, package, browser and hosted exercise final decisions read as valid.",
+    "source_review": "Read the exact 83cd72b product hook, DataView, Supabase client/query; compared the member driver and hosted workflow route at workflow SHA 46c315475.",
+    "report_validation": "JSON parse and whitespace check passed after screenshot evidence paths were added.",
+    "tests_run": false
+  },
+  "files_reviewed": [
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/native-report.sanitized.json",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-local-preflight-20261011.jsonl",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-package-38113237641.jsonl",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-browser-38113237641.jsonl",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-guest-38113237641.jsonl",
+    "docs/stabilization/runs/data-member-auto-extract-run38113237641.json",
+    "src/features/data/DataView.tsx",
+    "src/hooks/use-auto-extract.ts",
+    "src/lib/supabase/client.ts",
+    "src/lib/supabase/queries.ts",
+    "tests/browser/data-member-native-acceptance.mjs",
+    "tests/browser/data-member-auto-extract-driver.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-native-sidepanel.png",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-normal-target-after-open.png"
+  ],
+  "questions": [],
+  "evidence_artifact": {
+    "hosted_artifact_id": 11692014833,
+    "name": "hosted-guest-38113237641-1",
+    "digest": "sha256:31e33036c13914c3817ae159cee0885df618eccd200d8e6b324eb885cc718f1a",
+    "screenshot_files": [
+      "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-native-sidepanel.png",
+      "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-normal-target-after-open.png"
+    ]
+  }
+}

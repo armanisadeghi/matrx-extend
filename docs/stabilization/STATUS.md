@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-11 04:43 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T03:55:50Z. 205 features · 783 cases · 1364 controls · 196 linked defect records.
+Generated 2026-10-11 05:18 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T05:18:35Z. 205 features · 783 cases · 1364 controls · 197 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1252** — Pass: 95 · Partial: 90 · Fail: 2 · Unverified: 1063 · N/A: 2.
-Unverified splits into **137 explicitly marked unverified** and **926 with no result record**.
+Applicable case-by-role slots: **1252** — Pass: 95 · Partial: 91 · Fail: 2 · Unverified: 1062 · N/A: 2.
+Unverified splits into **136 explicitly marked unverified** and **926 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -38,7 +38,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
 | [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 10, n/a 0 | 0 |
 | [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
-| [Data side-panel](#data-side-panel) | 1 | 1 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 1, partial 3, fail 0, unverified 14, n/a 1 | 1 |
+| [Data side-panel](#data-side-panel) | 1 | 1 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 2 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 1, partial 4, fail 0, unverified 13, n/a 1 | 2 |
 | [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 3 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 3 |
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
@@ -902,7 +902,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T07 · guest: Pass. Guest scroll-sync behavior passed warm and after full extension reload.
   Evidence / build / date recorded: 38021736744, ['docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json', 'docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl']
-- EXT-F-1007-T08 · guest: Partial. Guest T08/C08 has bounded subtarget evidence for populated result tabs and empty Article/Images/Video/Links states on earlier runs, plus no-signal SEO and empty Schema on runs 38104691870 (600px CDP emulation) and 38111898943 (360px native-default). Run 38111898943 was bound to frozen development source cda49523be8fc568616e0205143982426e766c1a with workflow checkout 8ca2dc0601f6529b0224e7656f5e364916384063; its resource journal is valid. The target panes are absent from uploaded screenshots, so Verdict B is PARTIAL despite strong native DOM and full-export fingerprint assertions. T08 and the guest feature-role cell remain partial; member/admin, reload for this subtarget, physical resize, current-main, Store-installed, release, and the rest of full Scrape acceptance remain unverified.
+- EXT-F-1007-T08 · guest: Partial. Guest T08/C08 has bounded subtarget evidence for populated result tabs and empty Article/Images/Video/Links states on earlier runs, plus no-signal SEO and empty Schema on 600px CDP-emulated runs 38104691870 and 38113131426 and 360px native-default run 38111898943. Fresh independent review of run 38113131426 confirms behavior PASS for its bounded guest subtarget on frozen development source 83cd72b6c9a0b6cce5887c1f561668539e6d8259, workflow checkout 46c31547517484946d16472ecaeab534354f60e1; all three resource finals are valid. The uploaded screenshots omit the target panes (Verdict B PARTIAL), and emulated 600px does not demonstrate physical resize. T08 and the guest feature-role cell remain partial; member/admin, reload for this subtarget, physical resize, current-main, Store-installed, release, and the rest of full Scrape acceptance remain unverified.
   Evidence / build / date recorded: 38021736744, ['docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json', 'docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl']
 - EXT-F-1007-T08 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Image and video empty states and reload lifecycle need full observation. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
@@ -1459,9 +1459,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 8. **Controls:** 33.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0054
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0054, EXT-D-0197
 
-**Linked defects:** [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed)
+**Linked defects:** [EXT-D-0053](defects/EXT-D-0053.json) (closed), [EXT-D-0054](defects/EXT-D-0054.json) (fixed), [EXT-D-0197](defects/EXT-D-0197.json) (open)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1472,7 +1472,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2005-T05 Data page identity Retry, failure and recovery | Unverified | Unverified | Unverified | EXT-F-2005-C32, EXT-F-2005-C14, EXT-F-2005-C15, EXT-F-2005-C02, EXT-F-2005-C07 |
 | EXT-F-2005-T06 Data page identity during navigation and Retry recovery | Unverified | Unverified | Unverified | EXT-F-2005-C32, EXT-F-2005-C14, EXT-F-2005-C02, EXT-F-2005-C07 |
 | EXT-F-2005-T07 Picker hover, Clear and selected-field Cancel | Partial | Unverified | Unverified | EXT-F-2005-C18, EXT-F-2005-C19, EXT-F-2005-C21, EXT-F-2005-C22 |
-| EXT-F-2005-T08 Automatic extraction running, success, no-match and failure states | N/A | Unverified | Unverified | EXT-F-2005-C29, EXT-F-2005-C30, EXT-F-2005-C31, EXT-F-2005-C33 |
+| EXT-F-2005-T08 Automatic extraction running, success, no-match and failure states | N/A | Partial | Unverified | EXT-F-2005-C29, EXT-F-2005-C30, EXT-F-2005-C31, EXT-F-2005-C33 |
 
 **Recorded case details and evidence:**
 
@@ -1484,6 +1484,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: data-picker-long-native-20260928-01, ['docs/stabilization/reports/data-picker-long-native.json', 'docs/stabilization/reports/showcase-export-guarded-runtime.json']
 - EXT-F-2005-T07 · guest: Partial. Independently reviewed bounded guest T07 subtargets on imported development artifact v0.2.490: C18 hover highlight tracked two distinct fixture elements, C22 Clear removed the selected picker entry, and C21 Cancel after selecting a field restored the Data panel baseline. Only observations.t07 and its t07_clear result in the hosted driver report’s T01 envelope are credited; C19 is not credited. The native driver observed zero non-GET /wbx_pattern requests during the action window, with no backend persistence query. Archived screenshots omit picker states; post-run absence was not independently verified. Remaining T07 criteria, reload, member/admin and full Data remain unverified.
   Evidence / build / date recorded: 38109155658, ['docs/stabilization/evidence/guest-data-t07/run38109155658/receipt.sanitized.json', 'docs/stabilization/reports/data-t07-native-peer-20261011.json']
+- EXT-F-2005-T08 · member: Partial. Reviewed partial native member result on frozen CI development v0.2.492. The driver observed the real rendered Data card success with exact rows, no_match badge/explanation, error badge/detail, and enabled manual Extract. Running remains unverified. Exact original null list_root_selector was read, temporary invalid selector [ was PATCHed and read back on the exact id/organization, and null was restored and read back; the exact generated name/organization row was then deleted (one row). All four local/package/browser/hosted exercise resource finals are valid. The authenticated pattern-create POST returned 201 with body organization matching the selected organization but lacked X-Organization-Id, a provisional contract defect pending Sol diagnosis. No T08 case or feature pass is claimed; no current-main, release, Store, admin, or guest claim.
+  Evidence / build / date recorded: 38113237641, ['docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/native-report.sanitized.json', 'docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-local-preflight-20261011.jsonl', 'docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-package-38113237641.jsonl', 'docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-browser-38113237641.jsonl', 'docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-guest-38113237641.jsonl', 'docs/stabilization/runs/data-member-auto-extract-run38113237641.json', 'docs/stabilization/reports/data-t08-member-native-peer-20261011.json', 'docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-native-sidepanel.png', 'docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-normal-target-after-open.png']
 
 **Controls without a mapped case:** EXT-F-2005-C20 Picker Done; EXT-F-2005-C23 Copy saved pattern Selectors text; EXT-F-2005-C24 Copy saved pattern For AI agent; EXT-F-2005-C25 Copy saved pattern Full JSON admin option; EXT-F-2005-C26 Copy extracted rows TSV; EXT-F-2005-C27 Copy extracted rows JSON; EXT-F-2005-C28 Copy extracted rows For AI agent
 

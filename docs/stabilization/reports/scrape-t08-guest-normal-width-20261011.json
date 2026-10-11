@@ -1,0 +1,44 @@
+{
+  "task_id": "scrape-t08-guest-normal-width",
+  "lane": "B",
+  "status": "PASS",
+  "feature_ids": [
+    "EXT-F-1007"
+  ],
+  "defect_ids": [],
+  "summary": "Freshly peer-reviewed bounded guest Scrape T08/C08 run passed the owned title-only no-signal SEO and empty Schema assertions at an observed CDP-emulated 600px viewport. Capture export identity and digest stayed unchanged after both panes; all three resource finals are valid. This does not promote T08 or the guest feature-role cell.",
+  "verification": [
+    {
+      "case_id": "EXT-F-1007-T08",
+      "run_id": 38113131426,
+      "verdict": "bounded_guest_subtarget_pass_independently_reviewed",
+      "evidence": [
+        "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/native-report.sanitized.json",
+        "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/receipt.sanitized.json",
+        "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-finals.sanitized.json",
+        "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/"
+      ]
+    }
+  ],
+  "limitations": [
+    "Only owned guest title-only no-signal SEO and empty Schema at 600px CDP emulation.",
+    "The uploaded screenshots omit the exercised target panes; visual rendering is not independently reviewable.",
+    "CDP viewport emulation does not prove physical side-panel resize.",
+    "No current-main, release, wider T08, other-role, Store-installed, reload-for-this-subtarget, or full Scrape claim; T08 and the guest feature-role cell remain partial."
+  ],
+  "open_questions": [],
+  "files": [
+    "docs/stabilization/runs/38113131426.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426",
+    "docs/stabilization/reports/scrape-t08-guest-normal-width-20261011.json"
+  ],
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38113131426",
+  "artifact_source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+  "workflow_checkout_sha": "46c31547517484946d16472ecaeab534354f60e1",
+  "peer_review": {
+    "report": "docs/stabilization/reports/scrape-t08-guest-normal-peer-20261011.json",
+    "verdict_a": "PASS",
+    "verdict_b": "PARTIAL",
+    "resource_finals": "All three valid."
+  }
+}

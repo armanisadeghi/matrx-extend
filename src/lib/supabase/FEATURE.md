@@ -20,11 +20,33 @@ REAL Holder, so nothing here spells an agent name). Host wiring lives in
 
 A write that creates an org-scoped row sends the organization explicitly —
 `organization_id` in a row, `p_organization_id` to a create RPC — resolved by
-`requireActiveOrganizationId()` (`src/lib/org/active-org.ts`: this device's
-choice or the sole membership; otherwise HELD on the picker). No database
+`requireActiveOrganizationId()` (`src/lib/org/active-org.ts`, the canonical
+load ladder). No database
 default or trigger may choose it. Guard (red on any omission):
 `tests/unit/org-scoped-writes-name-their-organization.test.ts`, whose RPC list
 mirrors the live signatures of the create RPCs this extension calls.
+
+## HTTP organization context
+
+`organization-fetch.ts` is the final fetch boundary shared by the person,
+agent and machinery clients. Authenticated requests carry `X-Organization-Id`.
+A JSON write's explicit top-level `organization_id` / `p_organization_id`
+is its captured context: switching organizations while Save is pending does
+not redirect that save. Conflicting IDs, including bulk rows, refuse before
+network I/O. Other requests use the canonical active-organization resolver.
+Anonymous requests do not resolve an organization.
+
+The load ladder needs three identity-scoped reads before an organization can
+be verified. Three fixed resolver read helpers (membership RPC, organization labels and
+current-user account choice) use a private bootstrap client. They may omit
+the header before the load ladder has a verified selection; once available,
+the cached-only resolver adds it without beginning another resolution. The
+ordinary client never bypasses resolution, even for identical request shapes.
+The bootstrap client is not exported and cannot issue caller-selected RPCs,
+selects or writes. This pre-selection boundary follows the owner's load-time
+rule in the canonical Organizations VISION §10; aidream's org-required gate
+is unchanged.
+Guard: `pnpm test src/lib/supabase/client.organization.test.ts`.
 
 ## Change log
 
