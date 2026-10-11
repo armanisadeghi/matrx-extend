@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0199-notice-sibling-driver",
+  "review_kind": "independent_source_review",
+  "reviewer": "seo_notice_peer (Luna)",
+  "reviewed_source_sha": "2986b17ab",
+  "verdict": "PARTIAL_RUNNABLE_SOURCE",
+  "runnable_native_subtargets": [
+    "Real refusal notice and enabled Re-audit at exactly 360px after warm navigation, with nine target-owned and zero notice-owned hit points.",
+    "The same live notice and hit assertions at the restored normal panel width after second warm navigation.",
+    "Trusted manual Re-audit at normal width while the refusal notice remains visible.",
+    "Dismissed notice stays absent and Re-audit remains reachable after panel document reload."
+  ],
+  "open_native_subtargets": [
+    "Multiple distinct notices and a long notice: the owned history refusal currently produces one fixed-length notice.",
+    "Re-audit clearance with a visible refusal after panel reload: the current reload follows Dismiss."
+  ],
+  "verification": {
+    "focused_node_tests": "28 passed",
+    "compile": "passed",
+    "biome_check": "passed with two pre-existing noForEach warnings outside the changed lines",
+    "native_behavior": "unverified pending guarded hosted lane B run"
+  },
+  "next_action": "Run the controlled guest SEO case on hosted lane B against an exact-source development artifact containing 2986b17ab; grant behavior credit only after valid resource finals and independent native review. Build a separate controlled app notice fixture before claiming multiple/long or visible-notice reload coverage."
+}
