@@ -98,18 +98,39 @@ export function plainReceiptNote(note: string): string | null {
   return n;
 }
 
+/**
+ * Which slide numbers (1-based, in post order) are not stored yet, or null when the
+ * receipt cannot say exactly (unknown total, or stored files lack their position).
+ */
+export function missingSlideNumbers(receipt: SwipeCaptureReceipt): number[] | null {
+  const c = receipt.coverage;
+  if (!isCarousel(receipt) || c?.expected_items == null || c.status !== 'partial') return null;
+  const have = new Set(
+    receipt.media
+      .filter((m) => m.role !== 'thumbnail' && typeof m.source_index === 'number')
+      .map((m) => m.source_index as number),
+  );
+  if (have.size !== c.stored_items) return null;
+  const out: number[] = [];
+  for (let i = 1; i <= c.expected_items; i++) if (!have.has(i)) out.push(i);
+  return out.length ? out : null;
+}
+
 export function captureReceiptWarnings(receipt: SwipeCaptureReceipt): string[] {
   const unit = isCarousel(receipt) ? 'slide' : 'media item';
   const missing = receipt.coverage?.missing_items;
+  const slides = missingSlideNumbers(receipt);
   return [
     ...new Set(
       [
         ...receipt.mediaNotes.map((n) => plainReceiptNote(n)),
         ...(receipt.coverage?.status === 'partial'
           ? [
-              missing != null
-                ? `${missing} ${missing === 1 ? unit : `${unit}s`} missing`
-                : 'Some media could not be captured',
+              slides
+                ? `${slides.length === 1 ? 'Slide' : 'Slides'} ${slides.join(', ')} missing`
+                : missing != null
+                  ? `${missing} ${missing === 1 ? unit : `${unit}s`} missing`
+                  : 'Some media could not be captured',
             ]
           : []),
         ...(receipt.coverage?.status === 'unknown'
