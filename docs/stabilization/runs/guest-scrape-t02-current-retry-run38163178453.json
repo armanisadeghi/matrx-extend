@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "id": "guest-scrape-t02-current-retry-run38163178453",
+  "created_at_utc": "2026-10-11T18:17:23Z",
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T02",
+  "status": "running",
+  "scope": "Guarded hosted lane B real guest Scrape permission-denial/deep retry route, retesting the previously reviewed historical deep-mode preservation subtarget on frozen current-equivalent development v0.2.500. T14 is the route owner; T02 credit requires separate independent cross-case review.",
+  "hosted_run_id": 38163178453,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38163178453",
+  "workflow_source_sha": "c1b3baeda570e86f79e93b10892e5b3fcc9ccabe",
+  "inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "scrape-error-recovery-guest",
+    "scrape_auth_mode": "guest"
+  },
+  "frozen_product": {
+    "development_run_id": 38161635790,
+    "development_artifact_id": 11710458741,
+    "source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+    "version": "0.2.500",
+    "github_digest": "sha256:a1e5fde629f299e6f6c724937dd42aa6e27f9e10bf6a8e4d18c4943cd0c422c6",
+    "source_limit": "Subsequent main commits changed documentation and SEO test runner files only, not extension runtime source."
+  },
+  "next_action": "Await terminal hosted result, verify exact artifact and all resource finals, then obtain fresh independent T14/T02 cross-case native review before changing coverage. No duplicate pass credit for historical run38044062561."
+}
