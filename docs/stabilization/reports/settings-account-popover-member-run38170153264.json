@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-account-popover-member-run38170153264",
+  "recorded_at": "2026-10-11T20:06:49Z",
+  "scope": "Guarded hosted lane A ordinary-member account-popover cases T20, T23 and T26 on a frozen unpublished development v0.2.503 artifact. The native driver completed but the resource final was invalid, so this run earns zero product acceptance credit.",
+  "run": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38170153264",
+    "id": 38170153264,
+    "conclusion": "failure",
+    "acceptance_case": "settings-account-popover-member",
+    "workflow_head_sha": "e9321cf6d8754cb39591feeb97ffcef0256b7345",
+    "tested_artifact_source_sha": "24d8ad6dceda777b9e3ccbf0c5cf51cf2a809a10",
+    "development_ci_run_id": 38169407774,
+    "development_artifact_id": 11713442631,
+    "development_artifact_digest": "sha256:13dcff360b61574f02420372e24f333e7ed30c500b56d2710ddef2da2c32c5ef",
+    "sanitized_artifact": {
+      "id": 11713972955,
+      "name": "hosted-guest-38170153264-1",
+      "digest": "sha256:efcedd0c0670bc8400a1fb4b604b9296055548f52d05069a4be7250de235e2b0"
+    }
+  },
+  "resource_finals": {
+    "package": { "decision": "valid", "admitted": true, "resourceInvalid": false, "exitCode": 0 },
+    "browser": { "decision": "valid", "admitted": true, "resourceInvalid": false, "exitCode": 0 },
+    "guest": {
+      "decision": "invalid",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "reason": "RESOURCE_CPU_CONFIRMATION_EXPIRED"
+    }
+  },
+  "native_observation": "The sanitized native receipt has status pass for T20, T23 and T26 and child exit 0. It records an ordinary-member session (access token and profile present, isAdmin=false), one open account menu with Profile, Preferences and Sign out controls, and an active Profile pane with Back and Save profile controls after Profile was clicked. Preferences selected one Settings pane while the member identity remained. Sign out removed the access token and profile, and guest state plus the guest menu persisted after reload. The receipt's build.sourceSha is null; the hosted DEVELOPMENT_TEST_IMPORTED and PREPARED_DEVELOPMENT log lines bind the imported exact-pushed-commit artifact to the tested source above.",
+  "failure_boundary": "The acceptance resource journal admitted the job, then measured CPU busy/high load repeatedly during Chrome execution. The child finished with exit 0, but the completion recovery window expired with RESOURCE_CPU_CONFIRMATION_EXPIRED, so the journal finalized invalid and the workflow failed. Package and browser resource finals were valid. This is a resource-invalid attempt, not a product or driver failure verdict.",
+  "product_verdict": {
+    "cases": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+    "status": "unverified",
+    "credit": 0,
+    "reason": "The acceptance resource final is invalid despite passing native assertions. No independent native acceptance review or valid hosted resource final exists for these member cases."
+  },
+  "fixture_cleanup": "An existing confirmed nonadmin reviewer identity passed the documented dry run. A fresh one-use link was minted privately, staged as a temporary repository secret through stdin, and the local private file removed before dispatch. Immediately after terminal failure, MATRX_REVIEWER_MAGIC_LINK_JSON was deleted and a secret-name lookup verified its absence; the local link file was also verified absent. No link, token, email or profile identifier is stored here.",
+  "next": "Wait for measured resource capacity and lane availability, then rerun member A with a fresh one-use link against an eligible exact CI development artifact. Delete and verify the temporary secret at terminal. Seek independent native review before awarding T20/T23/T26 any credit. Admin stays deferred until member terminal review and fixture cleanup."
+}
