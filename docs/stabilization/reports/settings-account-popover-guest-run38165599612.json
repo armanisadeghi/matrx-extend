@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-account-popover-guest-run38165599612",
+  "recorded_at": "2026-10-11T19:00:36Z",
+  "scope": "Guarded hosted lane A guest attempt for EXT-F-1001-C09–C11 and guest cases T19, T22, T25. No account popover product behavior was exercised.",
+  "run": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38165599612",
+    "id": 38165599612,
+    "conclusion": "failure",
+    "acceptance_case": "settings-account-popover-guest",
+    "source_sha": "994daa1dfbb31c6dfbb40f61e869b6439315a844",
+    "development_artifact": {
+      "ci_run_id": 38164967463,
+      "artifact_id": 11712111232,
+      "name": "matrx-extend-development-test-994daa1dfbb31c6dfbb40f61e869b6439315a844-38164967463-1",
+      "digest": "sha256:4a2267eace9b699cd5bf9e4aae82da6e338a81b575a9b4388243509dd8e8adf4"
+    },
+    "sanitized_artifact": {
+      "id": 11712695393,
+      "name": "hosted-guest-38165599612-1"
+    }
+  },
+  "resource_finals": {
+    "package": { "decision": "valid", "admitted": true, "resourceInvalid": false, "exitCode": 0 },
+    "browser": { "decision": "valid", "admitted": true, "resourceInvalid": false, "exitCode": 0 },
+    "guest": { "decision": "child_failed", "admitted": true, "resourceInvalid": false, "exitCode": 1 }
+  },
+  "failure_boundary": "The hosted child rejected settings-account-popover-guest at scripts/hosted-acceptance-route.mjs:41 with unknown_hosted_acceptance_case. The native Chrome account popover driver did not start. This is a hosted route registration defect, not a resource refusal, fixture failure, or observed extension behavior.",
+  "product_verdict": {
+    "guest_cases": ["EXT-F-1001-T19", "EXT-F-1001-T22", "EXT-F-1001-T25"],
+    "status": "unverified",
+    "credit": 0,
+    "member_and_admin_cases": "unverified"
+  },
+  "next": "After the route repair passes independent source review and exact-source CI uploads a development artifact, rerun guest on guarded lane A. Do not infer member or admin behavior from this failed setup attempt."
+}

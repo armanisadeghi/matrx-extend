@@ -2,6 +2,32 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { hostedAcceptanceRoute } from './hosted-acceptance-route.mjs';
+
+test('the native hosted route admits every account popover role before browser launch', () => {
+  for (const role of ['guest', 'member', 'admin']) {
+    const selected = `settings-account-popover-${role}`;
+    const route = hostedAcceptanceRoute(
+      selected,
+      'development',
+      { kind: 'ci_development_test', eligibleStore: false },
+      'guest',
+      { lane: 'A' },
+    );
+    assert.equal(route.acceptanceCase, selected);
+    assert.equal(route.scrapeRoute, null);
+  }
+  assert.throws(
+    () =>
+      hostedAcceptanceRoute(
+        'settings-account-popover-unknown',
+        'development',
+        { kind: 'ci_development_test' },
+        'guest',
+      ),
+    /unknown_hosted_acceptance_case/,
+  );
+});
 
 test('Settings provenance is rejected before release downloads and browser resource admission', async () => {
   const workflow = await readFile(
