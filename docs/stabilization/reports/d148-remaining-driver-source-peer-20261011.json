@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-D-0148",
+  "reviewer_role": "independent source peer",
+  "reviewed_at": "2026-10-10",
+  "verdict_a_behavior_coverage": {
+    "status": "source-ready; hosted native evidence pending",
+    "findings": [
+      "Scenario driver covers create collapsed=true and false, update true and false, add, remove, and list.",
+      "Each branch uses the rendered manual runner, observes Chrome tabs/tabGroups, then calls get_tab_groups; list additionally compares its direct result.",
+      "Owned fixture tabs are validated as five unique ungrouped tabs in the fixture window before any tool call; cleanup verifies all fixture group IDs and non-owned Chrome state.",
+      "Existing create collapsed=true observation remains in the sequence and retains the original proof helper and fixture group ID field."
+    ],
+    "limits": [
+      "No hosted/native Chrome execution or release evidence reviewed; source/tests do not establish product runtime behavior."
+    ]
+  },
+  "verdict_b_forcing_guard_quality": {
+    "status": "pass on reviewed source and focused tests",
+    "findings": [
+      "First failure stage/code and partial branch evidence survive cleanup failure; error details are not serialized.",
+      "Manual runner remounts the tool detail and requires an empty result before each execution, guarding against stale output.",
+      "Focused tests pass 30/30 across scenario, failure, manual-runner, and route suites.",
+      "Source tests cover seven incorrect operation branches plus non-owned tab, non-owned group, and wrong-window mutations; independently verified red/green mutant run was reported by the implementer, not repeated in this peer review."
+    ],
+    "limits": [
+      "The native UI binding test is structural; real manual-runner interactions and cleanup isolation still require the hosted run."
+    ]
+  },
+  "files_reviewed": [
+    "tests/browser/tab-groups-member-native-acceptance.mjs",
+    "tests/browser/tab-groups-member-failure.mjs",
+    "tests/browser/tab-groups-member-scenarios.mjs",
+    "tests/browser/tab-groups-member-scenarios.test.mjs"
+  ],
+  "verification": {
+    "command": "node --test tests/browser/tab-groups-member-scenarios.test.mjs tests/browser/tab-groups-member-failure.test.mjs tests/browser/tab-groups-manual-runner.test.mjs scripts/hosted-tab-groups-route.test.mjs",
+    "passed": 30,
+    "failed": 0
+  },
+  "questions": []
+}

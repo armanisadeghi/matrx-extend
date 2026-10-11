@@ -106,3 +106,26 @@ test('failed panel observation does not replace the original failure', async () 
   assert.equal(report.failure_code, 'tab_groups_manual_catalog_ready_failed');
   assert.deepEqual(report.manual_runner_observation, { availability: 'unavailable' });
 });
+
+test('assertion detail keeps the allowlisted failure code without leaking actual values', () => {
+  let failure;
+  try {
+    assert.equal(false, true, 'tab_groups_create_refused');
+  } catch (error) {
+    failure = error;
+  }
+  assert.equal(
+    tabGroupsFailureCode(failure, { stage: 'tab_groups_create' }),
+    'tab_groups_create_refused',
+  );
+  assert.equal(
+    tabGroupsFailureCode(new Error('raw native details\nsecret'), {
+      stage: 'tab_groups_update_false',
+    }),
+    'tab_groups_update_false_failed',
+  );
+  assert.equal(
+    tabGroupsFailureCode(new Error('tab_groups_create_refused_secret'), { stage: 'inputs' }),
+    'unclassified_failure',
+  );
+});
