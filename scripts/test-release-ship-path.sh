@@ -768,7 +768,30 @@ check "serial release still publishes after all gates" '[[ $SERIAL_PASSED_STATUS
 check "serial release runs the mandatory checks" 'grep -q "check:matrx-packages" "$SANDBOX/serial-passed-calls" && grep -q " compile" "$SANDBOX/serial-passed-calls" && grep -q " lint" "$SANDBOX/serial-passed-calls" && grep -q "exec vitest run --maxWorkers=4" "$SANDBOX/serial-passed-calls" && grep -q "check:migrations:strict" "$SANDBOX/serial-passed-calls" && grep -q "catalog:tools:drift:strict" "$SANDBOX/serial-passed-calls"'
 check "serial release builds after the last check" 'unit_line=$(grep -n "exec vitest run --maxWorkers=4" "$SANDBOX/serial-passed-calls" | tail -1 | cut -d: -f1); build_line=$(grep -n "exec wxt zip" "$SANDBOX/serial-passed-calls" | head -1 | cut -d: -f1); [[ -n "$unit_line" && -n "$build_line" && $build_line -gt $unit_line ]]'
 
+# A shared-checkout writer can rewrite release.sh after validation. Keep the
+# inode (write_text truncates in place), deliberately shifting Bash's file
+# offset before the post-push promotion tail. The running body must be parsed
+# already; the modified checkout bytes must not become executable mid-release.
+cat > "$SANDBOX/rewrite-running-release.py" <<'PY'
+from pathlib import Path
+import sys
+
+script = Path(sys.argv[1])
+script.write_text("# concurrent checkout edit\n" * 4096 + "exit 93\n")
+Path(sys.argv[2]).touch()
+PY
+set +e
+RELEASE_TEST_BEFORE_PUSH="python3 '$SANDBOX/rewrite-running-release.py' '$PWD/release.sh' '$SANDBOX/script-rewritten'" \
+  PATH="$SANDBOX/bin:$PATH" bash release.sh > "$SANDBOX/script-rewrite-out" 2>&1
+SCRIPT_REWRITE_STATUS=$?
+set -e
+cp "$SCRIPT_UNDER_TEST" release.sh
+git fetch -q --tags origin 2>/dev/null || true
+check "running release survives in-place script rewrite" '[[ -f "$SANDBOX/script-rewritten" && $SCRIPT_REWRITE_STATUS -eq 0 ]] && grep -q "  pushed" "$SANDBOX/script-rewrite-out"'
+check "script rewrite still promotes the published candidate" '"$REAL_NODE" -e '\''const fs = require("fs"); const cp = require("child_process"); const receipt = JSON.parse(fs.readFileSync(".output/release-receipt.json", "utf8")); const sha = cp.execFileSync("git", ["rev-parse", "origin/main"], {encoding:"utf8"}).trim(); if (receipt.sourceSha !== sha) process.exit(1);'\'''
+
 if [[ $FAILED -ne 0 ]]; then
+  echo "--- in-place script rewrite output ---"; tail -30 "$SANDBOX/script-rewrite-out" 2>/dev/null
   echo "--- catch-up output ---"; tail -30 "$SANDBOX/catchup-out" 2>/dev/null
   echo "--- mid-check race output ---"; tail -30 "$SANDBOX/race-during-out" 2>/dev/null
   echo "--- evidence-only push output ---"; tail -30 "$SANDBOX/inert-out" 2>/dev/null

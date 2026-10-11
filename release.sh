@@ -18,6 +18,9 @@
 # as soon as it is seen (origin is polled during checks), not only at the push.
 # A failed check or build leaves main, tags and installed bundles untouched.
 # The full detail of every run: tmp/release-logs/release-<stamp>.log.
+# Parse the complete body before running: concurrent checkout edits must never
+# move Bash's file offset between validation, push, and artifact promotion.
+release_main() {
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -1049,3 +1052,7 @@ print_findings
 echo ""
 echo "Chrome Web Store upload ($WEBSTORE_UPLOAD_URL → Package → Upload new package): $STORE_ZIP"
 exit 0
+
+}
+
+release_main "$@"
