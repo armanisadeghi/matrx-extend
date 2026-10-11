@@ -1,0 +1,63 @@
+{
+  "id": "guest-scrape-empty-seo-schema-run38104691870",
+  "feature_id": "EXT-F-1007",
+  "at": "2026-10-11T02:24:36Z",
+  "status": "bounded-pass",
+  "scope": "One hosted guest T08 subtarget for no-signal SEO and empty Schema panes on an owned localhost fixture at 600px CDP-emulated width.",
+  "hosted_run_id": 38104691870,
+  "workflow_source_sha": "00769a35d9d34b501932f5d94e25f14181f8b381",
+  "runner": {
+    "label": "macos-15-intel",
+    "architecture": "X64",
+    "machine": "x86_64"
+  },
+  "resource": {
+    "local_preflight": "valid",
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid"
+  },
+  "product_artifact": {
+    "development_run_id": 38102137319,
+    "development_artifact_id": 11688890496,
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "version": "0.2.490",
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "runtime_equivalent_to_main_at_dispatch": true
+  },
+  "case": {
+    "case_id": "EXT-F-1007-T08",
+    "status": "bounded-pass",
+    "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+    "product_assertions_run": true,
+    "viewport": {
+      "mode": "normal",
+      "mechanism": "owned_SIDE_PANEL_CDP_viewport_emulation",
+      "observed_px": 600,
+      "minimum_px": 600
+    },
+    "fixture": "Owned localhost page with title only and no body, SEO metadata, links, images, headings or JSON-LD.",
+    "verified_substeps": [
+      "Initial active Scrape state had no result tablist or selected result tab.",
+      "A trusted click reached the active Scrape capture control and the fresh-capture predicate passed; its conditions require the active visible Article result pane, selected inside Scrape, with the fixture title.",
+      "The visible selected SEO pane showed the expected title, an empty description marker, and only the Title & description and Performance groups.",
+      "The visible selected Schema pane contained valid JSON with the expected title, absent description/canonical, and zero Open Graph, Twitter, schema type, and JSON-LD entries.",
+      "Capture identity and digest remained unchanged after each of the SEO and Schema panes."
+    ],
+    "article_ready_evidence_note": "The runner does not serialize the post-capture ready state object separately. Its successful exit and status=pass require `isCaptureReady` to pass after a trusted click; that predicate checks selected active visible Article, containment within active Scrape, result pane visibility, and matching title. Independent reviewer confirmed this is sufficient bounded evidence; the limitation remains explicit.",
+    "independent_review": {
+      "status": "completed",
+      "reviewer": "/root/scrape_empty_peer_review",
+      "verdict": "bounded_guest_subtarget_pass",
+      "summary": "Reviewer independently verified provenance, valid resource finals, 600px CDP width, trusted click and Article readiness predicate, exact SEO/Schema values, and stable capture identity/digest. No broader T08 or physical resize claim."
+    },
+    "product_defect_inference": false
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/"
+  ],
+  "next_action": "Credit only the bounded guest T08 no-signal SEO and empty Schema subtarget. Keep the overall Scrape result-tabs test partial; member/admin, physical resize, Store-installed behavior, and full T08 remain unverified."
+}

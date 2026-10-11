@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T01:05:38.231Z",
+  "updated_at": "2026-10-11T02:28:37.474Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -22528,12 +22528,13 @@
               "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
               "status": "partial",
               "passed_subtargets": [
-                "All six result tabs showed matching populated content; empty Images/Video states and empty Article/Links states were observed; capture identity and exported payload stayed unchanged warm and after full extension reload."
+                "All six result tabs showed matching populated content; empty Images/Video states and empty Article/Links states were observed; capture identity and exported payload stayed unchanged warm and after full extension reload.",
+                "On run 38104691870, guest no-signal SEO and empty Schema panes matched the owned fixture at observed 600px CDP-emulated width; capture identity/digest remained unchanged after both pane selections."
               ],
               "unverified": [
-                "Member/admin modes; actual Store-installed behavior; physical resize; empty SEO/Schema states; full Scrape feature acceptance."
+                "Member/admin modes and their SEO/Schema behavior; actual Store-installed behavior; physical resize; reload behavior for this subtarget; full Scrape feature acceptance."
               ],
-              "detail": "Independent review of hosted candidate run 38098345217 confirms bounded guest normal-width T08 assertions warm and after full extension reload/reopen. The earlier 38086330146 replacement-panel boundary was indeterminate; this run observed opener callback/reply and replacement target. T08 remains partial because member/admin modes, physical resize, Store-installed behavior, empty SEO/Schema states and full-feature coverage remain unverified.",
+              "detail": "Independent review of run 38104691870 confirms a bounded guest pass for no-signal SEO and empty Schema panes on frozen development v0.2.490 at observed 600px CDP-emulated width. A fresh trusted capture reached the active visible Article pane; the expected SEO/Schema values and unchanged capture identity/digest were observed. The readiness state is established by the passing source predicate but is not separately serialized. T08 remains partial because member/admin, actual Store-installed behavior, physical resize, reload behavior for this subtarget, and the rest of full-feature acceptance remain unverified.",
               "bounded_subtarget_evidence": [
                 {
                   "run_id": 38044684443,
@@ -22594,6 +22595,28 @@
                   "limits": "Guest candidate-key-adapted unpacked artifact only; member/admin, actual Store-installed behavior, physical resize, empty SEO/Schema states, and full feature acceptance remain unverified. T08 and the guest feature-role cell stay partial.",
                   "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-normal-run38098345217.json",
                   "upload_hygiene_followup": "The hosted result artifact contained 27 resource-journal files, mostly from historical runs, because the workflow upload glob is broad. Only this run\u2019s three sanitized journals were retained in the evidence package; the reviewer found no impact on behavior validity. Narrow future uploads to current run IDs."
+                },
+                {
+                  "run_id": 38104691870,
+                  "status": "bounded-pass",
+                  "mode": "guest",
+                  "viewport": "600px owned SIDE_PANEL CDP emulation; observed minimum met",
+                  "workflow_source_sha": "00769a35d9d34b501932f5d94e25f14181f8b381",
+                  "product_artifact": "Development v0.2.490; CI 38102137319/artifact 11688890496; source 6ed4289da90f19cab72e2d77feb7e845f71c02b7; runtime-equivalent to main at dispatch; tree 673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633.",
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/receipt.sanitized.json",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/native-report.sanitized.json",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-finals.sanitized.json",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-package-38104691870-1.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-browser-38104691870-1.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-guest-38104691870-1.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/local-preflight.jsonl",
+                    "docs/stabilization/runs/guest-scrape-empty-seo-schema-run38104691870.json"
+                  ],
+                  "proven": "On the owned no-signal page, a trusted fresh capture passed the readiness predicate requiring the active visible Article pane inside Scrape with the matching title. SEO showed the title, empty description, and only Title & description plus Performance groups. Schema JSON was valid with matching title, absent description/canonical, and zero Open Graph, Twitter, schema types, or JSON-LD. Capture identity and digest were unchanged after each pane.",
+                  "article_ready_evidence_note": "The ready state is not separately serialized. Successful completion requires the runner isCaptureReady predicate to pass; that predicate explicitly checks a fresh transition to the selected, active, visible Article result within active Scrape. Independent review confirmed this is adequate for this bounded subtarget.",
+                  "limits": "Guest subtarget only. Member/admin, actual Store-installed behavior, physical resize, reload, and full T08 acceptance remain unverified.",
+                  "independent_review": "Bounded PASS confirmed by fresh independent review; summary is retained in docs/stabilization/runs/guest-scrape-empty-seo-schema-run38104691870.json."
                 }
               ]
             },
