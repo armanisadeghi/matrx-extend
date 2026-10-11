@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T03:23:40Z",
+  "updated_at": "2026-10-11T03:55:50Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -41682,8 +41682,22 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "detail": "New T07 hover, Clear and selected-then-Cancel assertions have not been executed. Existing empty-picker Cancel evidence remains scoped to T01/run 38050967096."
+              "status": "partial",
+              "run_id": "38109155658",
+              "source_sha": "41976eec14af4964daad9113402316a9559cdb4c",
+              "development_ci_run_id": 38108390956,
+              "development_artifact_id": 11690966917,
+              "hosted_result_artifact_id": 11691467347,
+              "build_version": "0.2.490",
+              "build_kind": "native_ci_development_artifact",
+              "tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+              "resource_valid": true,
+              "independent_review": "docs/stabilization/reports/data-t07-native-peer-20261011.json",
+              "evidence": [
+                "docs/stabilization/evidence/guest-data-t07/run38109155658/receipt.sanitized.json",
+                "docs/stabilization/reports/data-t07-native-peer-20261011.json"
+              ],
+              "detail": "Independently reviewed bounded guest T07 subtargets on imported development artifact v0.2.490: C18 hover highlight tracked two distinct fixture elements, C22 Clear removed the selected picker entry, and C21 Cancel after selecting a field restored the Data panel baseline. Only observations.t07 and its t07_clear result in the hosted driver report\u2019s T01 envelope are credited; C19 is not credited. The native driver observed zero non-GET /wbx_pattern requests during the action window, with no backend persistence query. Archived screenshots omit picker states; post-run absence was not independently verified. Remaining T07 criteria, reload, member/admin and full Data remain unverified."
             },
             "member": {
               "status": "unverified"
@@ -41692,7 +41706,7 @@
               "status": "unverified"
             }
           },
-          "verification_status": "unverified"
+          "verification_status": "partial-bounded-guest-subtargets; remaining T07 criteria, reload and signed-in roles unverified"
         },
         {
           "id": "EXT-F-2005-T08",
@@ -41750,7 +41764,7 @@
       ],
       "cells": {
         "guest": {
-          "test_status": "unverified",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0053",
             "EXT-D-0054"
@@ -41763,13 +41777,14 @@
             "38049410816",
             "38050967096",
             "38071036836",
-            "38072894998"
+            "38072894998",
+            "38109155658"
           ],
-          "retest_status": "Independently reviewed hosted run 38072894998 passes bounded guest EXT-F-2005-T01 on exact v0.2.471 Store ZIP candidate with temporary key adaptation. Native assertions verify Cancel without changed selection or pattern writes, two distinct previews/selections, and the unauthenticated save gate with zero pre-auth pattern writes. Guest Data feature remains unverified; signed-in persistence, other cases/controls, member/admin and published Store installation remain open.",
+          "retest_status": "Guest T01 remains a bounded pass from run 38072894998. Independently reviewed run 38109155658 adds only bounded guest T07 C18 hover, C22 Clear and C21 selected-field Cancel subtargets on exact v0.2.490 development artifact. T07 and full Guest Data remain partial; C19, other cases/controls, reload, signed-in persistence, member/admin and published Store installation remain unverified.",
           "retest_evidence": {
-            "run_id": "38072894998",
-            "report": "docs/stabilization/reports/peer-review-run38072894998.json",
-            "scope": "Bounded guest EXT-F-2005-T01 only; exact v0.2.471 Store ZIP candidate key-adapted and loaded unpacked. No full Guest Data, persistence, member/admin or published Store-install credit."
+            "run_id": "38109155658",
+            "report": "docs/stabilization/reports/data-t07-native-peer-20261011.json",
+            "scope": "Bounded guest T07 subtargets C18, C21 and C22 only on exact v0.2.490 development artifact. C19, remaining T07 criteria, reload, member/admin, backend persistence query and Store-installed behavior receive no credit."
           }
         },
         "member": {
