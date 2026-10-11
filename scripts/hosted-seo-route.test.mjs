@@ -205,7 +205,7 @@ test('SEO reporter retains safe phase and completed targets after SIGTERM', asyn
     true,
   );
   assert.equal(driverAst.parseDiagnostics.length, 0);
-  const driverFunctions = ['checkpoint', 'advance', 'target']
+  const driverFunctions = ['checkpoint', 'advance', 'enter', 'target']
     .map((name) => {
       const declaration = driverAst.statements.find(
         (statement) =>
@@ -245,7 +245,7 @@ test('SEO reporter retains safe phase and completed targets after SIGTERM', asyn
         advance('owned_guest_panel_ready', { nativePanel: true });
         advance('public_page_0_ready', { title: 'private page text' });
         target('T09', 'page_0_title_and_headings', { title: 'private page text', sourceUrl: 'https://private.invalid/' });
-        report.current_operation = 'public_page_1_navigation';
+        enter('public_page_1_navigation');
         process.kill(process.pid, 'SIGTERM');
       `,
           path,
@@ -261,7 +261,11 @@ test('SEO reporter retains safe phase and completed targets after SIGTERM', asyn
       assert.equal(persisted.build.before.treeSha256, 'a'.repeat(64));
       assert.equal(persisted.resource_diagnostic_enabled, diagnostic);
       assert.equal(persisted.last_safe_stage, 'public_page_0_ready');
-      assert.equal(persisted.current_operation, null);
+      assert.equal(persisted.current_operation, 'public_page_1_navigation');
+      assert.ok(
+        Date.parse(persisted.operation_start_sample.at) >= Date.parse(persisted.boundary_sample.at),
+      );
+      assert.ok(persisted.operation_start_sample.user >= persisted.boundary_sample.user);
       assert.equal(persisted.status, 'unverified');
       assert.equal(persisted.receipt_state, 'in_progress');
       assert.deepEqual(diagnostic ? persisted.diagnostic_targets : persisted.targets, [
@@ -629,4 +633,78 @@ test('hosted workflow admits guest SEO on lane B with one exact development arti
     workflow,
     /SEO_METADATA_FIXTURE: \$\{\{ inputs\.seo_metadata_fixture \|\| 'none' \}\}/,
   );
+});
+
+// Break: a watchdog stop discards already-observed hit/click diagnostics.
+test('SEO progress durably retains safe differing hit outcomes at operation entry', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'seo-hit-progress-'));
+  try {
+    for (const [hits, phase] of [
+      [0, 'press_attempted'],
+      [9, 'release_returned'],
+    ]) {
+      const path = join(directory, `${hits}.json`);
+      const report = {
+        schema_version: 1,
+        feature_id: 'EXT-F-1008',
+        mode: 'guest',
+        scope: 'controlled',
+        status: 'pass',
+        targets: [],
+        last_safe_stage: 'sparse_seo_details_inspected',
+        current_operation: 'rich_detail_page_navigation',
+        boundary_sample: {
+          at: '2026-10-11T17:31:57.000Z',
+          user: 1200,
+          system: 300,
+          secret: 'secret-page',
+        },
+        operation_start_sample: { at: '2026-10-11T17:31:58.000Z', user: 1300, system: 350 },
+        click_phase: phase,
+        reaudit_hit_diagnostics: {
+          history_refused: {
+            active: true,
+            target_count: 1,
+            target_enabled: true,
+            database_refused_notice_count: 1,
+            dismiss_visible: true,
+            hit_point_count: hits,
+            notice_hit_point_count: 9 - hits,
+            x: 123,
+            text: 'secret-page',
+          },
+          private_stage: { secret: 'secret-page' },
+        },
+      };
+      seoRoute.writeSeoGuestProgress(path, report, false);
+      const persisted = JSON.parse(await readFile(path, 'utf8'));
+      assert.equal(persisted.status, 'unverified');
+      assert.equal(persisted.current_operation, 'rich_detail_page_navigation');
+      assert.equal(persisted.click_phase, phase);
+      assert.deepEqual(persisted.reaudit_hit_diagnostics, {
+        history_refused: {
+          active: true,
+          target_count: 1,
+          target_enabled: true,
+          database_refused_notice_count: 1,
+          dismiss_visible: true,
+          hit_point_count: hits,
+          notice_hit_point_count: 9 - hits,
+        },
+      });
+      assert.deepEqual(persisted.boundary_sample, {
+        at: '2026-10-11T17:31:57.000Z',
+        user: 1200,
+        system: 300,
+      });
+      assert.deepEqual(persisted.operation_start_sample, {
+        at: '2026-10-11T17:31:58.000Z',
+        user: 1300,
+        system: 350,
+      });
+      assert.doesNotMatch(JSON.stringify(persisted), /secret-page|private_stage|"x"/);
+    }
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });

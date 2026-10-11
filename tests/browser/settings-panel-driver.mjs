@@ -552,6 +552,10 @@ export async function click(panel, kind, label, onPhase = undefined) {
           ? [...menu.querySelectorAll('[role="option"]')] : [];
       })
       .filter((el) => el.textContent.trim() === label);
+    else if (kind === 'seo-database-refused-dismiss') candidates = [...document.querySelectorAll('[role="alert"]')]
+      .filter((el) => el.querySelector('.font-medium')?.textContent.trim() === 'Saved audits unavailable'
+        && el.querySelector('p')?.textContent.includes('the database refused the request because your account is not allowed'))
+      .flatMap((el) => [...el.querySelectorAll('button[aria-label="Dismiss"]')]);
     else if (kind === 'capture-no-workspace-dismiss') candidates = [...document.querySelectorAll('[role="alert"]')]
       .filter((el) => el.querySelector('.font-medium')?.textContent.trim() === 'Capture list unavailable'
         && el.querySelector('p')?.textContent.includes('no workspace is selected, so the request was never sent'))

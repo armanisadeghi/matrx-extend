@@ -148,10 +148,13 @@ const advance = (stage, observable = null) => {
   report.last_safe_stage = stage;
   report.last_safe_observable = observable;
   report.current_operation = null;
+  report.boundary_sample = { at: new Date().toISOString(), ...process.cpuUsage() };
   checkpoint();
 };
 const enter = (operation) => {
   report.current_operation = operation;
+  report.operation_start_sample = { at: new Date().toISOString(), ...process.cpuUsage() };
+  checkpoint();
 };
 async function observe(stage, read) {
   enter(stage);
@@ -1319,6 +1322,7 @@ try {
           onHit: (stage, state) => {
             report.reaudit_hit_diagnostics ??= {};
             report.reaudit_hit_diagnostics[stage] = state;
+            checkpoint();
           },
         });
         target('T06', 'guest_history_error_retry_fresh_empty_read', history);
@@ -1565,8 +1569,9 @@ try {
       await observe('manual_reaudit_preflight', () => seoContent(panel));
       report.reaudit_hit_diagnostics ??= {};
       report.reaudit_hit_diagnostics.before_click = await observeSeoReauditHit(panel);
+      checkpoint();
       enter('manual_reaudit_click');
-      await clickSeoReaudit(panel, report, click);
+      await clickSeoReaudit(panel, report, click, checkpoint);
       advance('manual_reaudit_click_dispatched', { trustedInput: true });
       await waitObserved(
         'manual_reaudit_running_wait',
@@ -1585,6 +1590,28 @@ try {
       );
       target('T02', 'manual_button_returns_to_current_page', { currentTitlePreserved: true });
       advance('manual_reaudit_settled', { currentTitlePreserved: true });
+      report.reaudit_hit_diagnostics.after_click = await observeSeoReauditHit(panel);
+      checkpoint();
+      if (SEO_CASE_SCOPE === 'controlled') {
+        assert.equal(
+          report.reaudit_hit_diagnostics.before_click.dismiss_visible,
+          true,
+          'database notice Dismiss is visible before trusted Re-audit',
+        );
+        assert.equal(
+          report.reaudit_hit_diagnostics.after_click.hit_point_count,
+          9,
+          'all nine Re-audit points remain target-owned after recapture',
+        );
+        enter('manual_reaudit_notice_dismiss');
+        await click(panel, 'seo-database-refused-dismiss', 'Dismiss');
+        report.reaudit_hit_diagnostics.after_dismiss = await waitFor(
+          'reaudit_notice_dismissed',
+          () => observeSeoReauditHit(panel),
+          (state) => state.database_refused_notice_count === 0 && state.hit_point_count === 9,
+        );
+        advance('manual_reaudit_notice_dismissed');
+      }
 
       await observe('copy_menu_preflight', () => selectedSeo(panel));
       const menu = await copyMenu(panel);
