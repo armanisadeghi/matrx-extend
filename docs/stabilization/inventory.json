@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T05:18:35Z",
+  "updated_at": "2026-10-11T05:59:43Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -2379,15 +2379,32 @@
           "id": "EXT-F-1001-C08",
           "label": "Explicit target-page reload",
           "action": "Reload captured target tab only on separate user click; page identity invalidates old feedback/outcomes."
+        },
+        {
+          "id": "EXT-F-1001-C09",
+          "label": "Profile menu entry",
+          "action": "From the account popover, verify the Profile entry is hidden to guests and opens the Profile tab for signed-in members and admins."
+        },
+        {
+          "id": "EXT-F-1001-C10",
+          "label": "Preferences menu entry",
+          "action": "From the account popover, choose Preferences and verify it closes the popover and selects Settings for guest, member and admin."
+        },
+        {
+          "id": "EXT-F-1001-C11",
+          "label": "Sign out menu action",
+          "action": "From the account popover, activate Sign out; verify the menu closes and the resulting identity is signed out, including the already-guest case."
         }
       ],
       "source_anchors": [
-        "src/entrypoints/sidepanel/App.tsx:307",
+        "src/components/UserMenu.tsx:100-109",
+        "src/components/UserMenu.tsx:86-95",
         "src/config/sidepanel-visibility.ts:1",
-        "src/state/sidepanel-tab.ts:1",
-        "src/components/UserMenu.tsx:89",
+        "src/config/sidepanel-visibility.ts:37-38",
         "src/entrypoints/sidepanel/App.tsx",
+        "src/entrypoints/sidepanel/App.tsx:307",
         "src/lib/panel/launch-intent.ts",
+        "src/state/sidepanel-tab.ts:1",
         "src/styles/globals.css"
       ],
       "dependency_class": "local",
@@ -2982,6 +2999,229 @@
               "prior_evidence": "docs/stabilization/reports/site-access-native-acceptance-20261002.json"
             }
           }
+        },
+        {
+          "id": "EXT-F-1001-T19",
+          "title": "guest: Profile menu entry is hidden",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C09"
+          ],
+          "preconditions": [
+            "Use a genuinely signed-out extension profile and open the actual side panel. Record guest identity before the check."
+          ],
+          "steps": [
+            "Open the avatar account popover. Inspect its menu actions without changing the persisted tab."
+          ],
+          "expected": [
+            "Profile is absent from the menu because the Profile surface is signed-in only."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation"
+          ]
+        },
+        {
+          "id": "EXT-F-1001-T20",
+          "title": "member: Profile menu entry opens Profile",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C09"
+          ],
+          "preconditions": [
+            "Use a signed-in ordinary-member profile and open the actual side panel. Record member identity before the check."
+          ],
+          "steps": [
+            "Open the avatar account popover.",
+            "Choose Profile.",
+            "Verify the Profile view is selected and the account remains signed in with the same role."
+          ],
+          "expected": [
+            "Profile is present for signed-in users and opens the Profile view; the menu closes."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation"
+          ]
+        },
+        {
+          "id": "EXT-F-1001-T21",
+          "title": "admin: Profile menu entry opens Profile",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C09"
+          ],
+          "preconditions": [
+            "Use a signed-in admin profile and open the actual side panel. Record admin identity before the check."
+          ],
+          "steps": [
+            "Open the avatar account popover.",
+            "Choose Profile.",
+            "Verify the Profile view is selected and the account remains signed in with the same role."
+          ],
+          "expected": [
+            "Profile is present for signed-in users and opens the Profile view; the menu closes."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation"
+          ]
+        },
+        {
+          "id": "EXT-F-1001-T22",
+          "title": "guest: Preferences menu entry opens Settings",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C10"
+          ],
+          "preconditions": [
+            "Use a genuinely signed-out extension profile and open the actual side panel. Record guest identity before the check."
+          ],
+          "steps": [
+            "Open the avatar account popover.",
+            "Choose Preferences.",
+            "Verify the Settings view is selected and the account role is unchanged."
+          ],
+          "expected": [
+            "Preferences is present for this role, opens Settings, and closes the popover."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation"
+          ]
+        },
+        {
+          "id": "EXT-F-1001-T23",
+          "title": "member: Preferences menu entry opens Settings",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C10"
+          ],
+          "preconditions": [
+            "Use a signed-in ordinary-member profile and open the actual side panel. Record member identity before the check."
+          ],
+          "steps": [
+            "Open the avatar account popover.",
+            "Choose Preferences.",
+            "Verify the Settings view is selected and the account role is unchanged."
+          ],
+          "expected": [
+            "Preferences is present for this role, opens Settings, and closes the popover."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation"
+          ]
+        },
+        {
+          "id": "EXT-F-1001-T24",
+          "title": "admin: Preferences menu entry opens Settings",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C10"
+          ],
+          "preconditions": [
+            "Use a signed-in admin profile and open the actual side panel. Record admin identity before the check."
+          ],
+          "steps": [
+            "Open the avatar account popover.",
+            "Choose Preferences.",
+            "Verify the Settings view is selected and the account role is unchanged."
+          ],
+          "expected": [
+            "Preferences is present for this role, opens Settings, and closes the popover."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation"
+          ]
+        },
+        {
+          "id": "EXT-F-1001-T25",
+          "title": "guest: Sign out menu action",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C11"
+          ],
+          "preconditions": [
+            "Use a genuinely signed-out extension profile and open the actual side panel. Record guest identity before the check."
+          ],
+          "steps": [
+            "Open the avatar account popover and confirm Sign out is present.",
+            "Choose Sign out.",
+            "Wait for account state to settle, then reopen the avatar popover and inspect the displayed identity."
+          ],
+          "expected": [
+            "The menu closes after activation. The resulting account state is guest; when the case starts as guest, it remains guest."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation"
+          ]
+        },
+        {
+          "id": "EXT-F-1001-T26",
+          "title": "member: Sign out menu action",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C11"
+          ],
+          "preconditions": [
+            "Use a signed-in ordinary-member profile and open the actual side panel. Record member identity before the check."
+          ],
+          "steps": [
+            "Open the avatar account popover and confirm Sign out is present.",
+            "Choose Sign out.",
+            "Wait for account state to settle, then reopen the avatar popover and inspect the displayed identity."
+          ],
+          "expected": [
+            "The menu closes after activation. The resulting account state is guest; when the case starts as guest, it remains guest."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation"
+          ]
+        },
+        {
+          "id": "EXT-F-1001-T27",
+          "title": "admin: Sign out menu action",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1001-C11"
+          ],
+          "preconditions": [
+            "Use a signed-in admin profile and open the actual side panel. Record admin identity before the check."
+          ],
+          "steps": [
+            "Open the avatar account popover and confirm Sign out is present.",
+            "Choose Sign out.",
+            "Wait for account state to settle, then reopen the avatar popover and inspect the displayed identity."
+          ],
+          "expected": [
+            "The menu closes after activation. The resulting account state is guest; when the case starts as guest, it remains guest."
+          ],
+          "dimensions": [
+            "warm",
+            "navigation"
+          ]
         }
       ],
       "cells": {
