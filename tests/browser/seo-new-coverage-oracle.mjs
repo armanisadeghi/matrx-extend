@@ -144,9 +144,20 @@ export async function runCopyCheckThenRecapture(copyCheck, recapture) {
 // Errors still propagate so a broken source or lost target fails the run.
 export function seoCaseSelection(scope = 'full') {
   assert.ok(
-    scope === 'full' || scope === 'controlled' || scope === 'readability' || scope === 'metadata',
+    scope === 'full' ||
+      scope === 'controlled' ||
+      scope === 'readability' ||
+      scope === 'metadata' ||
+      scope === 'narrow',
     'unknown_seo_case_scope',
   );
+  if (scope === 'narrow')
+    return {
+      scope,
+      selected_cases: ['T09'],
+      selected_subtargets: ['guest_detail_content_and_controls_reachable_at_360px'],
+      excluded_cases: ['all SEO targets other than the owned T09 narrow-panel dimension'],
+    };
   if (scope === 'metadata')
     return {
       scope,
@@ -166,6 +177,36 @@ export function seoCaseSelection(scope = 'full') {
     selected_cases: ['T01', 'T02', 'T03', 'T07', 'T09', 'T14'],
     excluded_cases:
       scope === 'controlled' ? ['T09 volatile public detail', 'T09 optional metadata fixture'] : [],
+  };
+}
+
+export function requireNarrowSeoLayout(observation) {
+  assert.equal(observation?.scopeValid, true, 'narrow_seo_pane_scope_valid');
+  assert.equal(observation?.viewportWidth, 360, 'narrow_seo_viewport_is_360px');
+  assert.ok(
+    observation?.documentScrollWidth <= observation?.documentClientWidth,
+    'narrow_seo_document_has_no_horizontal_overflow',
+  );
+  assert.ok(
+    observation?.paneScrollWidth <= observation?.paneClientWidth,
+    'narrow_seo_pane_has_no_horizontal_overflow',
+  );
+  for (const group of ['title', 'international', 'structuredData'])
+    assert.equal(observation?.detailGroups?.[group], true, `narrow_seo_${group}_present`);
+  assert.ok(observation?.hreflangLinks > 0, 'narrow_seo_hreflang_door_present');
+  assert.ok(observation?.schemaChips > 0, 'narrow_seo_schema_chip_present');
+  assert.ok(observation?.buttons?.reAudit > 0, 'narrow_seo_reaudit_control_present');
+  assert.ok(observation?.buttons?.copyAudit > 0, 'narrow_seo_copy_control_present');
+  assert.equal(observation?.unreachableTargets, 0, 'narrow_seo_controls_and_links_reachable');
+  assert.ok(observation?.targetCount > 0, 'narrow_seo_targets_observed');
+  return {
+    viewportWidth: 360,
+    noHorizontalOverflow: true,
+    detailGroups: 3,
+    hreflangLinks: observation.hreflangLinks,
+    schemaChips: observation.schemaChips,
+    buttons: observation.buttons,
+    reachableTargets: observation.targetCount,
   };
 }
 

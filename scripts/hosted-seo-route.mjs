@@ -97,9 +97,12 @@ export function hostedSeoMetadataFixture(acceptanceCase, scope, fixture = 'none'
   }
   if (fixture === 'owned') {
     assert.equal(acceptanceCase, 'guest-seo', 'seo_metadata_fixture_requires_guest_seo');
-    assert.equal(scope, 'metadata', 'owned_metadata_fixture_requires_metadata_scope');
+    assert.ok(
+      scope === 'metadata' || scope === 'narrow',
+      'owned_metadata_fixture_requires_owned_scope',
+    );
   }
-  if (scope === 'metadata')
+  if (scope === 'metadata' || scope === 'narrow')
     assert.equal(fixture, 'owned', 'owned_metadata_fixture_requires_metadata_scope');
   return fixture === 'none' ? undefined : fixture;
 }
@@ -160,7 +163,11 @@ export function hostedGuestSeoRoute(
   resourceDiagnostic = '0',
 ) {
   assert.ok(
-    scope === 'full' || scope === 'controlled' || scope === 'readability' || scope === 'metadata',
+    scope === 'full' ||
+      scope === 'controlled' ||
+      scope === 'readability' ||
+      scope === 'metadata' ||
+      scope === 'narrow',
     'unknown_seo_case_scope',
   );
   assert.ok(scope === 'full' || acceptanceCase === 'guest-seo', 'seo_scope_requires_guest_seo');

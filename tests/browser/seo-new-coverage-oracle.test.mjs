@@ -5,6 +5,7 @@ import {
   observeSocialCopyOutcome,
   pollSocialFeedback,
   requireSeoDoorSourceRestoration,
+  requireNarrowSeoLayout,
   runCopyCheckThenRecapture,
   runSeoCaseSequence,
   seoCaseSelection,
@@ -80,6 +81,46 @@ test('metadata scope selects only the owned hreflang and Article door target', (
     selected_subtargets: ['guest_owned_hreflang_article_doors_match_fixture_dom'],
     excluded_cases: ['all SEO targets other than the owned T09 metadata door target'],
   });
+});
+
+test('narrow T09 scope requires reachable detail doors and controls without horizontal overflow', () => {
+  assert.deepEqual(seoCaseSelection('narrow'), {
+    scope: 'narrow',
+    selected_cases: ['T09'],
+    selected_subtargets: ['guest_detail_content_and_controls_reachable_at_360px'],
+    excluded_cases: ['all SEO targets other than the owned T09 narrow-panel dimension'],
+  });
+  const valid = {
+    scopeValid: true,
+    viewportWidth: 360,
+    documentScrollWidth: 360,
+    documentClientWidth: 360,
+    paneScrollWidth: 360,
+    paneClientWidth: 360,
+    detailGroups: { title: true, international: true, structuredData: true },
+    hreflangLinks: 1,
+    schemaChips: 1,
+    buttons: { reAudit: 1, copyAudit: 1 },
+    unreachableTargets: 0,
+    targetCount: 5,
+  };
+  assert.deepEqual(requireNarrowSeoLayout(valid), {
+    viewportWidth: 360,
+    noHorizontalOverflow: true,
+    detailGroups: 3,
+    hreflangLinks: 1,
+    schemaChips: 1,
+    buttons: { reAudit: 1, copyAudit: 1 },
+    reachableTargets: 5,
+  });
+  for (const broken of [
+    { ...valid, viewportWidth: 359 },
+    { ...valid, documentScrollWidth: 361 },
+    { ...valid, paneScrollWidth: 361 },
+    { ...valid, unreachableTargets: 1 },
+    { ...valid, detailGroups: { ...valid.detailGroups, structuredData: false } },
+  ])
+    assert.throws(() => requireNarrowSeoLayout(broken));
 });
 
 test('metadata door restoration fails when the source tab closes or changes URL', () => {
