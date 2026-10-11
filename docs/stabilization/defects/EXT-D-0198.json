@@ -7,7 +7,7 @@
   "title": "SEO history query failure is rendered as unavailable history without an error or history retry",
   "severity": "S2: a failed history read hides saved audit navigation and diffs, with no history-specific recovery path",
   "priority": "P1: current Wave B SEO stabilization case EXT-F-1008-T06",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "seo-history implementation lane",
   "preconditions": [
     "Open the SEO surface for a page URL while the active page identity is unresolved so auto-audit does not issue unrelated capture work.",
@@ -32,7 +32,7 @@
     "src/features/seo/SeoView.tsx:272-281",
     "docs/stabilization/reports/seo-history-error-fix-20261011.json"
   ],
-  "fix_commit": null,
+  "fix_commit": "9ea9401ed75d3d21cf1bb370eec81a3b8027df0f",
   "verification": [
     "A temporary focused Vitest diagnostic invoked the real fetchSeoAuditHistoryForUrl and rendered the real SeoView with a controlled synthetic PostgREST 42501 permission error; it passed the assertions that the query resolves to [], the History toggle is absent, and no history-specific error is shown.",
     "The temporary diagnostic test file was removed after the run and is not committed.",
@@ -58,6 +58,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Implement distinct query failure and saved-history loading/empty/error states with a fresh-read retry; independent native retest remains open."
+    },
+    {
+      "at": "2026-10-11T06:21:03.108015+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair pushed to main in 9ea9401ed75d3d21cf1bb370eec81a3b8027df0f after RED\u2192GREEN regression, 28 focused SEO tests, compile/lint/schema checks. Independent native and role-specific retest remains open; not shipped or closed."
     }
   ],
   "retest_status": "open \u2014 independent native T06 and relevant guest/member/admin checks required; no browser or live-backend acceptance claimed",
