@@ -20,8 +20,8 @@
   },
   "native_acceptance_status": "success",
   "resource_valid": true,
-  "independent_review_status": "pending",
-  "inventory_credit": "none pending fresh independent peer review",
+  "independent_review_status": "Verdict A PASS_BOUNDED_DOM_OBSERVATION; Verdict B PARTIAL",
+  "inventory_credit": "repeat bounded T08 guest no-signal SEO/empty Schema observation only; no new unique coverage count; case and guest feature-role remain partial",
   "evidence": {
     "directory": "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38174175733",
     "receipt": "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38174175733/receipt.sanitized.json",
@@ -39,17 +39,20 @@
     "case_id": "EXT-F-1007-T08",
     "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
     "auth_mode": "guest",
-    "status": "bounded_pass_pending_peer",
+    "status": "repeat_bounded_observation_peer_reviewed",
     "findings": [
       "On the owned title-only guest page at native-default 360px width, SEO displayed the matching title, empty description, and only Title & description and Performance groups.",
       "Schema displayed valid JSON with the matching title and no description, canonical, Open Graph, Twitter, schema types, or JSON-LD.",
-      "Full-capture export identity and digest remained unchanged after selecting each pane. The report records a trusted click on the capture control and selected, visible target panes."
+      "Full-capture export identity and digest remained unchanged after selecting each pane. The report records a trusted click on the capture control and selected, visible target panes.",
+      "Fresh independent review: Verdict A PASS for the bounded DOM assertions; Verdict B PARTIAL because screenshots omit target panes and raw pane values are not retained."
     ],
     "limits": [
       "Only the guest no-signal SEO and empty Schema T08 subtarget is covered.",
       "The tested product is frozen v0.2.504/source acb5506d5; no current-main, Store, release, or broader Scrape claim follows.",
       "Target-pane behavior evidence is serialized DOM output; the uploaded screenshots do not show the exercised Scrape, SEO, or Schema panes.",
-      "Inventory remains unchanged until a fresh independent peer verifies behavior and provenance."
+      "Inventory remains unchanged until a fresh independent peer verifies behavior and provenance.",
+      "This repeats already-covered guest no-signal SEO/empty Schema behavior and adds no unique coverage count. Peer review does not establish current-main, Store, release, full T08, reload, physical resize, or other-role acceptance."
     ]
-  }
+  },
+  "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-empty-seo-schema-run38174175733-20261011.json"
 }
