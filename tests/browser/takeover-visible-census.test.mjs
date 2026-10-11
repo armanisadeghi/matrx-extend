@@ -974,3 +974,124 @@ test('guest screenshot refuses a one-pixel Account header or Sign in sliver', as
     );
   }
 });
+
+// Guard the harness's evidence output, not product behavior: a guest inspecting Chat
+// must distinguish a static New chat button from a private conversation label.
+test('diagnostic identities retain static names and DOM identity while redacting private text', async () => {
+  const expression = discoveryExpression('navigation', randomBytes(32).toString('base64'));
+  const verify = async (observe) => {
+    const rows = await observe(
+      '<header><button title="New chat">Private conversation</button><button>Private subject</button><button></button><button>New chat</button><label>New chat<button></button></label></header>',
+    );
+    const identities = rows.map((row) => row.provenance.diagnostic_identity);
+    assert.deepEqual(
+      Array.from(identities, (row) => row.accessible_name),
+      [
+        'New chat',
+        '[redacted_unrecognized_label]',
+        '[unlabeled]',
+        '[redacted_unrecognized_label]',
+        '[unlabeled]',
+      ],
+    );
+    assert.ok(identities[0].inventory_candidate_ids.includes('EXT-F-2013-C03'));
+    assert.equal(identities[0].outside_panel, false);
+    assert.equal(identities[0].name_source, 'title');
+    assert.equal(identities[3].name_source, 'marker');
+    assert.equal(identities[3].inventory_candidate_ids.length, 0);
+    assert.notEqual(rows[0].provenance.dom_path, rows[1].provenance.dom_path);
+    assert.doesNotMatch(JSON.stringify(rows), /Private|conversation|subject/);
+    assert.equal((await observe('')).length, 0);
+  };
+  const observe = (html) => vm.runInNewContext(expression, domContext(html));
+  await verify(observe);
+  const constant = await observe('<button></button>');
+  await assert.rejects(() => verify(async () => constant));
+  const stripped = expression.replace(
+    'diagnostic_identity: (() => {',
+    'discarded_identity: (() => {',
+  );
+  await assert.rejects(() => verify((html) => vm.runInNewContext(stripped, domContext(html))));
+});
+
+test('About diagnostics distinguish click failure, runtime inspection and one read-only retry', async () => {
+  const { inspectSettingsSection } = await import('./takeover-visible-census.mjs');
+  const key = randomBytes(32).toString('base64');
+  let reads = 0;
+  let clicks = 0;
+  const panel = {
+    async send() {
+      reads++;
+      return reads === 1
+        ? { exceptionDetails: { text: 'Private error' } }
+        : { result: { value: [] } };
+    },
+  };
+  const result = await inspectSettingsSection(panel, 'About', key, async () => {
+    clicks++;
+  });
+  assert.equal(clicks, 1);
+  assert.equal(reads, 2);
+  assert.equal(result.raw, null, 'retry cannot erase first failure');
+  assert.deepEqual(result.diagnostic, {
+    region: 'settings_section',
+    label: 'About',
+    reason: 'inspection_failed',
+    stage: 'content_inspection',
+    click_result: 'opened',
+    failure_category: 'runtime_exception',
+    read_only_retry: { result: 'inspected', visible_control_count: 0 },
+  });
+  reads = 0;
+  const failedClick = await inspectSettingsSection(panel, 'About', key, async () => {
+    throw new Error('About_expanded_not_observed:Private');
+  });
+  assert.equal(failedClick.diagnostic.stage, 'section_click');
+  assert.equal(failedClick.diagnostic.failure_category, 'timeout');
+  assert.equal(reads, 1, 'exactly one diagnostic inspection after failed click');
+  assert.doesNotMatch(JSON.stringify(failedClick), /Private/);
+  reads = 0;
+  const pointerFailure = new Error('Private pointer transport');
+  pointerFailure.driverFailure = { code: 'pointer_stable_hit_not_observed' };
+  const pointer = await inspectSettingsSection(panel, 'About', key, async () => {
+    throw pointerFailure;
+  });
+  assert.equal(pointer.diagnostic.failure_category, 'pointer_stable_hit_not_observed');
+  assert.doesNotMatch(JSON.stringify(pointer), /Private/);
+  const success = await inspectSettingsSection(
+    { send: async () => ({ result: { value: [] } }) },
+    'About',
+    key,
+    async () => {},
+  );
+  assert.deepEqual(success, { raw: [] });
+});
+
+test('blocked RPC diagnostics distinguish source read and write without relaxing interception', async () => {
+  const { blockedRequestDiagnostic } = await import('./takeover-visible-census.mjs');
+  const read = blockedRequestDiagnostic(
+    {
+      method: 'POST',
+      url: 'https://db.matrxserver.com/rest/v1/rpc/knob_snapshot?token=Private',
+      postData: 'Private',
+    },
+    'extension_worker',
+  );
+  assert.equal(read.rpc_name, 'knob_snapshot');
+  assert.equal(read.path, '/rest/v1/rpc/knob_snapshot');
+  assert.equal(read.source_classification, 'read');
+  assert.equal(read.initiator, 'extension_worker');
+  assert.equal(read.policy, 'blocked_non_GET');
+  const write = blockedRequestDiagnostic({
+    method: 'POST',
+    url: 'https://db.matrxserver.com/rest/v1/rpc/log_client_error',
+  });
+  assert.equal(write.source_classification, 'write');
+  const unknown = blockedRequestDiagnostic({
+    method: 'DELETE',
+    url: 'https://db.matrxserver.com/private/Private?secret=Private',
+  });
+  assert.equal(unknown.path, '[redacted_path]');
+  assert.equal(unknown.source_classification, 'unclassified');
+  assert.doesNotMatch(JSON.stringify([read, write, unknown]), /Private|postData|token|secret/);
+});

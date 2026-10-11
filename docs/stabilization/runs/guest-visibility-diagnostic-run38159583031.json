@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "id": "guest-visibility-diagnostic-run38159583031",
+  "created_at_utc": "2026-10-11T17:25:28Z",
+  "status": "terminal_failed_unverified",
+  "run_id": 38159583031,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38159583031",
+  "attempt": 1,
+  "lane": "A",
+  "runner_label": "macos-15",
+  "workflow_source_sha": "6d07959011d0365c1a7fd57f0ac33eef7fa6434e",
+  "inputs": {
+    "acceptance_case": "visibility-census-guest"
+  },
+  "product_artifact": {
+    "ci_run_id": 38158831692,
+    "artifact_id": 11708654888,
+    "source_sha": "5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6",
+    "github_digest": "sha256:f0ba27bf56a1c4b83d991089e1f4e98683db7568c9487ea49c9c7a003a6c4d9a",
+    "ci_conclusion": "success"
+  },
+  "purpose": "Guarded guest visibility census diagnostic on the source-reviewed safe identity and failure-detail driver. Resolve the 32 unmapped controls, About inspection category and blocked RPC origin from the previous aggregate-only run, without weakening the observation-only non-GET guard.",
+  "credit_rule": "Inventory mapping and diagnostic evidence only; no product behavior pass, denial-path verdict, full census claim, or defect attribution from visibility alone.",
+  "next_action": "Obtain a sanitized identity-to-inventory mapping for the 34 unresolved observations and rerun the observation-only census without weakening the non-GET guard. Keep this run incomplete and do not change inventory or attribute product defects from its visibility data.",
+  "completed_at_utc": "2026-10-11T17:31:57Z",
+  "conclusion": "failure",
+  "hosted_result_artifact_id": 11709594965,
+  "github_digest": "sha256:b705c4e629c67c066e1a4ef6863500cc832ed7cae7f07ea5e332dbed58e38bc3",
+  "artifact_digest_verified": true,
+  "product_artifact_digest_verified": true,
+  "resource_journals": [
+    "docs/stabilization/resource-journals/hosted-package-38159583031-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-browser-38159583031-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-guest-38159583031-1.jsonl"
+  ],
+  "sanitized_evidence": "docs/stabilization/evidence/visibility-census-guest/run38159583031.json",
+  "independent_report": "docs/stabilization/reports/guest-visibility-diagnostic-peer-run38159583031.json",
+  "result": "All three resource journals finalized. Package and browser phases were resource-valid; the guest phase was admitted and resource-valid but its child exited 1 after the census wrote status incomplete (36 unmapped observations; one blocked non-GET RPC). The diagnostic itself returned exit 2 for incompleteness and the hosted wrapper assertion failed. About was opened and inspected: its update control was mapped and no About inspection failure was recorded. Two outer guest sign-in/sign-up controls were identified in the native screenshot as existing EXT-F-2013 controls. The other 34 hashed identities have no inventory candidate ids and raw identities are suppressed, so they remain unresolved; no true-missing-control finding or product defect attribution is made. Blocked RPC: log_client_error, source callsites src/state/context-rules.ts and src/lib/supabase/db-failure.ts; artifact does not distinguish the issuing caller. No behavior credit."
+}

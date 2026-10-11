@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "run_id": 38159583031,
+  "status": "independent_artifact_review_complete_run_failed_and_census_incomplete",
+  "reviewed_at_utc": "2026-10-11T17:35:00Z",
+  "provenance": {
+    "workflow_source_sha": "6d07959011d0365c1a7fd57f0ac33eef7fa6434e",
+    "workflow_source_commit_match": true,
+    "artifact_id": 11709594965,
+    "artifact_sha256": "b705c4e629c67c066e1a4ef6863500cc832ed7cae7f07ea5e332dbed58e38bc3",
+    "artifact_digest_match": true,
+    "frozen_product_ci_run_id": 38158831692,
+    "frozen_product_artifact_id": 11708654888,
+    "frozen_product_source_sha": "5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6",
+    "frozen_product_artifact_sha256": "f0ba27bf56a1c4b83d991089e1f4e98683db7568c9487ea49c9c7a003a6c4d9a",
+    "frozen_product_digest_match": true,
+    "product_ci_conclusion": "success"
+  },
+  "resource_review": {
+    "finalized_journal_count": 3,
+    "package": "valid, exit 0",
+    "browser": "valid, exit 0",
+    "guest": "admitted, resourceInvalid false, child exit 1; resource decision child_failed"
+  },
+  "failure_localization": {
+    "stage": "census output was written as incomplete; driver returned exit 2; hosted wrapper assertion failed while requiring child exit 0",
+    "failing_step": "Exercise the selected Chrome side-panel case",
+    "about": "No About inspection failure occurred. About section was opened; one control (EXT-F-1003-C31) was inspected and mapped; inaccessible_regions is empty.",
+    "blocked_request": {
+      "rpc": "log_client_error",
+      "request": "POST /rest/v1/rpc/log_client_error",
+      "initiator": "sidepanel",
+      "classification": "write",
+      "policy": "blocked_non_GET",
+      "recorded_source_callsites": [
+        "src/state/context-rules.ts",
+        "src/lib/supabase/db-failure.ts"
+      ],
+      "caller_resolution": "The artifact lists both source callsites but does not identify which callsite issued this request."
+    }
+  },
+  "unmapped_classification": {
+    "observation_count": 36,
+    "identified_existing_inventory_controls": 2,
+    "unresolved_redacted_identities": 34,
+    "true_missing_stable_controls": 0,
+    "rule": "The 34 observations are per-observation listed in sanitized evidence, but their HMAC fingerprints and absent candidate ids do not reveal an inventory label. Treat them as unresolved, not as true missing controls. No inventory change follows.",
+    "existing_controls": [
+      "EXT-F-2013-C132 guest banner Sign in",
+      "EXT-F-2013-C133 guest banner Sign up free"
+    ]
+  },
+  "scope_and_credit": {
+    "observation_only": true,
+    "guest_signed_out_observed": true,
+    "non_get_guard": "remained enabled; blocked POST was recorded",
+    "product_behavior_credit": false,
+    "denial_path_verdict": false,
+    "full_census_claim": false,
+    "product_defect_attribution": false
+  },
+  "files": {
+    "sanitized_evidence": "docs/stabilization/evidence/visibility-census-guest/run38159583031.json",
+    "run_record": "docs/stabilization/runs/guest-visibility-diagnostic-run38159583031.json"
+  },
+  "next_action": "Get a privacy-preserving mapping for the 34 unresolved identities, then rerun this observation-only census; preserve the non-GET guard. Do not promote inventory or defect status from this run."
+}

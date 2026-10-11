@@ -1,27 +1,26 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-10-11T08:14:30Z",
+  "observed_at": "2026-10-11T17:25:49Z",
   "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
   "daily_window": "2026-10-11 America/Los_Angeles; already claimed in common-docs commit 21dd23fa8",
   "public_listing": {
     "url": "https://chromewebstore.google.com/detail/matrx-extend/hnfolienncfklkgmdjjmhhegglimlamg",
     "method": "Direct read-only HTTPS public response with no-cache request",
     "response_status": 200,
-    "response_date": "Sun, 11 Oct 2026 08:12:04 GMT",
+    "response_date": "Sun, 11 Oct 2026 17:25:49 GMT",
     "cache_control": "no-cache, no-store, max-age=0, must-revalidate",
     "rendered_details_version": "0.2.205",
     "embedded_manifest_version": "0.2.205",
-    "private_review_state_proven": false
+    "private_review_state_proven_by_public_listing": false
   },
   "private_status": {
-    "fresh_authenticated_dashboard": "unavailable: prior exact primary Package route was refused by Browser Use; no alternate UI-control bypass attempted",
-    "fresh_publisher_mail": "unavailable: the publisher Chrome profile reached a live Google 2-Step Verification challenge after using existing saved-password autofill; no accessible code or passkey completion",
-    "login_challenge": "arman@armansadeghi.com; passkey requiring fingerprint/face/screen lock, one-time code from another signed-in device, phone prompt, Google Authenticator, or SMS to masked phone ending 27",
-    "credential_handling": "Existing browser autofill only; no password or code revealed or recorded; no new access granted",
-    "last_authenticated_dashboard_observation": "2026-10-10 about 20:22 UTC: 0.2.205 Published - public; 0.2.479 Pending review with automatic publication selected",
+    "authenticated_dashboard_observer": "Owning release session, 2026-10-11 about 17:25 UTC; exact primary item under Matrx publisher",
+    "authenticated_dashboard_observation": "Pending review; Draft package 0.2.479; Published package 0.2.205; Upload new package disabled",
+    "independent_browser_attempt": "This lane selected the existing exact primary Package tab through Browser Use; the tool refused scripting the extensions gallery. No alternate UI-control bypass attempted.",
+    "fresh_publisher_mail": "Authenticated arman@armansadeghi.com Gmail, 2026-10-11 about 17:25 UTC: in:anywhere after:2026/10/09 searches for exact phrases Chrome Web Store and hnfolienncfklkgmdjjmhhegglimlamg each returned no matching messages; mail absence does not establish review state",
+    "credential_handling": "Human completed the live Google verification challenge; no password, code or token revealed or recorded; no new access granted",
     "review_transition_established": false,
-    "official_publisher_api": "not called: no verified publisher ID or already-authorized Store-scoped credential",
-    "browser_refusal_boundary": "The prior exact primary Package route was refused by Browser Use; no alternate UI-control bypass attempted"
+    "official_publisher_api": "not called: no verified publisher ID or already-authorized Store-scoped credential"
   },
   "source_and_runtime": {
     "checkout_at_checkpoint": "15fa3a870c403e588c8ab4622f9ebcd29fe06d36",
@@ -34,11 +33,11 @@
   },
   "release_decision": {
     "action": "preserve last verified pending 0.2.479; no replacement, dispatch, upload or submission",
-    "reason": "Public 0.2.205 does not establish the current private review state; no authenticated approval or rejection evidence",
+    "reason": "Fresh authenticated primary dashboard still says Pending review 0.2.479 and disables new package upload; public listing remains 0.2.205",
     "approved_baseline_unchanged": "0.2.205",
     "pending_source": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
     "pending_store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
     "new_external_mutation": false
   },
-  "next_action": "At the next permitted authenticated publisher access, check primary-item review status and official mail. If published, verify exact public version before advancing baseline and reconsider synchronized-main eligibility; if rejected, record feedback and route repair. Preserve pending meanwhile."
+  "next_action": "Keep the 0.2.479 submission pending; next daily window check the authenticated primary dashboard and publisher mail. On approval verify exact public version before advancing baseline; on rejection record exact feedback and route repair."
 }

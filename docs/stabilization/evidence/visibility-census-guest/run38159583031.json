@@ -1,0 +1,413 @@
+{
+  "schema_version": 1,
+  "run_id": 38159583031,
+  "artifact_id": 11709594965,
+  "artifact_digest": "sha256:b705c4e629c67c066e1a4ef6863500cc832ed7cae7f07ea5e332dbed58e38bc3",
+  "source_sha": "5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6",
+  "capture_sha256": "ddee005cfbceace39d7a979d78093976ad8b045de891cc6aa6cfaca19d8679a7",
+  "observation_only": true,
+  "identity_values_omitted": true,
+  "census": {
+    "status": "incomplete",
+    "role": "guest",
+    "total_unmapped": 36,
+    "native_panel_verified": true,
+    "missing_required_regions": [],
+    "inaccessible_region_count": 0,
+    "unsupported_trigger_count": 0,
+    "blocked_request_count": 1
+  },
+  "about": {
+    "section_opened": true,
+    "inspection_succeeded": true,
+    "mapped_controls": [
+      {
+        "id": "EXT-F-1003-C31",
+        "label": "Check for extension update"
+      }
+    ]
+  },
+  "blocked_request": [
+    {
+      "method": "POST",
+      "path": "/rest/v1/rpc/log_client_error",
+      "rpc_name": "log_client_error",
+      "initiator": "sidepanel",
+      "source_classification": "write",
+      "source_callsites": ["src/state/context-rules.ts", "src/lib/supabase/db-failure.ts"],
+      "policy": "blocked_non_GET"
+    }
+  ],
+  "resource_journals": [
+    {
+      "file": "hosted-package-38159583031-1.jsonl",
+      "decision": "valid",
+      "child_exit_code": 0,
+      "resource_invalid": false
+    },
+    {
+      "file": "hosted-browser-38159583031-1.jsonl",
+      "decision": "valid",
+      "child_exit_code": 0,
+      "resource_invalid": false
+    },
+    {
+      "file": "hosted-guest-38159583031-1.jsonl",
+      "decision": "child_failed",
+      "child_exit_code": 1,
+      "resource_invalid": false
+    }
+  ],
+  "unmapped_observations": [
+    {
+      "area": "navigation",
+      "order": 6,
+      "fingerprint": "db3c8989d1a1a804ba798123204cb06906a08e5d3cc871789bd55e2a261ae415",
+      "kind": "button",
+      "region": "outside_panel",
+      "classification": "existing_inventory_control",
+      "inventory_ids": ["EXT-F-2013-C132"],
+      "basis": "Visible in native side-panel screenshot as the guest sign-in and sign-up actions; matched to the existing guest banner inventory controls."
+    },
+    {
+      "area": "navigation",
+      "order": 7,
+      "fingerprint": "c329cdb9911148e59adde44da449f83e3e5e6b6c4e712e9594e88e98a85d4e19",
+      "kind": "button",
+      "region": "outside_panel",
+      "classification": "existing_inventory_control",
+      "inventory_ids": ["EXT-F-2013-C133"],
+      "basis": "Visible in native side-panel screenshot as the guest sign-in and sign-up actions; matched to the existing guest banner inventory controls."
+    },
+    {
+      "area": "settings_sections",
+      "order": 11,
+      "fingerprint": "047eb783a14459f4bbfe63314ca04a1fd54498b2381ffa80f7d208b7738e7605",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 0,
+      "fingerprint": "047eb783a14459f4bbfe63314ca04a1fd54498b2381ffa80f7d208b7738e7605",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 1,
+      "fingerprint": "361a9af70d1a02d11dfd8b058b4ab09263becd2c5258db53bbc20982f5c98f07",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 2,
+      "fingerprint": "5b9d2497ad267117f2dc6b1ab589db811969822e9456ecab557ea8f5c94a7cbe",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 3,
+      "fingerprint": "8c6793d4db387b50fb9afb4b2184b9a52332237c4e89c474e2dd40df7c62d0a2",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 4,
+      "fingerprint": "290cef4f5e8f681cd5a84a29ee88fd1c65ddd85036dd144544d8eaa5d4d9113f",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 7,
+      "fingerprint": "591d15d73fb7a5bc052b993f5f8dac9404ac71fb7198c486af792e9d5fe35d80",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 8,
+      "fingerprint": "37c66dc03c3ec802aade4cb4a7ff774527780b16d4361b30d8a352ee4ea947d6",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 9,
+      "fingerprint": "d8878c0ed27aa23cf8ceaecd05ac92f2911a67b4a8468b410c5774eae7200685",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 10,
+      "fingerprint": "12883bdeae08e914b888af3ee78427118a500399cb175d2bbca4ec31b3dcc22f",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 11,
+      "fingerprint": "0769f7a81da6ba37beda1c2e0a976a3270c85b2018a2ee4e1968f4720430ba7d",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 12,
+      "fingerprint": "f2345a435492930400b97099d049305efc6acf85e9aa3ffab72429924a991cff",
+      "kind": "textarea",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 13,
+      "fingerprint": "56fb9afedf6b8a9c6b9cef17d2a34a8ea8a08ce8640816e1e8dfec349108c889",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 14,
+      "fingerprint": "634efcb10a1a751db8c0daad03c9a4f34b6fd0feff34c771adb57ea9316139e0",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 15,
+      "fingerprint": "49592ac34ff7a7fa31644da80c0b760d1a08db061e35c0c30deed19967562740",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 16,
+      "fingerprint": "8b41a55feb1a1c15cd3ba446774f992c499f3729831a3b0ee804d1243f183a28",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Chat",
+      "order": 17,
+      "fingerprint": "8c2f0837f44e847b9235c2c93208f17ebe001154867fb220432ff9fd34062eb0",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Data",
+      "order": 0,
+      "fingerprint": "aa5098a19e0f019b8663dd41016f924e3dec0a102689551de0b777d23e5a98bc",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "Data",
+      "order": 1,
+      "fingerprint": "9b7e2312202a6e3de77286bb033775dcc883920d84c6e3c69636643230b58952",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 0,
+      "fingerprint": "5bff9af99d0909f38924d58a871387a16d38a8238512bcb8dd63b0cc54cef6b0",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 1,
+      "fingerprint": "d292db41cd8e9f9afb71c306010a433c13ff94ceca682022b5cb9074edee4b75",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 2,
+      "fingerprint": "5c9966e4028c1a132918eed0302d073c6caf854ebdc8463e860226f85c3bef0c",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 3,
+      "fingerprint": "97ae92c33cdb38048ed8e90124236b415a0481e50d023bd6f941f894e1107210",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 4,
+      "fingerprint": "b84e9cc41b8c16550d4f727e3c2159307b50cac42252312d2bc8dcb1e45a170d",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 5,
+      "fingerprint": "864f3b2770ea0b08e2c91f55e4e7e42a92d57c45ac487383597b2e9b85505679",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 6,
+      "fingerprint": "864f3b2770ea0b08e2c91f55e4e7e42a92d57c45ac487383597b2e9b85505679",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 7,
+      "fingerprint": "864f3b2770ea0b08e2c91f55e4e7e42a92d57c45ac487383597b2e9b85505679",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 8,
+      "fingerprint": "864f3b2770ea0b08e2c91f55e4e7e42a92d57c45ac487383597b2e9b85505679",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 9,
+      "fingerprint": "864f3b2770ea0b08e2c91f55e4e7e42a92d57c45ac487383597b2e9b85505679",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 10,
+      "fingerprint": "864f3b2770ea0b08e2c91f55e4e7e42a92d57c45ac487383597b2e9b85505679",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 11,
+      "fingerprint": "78a246206ad0a5c96f90c1d1dd83908b4e910e85efcc6e2937170e2e05351858",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 12,
+      "fingerprint": "4c5b3322740ce8197965e81277a534a57716385587b1635e1c149acfe2ec8747",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "SEO",
+      "order": 13,
+      "fingerprint": "de8f751d57c3fc6b15ff01b417f6aa5ea8f761e4f4ca2d718666bfcf1eafb20c",
+      "kind": "button",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    },
+    {
+      "area": "settings:Chat",
+      "order": 0,
+      "fingerprint": "9ac90c37f4aebb2dc3aeca3d638b8da6d09980a6f2a7063336ecd0e55dc5abf6",
+      "kind": "combobox",
+      "region": "tabpanel",
+      "classification": "unresolved_redacted_identity",
+      "inventory_candidate_ids": []
+    }
+  ],
+  "classification_summary": {
+    "existing_inventory_controls": 2,
+    "unresolved_redacted_identity": 34,
+    "true_missing_stable_controls": 0,
+    "true_missing_means": "No missing stable control is asserted; per-observation names were intentionally withheld and cannot be mapped from the HMAC fingerprints."
+  },
+  "completed_at_utc": "2026-10-11T17:31:57Z",
+  "workflow_source_sha": "6d07959011d0365c1a7fd57f0ac33eef7fa6434e",
+  "workflow_source_ref_verified": true,
+  "product_artifact": {
+    "ci_run_id": 38158831692,
+    "artifact_id": 11708654888,
+    "source_sha": "5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6",
+    "github_digest": "sha256:f0ba27bf56a1c4b83d991089e1f4e98683db7568c9487ea49c9c7a003a6c4d9a",
+    "digest_verified": true,
+    "ci_conclusion": "success"
+  },
+  "terminal_failure": {
+    "job": "guest",
+    "job_conclusion": "failure",
+    "failing_step": "Exercise the selected Chrome side-panel case",
+    "driver_output": "census status incomplete; hosted wrapper assertion observed native side-panel acceptance exit 2",
+    "about_failure": "none recorded; section opened, inspection succeeded, one mapped control"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "source": "Sanitized with scripts/copy-hosted-resource-journal.mjs; process attribution and private opened-event paths removed.",
+  "phases": {
+    "package": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-package-38159469990-1.jsonl",
+      "sha256": "2231f55d2a47d2b7672c3a5e1cbf0a7d1f58ab6120757f751a37a6d88b5eb6ec"
+    },
+    "browser": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-browser-38159469990-1.jsonl",
+      "sha256": "ab548e42b6000b5dd0b7a96d0e3d02b547841c079ace0e0fb313ced76160eaae"
+    },
+    "guest": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": true,
+        "exit_code": 3,
+        "decision": "invalid"
+      },
+      "journal": "resource-journals/hosted-guest-38159469990-1.jsonl",
+      "sha256": "21c8d00baa1d5c6a626208327b73522d0cb4bb8bd8a11ddc4a912fc5a13b7349"
+    }
+  },
+  "policy_verdict": "Package and browser phases passed. Guest phase was resource-invalid: CPU watchdog saw 98% busy, then 100% busy with high-load-busy reasons, stopped the owned process group at a safe boundary, and recorded exit 3. No product verdict is valid."
+}
