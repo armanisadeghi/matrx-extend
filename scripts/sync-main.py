@@ -996,7 +996,7 @@ PACKAGE_FILES = ("package.json", "pnpm-lock.yaml", "package-lock.json")
 # sync whose packages serve it.
 PUBLISH_REPO = "AI-Matrix-Engine/aidream"
 PUBLISH_WORKFLOW = "Publish TypeScript Package to npm"
-PUBLISH_WAIT_MAX_SECONDS = 6 * 60    # agent-chosen: one publish run took 1-10 min on 2026-10-07. Review 2026-11-07.
+PUBLISH_WAIT_MAX_SECONDS = 140   # Allow a short train to finish; a continuous train cannot be awaited to completion.
 PUBLISH_POLL_SECONDS = 20
 
 

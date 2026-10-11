@@ -756,8 +756,9 @@ NODE
 # three catch-ups ("@ai-matrx moved again after 3 catch-ups"): each catch-up read
 # npm in the middle of aidream's publish train and adopted one package of it,
 # while the rest of the train landed during the re-check. Now each catch-up
-# first waits for the npm publish runs already in flight (sync-main.py
-# --wait-for-publish-train, max 6 min), so it adopts the whole train at once.
+# first waits briefly for npm publish runs already in flight (sync-main.py
+# --wait-for-publish-train). A continuous train cannot be awaited to completion;
+# the unchanged latest gate below rechecks every candidate after catch-up.
 # A catch-up that adopts newer versions is progress and never stops the release;
 # only one that moves nothing (handled below) or the release's own race budget
 # (SHIP_RACE_BUDGET_SECS, shared with every other race) does. An update that adds
