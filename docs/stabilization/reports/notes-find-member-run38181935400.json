@@ -1,0 +1,69 @@
+{
+  "task_id": "notes-find-member-hosted-20261011",
+  "lane": "A",
+  "status": "blocked-resource-invalid-native-unverified",
+  "feature_ids": [
+    "EXT-F-2006"
+  ],
+  "case_ids": [
+    "EXT-F-2006-T02"
+  ],
+  "run_id": 38181935400,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38181935400",
+  "attempt": 1,
+  "workflow_source_sha": "1b1c400f71e6be024d733d3cfb8bb96eb3f0df55",
+  "runner": "macos-15-intel",
+  "artifact": {
+    "id": 11717498082,
+    "sha256": "a4f470aedd2d9fcbe485757965ad9d8b57f978dc6facbfcd1d3094614c531230",
+    "download_digest_verified": true,
+    "files": 4
+  },
+  "product": {
+    "version": "0.2.508",
+    "source_sha": "1b1c400f71e6be024d733d3cfb8bb96eb3f0df55",
+    "ci_run": 38181243134,
+    "ci_artifact": 11718336129,
+    "tree_sha256": "2f26dd74a7819a03d7f61dc5675e37dfc03843a900b6721da41b6b1d02df7bbe",
+    "store": false
+  },
+  "summary": "One authorized run completed failure. Native report stops at receipt with stage_operation_failed, empty observations and no after snapshot. No member authentication or Notes interaction is evidenced; zero case credit. Package/browser resources valid; acceptance resource final invalid after CPU pending and child exit 1.",
+  "resource_finals": {
+    "package": "valid exit 0",
+    "browser": "valid exit 0",
+    "guest": "invalid; resourceInvalid true; exit 3; child exit 1"
+  },
+  "cpu_checkpoint": {
+    "reasons": [
+      "RESOURCE_CPU_BUSY",
+      "RESOURCE_CPU_HIGH_LOAD_BUSY"
+    ],
+    "one_minute_load": 11.12,
+    "logical_cpus": 4,
+    "cpu_busy_fraction": 1,
+    "at": "2026-10-11T22:57:02.799Z"
+  },
+  "cause": "Undetermined: CPU pending invalidated the acceptance journal, but retained report does not identify the caught native startup error. This proves neither a Notes product defect nor CPU as the sole child-failure cause.",
+  "fixtures": {
+    "created_by_this_run": "No creation evidenced; failure stage remains before exercisePanel real_signin callback, observations empty.",
+    "cleanup": "No Notes fixture ledger retained; no fixture cleanup claim beyond the pre-interaction stage evidence."
+  },
+  "credential_cleanup": {
+    "temporary_github_secret": "Deleted immediately after terminal; repository secret-name listing verified absent.",
+    "local_one_use_link": "Deleted before dispatch and absence reverified at terminal.",
+    "values_in_evidence": false
+  },
+  "independent_runtime_review": "pending",
+  "evidence_root": "docs/stabilization/evidence/notes-find-member/run38181935400",
+  "sanitized_journal_sha256": {
+    "hosted-package-38181935400-1.jsonl": "c1c4fe46849148d29e54eb90ebd2d12f388f899b119d86a72390cf517cc52dec",
+    "hosted-browser-38181935400-1.jsonl": "afa5aa6a52b6f4fae158dc5575ef6b09c804d3a6d7a61d401d92c969843e2603",
+    "hosted-guest-38181935400-1.jsonl": "5bd460bc189959b26d91611d5e35951ee51eeee04321380b9e6cdf33c2f2db0c"
+  },
+  "next_action": "Independent peer classify retained native/resource evidence. Keep T02 member unverified; no retry authorized in this lane. Before another attempt, diagnose native startup error with sanitized failure telemetry while preserving resource guards.",
+  "open_questions": [
+    "Which native startup operation threw before exercisePanel?",
+    "Whether CPU pressure caused the native child failure or merely invalidated its separate resource final."
+  ],
+  "owned_jobs_remaining": 0
+}
