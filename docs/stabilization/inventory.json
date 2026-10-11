@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T20:03:52Z",
+  "updated_at": "2026-10-11T21:46:40Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -42636,24 +42636,24 @@
         },
         {
           "id": "EXT-F-2006-C02",
-          "label": "Search notes",
-          "action": "Filter note list by text",
+          "label": "Search notes by title",
+          "action": "Filter the note list by title text",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Search notes (Filter note list by text) on Notes side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Search notes by title (Filter the note list by title text) on Notes side-panel in source-applicable roles; feature contract: one required home per note, with All homes as the unfiltered list choice."
         },
         {
           "id": "EXT-F-2006-C03",
-          "label": "Choose folder filter",
-          "action": "Filter all folders, no folder, or a named folder",
+          "label": "Choose home filter",
+          "action": "Filter notes by All homes or a named home",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Choose folder filter (Filter all folders, no folder, or a named folder) on Notes side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Choose home filter (Filter notes by All homes or a named home) on Notes side-panel in source-applicable roles; feature contract: one required home per note, with All homes as the unfiltered list choice."
         },
         {
           "id": "EXT-F-2006-C04",
           "label": "Choose note from selector",
-          "action": "Open a note from the folder-filtered picker",
+          "action": "Open a note from the home-filtered picker",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Choose note from selector (Open a note from the folder-filtered picker) on Notes side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Choose note from selector (Open a note from the home-filtered picker) on Notes side-panel in source-applicable roles; feature contract: one required home per note, with All homes as the unfiltered list choice."
         },
         {
           "id": "EXT-F-2006-C05",
@@ -42671,19 +42671,19 @@
         },
         {
           "id": "EXT-F-2006-C07",
-          "label": "Select all folders",
-          "action": "Remove folder filter",
+          "label": "Select All homes",
+          "action": "Clear the home filter and show notes from every visible home",
           "source_anchor": "src/features/notes/NotesList.tsx",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Select all folders (Remove folder filter) on Notes side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Select All homes (Clear the home filter and show notes from every visible home) on Notes side-panel in source-applicable roles; feature contract: one required home per note, with All homes as the unfiltered list choice."
         },
         {
           "id": "EXT-F-2006-C08",
-          "label": "Select named folder",
-          "action": "Filter notes by folder name",
+          "label": "Select named home",
+          "action": "Filter notes to one named home",
           "source_anchor": "src/features/notes/NotesList.tsx",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Select named folder (Filter notes by folder name) on Notes side-panel in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify Select named home (Filter notes to one named home) on Notes side-panel in source-applicable roles; feature contract: one required home per note, with All homes as the unfiltered list choice."
         },
         {
           "id": "EXT-F-2006-C09",
@@ -42779,31 +42779,42 @@
         },
         {
           "id": "EXT-F-2006-T02",
-          "title": "Find notes by search and folder",
+          "title": "Find notes by title search and home",
           "control_ids": [
             "EXT-F-2006-C02",
             "EXT-F-2006-C03",
             "EXT-F-2006-C04",
-            "EXT-F-2006-C05"
+            "EXT-F-2006-C05",
+            "EXT-F-2006-C07",
+            "EXT-F-2006-C08",
+            "EXT-F-2006-C09",
+            "EXT-F-2006-C10"
           ],
           "modes": [
             "member",
             "admin"
           ],
           "preconditions": [
-            "Signed-in user with controlled notes in two folders and one without folder."
+            "Signed-in user with an active organization that has General and at least two additional visible homes."
           ],
           "steps": [
-            "Search for a distinctive title/body phrase; clear search; filter All folders, no folder, then a named folder; select one note using selector and another by row."
+            "In the Notes UI, create three notes with unique title tokens; leave the first in General and move the other two to distinct named homes using the note editor home picker.",
+            "Search by the unique title token and verify the three fixture notes; clear search.",
+            "Choose All homes, then each fixture named home; verify each filter shows its fixture note.",
+            "Open one fixture through the note selector and another through its visible row.",
+            "Delete each fixture through the Notes UI and verify the live delete response and list removal."
           ],
           "expected": [
-            "Search and folder selections narrow the visible collection correctly; selector reflects folder-filtered notes; both entry paths open the chosen note."
+            "Create without choosing a home places the note in the active organization\u2019s General; the editor picker changes the other notes\u2019 homes through the live home action.",
+            "Title search and All homes/named-home selection narrow the visible collection correctly; the selector reflects its home-filtered notes and both entry paths open the chosen note.",
+            "Cleanup deletes only the three run-owned note IDs and confirms each live delete and row removal."
           ],
           "dimensions": [
             "member",
             "admin",
             "reload"
-          ]
+          ],
+          "source_contract": "Folders and the \u201cno folder\u201d filter are retired: each note has one required home, General represents the organization\u2019s \u201cnothing,\u201d and a create with no chosen home defaults to that organization\u2019s General. Canonical: common-docs/systems/data/scopes-context/projects/item-homes/PLAN.md \u00a7 Status and Model rules 1\u20133 (2026-10-11); extension mirror: src/lib/notes/types.ts:4-6,23,45-55."
         },
         {
           "id": "EXT-F-2006-T03",

@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-11 21:23 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T20:03:52Z. 205 features · 792 cases · 1367 controls · 200 linked defect records.
+Generated 2026-10-11 21:47 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T21:46:40Z. 205 features · 792 cases · 1367 controls · 200 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -1529,10 +1529,8 @@ These historical checks retain their original artifact boundary; they do not est
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-2006-T01 Guest cannot open Notes | N/A | N/A | N/A | EXT-F-2006-C01 |
-| EXT-F-2006-T02 Find notes by search and folder | N/A | Unverified | Unverified | EXT-F-2006-C02, EXT-F-2006-C03, EXT-F-2006-C04, EXT-F-2006-C05 |
+| EXT-F-2006-T02 Find notes by title search and home | N/A | Unverified | Unverified | EXT-F-2006-C02, EXT-F-2006-C03, EXT-F-2006-C04, EXT-F-2006-C05, EXT-F-2006-C07, EXT-F-2006-C08, EXT-F-2006-C09, EXT-F-2006-C10 |
 | EXT-F-2006-T03 Create first note and empty/loading states | N/A | Unverified | Unverified | EXT-F-2006-C01, EXT-F-2006-C06, EXT-F-2006-C11, EXT-F-2006-C12, EXT-F-2006-C13 |
-
-**Controls without a mapped case:** EXT-F-2006-C07 Select all folders; EXT-F-2006-C08 Select named folder; EXT-F-2006-C09 Clear notes search; EXT-F-2006-C10 Choose note in selector
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 

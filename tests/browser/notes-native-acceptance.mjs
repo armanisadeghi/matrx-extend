@@ -12,6 +12,7 @@ import {
 } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { runNotesFindAcceptance } from './notes-find-native-case.mjs';
 import { readMemberCredential } from './notes-member-credential.mjs';
 import {
   ownedNotesFixtureReceipt,
@@ -25,10 +26,12 @@ const REPO = resolve(import.meta.dirname, '../..');
 const RECEIPT = process.env.NOTES_DEV_BUILD_RECEIPT;
 const EXPECTED_SOURCE_SHA = process.env.NOTES_EXPECTED_SOURCE_SHA;
 const ROLE = process.env.NOTES_ROLE ?? 'admin';
+const CASE = process.env.NOTES_CASE ?? 'failure-recovery';
 const INTERACTIVE_MEMBER = process.env.NOTES_INTERACTIVE_MEMBER === '1';
 const MEMBER_CREDENTIAL_FILE = process.env.NOTES_MEMBER_CREDENTIAL_FILE;
 const OUTPUT = join(REPO, 'test-results/notes-native-acceptance.json');
 const FIXTURE_RECEIPT = join(REPO, `test-results/notes-owned-fixture-${randomUUID()}.json`);
+const FIND_FIXTURE_LEDGER = join(REPO, `test-results/notes-find-fixture-${randomUUID()}.json`);
 const ADMIN_ENV = join(homedir(), 'code/aidream/.env');
 const DEV_ENV = join(REPO, '.env.development');
 const PRIVATE_CONFIG =
@@ -43,7 +46,10 @@ const draftC = `${draftB}\nFlag the intake coordinator before check-in.`;
 let stage = 'receipt';
 const report = {
   schema_version: 1,
-  cases: ['EXT-D-0061', 'EXT-D-0062', 'EXT-D-0063', 'EXT-D-0067', 'EXT-D-0068'],
+  cases:
+    CASE === 't02'
+      ? ['EXT-F-2006-T02']
+      : ['EXT-D-0061', 'EXT-D-0062', 'EXT-D-0063', 'EXT-D-0067', 'EXT-D-0068'],
   status: 'unverified',
   role: ROLE,
   build: null,
@@ -51,7 +57,9 @@ const report = {
   fault_scope:
     'owned panel, workbench.notes transport; detail/delete faults restricted to the owned note id',
   data_scope:
-    'one newly created Harbor Dental intake handoff note; delete is verified only after live retry',
+    CASE === 't02'
+      ? 'three synthetic notes created and deleted through the Notes UI; recovery ledger is private and records only owned ids, titles, homes, role and build identity'
+      : 'one newly created Harbor Dental intake handoff note; delete is verified only after live retry',
 };
 function fail(code) {
   report.failure_code = code;
@@ -366,7 +374,7 @@ async function selectMemberOrganizationThroughUi(panel) {
   if (before.name !== 'Choose…' || before.id) fail('unexpected_preselected_member_organization');
   stage = 'ready_manual_member_organization';
   process.stdout.write('STAGE ready_manual_member_organization\n');
-  await waitFor(
+  const selectedState = await waitFor(
     'member_organization_selected_in_ui',
     selected,
     (state) =>
@@ -375,6 +383,7 @@ async function selectMemberOrganizationThroughUi(panel) {
   );
   report.observations.organization_selected_through_membership_ui = true;
   report.observations.organization_membership_resolver = 'canonical mbr_for_user picker';
+  return selectedState;
 }
 async function selectTestOrganization(panel, name) {
   await openSection(panel, 'Organization');
@@ -833,8 +842,10 @@ try {
       stage = 'real_signin';
       await realLogin(page, panel, config);
       stage = 'organization';
-      if (ROLE === 'member') await selectMemberOrganizationThroughUi(panel);
-      else await selectTestOrganization(panel, config.approved_organization_name);
+      if (CASE === 't02' && ROLE !== 'member') fail('t02_requires_member_role');
+      const memberOrganization =
+        ROLE === 'member' ? await selectMemberOrganizationThroughUi(panel) : null;
+      if (ROLE !== 'member') await selectTestOrganization(panel, config.approved_organization_name);
       const selectedOrganizationId = requireNotesOrganizationId(
         await evaluate(
           panel,
@@ -844,6 +855,25 @@ try {
       const transport = armNotesTransport(panel, origin);
       await transport.start();
       try {
+        if (CASE === 't02') {
+          stage = 'T02_native_member_find';
+          await mkdir(join(REPO, 'test-results'), { recursive: true, mode: 0o700 });
+          const result = await runNotesFindAcceptance({
+            panel,
+            transport,
+            origin,
+            selectedOrganizationId,
+            selectedOrganizationName: memberOrganization?.name,
+            role: ROLE,
+            sourceSha: EXPECTED_SOURCE_SHA,
+            treeSha256: before.treeSha256,
+            ledgerPath: FIND_FIXTURE_LEDGER,
+          });
+          report.observations.T02 = result;
+          if (result.verdict !== 'pass')
+            fail(result.failure_code ?? 't02_member_acceptance_unverified');
+          return;
+        }
         stage = 'D61_failed_list';
         transport.setMode('fail_get');
         await click(panel, 'title', 'Notes');

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "review": "source_handoff",
+  "task_id": "notes-t02-member-find-acceptance-20261011",
+  "case_id": "EXT-F-2006-T02",
+  "verdict": "UNVERIFIED",
+  "scope": "Member Notes title search and home filtering, with note-selector and row opening; guest Notes is not applicable because the signed-in gate omits the tab.",
+  "source_contract": {
+    "canonical": "/Volumes/Samsung2TB/code/common-docs/systems/data/scopes-context/projects/item-homes/PLAN.md § Status and Model rules 1–3 (2026-10-11): notes migrated; folders retired; every note has exactly one home; General means no specific home; create without an explicit home uses active organization General.",
+    "extension": "src/lib/notes/types.ts:4-6,23,45-55 requires the home UUID and documents no-home create default; src/lib/notes/queries.ts:39-70 resolves visible homes and display labels, and :112-135 sends active organization on create; src/lib/notes/utils.ts:15-25 filters title text and home_scope_id; src/features/notes/NotesList.tsx:42-55,105-157 renders filters and selector.",
+    "inventory_reconciliation": "T02 no-folder fixture/filter and body-search phrase removed; C02 describes title search; C03/C07/C08 describe home filtering; C04 is home-filtered; C09/C10 are mapped to search clear and selector. All design/runtime verdicts remain unverified."
+  },
+  "authored_case": {
+    "fixture": "Three unique Harbor Dental new-patient intake note titles; first remains in General, the other two use distinct visible homes. Synthetic titles only; no note body or personal data is entered.",
+    "steps": [
+      "Use the signed-in member Notes UI to create all three notes; immediately persist each actual note id from the successful Supabase insert in the 0600 recovery ledger, before detail-ID or General-home validation.",
+      "Confirm General default; move two notes through the real editor HomePicker; observe successful real platform.set_home RPC responses.",
+      "Search the unique title token, clear search, select All homes and each named home, then open one filtered note from the selector and another from its row.",
+      "Delete each recorded note id through the Notes UI; require a successful live Supabase delete response and list-row removal before marking it cleaned."
+    ],
+    "no_mocks": "Positive create, search, home-filter, home-move, selector, row-open and cleanup paths use the real authenticated browser UI and Supabase. Existing Fetch interception observes and continues real requests; no response is mocked or altered for this case.",
+    "cleanup_ownership": "Only IDs captured from this run’s successful create responses enter the ledger. The ledger records IDs, synthetic titles, home IDs, role and build identity only. Cleanup acts on those IDs through the UI, verifies real delete response and row disappearance, and retains 0600 pending-ID recovery evidence on incomplete cleanup.",
+    "mapped_control_ids": [
+      "EXT-F-2006-C02",
+      "EXT-F-2006-C03",
+      "EXT-F-2006-C04",
+      "EXT-F-2006-C05",
+      "EXT-F-2006-C07",
+      "EXT-F-2006-C08",
+      "EXT-F-2006-C09",
+      "EXT-F-2006-C10"
+    ],
+    "failure_recovery": "A focused forcing test injects failure at post-insert detail validation and requires the already persisted ledger to retain the owned ID; a mutation that skips the ledger write makes the test fail. A separate mutation proves duplicate home IDs are rejected."
+  },
+  "focused_checks": [
+    "node --check tests/browser/notes-native-acceptance.mjs — PASS",
+    "node --check tests/browser/notes-find-native-case.mjs — PASS",
+    "node --test tests/browser/notes-find-fixture.test.mjs — PASS, 5 tests",
+    "Forcing mutation: skipping pre-validation ledger write — RED for notes_find_insert_not_persisted_before_validation; restored — GREEN.",
+    "Forcing mutation: allowing duplicate ledger home IDs — RED for notes_find_home_scope_id_duplicate; restored — GREEN.",
+    "git diff --check — PASS",
+    "pnpm -s lint — PASS, 2717 files checked; 854 existing advisory warnings."
+  ],
+  "unverified": [
+    "No native member browser run has been dispatched; member behavior, real Supabase writes, and cleanup remain unverified.",
+    "Admin T02 and all reload/persistence dimensions remain unverified.",
+    "No-folder filtering is obsolete under the canonical homes contract. Body search is not claimed because no current contract requires it."
+  ],
+  "files_touched": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html",
+    "docs/stabilization/CHECKLIST.md",
+    "tests/browser/notes-native-acceptance.mjs",
+    "tests/browser/notes-find-native-case.mjs",
+    "tests/browser/notes-find-fixture.mjs",
+    "tests/browser/notes-find-fixture.test.mjs",
+    "docs/stabilization/reports/notes-t02-member-source-handoff-20261011.json"
+  ],
+  "next_step": "After Settings A releases the member identity with terminal cleanup, run the separately guarded native member T02 case on the frozen accepted artifact; retain UNVERIFIED until live UI/Supabase behavior and owned cleanup are independently reviewed.",
+  "pushed": false,
+  "independent_review": {
+    "A": "UNVERIFIED",
+    "B": "ADDRESSED",
+    "findings": 0,
+    "scope": "Fresh independent source reverify confirmed all three requested repairs and reported no new findings."
+  }
+}
