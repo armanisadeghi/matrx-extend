@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-11 02:28 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T02:28:37.474Z. 205 features · 780 cases · 1362 controls · 196 linked defect records.
+Generated 2026-10-11 02:33 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T02:28:37.474Z. 205 features · 781 cases · 1363 controls · 196 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1243** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1056 · N/A: 1.
-Unverified splits into **133 explicitly marked unverified** and **923 with no result record**.
+Applicable case-by-role slots: **1246** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1059 · N/A: 1.
+Unverified splits into **133 explicitly marked unverified** and **926 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -25,7 +25,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 9 pass · 4 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 35 unverified · 0 deferred; 0/1 full | pass 9, partial 14, fail 0, unverified 75, n/a 0 | 11 |
-| [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 36, n/a 0 | 0 |
+| [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 39, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
@@ -940,7 +940,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Audit page SEO and manage audit history (EXT-F-1008)
 
-**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 14. **Controls:** 14.
+**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 15. **Controls:** 15.
 
 **Next:** Finish the missing criteria and repeat the partial case in the extension.
 
@@ -962,6 +962,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1008-T12 Stage one SEO fix in Chat | Unverified | Unverified | Unverified | EXT-F-1008-C12 |
 | EXT-F-1008-T13 Stage all SEO fixes in Chat | Unverified | Unverified | Unverified | EXT-F-1008-C13 |
 | EXT-F-1008-T14 Copy missing social meta tags | Partial | Unverified | Unverified | EXT-F-1008-C14 |
+| EXT-F-1008-T15 Retry active-page identity | Unverified | Unverified | Unverified | EXT-F-1008-C15 |
 
 **Recorded case details and evidence:**
 

@@ -1,0 +1,21 @@
+{
+  "reviewed_at_utc": "2026-10-11T02:33:00Z",
+  "reviewer_lane": "seo_inventory_peer_review",
+  "status": "pass",
+  "scope": "Source-level inventory coverage only; no product behavior tested.",
+  "changes_reviewed": [
+    "EXT-F-1008-C15 and EXT-F-1008-T15: active-page identity Retry for guest, member, and admin",
+    "EXT-F-1008-T09: unverified 360px narrow-panel dimension",
+    "Generated CHECKLIST.md, STATUS.md, and STATUS.html"
+  ],
+  "evidence": [
+    "SeoView.tsx renders Retry without pageKey, disables audit until identity resolves, and refreshes active tab identity on click.",
+    "SeoDetails.tsx and docs/feature-tests.md support the detail-link anchors and 360px layout expectation.",
+    "All new mode cells remain unverified; generated totals are 781 cases and 1363 controls."
+  ],
+  "findings": [],
+  "minor_wording_resolved": "T15 now instructs Retry while identity is unresolved, followed by checking audit availability after resolution.",
+  "open_questions": [
+    "Native guest, member, and admin Retry behavior and 360px layout still require browser verification."
+  ]
+}

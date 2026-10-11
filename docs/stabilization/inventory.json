@@ -26388,6 +26388,11 @@
           "id": "EXT-F-1008-C14",
           "label": "Copy missing social meta tags",
           "action": "Choose Copy the meta tags this page is missing when a social issue provides a snippet."
+        },
+        {
+          "id": "EXT-F-1008-C15",
+          "label": "Retry active-page identity",
+          "action": "When the active page identity is unresolved, choose Retry and confirm the SEO audit action becomes available after identity resolves."
         }
       ],
       "source_anchors": [
@@ -26408,7 +26413,12 @@
         "src/features/seo/SeoView.tsx:42",
         "src/features/seo/SeoView.tsx:80",
         "src/features/seo/SeoView.tsx:98",
-        "src/features/seo/SeoView.tsx"
+        "src/features/seo/SeoView.tsx",
+        "src/features/seo/SeoView.tsx:353",
+        "src/features/seo/SeoView.tsx:359",
+        "src/features/seo/SeoDetails.tsx:104",
+        "src/features/seo/SeoDetails.tsx:108",
+        "src/features/seo/SeoDetails.tsx:118"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -28174,11 +28184,13 @@
             "Inspect title/description, canonical, robots, social preview, language/hreflang, schema chips, headings, links, images, readability and performance; activate URL/schema links."
           ],
           "expected": [
-            "Only available measured groups appear; URL destinations open through OpenUrl; schema types link to docs when valid; broken preview image gives explanatory fallback."
+            "Only available measured groups appear; URL destinations open through OpenUrl; schema types link to docs when valid; broken preview image gives explanatory fallback.",
+            "At a 360px panel width, detail content and links remain reachable without horizontal page overflow or clipped controls."
           ],
           "dimensions": [
             "warm",
-            "reload"
+            "reload",
+            "narrow_panel_360px"
           ],
           "results": {
             "guest": {
@@ -28195,6 +28207,7 @@
                 "guest_owned_hreflang_article_doors_match_fixture_dom"
               ],
               "unverified_dimensions": [
+                "360px narrow-panel layout and horizontal overflow",
                 "Wikipedia hreflang/schema doors remain unverified: its live DOM had no unique openable candidates",
                 "remaining detail controls",
                 "readability calculation beyond the two known-text fixtures",
@@ -29593,6 +29606,32 @@
               ],
               "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
             }
+          ]
+        },
+        {
+          "id": "EXT-F-1008-T15",
+          "title": "Retry active-page identity",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1008-C15"
+          ],
+          "preconditions": [
+            "Open the SEO tab while active-page identity is unresolved or has an identity error."
+          ],
+          "steps": [
+            "Confirm the page identity message and Retry action appear while the audit button is unavailable; choose Retry while identity is unresolved, then verify the audit action becomes available after identity resolves."
+          ],
+          "expected": [
+            "The current tab identity is refreshed; the SEO audit action becomes available only when a page key resolves, and any resulting audit belongs to that current page."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "identity_unavailable_then_recovered"
           ]
         }
       ],
