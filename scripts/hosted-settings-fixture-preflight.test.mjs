@@ -29,6 +29,9 @@ test('Settings provenance is rejected before release downloads and browser resou
     'settings-controls',
     'settings-theme-rendering',
     'settings-auto-scrape-capture',
+    'settings-account-popover-guest',
+    'settings-account-popover-member',
+    'settings-account-popover-admin',
   ]) {
     for (const [release, devRun, devArtifact, crx, accepted] of [
       ['38079287426', '', '', 'false', false],

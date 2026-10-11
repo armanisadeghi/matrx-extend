@@ -59,6 +59,9 @@ on:
           - settings-persistence
           - settings-persistence-admin
           - settings-persistence-member
+          - settings-account-popover-guest
+          - settings-account-popover-member
+          - settings-account-popover-admin
           - desktop-settings-guest
           - desktop-settings-member
           - desktop-settings-admin
@@ -250,7 +253,7 @@ jobs:
           SCRAPE_SCOPE="${SCRAPE_SCOPE:-full}"
           [[ "$ACCEPTANCE_LANE" == A || "$ACCEPTANCE_LANE" == B ]] || { echo 'Unknown hosted acceptance lane.' >&2; exit 1; }
           case "$ACCEPTANCE_CASE" in
-            guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-error-recovery-guest|scrape-save-member|tab-groups-member|native-ai-member-probe|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
+            guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-error-recovery-guest|scrape-save-member|tab-groups-member|native-ai-member-probe|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|settings-account-popover-guest|settings-account-popover-member|settings-account-popover-admin|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
           [[ "${RELOAD_OPEN_DIAGNOSTIC:-0}" != 1 || "$ACCEPTANCE_CASE" == guest-scrape-development || "$ACCEPTANCE_CASE" == member-data || "$ACCEPTANCE_CASE" == settings-controls ]] || { echo 'Worker open diagnostic requires guest-scrape-development, member-data or settings-controls.' >&2; exit 1; }
@@ -328,7 +331,7 @@ jobs:
         run: |
           set -euo pipefail
           case "$ACCEPTANCE_CASE" in
-            settings-controls|settings-theme-rendering|settings-auto-scrape-capture)
+            settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-account-popover-guest|settings-account-popover-member|settings-account-popover-admin)
               [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || {
                 echo 'Settings acceptance requires a matching CI development run and artifact; release and Store CRX artifacts are unsupported.' >&2
                 exit 1
@@ -411,7 +414,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == guest-seo || "$ACCEPTANCE_CASE" == guest-data ]]; then
             [[ "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
-          if [[ "$ACCEPTANCE_CASE" == member-data || "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == visibility-census-guest || "$ACCEPTANCE_CASE" == visibility-census-member || "$ACCEPTANCE_CASE" == visibility-census-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
+          if [[ "$ACCEPTANCE_CASE" == member-data || "$ACCEPTANCE_CASE" == settings-persistence || "$ACCEPTANCE_CASE" == settings-persistence-admin || "$ACCEPTANCE_CASE" == settings-persistence-member || "$ACCEPTANCE_CASE" == settings-account-popover-guest || "$ACCEPTANCE_CASE" == settings-account-popover-member || "$ACCEPTANCE_CASE" == settings-account-popover-admin || "$ACCEPTANCE_CASE" == desktop-settings-guest || "$ACCEPTANCE_CASE" == desktop-settings-member || "$ACCEPTANCE_CASE" == desktop-settings-admin || "$ACCEPTANCE_CASE" == visibility-census-guest || "$ACCEPTANCE_CASE" == visibility-census-member || "$ACCEPTANCE_CASE" == visibility-census-admin || "$ACCEPTANCE_CASE" == audit-key-admin || "$ACCEPTANCE_CASE" == profile-admin || "$ACCEPTANCE_CASE" == profile-member || "$ACCEPTANCE_CASE" == startup-resource-diagnostic ]]; then
             [[ -z "$RELEASE_RUN_ID" && -n "$DEVELOPMENT_RUN_ID" && -n "$DEVELOPMENT_ARTIFACT_ID" && "$PUBLISHED_STORE_CRX" != true ]] || exit 1
           fi
           if [[ "$ACCEPTANCE_CASE" == prepare-stale-results || "$ACCEPTANCE_CASE" == showcase-picker-admin || "$ACCEPTANCE_CASE" == showcase-stale-admin || "$ACCEPTANCE_CASE" == showcase-d47-admin || "$ACCEPTANCE_CASE" == showcase-d47-public-admin || "$ACCEPTANCE_CASE" == records-readonly-admin ]]; then
@@ -580,6 +583,7 @@ jobs:
             test-results/settings-local-controls-acceptance.json
             test-results/settings-auto-scrape-capture-native.json
             test-results/settings-d87-native-*.json
+            test-results/settings-account-popover-*.json
             test-results/visibility-census-*.json
             test-results/visibility-census-guest.json.guest-account-readiness.png
             test-results/settings-desktop-native-*.json

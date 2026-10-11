@@ -204,6 +204,32 @@ test('member Data is restricted to the shared-credential lane and validates the 
   );
 });
 
+test('account popover member and admin cases refuse missing or invalid shared credentials before browser setup', () => {
+  requireHostedAcceptanceCredential('settings-account-popover-guest', {});
+  assert.throws(
+    () => requireHostedAcceptanceCredential('settings-account-popover-member', {}),
+    /hosted_member_link_secret_required/,
+  );
+  assert.throws(
+    () =>
+      requireHostedAcceptanceCredential('settings-account-popover-member', {
+        MATRX_HOSTED_MEMBER_LINK_JSON: '{}',
+      }),
+    /d87_member_fingerprint_mismatch/,
+  );
+  assert.throws(
+    () => requireHostedAcceptanceCredential('settings-account-popover-admin', {}),
+    /hosted_admin_secret_required/,
+  );
+  assert.throws(
+    () =>
+      requireHostedAcceptanceCredential('settings-account-popover-admin', {
+        MATRX_HOSTED_ADMIN_CREDENTIALS_JSON: '{}',
+      }),
+    /d87_admin_identity_required/,
+  );
+});
+
 test('hosted credential preflight executes from a fresh checkout without installed packages', async () => {
   const root = await mkdtemp(join(tmpdir(), 'hosted-preflight-fresh-'));
   try {

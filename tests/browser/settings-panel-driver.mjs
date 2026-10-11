@@ -407,6 +407,20 @@ export async function click(panel, kind, label, onPhase = undefined) {
         };
       }
     }
+    else if (kind === 'account-avatar') candidates = [...document.querySelectorAll('button[aria-haspopup="dialog"]')]
+      .filter((el) => el.getAttribute('title') === 'Account' ||
+        (el.getAttribute('title') ?? '').includes('@'));
+    else if (kind === 'account-menu') {
+      const triggers = [...document.querySelectorAll('button[aria-haspopup="dialog"]')]
+        .filter((button) => button.title === 'Account' || button.title.includes('@'));
+      const trigger = triggers.length === 1 ? triggers[0] : null;
+      const content = trigger?.getAttribute('aria-controls')
+        ? document.getElementById(trigger.getAttribute('aria-controls')) : null;
+      candidates = trigger?.getAttribute('data-state') === 'open' &&
+        content?.getAttribute('data-state') === 'open'
+        ? [...content.querySelectorAll('button')]
+          .filter((button) => button.textContent.trim() === label) : [];
+    }
     else if (kind === 'active-chat-send') {
       const chatPanel = ${activeTabPanelExpression('Chat')};
       candidates = [...(chatPanel?.querySelectorAll('button[title="Send"], button:not([title])[data-matrx-title="Send"]') ?? [])]

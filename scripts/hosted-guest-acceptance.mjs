@@ -322,7 +322,8 @@ async function run(prepared, artifactMode) {
   if (
     ['settings-controls', 'settings-theme-rendering', 'settings-auto-scrape-capture'].includes(
       acceptanceCase,
-    )
+    ) ||
+    acceptanceCase.startsWith('settings-account-popover-')
   )
     assert.equal(kind, 'ci_development_test', 'Settings controls requires CI development receipt');
   if (
@@ -493,6 +494,7 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'member-data' ||
     (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
+    acceptanceCase === 'settings-account-popover-member' ||
     acceptanceCase === 'desktop-settings-member' ||
     acceptanceCase === 'visibility-census-member' ||
     acceptanceCase === 'tab-groups-member' ||
@@ -503,6 +505,7 @@ async function run(prepared, artifactMode) {
     showcaseRoute ||
     (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
+    acceptanceCase === 'settings-account-popover-admin' ||
     acceptanceCase === 'audit-key-admin' ||
     acceptanceCase === 'desktop-settings-admin' ||
     acceptanceCase === 'visibility-census-admin'
@@ -567,6 +570,13 @@ async function run(prepared, artifactMode) {
                 : 'guest',
         }
       : {}),
+    ...(acceptanceCase.startsWith('settings-account-popover-')
+      ? {
+          MATRX_ACCOUNT_POPOVER_EXTENSION_DIR: extensionDir,
+          MATRX_ACCOUNT_POPOVER_RECEIPT: relocatedReceipt,
+          MATRX_ACCOUNT_POPOVER_ROLE: acceptanceCase.slice('settings-account-popover-'.length),
+        }
+      : {}),
     ...(acceptanceCase.startsWith('desktop-settings-')
       ? {
           MATRX_DESKTOP_SETTINGS_EXTENSION_DIR: extensionDir,
@@ -591,6 +601,7 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'member-data' ||
     (scrapeRoute && scrapeSelection.mode === 'member') ||
     acceptanceCase === 'settings-persistence-member' ||
+    acceptanceCase === 'settings-account-popover-member' ||
     acceptanceCase === 'desktop-settings-member' ||
     acceptanceCase === 'visibility-census-member' ||
     acceptanceCase === 'tab-groups-member' ||
@@ -601,6 +612,7 @@ async function run(prepared, artifactMode) {
     showcaseRoute ||
     (scrapeRoute && scrapeSelection.mode === 'admin') ||
     acceptanceCase === 'settings-persistence-admin' ||
+    acceptanceCase === 'settings-account-popover-admin' ||
     acceptanceCase === 'audit-key-admin' ||
     acceptanceCase === 'desktop-settings-admin' ||
     acceptanceCase === 'visibility-census-admin'
@@ -665,10 +677,15 @@ async function run(prepared, artifactMode) {
       'settings-controls',
       'settings-theme-rendering',
       'settings-auto-scrape-capture',
+      'settings-account-popover-guest',
+      'settings-account-popover-member',
+      'settings-account-popover-admin',
     ].includes(acceptanceCase)
-      ? acceptanceCase === 'settings-auto-scrape-capture'
-        ? 'tests/browser/settings-auto-scrape-capture-native.mjs'
-        : 'tests/browser/settings-local-controls-acceptance.mjs'
+      ? acceptanceCase.startsWith('settings-account-popover-')
+        ? 'tests/browser/settings-account-popover-native.mjs'
+        : acceptanceCase === 'settings-auto-scrape-capture'
+          ? 'tests/browser/settings-auto-scrape-capture-native.mjs'
+          : 'tests/browser/settings-local-controls-acceptance.mjs'
       : acceptanceCase === 'guest-data'
         ? 'tests/browser/data-guest-native-acceptance.mjs'
         : acceptanceCase === 'member-data'
@@ -716,6 +733,7 @@ async function run(prepared, artifactMode) {
       acceptanceCase === 'member-data' ||
       (scrapeRoute && scrapeSelection.mode === 'member') ||
       acceptanceCase === 'settings-persistence-member' ||
+      acceptanceCase === 'settings-account-popover-member' ||
       acceptanceCase === 'desktop-settings-member' ||
       acceptanceCase === 'tab-groups-member' ||
       acceptanceCase === 'native-ai-member-probe'

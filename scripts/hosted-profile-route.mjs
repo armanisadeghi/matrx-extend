@@ -53,6 +53,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'member-chat',
       'member-data',
       'settings-persistence-member',
+      'settings-account-popover-member',
       'desktop-settings-member',
       'visibility-census-member',
       'profile-member',
@@ -66,7 +67,8 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       scrapeMode === 'member' ||
       acceptanceCase === 'member-data' ||
       acceptanceCase === 'tab-groups-member' ||
-      acceptanceCase === 'native-ai-member-probe'
+      acceptanceCase === 'native-ai-member-probe' ||
+      acceptanceCase === 'settings-account-popover-member'
     )
       requireSettingsCredential('member', env.MATRX_HOSTED_MEMBER_LINK_JSON);
   }
@@ -74,6 +76,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
     [
       'prepare-stale-results',
       'settings-persistence-admin',
+      'settings-account-popover-admin',
       'desktop-settings-admin',
       'audit-key-admin',
       'showcase-picker-admin',
@@ -90,7 +93,8 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
     if (
       scrapeMode === 'admin' ||
       acceptanceCase.startsWith('showcase-') ||
-      acceptanceCase === 'records-readonly-admin'
+      acceptanceCase === 'records-readonly-admin' ||
+      acceptanceCase === 'settings-account-popover-admin'
     )
       requireSettingsCredential('admin', env.MATRX_HOSTED_ADMIN_CREDENTIALS_JSON);
   }
