@@ -1,0 +1,413 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "sanitized_native_visibility_observation",
+  "role": "guest",
+  "observation_only": true,
+  "build_channel": "ci_development_test",
+  "product_artifact": {
+    "version": "0.2.498",
+    "source_sha": "b53735e2c275dff7c10b752a695b64cb0c64ea1a",
+    "ci_run_id": 38126956706,
+    "artifact_id": 11697244437,
+    "tree_sha256": "b2606d3f2315adf07fc40536d89991725115f93d321815bc8e07c7d59240910e"
+  },
+  "browser": {
+    "product": "Chrome/141.0.7390.37",
+    "protocol_version": "1.3"
+  },
+  "extension_identity": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "version": "0.2.498"
+  },
+  "signed_out_before_and_after": true,
+  "account_state": {
+    "role": "guest",
+    "access_token_present": false,
+    "refresh_token_present": false,
+    "profile_present": false,
+    "admin_role": false,
+    "sign_in_visible": true,
+    "sign_out_visible": false
+  },
+  "visible_navigation": {
+    "total": 8,
+    "mapped": [
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Chat"
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Scrape"
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Data"
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "SEO"
+      },
+      {
+        "id": "EXT-F-1001-C01",
+        "label": "Settings"
+      }
+    ],
+    "unmapped_count": 2,
+    "unmapped_by_kind": {
+      "button": 2
+    },
+    "structural_count": 1
+  },
+  "known_admin_only_tabs_not_observed": [
+    "Pilot (admin only — sandboxed tab group)",
+    "Showcase (admin only)",
+    "Token broker (admin only)",
+    "Debug (admin only)"
+  ],
+  "settings_sections": {
+    "total": 12,
+    "mapped": [
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Account"
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Organization"
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Appearance"
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Chat"
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Privacy"
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Scrape"
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Data"
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "SEO"
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Desktop bridge"
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "Data & reset"
+      },
+      {
+        "id": "EXT-F-1003-C10",
+        "label": "About"
+      }
+    ],
+    "unmapped_count": 1,
+    "unmapped_by_kind": {
+      "button": 1
+    },
+    "structural_count": 0
+  },
+  "settings_controls_by_section": {
+    "Account": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped_by_kind": {},
+      "structural_count": 0
+    },
+    "Organization": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped_by_kind": {},
+      "structural_count": 0
+    },
+    "Appearance": {
+      "total": 1,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C02",
+          "label": "Theme"
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped_by_kind": {},
+      "structural_count": 0
+    },
+    "Chat": {
+      "total": 3,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C04",
+          "label": "Default mode"
+        },
+        {
+          "id": "EXT-F-1003-C05",
+          "label": "Default speed"
+        }
+      ],
+      "unmapped_count": 1,
+      "unmapped_by_kind": {
+        "combobox": 1
+      },
+      "structural_count": 0
+    },
+    "Privacy": {
+      "total": 4,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C06",
+          "label": "Share page identity & email content"
+        },
+        {
+          "id": "EXT-F-1003-C07",
+          "label": "Offer to save logins to the Vault"
+        },
+        {
+          "id": "EXT-F-1003-C11",
+          "label": "Offer saved logins on sign-in forms"
+        },
+        {
+          "id": "EXT-F-1003-C12",
+          "label": "Show password suggestions on websites"
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped_by_kind": {},
+      "structural_count": 0
+    },
+    "Scrape": {
+      "total": 3,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C13",
+          "label": "Deep clean"
+        },
+        {
+          "id": "EXT-F-1003-C14",
+          "label": "Auto-scrape on load"
+        },
+        {
+          "id": "EXT-F-1003-C29",
+          "label": "Auto-scrape mode"
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped_by_kind": {},
+      "structural_count": 0
+    },
+    "Data": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped_by_kind": {},
+      "structural_count": 0
+    },
+    "SEO": {
+      "total": 0,
+      "mapped": [],
+      "unmapped_count": 0,
+      "unmapped_by_kind": {},
+      "structural_count": 0
+    },
+    "Desktop bridge": {
+      "total": 4,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C15",
+          "label": "Pair code"
+        },
+        {
+          "id": "EXT-F-1003-C15",
+          "label": "Pair code"
+        },
+        {
+          "id": "EXT-F-1003-C16",
+          "label": "Local engine port"
+        },
+        {
+          "id": "EXT-F-1003-C16",
+          "label": "Local engine port"
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped_by_kind": {},
+      "structural_count": 0
+    },
+    "Data & reset": {
+      "total": 1,
+      "mapped": [
+        {
+          "id": "EXT-F-1003-C17",
+          "label": "Clear local data on this device"
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped_by_kind": {},
+      "structural_count": 0
+    }
+  },
+  "visible_surface_controls_by_tab": {
+    "Chat": {
+      "total": 18,
+      "mapped": [
+        {
+          "id": "EXT-F-2013-C55",
+          "label": "Copy entire conversation"
+        },
+        {
+          "id": "EXT-F-2013-C03",
+          "label": "New chat"
+        }
+      ],
+      "unmapped_count": 16,
+      "unmapped_by_kind": {
+        "button": 15,
+        "textarea": 1
+      },
+      "structural_count": 0
+    },
+    "Scrape": {
+      "total": 3,
+      "mapped": [
+        {
+          "id": "EXT-F-1007-C19",
+          "label": "Add this page to a project"
+        },
+        {
+          "id": "EXT-F-1007-C01",
+          "label": "Capture the page exactly as it is right now"
+        },
+        {
+          "id": "EXT-F-1007-C02",
+          "label": "Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages."
+        }
+      ],
+      "unmapped_count": 0,
+      "unmapped_by_kind": {},
+      "structural_count": 0
+    },
+    "Data": {
+      "total": 2,
+      "mapped": [],
+      "unmapped_count": 2,
+      "unmapped_by_kind": {
+        "button": 2
+      },
+      "structural_count": 0
+    },
+    "SEO": {
+      "total": 14,
+      "mapped": [],
+      "unmapped_count": 14,
+      "unmapped_by_kind": {
+        "button": 14
+      },
+      "structural_count": 0
+    }
+  },
+  "navigation_actions": [
+    {
+      "kind": "direct_tab",
+      "label": "Chat"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "Scrape"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "Data"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "SEO"
+    },
+    {
+      "kind": "direct_tab",
+      "label": "Settings"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Account"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Organization"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Appearance"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Chat"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Privacy"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Scrape"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Data"
+    },
+    {
+      "kind": "settings_section",
+      "label": "SEO"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Desktop bridge"
+    },
+    {
+      "kind": "settings_section",
+      "label": "Data & reset"
+    },
+    {
+      "kind": "settings_section",
+      "label": "About"
+    }
+  ],
+  "inaccessible_regions": [
+    {
+      "region": "settings_section",
+      "label": "About",
+      "reason": "inspection_failed"
+    }
+  ],
+  "interception": {
+    "scope": ["sidepanel", "extension_worker"],
+    "effect": "HTTP(S) methods other than GET/HEAD/OPTIONS aborted during observation",
+    "blocked_request_count": 1,
+    "sidepanel": {
+      "database:rpc_post_unclassified": 1
+    },
+    "extension_worker": {}
+  },
+  "native_panel_verified": true,
+  "completeness": {
+    "complete": false,
+    "unmapped_total": 36,
+    "unsupported_trigger_count": 0,
+    "inaccessible_count": 1,
+    "blocked_request_count": 1,
+    "missing_required_regions": ["settings_content:About"]
+  },
+  "interpretation": "Guest-only visibility evidence. The four named admin-only tab labels were absent from the observed navigation labels; this is not an access-denial test. “Advanced agent capabilities” and profile-menu visibility are not identified by this report. All behavior cells remain unverified."
+}

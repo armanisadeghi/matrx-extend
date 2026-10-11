@@ -1,11 +1,12 @@
 /**
- * Renders the notice stack over the side panel.
+ * Renders the notice tray in the side panel layout.
  *
  * This is the surface half of the "nothing fails silently" rule: when a
  * database read or write is refused, `src/lib/supabase/db-failure.ts` pushes a
  * notice and the user sees a real sentence here instead of an empty list or a
  * button that quietly snapped back. Mounted once, in the side panel shell,
- * next to `PermissionPromptModal`.
+ * outside the auth gate. The tray reserves space so its cards cannot cover
+ * the controls used to recover from the failure.
  *
  * The technical tail (`detail`) is admin-only — a non-technical user never
  * needs to read `42501`, and an admin always does.
@@ -63,7 +64,7 @@ export function NoticeHost() {
   if (notices.length === 0) return null;
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex flex-col gap-2 p-3">
+    <div className="flex max-h-[40%] shrink-0 flex-col gap-2 overflow-y-auto p-3">
       {notices.map((n) => (
         <div
           key={n.id}
@@ -71,7 +72,7 @@ export function NoticeHost() {
           // its own icon, announced politely.
           role={n.tone === 'info' ? 'status' : 'alert'}
           data-tone={n.tone}
-          className={`pointer-events-auto flex items-start gap-2 rounded-xl border px-3 py-2 text-xs shadow-lg backdrop-blur ${
+          className={`flex items-start gap-2 rounded-xl border px-3 py-2 text-xs shadow-lg backdrop-blur ${
             n.tone === 'error'
               ? 'border-destructive/40 bg-destructive/10 text-destructive'
               : n.tone === 'warning'

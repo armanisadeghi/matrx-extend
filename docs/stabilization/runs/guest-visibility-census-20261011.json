@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "task_id": "guest-visibility-census-20261011",
-  "status": "running",
+  "status": "completed_incomplete",
   "scope": {
     "workflow": ".github/workflows/hosted-guest-acceptance.yml",
     "acceptance_case": "visibility-census-guest",
@@ -30,14 +30,225 @@
     "run_id": 38157797924,
     "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38157797924",
     "started_at": "2026-10-11T17:00:09Z",
-    "status": "in_progress",
-    "conclusion": null
+    "status": "completed",
+    "conclusion": "failure",
+    "completed_at": "2026-10-11T17:07:07Z"
   },
   "result": {
-    "runner_overall_status": "unverified",
-    "bounded_status": "pending",
+    "runner_overall_status": "incomplete",
+    "bounded_status": "guest_visibility_observed_unreviewed",
     "behavior_credit": "none",
-    "interpretation": "Observation only: inventory visible navigation, visible Settings sections and visible controls across safely opened tabs/sections. This does not test control actions or prove behavior. All behavior cells remain unverified."
+    "product_defect_verdict": "none",
+    "native_panel_verified": true,
+    "browser": "Chrome/141.0.7390.37",
+    "guest_signed_out_before_and_after": true,
+    "authentication_observed": {
+      "access_token_present": false,
+      "refresh_token_present": false,
+      "profile_present": false,
+      "admin_role": false,
+      "sign_in_visible": true,
+      "sign_out_visible": false
+    },
+    "visible_navigation": ["Chat", "Scrape", "Data", "SEO", "Settings"],
+    "known_admin_only_tabs_not_observed": ["Pilot", "Showcase", "Token broker", "Debug"],
+    "visible_settings_sections": [
+      "Account",
+      "Organization",
+      "Appearance",
+      "Chat",
+      "Privacy",
+      "Scrape",
+      "Data",
+      "SEO",
+      "Desktop bridge",
+      "Data & reset",
+      "About"
+    ],
+    "visible_settings_controls": [
+      {
+        "id": "EXT-F-1003-C02",
+        "label": "Theme"
+      },
+      {
+        "id": "EXT-F-1003-C04",
+        "label": "Default mode"
+      },
+      {
+        "id": "EXT-F-1003-C05",
+        "label": "Default speed"
+      },
+      {
+        "id": "EXT-F-1003-C06",
+        "label": "Share page identity & email content"
+      },
+      {
+        "id": "EXT-F-1003-C07",
+        "label": "Offer to save logins to the Vault"
+      },
+      {
+        "id": "EXT-F-1003-C11",
+        "label": "Offer saved logins on sign-in forms"
+      },
+      {
+        "id": "EXT-F-1003-C12",
+        "label": "Show password suggestions on websites"
+      },
+      {
+        "id": "EXT-F-1003-C13",
+        "label": "Deep clean"
+      },
+      {
+        "id": "EXT-F-1003-C14",
+        "label": "Auto-scrape on load"
+      },
+      {
+        "id": "EXT-F-1003-C15",
+        "label": "Pair code"
+      },
+      {
+        "id": "EXT-F-1003-C16",
+        "label": "Local engine port"
+      },
+      {
+        "id": "EXT-F-1003-C17",
+        "label": "Clear local data on this device"
+      },
+      {
+        "id": "EXT-F-1003-C29",
+        "label": "Auto-scrape mode"
+      }
+    ],
+    "visible_surface_controls": {
+      "Chat": [
+        {
+          "id": "EXT-F-2013-C55",
+          "label": "Copy entire conversation"
+        },
+        {
+          "id": "EXT-F-2013-C03",
+          "label": "New chat"
+        }
+      ],
+      "Scrape": [
+        {
+          "id": "EXT-F-1007-C19",
+          "label": "Add this page to a project"
+        },
+        {
+          "id": "EXT-F-1007-C01",
+          "label": "Capture the page exactly as it is right now"
+        },
+        {
+          "id": "EXT-F-1007-C02",
+          "label": "Scroll the page top→bottom to load lazy content (images, infinite-scroll items), then capture. Better for dynamic pages."
+        }
+      ],
+      "Data": [],
+      "SEO": []
+    },
+    "unmapped_observations": {
+      "total": 36,
+      "navigation": {
+        "total": 2,
+        "kinds": {
+          "button": 2
+        },
+        "classification": "action"
+      },
+      "settings_sections": {
+        "total": 1,
+        "kinds": {
+          "button": 1
+        },
+        "classification": "action"
+      },
+      "settings_controls": {
+        "Chat": 1
+      },
+      "surface_controls": {
+        "Chat": {
+          "total": 16,
+          "kinds": {
+            "button": 15,
+            "textarea": 1
+          }
+        },
+        "Scrape": {
+          "total": 0
+        },
+        "Data": {
+          "total": 2,
+          "kinds": {
+            "button": 2
+          }
+        },
+        "SEO": {
+          "total": 14,
+          "kinds": {
+            "button": 14
+          }
+        }
+      }
+    },
+    "incomplete_regions": [
+      {
+        "region": "settings_section",
+        "label": "About",
+        "reason": "inspection_failed"
+      }
+    ],
+    "blocked_requests": {
+      "count": 1,
+      "class": "database:rpc_post_unclassified",
+      "purpose": "unknown; blocked by read-only observation interceptor"
+    },
+    "resource_guards": {
+      "hosted-package-38157797924-1": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "hosted-browser-38157797924-1": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "hosted-guest-38157797924-1": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 1,
+        "decision": "child_failed"
+      }
+    },
+    "failure_classification": "The resource guards remained valid and the native panel was verified. The census returned incomplete because 36 observations were unmapped, About content inspection failed, and one unclassified database RPC POST was blocked. The driver emits exit 2 for incomplete census; the acceptance wrapper asserts zero and exits 1. This is an incomplete census/harness gate result, not a product defect verdict.",
+    "interpretation": "The named tabs and mapped controls were visible in a signed-out guest session. Named admin-only tabs were not present among observed nav labels. Sign in was visible and Sign out absent in the Account state before and after. Other hidden-control claims, including Profile menu visibility and unidentified controls, remain unverified. All behavior cells remain unverified.",
+    "evidence_paths": [
+      "docs/stabilization/evidence/guest-visibility-census/run38157797924/receipt.sanitized.json",
+      "docs/stabilization/evidence/guest-visibility-census/run38157797924/native-report.sanitized.json",
+      "docs/stabilization/evidence/guest-visibility-census/run38157797924/guest-account-readiness.png",
+      "docs/stabilization/evidence/guest-visibility-census/run38157797924/native-guest-panel.png",
+      "docs/stabilization/evidence/guest-visibility-census/run38157797924/resource-journals/hosted-package-38157797924-1.jsonl",
+      "docs/stabilization/evidence/guest-visibility-census/run38157797924/resource-journals/hosted-browser-38157797924-1.jsonl",
+      "docs/stabilization/evidence/guest-visibility-census/run38157797924/resource-journals/hosted-guest-38157797924-1.jsonl"
+    ],
+    "next_action": "Fresh peer review of the exact native report and sanitized evidence; no blind rerun and no inventory or coordinator status change in this lane."
   },
-  "evidence_paths": []
+  "evidence_paths": [
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/guest-account-readiness.png",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/native-guest-panel.png",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/resource-journals/hosted-package-38157797924-1.jsonl",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/resource-journals/hosted-browser-38157797924-1.jsonl",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/resource-journals/hosted-guest-38157797924-1.jsonl"
+  ],
+  "workflow_artifact": {
+    "id": 11709512136,
+    "name": "hosted-guest-38157797924-1",
+    "github_digest": "sha256:ef818f34385e14c63d92ffbe7ec24d4650ea9daf1f923be734f1efba78dc0b24",
+    "expired": false
+  }
 }

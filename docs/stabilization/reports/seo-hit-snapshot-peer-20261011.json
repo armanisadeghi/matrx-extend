@@ -1,36 +1,43 @@
 {
   "schema_version": 1,
-  "review_type": "independent_source_and_focused_test_review",
+  "status": "DONE_WITH_CONCERNS",
+  "review_type": "independent_hosted_run_and_snapshot_review",
   "reviewed_at": "2026-10-11",
-  "reviewer_scope": "SEO Re-audit occluder diagnostic only",
-  "reviewed_commit": "81781b370043fae06858c1161e6143e58b8712ae",
-  "prior_native_run_id": 38124088927,
-  "verdict_a": {
-    "verdict": "PASS_BOUNDED_DIAGNOSTIC",
-    "finding": "The three samples are captured after the controlled history refusal, after its successful retry, and immediately before the manual click. The sampler mirrors the pointer driver’s target scoping, viewport preparation, clipping intersection, and nine hit points. Its booleans and counts can distinguish the named refusal notice occupying hit points from an exposed target; comparison with the pointer receipt can separate persistent occlusion from a preflight-to-click timing change.",
-    "attribution": "The fields do not prove why an element occupies a hit point. They support classification only when paired with the same-run pointer receipt. A future result must not be called a product defect solely because an alert or other element is the hit target.",
-    "limits": [
-      "The local happy-dom test supplies elementFromPoint and rectangles directly; it validates sampler classification, not native Chrome stacking or layout.",
-      "The existing hosted run 38124088927 predates this instrumentation and does not resolve the occluder cause."
-    ]
+  "run": {
+    "id": 38157769699,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38157769699",
+    "head_sha": "226aa489855b637178fa60cde7b7cda7a8c5ef37",
+    "conclusion": "failure",
+    "hosted_artifact_id": 11709716767
   },
-  "verdict_b": {
-    "verdict": "PASS_FOR_GUARDED_DIAGNOSTIC_RERUN",
-    "privacy": "The returned samples contain only fixed booleans, bounded counts, or nulls. The notice copy is read inside the page only to recognize the specific known refusal and is not returned. No DOM text, URLs, coordinates, screenshots, credentials, or arbitrary exception strings are serialized by the new sampler.",
-    "cleanup": "The sampler allocates no persistent listeners, timers, or browser resources. The existing native history interception retains its finally cleanup. The fixture aborts its happy-dom window in finally.",
-    "guard_quality": "The new test asserts both outcomes: all nine points resolve to the refusal notice, then all nine resolve to the target. Existing focused tests retain the controlled history refusal/retry assertions and hosted route admission checks. The call-site stage wiring is not independently asserted by a dedicated test, but is explicit in the reviewed source.",
-    "regression_review": "The history helper’s refusal and retry sequence is unchanged apart from two no-op-by-default observation callbacks. The SEO route adds one observation before the existing trusted click; it does not dispatch input or dismiss notices. No T06 or routing regression was found in the reviewed diff or focused tests.",
-    "open_evidence_gap": "No native run has yet exercised the new snapshots against Chrome’s actual layout. The diagnostic can narrow cause but cannot earn T02, whole-feature, member/admin, live-backend, or Store credit."
+  "product_artifact": {
+    "id": 11693783976,
+    "source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+    "version": "0.2.493",
+    "tree_sha256": "6ac2233eb04997096e173e0f741c127130a7ee9a245882392befcd49b9fe2206",
+    "publish_state": "not_published",
+    "provenance": "CI development artifact; source, run, attempt, and digest in the acceptance receipt match the supplied frozen artifact identity."
   },
-  "tests": {
-    "command": "node --test tests/browser/guest-seo-click-diagnostic.test.mjs tests/browser/seo-history-native-recovery.test.mjs scripts/hosted-seo-route.test.mjs",
-    "result": "PASS",
-    "passed": 24,
-    "failed": 0
+  "changes": [
+    "Independently downloaded the hosted run artifact and reviewed the guest acceptance receipt, all three resource journals, and retained screenshots.",
+    "Classified repeated T06 evidence as already credited; this run adds no T06 credit."
+  ],
+  "verification_evidence": {
+    "run_and_artifact_provenance": "GitHub run metadata confirms run 38157769699 attempt 1 on 226aa489855b637178fa60cde7b7cda7a8c5ef37 and hosted artifact 11709716767. The receipt identifies CI development artifact 11693783976 from source 40ad70d458fd1f6acd16aa04c40c061eb6ef21bb, version 0.2.493, with matching tree hash.",
+    "resource_journals": {
+      "package": "admitted; valid final decision; child exit 0",
+      "browser": "admitted; valid final decision; child exit 0",
+      "guest": "admitted and healthy through execution; resourceInvalid false; child exit 1; decision child_failed"
+    },
+    "acceptance": "Receipt status is unverified. T06, T09, T07, and T01 listed subtargets pass, but T06 is a repeat and receives no new credit. Execution stopped at manual_reaudit_click after manual_reaudit_preflight.",
+    "hit_snapshots": "At history_refused, history_recovered, and before_click, the Re-audit target is active, unique, and enabled; hit_point_count is 0 and notice_hit_point_count is 9 with one recognized database-refusal notice. The pointer driver independently reports pointer_stable_hit_not_observed before target resolution, hit_target false, zero stable samples, and the same known notice at center.",
+    "interpretation": "The samples establish that the recognized refusal notice occupied all sampled target hit points during the checkpoints, so click failure is consistent with an actual on-screen obstruction. They do not establish why the notice persisted, whether its duration or placement violates product intent, or whether a controlled counterpart would pass T02. Classify this as an observed obstruction with product-versus-state attribution unresolved, not as a confirmed product defect. The hosted job failure is real; it is not acceptance evidence for T02.",
+    "privacy": "Reviewed acceptance evidence contains fixed labels, booleans, and bounded counts. Resource journals contain host capacity metrics. No credential, URL/page content, coordinates, or raw exception text is present in the reviewed JSON evidence. Screenshots retained only generic panel and public fixture content; they do not resolve notice attribution."
   },
-  "diagnostic_rerun": {
-    "safe": true,
-    "conditions": "Use only the existing guarded hosted guest-seo controlled case on one frozen development artifact with run-owner coordination; retain the sanitized receipt and pointer failure receipt. Do not infer product attribution or acceptance credit unless a later same-artifact controlled counterpart changes only the synthetic refusal or safely dismisses only that notice and the real T02 click passes.",
-    "dispatched_by_reviewer": false
-  }
+  "files": ["docs/stabilization/reports/seo-hit-snapshot-peer-20261011.json"],
+  "open_questions": [
+    "Why does the recognized database-refusal notice remain over all nine target hit points after the history recovery checkpoint?",
+    "Would the controlled same-artifact comparison change only that notice state and allow the real T02 Re-audit action to pass?"
+  ]
 }

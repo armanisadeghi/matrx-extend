@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "report_id": "seo-notice-fix-source-peer-20261011",
+  "reviewed_at": "2026-10-11",
+  "review_type": "independent_source_and_guard_review",
+  "reviewed_scope": [
+    "EXT-D-0199 source cause and shared notice layout repair",
+    "SidepanelFrame, NoticeHost, App integration, notice layout guard, relevant feature-test instructions",
+    "Hosted run 38157769699 sanitized hit evidence and defect acceptance record"
+  ],
+  "verdict_a_product_reasoning": {
+    "verdict": "PASS_SOURCE_ONLY",
+    "evidence": [
+      "The hosted receipt for run 38157769699 shows one active enabled Re-audit target, zero target-owned hit points, and nine database-refusal-notice hit points at history_refused, history_recovered, and before_click. The pointer driver's center sample independently names the recognized database_refused notice. This supports the stated occlusion cause; the failed run itself earns no T02 acceptance credit.",
+      "SidepanelFrame places the unchanged AuthGate content in a min-h-0 flexible region and mounts the shared NoticeHost as its trailing sibling. NoticeHost remains outside AuthGate, so guest, member, admin, and auth/error surfaces continue using the same host and store.",
+      "Notice retirement, tone-specific alert/status roles and icons, admin-only detail, cross-context relay, and the native Dismiss button are unchanged. The host no longer uses fixed/absolute positioning or pointer-event pass-through classes; its tray has a 40% height bound and vertical scrolling, leaving room for the panel content. Emptying the store removes the tray and returns that space."
+    ],
+    "cannot_verify": [
+      "No post-fix native run was available. Actual pointer clearance, tray and panel scroll interaction, long notices, 360px and normal widths, panel/extension reload, and native retry/dismiss behavior remain open per EXT-D-0199.",
+      "Member/admin and Store-installed behavior remain unverified. Source placement is shared, but this review does not promote those runtime boundaries."
+    ],
+    "acceptance_state": "Native post-fix acceptance remains required; do not close EXT-D-0199 or promote EXT-F-1008/T02 from this source review."
+  },
+  "verdict_b_guard_and_source_quality": {
+    "verdict": "PARTIAL",
+    "findings": [
+      "The focused guard asserts the panel-flow contract, flexible content sibling, bounded scroll tray, absence of fixed/absolute classes, retained info status, individual Dismiss behavior, and content-space recovery after the final dismissal. It explicitly says it does not prove native geometry or pointer clearance.",
+      "Mutation proof: plant.py temporarily restored the former fixed positioning classes on the production tray; notice-layout.test.tsx failed at the intended fixed-class assertion (expected true to be false). plant.py restored NoticeHost byte-identically (SHA fae9307ecf43). This proves the named regression is caught, not the broader native acceptance behavior.",
+      "The new test groups layout and dismissal in one case; splitting these independent outcomes would make failures easier to route. This is a guard-quality improvement, not a product-source blocker."
+    ],
+    "reuse_and_scope": "The repair uses one shared NoticeHost and a small side-panel frame. It does not add a second notice system, alter notice lifecycle semantics, or suppress any notice tone.",
+    "checks": [
+      "pnpm exec vitest run tests/unit/notice-layout.test.tsx tests/unit/notice-icon.test.tsx tests/unit/notice-resolution.test.tsx --maxWorkers=2 — 3 files, 7 tests passed",
+      "plant.py fixed-position regression mutation — expected RED at tests/unit/notice-layout.test.tsx:45; source restored byte-identically",
+      "pnpm exec biome check src/components/SidepanelFrame.tsx src/components/NoticeHost.tsx src/entrypoints/sidepanel/App.tsx tests/unit/notice-layout.test.tsx docs/feature-tests.md — exit 0; existing DataView shadow warning",
+      "git diff --check — passed"
+    ],
+    "not_run": [
+      "Native browser acceptance",
+      "Local build or release"
+    ]
+  }
+}
