@@ -118,6 +118,8 @@ test('narrow T09 scope requires reachable detail doors and controls without hori
     { ...valid, documentScrollWidth: 361 },
     { ...valid, paneScrollWidth: 361 },
     { ...valid, unreachableTargets: 1 },
+    { ...valid, buttons: { ...valid.buttons, reAudit: 0 } },
+    { ...valid, buttons: { ...valid.buttons, copyAudit: 0 } },
     { ...valid, detailGroups: { ...valid.detailGroups, structuredData: false } },
   ])
     assert.throws(() => requireNarrowSeoLayout(broken));
