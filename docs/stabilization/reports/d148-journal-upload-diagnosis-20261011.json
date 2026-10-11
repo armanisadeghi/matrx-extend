@@ -1,0 +1,129 @@
+{
+  "schema_version": 1,
+  "diagnosis_date": "2026-10-11",
+  "feature_id": "EXT-F-4163",
+  "defect_id": "EXT-D-0148",
+  "status": "UPLOAD_DEFECT_REFUTED_INDEPENDENTLY_CONFIRMED",
+  "artifact": {
+    "run_id": 38114610597,
+    "artifact_id": 11693117210,
+    "name": "hosted-guest-38114610597-1",
+    "download_command": "gh api repos/armanisadeghi/matrx-extend/actions/artifacts/11693117210/zip",
+    "zip_sha256": "a0f67ff78e489a0d818dff70f29f6b28043f63a6e74b3730005c7e8312eeeea4",
+    "total_files": 6
+  },
+  "finding": "All three guard-owned completed journals exist in the exact uploaded artifact. No upload/creation mismatch exists. The prior peer claim that the archive contains only the native report and two screenshots is refuted by the ZIP central directory and validated file contents.",
+  "path_explanation": {
+    "observed_upload_root": "/Users/runner/work",
+    "reason": "actions/upload-artifact calculates the least common ancestor across workspace-relative evidence and runner.temp evidence paths. This nests workspace files under matrx-extend/matrx-extend and screenshots under _temp. The previous review failed to account for the archive path prefix; its precise local search command was not recorded and cannot be established.",
+    "evidence": "Workflow upload log states least common ancestor /Users/runner/work and six files uploaded; exact ZIP has three journals, native JSON and two screenshots."
+  },
+  "journals": [
+    {
+      "phase": "package",
+      "run_id": "hosted-package-38114610597-1",
+      "zip_path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-38114610597-1.jsonl",
+      "bytes": 974,
+      "sha256": "ee9393242fa371ba39134e97794e328ae8b249c5be9cc1dd3a8f9c2adcecc02e",
+      "sanitizer_validation": "PASS",
+      "sanitized_sha256": "ee9393242fa371ba39134e97794e328ae8b249c5be9cc1dd3a8f9c2adcecc02e",
+      "event_codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ],
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-11T05:25:14.514Z",
+        "runId": "hosted-package-38114610597-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "phase": "browser",
+      "run_id": "hosted-browser-38114610597-1",
+      "zip_path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-38114610597-1.jsonl",
+      "bytes": 1003,
+      "sha256": "c4670d5f84f8dae4abf1af4a457951008624886435caa1460d5ab0ee6b4cccee",
+      "sanitizer_validation": "PASS",
+      "sanitized_sha256": "c4670d5f84f8dae4abf1af4a457951008624886435caa1460d5ab0ee6b4cccee",
+      "event_codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ],
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-11T05:27:17.794Z",
+        "runId": "hosted-browser-38114610597-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    },
+    {
+      "phase": "guest",
+      "run_id": "hosted-guest-38114610597-1",
+      "zip_path": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-38114610597-1.jsonl",
+      "bytes": 8932,
+      "sha256": "f4fd0fbde1d1e01322e8ab87316f66e1c5474aef5efd1cdaa36c735386c83a8f",
+      "sanitizer_validation": "PASS",
+      "sanitized_sha256": "ee3a81a59df3c1be095129997cdea317e9c6f6e2df5208ae847bb8cca3f8b688",
+      "event_codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_CPU_PENDING",
+        "RESOURCE_PROCESS_ATTRIBUTION",
+        "RESOURCE_CPU_PENDING",
+        "RESOURCE_CPU_PENDING",
+        "RESOURCE_CPU_RECOVERED",
+        "RESOURCE_CPU_PENDING",
+        "RESOURCE_CPU_PENDING",
+        "RESOURCE_CPU_PENDING",
+        "RESOURCE_CPU_RECOVERED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ],
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-11T05:31:18.003Z",
+        "runId": "hosted-guest-38114610597-1",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      }
+    }
+  ],
+  "working_sibling": {
+    "run_id": 38107414974,
+    "artifact_id": 11689584250,
+    "case": "guest-seo",
+    "total_files": 6,
+    "journal_zip_prefix": "matrx-extend/matrx-extend/docs/stabilization/resource-journals/",
+    "finding": "Exact sibling ZIP contains completed package/browser/guest journals under the same nested prefix. D148 follows the established successful layout."
+  },
+  "verification": {
+    "existing_upload_guard": "node --test scripts/test-hosted-journal-upload.mjs: 3 passed; exact current-attempt paths retain completed/crashed evidence and exclude other runs/attempts.",
+    "source_changes": "None: no production defect demonstrated, so no workflow/collector/guard change is justified.",
+    "runtime": "No new hosted run; no credentials accessed or changed; no inventory or defect state changed.",
+    "compile_and_lint": "pnpm compile passed; pnpm -s lint passed (2627 files, 854 pre-existing warnings). Report-only Biome formatting/check passed using a temporary scripts-path copy because docs paths are ignored by repository Biome configuration."
+  },
+  "acceptance": "No acceptance promotion performed by this lane. The independent native peer confirmed retained completed journals; bounded T01 member evidence remains partial in feature scope. Missing journals are not a remaining blocker.",
+  "files_touched": ["docs/stabilization/reports/d148-journal-upload-diagnosis-20261011.json"],
+  "questions": [],
+  "independent_review": {
+    "reviewer": "/root/d148_member_native_peer_38114610597",
+    "report": "docs/stabilization/reports/d148-tabgroups-member-native-peer-20261011.json",
+    "result": "Parent relayed independent ZIP discovery and validation of all three nested completed journals; peer correcting bounded Verdict A to PASS and Verdict B to PARTIAL."
+  }
+}
