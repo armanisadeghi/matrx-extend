@@ -1,0 +1,27 @@
+{
+  "id": "guest-seo-click-diagnostic-run38124088927",
+  "created_at_utc": "2026-10-11T08:14:09Z",
+  "status": "queued_unverified",
+  "run_id": 38124088927,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38124088927",
+  "attempt": 1,
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "workflow_source_sha": "9b8511eecac2853eb1d091f2e3681d42ce2f99b0",
+  "inputs": {
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none"
+  },
+  "product_artifact": {
+    "ci_run_id": 38118947880,
+    "artifact_id": 11693783976,
+    "source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+    "github_digest": "sha256:162c745cbcc558f3d9f45c23560be63a0c4b9473c76109bd18405f636217549c",
+    "ci_conclusion": "success",
+    "version": "0.2.493"
+  },
+  "purpose": "Guarded diagnostic rerun for prior manual_reaudit_click failure with reviewed safe click-phase capture; also exercises bounded guest EXT-D-0198 history error and retry path on a product artifact containing the source repair.",
+  "credit_rule": "No product or inventory credit until terminal run, exact artifact and resource-journal validation, and fresh independent review. Click diagnosis must be read from sanitized receipt; do not infer product defect from a child failure.",
+  "next_action": "Observe terminal state no more frequently than once per 60 seconds, inspect exact hosted artifact and all finalized resource journals, independently review rendered native behavior and diagnostic capture; reconcile source drift before any release use."
+}
