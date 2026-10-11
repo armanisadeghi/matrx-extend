@@ -45,8 +45,8 @@ vi.mock('@/lib/supabase/client', () => ({
   }),
   readOrganizationBootstrapAccountChoice: async () => ({
     data: {
-      last_active_organization_id: harness.account.lastActive,
-      startup_organization_id: harness.account.startup,
+      lastActiveOrganizationId: harness.account.lastActive,
+      startupOrganizationId: harness.account.startup,
     },
     error: null,
   }),

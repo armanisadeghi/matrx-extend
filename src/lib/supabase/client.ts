@@ -139,10 +139,7 @@ export async function readOrganizationBootstrapAccountChoice() {
   try {
     const choice = await readAccountOrganizationChoices(getOrganizationBootstrapClient(), user.id);
     return {
-      data: {
-        last_active_organization_id: choice.lastActiveOrganizationId,
-        startup_organization_id: choice.startupOrganizationId,
-      },
+      data: choice,
       error: null,
     };
   } catch (error) {

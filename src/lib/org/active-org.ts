@@ -199,13 +199,13 @@ async function readAccountOrganizationChoice(): Promise<{
     throw new Error(`Could not read your saved organization: ${error.message}`);
   }
   const row = (data ?? {}) as {
-    last_active_organization_id?: unknown;
-    startup_organization_id?: unknown;
+    lastActiveOrganizationId?: unknown;
+    startupOrganizationId?: unknown;
   };
   const pick = (v: unknown) => (typeof v === 'string' && v ? v : null);
   return {
-    lastActive: pick(row.last_active_organization_id),
-    startup: pick(row.startup_organization_id),
+    lastActive: pick(row.lastActiveOrganizationId),
+    startup: pick(row.startupOrganizationId),
   };
 }
 

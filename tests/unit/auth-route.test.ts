@@ -107,7 +107,7 @@ function membershipsFor(...ids: string[]) {
 /** The account's two saved organization columns. */
 function accountChoice(lastActive: string | null, startup: string | null) {
   mocks.prefsSelect.mockResolvedValue({
-    data: { last_active_organization_id: lastActive, startup_organization_id: startup },
+    data: { lastActiveOrganizationId: lastActive, startupOrganizationId: startup },
     error: null,
   });
 }
