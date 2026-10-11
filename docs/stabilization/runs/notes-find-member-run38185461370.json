@@ -1,0 +1,77 @@
+{
+  "task_id": "notes-find-member-hosted-20261011",
+  "lane": "A",
+  "status": "blocked-resource-invalid-native-unverified",
+  "feature_ids": ["EXT-F-2006"],
+  "case_ids": ["EXT-F-2006-T02"],
+  "run_id": 38185461370,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38185461370",
+  "attempt": 1,
+  "workflow_source_sha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+  "runner": "macos-15-intel",
+  "artifact": {
+    "id": 11719910207,
+    "name": "hosted-guest-38185461370-1",
+    "sha256": "c4dc34744688e38649104589ed511a73f54bd30b3c16bd1ccc32683235898cdb",
+    "download_digest_verified": true,
+    "files": 4
+  },
+  "product": {
+    "version": "0.2.509",
+    "source_sha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+    "ci_run": 38184510025,
+    "ci_artifact": 11718734199,
+    "ci_artifact_digest": "sha256:cbe88a96027ac65fbbfd057a3a7370db70f890e1adec94183e2c0d43778f30a7",
+    "tree_sha256": "e86a72574489f1bca661a23c79722a5f4fbce9a1ee709b5a51754cd5f2027620",
+    "store": false
+  },
+  "summary": "One authorized hosted attempt completed failure. Exact-source artifact preflight and package/browser preparation passed. Native CDP connection timed out before sign-in or Notes interaction; acceptance resource final was also invalid after CPU pending and child exit 1. Zero product acceptance credit.",
+  "resource_finals": {
+    "package": "valid exit 0",
+    "browser": "valid exit 0",
+    "guest": "invalid; admitted true; resourceInvalid true; exit 3; child exit 1"
+  },
+  "cpu_checkpoint": {
+    "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+    "one_minute_load": 3.4,
+    "logical_cpus": 4,
+    "cpu_busy_fraction": 1,
+    "at": "2026-10-11T23:52:04.997Z"
+  },
+  "native_diagnostic": {
+    "failure_stage": "native_cdp_connect",
+    "failure_code": "stage_operation_failed",
+    "safe_failure_category": "owned_cdp_open_timeout",
+    "elapsed_ms": 14437,
+    "launch_failed": false,
+    "spawn_observed": true,
+    "devtools_listening": true,
+    "sandbox_enabled": true,
+    "crash_observed": false
+  },
+  "cause": "Undetermined. Evidence records an owned CDP open timeout and a separate CPU-invalid acceptance journal. No Notes behavior was exercised; neither a Notes defect nor CPU as the sole native timeout cause is established.",
+  "fixtures": {
+    "created_by_this_run": "None evidenced; report has no after snapshot and failure occurred before sign-in or Notes interaction.",
+    "cleanup": "No Notes fixture ledger or cleanup action evidenced; no fixture cleanup claim."
+  },
+  "credential_cleanup": {
+    "temporary_github_secret": "Deleted at terminal; repository secret-name listing verified absent.",
+    "local_one_use_link": "Deleted before dispatch; absence verified after terminal.",
+    "local_identity_scratch": "Removed after terminal; absence verified.",
+    "values_in_evidence": false
+  },
+  "independent_runtime_review": "pending",
+  "evidence_root": "docs/stabilization/evidence/notes-find-member/run38185461370",
+  "sanitized_report_sha256": "3695d4ad93cadf5141a45cfced7e8aac8e38ead8f8c4f8d705775b98c37c03c4",
+  "sanitized_journal_sha256": {
+    "hosted-package-38185461370-1.jsonl": "e2bc4d72a7396f989bb2b64917f0c1abc69f13360c4e9c2fc3a91f65a8e1472e",
+    "hosted-browser-38185461370-1.jsonl": "94e2770d903843e6103d7f6b3d989f1f6c27154ff7e498aee6fb259b6e5e3762",
+    "hosted-guest-38185461370-1.jsonl": "884115cdeddc3deae2db66a09313bd8cca105e7c7c3856da31698306f5866f26"
+  },
+  "next_action": "No retry in this lane. Root to commission independent cause investigation and peer review of retained evidence; keep T02 unverified and exclude from inventory credit.",
+  "open_questions": [
+    "Why did native CDP open time out despite spawn observed and DevTools listening?",
+    "Did CPU pressure contribute to the native startup timeout or only invalidate the acceptance journal?"
+  ],
+  "owned_jobs_remaining": 0
+}

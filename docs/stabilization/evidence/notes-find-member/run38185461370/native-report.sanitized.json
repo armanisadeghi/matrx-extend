@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "cases": ["EXT-F-2006-T02"],
+  "status": "unverified",
+  "role": "member",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "version": "0.2.509",
+      "treeSha256": "e86a72574489f1bca661a23c79722a5f4fbce9a1ee709b5a51754cd5f2027620",
+      "extensionDir": "/Users/runner/work/matrx-extend/matrx-extend/test-results/ci-artifacts/456239f59efc76413f7f8b56ce482d8b5bd1b965/38184510025-1/chrome-mv3"
+    },
+    "after": null
+  },
+  "observations": {
+    "startup_failure": {
+      "operation": "native_cdp_connect",
+      "category": "operation_failed"
+    }
+  },
+  "fault_scope": "owned panel, workbench.notes transport; detail/delete faults restricted to the owned note id",
+  "data_scope": "three synthetic notes created and deleted through the Notes UI; recovery ledger is private and records only owned ids, titles, homes, role and build identity",
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+    "runId": 38184510025,
+    "runAttempt": 1,
+    "artifactId": 11718734199,
+    "githubArtifactDigest": "sha256:cbe88a96027ac65fbbfd057a3a7370db70f890e1adec94183e2c0d43778f30a7",
+    "version": "0.2.509",
+    "treeSha256": "e86a72574489f1bca661a23c79722a5f4fbce9a1ee709b5a51754cd5f2027620",
+    "source": {
+      "originMain": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+      "localHead": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "current_pushed_source"
+    }
+  },
+  "failure_stage": "native_cdp_connect",
+  "failure_code": "stage_operation_failed"
+}
