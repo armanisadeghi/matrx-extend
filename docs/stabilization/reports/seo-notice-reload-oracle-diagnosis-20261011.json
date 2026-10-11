@@ -71,17 +71,22 @@
     "Forcing negative: fresh post-reload obstruction fails even after earlier width checks pass.",
     "Independent in-memory mutations: removing each reload hit check separately causes its corresponding negative guard to fail; the two checks cannot mask each other.",
     "Guarded pnpm compile passed; completed resource journal seo-reload-oracle-compile-20261011-2005 is valid (exitCode0/resourceInvalidfalse).",
-    "Guarded full repository error-level Biome check passed (2697 files), completed resource journal seo-reload-oracle-lint-20261011-2006 valid (exitCode0/resourceInvalidfalse)."
+    "Guarded full repository error-level Biome check passed (2697 files), completed resource journal seo-reload-oracle-lint-20261011-2006 valid (exitCode0/resourceInvalidfalse).",
+    "After held-copy reconciliation, focused scope/oracle tests43 passed, including absent/present refusal and missing Dismiss rejection with an independent in-memory mutation.",
+    "Held reconciliation: guarded full error-level lint and pnpm compile both passed with completed valid journals; peer PASS retains post-reload Dismiss visibility scope only."
   ],
   "limitations": [
     "No new native browser run or release launched; current hosted member lane remains independent.",
     "Native source binding/final viewport restoration and full D199 sibling coverage still require a fresh guarded run.",
-    "Exact origin of the post-reload notice is not established by count-only native evidence."
+    "Exact origin of the post-reload notice is not established by count-only native evidence.",
+    "Post-reload Dismiss visibility is verified by the oracle; no second trusted Dismiss click is exercised. Full D199 reload closure remains open."
   ],
   "next_action": "Commit reviewed source oracle/evidence unit. Parent selects a fresh admitted native test slot only after a current-source CI artifact is available. Keep EXT-D-0199 fixed/open; no retroactive target promotion.",
   "resource_journals": [
     "docs/stabilization/resource-journals/seo-reload-oracle-compile-20261011-2005.jsonl",
-    "docs/stabilization/resource-journals/seo-reload-oracle-lint-20261011-2006.jsonl"
+    "docs/stabilization/resource-journals/seo-reload-oracle-lint-20261011-2006.jsonl",
+    "docs/stabilization/resource-journals/seo-held-reconcile-lint-20261011-2014.jsonl",
+    "docs/stabilization/resource-journals/seo-held-reconcile-compile-20261011-2014.jsonl"
   ],
   "review": {
     "status": "PASS",
@@ -94,5 +99,35 @@
       "forcing negative and per-check in-memory mutations"
     ],
     "native_retest": "not performed"
+  },
+  "held_conflict_disposition": {
+    "source_commit": "28e9ff264af33e9f1b42f46575df9c24e4e0d81e",
+    "held_sync": "d25beae09",
+    "review_status": "Fresh independent B PASS: all four payload hashes verified;43 focused tests passed; no unique valid behavior lost.",
+    "retained_unique_behavior": "Retain dismissVisible in reload telemetry and require Dismiss when a post-reload refusal is visible. Add forcing missing-Dismiss rejection and in-memory removed-assertion mutation.",
+    "not_adopted": "Mandatory post-reload count1 and automatic visible_notice_full_reload_clearance promotion. The post-reload history response is not controlled, and evidence lacks announcement identity/network provenance. Keep bounded notice_reload_reaudit_clearance and both count0/count1 tests; forced visible-reload fixture remains unverified.",
+    "recovery": "All four contributor versions remain recoverable via git show 28e9ff264a:<path>. Final canonical files contain the reviewed behavior; resolved held wrappers and README rows removed.",
+    "files": [
+      {
+        "path": "_conflicts/2026-10-11-130723/tests/browser/seo-guest-acceptance.mjs.held",
+        "payload_sha256": "6e3f266922a75c1bc86990c77403e48342d6eabd0ecbe73d58580943f6fa7fbc",
+        "live_path": "tests/browser/seo-guest-acceptance.mjs"
+      },
+      {
+        "path": "_conflicts/2026-10-11-130723/tests/browser/seo-new-coverage-oracle.mjs.held",
+        "payload_sha256": "8c7743cf43e507e1d7fdef6c64138e7c9fcb57cda86871f1d1f147b3e25c11f8",
+        "live_path": "tests/browser/seo-new-coverage-oracle.mjs"
+      },
+      {
+        "path": "_conflicts/2026-10-11-130723/tests/browser/seo-new-coverage-oracle.test.mjs.held",
+        "payload_sha256": "8d83f32098f73894cfa1765e835da0ccb4f56d1a49a842ad65cf37bdbaa4a0ae",
+        "live_path": "tests/browser/seo-new-coverage-oracle.test.mjs"
+      },
+      {
+        "path": "_conflicts/2026-10-11-130723/tests/browser/seo-notice-scope.test.mjs.held",
+        "payload_sha256": "643345f43bedf7699853606a2aebed265b9e68afddd14dc47a71fc795be48ed0",
+        "live_path": "tests/browser/seo-notice-scope.test.mjs"
+      }
+    ]
   }
 }

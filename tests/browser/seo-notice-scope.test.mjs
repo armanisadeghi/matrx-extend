@@ -52,6 +52,7 @@ async function run(
   driver = callback,
   reloadNoticeCount = reloadCapture.database_refused_notice_count,
   reloadOccluded = false,
+  reloadDismissVisible = true,
 ) {
   let viewportWidth = 360;
   let index = 0;
@@ -63,6 +64,7 @@ async function run(
   const hit = () => ({
     ...captured,
     database_refused_notice_count: reloaded ? reloadNoticeCount : dismissed ? 0 : 1,
+    dismiss_visible: reloaded ? reloadNoticeCount > 0 && reloadDismissVisible : !dismissed,
     hit_point_count:
       (occluded && index === 0) ||
       (reloaded && (reloadOccluded === true || reloadOccluded === 'target'))
@@ -236,6 +238,7 @@ test('reload accepts either no notice or a subsequent refusal while controls rem
     );
     assert.deepEqual(JSON.parse(JSON.stringify(reload.evidence)), {
       noticeCount: count,
+      dismissVisible: count > 0,
       targetHitPoints: 9,
       noticeHitPoints: 0,
       currentTitleMatched: true,
@@ -267,3 +270,19 @@ for (const [field, mutation, message] of [
     );
   });
 }
+
+test('visible reload refusal requires Dismiss and catches a skipped dismissal check', async () => {
+  await assert.rejects(
+    run(false, callback, 1, false, false),
+    /visible reload refusal remains dismissible/,
+  );
+  const unchecked = callback.replace(
+    /assert\.equal\(\s*afterReloadHit\.dismiss_visible,[\s\S]*?\);/,
+    '',
+  );
+  assert.notEqual(unchecked, callback);
+  await assert.rejects(
+    async () => assert.rejects(run(false, unchecked, 1, false, false)),
+    /Missing expected rejection/,
+  );
+});

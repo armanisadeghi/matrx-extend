@@ -1790,8 +1790,16 @@ try {
           9,
           'Re-audit remains target-owned after panel reload',
         );
+        if (afterReloadHit.database_refused_notice_count > 0) {
+          assert.equal(
+            afterReloadHit.dismiss_visible,
+            true,
+            'visible reload refusal remains dismissible',
+          );
+        }
         target('T02', 'notice_reload_reaudit_clearance', {
           noticeCount: afterReloadHit.database_refused_notice_count,
+          dismissVisible: afterReloadHit.dismiss_visible,
           targetHitPoints: afterReloadHit.hit_point_count,
           noticeHitPoints: afterReloadHit.notice_hit_point_count,
           currentTitleMatched: reloadedAudit.title === publicPages[1].title,
