@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "review": "fresh independent review of bounded guest EXT-F-1007-T08 no-signal SEO and empty Schema evidence",
+  "run_id": 38174175733,
+  "verdict_a_behavior": {
+    "status": "PASS_BOUNDED_DOM_OBSERVATION",
+    "finding": "At the reported 360px native-default panel width, the workflow-source-bound driver clicks the Capture control with a trusted click inside the active Scrape panel, waits for a selected visible result pane with the fixture title, then selects SEO and Schema. The retained native report records both panes visible and selected, matching title/empty-state assertions, valid empty Schema metadata, and unchanged full-capture export identity and digest after each pane. The checked driver and oracle assert the exact expected title, empty description, SEO group set, absent metadata counts, and copy/export results.",
+    "bounded_claim": "One fresh guest profile and owned title-only localhost fixture; no-signal SEO and empty Schema panes plus unchanged full-capture export identity/digest after each pane, on frozen development v0.2.504/source acb5506d55f972b22619c775b56154adeba694e3.",
+    "limits": [
+      "The report preserves assertion booleans and capture event diagnostics, not the selected pane's raw DOM values or a post-capture screenshot. The pass is substantiated by the native DOM assertions and their exact workflow-source-bound test code.",
+      "The uploaded screenshots show the generic guest Chat side panel and the fixture opener page; neither shows Capture results or the SEO/Schema panes. Their rendered appearance is therefore not visually verified.",
+      "No full T08, other roles, reload, physical resize, current-main, Store-installed, release, or wider Scrape acceptance is established. T14 is unrelated and receives no credit."
+    ]
+  },
+  "verdict_b_provenance_resource_evidence": {
+    "status": "PARTIAL",
+    "finding": "GitHub confirms hosted workflow run 38174175733 completed successfully at workflow SHA fca97c646a6834c673e040b6c14874535d0e9316, and CI run 38172909785 completed at product source SHA acb5506d55f972b22619c775b56154adeba694e3. GitHub artifact metadata confirms product artifact 11715051290 with the recorded digest and hosted artifact 11714944719 with digest sha256:b319c8513e433a32f8e298ecfd58cb6fda1e1d9eaa6a451baea4b935c849a52b. The hosted workflow log reports that same hosted ZIP digest; download confirms its native report is byte-identical to the committed report, alongside three resource journals and two screenshots. The five committed evidence-file hashes match the receipt. Package, browser, and guest resource finals are admitted, valid, and exit code 0; guest CPU-pending observations recovered before exit.",
+    "limits": "Provenance, artifact binding, resource journals, and committed file integrity check out. Evidence completeness remains partial because the screenshots are not of the exercised panes and the retained native report omits their raw values; screenshots cannot independently corroborate the DOM assertions. No current-main or Store provenance is claimed."
+  },
+  "provenance": {
+    "hosted_workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38174175733",
+    "hosted_workflow_source_sha": "fca97c646a6834c673e040b6c14874535d0e9316",
+    "product_ci_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38172909785",
+    "product_source_sha": "acb5506d55f972b22619c775b56154adeba694e3",
+    "product_artifact_id": 11715051290,
+    "product_version": "0.2.504",
+    "product_tree_sha256": "b9a0d28b32c58dc1fc3f1ec3f941cf6383fad83d297fcc18e1d8fcc4712118cd",
+    "hosted_artifact_id": 11714944719,
+    "hosted_artifact_sha256": "b319c8513e433a32f8e298ecfd58cb6fda1e1d9eaa6a451baea4b935c849a52b",
+    "test_source": "tests/browser/scrape-seo-schema-empty-guest.mjs and tests/browser/scrape-seo-schema-empty-oracle.mjs at workflow SHA fca97c646a6834c673e040b6"
+  },
+  "checked": [
+    "docs/stabilization/runs/38174175733.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38174175733/",
+    "docs/stabilization/inventory.json: EXT-F-1007-T08 contract and existing scope limits",
+    "docs/feature-tests.md: Scrape SEO display contract",
+    "GitHub run metadata, logs, and artifact metadata for runs 38174175733 and 38172909785",
+    "Hosted workflow and native driver/oracle at workflow SHA fca97c646a6834c673e040b6"
+  ],
+  "scope": "Independent evidence review only. No product code or inventory was changed; no new browser run was performed."
+}
