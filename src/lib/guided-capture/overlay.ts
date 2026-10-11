@@ -14,6 +14,7 @@ import {
   type CapturedImageRef,
   createAccumulator,
 } from '@/lib/guided-capture/accumulator';
+import { type AutoScrollEnd, runAutoScroll, scrollSentence } from '@/lib/guided-capture/autoscroll';
 import {
   type GuidedState,
   INITIAL_GUIDED_STATE,
@@ -125,6 +126,52 @@ export function mountGuidedOverlay(): void {
   let postAvailable = true;
   const postMode = () =>
     job?.target === 'post' && recipe && job ? { recipe, url: job.url } : undefined;
+  let scroller: AbortController | null = null;
+  let scrollEnd: AutoScrollEnd | null = null;
+  let scrollTarget: number | null = 50;
+  function stopScrolling() {
+    scroller?.abort();
+  }
+  async function scrollForMe() {
+    if (!acc || scroller || postMode()) return;
+    const ctl = new AbortController();
+    scroller = ctl;
+    scrollEnd = null;
+    const keyStop = (e: KeyboardEvent) => e.key === 'Escape' && ctl.abort();
+    window.addEventListener('keydown', keyStop, true);
+    render();
+    try {
+      scrollEnd = await runAutoScroll(
+        {
+          count: () => scan(acc!, recipe),
+          scrollBy: (px) => window.scrollBy({ top: px, behavior: 'smooth' }),
+          viewportHeight: () => window.innerHeight,
+          pageHeight: () => document.documentElement.scrollHeight,
+          onTick: (c) => {
+            dispatch({ type: 'items', count: c });
+          },
+          sleep: (ms) =>
+            new Promise<void>((resolve) => {
+              const t = setTimeout(resolve, ms);
+              ctl.signal.addEventListener(
+                'abort',
+                () => {
+                  clearTimeout(t);
+                  resolve();
+                },
+                { once: true },
+              );
+            }),
+        },
+        scrollTarget,
+        ctl.signal,
+      );
+    } finally {
+      window.removeEventListener('keydown', keyStop, true);
+      if (scroller === ctl) scroller = null;
+      render();
+    }
+  }
   function stopRevealing() {
     reveal?.abort();
     reveal = null;
@@ -252,15 +299,28 @@ export function mountGuidedOverlay(): void {
   button.b{flex:1;background:#2563eb;color:#fff;border:0;border-radius:8px;padding:8px 10px;font:inherit;font-weight:600;cursor:pointer}
   button.b.alt{background:#374151}
   button.b:disabled{opacity:.55;cursor:default}
+  select{flex:1;min-width:0;background:#1f2937;color:#f9fafb;border:1px solid #4b5563;border-radius:8px;padding:6px;font:inherit}
   .msg{font-size:12px;word-break:break-word}.ok{color:#86efac}.bad{color:#fca5a5}
   [hidden]{display:none!important}
 </style>
 <div class="card" part="card"></div>`;
     document.documentElement.appendChild(host);
+    root.addEventListener('change', (e) => {
+      const el = e.target as HTMLSelectElement;
+      if (el.id === 'scroll-target') scrollTarget = el.value === 'all' ? null : Number(el.value);
+    });
     root.addEventListener('click', (e) => {
       const id = (e.target as HTMLElement).closest('[data-act]')?.getAttribute('data-act');
       if (id === 'reveal') {
         void revealSlides();
+        return;
+      }
+      if (id === 'scroll') {
+        void scrollForMe();
+        return;
+      }
+      if (id === 'scroll-stop') {
+        stopScrolling();
         return;
       }
       if (id === 'stop') {
@@ -271,12 +331,14 @@ export function mountGuidedOverlay(): void {
       }
       if (id === 'capture' && canCapture(state) && acc && postAvailable) {
         stopRevealing();
+        stopScrolling();
         dispatch({ type: 'capture' });
         send({ t: 'capture', payload: readPage(acc, postMode()) });
       } else if (id === 'retry') dispatch({ type: 'retry' });
       else if (id === 'back') send({ t: 'back' });
       else if (id === 'close') {
         stopRevealing();
+        stopScrolling();
         send({ t: 'finish' });
         host?.remove();
       } else if (id === 'min') {
@@ -284,6 +346,17 @@ export function mountGuidedOverlay(): void {
         render();
       }
     });
+  }
+
+  function scrollControls(): string {
+    const opts = [25, 50, 100, 250, 500]
+      .map(
+        (n) =>
+          `<option value="${n}"${scrollTarget === n ? ' selected' : ''}>${n} ${esc(recipe?.noun.many ?? 'items')}</option>`,
+      )
+      .join('');
+    const all = `<option value="all"${scrollTarget === null ? ' selected' : ''}>Until the end</option>`;
+    return `<div class="row"><select id="scroll-target" aria-label="How many to collect"${scroller ? ' disabled' : ''}>${opts}${all}</select><button class="b alt" data-act="${scroller ? 'scroll-stop' : 'scroll'}"${state.phase === 'filing' ? ' disabled' : ''}>${scroller ? 'Stop (Esc)' : 'Scroll for me'}</button></div>`;
   }
 
   function render() {
@@ -315,8 +388,8 @@ export function mountGuidedOverlay(): void {
     } else {
       const manual = post
         ? `<div class="msg" role="status">${esc(!postAvailable ? 'Open the saved post so its slides can be captured.' : revealNotice || 'Reveal slides automatically, or swipe through each one.')}</div>${unavailableVideos ? '<div class="msg bad">Some videos cannot be downloaded from this browser.</div>' : ''}<div class="row"><button class="b alt" data-act="${reveal ? 'stop' : 'reveal'}"${!postAvailable || state.phase === 'filing' ? ' disabled' : ''}>${reveal ? 'Stop' : 'Reveal slides'}</button></div>`
-        : '';
-      body = `${list}<div class="count" role="status" aria-live="polite">${esc(count)} found</div>${manual}
+        : scrollControls();
+      body = `${list}<div class="count" role="status" aria-live="polite">${esc(scroller || scrollEnd ? scrollSentence(scroller ? null : scrollEnd, state.itemCount, recipe?.noun.many ?? 'items') : `${count} found`)}</div>${manual}
 <div class="row"><button class="b" data-act="capture"${state.phase === 'filing' || !postAvailable || reveal ? ' disabled' : ''}>${state.phase === 'filing' ? 'Saving…' : 'Capture'}</button></div>`;
     }
     card.innerHTML = head + body;
