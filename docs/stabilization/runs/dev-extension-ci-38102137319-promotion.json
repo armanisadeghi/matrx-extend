@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "kind": "pinned_development_extension_promotion",
+  "status": "artifact_promoted_chrome_reload_blocked",
+  "observed_at": "2026-10-11T01:43:49.196Z",
+  "ci": {
+    "run_id": 38102137319,
+    "run_attempt": 1,
+    "artifact_id": 11688890496,
+    "artifact_sha256": "b3b92f267456770e473d1a3c0afc28da4aa901b0551084f051ced999e6a63b2a",
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "main_sha_at_promotion": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "compatibility": "exact-source",
+    "import_source_claim": "exact_pushed_commit_only",
+    "import_tracked_dirty": true,
+    "version": "0.2.490",
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "file_count": 2009
+  },
+  "promotion": {
+    "destination": ".output/chrome-mv3-dev",
+    "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "promoted_on_disk": true,
+    "chrome_reloaded": false,
+    "loaded_path_verified": false,
+    "loaded_version_verified": false,
+    "pin_beside_store_copy_verified": false
+  },
+  "browser_limit": "Chrome loaded-from/version/reload/pin remain unverified because browser automation of chrome://extensions was refused; no alternate UI/API route was used."
+}
