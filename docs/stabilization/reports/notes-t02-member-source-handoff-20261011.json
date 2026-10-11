@@ -58,11 +58,17 @@
     "docs/stabilization/reports/notes-t02-member-source-handoff-20261011.json"
   ],
   "next_step": "After Settings A releases the member identity with terminal cleanup, run the separately guarded native member T02 case on the frozen accepted artifact; retain UNVERIFIED until live UI/Supabase behavior and owned cleanup are independently reviewed.",
-  "pushed": false,
+  "pushed": true,
   "independent_review": {
     "A": "UNVERIFIED",
     "B": "ADDRESSED",
     "findings": 0,
     "scope": "Fresh independent source reverify confirmed all three requested repairs and reported no new findings."
+  },
+  "integration": {
+    "commit": "d020cd3f14f8a1f39bccec1d6db2e6752925fc7e",
+    "branch": "main",
+    "push": "success",
+    "current_main_ci": "No workflow runs or status checks were returned by the GitHub lookup for this commit at handoff time."
   }
 }
