@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-history-error-fix-20261011",
+  "defect_id": "EXT-D-0198",
+  "feature_id": "EXT-F-1008",
+  "case_id": "EXT-F-1008-T06",
+  "status": "source_unit_fixed_native_retest_open",
+  "recorded_at": "2026-10-11T06:20:47.281093+00:00",
+  "source_binding": "Exact implementation commit recorded in docs/stabilization/defects/EXT-D-0198.json fix_commit.",
+  "cause": "fetchSeoAuditHistoryForUrl converted all PostgREST failures into []; SeoView also used history.length to decide whether history could be opened.",
+  "sibling_census": "Only SeoView calls fetchSeoAuditHistoryForUrl. Initial URL loads, post-save reloads, and retries now use one generation-guarded loader. Missing-table errors also use failDbCall rather than an empty success. fetchLatestSeoAuditForUrl is a separate nullable single-row read, outside this saved-history repair.",
+  "verification": [
+    {
+      "command": "pnpm exec vitest run tests/unit/seo-history-recovery.test.tsx --maxWorkers=1",
+      "stage": "RED before production changes",
+      "result": "4 assertion failures: refusal and missing table resolved [] rather than rejecting; history control absent while loading/empty; UI history alert absent after query refusal."
+    },
+    {
+      "command": "pnpm exec vitest run tests/unit/seo-history-recovery.test.tsx tests/unit/seo-navigation-recovery.test.tsx tests/unit/seo-diff.test.ts --maxWorkers=1",
+      "stage": "GREEN after production changes",
+      "result": "28 tests passed in 3 files, including 5 history tests. The history test exercises real queries, real DbFailureError reporting, and real SeoView with only the external database query builder and unrelated page identity/components doubled."
+    },
+    {
+      "command": "pnpm compile",
+      "result": "Passed, exit 0."
+    },
+    {
+      "command": "pnpm -s lint",
+      "result": "Passed, exit 0; 854 repository warnings, no errors. Focused changed-file lint reports only two existing audit-effect dependency warnings."
+    },
+    {
+      "command": "pnpm check:schema-routing",
+      "result": "Passed; no new organization filter or auth contract changes."
+    },
+    {
+      "command": "node ../ai-matrx/scripts/interface-text/check-interface-text.mjs --root=. --changed",
+      "result": "0 novel candidates; one existing over-budget audit empty-state text candidate, outside the changed history copy."
+    },
+    {
+      "command": "git diff --check",
+      "result": "Passed."
+    }
+  ],
+  "behavior": "History remains accessible for this URL during loading, empty success, and error. Error is always visible and never masquerades as no saved audits. Retry history performs a fresh query and opens the resulting list. Previous-URL/superseded responses cannot replace current history or supply a stale comparison baseline.",
+  "limitations": [
+    "Controlled source/unit checks only; no live backend, browser, role-specific RLS, warm/full extension reload, Store or installed acceptance.",
+    "No local manual build/release or native test was attempted; local resource refusal remains binding.",
+    "Independent reviewer and release owner remain the root task; hosted dispatch is paused for separate resource admission provenance repair."
+  ],
+  "next_action": "Root owner performs independent source review, consolidates generated tracker, and schedules guarded exact-artifact native T06 checks after remote admission correction; leave retest open."
+}
