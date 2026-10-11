@@ -1,0 +1,20 @@
+{
+  "reviewed_at_utc": "2026-10-11T06:44:43Z",
+  "source_commit": "40ad70d45",
+  "defect_id": "EXT-D-0198",
+  "case_id": "EXT-F-1008-T06",
+  "source_review": "pass_bounded_guest_synthetic_history_path",
+  "native_product_verdict": "unverified",
+  "evidence": [
+    "The driver intercepts only GET extend.wbx_seo_audit history reads for the owned page URL and continues unrelated paused requests.",
+    "The first matching response is synthetic PostgREST 42501. A pass requires rendered History, an error alert, trusted Retry, visible Loading while the second request is held, a second fulfilled read, and true empty state with the error cleared.",
+    "Timeouts fail missing transitions. Finally cleanup releases the held response, disables Fetch, removes its listener, and awaits pending handlers.",
+    "Two new driver tests and pnpm compile passed. The separate combined route/driver command's six unrelated route tests hit macOS ENOSPC before behavioral execution; no browser run was performed."
+  ],
+  "limits": [
+    "Guest synthetic backend-error path only; member and admin remain unverified.",
+    "The driver does not establish that active page identity is unresolved, so credit is bounded to the isolated history query/UI sequence.",
+    "The current hosted Data/SEO runs use an older frozen artifact and do not execute this new driver."
+  ],
+  "next_action": "Use a successful exact-source CI development artifact to run guest-seo controlled scope on a guarded hosted runner, then independently inspect actual native UI and resource artifacts. Extend role checks before closing the defect."
+}
