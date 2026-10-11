@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-control-census-20261011",
+  "feature_id": "EXT-F-1008",
+  "source_sha": "84e82fc02a249296dec251f270232a03d9060321",
+  "scope": "Visible SEO audit controls, history navigation, and audit copy/export actions only.",
+  "status": "no_missing_controls",
+  "inventory_controls_reviewed": [
+    "EXT-F-1008-C01",
+    "EXT-F-1008-C02",
+    "EXT-F-1008-C03",
+    "EXT-F-1008-C04",
+    "EXT-F-1008-C05",
+    "EXT-F-1008-C06",
+    "EXT-F-1008-C07"
+  ],
+  "case_mapping": {
+    "EXT-F-1008-C01": "EXT-F-1008-T01",
+    "EXT-F-1008-C02": "EXT-F-1008-T02",
+    "EXT-F-1008-C03": "EXT-F-1008-T03",
+    "EXT-F-1008-C04": "EXT-F-1008-T04",
+    "EXT-F-1008-C05": "EXT-F-1008-T05",
+    "EXT-F-1008-C06": "EXT-F-1008-T06",
+    "EXT-F-1008-C07": "EXT-F-1008-T07"
+  },
+  "source_findings": [
+    {
+      "finding": "The inventory covers the visible history count/toggle, snapshot selection, Live return, and Summary (text), For AI agent, and JSON copy choices. JSON is marked admin-only in the component options.",
+      "anchors": [
+        "src/features/seo/SeoView.tsx:220",
+        "src/features/seo/SeoView.tsx:242",
+        "src/features/seo/SeoView.tsx:272",
+        "src/features/seo/SeoView.tsx:281",
+        "src/features/seo/SeoView.tsx:300",
+        "src/features/seo/SeoView.tsx:450",
+        "src/components/CopyMenu.tsx:114"
+      ]
+    },
+    {
+      "finding": "Existing T06 overstates the source-visible empty/loading/error experience. The history control only renders when rows exist; the query returns an empty array both for a missing relation and for other errors, and the component has no distinct history loading/error message or retry control. These remain unverified source limitations, not omitted actionable controls.",
+      "anchors": [
+        "src/features/seo/SeoView.tsx:73",
+        "src/features/seo/SeoView.tsx:82",
+        "src/features/seo/SeoView.tsx:224",
+        "src/lib/supabase/queries.ts:1154",
+        "src/lib/supabase/queries.ts:1163"
+      ],
+      "affected_case": "EXT-F-1008-T06",
+      "status": "unverified"
+    }
+  ],
+  "mode_applicability": {
+    "guest": "SEO audit, history display and the text/AI copy choices are present; JSON is filtered by CopyMenu admin status. Existing feature inventory marks the surface applicable.",
+    "member": "SEO audit, history display and the text/AI copy choices are present; JSON is filtered by CopyMenu admin status. Existing feature inventory marks the surface applicable.",
+    "admin": "All three copy choices are present, including JSON. Existing feature inventory marks the surface applicable."
+  },
+  "runtime_status": "No browser or runtime behavior was checked; all inventory coverage remains governed by its existing unverified or partial results.",
+  "inventory_change": "None: all in-scope actionable controls already have stable control and case IDs."
+}
