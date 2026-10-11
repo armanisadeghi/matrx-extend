@@ -382,6 +382,7 @@ export interface AgentStudioFromChatProgressData {
   build_id?: string | null;
   proof_cases?: number | null;
   run_conversation_id?: string | null;
+  brief?: Record<string, unknown> | null;
 }
 
 export interface AgentStudioBriefVariable {

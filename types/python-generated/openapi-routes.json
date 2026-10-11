@@ -538,6 +538,14 @@
    "application/json"
   ]
  },
+ "/agent-studio/import/draft/{draft_id}": {
+  "get": []
+ },
+ "/agent-studio/import/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/agent-testing/agents/{agent_id}/tests": {
   "post": [
    "application/json"
