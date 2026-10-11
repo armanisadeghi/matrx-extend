@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "status": "unverified",
+  "scope": "Actual guest Settings Privacy switch and persisted preference; panel-document reload",
+  "build": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publishState": "not_published",
+    "version": "0.2.490",
+    "treeSha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "verified": true
+  },
+  "case": {
+    "id": "EXT-F-1003-T16",
+    "role": "guest",
+    "status": "unverified",
+    "observations": [
+      {
+        "phase": "warm",
+        "action": "Switch off changes visible and stored values",
+        "observation": {
+          "activeSettings": true,
+          "privacyOpen": true,
+          "count": 1,
+          "checked": false,
+          "stored": false,
+          "saveError": false
+        }
+      },
+      {
+        "phase": "reload",
+        "action": "Switch off survives panel reload",
+        "observation": {
+          "activeSettings": true,
+          "privacyOpen": true,
+          "count": 1,
+          "checked": false,
+          "stored": false,
+          "saveError": false
+        }
+      },
+      {
+        "phase": "warm",
+        "action": "Switch on changes visible and stored values",
+        "observation": {
+          "activeSettings": true,
+          "privacyOpen": true,
+          "count": 1,
+          "checked": true,
+          "stored": true,
+          "saveError": false
+        }
+      },
+      {
+        "phase": "reload",
+        "action": "Switch on survives panel reload",
+        "observation": {
+          "activeSettings": true,
+          "privacyOpen": true,
+          "count": 1,
+          "checked": true,
+          "stored": true,
+          "saveError": false
+        }
+      }
+    ],
+    "criteria": [
+      {
+        "name": "Switch off changes visible and stored values",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "privacyOpen": true,
+          "count": 1,
+          "checked": false,
+          "stored": false,
+          "saveError": false
+        }
+      },
+      {
+        "name": "Switch off survives panel reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "privacyOpen": true,
+          "count": 1,
+          "checked": false,
+          "stored": false,
+          "saveError": false
+        }
+      },
+      {
+        "name": "Switch on changes visible and stored values",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "privacyOpen": true,
+          "count": 1,
+          "checked": true,
+          "stored": true,
+          "saveError": false
+        }
+      },
+      {
+        "name": "Switch on survives panel reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "privacyOpen": true,
+          "count": 1,
+          "checked": true,
+          "stored": true,
+          "saveError": false
+        }
+      },
+      {
+        "name": "preference changes its downstream browser behavior",
+        "status": "unverified",
+        "evidence": "This bounded batch checks the real Settings switch and persistence; the site or agent consumer is not exercised."
+      }
+    ],
+    "preconditions": [
+      "Owned disposable profile",
+      "Extension receipt and tree hash verified",
+      "Guest panel settled before interaction"
+    ]
+  },
+  "limits": [
+    "Downstream identity and email context behavior was not exercised.",
+    "This route performs panel-document reload; no full extension reload is claimed for T16.",
+    "The runner asserted restored baseline and persisted value after panel reload, but its report omitted explicit final restoration samples."
+  ]
+}

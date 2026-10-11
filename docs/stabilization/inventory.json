@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T02:48:38Z",
+  "updated_at": "2026-10-11T02:57:55Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -7161,17 +7161,20 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37994579674",
-              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
-              "build_version": "0.2.456",
+              "run_id": "38105457992",
+              "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+              "build_version": "0.2.490",
               "resource_valid": true,
-              "detail": "Guest native run passed warm Off/On visible+stored checks and both panel reload observations. During cleanup after the second change, panel reload completed with expected URL, one exact side-panel context, root count 1, runtime ID match, readyState complete and visible target, but Settings tab count was 0; cleanup/restoration did not complete. Candidate duplicate of EXT-D-0167 missing-Settings recovery investigation; cause remains unconfirmed. Reviewed frozen guest run38041519886: 4 passed criteria; native case unverified. Unverified: preference changes its downstream browser behavior.",
+              "detail": "Independent review accepts only a qualified pass for the four guest switch UI/storage Off/On and panel-document reload criteria on current-equivalent development v0.2.490. T16 remains partial because downstream identity/email behavior is unverified. The retained native report has no explicit final baseline sample; runner source asserts cleanup restoration but the initial value and final restoration are not independently evidenced. Signed-out UI, role, organization, browser and profile context were not serialized for independent review.",
               "evidence": [
-                ".research/settings-full-extension-recheck-diagnostics-20261009.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+                "docs/stabilization/resource-journals/hosted-package-38105457992-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38105457992-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38105457992-1.jsonl"
               ],
-              "scope": "Hosted lane B run 37994579674; exact frozen development artifact 11643292724, source eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b, v0.2.456; macos-15-intel guest. Member/admin result not tested.",
+              "scope": "Guarded hosted lane A, signed-out guest route as asserted by runner; exact frozen CI development artifact v0.2.490, source 6ed4289da90f19cab72e2d77feb7e845f71c02b7, tree 673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633. Bounded switch/persistence only; no downstream behavior, full extension reload, Store, current-main runtime, member/admin, or full T16 claim.",
               "bounded_subtarget_evidence": [
                 {
                   "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
@@ -7194,8 +7197,33 @@
                   ],
                   "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
                   "passed_criteria_count": 4
+                },
+                {
+                  "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                  "build_version": "0.2.490",
+                  "development_ci_run_id": 38102137319,
+                  "development_artifact_id": 11688890496,
+                  "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+                  "run_id": 38105457992,
+                  "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+                  "hosted_result_artifact_id": 11690340577,
+                  "status": "pass",
+                  "native_case_status": "unverified",
+                  "resource_valid": true,
+                  "unverified": [
+                    "preference changes its downstream browser behavior"
+                  ],
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                    "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                    "docs/stabilization/reports/peer-review-run38105457992-t16.json"
+                  ],
+                  "scope": "Qualified independent PASS for only guest T16 switch Off/On visible+stored state in warm use and after panel-document reload. Overall T16 remains partial. Explicit original-baseline restoration, signed-out UI/role/org/browser/profile serialization, downstream identity/email behavior, full extension reload, Store, member and admin remain unverified.",
+                  "passed_criteria_count": 4,
+                  "independent_review_verdict": "qualified_bounded_pass"
                 }
-              ]
+              ],
+              "independent_review": "docs/stabilization/reports/peer-review-run38105457992-t16.json"
             }
           },
           "linked_defects": [
@@ -7250,6 +7278,141 @@
                 "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim."
               },
               "reason": "Preserve preceding guest result when recording hosted run 37994579674."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "38105457992",
+                "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                "build_version": "0.2.490",
+                "resource_valid": true,
+                "detail": "Independent review accepts only a qualified pass for the four guest switch UI/storage Off/On and panel-document reload criteria on current-equivalent development v0.2.490. T16 remains partial because downstream identity/email behavior is unverified. The retained native report has no explicit final baseline sample; runner source asserts cleanup restoration but the initial value and final restoration are not independently evidenced. Signed-out UI, role, organization, browser and profile context were not serialized for independent review.",
+                "evidence": [
+                  "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                  "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+                  "docs/stabilization/resource-journals/hosted-package-38105457992-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38105457992-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38105457992-1.jsonl"
+                ],
+                "scope": "Guarded hosted lane A, signed-out guest route as asserted by runner; exact frozen CI development artifact v0.2.490, source 6ed4289da90f19cab72e2d77feb7e845f71c02b7, tree 673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633. Bounded switch/persistence only; no downstream behavior, full extension reload, Store, current-main runtime, member/admin, or full T16 claim.",
+                "bounded_subtarget_evidence": [
+                  {
+                    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+                    "build_version": "0.2.459",
+                    "development_ci_run_id": 38036029832,
+                    "development_artifact_id": 11664077690,
+                    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                    "run_id": 38041519886,
+                    "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+                    "hosted_result_artifact_id": 11665862988,
+                    "status": "partial",
+                    "native_case_status": "unverified",
+                    "resource_valid": true,
+                    "unverified": [
+                      "preference changes its downstream browser behavior"
+                    ],
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                      "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                    ],
+                    "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
+                    "passed_criteria_count": 4
+                  },
+                  {
+                    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                    "build_version": "0.2.490",
+                    "development_ci_run_id": 38102137319,
+                    "development_artifact_id": 11688890496,
+                    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+                    "run_id": 38105457992,
+                    "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+                    "hosted_result_artifact_id": 11690340577,
+                    "status": "pass",
+                    "native_case_status": "unverified",
+                    "resource_valid": true,
+                    "unverified": [
+                      "preference changes its downstream browser behavior"
+                    ],
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                      "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                      "docs/stabilization/reports/peer-review-run38105457992-t16.json"
+                    ],
+                    "scope": "Qualified independent PASS for only guest T16 switch Off/On visible+stored state in warm use and after panel-document reload. Overall T16 remains partial. Explicit original-baseline restoration, signed-out UI/role/org/browser/profile serialization, downstream identity/email behavior, full extension reload, Store, member and admin remain unverified.",
+                    "passed_criteria_count": 4,
+                    "independent_review_verdict": "qualified_bounded_pass"
+                  }
+                ],
+                "result_history": [
+                  {
+                    "mode": "guest",
+                    "result": {
+                      "status": "partial",
+                      "run_id": "37994579674",
+                      "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+                      "build_version": "0.2.456",
+                      "resource_valid": true,
+                      "detail": "Guest native run passed warm Off/On visible+stored checks and both panel reload observations. During cleanup after the second change, panel reload completed with expected URL, one exact side-panel context, root count 1, runtime ID match, readyState complete and visible target, but Settings tab count was 0; cleanup/restoration did not complete. Candidate duplicate of EXT-D-0167 missing-Settings recovery investigation; cause remains unconfirmed. Reviewed frozen guest run38041519886: 4 passed criteria; native case unverified. Unverified: preference changes its downstream browser behavior.",
+                      "evidence": [
+                        ".research/settings-full-extension-recheck-diagnostics-20261009.json",
+                        "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                        "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                      ],
+                      "scope": "Hosted lane B run 37994579674; exact frozen development artifact 11643292724, source eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b, v0.2.456; macos-15-intel guest. Member/admin result not tested.",
+                      "bounded_subtarget_evidence": [
+                        {
+                          "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+                          "build_version": "0.2.459",
+                          "development_ci_run_id": 38036029832,
+                          "development_artifact_id": 11664077690,
+                          "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                          "run_id": 38041519886,
+                          "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+                          "hosted_result_artifact_id": 11665862988,
+                          "status": "partial",
+                          "native_case_status": "unverified",
+                          "resource_valid": true,
+                          "unverified": [
+                            "preference changes its downstream browser behavior"
+                          ],
+                          "evidence": [
+                            "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                            "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                          ],
+                          "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
+                          "passed_criteria_count": 4
+                        }
+                      ]
+                    },
+                    "superseded_at": "2026-10-11T02:57:55Z",
+                    "reason": "Preserve the previous top-level result before recording independently reviewed current-equivalent v0.2.490 run 38105457992."
+                  }
+                ],
+                "independent_review": "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+                "revalidation_history": [
+                  {
+                    "mode": "guest",
+                    "run_id": 38105457992,
+                    "status": "partial",
+                    "build_version": "0.2.490",
+                    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                      "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                      "docs/stabilization/reports/peer-review-run38105457992-t16.json"
+                    ],
+                    "independent_review": "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+                    "resource_valid": true,
+                    "detail": "Four switch UI/storage warm and panel-document reload criteria received a qualified independent PASS. T16 remains partial; downstream identity/email behavior and explicit restoration proof remain open.",
+                    "release_scope": "Frozen unpublished development artifact only; no full extension reload, Store, current-main runtime, member/admin or overall Settings acceptance."
+                  }
+                ]
+              },
+              "superseded_at": "2026-10-11T02:57:55Z",
+              "reason": "Preserve the previous top-level guest result before recording independently reviewed current-equivalent v0.2.490 run 38105457992."
             }
           ],
           "attempt_history": [
@@ -7323,6 +7486,23 @@
               "independent_review": "4a5a8e98",
               "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            },
+            {
+              "mode": "guest",
+              "run_id": 38105457992,
+              "status": "partial",
+              "build_version": "0.2.490",
+              "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+              "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+              "evidence": [
+                "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                "docs/stabilization/reports/peer-review-run38105457992-t16.json"
+              ],
+              "independent_review": "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+              "resource_valid": true,
+              "detail": "Four switch UI/storage warm and panel-document reload criteria received a qualified independent PASS. T16 remains partial; downstream identity/email behavior and explicit restoration proof remain open.",
+              "release_scope": "Frozen unpublished development artifact only; no full extension reload, Store, current-main runtime, member/admin or overall Settings acceptance."
             }
           ]
         },

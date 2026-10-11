@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "case_id": "settings-controls",
+  "scope": "EXT-F-1003-T16 only; signed-out guest; switch and storage persistence through panel-document reload",
+  "hosted_run_id": 38105457992,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38105457992",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_checkout_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "workflow_conclusion": "success",
+  "hosted_result_artifact": {
+    "artifact_id": 11690340577,
+    "name": "hosted-guest-38105457992-1",
+    "digest": "sha256:72cbe43d0a825a7147d461ced80404bf1ae101e57405ba1839ecffc696447644",
+    "expired": false
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38102137319,
+    "development_artifact_id": 11688890496,
+    "name": "matrx-extend-development-test-6ed4289da90f19cab72e2d77feb7e845f71c02b7-38102137319-1",
+    "digest": "sha256:b3b92f267456770e473d1a3c0afc28da4aa901b0551084f051ced999e6a63b2a",
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "version": "0.2.490",
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "verified": true
+  },
+  "inputs": {
+    "acceptance_case": "settings-controls",
+    "auth_mode": "signed-out guest"
+  },
+  "native_report": {
+    "status": "unverified",
+    "observations": 4,
+    "passing_switch_and_persistence_criteria": 4,
+    "unverified_criteria": ["preference changes its downstream browser behavior"]
+  },
+  "resource": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "evidence": "docs/stabilization/resource-journals/hosted-package-38105457992-1.jsonl",
+      "sha256": "8d043c395f563ea3043d6e870559397afc2986241ac3c45b94309f9fe4992943"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "evidence": "docs/stabilization/resource-journals/hosted-browser-38105457992-1.jsonl",
+      "sha256": "13542f8d387b8cb13b1dfebb89222e842faeb932d867579dcb37bab56313f84e"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "evidence": "docs/stabilization/resource-journals/hosted-guest-38105457992-1.jsonl",
+      "sha256": "741259f243f3a6a3390d3aac8b0a2d5a14fa376b35577dca5f9bfbfab5ba477d"
+    }
+  },
+  "verdict": "reviewed_qualified_pass_for_guest_t16_switch_and_panel_reload_only",
+  "privacy": {
+    "credential_values_persisted": false,
+    "raw_dom_or_errors_persisted": false,
+    "screenshots_persisted": false,
+    "full_native_report_persisted": false
+  },
+  "independent_review": "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+  "evidence_files": [
+    {
+      "path": "native-report.sanitized.json",
+      "sha256": "8f8e7396b3fb3dc1177078a686c34a08ec248875ff37ae645ead6e93e66e896b"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-package-38105457992-1.jsonl",
+      "sha256": "8d043c395f563ea3043d6e870559397afc2986241ac3c45b94309f9fe4992943"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-browser-38105457992-1.jsonl",
+      "sha256": "13542f8d387b8cb13b1dfebb89222e842faeb932d867579dcb37bab56313f84e"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-guest-38105457992-1.jsonl",
+      "sha256": "741259f243f3a6a3390d3aac8b0a2d5a14fa376b35577dca5f9bfbfab5ba477d"
+    },
+    {
+      "path": "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+      "sha256": "511937cc5be30bd377306c0ab1fd9d24d33a5d88594e78a2193f93b4c14e3aa6"
+    }
+  ],
+  "review_verdict_received_at": "2026-10-11T02:57:55Z"
+}
