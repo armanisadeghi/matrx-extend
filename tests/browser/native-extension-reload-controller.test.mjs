@@ -1,6 +1,60 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { runOwnedPanelReopen } from './native-panel-reopen-boundary.mjs';
 import { createOwnedExtensionReloadController } from './native-sidepanel-qa-harness.mjs';
+
+test('T93 close/reopen requires both retirement boundaries and a distinct visible reacquired panel', async () => {
+  const events = [];
+  const make = (overrides = {}) => ({
+    identify: async () => ({ targetId: 'old', contextId: 'old-context' }),
+    close: async () => {
+      events.push('close');
+      return true;
+    },
+    retired: async () => {
+      events.push('retired');
+      return { targetRetired: true, contextRetired: true };
+    },
+    open: async () => {
+      events.push('open');
+      return true;
+    },
+    acquire: async () => {
+      events.push('acquire');
+      return { panel: { targetId: 'new' }, contextId: 'new-context', visible: true };
+    },
+    ...overrides,
+  });
+  const result = await runOwnedPanelReopen(make());
+  assert.equal(result.panel.targetId, 'new');
+  assert.deepEqual(events, ['close', 'retired', 'open', 'acquire']);
+  for (const retirement of [
+    { targetRetired: false, contextRetired: true },
+    { targetRetired: true, contextRetired: false },
+  ]) {
+    events.length = 0;
+    await assert.rejects(
+      runOwnedPanelReopen(make({ retired: async () => retirement })),
+      /native_panel_reopen_failed:retirement/,
+    );
+    assert.deepEqual(events, ['close']);
+  }
+  for (const replacement of [
+    { panel: { targetId: 'old' }, contextId: 'new-context', visible: true },
+    { panel: { targetId: 'new' }, contextId: 'old-context', visible: true },
+    { panel: { targetId: 'new' }, contextId: 'new-context', visible: false },
+    { contextId: 'new-context', visible: true },
+  ])
+    await assert.rejects(
+      runOwnedPanelReopen(make({ acquire: async () => replacement })),
+      /native_panel_reopen_failed:reacquire/,
+    );
+  await assert.rejects(runOwnedPanelReopen(make({ close: async () => false })), /failed:close/);
+  await assert.rejects(
+    runOwnedPanelReopen(make({ open: async () => false })),
+    /failed:trusted_open/,
+  );
+});
 
 const provenReplacement = (targetId) => ({
   management_reload_clicked: true,

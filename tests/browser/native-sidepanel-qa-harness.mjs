@@ -27,6 +27,7 @@ import { beginStartupProcessInterval } from '../../scripts/startup-process-inter
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { runOwnedPanelReopen } from './native-panel-reopen-boundary.mjs';
 import { reloadOperationBoundary } from './native-reload-operation-boundary.mjs';
 import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
 import { serveOwnedFixture } from './owned-fixture-server.mjs';
@@ -1807,6 +1808,95 @@ export async function runNativeSidepanelQa({
                 page,
                 observe: (phase) => observeVisibility(phase, panel),
               }),
+            cycleOwnedPanel: async (currentPanel) => {
+              const currentWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
+              const worker = await attachTargetSession(cdp, currentWorker.targetId);
+              try {
+                const replacement = await runOwnedPanelReopen({
+                  identify: async () => {
+                    const contexts = await sidePanelContexts(cdp, currentWorker.targetId);
+                    const exact = contexts.filter((entry) => entry.documentUrl === panelUrl);
+                    const targets = (await cdp.send('Target.getTargets')).targetInfos;
+                    if (
+                      exact.length !== 1 ||
+                      !targets.some(
+                        (entry) =>
+                          entry.targetId === currentPanel.targetId && entry.url === panelUrl,
+                      )
+                    )
+                      throw new Error('owned_panel_not_unique');
+                    return {
+                      targetId: currentPanel.targetId,
+                      contextId: requireSidePanelContext(contexts, panelUrl).contextId,
+                    };
+                  },
+                  close: async () => {
+                    const response = await worker.send('Runtime.evaluate', {
+                      expression: `(async () => {
+                        const roots = (await chrome.tabs.query({})).filter(tab => tab.url === ${JSON.stringify(page.url())});
+                        if (roots.length !== 1 || !Number.isInteger(roots[0].windowId) || typeof chrome.sidePanel.close !== 'function') return false;
+                        await chrome.sidePanel.close({ windowId: roots[0].windowId });
+                        return true;
+                      })()`,
+                      awaitPromise: true,
+                      returnByValue: true,
+                    });
+                    return !response.exceptionDetails && response.result?.value === true;
+                  },
+                  retired: async (before) => {
+                    for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
+                      const targets = (await cdp.send('Target.getTargets')).targetInfos;
+                      const contexts = await sidePanelContexts(cdp, currentWorker.targetId);
+                      const observation = {
+                        targetRetired: !targets.some((entry) => entry.targetId === before.targetId),
+                        contextRetired:
+                          !contexts.some((entry) => entry.contextId === before.contextId) &&
+                          !contexts.some((entry) => entry.documentUrl === panelUrl),
+                      };
+                      if (observation.targetRetired && observation.contextRetired)
+                        return observation;
+                      if (attempt === ATTEMPTS - 1) return observation;
+                      await wait(WAIT_MS);
+                    }
+                  },
+                  open: async () => {
+                    await page.bringToFront();
+                    const result = page.locator('#result');
+                    await result.evaluate((element) => {
+                      element.textContent = '';
+                    });
+                    await page.locator('#open-panel').click();
+                    await result.filter({ hasText: /\S/ }).waitFor({ state: 'visible' });
+                    return (
+                      panelOpenReplyCategory(JSON.parse((await result.textContent()) || '{}')) ===
+                      'opened'
+                    );
+                  },
+                  acquire: async () => {
+                    const ready = await waitForInitialPanelReady({
+                      cdp,
+                      panelUrl,
+                      serviceWorkerTargetId: currentWorker.targetId,
+                      normalTargetId: normalTarget.targetId,
+                    });
+                    const next = await waitForSettledGuestPanel(cdp, ready.panelTarget.targetId);
+                    const contexts = await sidePanelContexts(cdp, currentWorker.targetId);
+                    const context = requireSidePanelContext(contexts, panelUrl);
+                    const visibility = await observePanelVisibility(next);
+                    return {
+                      panel: next,
+                      contextId: context.contextId,
+                      visible: visibility.measured && visibility.visibility === 'visible',
+                    };
+                  },
+                });
+                reloadController.adoptLivePanel(replacement.panel);
+                await currentPanel.detach();
+                return replacement;
+              } finally {
+                await worker.detach();
+              }
+            },
             observePanelVisibility: (phase) => observeVisibility(phase, panel),
             observeAuthenticatedPanel: async (phase) => {
               if (onPanelVisibilityObservation)
