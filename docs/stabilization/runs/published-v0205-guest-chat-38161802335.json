@@ -78,5 +78,10 @@
     "verdict_a_product_behavior": "PASS",
     "verdict_b_evidence_quality": "PARTIAL",
     "reviewer_independent": true
+  },
+  "actual_store_installed_verification_today": {
+    "status": "unverified",
+    "barrier": "The guarded hosted workflow only supports downloading the public 0.2.205 CRX and loading it unpacked with the verified Store key; it cannot exercise a Chrome Web Store-managed installation/update. Local heavy Chat acceptance in the primary user profile was not admitted under the current host resource restriction. A prior Browser Use refusal on the extensions-gallery surface was respected; no alternate UI-control path was attempted.",
+    "bounded_alternative": "This run separately verifies the exact pinned public 0.2.205 CRX unpacked on an isolated hosted Chrome profile against the current server."
   }
 }
