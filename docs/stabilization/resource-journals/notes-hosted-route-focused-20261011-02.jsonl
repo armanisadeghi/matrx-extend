@@ -1,0 +1,4 @@
+{"schema":1,"at":"2026-10-11T21:58:19.111Z","runId":"notes-hosted-route-focused-20261011-02","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-11T21:58:27.538Z","runId":"notes-hosted-route-focused-20261011-02","signal":"SIGINT","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-11T21:59:26.324Z","runId":"notes-hosted-route-focused-20261011-02","code":"RESOURCE_STOP_REQUESTED"}
+{"schema":1,"at":"2026-10-11T21:59:26.334Z","runId":"notes-hosted-route-focused-20261011-02","admitted":false,"resourceInvalid":false,"exitCode":2,"decision":"refused","code":"RESOURCE_FINAL_DECISION"}

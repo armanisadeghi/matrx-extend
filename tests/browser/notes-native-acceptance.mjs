@@ -20,6 +20,7 @@ import {
   shouldHoldOwnedNotesPatch,
   verifyNotesSnapshot,
 } from './notes-native-contract.mjs';
+import { MEMBER_TEST_ORGANIZATION_NAME, signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
@@ -27,13 +28,14 @@ const RECEIPT = process.env.NOTES_DEV_BUILD_RECEIPT;
 const EXPECTED_SOURCE_SHA = process.env.NOTES_EXPECTED_SOURCE_SHA;
 const ROLE = process.env.NOTES_ROLE ?? 'admin';
 const CASE = process.env.NOTES_CASE ?? 'failure-recovery';
+const HOSTED_FIND = process.env.NOTES_HOSTED_FIND === '1';
 const INTERACTIVE_MEMBER = process.env.NOTES_INTERACTIVE_MEMBER === '1';
 const MEMBER_CREDENTIAL_FILE = process.env.NOTES_MEMBER_CREDENTIAL_FILE;
 const OUTPUT = join(REPO, 'test-results/notes-native-acceptance.json');
 const FIXTURE_RECEIPT = join(REPO, `test-results/notes-owned-fixture-${randomUUID()}.json`);
 const FIND_FIXTURE_LEDGER = join(REPO, `test-results/notes-find-fixture-${randomUUID()}.json`);
 const ADMIN_ENV = join(homedir(), 'code/aidream/.env');
-const DEV_ENV = join(REPO, '.env.development');
+const DEV_ENV = join(REPO, HOSTED_FIND ? '.env.production' : '.env.development');
 const PRIVATE_CONFIG =
   process.env.NOTES_PRIVATE_CONFIG ?? join(REPO, 'test-results/notes-private-config.json');
 const WEB_ORIGIN = 'https://www.aimatrx.com';
@@ -832,7 +834,16 @@ try {
   if (report.imported_artifact.sourceSha !== EXPECTED_SOURCE_SHA) fail('unexpected_source_sha');
   const origin = await supabaseOrigin();
   if (origin !== 'https://db.matrxserver.com') fail('unexpected_supabase_origin');
-  const config = await privateConfig();
+  if (HOSTED_FIND) {
+    assert.equal(ROLE, 'member');
+    assert.equal(CASE, 't02');
+    assert.equal(report.imported_artifact.runId, Number(process.env.NOTES_EXPECTED_CI_RUN_ID));
+    assert.equal(
+      report.imported_artifact.artifactId,
+      Number(process.env.NOTES_EXPECTED_ARTIFACT_ID),
+    );
+  }
+  const config = HOSTED_FIND ? null : await privateConfig();
   const native = await runNativeSidepanelQa({
     headed: ROLE === 'member',
     extensionDir: before.extensionDir,
@@ -840,17 +851,41 @@ try {
     localDevReceiptPath: RECEIPT,
     exercisePanel: async ({ page, panel }) => {
       stage = 'real_signin';
-      await realLogin(page, panel, config);
+      const hostedIdentity = HOSTED_FIND
+        ? await signInSettings({
+            mode: 'member',
+            page,
+            panel,
+            repo: REPO,
+            memberLinkFile: process.env.MATRX_REVIEWER_MAGIC_LINK_FILE,
+            allowLadderOrganization: true,
+            onStage: (value) => {
+              stage = `auth_${value}`;
+            },
+          })
+        : null;
+      if (!HOSTED_FIND) await realLogin(page, panel, config);
+      if (hostedIdentity)
+        report.observations.hosted_authentication = {
+          member_signed_in: hostedIdentity.web_signed_in && hostedIdentity.extension_signed_in,
+          non_admin_identity: hostedIdentity.admin_role === false,
+          organization_selected: hostedIdentity.organization_selected,
+          account_fingerprint: hostedIdentity.account_fingerprint,
+        };
       stage = 'organization';
       if (CASE === 't02' && ROLE !== 'member') fail('t02_requires_member_role');
-      const memberOrganization =
-        ROLE === 'member' ? await selectMemberOrganizationThroughUi(panel) : null;
+      const memberOrganization = hostedIdentity
+        ? { id: hostedIdentity.organizationId, name: MEMBER_TEST_ORGANIZATION_NAME }
+        : ROLE === 'member'
+          ? await selectMemberOrganizationThroughUi(panel)
+          : null;
       if (ROLE !== 'member') await selectTestOrganization(panel, config.approved_organization_name);
       const selectedOrganizationId = requireNotesOrganizationId(
-        await evaluate(
-          panel,
-          "chrome.storage.local.get('matrx.org.active').then(stored => stored['matrx.org.active']?.id ?? null)",
-        ),
+        hostedIdentity?.organizationId ??
+          (await evaluate(
+            panel,
+            "chrome.storage.local.get('matrx.org.active').then(stored => stored['matrx.org.active']?.id ?? null)",
+          )),
       );
       const transport = armNotesTransport(panel, origin);
       await transport.start();
