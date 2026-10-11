@@ -1,0 +1,602 @@
+{
+  "schema_version": 1,
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "build": {
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "kind": "local_dev_unpacked",
+    "publishState": "not_published",
+    "version": "0.2.490",
+    "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+  },
+  "preconditions": [
+    "Owned disposable profile",
+    "Extension receipt and tree hash verified",
+    "Guest panel settled before interaction"
+  ],
+  "cases": [
+    {
+      "id": "EXT-F-1003-T04",
+      "role": "guest",
+      "status": "fail",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        },
+        {
+          "name": "full extension reload recheck required",
+          "status": "fail",
+          "evidence": {
+            "status": "missing",
+            "error": "full_extension_recheck_missing"
+          }
+        }
+      ],
+      "fullExtensionReload": {
+        "status": "missing",
+        "criteria": []
+      },
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T10",
+      "role": "guest",
+      "status": "fail",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        },
+        {
+          "name": "full extension reload recheck required",
+          "status": "fail",
+          "evidence": {
+            "status": "missing",
+            "error": "full_extension_recheck_missing"
+          }
+        }
+      ],
+      "fullExtensionReload": {
+        "status": "missing",
+        "criteria": []
+      },
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T13",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T16",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T19",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T22",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T28",
+      "role": "guest",
+      "status": "fail",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        },
+        {
+          "name": "full extension reload recheck required",
+          "status": "fail",
+          "evidence": {
+            "status": "missing",
+            "error": "full_extension_recheck_missing"
+          }
+        }
+      ],
+      "fullExtensionReload": {
+        "status": "missing",
+        "criteria": []
+      },
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T31",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T34",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T37",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T40",
+      "role": "guest",
+      "status": "fail",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        },
+        {
+          "name": "full extension reload recheck required",
+          "status": "fail",
+          "evidence": {
+            "status": "missing",
+            "error": "full_extension_recheck_missing"
+          }
+        }
+      ],
+      "fullExtensionReload": {
+        "status": "missing",
+        "criteria": []
+      },
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T46",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T63",
+      "role": "guest",
+      "scope": "guest-negative-access-only",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T64",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T67",
+      "role": "guest",
+      "status": "fail",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        },
+        {
+          "name": "full extension reload recheck required",
+          "status": "fail",
+          "evidence": {
+            "status": "missing",
+            "error": "full_extension_recheck_missing"
+          }
+        }
+      ],
+      "fullExtensionReload": {
+        "status": "missing",
+        "criteria": []
+      },
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T70",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T73",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T76",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T92",
+      "role": "guest",
+      "scope": "guest-negative-access-only",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    },
+    {
+      "id": "EXT-F-1003-T93",
+      "role": "guest",
+      "status": "unverified",
+      "steps": [],
+      "criteria": [
+        {
+          "name": "setup completed",
+          "status": "unverified",
+          "evidence": "owned_cdp_endpoint_timeout"
+        }
+      ],
+      "build": {
+        "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+        "kind": "local_dev_unpacked",
+        "publishState": "not_published",
+        "version": "0.2.490",
+        "treeSha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+      },
+      "preconditions": [
+        "Owned disposable profile",
+        "Extension receipt and tree hash verified",
+        "Guest panel settled before interaction"
+      ],
+      "evidence": null
+    }
+  ],
+  "setup_error": "owned_cdp_endpoint_timeout",
+  "status": "fail"
+}

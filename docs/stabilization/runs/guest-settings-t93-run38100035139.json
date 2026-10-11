@@ -1,0 +1,43 @@
+{
+  "id": "guest-settings-t93-run38100035139",
+  "feature_id": "EXT-F-1003",
+  "at": "2026-10-11T01:02:19Z",
+  "status": "unverified",
+  "scope": "Guest EXT-F-1003-T93 attempt on frozen CI development v0.2.490; hosted setup ended before product interaction.",
+  "hosted_run": "docs/stabilization/evidence/guest-settings-t93/run38100035139/receipt.sanitized.json",
+  "resource": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "invalid: RESOURCE_CPU_PENDING; exit code 3"
+  },
+  "artifact": {
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "version": "0.2.490",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T93",
+      "status": "unverified",
+      "product_assertions_run": false,
+      "failure_code": "owned_cdp_endpoint_timeout",
+      "endpoint_elapsed_ms": 8023,
+      "endpoint_deadline_ms": 8000,
+      "verified_substeps": []
+    }
+  ],
+  "comparison": {
+    "prior_run_id": 38084416311,
+    "prior_case": "startup-resource-diagnostic",
+    "prior_endpoint_phase": "cdp_connected",
+    "prior_endpoint_elapsed_ms": 5602,
+    "prior_deadline_ms": 8000,
+    "prior_resource_final": "invalid: RESOURCE_CPU_CONFIRMATION_EXPIRED",
+    "interpretation": "The prior admitted run saw an endpoint before the same deadline and then had CPU-pressure/resource invalidation. The present run timed out with the endpoint absent while CPU was pending. These uncontrolled observations do not identify a product regression or establish a causal timing relationship."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-settings-t93/run38100035139/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-t93/run38100035139/resource-finals.sanitized.json"
+  ],
+  "next_action": "Keep T93 unverified. No retry was dispatched under the one-run limit. A future run needs a fresh resource-admitted hosted lane and independent review before any inventory change."
+}
