@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "review": "fresh independent cross-case evidence review of EXT-F-1007-T02 deep-failure retry subtarget",
+  "case_id": "EXT-F-1007-T02",
+  "cross_case_run": 38044062561,
+  "verdict_a_behavior": {
+    "status": "PASS_BOUNDED_SUBTARGET",
+    "finding": "The run supports bounded guest credit for retrying a deep capture after a real host-permission denial while preserving deep mode. The archived driver verifies effective injection denial before clicking the deep control, requires the lazy marker to be absent before retry, restores access, clicks Try again, and waits for the error to clear and the marker to appear. The fixture creates that marker only after scrolling beyond 250 px, so its appearance is functional evidence that retry used the deep scroll path.",
+    "bounded_claim": "Guest permission-denial during a requested deep capture, followed by Try again that preserves deep mode and reaches scroll-triggered lazy content, on the exact frozen v0.2.459 development artifact.",
+    "not_established": [
+      "Other deep-capture failure classes or their retry behavior.",
+      "The T02 visible scrolling-progress criterion.",
+      "Warm or reload acceptance, member/admin behavior, default Chrome, Store installation, current-main behavior, or full T02/Scrape acceptance."
+    ]
+  },
+  "verdict_b_provenance_and_resources": {
+    "status": "PASS_WITH_LIMITS",
+    "finding": "The sanitized receipt binds hosted guest run 38044062561, attempt 1, to hosted workflow source 1dfcd73e261a2f43355eadc9a571af309103df98 and development artifact source 129299df0a53a8a795ba1af054752817454357e3, version 0.2.459, tree SHA-256 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa. At the recorded product source, the deep control stores `lastModeRef` and Try again replays `activeMode ?? lastModeRef ?? 'fast'`. The archived workflow driver and oracle require the reported denial/retry/marker observations before returning their bounded partial result.",
+    "resource_valid": true,
+    "resource_finals": {
+      "hosted-package-38044062561-1.jsonl": {
+        "decision": "valid",
+        "sha256": "d79b913e10e2221c1cc0bf4b3109b00d56f175f827372f32b0e49c1ee15f6147"
+      },
+      "hosted-browser-38044062561-1.jsonl": {
+        "decision": "valid",
+        "sha256": "3f12553593317a06b4649845bb4299839b6f4bb7af3ab8edbe18f39550804024"
+      },
+      "hosted-guest-38044062561-1.jsonl": {
+        "decision": "valid",
+        "sha256": "47cd8afce1fbaa6f80e91138d20b26932cf92d20445005f38ba0b853929b8852"
+      }
+    },
+    "provenance_scope": "Historical frozen guest artifact v0.2.459 only. This run does not transfer to current main or another artifact."
+  },
+  "limitations": [
+    "The sanitized native report does not retain a raw timeline, screenshot, or explicit initial deep-click event. The archived driver at the receipt-bound workflow SHA orders the effective-denial assertion before the deep-control click, checks marker absence before retry, and only reports retry success after the lazy marker appears; this is adequate for the narrow subtarget but is not a retained visual/action trace.",
+    "The driver computes scrolling-progress state but the sanitized output does not retain an observed progress value. Visible progress remains unverified, so this evidence cannot satisfy that T02 criterion.",
+    "The product artifact is v0.2.459 from source 129299df; current-main and full T02 acceptance remain unverified.",
+    "The run used a non-default Chrome profile with ExtensionsMenuAccessControl enabled. It does not establish default-Chrome or Store-installed behavior; reload-page recovery was unverified."
+  ],
+  "sources_checked": [
+    "AGENTS.md",
+    "docs/stabilization/inventory.json: EXT-F-1007-T02",
+    "docs/stabilization/evidence/scrape-error-recovery-guest/run38044062561/receipt.sanitized.json",
+    "docs/stabilization/evidence/scrape-error-recovery-guest/run38044062561/native-report.sanitized.json",
+    "docs/stabilization/evidence/scrape-error-recovery-guest/run38044062561/resource-journals/hosted-package-38044062561-1.jsonl",
+    "docs/stabilization/evidence/scrape-error-recovery-guest/run38044062561/resource-journals/hosted-browser-38044062561-1.jsonl",
+    "docs/stabilization/evidence/scrape-error-recovery-guest/run38044062561/resource-journals/hosted-guest-38044062561-1.jsonl",
+    "tests/browser/scrape-error-recovery-guest.mjs at workflow SHA 1dfcd73e261a2f43355eadc9a571af309103df98",
+    "tests/browser/scrape-error-recovery-guest-oracle.mjs at workflow SHA 1dfcd73e261a2f43355eadc9a571af309103df98",
+    "tests/browser/scrape-recovery-failure-diagnostic.mjs at workflow SHA 1dfcd73e261a2f43355eadc9a571af309103df98",
+    "src/features/scrape/ScrapeView.tsx at product source 129299df0a53a8a795ba1af054752817454357e3",
+    "src/lib/scrape/capture-error.ts at product source 129299df0a53a8a795ba1af054752817454357e3"
+  ],
+  "scope": "Read-only independent evidence review. No inventory edit, browser run, or product test."
+}
