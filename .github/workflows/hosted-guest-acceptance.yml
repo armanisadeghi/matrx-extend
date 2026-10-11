@@ -151,7 +151,7 @@ on:
         default: false
         type: boolean
       reload_sender_document_diagnostic:
-        description: Member Data only; refresh owned sender document before post-reload click. Diagnostic-only; compare with unrefreshed control on the same artifact.
+        description: Member Data or Settings controls only; refresh owned sender document before post-reload click. Diagnostic-only; compare with unrefreshed control on the same artifact.
         required: false
         default: false
         type: boolean
@@ -242,7 +242,7 @@ jobs:
             guest-chat|guest-seo|guest-data|member-data|guest-scrape|guest-scrape-development|scrape-error-recovery-guest|scrape-save-member|tab-groups-member|native-ai-member-probe|settings-controls|settings-theme-rendering|settings-auto-scrape-capture|settings-persistence|settings-persistence-admin|settings-persistence-member|desktop-settings-guest|desktop-settings-member|desktop-settings-admin|visibility-census-guest|visibility-census-member|visibility-census-admin|audit-key-admin|member-chat|prepare-stale-results|showcase-picker-admin|showcase-stale-admin|showcase-d47-admin|showcase-d47-public-admin|records-readonly-admin|profile-admin|profile-member|startup-resource-diagnostic) ;;
             *) echo 'Unknown hosted acceptance case.' >&2; exit 1 ;;
           esac
-          [[ "${RELOAD_SENDER_DOCUMENT_DIAGNOSTIC:-0}" != 1 || "$ACCEPTANCE_CASE" == member-data ]] || { echo 'Sender document diagnostic requires member-data.' >&2; exit 1; }
+          [[ "${RELOAD_SENDER_DOCUMENT_DIAGNOSTIC:-0}" != 1 || "$ACCEPTANCE_CASE" == member-data || "$ACCEPTANCE_CASE" == settings-controls ]] || { echo 'Sender document diagnostic requires member-data or settings-controls.' >&2; exit 1; }
           if [[ "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'D187 Save Source requires member auth.' >&2; exit 1; }
             [[ "$SCRAPE_SAVE_DESTINATION" == project || "$SCRAPE_SAVE_DESTINATION" == none ]] || { echo 'Unknown Save Source destination.' >&2; exit 1; }

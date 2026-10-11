@@ -52,6 +52,10 @@ import {
   observeReloadSettingsPanel,
   observeSettingsReacquisition,
 } from './settings-reload-boundary.mjs';
+import {
+  finalizeSettingsSenderDocumentDiagnostic,
+  requireSettingsSenderDocumentReceipt,
+} from './settings-sender-document-diagnostic.mjs';
 
 // Runs against a receipt-verified, disposable Chrome profile and its real native panel.
 // UI actions use trusted CDP pointer/keyboard input; DOM and Chrome API reads are evidence only.
@@ -87,9 +91,16 @@ const IDS = [
 ].map((id) => `EXT-F-1003-${id}`);
 const THEME_RENDERING_PROBE =
   process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'settings-theme-rendering';
+const RELOAD_SENDER_DOCUMENT_DIAGNOSTIC =
+  process.env.MATRX_RELOAD_SENDER_DOCUMENT_DIAGNOSTIC === '1';
 const CASE_IDS = THEME_RENDERING_PROBE ? ['EXT-F-1003-T04'] : IDS;
 const report = {
   schema_version: 1,
+  reload_sender_document_diagnostic: {
+    enabled: RELOAD_SENDER_DOCUMENT_DIAGNOSTIC,
+    evidence_class: RELOAD_SENDER_DOCUMENT_DIAGNOSTIC ? 'diagnostic_only' : 'acceptance_eligible',
+    perturbation: RELOAD_SENDER_DOCUMENT_DIAGNOSTIC ? 'owned_sender_document_reload' : 'none',
+  },
   scope: 'real isolated Chrome-for-Testing native side panel; signed-out guest',
   build: { extensionId: EXTENSION_ID },
   preconditions: [
@@ -535,6 +546,11 @@ async function runCase(c, fn) {
 
 let observedPort;
 try {
+  assert.ok(
+    !RELOAD_SENDER_DOCUMENT_DIAGNOSTIC ||
+      process.env.MATRX_HOSTED_ACCEPTANCE_CASE === 'settings-controls',
+    'settings_sender_document_diagnostic_scope_refused',
+  );
   const packageJson = JSON.parse(await readFile(join(REPO, 'package.json'), 'utf8'));
   let receipt;
   if (DEV_BUILD_RECEIPT !== undefined) {
@@ -570,6 +586,7 @@ try {
   }
   if (!THEME_RENDERING_PROBE) observedPort = await startObservedDeadPort();
   const result = await runNativeSidepanelQa({
+    reloadSenderDocumentDiagnostic: RELOAD_SENDER_DOCUMENT_DIAGNOSTIC,
     ...(DEV_BUILD_RECEIPT !== undefined && {
       extensionDir: DEV_EXTENSION_DIR,
       expectedRelease: { version: receipt.version, treeSha256: receipt.treeSha256 },
@@ -1086,6 +1103,10 @@ try {
         });
         guestStage = 'extension_reload';
         const replacement = await reloadExtension();
+        if (RELOAD_SENDER_DOCUMENT_DIAGNOSTIC)
+          report.reload_sender_document_diagnostic.receipt = requireSettingsSenderDocumentReceipt(
+            replacement.retirement_evidence?.sender_document,
+          );
         report.guestExtensionReload = {
           managementReloadClicked: replacement.management_reload_clicked === true,
           oldTargetsRetired: replacement.old_targets_retired === true,
@@ -1214,9 +1235,13 @@ try {
     : report.cases.every((c) => c.status === 'pass')
       ? 'pass'
       : 'unverified';
+  const diagnosticOnly = finalizeSettingsSenderDocumentDiagnostic(
+    report,
+    RELOAD_SENDER_DOCUMENT_DIAGNOSTIC,
+  );
   await mkdir(join(REPO, 'test-results'), { recursive: true });
   await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
   console.log(`${report.status.toUpperCase()} settings-local-controls: ${OUTPUT}`);
   if (report.setup_error) console.error(report.setup_error);
-  if (report.status === 'fail' || report.setup_error) process.exitCode = 1;
+  if (diagnosticOnly || report.status === 'fail' || report.setup_error) process.exitCode = 1;
 }
