@@ -205,8 +205,19 @@ describe('Supabase outgoing organization boundary (real SDK and resolver)', () =
   );
 
   it('requires resolution for ordinary requests identical to the membership bootstrap', async () => {
-    await sendBoundary('rpc/mbr_for_user', { p_container_type: 'organization' });
+    const { call, createDb } = await import('@ai-matrx/data/db');
+    const { getSupabase } = await import('./client');
+    await call(
+      createDb({ client: getSupabase() }),
+      { schema: 'public', name: 'mbr_for_user', roles: ['authenticated'], registered: true },
+      { p_container_type: 'organization' },
+    );
     expect(outgoing).toHaveLength(4);
+    // The ordinary RPC uses the same real SDK endpoint and body as bootstrap,
+    // but only the private bootstrap client may send it before resolution.
+    expect(outgoing.at(-1)?.url).toBe(outgoing[0]?.url);
+    expect(await outgoing.at(-1)?.clone().json()).toEqual(await outgoing[0]?.clone().json());
+    expect(outgoing[0]?.headers.get('X-Organization-Id')).toBeNull();
     expect(outgoing.at(-1)?.headers.get('X-Organization-Id')).toBe(state.org);
   });
 
