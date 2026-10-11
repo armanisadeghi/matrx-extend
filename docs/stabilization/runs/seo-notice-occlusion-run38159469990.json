@@ -1,5 +1,7 @@
 {
+  "schema_version": 1,
   "id": "seo-notice-occlusion-run38159469990",
+  "created_at_utc": "2026-10-11T17:23:54Z",
   "feature_id": "EXT-F-1008",
   "defect_id": "EXT-D-0199",
   "at": "2026-10-11T17:32:24Z",
@@ -8,6 +10,14 @@
   "hosted_run": "docs/stabilization/evidence/seo-notice-occlusion/run38159469990/receipt.sanitized.json",
   "hosted_run_id": 38159469990,
   "workflow_source_sha": "3063eedc0d60599190ff6e7163786e05d9f8edde",
+  "inputs": {
+    "acceptance_lane": "B",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none"
+  },
+  "hosted_result_artifact_id": 11710010698,
+  "hosted_result_digest": "sha256:79b8162260ecb6d97fe0c23c268714c19bdc2934d4e11628069bdd5becf281f3",
   "runner": {
     "label": "macos-15-intel",
     "arch": "x86_64"
@@ -20,6 +30,7 @@
   "artifact": {
     "development_run_id": 38158831692,
     "development_artifact_id": 11708654888,
+    "github_digest": "sha256:f0ba27bf56a1c4b83d991089e1f4e98683db7568c9487ea49c9c7a003a6c4d9a",
     "source_sha": "5a139a4a1f59b4c6e76407ad7e06b7fd1111f1f6",
     "version": "0.2.499",
     "tree_sha256": "dcedb190bb82480dc0832d6c23007c20c502cf088ec1fc8bd01b883274ad5f96",
@@ -30,10 +41,11 @@
       "case_id": "EXT-F-1008-T02",
       "status": "unverified",
       "native_case_status": "resource_invalid",
-      "product_assertions_run": false,
+      "product_assertions_run": true,
+      "bounded_observation": "The artifact records manual_button_returns_to_current_page as pass before resource invalidation; this does not include the notice-owned hit points or a D199-specific settled result and earns no acceptance credit.",
       "unverified_substeps": [
         "Post-history-recovery manual Re-audit native hit sampling",
-        "Trusted Re-audit click and settled current-page result",
+        "D199-specific trusted Re-audit click with visible notice and settled result",
         "Notice placement while Re-audit remains available",
         "Visible notice Dismiss control and dismissal effect"
       ]
@@ -142,5 +154,5 @@
     "docs/stabilization/evidence/seo-notice-occlusion/run38159469990/resource-finals.sanitized.json"
   ],
   "independent_review": "docs/stabilization/reports/seo-notice-occlusion-independent-review-38159469990.json",
-  "next_action": "Keep EXT-D-0199 fixed but open for native retest; do not close or mark retest-pass. Before one fresh guarded hosted run, address why the guest watchdog reaches sustained 100% CPU during the manual Re-audit observation boundary; then capture the 9-point hit snapshots, verify the notice remains visible with a visible Dismiss control and Re-audit target-owned points, perform trusted Re-audit, dismiss and verify notice removal, and complete bounded multiple/long notice plus warm/reload checks. If resource guard again invalidates, stop and preserve unverified status."
+  "next_action": "Keep EXT-D-0199 fixed but open for native retest; do not close or mark retest-pass. Diagnose sustained CPU after sparse SEO details while entering rich-page navigation, and separately repair the progress writer that dropped Re-audit hit snapshots. Then run a fresh guarded case retaining nine-point before/after hits, visible notice and Dismiss, trusted Re-audit with notice state, dismissal effect, multiple/long notices and warm/reload checks. If resource guard again invalidates, preserve unverified status."
 }
