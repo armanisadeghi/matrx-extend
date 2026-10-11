@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "task_id": "data-t07-guest-driver",
+  "feature_id": "EXT-F-2005",
+  "case_id": "EXT-F-2005-T07",
+  "status": "observed_pass_pending_independent_native_review",
+  "run_id": 38109155658,
+  "source_commit": "e94a7c466418e1c9bc03817d9653ac79e1023b48",
+  "source_review_report": "docs/stabilization/reports/data-t07-driver-source-peer-20261011.json",
+  "evidence_receipt": "docs/stabilization/evidence/guest-data-t07/run38109155658/receipt.sanitized.json",
+  "native_observations": {
+    "guest": true,
+    "controlled_rows": 3,
+    "t07_clear": {
+      "before": "Cedar chair",
+      "after_entries": 0
+    },
+    "t07": {
+      "hover": [
+        {
+          "target": {
+            "top": 79.875,
+            "left": 8,
+            "width": 805,
+            "height": 28
+          },
+          "pointer": "field",
+          "highlight_visible": true
+        },
+        {
+          "target": {
+            "top": 213.59375,
+            "left": 8,
+            "width": 805,
+            "height": 18
+          },
+          "pointer": "field",
+          "highlight_visible": true
+        }
+      ],
+      "selected_then_cancel": true,
+      "panel_state_restored": true,
+      "panel_before": {
+        "selected_fields": [],
+        "picker_button": 1,
+        "cancel_selection": 0
+      },
+      "panel_after": {
+        "selected_fields": [],
+        "picker_button": 1,
+        "cancel_selection": 0
+      },
+      "pattern_write_requests": 0
+    }
+  },
+  "resource_finals": {
+    "package": {
+      "at": "2026-10-11T03:43:46.922Z",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "at": "2026-10-11T03:45:50.912Z",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "at": "2026-10-11T03:48:59.847Z",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    }
+  },
+  "open_items": [
+    "Fresh independent native peer must verify guest T07 hover, Clear, selected-field Cancel, no observed pattern write, and cleanup on this exact run before inventory credit.",
+    "Member and admin T07 remain unverified."
+  ],
+  "credit_scope": "Guest T07 only after peer; no full Data health claim."
+}

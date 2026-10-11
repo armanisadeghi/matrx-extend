@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T07",
+  "mode": "guest",
+  "status": "observed_pass_pending_independent_native_review",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "hosted_run_id": 38109155658,
+  "hosted_run_attempt": 1,
+  "hosted_conclusion": "success",
+  "hosted_source_sha": "41976eec14af4964daad9113402316a9559cdb4c",
+  "hosted_result_artifact": {
+    "id": 11691467347,
+    "name": "hosted-guest-38109155658-1",
+    "digest": "sha256:f4774a5a10d85007e1d2b339c921e16dfa498ba41d7eea8e96418b04bfb97f8e",
+    "expired": false
+  },
+  "development_artifact": {
+    "ci_run_id": 38108390956,
+    "ci_conclusion": "success",
+    "id": 11690966917,
+    "digest": "sha256:3f4de76f2a2795cf7481830a96e087fa06b3a32bccd5b3a35a766552fd8134a7",
+    "source_sha": "41976eec14af4964daad9113402316a9559cdb4c",
+    "run_id": 38108390956,
+    "artifact_id": 11690966917,
+    "tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+    "version": "0.2.490"
+  },
+  "native_report": {
+    "path": "docs/stabilization/evidence/guest-data-t07/run38109155658/native-report.sanitized.json",
+    "sha256": "afd5580af9afd93578a0b8edfde729e5c2506746ee4818d176f361dfe63f4c2b",
+    "raw_report_sha256": "83a1052fc80c9db513900d55a2a026cde33dd3ba1542c300789f25dce2e1c8c5"
+  },
+  "resource_phases": {
+    "package": {
+      "journal": "docs/stabilization/evidence/guest-data-t07/run38109155658/resource-journals/hosted-package-38109155658-1.jsonl",
+      "sha256": "1f30e2ccd504e12df65d2618352b0640364f81ba53870f07a4841cdd9265094a",
+      "final": {
+        "at": "2026-10-11T03:43:46.922Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    },
+    "browser": {
+      "journal": "docs/stabilization/evidence/guest-data-t07/run38109155658/resource-journals/hosted-browser-38109155658-1.jsonl",
+      "sha256": "2bf86802c68b07ce171c31515b39c3542d721e5937b2f020b5f20b1f69e75877",
+      "final": {
+        "at": "2026-10-11T03:45:50.912Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    },
+    "guest": {
+      "journal": "docs/stabilization/evidence/guest-data-t07/run38109155658/resource-journals/hosted-guest-38109155658-1.jsonl",
+      "sha256": "e14c081cf1c7c47cd2f76f406e66f26dbc6b1c43923848a3f149f0fc135e9ea5",
+      "final": {
+        "at": "2026-10-11T03:48:59.847Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    }
+  },
+  "dispatch_inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-data",
+    "scrape_auth_mode": "guest",
+    "scrape_width_mode": "narrow",
+    "development_run_id": 38108390956,
+    "development_artifact_id": 11690966917
+  },
+  "cleanup": {
+    "loopback_fixture_server": "closed in harness finally",
+    "owned_chromium_child": "stopped in harness finally",
+    "temporary_profile_root": "removed in harness finally",
+    "post_run_absence_independently_verified": false,
+    "runner": "isolated ephemeral hosted runner completed successfully"
+  },
+  "limits": [
+    "Driver envelope remains T01; only observations.t07 supports T07.",
+    "No independent native peer review yet; no inventory or tracker credit.",
+    "No member/admin or Store behavior observed.",
+    "No pattern write requests were observed by the panel network listener during T07; no backend persistence query was performed."
+  ]
+}
