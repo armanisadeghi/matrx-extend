@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "run_id": "dev-artifact-promotion-20261011-03",
+  "status": "promoted_on_disk",
+  "observed_at": "2026-10-11T05:05:09.548Z",
+  "artifact": {
+    "sourceSha": "46c31547517484946d16472ecaeab534354f60e1",
+    "runId": 38112998812,
+    "runAttempt": 1,
+    "artifactId": 11692721553,
+    "githubArtifactDigest": "sha256:f17fcbe12c068051ea7d3aa3aa32309af07daf5bf7adf8f7b02497f277cc031a",
+    "treeSha256": "76f0926c5fa041ffc3f77df5c9a9d56f471a38be5dd29fb215dc1f8c0fa56de0",
+    "version": "0.2.493",
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "eligibleStore": false,
+    "publish_state": "not_published"
+  },
+  "promotion": {
+    "compatibility": "exact-source",
+    "mainSha": "46c31547517484946d16472ecaeab534354f60e1",
+    "destination": ".output/chrome-mv3-dev",
+    "fileCount": 2009,
+    "promotionReceipt": "test-results/ci-dev-promotion-receipt.json",
+    "importedArtifact": "test-results/ci-artifacts/46c31547517484946d16472ecaeab534354f60e1/38112998812-1/chrome-mv3",
+    "importSourceClaim": "current_pushed_source",
+    "importTrackedDirty": false,
+    "importUntrackedRunnerInputs": []
+  },
+  "verification": {
+    "ciRun": "completed_success",
+    "artifactMetadata": "matched_run_source_attempt_name_and_digest",
+    "downloadedZipDigestMatchedGitHub": true,
+    "importedTreeMatchedReceipt": true,
+    "promotedTreeMatchedImportedTree": true,
+    "manifestVersion": "0.2.493",
+    "manifestExtensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "chromeLoadedFromPath": "unverified",
+    "chromeDisplayedVersion": "unverified",
+    "chromeReloaded": false,
+    "pinnedState": "unverified"
+  },
+  "limits": "The successful main-push CI artifact was imported and promoted to the stable unpacked development path with an exact source SHA and matching tree digest. Chrome's loaded path, displayed version, reload, and pin state were not inspected."
+}
