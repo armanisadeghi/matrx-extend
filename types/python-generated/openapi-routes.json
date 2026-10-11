@@ -1756,15 +1756,6 @@
  "/constant-contact/public/status": {
   "get": []
  },
- "/content-blocks": {
-  "get": []
- },
- "/content-blocks/category/{category_id}": {
-  "get": []
- },
- "/content-blocks/{block_id}": {
-  "get": []
- },
  "/content-label": {
   "post": [
    "application/json"
