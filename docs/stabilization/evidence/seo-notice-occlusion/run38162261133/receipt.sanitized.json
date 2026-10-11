@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38162261133,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38162261133",
+  "workflow": {
+    "source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+    "status": "completed",
+    "conclusion": "failure",
+    "job": "guest",
+    "job_conclusion": "failure"
+  },
+  "lane": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": false,
+    "seo_interrupt_after_target": "none"
+  },
+  "product_artifact": {
+    "development_run_id": 38161635790,
+    "artifact_id": 11710458741,
+    "version": "0.2.500",
+    "source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+    "github_digest": "sha256:a1e5fde629f299e6f6c724937dd42aa6e27f9e10bf6a8e4d18c4943cd0c422c6",
+    "downloaded_archive_sha256": "a1e5fde629f299e6f6c724937dd42aa6e27f9e10bf6a8e4d18c4943cd0c422c6",
+    "digest_matches": true,
+    "publish_state": "not_published"
+  },
+  "result_artifact": {
+    "artifact_id": 11710602784,
+    "name": "hosted-guest-38162261133-1",
+    "github_digest": "sha256:7a1b7d62f74f2045ace9ff26ccdc4d5279895baa945a8f38a2c8e20f3bc998e8",
+    "downloaded_archive_sha256": "7a1b7d62f74f2045ace9ff26ccdc4d5279895baa945a8f38a2c8e20f3bc998e8",
+    "digest_matches": true,
+    "files": {
+      "native-report.sanitized.json": {
+        "path": "native-report.sanitized.json",
+        "sha256": "1a28d33074112381fa79f1544b1a44ada366a939a856f14ebd24a03815d9f2ed"
+      },
+      "native-progress.sanitized.json": {
+        "path": "native-progress.sanitized.json",
+        "sha256": "3e2626740f1f4a7369495c63dc62c1cfcdeda20d824de5addea3a503375b3c24"
+      },
+      "resource-finals.sanitized.json": {
+        "path": "resource-finals.sanitized.json",
+        "sha256": "50ab4801425ec6ef4ba6982f1a7f46d5ddaaa8a60c41e2de1e1ec9fb2d5f51dd"
+      },
+      "screenshots/native-side-panel.png": {
+        "path": "screenshots/native-side-panel.png",
+        "sha256": "c5c2895937ccbe6c55e55f9d5d53fae341164c49aac0c1264858f18f5534e1c2"
+      },
+      "screenshots/normal-target-after-open.png": {
+        "path": "screenshots/normal-target-after-open.png",
+        "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c"
+      },
+      "resource-journals/hosted-package-38162261133-1.jsonl": {
+        "path": "resource-journals/hosted-package-38162261133-1.jsonl",
+        "sha256": "2934356c22d7fc350453aaca86c6ed39c4fd3310373bb915ef432faa5936d333"
+      },
+      "resource-journals/hosted-browser-38162261133-1.jsonl": {
+        "path": "resource-journals/hosted-browser-38162261133-1.jsonl",
+        "sha256": "a8345e45f97d92886fe97e1f9617c3f993501d185d0cafa0f2ff0075f06d7d96"
+      },
+      "resource-journals/hosted-guest-38162261133-1.jsonl": {
+        "path": "resource-journals/hosted-guest-38162261133-1.jsonl",
+        "sha256": "d5eec2070e34842c94cbd1a01065966b64ab3d2e1b2435fed1337e96d3fde144"
+      }
+    }
+  },
+  "resource_finals": "resource-finals.sanitized.json",
+  "native_report": "native-report.sanitized.json",
+  "native_progress": "native-progress.sanitized.json",
+  "terminal_observation": {
+    "last_safe_stage": "notice_normal_viewport_preflight",
+    "last_safe_observable": {
+      "width": 360,
+      "height": 373
+    },
+    "failure_stage": "notice_normal_viewport_preflight",
+    "child_exit_code": 1,
+    "product_status": "unverified"
+  },
+  "acceptance_credit": "none; native run failed before any width or warm-navigation target assertion",
+  "screenshots_note": "Neither screenshot shows the SEO pane or refusal notice; they do not establish notice visibility or pointer clearance."
+}

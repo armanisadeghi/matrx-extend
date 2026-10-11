@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "source": "derived_terminal_report; no separate native progress file was uploaded",
+  "report_path": "docs/stabilization/evidence/seo-notice-occlusion/run38162261133/native-report.sanitized.json",
+  "last_safe_stage": "notice_normal_viewport_preflight",
+  "last_safe_observable": {
+    "width": 360,
+    "height": 373
+  },
+  "current_operation": null,
+  "failure_stage": "notice_normal_viewport_preflight",
+  "interpretation": "The terminal report preserves the last successful observation; it is not a separately emitted progress checkpoint."
+}

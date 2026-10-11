@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_seo_notice_sibling_run_review",
+  "reviewer": "seo_notice_sibling_native_peer",
+  "reviewed_at_utc": "2026-10-11T18:18:00Z",
+  "run_id": 38162261133,
+  "verdict_a_product_behavior": {
+    "verdict": "NO_D0199_ACCEPTANCE_CREDIT",
+    "reason": "The exact-source lane B run failed before its first width override or page navigation. The captured normal viewport was width 360 and height 373; the harness requires the initial width to be greater than 360, so the preflight assertion stopped the case. No narrow_warm_navigation or normal_warm_navigation hit snapshot was recorded, and no trusted Re-audit, notice dismissal, or reload assertion ran.",
+    "observed_before_failure": {
+      "controlled_history": "The native report records T06 error rendering, successful fresh retry, and empty history rendering as pass.",
+      "refusal_notice_hit_diagnostics": {
+        "history_refused": {
+          "active": true,
+          "target_count": 1,
+          "target_enabled": true,
+          "database_refused_notice_count": 1,
+          "dismiss_visible": true,
+          "hit_point_count": 9,
+          "notice_hit_point_count": 0
+        },
+        "history_recovered": {
+          "active": true,
+          "target_count": 1,
+          "target_enabled": true,
+          "database_refused_notice_count": 1,
+          "dismiss_visible": true,
+          "hit_point_count": 9,
+          "notice_hit_point_count": 0
+        }
+      },
+      "viewport_preflight": {
+        "observed_width": 360,
+        "observed_height": 373,
+        "required_initial_width": "> 360",
+        "failure_stage": "notice_normal_viewport_preflight"
+      }
+    },
+    "not_established": [
+      "Real refusal notice clearance at 360px after warm navigation.",
+      "The same assertion at a restored normal width after second warm navigation.",
+      "Trusted manual Re-audit while the notice remains visible.",
+      "Dismiss effect, visible notice after reload, or any reload assertion.",
+      "Multiple/long notices, member/admin behavior, current-main runtime, or Store behavior."
+    ],
+    "screenshots": "The uploaded native-side-panel image shows the generic guest panel, and normal-target-after-open shows only the public page. Neither shows the SEO pane or refusal notice, so neither proves notice visibility or clearance.",
+    "scope_adjudication": "The run record must stay unverified/no-credit for D0199 sibling acceptance. Do not describe this as a 360px or normal-width pass. It is also not a product failure: the required product interaction was not reached."
+  },
+  "verdict_b_provenance_resource_and_run_quality": {
+    "verdict": "PROVENANCE_AND_RESOURCE_PASS; NATIVE_EXECUTION_PARTIAL",
+    "provenance": "PASS: workflow source and product source are both 01a6160208adadf321cba2f7a1a9283e733dddbe. Product artifact 11710458741 from CI 38161635790 is v0.2.500, unpublished, and its downloaded archive SHA-256 matches GitHub's sha256:a1e5fde629f299e6f6c724937dd42aa6e27f9e10bf6a8e4d18c4943cd0c422c6 metadata. The native result artifact 11710602784 downloaded with SHA-256 matching GitHub's sha256:7a1b7d62f74f2045ace9ff26ccdc4d5279895baa945a8f38a2c8e20f3bc998e8 metadata; its six files were enumerated and inspected.",
+    "resource_finals": "PASS: exactly one terminal final decision in each package/browser/guest journal. Package and browser are admitted, resource-valid, exit 0, decision valid. Guest is admitted and resource-valid, child exit 1, decision child_failed. This is a test-child failure, not a resource-invalid run.",
+    "native_report_integrity": "PASS: native report preserves the initial viewport observation and names notice_normal_viewport_preflight as failure_stage. Status is unverified; only the bounded controlled T06 retry/fresh-empty target is marked pass. No missing later target is inferred as pass.",
+    "cleanup_and_scope": "PARTIAL: the guest resource wrapper records child exit and a terminal child_failed decision, but the uploaded report and journals contain no explicit browser/profile/fixture-restoration assertion. Cleanup state is therefore unverified. Case scope is controlled guest only; excluded member/admin and Store boundaries remain open.",
+    "harness_finding": "The sibling harness assumes a native side-panel innerWidth above 360 before it creates the 360px emulation. This runner starts at exactly 360px, as both the report and screenshot indicate. A repair must establish and record a real wider normal panel width before setting the narrow override; merely weakening the predicate or claiming clearDeviceMetricsOverride restored a wider width would leave the width comparison unproved.",
+    "evidence": {
+      "run_record": "docs/stabilization/runs/seo-notice-sibling-run38162261133.json",
+      "receipt": "docs/stabilization/evidence/seo-notice-occlusion/run38162261133/receipt.sanitized.json",
+      "native_report": "docs/stabilization/evidence/seo-notice-occlusion/run38162261133/native-report.sanitized.json",
+      "native_progress": "docs/stabilization/evidence/seo-notice-occlusion/run38162261133/native-progress.sanitized.json",
+      "resource_finals": "docs/stabilization/evidence/seo-notice-occlusion/run38162261133/resource-finals.sanitized.json",
+      "resource_journals": [
+        "docs/stabilization/evidence/seo-notice-occlusion/run38162261133/resource-journals/hosted-package-38162261133-1.jsonl",
+        "docs/stabilization/evidence/seo-notice-occlusion/run38162261133/resource-journals/hosted-browser-38162261133-1.jsonl",
+        "docs/stabilization/evidence/seo-notice-occlusion/run38162261133/resource-journals/hosted-guest-38162261133-1.jsonl"
+      ],
+      "screenshots": [
+        "docs/stabilization/evidence/seo-notice-occlusion/run38162261133/screenshots/native-side-panel.png",
+        "docs/stabilization/evidence/seo-notice-occlusion/run38162261133/screenshots/normal-target-after-open.png"
+      ]
+    }
+  },
+  "overall": "NO_D0199_SIBLING_ACCEPTANCE_CREDIT; FIX_HARNESS_WIDTH_PRECONDITION_AND_RERUN",
+  "next_action": "Before rerun, size the actual native panel to a measured width above 360px, preserve that width as the normal baseline, then exercise the 360px and restored-width warm-navigation assertions. Continue to require a visible refusal notice, nine target-owned/zero notice-owned hit points, trusted Re-audit success, and explicit cleanup evidence. Multiple/long notices and visible-notice full reload require separate forcing fixtures; this run covers neither."
+}

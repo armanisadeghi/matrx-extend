@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "unverified",
+  "scope": "public-page guest SEO actions in an owned native side panel",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T06",
+      "subtarget": "guest_history_error_retry_fresh_empty_read",
+      "status": "pass",
+      "evidence": {
+        "errorRendered": true,
+        "retryFreshRead": true,
+        "emptyRendered": true
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04,T05,T08",
+      "part": "database save, saved-row history, and diff flows"
+    },
+    {
+      "case": "T06",
+      "part": "guest live-backend and member/admin history failure modes"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "notice_normal_viewport_preflight",
+  "last_safe_observable": {
+    "width": 360,
+    "height": 373
+  },
+  "current_operation": null,
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+    "runId": 38161635790,
+    "runAttempt": 1,
+    "artifactId": 11710458741,
+    "githubArtifactDigest": "sha256:a1e5fde629f299e6f6c724937dd42aa6e27f9e10bf6a8e4d18c4943cd0c422c6",
+    "version": "0.2.500",
+    "treeSha256": "a5de6c0095949b6b55a27c7389656188f852c6cd40dd0d21ef600fac5bf2bdf9",
+    "source": {
+      "originMain": "b8daa4aea3dda3a2bd37caf94e09de64835e4b6d",
+      "localHead": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "case_selection": {
+    "scope": "controlled",
+    "selected_cases": ["T01", "T02", "T03", "T06", "T07", "T09", "T14"],
+    "excluded_cases": ["T09 volatile public detail", "T09 optional metadata fixture"]
+  },
+  "resource_diagnostic_enabled": false,
+  "operation_start_sample": {
+    "at": "2026-10-11T18:10:33.631Z",
+    "user": 1452504,
+    "system": 415542
+  },
+  "boundary_sample": {
+    "at": "2026-10-11T18:10:33.636Z",
+    "user": 1453002,
+    "system": 416327
+  },
+  "reaudit_hit_diagnostics": {
+    "history_refused": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "history_recovered": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    }
+  },
+  "failure_stage": "notice_normal_viewport_preflight"
+}

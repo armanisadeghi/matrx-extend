@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "run_id": 38162261133,
+  "finals": {
+    "package": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-package-38162261133-1.jsonl",
+      "sha256": "2934356c22d7fc350453aaca86c6ed39c4fd3310373bb915ef432faa5936d333"
+    },
+    "browser": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-browser-38162261133-1.jsonl",
+      "sha256": "a8345e45f97d92886fe97e1f9617c3f993501d185d0cafa0f2ff0075f06d7d96"
+    },
+    "guest": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 1,
+        "decision": "child_failed"
+      },
+      "journal": "resource-journals/hosted-guest-38162261133-1.jsonl",
+      "sha256": "d5eec2070e34842c94cbd1a01065966b64ab3d2e1b2435fed1337e96d3fde144"
+    }
+  }
+}
