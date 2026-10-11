@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38114610597,
+  "resource_finals": [
+    {
+      "run_id": "hosted-package-38114610597-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "observed_in": "resource-package-38114610597.jsonl: final RESOURCE_FINAL_DECISION"
+    },
+    {
+      "run_id": "hosted-browser-38114610597-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "observed_in": "resource-browser-38114610597.jsonl: final RESOURCE_FINAL_DECISION"
+    },
+    {
+      "run_id": "hosted-guest-38114610597-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "observed_in": "resource-guest-38114610597.jsonl: final RESOURCE_FINAL_DECISION"
+    }
+  ],
+  "journal_artifacts_included": true,
+  "journal_evidence": [
+    {
+      "run_id": "hosted-package-38114610597-1",
+      "path": "resource-package-38114610597.jsonl",
+      "sha256": "ee9393242fa371ba39134e97794e328ae8b249c5be9cc1dd3a8f9c2adcecc02e"
+    },
+    {
+      "run_id": "hosted-browser-38114610597-1",
+      "path": "resource-browser-38114610597.jsonl",
+      "sha256": "c4670d5f84f8dae4abf1af4a457951008624886435caa1460d5ab0ee6b4cccee"
+    },
+    {
+      "run_id": "hosted-guest-38114610597-1",
+      "path": "resource-guest-38114610597.jsonl",
+      "sha256": "ee3a81a59df3c1be095129997cdea317e9c6f6e2df5208ae847bb8cca3f8b688"
+    }
+  ],
+  "note": "Full recursive inspection of hosted artifact 11693117210 found all three completed journals nested under matrx-extend/matrx-extend/docs/stabilization/resource-journals/. Sanitized copies were made with scripts/copy-hosted-resource-journal.mjs; process attribution and opened paths are removed. Each copy retains its exact runId and final valid decision."
+}

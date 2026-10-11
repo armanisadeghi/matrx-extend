@@ -88681,6 +88681,27 @@
             "dispatcher-unverified",
             "runtime-unverified"
           ],
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "38114610597",
+              "workflow_source_sha": "b08cde49d38bd0e9c926b969a62ac03bff68b669",
+              "source_sha": "83cd72b6c9a0b6bce5887c1f561668539e6d8259",
+              "build_version": "0.2.492",
+              "resource_valid": true,
+              "detail": "Independent native review accepts the bounded member tab_groups create collapsed=true and get_tab_groups readback; Chrome confirmed collapsed state and exact owned-tab group membership, and cleanup was verified. All three retained resource journals are valid. This does not complete T01: collapsed=false, update/add/remove/list, reload, invalid-schema behavior, admin, permissions, and full feature acceptance remain unverified.",
+              "build_receipt": "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/receipt.sanitized.json",
+              "verified_at": "2026-10-11T05:41:00Z",
+              "evidence": [
+                "docs/stabilization/runs/d148-tabgroups-member-run38114610597.json",
+                "docs/stabilization/reports/d148-tabgroups-member-native-peer-20261011.json",
+                "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/native-report.sanitized.json",
+                "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-package-38114610597.jsonl",
+                "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-browser-38114610597.jsonl",
+                "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-guest-38114610597.jsonl"
+              ]
+            }
+          },
           "procedure_source_review": {
             "proposal": ".research/inventory-six-procedures-20261007.json",
             "peer": ".research/inventory-six-procedures-root-review-20261007.json",
@@ -88702,12 +88723,14 @@
           "retest_status": "not-run"
         },
         "member": {
-          "test_status": "unverified",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0148"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "38114610597"
+          ],
+          "retest_status": "partial: native create collapsed=true and get_tab_groups readback only; collapsed=false, update/add/remove/list, reload, invalid-input and admin remain unverified"
         },
         "admin": {
           "test_status": "unverified",
