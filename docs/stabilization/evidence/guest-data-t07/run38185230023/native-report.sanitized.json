@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "failure_stage": null,
+  "observations": {
+    "picker_cancel_without_selection": true,
+    "picker_cancel_selected_fields_unchanged": true,
+    "picker_cancel_pattern_writes": 0,
+    "c19_click_to_select": {
+      "preview": "Cedar chair",
+      "visible_field": "field_1: body > main > section > article.product-card:nth-of-type(1) > h2.product-name",
+      "selector_unique_matches": 1,
+      "selector_matched_clicked_element": true
+    },
+    "t07_clear": {
+      "before": "Cedar chair",
+      "after_entries": 0
+    },
+    "t07": {
+      "hover": [
+        {
+          "target": {
+            "top": 79.875,
+            "left": 8,
+            "width": 805,
+            "height": 28
+          },
+          "pointer": "field",
+          "highlight_visible": true
+        },
+        {
+          "target": {
+            "top": 213.59375,
+            "left": 8,
+            "width": 805,
+            "height": 18
+          },
+          "pointer": "field",
+          "highlight_visible": true
+        }
+      ],
+      "selected_then_cancel": true,
+      "panel_state_restored": true,
+      "panel_before": {
+        "selected_fields": [],
+        "picker_button": 1,
+        "cancel_selection": 0
+      },
+      "panel_after": {
+        "selected_fields": [],
+        "picker_button": 1,
+        "cancel_selection": 0
+      },
+      "pattern_write_requests": 0
+    },
+    "guest": true,
+    "controlled_rows": 3,
+    "two_distinct_picker_previews": true,
+    "two_selected_fields": true,
+    "pattern_name_absent": true,
+    "save_pattern_absent": true,
+    "sign_in_to_save_present": true,
+    "sign_in_action_used": true,
+    "pattern_write_requests_before_auth": 0
+  },
+  "limits": "Guest native behavior on the selected imported artifact; no signed-in save or published Store claim.",
+  "raw_report_sha256": "396cdd029aa953a09f313e50983f33c6188972a121b5cec67081cd0d45d58cf5"
+}

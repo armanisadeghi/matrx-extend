@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38185230023,
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "source": "Hosted workflow artifact 11719845492; terminal resource journals are retained alongside this file."
+}

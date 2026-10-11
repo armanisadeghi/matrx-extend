@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "run_id": 38185230023,
+  "feature_id": "EXT-F-2005",
+  "scope": "Guarded hosted native guest Data rerun of repaired T07 sequence; observations cover C18, C19, C21, C22 and zero unauthorized pattern writes.",
+  "mode": "guest",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_lane": "B",
+  "runner_label": "macos-15-intel",
+  "source_sha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+  "version": "0.2.509",
+  "started_at": "2026-10-11T23:41:31Z",
+  "finished_at": "2026-10-11T23:48:57Z",
+  "outcome": "independently_reviewed_bounded_guest_pass_with_evidence_limits",
+  "build": {
+    "kind": "native_ci_development_artifact",
+    "source_sha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+    "ci_run_id": 38184510025,
+    "artifact_id": 11718734199,
+    "artifact_name": "matrx-extend-development-test-456239f59efc76413f7f8b56ce482d8b5bd1b965-38184510025-1",
+    "artifact_digest": "sha256:cbe88a96027ac65fbbfd057a3a7370db70f890e1adec94183e2c0d43778f30a7",
+    "version": "0.2.509"
+  },
+  "hosted_result_artifact": {
+    "id": 11719845492,
+    "name": "hosted-guest-38185230023-1",
+    "digest": "sha256:3e562e95df96b3dae01e2bf9172bbccb844023dbc5a70f9e5df8bb5262028b12",
+    "expired": false
+  },
+  "case_results": {
+    "EXT-F-2005-T07": {
+      "guest": "partial_bounded_guest_subtargets_independently_reviewed",
+      "observations": [
+        "C18 hover highlights appeared on two distinct fields.",
+        "C19 selected Cedar chair and showed a unique field_1 selector matching the clicked heading.",
+        "C22 Clear removed the selected entry.",
+        "C21 selected-field Cancel restored the empty Data panel baseline.",
+        "Zero non-GET pattern write requests were observed during the action window."
+      ],
+      "resource_valid": true,
+      "new_acceptance_credit": "C18, C19, C21 and C22 bounded guest observations only; T07 remains partial.",
+      "independent_review": "docs/stabilization/reports/data-t07-run38185230023-independent-review.json"
+    },
+    "EXT-F-2005-C19": {
+      "guest": "bounded_guest_pass",
+      "resource_valid": true,
+      "new_acceptance_credit": "C19 bounded guest observation only; exact T07 run and independent runtime review.",
+      "independent_review": "docs/stabilization/reports/data-t07-run38185230023-independent-review.json"
+    }
+  },
+  "resource_admission": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-data-t07/run38185230023/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-t07/run38185230023/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-t07/run38185230023/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-data-t07/run38185230023/resource-journals/hosted-package-38185230023-1.jsonl",
+    "docs/stabilization/evidence/guest-data-t07/run38185230023/resource-journals/hosted-browser-38185230023-1.jsonl",
+    "docs/stabilization/evidence/guest-data-t07/run38185230023/resource-journals/hosted-guest-38185230023-1.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38185230023",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38184510025"
+  ],
+  "hashes": {
+    "raw_native_report_sha256": "396cdd029aa953a09f313e50983f33c6188972a121b5cec67081cd0d45d58cf5",
+    "resource_journals": {
+      "package": "8b4d674870403e8852a020b317c2afc141d7c31a244ffdff864ba91bba06f507",
+      "browser": "845af3c12b69939c91269f3a29c2c809868aa368aedc39eda6f35f2114128841",
+      "guest": "83b789d4771be1a855c141a276979815055c625b36cc05a2dc319a43c6ed0009"
+    }
+  },
+  "limits": [
+    "Bounded guest C18/C19/C21/C22 observations only; no full T07, whole Data feature or feature-role credit.",
+    "Member and admin remain unverified; no published Store behavior was exercised.",
+    "No pattern writes were observed only on the panel CDP target during the action window; no backend persistence query or cross-target audit was performed.",
+    "Uploaded screenshots omit Data picker states; native assertions and report provide the interaction evidence.",
+    "Peer verified hosted archive digest and provenance, but could not independently download the large CI artifact to recheck its internal tree hash.",
+    "Cleanup paths are reported as executed in harness finally; post-run absence was not independently verified."
+  ]
+}

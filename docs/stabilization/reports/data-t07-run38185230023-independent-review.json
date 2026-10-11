@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_native_runtime_review",
+  "reviewer": "/root/data_t07_runtime_peer_1011",
+  "reviewed_at": "2026-10-11",
+  "feature_id": "EXT-F-2005",
+  "target_case_id": "EXT-F-2005-T07",
+  "verdict_a": {
+    "overall": "PASS_BOUNDED_GUEST_SUBTARGETS; PARTIAL_NO_PERSISTENCE_ASSURANCE",
+    "controls": {
+      "C18_hover_highlight": {
+        "verdict": "PASS_BOUNDED_GUEST",
+        "evidence": "Raw native report records two distinct page element rectangles (h2 and price), pointer kind field, and highlight_visible true for both. Exact driver source at 456239f59efc76413f7f8b56ce482d8b5bd1b965 sends real page.mouse.move and requires closed-shadow #hl display:block with top/left/width/height each within 1px of the target rectangle."
+      },
+      "C19_click_to_select": {
+        "verdict": "PASS_BOUNDED_GUEST",
+        "evidence": "Report records preview Cedar chair and field_1 selector; source checks picker preview before Done, waits for returned field value, then asserts selector has exactly one match and that match is the clicked Cedar chair heading."
+      },
+      "C22_clear": {
+        "verdict": "PASS_BOUNDED_GUEST",
+        "evidence": "Source selects Cedar chair in a fresh picker, reads the closed-shadow #picked list before Clear, performs a trusted pointer click with exact button hit-target validation, then reads the list and asserts no picked-item remains. Native report says before Cedar chair, after_entries 0. This establishes picker-draft Clear only."
+      },
+      "C21_selected_field_cancel": {
+        "verdict": "PASS_BOUNDED_GUEST",
+        "evidence": "Source selects $429 and confirms it in #picked before trusted Cancel, waits for picker host detach, then compares selected field markers/values, picker, Cancel, Save pattern, and name input with the empty Data baseline. Report records selected_then_cancel and panel_state_restored true with empty before/after selected fields."
+      },
+      "guest_pattern_write_boundary": {
+        "verdict": "PASS_FOR_NO_OBSERVED_PATTERN_WRITE_ONLY",
+        "evidence": "Network listener starts before the C18/C19/C22/C21 action window and asserts no non-GET request matching /wbx_pattern; the raw report records zero. Guest auth storage is checked false/false, and later guest UI requires Sign in to save with Save pattern/name input absent."
+      }
+    },
+    "scope": "Bounded behavior on one hosted guest run using the exact development artifact; no full T07, whole Data feature, member/admin, Store, or persistent-state claim."
+  },
+  "verdict_b": {
+    "overall": "PASS_WITH_EVIDENCE_LIMITS",
+    "evidence_quality": "GitHub API metadata confirms hosted run 38185230023 attempt 1 succeeded at head SHA 456239f59efc76413f7f8b56ce482d8b5bd1b965 and emitted artifact 11719845492 with the recorded digest. Downloaded artifact ZIP SHA-256 matches that digest; its raw report SHA-256 is 396cdd029aa953a09f313e50983f33c6188972a121b5cec67081cd0d45d58cf5, matching the receipt and raw_native_report_sha256. CI run 38184510025 and artifact 11718734199 are independently confirmed by GitHub metadata at the same SHA and recorded digest. Raw report binds those IDs, source SHA, version 0.2.509 and tree SHA e86a72574489f1bca661a23c79722a5f4fbce9a1ee709b5a51754cd5f2027620. All three local resource journal hashes match the receipt; their final records are admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Guest journal had one CPU-pending interval, then recovered before valid final. The CI artifact archive was too large for this review's bounded download attempt, so its contents/tree hash were not independently rechecked; hosted artifact and API provenance were verified.",
+    "sequencing_repair": "Prior run 38181924184 stopped after C19 because it tried to reopen the picker while the Data draft had selected fields; the native diagnostic showed zero picker-button matches. At this source SHA, the driver explicitly clicks Data-level Cancel after C19, waits for empty field state and picker return, then starts a fresh picker for Clear and another for selected-field Cancel. The exact hosted run completed with status pass, stage complete, failure_stage null, and all four subtarget observations. This removes the reported stale-picker precondition from the exercised sequence.",
+    "contamination_and_limits": [
+      "Native report envelope is still case_id EXT-F-2005-T01. Credit only its explicit c19_click_to_select, t07_clear and observations.t07 fields; never infer full T01 coverage.",
+      "Uploaded screenshots are the generic side panel and fixture page, not Data picker states; intermediate control evidence is from native CDP/DOM/pointer assertions plus report, not visual screenshots.",
+      "The network observer is scoped to the panel CDP target and /wbx_pattern requests during the action window. No backend persistence query or cross-target network audit occurred, so it does not prove universal absence of persistence.",
+      "Receipt says cleanup paths closed the fixture server, stopped owned Chromium and removed the temp profile in finally, but post-run absence was not independently verified."
+    ],
+    "credit": "Independent bounded guest T07 evidence is justified for C18, C19, C21, and C22 on this artifact. No full T07 or feature-role credit is justified: member/admin remain unverified, no persistence query was performed, and no published Store behavior was exercised."
+  },
+  "provenance": {
+    "hosted_run_id": 38185230023,
+    "hosted_run_attempt": 1,
+    "hosted_head_sha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+    "hosted_artifact_id": 11719845492,
+    "hosted_artifact_digest": "sha256:3e562e95df96b3dae01e2bf9172bbccb844023dbc5a70f9e5df8bb5262028b12",
+    "downloaded_hosted_zip_sha256": "3e562e95df96b3dae01e2bf9172bbccb844023dbc5a70f9e5df8bb5262028b12",
+    "raw_native_report_sha256": "396cdd029aa953a09f313e50983f33c6188972a121b5cec67081cd0d45d58cf5",
+    "sanitized_native_report_sha256": "543fc83388e7c74bd427edb64e751cd45fa2124da66f68ec2d1d7740104af15a",
+    "development_ci_run_id": 38184510025,
+    "development_artifact_id": 11718734199,
+    "development_artifact_digest": "sha256:cbe88a96027ac65fbbfd057a3a7370db70f890e1adec94183e2c0d43778f30a7",
+    "build_version": "0.2.509",
+    "resource_journal_sha256": {
+      "package": "8b4d674870403e8852a020b317c2afc141d7c31a244ffdff864ba91bba06f507",
+      "browser": "845af3c12b69939c91269f3a29c2c809868aa368aedc39eda6f35f2114128841",
+      "guest": "83b789d4771be1a855c141a276979815055c625b36cc05a2dc319a43c6ed0009"
+    }
+  },
+  "sources_reviewed": [
+    "docs/stabilization/runs/guest-data-t07-run38185230023.json",
+    "docs/stabilization/evidence/guest-data-t07/run38185230023/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-t07/run38185230023/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-t07/run38185230023/resource-finals.sanitized.json and all three resource journals",
+    "Downloaded hosted artifact raw test-results/data-guest-native-acceptance.json and screenshots",
+    "Exact source at 456239f59efc76413f7f8b56ce482d8b5bd1b965: tests/browser/data-guest-native-acceptance.mjs, tests/browser/data-guest-picker-driver.mjs, tests/browser/data-guest-picker-cancel.mjs",
+    "docs/stabilization/runs/guest-data-c19-run38181924184.json and docs/stabilization/reports/data-c19-independent-review-38181924184.json",
+    "docs/stabilization/reports/data-t07-native-peer-20261011.json"
+  ],
+  "verification": {
+    "github_run_and_artifact_metadata_checked": true,
+    "hosted_artifact_downloaded_and_archive_digest_verified": true,
+    "raw_report_and_resource_journal_hashes_verified": true,
+    "exact_driver_source_reviewed_at_hosted_sha": true,
+    "previous_sequence_failure_compared_with_repaired_sequence": true,
+    "new_browser_run": false,
+    "inventory_or_product_code_edited": false,
+    "ci_artifact_contents_downloaded_and_tree_hash_rechecked": false
+  }
+}

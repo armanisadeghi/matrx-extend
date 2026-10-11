@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T07",
+  "mode": "guest",
+  "status": "observed_pass_pending_independent_native_review",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "hosted_run_id": 38185230023,
+  "hosted_run_attempt": 1,
+  "hosted_conclusion": "success",
+  "hosted_source_sha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+  "hosted_result_artifact": {
+    "id": 11719845492,
+    "name": "hosted-guest-38185230023-1",
+    "digest": "sha256:3e562e95df96b3dae01e2bf9172bbccb844023dbc5a70f9e5df8bb5262028b12",
+    "expired": false
+  },
+  "development_artifact": {
+    "ci_run_id": 38184510025,
+    "ci_conclusion": "success",
+    "id": 11718734199,
+    "digest": "sha256:cbe88a96027ac65fbbfd057a3a7370db70f890e1adec94183e2c0d43778f30a7",
+    "source_sha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+    "version": "0.2.509"
+  },
+  "native_report": {
+    "path": "docs/stabilization/evidence/guest-data-t07/run38185230023/native-report.sanitized.json",
+    "sha256": "543fc83388e7c74bd427edb64e751cd45fa2124da66f68ec2d1d7740104af15a",
+    "raw_report_sha256": "396cdd029aa953a09f313e50983f33c6188972a121b5cec67081cd0d45d58cf5"
+  },
+  "resource_phases": {
+    "package": {
+      "journal": "docs/stabilization/evidence/guest-data-t07/run38185230023/resource-journals/hosted-package-38185230023-1.jsonl",
+      "sha256": "8b4d674870403e8852a020b317c2afc141d7c31a244ffdff864ba91bba06f507",
+      "final": {
+        "at": "2026-10-11T23:43:58.082Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    },
+    "browser": {
+      "journal": "docs/stabilization/evidence/guest-data-t07/run38185230023/resource-journals/hosted-browser-38185230023-1.jsonl",
+      "sha256": "845af3c12b69939c91269f3a29c2c809868aa368aedc39eda6f35f2114128841",
+      "final": {
+        "at": "2026-10-11T23:46:02.638Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    },
+    "guest": {
+      "journal": "docs/stabilization/evidence/guest-data-t07/run38185230023/resource-journals/hosted-guest-38185230023-1.jsonl",
+      "sha256": "83b789d4771be1a855c141a276979815055c625b36cc05a2dc319a43c6ed0009",
+      "final": {
+        "at": "2026-10-11T23:48:57.608Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    }
+  },
+  "dispatch_inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-data",
+    "development_run_id": 38184510025,
+    "development_artifact_id": 11718734199
+  },
+  "observations": {
+    "c18_hover_highlight": "two distinct field targets displayed hover highlights",
+    "c19_click_to_select": "Cedar chair preview; field_1 selector uniquely matched the clicked heading",
+    "c22_clear": "selected Cedar chair entry removed",
+    "c21_selected_cancel": "selected-field Cancel restored the empty Data panel baseline",
+    "unauthorized_pattern_writes": 0
+  },
+  "cleanup": {
+    "loopback_fixture_server": "closed in harness finally",
+    "owned_chromium_child": "stopped in harness finally",
+    "temporary_profile_root": "removed in harness finally",
+    "post_run_absence_independently_verified": false,
+    "runner": "isolated ephemeral hosted runner completed successfully"
+  },
+  "limits": [
+    "No independent runtime peer review yet; no inventory, defect closure, or T07 credit.",
+    "Guest behavior only; no member/admin or published Store behavior.",
+    "No pattern writes were observed during the native action window; no backend persistence query was performed.",
+    "Uploaded screenshots show the generic side panel and a Research brief page, not the Data picker states; acceptance evidence comes from the native report."
+  ]
+}

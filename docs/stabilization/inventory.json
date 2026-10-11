@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T21:46:40Z",
+  "updated_at": "2026-10-11T23:58:13Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -42645,11 +42645,13 @@
                 "docs/stabilization/evidence/guest-data-t07/run38109155658/receipt.sanitized.json",
                 "docs/stabilization/reports/data-t07-native-peer-20261011.json"
               ],
-              "detail": "Independently reviewed bounded guest T07 subtargets on imported development artifact v0.2.490: C18 hover highlight tracked two distinct fixture elements, C22 Clear removed the selected picker entry, and C21 Cancel after selecting a field restored the Data panel baseline. Only observations.t07 and its t07_clear result in the hosted driver report\u2019s T01 envelope are credited; C19 is not credited. The native driver observed zero non-GET /wbx_pattern requests during the action window, with no backend persistence query. Archived screenshots omit picker states; post-run absence was not independently verified. Remaining T07 criteria, reload, member/admin and full Data remain unverified.",
+              "detail": "Independently reviewed bounded guest T07 subtargets on imported development artifact v0.2.490: C18 hover highlight tracked two distinct fixture elements, C22 Clear removed the selected picker entry, and C21 Cancel after selecting a field restored the Data panel baseline. Only observations.t07 and its t07_clear result in the hosted driver report\u2019s T01 envelope are credited; C19 is not credited. The native driver observed zero non-GET /wbx_pattern requests during the action window, with no backend persistence query. Archived screenshots omit picker states; post-run absence was not independently verified. Remaining T07 criteria, reload, member/admin and full Data remain unverified. New exact-source run 38185230023, independently reviewed, adds bounded guest C19 and re-observes C18/C21/C22; T07 remains partial. See its additional_bounded_runs entry for evidence limits.",
               "additional_bounded_runs": [
                 {
                   "run_id": "38181924184",
-                  "control_ids": ["EXT-F-2005-C19"],
+                  "control_ids": [
+                    "EXT-F-2005-C19"
+                  ],
                   "status": "bounded_guest_pass",
                   "source_sha": "1b1c400f71e6be024d733d3cfb8bb96eb3f0df55",
                   "development_ci_run_id": 38181243134,
@@ -42667,6 +42669,34 @@
                     "docs/stabilization/reports/data-c19-independent-review-38181924184.json"
                   ],
                   "detail": "Independent runtime review credits only guest C19: native report records a trusted click previewing Cedar chair, Data displays the derived field_1 selector, that selector uniquely matches one page node, and the node is the exact clicked heading. The subsequent T07 sequence fails in the test driver because it tries to reopen the picker while the selected field is in Data; the product correctly exposes Data-level Cancel and Sign in to save instead. Package/browser resource finals are valid and the guest exercise final is admitted/resourceInvalid=false/exitCode=1 due the harness failure. C18, selected-field C21 and C22 receive no new credit from this run; prior independent run 38109155658 remains their evidence. T07 and Guest Data stay partial; member/admin, reload, Store and full feature remain unverified."
+                },
+                {
+                  "run_id": "38185230023",
+                  "control_ids": [
+                    "EXT-F-2005-C18",
+                    "EXT-F-2005-C19",
+                    "EXT-F-2005-C21",
+                    "EXT-F-2005-C22"
+                  ],
+                  "status": "bounded_guest_pass",
+                  "source_sha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+                  "development_ci_run_id": 38184510025,
+                  "development_artifact_id": 11718734199,
+                  "hosted_result_artifact_id": 11719845492,
+                  "build_version": "0.2.509",
+                  "build_kind": "native_ci_development_artifact",
+                  "hosted_artifact_digest": "sha256:3e562e95df96b3dae01e2bf9172bbccb844023dbc5a70f9e5df8bb5262028b12",
+                  "development_artifact_digest": "sha256:cbe88a96027ac65fbbfd057a3a7370db70f890e1adec94183e2c0d43778f30a7",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/data-t07-run38185230023-independent-review.json",
+                  "evidence": [
+                    "docs/stabilization/runs/guest-data-t07-run38185230023.json",
+                    "docs/stabilization/evidence/guest-data-t07/run38185230023/receipt.sanitized.json",
+                    "docs/stabilization/evidence/guest-data-t07/run38185230023/native-report.sanitized.json",
+                    "docs/stabilization/evidence/guest-data-t07/run38185230023/resource-finals.sanitized.json",
+                    "docs/stabilization/reports/data-t07-run38185230023-independent-review.json"
+                  ],
+                  "detail": "Independent runtime review passes bounded guest C18 hover highlight, C19 click-to-select, C22 picker Clear and C21 selected-field Cancel on the exact 456239f development artifact. C19 selects Cedar chair and uniquely matches the clicked heading; Clear removes the draft entry; selected-field Cancel restores the empty Data baseline. The repaired sequence explicitly returns through Data-level Cancel between C19 and the fresh Clear picker; the prior stale-picker harness failure did not recur. No non-GET /wbx_pattern writes were observed only on the panel CDP target during the action window; there was no backend persistence query or cross-target audit. Screenshots omit Data picker states. Peer verified hosted artifact digest and provenance but could not independently download the large CI archive to recheck its internal tree hash; cleanup absence was not independently checked. This is bounded guest subtarget evidence only: T07 and Data role coverage remain partial; member/admin/Store and persistence remain unverified."
                 }
               ]
             },
