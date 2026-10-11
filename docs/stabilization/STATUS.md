@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-11 05:18 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T05:18:35Z. 205 features · 783 cases · 1364 controls · 197 linked defect records.
+Generated 2026-10-11 05:42 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T05:18:35Z. 205 features · 783 cases · 1364 controls · 197 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1252** — Pass: 95 · Partial: 91 · Fail: 2 · Unverified: 1062 · N/A: 2.
-Unverified splits into **136 explicitly marked unverified** and **926 with no result record**.
+Applicable case-by-role slots: **1252** — Pass: 95 · Partial: 92 · Fail: 2 · Unverified: 1061 · N/A: 2.
+Unverified splits into **136 explicitly marked unverified** and **925 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -51,7 +51,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Vault password generator](#vault-password-generator) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 154 unverified · 0 deferred; 0/150 full | 0 pass · 1 partial · 0 fail · 172 unverified · 0 deferred; 0/169 full | pass 0, partial 1, fail 0, unverified 326, n/a 0 | 7 |
+| [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 153 unverified · 0 deferred; 0/150 full | 0 pass · 1 partial · 0 fail · 172 unverified · 0 deferred; 0/169 full | pass 0, partial 2, fail 0, unverified 325, n/a 0 | 7 |
 
 Role counts include only case-role combinations listed in each case. The all-role column includes every applicable recorded or unrecorded slot. Open each feature for case evidence, defects, and next action.
 
@@ -3936,7 +3936,7 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 ### tab_groups (EXT-F-4163)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 1. **Controls:** 6.
+**Role status:** guest: N/A · member: Partial · admin: Unverified. **Cases:** 1. **Controls:** 6.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0148
 
@@ -3944,7 +3944,12 @@ Registered tools are executor capabilities, listed separately from the visible T
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-4163-T01 Controlled manual execution: tab_groups | N/A | Unverified | Unverified | EXT-F-4163-C01, EXT-F-4163-C02, EXT-F-4163-C03, EXT-F-4163-C04, EXT-F-4163-C05, EXT-F-4163-C06 |
+| EXT-F-4163-T01 Controlled manual execution: tab_groups | N/A | Partial | Unverified | EXT-F-4163-C01, EXT-F-4163-C02, EXT-F-4163-C03, EXT-F-4163-C04, EXT-F-4163-C05, EXT-F-4163-C06 |
+
+**Recorded case details and evidence:**
+
+- EXT-F-4163-T01 · member: Partial. Independent native review accepts the bounded member tab_groups create collapsed=true and get_tab_groups readback; Chrome confirmed collapsed state and exact owned-tab group membership, and cleanup was verified. All three retained resource journals are valid. This does not complete T01: collapsed=false, update/add/remove/list, reload, invalid-schema behavior, admin, permissions, and full feature acceptance remain unverified.
+  Evidence / build / date recorded: 38114610597, docs/stabilization/evidence/d148-tabgroups-member/run38114610597/receipt.sanitized.json, 2026-10-11T05:41:00Z, ['docs/stabilization/runs/d148-tabgroups-member-run38114610597.json', 'docs/stabilization/reports/d148-tabgroups-member-native-peer-20261011.json', 'docs/stabilization/evidence/d148-tabgroups-member/run38114610597/native-report.sanitized.json', 'docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-package-38114610597.jsonl', 'docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-browser-38114610597.jsonl', 'docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-guest-38114610597.jsonl']
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
 

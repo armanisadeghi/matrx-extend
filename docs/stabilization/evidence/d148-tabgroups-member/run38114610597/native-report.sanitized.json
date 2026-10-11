@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-4163-T01",
+  "status": "passed",
+  "scope": "member Tools > Catalog manual runner; tab_groups create collapsed=true only",
+  "stage": "cleanup",
+  "artifact": {
+    "source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+    "ci_run_id": 38112620925,
+    "ci_artifact_id": 11691669564,
+    "version": "0.2.492",
+    "tree_sha256": "f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c"
+  },
+  "authentication": {
+    "member_signed_in": true,
+    "non_admin_identity": true,
+    "organization_selected": true
+  },
+  "fixture": {
+    "owned_tab_count": 2,
+    "same_window": true,
+    "cleanup_verified": true
+  },
+  "manual_runner": {
+    "opened": true,
+    "all_handlers_selected": true,
+    "canonical_tool": true
+  },
+  "create": {
+    "create_ok": true,
+    "group_id_observed": true,
+    "chrome_group_matches": true,
+    "chrome_collapsed": true,
+    "chrome_membership_matches": true,
+    "readback_matches": true,
+    "passed": true,
+    "collapsed_requested": true
+  },
+  "readback": {
+    "list_count": 1,
+    "group_match": true
+  },
+  "fixture_group_id": 777164355,
+  "failure_code": null,
+  "failure_stage": null,
+  "failure_step": null,
+  "cleanup_failure_code": null,
+  "manual_runner_step": "tab_groups_form_ready",
+  "manual_runner_observation": null,
+  "native_stage": "exercise_panel"
+}

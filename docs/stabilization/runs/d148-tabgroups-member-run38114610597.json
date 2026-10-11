@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "report_id": "d148-tabgroups-member-run38114610597",
+  "case_id": "EXT-F-4163-T01",
+  "defect_id": "EXT-D-0148",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "ci_run_id": 38112620925,
+    "ci_artifact_id": 11691669564,
+    "artifact_name": "matrx-extend-development-test-83cd72b6c9a0b6cce5887c1f561668539e6d8259-38112620925-1",
+    "source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+    "version": "0.2.492",
+    "artifact_digest": "sha256:09dad80186549b94f08f48090834997cf709801a3628f35f6cc4a28b925aef38",
+    "tree_sha256": "f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c",
+    "provenance_gate_passed": true,
+    "selector_fix_commit": "6fadf1b1a"
+  },
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "checkout_sha": "b08cde49d38bd0e9c926b969a62ac03bff68b669",
+    "run_id": 38114610597,
+    "job_id": 114396918073,
+    "artifact_id": 11693117210,
+    "artifact_name": "hosted-guest-38114610597-1",
+    "artifact_digest": "sha256:a0f67ff78e489a0d818dff70f29f6b28043f63a6e74b3730005c7e8312eeeea4",
+    "artifact_size_bytes": 70462,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38114610597",
+    "event": "workflow_dispatch",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "case": "tab-groups-member",
+    "status": "success",
+    "conclusion": "success"
+  },
+  "native_result": {
+    "status": "passed",
+    "authentication": {
+      "member_signed_in": true,
+      "non_admin_identity": true,
+      "organization_selected": true
+    },
+    "fixture": {
+      "owned_tab_count": 2,
+      "same_window": true,
+      "cleanup_verified": true
+    },
+    "manual_runner": {
+      "opened": true,
+      "all_handlers_selected": true,
+      "canonical_tool": true
+    },
+    "create": {
+      "create_ok": true,
+      "collapsed_requested": true,
+      "chrome_collapsed": true,
+      "chrome_group_matches": true,
+      "chrome_membership_matches": true,
+      "readback_matches": true,
+      "passed": true
+    },
+    "readback": {
+      "list_count": 1,
+      "group_match": true
+    },
+    "failure_code": null,
+    "failure_stage": null,
+    "failure_step": null,
+    "cleanup_failure_code": null
+  },
+  "resource_finals": "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-finals.sanitized.json",
+  "resource_journals": [
+    "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-package-38114610597.jsonl",
+    "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-browser-38114610597.jsonl",
+    "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-guest-38114610597.jsonl"
+  ],
+  "resource_validity": "valid; all three exact run-and-attempt journals have one final valid decision and the guest journal contains watch samples",
+  "acceptance_credit": {
+    "status": "partial",
+    "bounded_behavior": "member tab_groups create with collapsed=true, Chrome group/membership readbacks, and get_tab_groups readback",
+    "excluded": "The rest of T01, collapsed=false, update/add/remove/list, invalid schema input, reload, admin, current-main, release, and Store behavior are unverified."
+  },
+  "peer_review": "docs/stabilization/reports/d148-tabgroups-member-native-peer-20261011.json",
+  "evidence": "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/native-report.sanitized.json",
+  "cleanup": {
+    "temporary_github_secret_deleted": true,
+    "github_secret_absence_verified": true,
+    "local_one_time_link_deleted": true,
+    "local_link_absence_verified": true,
+    "private_identity_file_preserved": true,
+    "credential_values_recorded": false
+  },
+  "limits": [
+    "This run proves only member tab_groups create with collapsed=true on the frozen CI development artifact; collapsed=false, update, add, remove, standalone list, full feature, release, Store-installed, and current-main artifact behavior remain unverified.",
+    "The initial depth-limited artifact listing missed journals nested under the artifact common root. Full recursive review found and validated all three finalized journals; sanitized copies are retained at the paths above.",
+    "The member case is partial, not a pass. EXT-D-0148 remains fixed and open to original collapsed=false plus surrounding update/add/remove/list native retests; admin, full feature, release, Store, and current-main evidence remain unverified."
+  ],
+  "next_action": "Complete the remaining member T01 actions, including collapsed=false and update/add/remove/list native retests, then independently review them before changing defect state."
+}

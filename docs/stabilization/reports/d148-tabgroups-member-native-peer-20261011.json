@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_native_peer_review",
+  "review_revision": 2,
+  "reviewer": "/root/d148_member_native_peer_38114610597",
+  "reviewed_at": "2026-10-11",
+  "feature_id": "EXT-F-4163",
+  "defect_id": "EXT-D-0148",
+  "case_id": "EXT-F-4163-T01",
+  "hosted_run_id": 38114610597,
+  "source_provenance": {
+    "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38114610597",
+    "workflow_checkout_sha": "b08cde49d38bd0e9c926b969a62ac03bff68b669",
+    "product_artifact_source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+    "product_artifact_run_id": 38112620925,
+    "product_artifact_id": 11691669564,
+    "product_artifact_digest": "sha256:09dad80186549b94f08f48090834997cf709801a3628f35f6cc4a28b925aef38",
+    "product_tree_sha256": "f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c",
+    "workflow_artifact_id": 11693117210,
+    "workflow_artifact_name": "hosted-guest-38114610597-1",
+    "workflow_artifact_digest": "sha256:a0f67ff78e489a0d818dff70f29f6b28043f63a6e74b3730005c7e8312eeeea4",
+    "run_conclusion": "success",
+    "selector_fix_commit": "6fadf1b1ac67eb262c4a6d9d8d766b78239bd06b",
+    "workflow_driver_and_tools_selector_sha256_equal_between_workflow_and_product_source": true,
+    "runtime_claim": "One member manual-runner create with collapsed=true on frozen CI development artifact 0.2.492 only."
+  },
+  "verdicts": {
+    "A_behavior_and_evidence": "PASS",
+    "B_harness_provenance_and_quality": "PARTIAL"
+  },
+  "correction": "Revision 2 supersedes the initial resource-evidence failure: the first artifact listing was depth-limited and missed the nested journals. Full recursive artifact inspection found and validated all three exact run-and-attempt journals; sanitized copies and hashes are now retained below.",
+  "resource_journal_evidence": [
+    {
+      "run_id": "hosted-package-38114610597-1",
+      "sha256": "ee9393242fa371ba39134e97794e328ae8b249c5be9cc1dd3a8f9c2adcecc02e",
+      "final_decision": "valid"
+    },
+    {
+      "run_id": "hosted-browser-38114610597-1",
+      "sha256": "c4670d5f84f8dae4abf1af4a457951008624886435caa1460d5ab0ee6b4cccee",
+      "final_decision": "valid"
+    },
+    {
+      "run_id": "hosted-guest-38114610597-1",
+      "sha256": "ee3a81a59df3c1be095129997cdea317e9c6f6e2df5208ae847bb8cca3f8b688",
+      "final_decision": "valid"
+    }
+  ],
+  "behavior_evidence": {
+    "member_identity": "PASS: the artifact report says member_signed_in=true, non_admin_identity=true, and organization_selected=true. The workflow configured the member link secret and admitted this case only on lane A.",
+    "controlled_fixture": "PASS: two owned tabs in the same window were created for this case, and cleanup_verified=true with no cleanup failure.",
+    "manual_runner": "PASS: the native report records the Tools Catalog manual runner open, all handlers selected, and canonical tool invocation.",
+    "create_and_chrome_state": "PASS as an observed bounded behavior: canonical tab_groups create returned ok with a group id; collapsed=true was requested; Chrome tabGroups.get reported collapsed=true; the two tab ids matched Chrome group membership.",
+    "canonical_readback": "PASS as an observed bounded behavior: the actual artifact report records a get_tab_groups list count of 1 and group_match=true for the created group.",
+    "resource_credit": "PASS: direct listing of the complete downloaded artifact found all three finalized journals nested under matrx-extend/matrx-extend/docs/stabilization/resource-journals/. Each exact run-and-attempt journal has one last RESOURCE_FINAL_DECISION with admitted=true, resourceInvalid=false, exitCode=0, decision=valid. The package and browser commands ended within one 15-second watch interval after admission; the guest journal contains periodic watch samples through cleanup. Sanitized copies are retained with the run. This supports acceptance credit for the bounded observation below.",
+    "temporary_credentials": "The sanitized run manifest and receipt record temporary GitHub secret deletion and absence verification, local one-time link deletion and absence verification, preservation of the private reviewer identity file, and credential_values_recorded=false. The downloaded artifact contains no credential values. The workflow runner source also removes the staged member-link file in its finally path. The raw hosted log does not independently show a GitHub-secret absence check, so that particular removal remains supported by the sanitized boolean attestation rather than a raw API observation.",
+    "screenshots": "The actual artifact contains native-side-panel.png and normal-target-after-open.png, which are generic native QA images and do not show the tab-group create/readback state. They do not contradict the native DOM/CDP-backed report but provide no visual corroboration for this behavior."
+  },
+  "harness_and_quality": {
+    "provenance": "PASS: GitHub run metadata reports workflow checkout b08cde49d38bd0e9c926b969a62ac03bff68b669, workflow_dispatch, macos-15 ARM64, and successful exercise/upload steps. The exercise log records importing exact pushed CI development artifact source 83cd72b6c9a0b6bce5887c1f561668539e6d8259 and its matching tree hash. The hosted artifact metadata digest matches the report.",
+    "selector_fix": "PASS: commit 6fadf1b1a is present in product source 83cd72b6. It moves Tools-tab matching to toolsTab(), accepting either title=Tools or data-matrx-title=Tools, and updates readiness checks to use that selector. SHA-256 comparisons show the driver and selector helper are byte-identical at product source and workflow checkout revisions.",
+    "behavior_oracle": "The frozen native driver invokes the rendered tab_groups manual form with {action:create, tab_ids, title, color, collapsed:true}; reads chrome.tabGroups.get and chrome.tabs.query for the returned group; then invokes get_tab_groups through the manual runner and compares its result with the native state. It also has an owned-tab cleanup path that ungroups/removes only its created tab IDs and verifies their absence.",
+    "resource_record_contract": "PASS: the artifact ZIP's common-root layout placed all three journals below matrx-extend/matrx-extend/docs/stabilization/resource-journals/, which the earlier depth-limited listing missed. All three exact run-and-attempt journals were parsed and passed the existing copyHostedResourceJournal sanitizer; final events are last and valid. Sanitized journal copies are now attached in the repository evidence folder and named by phase.",
+    "artifact_visual_quality": "PARTIAL: screenshots do not correspond to the tested feature state, so visual review cannot corroborate the native report. The functional report itself has concrete booleans and an explicit native stage.",
+    "overall_quality_effect": "The native observation is resource-valid and earns bounded member collapsed=true create/readback credit. Verdict B remains partial because the artifact screenshots are generic startup images rather than images of the tested state. The case is broader than this one behavior, and admin, collapsed=false, update/add/remove, standalone list, schema-negative input, reload, and full-feature coverage remain open; retain the fixed defect state without closing it."
+  },
+  "scope_limits": [
+    "Observed evidence covers only a signed-in non-admin member invoking tab_groups create with collapsed=true through the manual Tools Catalog and reading back the created group with get_tab_groups.",
+    "This does not prove collapsed=false, update, add, remove, standalone list, agent-dispatched calls, admin behavior, full feature coverage, release or Store-installed behavior, or current-main artifact behavior.",
+    "No native run was launched during review. No product source, workflow, defect, credential, or secret state was changed. The D148 run record, sanitized evidence, peer report, inventory link, and coordinator bookkeeping were updated; the registered T01 case remains partial.",
+    "The current shared checkout had unrelated pre-existing dirty paths; they were left untouched."
+  ],
+  "verification": {
+    "hosted_metadata": "Read GitHub run 38114610597 metadata, job steps, artifact metadata, and original hosted workflow logs.",
+    "artifact": "Downloaded hosted-guest-38114610597-1 to a temporary directory and compared its native JSON report to the sanitized evidence copy. Full recursive listing found the three resource journals under the nested common-root path; all were validated and sanitized into retained evidence.",
+    "source": "Compared the exact product source 83cd72b6b9 and workflow checkout b08cde49d38 across the tab-group native driver and selector helper; reviewed selector fix commit 6fadf1b1a.",
+    "resource_policy": "Applied docs/stabilization/PLAN.md § resource-journal contract: exact completed journal files with final decision and sufficient watch evidence establish resource validity. All three artifact journals meet that contract.",
+    "tests_run": false
+  },
+  "files_reviewed": [
+    "docs/stabilization/PLAN.md",
+    "docs/stabilization/runs/d148-tabgroups-member-run38114610597.json",
+    "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/native-report.sanitized.json",
+    "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/receipt.sanitized.json",
+    "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-package-38114610597.jsonl",
+    "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-browser-38114610597.jsonl",
+    "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/resource-guest-38114610597.jsonl",
+    "docs/stabilization/defects/EXT-D-0148.json",
+    "docs/stabilization/inventory.json",
+    "tests/browser/tab-groups-member-native-acceptance.mjs",
+    "tests/browser/tab-groups-manual-runner.mjs",
+    "tests/browser/tab-groups-member-failure.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/hosted-guest-acceptance.mjs",
+    "GitHub artifact 11693117210: tab-groups-member-native-acceptance.json, three nested resource journals, and two screenshots",
+    "GitHub workflow log for run 38114610597"
+  ],
+  "files_touched": [
+    "docs/stabilization/reports/d148-tabgroups-member-native-peer-20261011.json",
+    "docs/stabilization/runs/d148-tabgroups-member-run38114610597.json",
+    "docs/stabilization/evidence/d148-tabgroups-member/run38114610597/",
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html"
+  ]
+}
