@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T05:59:43Z",
+  "updated_at": "2026-10-11T19:29:47Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -27604,14 +27604,20 @@
               "status": "partial",
               "passed_subtargets": [
                 "manual_button_returns_to_current_page",
-                "guest_reaudit_captures_changed_page_metadata"
+                "guest_reaudit_captures_changed_page_metadata",
+                "notice_narrow_warm_navigation_reaudit_clearance",
+                "notice_wide_warm_navigation_reaudit_clearance"
               ],
               "unverified_dimensions": [
                 "running button state",
                 "stale advice replacement",
                 "failure report",
                 "displayed description directly matches changed page",
-                "reload"
+                "reload",
+                "Dismiss and post-Dismiss reload following the notice-visible Re-audit attempt in run 38167373687",
+                "Multiple or long notices",
+                "Native normal-width clearance (the 480px observation was emulated)",
+                "Notice-visible full reload"
               ],
               "run_id": "38016503649",
               "source_sha": "987a3e08d811c03aa9fc2b82a92d4e51cd45d29a",
@@ -27622,7 +27628,10 @@
                 ".research/seo-controlled-followon-38016503649-peer.json",
                 ".research/seo-controlled-followon-38016503649-originals/seo-guest-acceptance.json",
                 "docs/stabilization/evidence/guest-seo-controlled/run38041517954/receipt.sanitized.json",
-                "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json"
+                "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json",
+                "docs/stabilization/reports/seo-notice-only-run-independent-review-38167373687.json",
+                "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/receipt.sanitized.json",
+                "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/native-report.sanitized.json"
               ],
               "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T02 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred.",
               "qualification": "The direct re-audit view assertion verifies the changed title, not the displayed description. Exact T14 clipboard readback after re-audit is indirect evidence that the changed social snippet was captured.",
@@ -27647,9 +27656,53 @@
                     "docs/stabilization/evidence/guest-seo-controlled/run38041517954/native-report.sanitized.json"
                   ],
                   "scope": "Reviewed controlled guest subtargets only; existing deferred dimensions remain open. No full SEO/current-main/Store/member/admin claim."
+                },
+                {
+                  "source_sha": "67f3c3d398909f4e1316a221800afee798d45906",
+                  "build_version": "0.2.502",
+                  "development_ci_run_id": 38166523824,
+                  "development_artifact_id": 11711963526,
+                  "tree_sha256": "490c43018ba2ed898101fb37dfd76ec217c9ad9bf79973e17aa0a2cada7ae170",
+                  "run_id": 38167373687,
+                  "workflow_source_sha": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f",
+                  "hosted_result_artifact_id": 11712024079,
+                  "status": "partial",
+                  "resource_valid": true,
+                  "passed_subtargets": [
+                    "notice_narrow_warm_navigation_reaudit_clearance",
+                    "notice_wide_warm_navigation_reaudit_clearance"
+                  ],
+                  "subtarget_evidence": [
+                    {
+                      "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+                      "viewport_width_px": 360,
+                      "viewport_source": "native",
+                      "refusal_notice_visible": true,
+                      "target_hit_points": 9,
+                      "notice_hit_points": 0
+                    },
+                    {
+                      "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+                      "viewport_width_px": 480,
+                      "viewport_source": "emulated",
+                      "refusal_notice_visible": true,
+                      "target_hit_points": 9,
+                      "notice_hit_points": 0
+                    }
+                  ],
+                  "unverified_subtargets": [
+                    "manual_button_returns_to_current_page",
+                    "dismissed_notice_stays_clear_after_reload"
+                  ],
+                  "evidence": [
+                    "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/receipt.sanitized.json",
+                    "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/native-report.sanitized.json",
+                    "docs/stabilization/reports/seo-notice-only-run-independent-review-38167373687.json"
+                  ],
+                  "scope": "Two geometry-only notice-clearance subtargets; guest click ended at manual_reaudit_running_wait_sample and did not establish Re-audit completion, Dismiss/reload, other widths, full T02, current-main runtime or Store behavior."
                 }
               ],
-              "detail": " Reviewed frozen guest controlled run38041517954 adds 2 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass."
+              "detail": "Reviewed hosted run 38167373687 on frozen v0.2.502 adds only two guest T02 notice-clearance geometry subtargets: native 360px and emulated 480px, each with the refusal notice visible, 9/9 target-owned and 0 notice-owned hit points. The trusted Re-audit wait did not observe reAudit=false and Dismiss/reload were not reached. Prior bounded T02 evidence remains credited; all other dimensions and full T02 remain unverified, with EXT-D-0199 fixed/open."
             }
           },
           "result_history": [
@@ -27861,6 +27914,59 @@
                 "release_scope": "Guest behavior on exact imported unpublished development artifact; 22 of 23 selected targets passed and one remained unverified. Workflow driver checkout 54cd2de; extension bytes from CI source eb5fc114. Other guest cases, member/admin modes, latest-main product bytes and Store acceptance are not inferred."
               },
               "superseded_at": "2026-10-10T02:25:54.623Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "38167373687",
+                "artifact_version": "0.2.502",
+                "artifact_source_sha": "67f3c3d398909f4e1316a221800afee798d45906",
+                "resource_valid": true,
+                "observed_subtargets": [
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+                    "status": "pass",
+                    "evidence": {
+                      "viewportWidth": 360,
+                      "viewportSource": "native",
+                      "refusalNoticeVisible": true,
+                      "targetHitPoints": 9,
+                      "noticeHitPoints": 0
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+                    "status": "pass",
+                    "evidence": {
+                      "viewportWidth": 480,
+                      "viewportSource": "emulated",
+                      "refusalNoticeVisible": true,
+                      "targetHitPoints": 9,
+                      "noticeHitPoints": 0
+                    }
+                  },
+                  {
+                    "case_id": "EXT-F-1008-T02",
+                    "subtarget": "manual_button_returns_to_current_page",
+                    "status": "unverified",
+                    "evidence": {
+                      "clickPhase": "release_returned",
+                      "lastSafeStage": "manual_reaudit_running_wait_sample",
+                      "reAudit": true,
+                      "error": false
+                    }
+                  }
+                ],
+                "evidence": [
+                  "docs/stabilization/reports/seo-notice-only-run-independent-review-38167373687.json",
+                  "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/receipt.sanitized.json",
+                  "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/native-report.sanitized.json"
+                ],
+                "detail": "Two geometry-only T02 targets pass: native 360px and emulated 480px, each with the refusal notice visible, 9/9 target-owned hit points and zero notice-owned points. Trusted click returned, but Re-audit completion was not observed within the wait; Dismiss/reload were not reached. D199 remains fixed/open; full T02 unverified."
+              }
             }
           ],
           "defect_ids": [
@@ -30507,11 +30613,11 @@
             "38041517954",
             "38045276587",
             "38107414974",
-        "38124088927",
-        "38157769699",
-        "38160708149"
+            "38124088927",
+            "38157769699",
+            "38160708149"
           ],
-      "retest_status": "Partial surface. Reviewed frozen129 controlled guest run38041517954 passes 19 named subtargets across T01/T02/T03/T07/T09/T14; all deferred criteria remain open. Earlier known-text readability evidence retains its own frozen-artifact provenance. No full SEO/current-main/Store/member/admin promotion. Reviewed run 38045276587 adds five new passing guest T09 targets and one unverified hreflang/schema-door target; its 19 repeated targets are duplicates of 38041517954. No duplicate credit; all six guest SEO cases and feature remain partial. Frozen v0.2.459, not current-main or Store. Three sanitized completed journals were later recovered and independently reviewed by a separate addendum; the original peer review remains immutable. Reviewed hosted run 38107414974 on exact development v0.2.490 source 5b01a35 (CI 38106946361/artifact 11690348157) and independent native peer report PASS_BOUNDED only for guest T09 guest_detail_content_and_controls_reachable_at_360px. The narrow-panel dimension is covered; the feature cell and T09 remain partial. Report omits numeric layout/target counts, screenshots do not show the SEO pane, and no independent reproduction occurred. All other cases/dimensions, member/admin and Store behavior remain unverified; on-disk promotion receipt records Chrome-loaded state as unverified. Bounded guest T06 synthetic history error/Retry/fresh-empty path passed independently on frozen development v0.2.493 in run 38124088927; run 38157769699 repeated T06 without new credit and diagnosed all Re-audit hit points blocked by a persistent notice. EXT-D-0199 has a source-reviewed shared layout fix at f3a7f8294. Independently reviewed frozen v0.2.499 hosted run 38160708149 passes the original guest obstruction reproduction: five notice-visible snapshots show 9/9 Re-audit target hits, trusted Re-audit settles on the current page, and Dismiss removes the notice; all three resource finals are valid. This is a bounded T02 subtarget, not a full T02 pass; multiple/long notices, narrow/normal widths, warm/full reload and other roles remain unverified, so D0199 stays fixed/open. Live backend, reload, member/admin, current-main runtime and Store remain unverified."
+          "retest_status": "Partial surface. Reviewed frozen129 controlled guest run38041517954 passes 19 named subtargets across T01/T02/T03/T07/T09/T14; all deferred criteria remain open. Earlier known-text readability evidence retains its own frozen-artifact provenance. No full SEO/current-main/Store/member/admin promotion. Reviewed run 38045276587 adds five new passing guest T09 targets and one unverified hreflang/schema-door target; its 19 repeated targets are duplicates of 38041517954. No duplicate credit; all six guest SEO cases and feature remain partial. Frozen v0.2.459, not current-main or Store. Three sanitized completed journals were later recovered and independently reviewed by a separate addendum; the original peer review remains immutable. Reviewed hosted run 38107414974 on exact development v0.2.490 source 5b01a35 (CI 38106946361/artifact 11690348157) and independent native peer report PASS_BOUNDED only for guest T09 guest_detail_content_and_controls_reachable_at_360px. The narrow-panel dimension is covered; the feature cell and T09 remain partial. Report omits numeric layout/target counts, screenshots do not show the SEO pane, and no independent reproduction occurred. All other cases/dimensions, member/admin and Store behavior remain unverified; on-disk promotion receipt records Chrome-loaded state as unverified. Bounded guest T06 synthetic history error/Retry/fresh-empty path passed independently on frozen development v0.2.493 in run 38124088927; run 38157769699 repeated T06 without new credit and diagnosed all Re-audit hit points blocked by a persistent notice. EXT-D-0199 has a source-reviewed shared layout fix at f3a7f8294. Independently reviewed frozen v0.2.499 hosted run 38160708149 passes the original guest obstruction reproduction: five notice-visible snapshots show 9/9 Re-audit target hits, trusted Re-audit settles on the current page, and Dismiss removes the notice; all three resource finals are valid. This is a bounded T02 subtarget, not a full T02 pass; multiple/long notices, narrow/normal widths, warm/full reload and other roles remain unverified, so D0199 stays fixed/open. Live backend, reload, member/admin, current-main runtime and Store remain unverified."
         },
         "member": {
           "test_status": "unverified",

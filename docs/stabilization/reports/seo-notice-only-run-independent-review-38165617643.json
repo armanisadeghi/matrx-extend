@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_seo_notice_only_run_review",
+  "reviewer": "seo_notice_only_scope_peer",
+  "reviewed_at_utc": "2026-10-11T19:02:41Z",
+  "defect_id": "EXT-D-0199",
+  "feature_id": "EXT-F-1008",
+  "hosted_run": {
+    "id": 38165617643,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38165617643",
+    "status": "completed",
+    "conclusion": "failure",
+    "workflow_source_sha": "994daa1dfbb31c6dfbb40f61e869b6439315a844",
+    "inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "notice",
+      "seo_metadata_fixture": "none",
+      "seo_resource_diagnostic": "false",
+      "seo_interrupt_after_target": "none"
+    }
+  },
+  "product_provenance": {
+    "status": "verified",
+    "ci_run_id": 38164967463,
+    "ci_run_conclusion": "success",
+    "ci_head_sha": "994daa1dfbb31c6dfbb40f61e869b6439315a844",
+    "artifact_id": 11712111232,
+    "artifact_name": "matrx-extend-development-test-994daa1dfbb31c6dfbb40f61e869b6439315a844-38164967463-1",
+    "artifact_digest": "sha256:4a2267eace9b699cd5bf9e4aae82da6e338a81b575a9b4388243509dd8e8adf4",
+    "product_source_sha": "994daa1dfbb31c6dfbb40f61e869b6439315a844",
+    "version": "0.2.501",
+    "tree_sha256": "114dbad54c7250840d492621ce692e05620b51b5108ee033f83ae49a227a63fb",
+    "publish_state": "not_published"
+  },
+  "result_artifact": {
+    "artifact_id": 11712181888,
+    "artifact_name": "hosted-guest-38165617643-1",
+    "github_digest": "sha256:a4f0883bc944141ec0b851ca12ad546e6cd6fb3e16ced5e0efcc0bebcc40d646",
+    "downloaded_zip_sha256": "a4f0883bc944141ec0b851ca12ad546e6cd6fb3e16ced5e0efcc0bebcc40d646",
+    "digest_match": true,
+    "contents": [
+      "docs/stabilization/resource-journals/hosted-package-38165617643-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38165617643-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38165617643-1.jsonl",
+      "test-results/seo-guest-acceptance.json"
+    ]
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid"
+    }
+  },
+  "product_behavior": {
+    "verdict": "NO_PRODUCT_VERDICT; ZERO_SUBTARGET_CREDIT",
+    "reason": "The guest driver failed before establishing a native browser session or recording any SEO interaction; the resource owner also marked the guest phase invalid.",
+    "native_report": {
+      "mode": "guest",
+      "status": "unverified",
+      "targets": [],
+      "case_selection": {
+        "scope": "notice",
+        "selected_cases": ["T02"],
+        "selected_subtargets": [
+          "notice_narrow_warm_navigation_reaudit_clearance",
+          "notice_wide_warm_navigation_reaudit_clearance",
+          "manual_button_returns_to_current_page",
+          "dismissed_notice_stays_clear_after_reload"
+        ],
+        "excluded_cases": ["all other SEO targets; no full T02 or D199 closure"]
+      },
+      "last_safe_stage": "build_identity_verified",
+      "failure_stage": "build_identity_verified",
+      "failure_code": "owned_cdp_endpoint_timeout"
+    },
+    "failed_boundary": {
+      "stage": "native browser startup",
+      "observation": "Chromium spawn was observed, but the owned CDP endpoint did not become available within 8,022 ms (214 polls; longest read 215 ms).",
+      "last_safe_product_stage": "build_identity_verified",
+      "notice_viewport_plan_recorded": false
+    },
+    "resource_boundary": {
+      "guest_admitted_at": "2026-10-11T18:59:35.946Z",
+      "healthy_watch_at": "2026-10-11T18:59:52.372Z",
+      "first_unsafe_observation_at": "2026-10-11T19:00:08.552Z",
+      "unsafe_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+      "cpu_busy_fraction": 1,
+      "one_minute_load": 10.23,
+      "logical_cpus": 4,
+      "swap_used_mib": 0,
+      "process_attribution": "The sanitized snapshot showed high activity from macOS system services and provisioning, with Chromium also present; it does not establish a single cause.",
+      "child_exit": 1,
+      "guard_exit": 3,
+      "classification": "resource-invalid infrastructure failure; no product-fail verdict"
+    },
+    "not_established": [
+      "360px native warm-navigation hit sample",
+      "480px emulated warm-navigation hit sample",
+      "trusted Re-audit with refusal notice visible",
+      "Dismiss and post-Dismiss reload behavior",
+      "native viewport restoration",
+      "multiple/long notices and notice-visible full reload",
+      "full T02 or D199 closure"
+    ]
+  },
+  "cleanup": {
+    "hosted_job": "completed; ephemeral hosted runner teardown",
+    "browser_profile_restore": "not evidenced in the uploaded artifact",
+    "fixture_cleanup": "no driver fixture or notice sequence was reached; no product fixture mutation is evidenced"
+  },
+  "evidence": {
+    "uploaded_native_report": "test-results/seo-guest-acceptance.json",
+    "uploaded_resource_journals": [
+      "docs/stabilization/resource-journals/hosted-package-38165617643-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38165617643-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38165617643-1.jsonl"
+    ],
+    "github_log": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38165617643"
+  },
+  "next_action": "Keep EXT-D-0199 fixed/open. Treat this attempt as a resource-invalid browser-startup failure, not a product regression or pass. Resolve or avoid host startup contention without changing resource thresholds, then repeat the same bounded notice scope on a fresh admitted runner."
+}

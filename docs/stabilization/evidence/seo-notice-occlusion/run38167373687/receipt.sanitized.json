@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38167373687,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38167373687",
+  "workflow_source_sha": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f",
+  "workflow_conclusion": "failure",
+  "product_source": {
+    "ci_run_id": 38166523824,
+    "ci_conclusion": "success",
+    "source_sha": "67f3c3d398909f4e1316a221800afee798d45906",
+    "version": "0.2.502",
+    "artifact_id": 11711963526,
+    "artifact_name": "matrx-extend-development-test-67f3c3d398909f4e1316a221800afee798d45906-38166523824-1",
+    "artifact_digest": "sha256:63d30075b21e65599bcd25312fd618fefb4a8118c6bb5946e34bfbf221daf6d5",
+    "tree_sha256": "490c43018ba2ed898101fb37dfd76ec217c9ad9bf79973e17aa0a2cada7ae170",
+    "publish_state": "not_published"
+  },
+  "result_artifact": {
+    "artifact_id": 11712024079,
+    "name": "hosted-guest-38167373687-1",
+    "github_digest": "sha256:5abb0178c0f9b441e8756f68c04349b461b58ab2c632a8f3bdce80f29b4ebe49",
+    "downloaded_archive_digest_matches": true
+  },
+  "inputs": {
+    "acceptance_lane": "B",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "notice",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": false,
+    "seo_interrupt_after_target": "none"
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "failure_boundary": {
+    "stage": "manual_reaudit_running_wait_sample",
+    "operation": "wait for scope-valid SEO content with reAudit=false after the trusted Re-audit click",
+    "last_safe_observable": {
+      "scopeValid": true,
+      "page_title_matches_expected": true,
+      "auditButtonPresent": true,
+      "auditButtonDisabled": false,
+      "auditSpinner": false,
+      "reAudit": true,
+      "error": false
+    },
+    "click_phase": "release_returned"
+  },
+  "evidence_files": [
+    "native-report.sanitized.json",
+    "resource-journals/hosted-package-38167373687-1.jsonl",
+    "resource-journals/hosted-browser-38167373687-1.jsonl",
+    "resource-journals/hosted-guest-38167373687-1.jsonl",
+    "native-side-panel.png",
+    "normal-target-after-open.png"
+  ],
+  "limitations": [
+    "Resource journals show all three finals; guest is a valid-resource child failure, not a resource-invalid result.",
+    "The screenshots do not show the SEO pane or refusal notice; the JSON contains the native hit observations.",
+    "No multiple/long notices, Dismiss, post-Dismiss reload, native viewport restoration, member/admin, or Store behavior was established."
+  ]
+}

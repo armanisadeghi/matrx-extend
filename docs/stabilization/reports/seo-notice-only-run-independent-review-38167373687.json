@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_seo_notice_only_run_review",
+  "reviewer": "seo_notice_latest_peer",
+  "reviewed_at_utc": "2026-10-11T19:27:16Z",
+  "defect_id": "EXT-D-0199",
+  "feature_id": "EXT-F-1008",
+  "hosted_run": {
+    "id": 38167373687,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38167373687",
+    "status": "completed",
+    "conclusion": "failure",
+    "workflow_source_sha": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f",
+    "inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "notice",
+      "seo_metadata_fixture": "none",
+      "seo_resource_diagnostic": "false",
+      "seo_interrupt_after_target": "none"
+    }
+  },
+  "product_provenance": {
+    "status": "verified",
+    "ci_run_id": 38166523824,
+    "ci_run_conclusion": "success",
+    "ci_head_sha": "67f3c3d398909f4e1316a221800afee798d45906",
+    "workflow_sha_is_docs_only": true,
+    "workflow_commit_changed": [
+      "docs/stabilization/reports/seo-notice-only-run-independent-review-38165617643.json"
+    ],
+    "artifact_id": 11711963526,
+    "artifact_digest": "sha256:63d30075b21e65599bcd25312fd618fefb4a8118c6bb5946e34bfbf221daf6d5",
+    "product_source_sha": "67f3c3d398909f4e1316a221800afee798d45906",
+    "version": "0.2.502",
+    "tree_sha256": "490c43018ba2ed898101fb37dfd76ec217c9ad9bf79973e17aa0a2cada7ae170",
+    "publish_state": "not_published"
+  },
+  "result_artifact": {
+    "artifact_id": 11712024079,
+    "artifact_name": "hosted-guest-38167373687-1",
+    "github_digest": "sha256:5abb0178c0f9b441e8756f68c04349b461b58ab2c632a8f3bdce80f29b4ebe49",
+    "downloaded_archive_digest": "5abb0178c0f9b441e8756f68c04349b461b58ab2c632a8f3bdce80f29b4ebe49",
+    "digest_match": true,
+    "contents": [
+      "docs/stabilization/resource-journals/hosted-package-38167373687-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38167373687-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38167373687-1.jsonl",
+      "test-results/seo-guest-acceptance.json",
+      "test-results/native-sidepanel-qa-SXwJAz/native-side-panel.png",
+      "test-results/native-sidepanel-qa-SXwJAz/normal-target-after-open.png"
+    ]
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "product_behavior": {
+    "verdict": "PARTIAL_BOUNDED_T02_GEOMETRY_ONLY",
+    "credit": [
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+        "verdict": "PASS_BOUNDED",
+        "evidence": "native viewport 360px; persistent refusal notice visible; one enabled Re-audit target; 9/9 target-owned hit points and 0 notice-owned hit points after warm navigation"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+        "verdict": "PASS_BOUNDED_EMULATED_WIDTH",
+        "evidence": "emulated viewport 480px; persistent refusal notice visible; one enabled Re-audit target; 9/9 target-owned hit points and 0 notice-owned hit points after warm navigation"
+      }
+    ],
+    "not_credited": [
+      "manual_button_returns_to_current_page: trusted click release returned, but required reAudit=false transition was not observed within the wait boundary; the native report remains unverified.",
+      "dismissed_notice_stays_clear_after_reload: not reached.",
+      "EXT-D-0199 retest-pass or closure; full EXT-F-1008-T02."
+    ],
+    "native_report": {
+      "status": "unverified",
+      "targets": [
+        {
+          "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+          "status": "pass",
+          "viewportWidth": 360,
+          "viewportSource": "native",
+          "refusalNoticeVisible": true,
+          "targetHitPoints": 9,
+          "noticeHitPoints": 0,
+          "navigatedTitleMatches": true
+        },
+        {
+          "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+          "status": "pass",
+          "viewportWidth": 480,
+          "viewportSource": "emulated",
+          "refusalNoticeVisible": true,
+          "targetHitPoints": 9,
+          "noticeHitPoints": 0,
+          "navigatedTitleMatches": true
+        }
+      ],
+      "last_safe_stage": "manual_reaudit_running_wait_sample",
+      "last_safe_observable": {
+        "scopeValid": true,
+        "page_title_matches_expected": true,
+        "auditButtonPresent": true,
+        "auditButtonDisabled": false,
+        "auditSpinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      "current_operation": "manual_reaudit_running_wait",
+      "click_phase": "release_returned"
+    },
+    "failure_boundary": {
+      "stage": "manual_reaudit_running_wait_sample",
+      "expected": "within the default 10-second wait, scope-valid SEO state reports reAudit=false after the trusted click",
+      "actual": "last retained sample still reports reAudit=true; click phase is release_returned; no error or spinner is visible",
+      "classification": "unresolved browser/oracle boundary; insufficient evidence to call a reproducible product defect",
+      "reason": "single run; no reproduced failure; the catch records the stage and last safe sample but omits waitFor's timeout diagnostic and transition trace"
+    },
+    "not_established": [
+      "Trusted Re-audit result or manual_button_returns_to_current_page",
+      "Dismiss, reload, and viewport restoration",
+      "Multiple or long notices",
+      "Member/admin, current-main runtime, and Store behavior"
+    ]
+  },
+  "cleanup": {
+    "hosted_job": "completed; ephemeral hosted runner teardown",
+    "browser_profile_restore": "not evidenced in the uploaded artifact",
+    "fixture_cleanup": "no persistent external fixture is evidenced; controlled notice setup is local to the hosted browser flow"
+  },
+  "evidence": {
+    "sanitized_run_receipt": "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/receipt.sanitized.json",
+    "uploaded_native_report": "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/native-report.sanitized.json",
+    "uploaded_resource_journals": [
+      "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/resource-journals/hosted-package-38167373687-1.jsonl",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/resource-journals/hosted-browser-38167373687-1.jsonl",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/resource-journals/hosted-guest-38167373687-1.jsonl"
+    ],
+    "native_screenshots": [
+      "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/native-side-panel.png",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/normal-target-after-open.png"
+    ],
+    "github_log": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38167373687"
+  },
+  "next_action": "Keep EXT-D-0199 fixed/open. Credit the native 360px and emulated 480px notice-clearance T02 geometry subtargets only. On the next fresh admitted run, isolate the post-click boundary and preserve privacy-safe reAudit/button/spinner/error transition samples plus the wait timeout diagnostic; no product bug claim until independently reproduced. Do not weaken the resource guard."
+}
