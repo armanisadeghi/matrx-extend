@@ -1,0 +1,61 @@
+{
+  "id": "guest-settings-sender-refresh-diagnostic-run38103073242",
+  "feature_id": "EXT-F-1003",
+  "case_id": "EXT-F-1003-T93",
+  "at": "2026-10-11T01:56:51Z",
+  "status": "unverified",
+  "evidence_class": "diagnostic_only",
+  "diagnostic": "reload_sender_document_diagnostic",
+  "hosted_run": "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/receipt.sanitized.json",
+  "hosted_run_id": 38103073242,
+  "workflow_source_sha": "fc9c27d75f0695573e60a9c1aaa4b30e51e83706",
+  "runner": { "label": "macos-15", "image": "macos-15-arm64", "arch": "ARM64", "machine": "arm64" },
+  "artifact": {
+    "development_run_id": 38099299069,
+    "development_artifact_id": 11687570702,
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "version": "0.2.490",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+  },
+  "comparison": {
+    "control_run_id": 38102203927,
+    "same_frozen_app_artifact": true,
+    "control_workflow_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "diagnostic_workflow_sha": "fc9c27d75f0695573e60a9c1aaa4b30e51e83706",
+    "causality_established": false,
+    "reason": "Harness workflow revisions differ."
+  },
+  "resource": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid final; child exit 1; resourceInvalid false"
+  },
+  "findings": {
+    "sender_refresh_requested": true,
+    "sender_refresh_completed": true,
+    "new_document_observed": true,
+    "same_url_observed": true,
+    "normalized_receipt_recorded": false,
+    "receipt_failure": "native_reload_sender_document_refresh_unverified",
+    "replacement_worker_callback_entered": false,
+    "open_panel_reply_observed": false,
+    "replacement_panel_created": false,
+    "t93_steps": 0,
+    "product_acceptance_credit": false,
+    "product_defect_inference": false
+  },
+  "independent_review": {
+    "status": "completed",
+    "verdict": "diagnostic_only_no_product_acceptance",
+    "summary": "Reviewer verified artifact/runner provenance, four raw refresh predicates, callback/panel boundary, resource finals, diagnostic-only status, and no T93 credit."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/hosted-package-38103073242-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/hosted-browser-38103073242-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/hosted-guest-38103073242-1.jsonl"
+  ],
+  "next_action": "Leave T93 unverified; no second run authorized."
+}

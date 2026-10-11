@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "unverified",
+  "evidence_class": "diagnostic_only",
+  "scope": "real native Chrome-for-Testing side panel; signed-out guest; Settings sender-document refresh diagnostic",
+  "build": {
+    "version": "0.2.490",
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
+    "verified": true,
+    "publish_state": "not_published"
+  },
+  "comparison": {
+    "unrefreshed_control_run_id": 38102203927,
+    "same_frozen_app_artifact": true,
+    "control_workflow_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "diagnostic_workflow_sha": "fc9c27d75f0695573e60a9c1aaa4b30e51e83706",
+    "causal_conclusion": "Not established: the compared runs used different harness workflow revisions."
+  },
+  "sender_document_refresh_receipt": {
+    "refresh_requested": true,
+    "refresh_completed": true,
+    "new_document_observed": true,
+    "same_url_observed": true
+  },
+  "diagnostic_summary": {
+    "enabled": true,
+    "evidence_class": "diagnostic_only",
+    "perturbation": "owned_sender_document_reload",
+    "normalized_receipt_recorded": false,
+    "receipt_failure": "native_reload_sender_document_refresh_unverified",
+    "explanation": "The nested retirement evidence contains all four true predicates, but extension reload failed before returning to the normalizer, so no normalized receipt was written."
+  },
+  "extension_reload_boundary": {
+    "status": "unverified",
+    "failure_code": "native_extension_replacement_panel_unverified",
+    "transport_failure_class": "none",
+    "old_worker_retired": true,
+    "old_panel_absent": true,
+    "replacement_worker_created": true,
+    "trusted_click_received": true,
+    "send_invoked": true,
+    "send_returned": true,
+    "callback_entered": false,
+    "callback_has_reply": false,
+    "callback_last_error": false,
+    "send_threw": false,
+    "panel_reply_observed": false,
+    "replacement_panel_target_created": false
+  },
+  "t93": {
+    "status": "unverified",
+    "steps": [],
+    "cleanup_error": "native_extension_live_panel_unavailable_for_cleanup",
+    "product_acceptance_credit": false,
+    "product_defect_inference": false
+  },
+  "resource": {
+    "package": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" },
+    "guest": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1,
+      "decision": "child_failed"
+    }
+  },
+  "privacy": {
+    "raw_hosted_report_persisted": false,
+    "screenshots_persisted": false,
+    "credentials_or_auth_values_persisted": false,
+    "raw_dom_or_page_text_persisted": false,
+    "target_ids_or_local_paths_persisted": false
+  }
+}
