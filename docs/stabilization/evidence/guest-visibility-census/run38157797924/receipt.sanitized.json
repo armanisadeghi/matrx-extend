@@ -1,0 +1,197 @@
+{
+  "schema_version": 1,
+  "acceptance_case": "visibility-census-guest",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "run_id": 38157797924,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38157797924",
+    "lane": "A",
+    "conclusion": "failure",
+    "checkout_sha": "9a3a8b95d202ea78ad7ea12b343e586394ccdd3d",
+    "completed_at": "2026-10-11T17:07:07Z"
+  },
+  "product_artifact": {
+    "channel": "ci_development_test",
+    "version": "0.2.498",
+    "source_sha": "b53735e2c275dff7c10b752a695b64cb0c64ea1a",
+    "ci_run_id": 38126956706,
+    "ci_artifact_id": 11697244437,
+    "github_artifact_digest": "sha256:22bdc196eb41b0f6a8c1d8520d603eec67e45eec9d97a79d82b7fe9895fd2b1c",
+    "tree_sha256": "b2606d3f2315adf07fc40536d89991725115f93d321815bc8e07c7d59240910e",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_run_artifact": {
+    "id": 11709512136,
+    "name": "hosted-guest-38157797924-1",
+    "sha256": "ef818f34385e14c63d92ffbe7ec24d4650ea9daf1f923be734f1efba78dc0b24",
+    "expired": false
+  },
+  "observation": {
+    "classification": "partial_census_incomplete",
+    "role": "guest",
+    "positive_signed_out_proof_before_and_after": true,
+    "native_panel_verified": true,
+    "browser": "Chrome/141.0.7390.37",
+    "navigation": {
+      "total": 8,
+      "mapped": 5,
+      "unmapped": 2,
+      "visible_labels": ["Chat", "Scrape", "Data", "SEO", "Settings"]
+    },
+    "known_admin_only_tabs_not_observed": [
+      "Pilot (admin only — sandboxed tab group)",
+      "Showcase (admin only)",
+      "Token broker (admin only)",
+      "Debug (admin only)"
+    ],
+    "settings_sections": {
+      "total": 12,
+      "mapped": 11,
+      "unmapped": 1,
+      "visible_labels": [
+        "Account",
+        "Organization",
+        "Appearance",
+        "Chat",
+        "Privacy",
+        "Scrape",
+        "Data",
+        "SEO",
+        "Desktop bridge",
+        "Data & reset",
+        "About"
+      ]
+    },
+    "settings_controls": {
+      "Account": {
+        "total": 0,
+        "mapped": 0,
+        "unmapped": 0
+      },
+      "Organization": {
+        "total": 0,
+        "mapped": 0,
+        "unmapped": 0
+      },
+      "Appearance": {
+        "total": 1,
+        "mapped": 1,
+        "unmapped": 0
+      },
+      "Chat": {
+        "total": 3,
+        "mapped": 2,
+        "unmapped": 1
+      },
+      "Privacy": {
+        "total": 4,
+        "mapped": 4,
+        "unmapped": 0
+      },
+      "Scrape": {
+        "total": 3,
+        "mapped": 3,
+        "unmapped": 0
+      },
+      "Data": {
+        "total": 0,
+        "mapped": 0,
+        "unmapped": 0
+      },
+      "SEO": {
+        "total": 0,
+        "mapped": 0,
+        "unmapped": 0
+      },
+      "Desktop bridge": {
+        "total": 4,
+        "mapped": 4,
+        "unmapped": 0
+      },
+      "Data & reset": {
+        "total": 1,
+        "mapped": 1,
+        "unmapped": 0
+      }
+    },
+    "visible_surface_controls": {
+      "Chat": {
+        "total": 18,
+        "mapped": 2,
+        "unmapped": 16
+      },
+      "Scrape": {
+        "total": 3,
+        "mapped": 3,
+        "unmapped": 0
+      },
+      "Data": {
+        "total": 2,
+        "mapped": 0,
+        "unmapped": 2
+      },
+      "SEO": {
+        "total": 14,
+        "mapped": 0,
+        "unmapped": 14
+      }
+    },
+    "navigation_actions_observed": 16,
+    "unmapped_total": 36,
+    "inaccessible_regions": [
+      {
+        "region": "settings_section",
+        "label": "About",
+        "reason": "inspection_failed"
+      }
+    ],
+    "unsupported_triggers": 0,
+    "blocked_requests": 1,
+    "blocked_request_classes": {
+      "database:rpc_post_unclassified": 1
+    },
+    "missing_required_regions": ["settings_content:About"]
+  },
+  "resource_guards": {
+    "hosted-browser-38157797924-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "wrapper_exit_code": 0,
+      "decision": "valid",
+      "final_code": "RESOURCE_FINAL_DECISION"
+    },
+    "hosted-guest-38157797924-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "wrapper_exit_code": 1,
+      "decision": "child_failed",
+      "final_code": "RESOURCE_FINAL_DECISION"
+    },
+    "hosted-package-38157797924-1.jsonl": {
+      "admitted": true,
+      "resource_invalid": false,
+      "wrapper_exit_code": 0,
+      "decision": "valid",
+      "final_code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "failure_classification": "Resource admission and measurement were valid; the native panel was verified and the CI artifact matched. The census report was incomplete (36 unmapped observations, About content inspection failed, one non-read database RPC POST was blocked). The driver returned its incomplete status (exit 2), and the hosted acceptance wrapper treated nonzero as failure (wrapper exit 1). This is an incomplete visibility census/harness gate result; it is not a product defect verdict.",
+  "behavior_credit": "none",
+  "limits": [
+    "Guest-only development artifact observations; no member/admin, Web Store, or release behavior is established.",
+    "Visible navigation and sections were opened for inspection; setting values and controls were not exercised. All behavior cells remain unverified.",
+    "Known admin-only tab labels Pilot, Showcase, Token broker, and Debug were absent from observed guest navigation; this is not a denial-path test.",
+    "The Account view visibly offered Sign in and did not expose Sign out in the before/after states. Profile-menu visibility and all other hidden or gated controls remain unverified.",
+    "Unmapped observations remain unknown: 36 total across navigation, Settings, Chat, Data and SEO. No inference is made from their fingerprints.",
+    "About was an observed Settings section but its content inspection failed. The blocked POST is classified only as database:rpc_post_unclassified; its purpose is unknown.",
+    "No product defect was reproduced; do not rerun blindly. Peer review remains pending."
+  ],
+  "evidence_files": [
+    "native-report.sanitized.json",
+    "guest-account-readiness.png",
+    "native-guest-panel.png",
+    "resource-journals/hosted-browser-38157797924-1.jsonl",
+    "resource-journals/hosted-guest-38157797924-1.jsonl",
+    "resource-journals/hosted-package-38157797924-1.jsonl"
+  ]
+}
