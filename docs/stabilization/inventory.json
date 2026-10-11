@@ -13464,7 +13464,37 @@
             "panel-reopen",
             "preference-restoration"
           ]
-        },
+        ,
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "38101188335",
+              "workflow_source_sha": "6894d4a88a155108546a1abc08096904900130ec",
+              "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+              "build_version": "0.2.490",
+              "build_tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
+              "hosted_result_artifact_id": 11687871966,
+              "runner_arch": "ARM64",
+              "resource_valid": true,
+              "native_case_status": "fail",
+              "evidence": [
+                "docs/stabilization/evidence/guest-settings-t93/run38101188335/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-settings-t93/run38101188335/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-settings-t93/run38101188335/resource-finals.sanitized.json"
+              ],
+              "verified_substeps": [
+                "Observed the original Current/default value and saved New/package through the real selector.",
+                "Closed the native panel and observed a distinct visible replacement target and context."
+              ],
+              "unverified_substeps": [
+                "New/package after reopen, Current selection and persistence after reopen, and original-value restoration.",
+                "Replacement Settings readiness failed with owned_cdp_transport_failed; final preference state is unknown."
+              ],
+              "independent_review": "Completed; reviewer confirms partial transport evidence, with no T93 pass or product-defect inference.",
+              "detail": "Partial native observations only. After the distinct replacement panel opened, replacement Settings readiness failed with owned_cdp_transport_failed. The reopened selector value, Current choice, and original Current/default restoration were not verified. Keep T93 unverified; do not infer a product defect.",
+              "release_scope": "Exact unpublished CI development artifact v0.2.490 only; no current-main, Store, member/admin or full Settings claim."
+            }
+          }},
         {
           "id": "EXT-F-1003-T94",
           "title": "member: Chat version selector persistence",

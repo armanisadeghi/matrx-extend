@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T93",
+  "acceptance_case": "settings-controls",
+  "role": "guest",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38101188335,
+    "attempt": 1,
+    "dispatch_ref": "main",
+    "workflow_head_sha": "6894d4a88a155108546a1abc08096904900130ec",
+    "lane": "B",
+    "runner_label": "macos-15",
+    "runner_image": "macos-15-arm64",
+    "runner_arch": "ARM64",
+    "machine": "arm64",
+    "conclusion": "failure",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38101188335"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11687871966,
+    "name": "hosted-guest-38101188335-1",
+    "digest": "sha256:5d3ae4c17239c9cc6290d42290368520d34024b471b8613ebd73fb0ab305b101",
+    "size_bytes": 71717,
+    "expired": false
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38099299069,
+    "development_artifact_id": 11687570702,
+    "artifact_digest": "sha256:107a6bb9ae18339579098d0cc1c10f9d334f3cde082ad5e2ad6a159c2e7022d6",
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "version": "0.2.490",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "native_suite_status": "fail",
+    "t93_status": "unverified",
+    "verified_substeps": [
+      "Current/default baseline observed",
+      "New/package saved through the selector",
+      "Old native panel retired and a distinct visible panel opened"
+    ],
+    "unverified_substeps": [
+      "New persistence after reopen",
+      "Current selection and persistence after reopen",
+      "Original preference restoration and reopened verification"
+    ],
+    "failure_code": "replacement_settings_tab_ready_not_observed",
+    "transient": "owned_cdp_transport_failed",
+    "product_defect_inference": false
+  },
+  "resource": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "verdict": "partial_native_observations_t93_unverified",
+  "independent_review": {
+    "status": "completed",
+    "verdict": "unverified_partial_transport_failure",
+    "summary": "Independent review confirmed matching frozen artifact provenance, actual ARM64 execution, three valid resource finals, partial selector/panel observations, and no T93 pass or product-defect inference."
+  },
+  "limitations": [
+    "The selector value after native reopen was not observed because replacement Settings readiness failed on owned CDP transport.",
+    "Current was not selected after reopen and original Current/default restoration was not verified; final preference state is unknown.",
+    "This is one bounded guest run on frozen unpublished development v0.2.490; it establishes no current-main, member/admin, Store, full Settings, or product-defect claim.",
+    "No retry was dispatched under the one-run limit."
+  ],
+  "privacy": {
+    "raw_report_persisted": false,
+    "screenshots_persisted": false,
+    "credential_values_persisted": false,
+    "auth_values_persisted": false,
+    "raw_dom_or_errors_persisted": false
+  },
+  "evidence_files": [
+    {
+      "path": "native-report.sanitized.json",
+      "sha256": "e4a7023347d2afbc0bffa117e3f418773f8b7e493f57d1b3d94447bb95d22e3e"
+    },
+    {
+      "path": "resource-finals.sanitized.json",
+      "sha256": "db9844b44d26db22176c0bb45afce1af3f462da30e66e21e59e8536160e25b27"
+    },
+    {
+      "path": "hosted-package-38101188335-1.jsonl",
+      "sha256": "715005fb4cdcf6750b8e13e1031d05a89344a951bd9b25663243e9ac261764f7"
+    },
+    {
+      "path": "hosted-browser-38101188335-1.jsonl",
+      "sha256": "9bfa6fbc979439bf1a2899f4919a6f2b6e429a4c6004944ac883e482ee172714"
+    },
+    {
+      "path": "hosted-guest-38101188335-1.jsonl",
+      "sha256": "486c54e017b243682e5ba75dff1dd000b326249a0fb55e35df66fe5bac73fe1b"
+    }
+  ]
+}

@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-11 01:06 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T01:05:38.231Z. 205 features · 780 cases · 1362 controls · 196 linked defect records.
+Generated 2026-10-11 01:28 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T01:05:38.231Z. 205 features · 780 cases · 1362 controls · 196 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
 Applicable case-by-role slots: **1243** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1056 · N/A: 1.
-Unverified splits into **132 explicitly marked unverified** and **924 with no result record**.
+Unverified splits into **133 explicitly marked unverified** and **923 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -581,6 +581,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T92 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass. Guest negative access only; no signed-in role credit.
   Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
+- EXT-F-1003-T93 · guest: Unverified. Partial native observations only. After the distinct replacement panel opened, replacement Settings readiness failed with owned_cdp_transport_failed. The reopened selector value, Current choice, and original Current/default restoration were not verified. Keep T93 unverified; do not infer a product defect.
+  Evidence / build / date recorded: 38101188335, ['docs/stabilization/evidence/guest-settings-t93/run38101188335/receipt.sanitized.json', 'docs/stabilization/evidence/guest-settings-t93/run38101188335/native-report.sanitized.json', 'docs/stabilization/evidence/guest-settings-t93/run38101188335/resource-finals.sanitized.json']
 
 
 ## Profile
