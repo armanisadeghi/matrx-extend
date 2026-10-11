@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_and_focused_test_review",
+  "reviewed_at": "2026-10-11",
+  "reviewer_scope": "SEO Re-audit occluder diagnostic only",
+  "reviewed_commit": "81781b370043fae06858c1161e6143e58b8712ae",
+  "prior_native_run_id": 38124088927,
+  "verdict_a": {
+    "verdict": "PASS_BOUNDED_DIAGNOSTIC",
+    "finding": "The three samples are captured after the controlled history refusal, after its successful retry, and immediately before the manual click. The sampler mirrors the pointer driver’s target scoping, viewport preparation, clipping intersection, and nine hit points. Its booleans and counts can distinguish the named refusal notice occupying hit points from an exposed target; comparison with the pointer receipt can separate persistent occlusion from a preflight-to-click timing change.",
+    "attribution": "The fields do not prove why an element occupies a hit point. They support classification only when paired with the same-run pointer receipt. A future result must not be called a product defect solely because an alert or other element is the hit target.",
+    "limits": [
+      "The local happy-dom test supplies elementFromPoint and rectangles directly; it validates sampler classification, not native Chrome stacking or layout.",
+      "The existing hosted run 38124088927 predates this instrumentation and does not resolve the occluder cause."
+    ]
+  },
+  "verdict_b": {
+    "verdict": "PASS_FOR_GUARDED_DIAGNOSTIC_RERUN",
+    "privacy": "The returned samples contain only fixed booleans, bounded counts, or nulls. The notice copy is read inside the page only to recognize the specific known refusal and is not returned. No DOM text, URLs, coordinates, screenshots, credentials, or arbitrary exception strings are serialized by the new sampler.",
+    "cleanup": "The sampler allocates no persistent listeners, timers, or browser resources. The existing native history interception retains its finally cleanup. The fixture aborts its happy-dom window in finally.",
+    "guard_quality": "The new test asserts both outcomes: all nine points resolve to the refusal notice, then all nine resolve to the target. Existing focused tests retain the controlled history refusal/retry assertions and hosted route admission checks. The call-site stage wiring is not independently asserted by a dedicated test, but is explicit in the reviewed source.",
+    "regression_review": "The history helper’s refusal and retry sequence is unchanged apart from two no-op-by-default observation callbacks. The SEO route adds one observation before the existing trusted click; it does not dispatch input or dismiss notices. No T06 or routing regression was found in the reviewed diff or focused tests.",
+    "open_evidence_gap": "No native run has yet exercised the new snapshots against Chrome’s actual layout. The diagnostic can narrow cause but cannot earn T02, whole-feature, member/admin, live-backend, or Store credit."
+  },
+  "tests": {
+    "command": "node --test tests/browser/guest-seo-click-diagnostic.test.mjs tests/browser/seo-history-native-recovery.test.mjs scripts/hosted-seo-route.test.mjs",
+    "result": "PASS",
+    "passed": 24,
+    "failed": 0
+  },
+  "diagnostic_rerun": {
+    "safe": true,
+    "conditions": "Use only the existing guarded hosted guest-seo controlled case on one frozen development artifact with run-owner coordination; retain the sanitized receipt and pointer failure receipt. Do not infer product attribution or acceptance credit unless a later same-artifact controlled counterpart changes only the synthetic refusal or safely dismisses only that notice and the real T02 click passes.",
+    "dispatched_by_reviewer": false
+  }
+}
