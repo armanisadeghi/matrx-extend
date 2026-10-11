@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-guest-controls-20261011",
+  "hosted_run_id": 38124123515,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38124123515",
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_event": "workflow_dispatch",
+  "workflow_source_sha": "e18564655b882fb333ca0fa4350b68ed44fc0e30",
+  "acceptance_lane": "A",
+  "acceptance_case": "settings-controls",
+  "auth_mode": "signed-out guest",
+  "development_ci_run_id": 38118947880,
+  "development_artifact_id": 11693783976,
+  "development_source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+  "development_version": "0.2.493",
+  "development_tree_sha256": "6ac2233eb04997096e173e0f741c127130a7ee9a245882392befcd49b9fe2206",
+  "runtime_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "runtime_kind": "local_dev_unpacked",
+  "publish_state": "not_published",
+  "hosted_result_artifact_id": 11696965482,
+  "hosted_result_artifact_name": "hosted-guest-38124123515-1",
+  "hosted_result_artifact_size_bytes": 72609,
+  "hosted_result_artifact_sha256": "sha256:0df85940de694cce19da7a6a95b342c261b99044c3cdbd12ee8440addd250f71",
+  "artifact_digest_verified_in_memory": true,
+  "resource_journals": [
+    {
+      "path": "resource-journals/hosted-package-38124123515-1.jsonl",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-11T08:17:11.099Z",
+        "runId": "hosted-package-38124123515-1",
+        "code": "RESOURCE_FINAL_DECISION",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    },
+    {
+      "path": "resource-journals/hosted-browser-38124123515-1.jsonl",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-11T08:19:13.455Z",
+        "runId": "hosted-browser-38124123515-1",
+        "code": "RESOURCE_FINAL_DECISION",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    },
+    {
+      "path": "resource-journals/hosted-guest-38124123515-1.jsonl",
+      "final_decision": {
+        "schema": 1,
+        "at": "2026-10-11T08:23:22.623Z",
+        "runId": "hosted-guest-38124123515-1",
+        "code": "RESOURCE_FINAL_DECISION",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    }
+  ]
+}

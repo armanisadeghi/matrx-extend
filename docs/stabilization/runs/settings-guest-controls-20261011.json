@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "task_id": "settings-guest-controls-20261011",
-  "status": "running",
+  "status": "completed_unreviewed",
   "scope": {
     "workflow": "hosted-guest-acceptance.yml",
     "acceptance_case": "settings-controls",
-    "acceptance_lane": "B",
+    "acceptance_lane": "A",
     "auth_mode": "guest",
     "shared_credentials": false,
     "fixture_mutation": false,
@@ -31,11 +31,189 @@
         "reason": "Accidental lane selection; cancellation reached terminal state before any workflow step began."
       }
     ],
-    "main_sha_at_dispatch": "e18564655b882fb333ca0fa4350b68ed44fc0e30"
+    "main_sha_at_dispatch": "e18564655b882fb333ca0fa4350b68ed44fc0e30",
+    "status": "completed",
+    "conclusion": "success",
+    "completed_at": "2026-10-11T08:23:29Z"
   },
-  "result": null,
-  "evidence": [],
+  "result": {
+    "runner_overall_status": "unverified",
+    "bounded_status": "native_observations_unreviewed",
+    "cases": [
+      {
+        "case_id": "EXT-F-1003-T22",
+        "control_ids": ["EXT-F-1003-C08"],
+        "runner_case_status": "pass",
+        "bounded_status": "pass_pending_independent_review",
+        "criteria": [
+          {
+            "name": "warm admin section and controls absent",
+            "runner_status": "pass"
+          },
+          {
+            "name": "reload admin section and controls absent",
+            "runner_status": "pass"
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T37",
+        "control_ids": ["EXT-F-1003-C13"],
+        "runner_case_status": "pass",
+        "bounded_status": "pass_pending_independent_review",
+        "criteria": [
+          {
+            "name": "visible coming-soon hint",
+            "runner_status": "pass"
+          },
+          {
+            "name": "toggle changes state",
+            "runner_status": "pass"
+          },
+          {
+            "name": "state and coming-soon hint persist after reload",
+            "runner_status": "pass"
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T46",
+        "control_ids": ["EXT-F-1003-C16"],
+        "runner_case_status": "pass",
+        "bounded_status": "pass_pending_independent_review",
+        "criteria": [
+          {
+            "name": "valid port saved",
+            "runner_status": "pass"
+          },
+          {
+            "name": "saved port triggers desktop worker rediscovery",
+            "runner_status": "pass"
+          },
+          {
+            "name": "valid override persists after reload",
+            "runner_status": "pass"
+          },
+          {
+            "name": "boundary port 1 saves and persists after reload",
+            "runner_status": "pass"
+          },
+          {
+            "name": "boundary port 65535 saves and persists after reload",
+            "runner_status": "pass"
+          },
+          {
+            "name": "invalid range shows error and retains saved port",
+            "runner_status": "pass"
+          },
+          {
+            "name": "blank clears override and stale error",
+            "runner_status": "pass"
+          },
+          {
+            "name": "cleared override persists after reload",
+            "runner_status": "pass"
+          }
+        ]
+      },
+      {
+        "case_id": "EXT-F-1003-T70",
+        "control_ids": ["EXT-F-1003-C10", "EXT-F-1003-C30", "EXT-F-1003-C31"],
+        "runner_case_status": "unverified",
+        "bounded_status": "unverified",
+        "criteria": [
+          {
+            "name": "identity matches running browser, manifest, receipt and runtime ID",
+            "runner_status": "pass"
+          },
+          {
+            "name": "password-flow API readiness label and remedy",
+            "runner_status": "pass",
+            "acceptance_status": "unverified_oracle_mismatch"
+          },
+          {
+            "name": "password-flow API unavailable branch",
+            "runner_status": "unverified"
+          },
+          {
+            "name": "observed browser update result shown accurately",
+            "runner_status": "pass"
+          },
+          {
+            "name": "no-update outcome",
+            "runner_status": "pass"
+          },
+          {
+            "name": "update available branch",
+            "runner_status": "unverified"
+          },
+          {
+            "name": "throttled branch",
+            "runner_status": "unverified"
+          },
+          {
+            "name": "update error branch",
+            "runner_status": "unverified"
+          },
+          {
+            "name": "update API unavailable branch",
+            "runner_status": "unverified"
+          },
+          {
+            "name": "identity and API readiness remain current after reload",
+            "runner_status": "pass"
+          }
+        ],
+        "limitation": "Runner accepts readiness labels Ready or Available, while inventory expected Ready; current SettingsView renders Available. No readiness-label credit is assigned pending contract reconciliation."
+      }
+    ],
+    "resource_finals": {
+      "hosted-package": {
+        "schema": 1,
+        "at": "2026-10-11T08:17:11.099Z",
+        "runId": "hosted-package-38124123515-1",
+        "code": "RESOURCE_FINAL_DECISION",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      },
+      "hosted-browser": {
+        "schema": 1,
+        "at": "2026-10-11T08:19:13.455Z",
+        "runId": "hosted-browser-38124123515-1",
+        "code": "RESOURCE_FINAL_DECISION",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      },
+      "hosted-guest": {
+        "schema": 1,
+        "at": "2026-10-11T08:23:22.623Z",
+        "runId": "hosted-guest-38124123515-1",
+        "code": "RESOURCE_FINAL_DECISION",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    },
+    "independent_peer_review": "pending",
+    "inventory_updated": false,
+    "artifact_digest_verified": true
+  },
+  "evidence": [
+    "docs/stabilization/evidence/settings-guest-controls/run38124123515/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-guest-controls/run38124123515/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-guest-controls/run38124123515/resource-journals/hosted-package-38124123515-1.jsonl",
+    "docs/stabilization/evidence/settings-guest-controls/run38124123515/resource-journals/hosted-browser-38124123515-1.jsonl",
+    "docs/stabilization/evidence/settings-guest-controls/run38124123515/resource-journals/hosted-guest-38124123515-1.jsonl"
+  ],
   "limitations": [
-    "No behavior result until the hosted A run reaches a terminal state and its native artifact and resource journals are reviewed."
+    "No acceptance credit until a fresh independent peer reviews the native evidence.",
+    "T70 readiness-label criterion is withheld because the frozen runner accepts Ready/Available while the inventory expects Ready and SettingsView renders Available.",
+    "Uploaded native screenshot shows generic guest Chat rather than Settings, so it does not visually corroborate Settings interactions.",
+    "No full Settings, member/admin, current-main, release, Store, or overall feature health claim."
   ]
 }

@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-guest-controls-20261011",
+  "hosted_run_id": 38124123515,
+  "native_report_path": "test-results/settings-local-controls-acceptance.json",
+  "runner_overall_status": "unverified",
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "settings_panel_reload": {
+    "managementReloadClicked": true,
+    "oldTargetsRetired": true,
+    "workerReplaced": true,
+    "panelReplaced": true
+  },
+  "settings_reopen": {
+    "status": "settings_opened",
+    "panel": {
+      "sampled": true,
+      "runtimeIdMatches": true,
+      "documentReady": true,
+      "visible": true,
+      "settingsTabCount": 1,
+      "settingsActiveCount": 1,
+      "guestBannerPresent": false,
+      "guestOrganizationGuidancePresent": true
+    }
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T22",
+      "control_ids": ["EXT-F-1003-C08"],
+      "runner_case_status": "pass",
+      "bounded_status": "pass_pending_independent_review",
+      "criteria": [
+        {
+          "name": "warm admin section and controls absent",
+          "runner_status": "pass"
+        },
+        {
+          "name": "reload admin section and controls absent",
+          "runner_status": "pass"
+        }
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T37",
+      "control_ids": ["EXT-F-1003-C13"],
+      "runner_case_status": "pass",
+      "bounded_status": "pass_pending_independent_review",
+      "criteria": [
+        {
+          "name": "visible coming-soon hint",
+          "runner_status": "pass"
+        },
+        {
+          "name": "toggle changes state",
+          "runner_status": "pass"
+        },
+        {
+          "name": "state and coming-soon hint persist after reload",
+          "runner_status": "pass"
+        }
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T46",
+      "control_ids": ["EXT-F-1003-C16"],
+      "runner_case_status": "pass",
+      "bounded_status": "pass_pending_independent_review",
+      "criteria": [
+        {
+          "name": "valid port saved",
+          "runner_status": "pass"
+        },
+        {
+          "name": "saved port triggers desktop worker rediscovery",
+          "runner_status": "pass"
+        },
+        {
+          "name": "valid override persists after reload",
+          "runner_status": "pass"
+        },
+        {
+          "name": "boundary port 1 saves and persists after reload",
+          "runner_status": "pass"
+        },
+        {
+          "name": "boundary port 65535 saves and persists after reload",
+          "runner_status": "pass"
+        },
+        {
+          "name": "invalid range shows error and retains saved port",
+          "runner_status": "pass"
+        },
+        {
+          "name": "blank clears override and stale error",
+          "runner_status": "pass"
+        },
+        {
+          "name": "cleared override persists after reload",
+          "runner_status": "pass"
+        }
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T70",
+      "control_ids": ["EXT-F-1003-C10", "EXT-F-1003-C30", "EXT-F-1003-C31"],
+      "runner_case_status": "unverified",
+      "bounded_status": "unverified",
+      "criteria": [
+        {
+          "name": "identity matches running browser, manifest, receipt and runtime ID",
+          "runner_status": "pass"
+        },
+        {
+          "name": "password-flow API readiness label and remedy",
+          "runner_status": "pass",
+          "acceptance_status": "unverified_oracle_mismatch"
+        },
+        {
+          "name": "password-flow API unavailable branch",
+          "runner_status": "unverified"
+        },
+        {
+          "name": "observed browser update result shown accurately",
+          "runner_status": "pass"
+        },
+        {
+          "name": "no-update outcome",
+          "runner_status": "pass"
+        },
+        {
+          "name": "update available branch",
+          "runner_status": "unverified"
+        },
+        {
+          "name": "throttled branch",
+          "runner_status": "unverified"
+        },
+        {
+          "name": "update error branch",
+          "runner_status": "unverified"
+        },
+        {
+          "name": "update API unavailable branch",
+          "runner_status": "unverified"
+        },
+        {
+          "name": "identity and API readiness remain current after reload",
+          "runner_status": "pass"
+        }
+      ],
+      "limitation": "Runner accepts readiness labels Ready or Available, while inventory expected Ready; current SettingsView renders Available. No readiness-label credit is assigned pending contract reconciliation."
+    }
+  ],
+  "visual_evidence": {
+    "artifact_contains_native_side_panel_screenshot": true,
+    "screenshot_scope": "The captured image shows generic signed-out guest Chat, not a Settings control; it does not visually corroborate the targeted control assertions.",
+    "screenshots_persisted": false
+  },
+  "coverage_limit": "Only the four listed guest cases are summarized. The runner reports 20 Settings cases overall and top-level unverified. T22, T37 and T46 are runner-reported passes pending independent peer review; they are not yet acceptance credits. T70 remains unverified because the readiness-label oracle conflicts with the inventory. No whole-Settings or feature-role claim follows."
+}
