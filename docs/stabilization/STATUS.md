@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-11 19:29 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T19:29:47Z. 205 features · 792 cases · 1367 controls · 199 linked defect records.
+Generated 2026-10-11 19:31 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T19:31:17Z. 205 features · 792 cases · 1367 controls · 199 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1261** — Pass: 96 · Partial: 92 · Fail: 2 · Unverified: 1069 · N/A: 2.
-Unverified splits into **138 explicitly marked unverified** and **931 with no result record**.
+Applicable case-by-role slots: **1261** — Pass: 99 · Partial: 92 · Fail: 2 · Unverified: 1066 · N/A: 2.
+Unverified splits into **138 explicitly marked unverified** and **928 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -18,7 +18,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 4 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 1, unverified 19, n/a 0 | 7 |
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Navigation / shell](#navigation--shell) | 1 | 1 pass · 3 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 11 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 1, partial 6, fail 0, unverified 26, n/a 0 | 0 |
+| [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 11 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 4, partial 6, fail 0, unverified 23, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 18 pass · 6 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 32, partial 16, fail 0, unverified 49, n/a 1 | 3 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
@@ -299,13 +299,13 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1001-T16 Shared site access discovery | Partial | Unverified | Partial | EXT-F-1001-C06 |
 | EXT-F-1001-T17 Explicit persistent grant and temporary-access preservation | Partial | Unverified | Partial | EXT-F-1001-C07 |
 | EXT-F-1001-T18 Explicit reload recovers withheld page action | Partial | Unverified | Partial | EXT-F-1001-C08 |
-| EXT-F-1001-T19 guest: Profile menu entry is hidden | Unverified | N/A | N/A | EXT-F-1001-C09 |
+| EXT-F-1001-T19 guest: Profile menu entry is hidden | Pass | N/A | N/A | EXT-F-1001-C09 |
 | EXT-F-1001-T20 member: Profile menu entry opens Profile | N/A | Unverified | N/A | EXT-F-1001-C09 |
 | EXT-F-1001-T21 admin: Profile menu entry opens Profile | N/A | N/A | Unverified | EXT-F-1001-C09 |
-| EXT-F-1001-T22 guest: Preferences menu entry opens Settings | Unverified | N/A | N/A | EXT-F-1001-C10 |
+| EXT-F-1001-T22 guest: Preferences menu entry opens Settings | Pass | N/A | N/A | EXT-F-1001-C10 |
 | EXT-F-1001-T23 member: Preferences menu entry opens Settings | N/A | Unverified | N/A | EXT-F-1001-C10 |
 | EXT-F-1001-T24 admin: Preferences menu entry opens Settings | N/A | N/A | Unverified | EXT-F-1001-C10 |
-| EXT-F-1001-T25 guest: Sign out menu action | Unverified | N/A | N/A | EXT-F-1001-C11 |
+| EXT-F-1001-T25 guest: Sign out menu action | Pass | N/A | N/A | EXT-F-1001-C11 |
 | EXT-F-1001-T26 member: Sign out menu action | N/A | Unverified | N/A | EXT-F-1001-C11 |
 | EXT-F-1001-T27 admin: Sign out menu action | N/A | N/A | Unverified | EXT-F-1001-C11 |
 
@@ -327,6 +327,12 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: site-access-guest-sol-20261002-01, docs/stabilization/reports/site-access-guest-native-20261002.json
 - EXT-F-1001-T18 · admin: Partial. Actual Chrome owned profile and loaded175 folder/version verified before/after extension Reload. Withheld Prepare recovered through exact-origin Allow plus separate Reload; fresh Prepare757ms/3steps. Completed Prepare and Snapshot clear on same-URL reload. Admin Deny, controlled late results, failure retry and broad remaining controls unverified.
   Evidence / build / date recorded: siteaccess-prepare-pathchecked-sol-20261002-01, docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json
+- EXT-F-1001-T19 · guest: Pass. Native guest avatar menu rendered no Profile entry while Preferences and Sign out were present; selected tab and guest identity stayed unchanged on the exact driver's pass path. Frozen unpublished development v0.2.502 only.
+  Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
+- EXT-F-1001-T22 · guest: Pass. Trusted native pointer chose Preferences; the menu closed, Settings tab and pane became active, and guest identity remained unchanged on frozen unpublished development v0.2.502.
+  Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
+- EXT-F-1001-T25 · guest: Pass. Trusted native pointer chose Sign out; the menu closed, guest session and rendered Guest header persisted through reopening and full panel document reload on frozen unpublished development v0.2.502.
+  Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
 
 
 ## Popup / options / mic permission

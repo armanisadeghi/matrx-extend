@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-account-popover-guest-run38167323328",
+  "recorded_at": "2026-10-11T19:25:35Z",
+  "scope": "One guarded hosted lane A run of the disposable native Chrome side panel, guest only, on unpublished development v0.2.502. This proves the three observed guest account-popover cases only.",
+  "run": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38167323328",
+    "id": 38167323328,
+    "conclusion": "success",
+    "acceptance_case": "settings-account-popover-guest",
+    "workflow_head_sha": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f",
+    "tested_artifact_source_sha": "67f3c3d398909f4e1316a221800afee798d45906",
+    "development_artifact": {
+      "ci_run_id": 38166523824,
+      "artifact_id": 11711963526,
+      "name": "matrx-extend-development-test-67f3c3d398909f4e1316a221800afee798d45906-38166523824-1",
+      "digest": "sha256:63d30075b21e65599bcd25312fd618fefb4a8118c6bb5946e34bfbf221daf6d5"
+    },
+    "sanitized_artifact": {
+      "id": 11712618675,
+      "name": "hosted-guest-38167323328-1",
+      "digest": "sha256:9136eae865e830ce44babc8326af1a2f902d43b4fca276eab67a5559b472ef85"
+    }
+  },
+  "resource_finals": {
+    "package": { "decision": "valid", "admitted": true, "resourceInvalid": false, "exitCode": 0 },
+    "browser": { "decision": "valid", "admitted": true, "resourceInvalid": false, "exitCode": 0 },
+    "guest": { "decision": "valid", "admitted": true, "resourceInvalid": false, "exitCode": 0 }
+  },
+  "native_report": {
+    "path_in_artifact": "matrx-extend/matrx-extend/test-results/settings-account-popover-guest.json",
+    "status": "pass",
+    "role": "guest",
+    "build_kind": "local_dev_unpacked",
+    "embedded_source_sha": null,
+    "host_provenance": "The guarded run imported the exact CI artifact under test-results/ci-artifacts/67f3c3d398909f4e1316a221800afee798d45906/38166523824-1 with exact_pushed_commit_only. The receipt does not itself embed the source SHA."
+  },
+  "case_results": {
+    "EXT-F-1001-T19": "pass: native receipt records actual avatar menu open, one Preferences and one Sign out action, zero Profile actions and a guest header. The exact driver source also asserts selected tab unchanged and guest identity retained on this pass path, but does not serialize those two values into the receipt.",
+    "EXT-F-1001-T22": "pass: trusted pointer activated Preferences; popover closed, Settings tab and pane became active, guest identity retained.",
+    "EXT-F-1001-T25": "pass: trusted pointer activated Sign out; popover closed, guest identity persisted; reopened menu rendered Guest with Profile absent, including after a full panel document reload."
+  },
+  "limits": [
+    "Member and admin cases T20–T21, T23–T24 and T26–T27 were not run.",
+    "This is a development artifact, not published Store behavior or release acceptance.",
+    "The native report omits sensitive account text and its receipt has no embedded source SHA; hosted workflow provenance and imported path bind the artifact to the exact CI run."
+  ]
+}
