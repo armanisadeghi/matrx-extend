@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_resource_journal_upload_retest",
+  "defect_id": "EXT-D-0196",
+  "reviewer": "/root/scrape_t08_independent_review",
+  "reviewed_run_id": 38099410087,
+  "product_verdict": {
+    "status": "PASS_BOUNDED_GUEST_REOBSERVATION",
+    "candidate_version": "0.2.479",
+    "observed_passes": [
+      "EXT-F-1007-T20",
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12",
+      "EXT-F-1007-T07",
+      "EXT-F-1007-T09"
+    ],
+    "partial": [
+      "EXT-F-1007-T08",
+      "EXT-F-1007-T13",
+      "EXT-F-1007-T02",
+      "EXT-F-1007-T14"
+    ],
+    "limits": [
+      "Guest only; exact Store candidate loaded unpacked with key adaptation.",
+      "This run re-observes the full Scrape suite and contributes no duplicate product credit.",
+      "T08 remains partial; empty SEO/Schema pane states were not tested in this candidate route."
+    ]
+  },
+  "evidence_and_provenance_verdict": {
+    "status": "PASS",
+    "workflow_source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "fix_commit": "8e506501acd3eee52f2382d337200fdbe7699d90",
+    "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38099410087",
+    "hosted_artifact_id": 11687450662,
+    "hosted_artifact_name": "hosted-guest-38099410087-1",
+    "hosted_artifact_digest": "sha256:6a6ab44a2048e84f9b9da15c99ff00e23f5d954f4782370dec6f3ff27d186a4a",
+    "artifact_file_count": 10,
+    "receipt_evidence_file_count": 11,
+    "evidence_hashes_match": true,
+    "uploaded_journals": [
+      "hosted-package-38099410087-1.jsonl",
+      "hosted-browser-38099410087-1.jsonl",
+      "hosted-guest-38099410087-1.jsonl"
+    ],
+    "journal_count": 3,
+    "historic_or_prior_attempt_journals_present": false,
+    "pending_journals_present": false,
+    "resource_finals": {
+      "package": "valid; exit 0; resourceInvalid=false",
+      "browser": "valid; exit 0; resourceInvalid=false",
+      "guest": "valid; exit 0; resourceInvalid=false"
+    },
+    "startup_journal": "Not expected: startup diagnostic was skipped for this acceptance case.",
+    "original_repro_comparison": "The uploaded artifact for original repro run 38098345217 / artifact 11686544216 contained 27 journals; fresh artifact 38099410087 contains only its three current-attempt finals."
+  },
+  "independent_reviewer_summary": "A PASS for the EXT-D-0196 retest; B PASS for evidence/provenance. Reviewer confirmed exact journal membership, resource finals, 10-file artifact set, 11 retained evidence hashes, candidate provenance, and that surrounding native Scrape assertions remain pass/partial without regression.",
+  "independent_review_scope_limit": "This artifact review verifies upload ownership and provenance. It does not close T08 or establish empty SEO/Schema states, full Scrape health, member/admin, actual Store-installed behavior, or current-main runtime health.",
+  "evidence": {
+    "receipt": "docs/stabilization/evidence/guest-scrape-normal/run38099410087/receipt.sanitized.json",
+    "native_report": "docs/stabilization/evidence/guest-scrape-normal/run38099410087/native-report.sanitized.json",
+    "resource_finals": "docs/stabilization/evidence/guest-scrape-normal/run38099410087/resource-finals.sanitized.json",
+    "journal_membership_comparison": "docs/stabilization/evidence/guest-scrape-normal/run38099410087/d0196-original-artifact-journal-membership.sanitized.json"
+  },
+  "owner_regression_guard": {
+    "command": "node --test scripts/test-hosted-journal-upload.mjs",
+    "result": "3 passed; 0 failed",
+    "scenarios": [
+      "completed current-attempt finals",
+      "crashed current-attempt pending journals",
+      "missing current-attempt journals"
+    ],
+    "wrapper_coverage": [
+      "hosted-package",
+      "hosted-browser",
+      "hosted-guest",
+      "hosted-startup"
+    ],
+    "purpose": "Confirms pending startup diagnostics are retained when present, missing files are ignored, and historic/prior-attempt journals are excluded."
+  },
+  "reviewed_at": "2026-10-11",
+  "follow_up_review": {
+    "reviewer": "/root/scrape_t08_independent_review",
+    "result": "PASS; original EXT-D-0196 artifact verdict unchanged",
+    "confirmed": "All 11 current receipt hashes match; the supplemental 27 old-artifact filenames exactly match the downloaded original artifact; local preflight journal is sanitized and has valid final; current hosted artifact still contains only three valid attempt-1 finals with no historic or pending journals."
+  },
+  "owner_verification_after_followup": {
+    "receipt_hash_count": 11,
+    "receipt_hashes_match": true,
+    "original_artifact_journal_count": 27,
+    "original_membership_exact_match": true
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "run_id": 38099410087,
+  "title": "Guest Scrape candidate full-suite reobservation and EXT-D-0196 upload verification",
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38099410087",
+  "status": "success",
+  "purpose": "One fresh hosted artifact on workflow containing fix 8e506501a to verify resource-journal membership. Candidate route only supports guest-scrape full scope; seo-schema-empty requires guest-scrape-development with a CI development receipt.",
+  "product_verdict": "partial_full_suite_reobservation_no_duplicate_product_credit",
+  "workflow_source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+  "candidate": {
+    "version": "0.2.479",
+    "release_run_id": 38080281242,
+    "release_artifact_id": 11680078743,
+    "release_artifact_sha256": "c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "adapted_runtime_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0"
+  },
+  "hosted_artifact": {
+    "id": 11687450662,
+    "name": "hosted-guest-38099410087-1",
+    "digest": "sha256:6a6ab44a2048e84f9b9da15c99ff00e23f5d954f4782370dec6f3ff27d186a4a",
+    "uploaded_file_count": 10
+  },
+  "resource_preflight": {
+    "run_id": "guest-scrape-journal-20261011-01-preflight",
+    "decision": "valid",
+    "exit_code": 0,
+    "resource_invalid": false,
+    "available_memory_gib": 10.72,
+    "cpu_busy_fraction": 0.1714285714,
+    "repo_free_gib": 1661.6
+  },
+  "hosted_resource_finals": {
+    "package": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false
+    },
+    "browser": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false
+    },
+    "guest": {
+      "decision": "valid",
+      "exit_code": 0,
+      "resource_invalid": false
+    }
+  },
+  "native_cases": {
+    "passed": [
+      "EXT-F-1007-T20",
+      "EXT-F-1007-T10",
+      "EXT-F-1007-T11",
+      "EXT-F-1007-T12",
+      "EXT-F-1007-T07",
+      "EXT-F-1007-T09"
+    ],
+    "partial": [
+      "EXT-F-1007-T01",
+      "EXT-F-1007-T08",
+      "EXT-F-1007-T13",
+      "EXT-F-1007-T02",
+      "EXT-F-1007-T14"
+    ],
+    "failed": []
+  },
+  "scope": "Guest only, exact v0.2.479 Store candidate loaded unpacked with key adaptation, 600px CDP-emulated viewport. T08 and full feature remain partial; no empty SEO/Schema state assertions.",
+  "journal_upload_verification": {
+    "prior_repro_run_id": 38098345217,
+    "prior_artifact_id": 11686544216,
+    "prior_uploaded_journal_count": 27,
+    "current_uploaded_journal_count": 3,
+    "current_uploaded_journals": [
+      "hosted-package-38099410087-1.jsonl",
+      "hosted-browser-38099410087-1.jsonl",
+      "hosted-guest-38099410087-1.jsonl"
+    ],
+    "unexpected_historical_or_prior_attempt_journals": [],
+    "pending_diagnostics": [],
+    "startup_wrapper": "Not run in this workflow attempt; regression guard covers its completed/crashed/missing selection behavior."
+  },
+  "evidence_dir": "docs/stabilization/evidence/guest-scrape-normal/run38099410087",
+  "independent_review": "docs/stabilization/reports/peer-review-hosted-journal-38099410087.json",
+  "review_verdict": "PASS D0196 fresh artifact membership and provenance; T08 remains partial with no duplicate product credit.",
+  "independent_review_status": "PASS: final follow-up verified all 11 evidence hashes and exact original-artifact 27-name membership; D0196 artifact verdict unchanged."
+}

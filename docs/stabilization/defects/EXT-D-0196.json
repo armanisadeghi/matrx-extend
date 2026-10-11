@@ -7,7 +7,7 @@
   "title": "Hosted acceptance artifacts include unrelated historical resource journals",
   "severity": "S3: artifacts contain unrelated historical resource evidence and obscure run ownership",
   "priority": "P1: keep hosted acceptance evidence attributable to its actual run and attempt",
-  "state": "fixed",
+  "state": "closed",
   "owner": "hosted_journal_upload_fix",
   "preconditions": [
     "Tracked historic hosted resource journals exist in the checkout.",
@@ -23,19 +23,26 @@
   "sibling_census": "All four hosted acceptance resource wrapper IDs are covered: hosted-package, hosted-browser, hosted-guest and hosted-startup. Each can emit .jsonl or .pending.jsonl; test checks wrapper coverage.",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38098345217",
-    "scripts/test-hosted-journal-upload.mjs"
+    "scripts/test-hosted-journal-upload.mjs",
+    "docs/stabilization/evidence/guest-scrape-normal/run38099410087/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-normal/run38099410087/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-normal/run38099410087/d0196-original-artifact-journal-membership.sanitized.json",
+    "docs/stabilization/reports/peer-review-hosted-journal-38099410087.json"
   ],
   "fix_commit": "8e506501acd3eee52f2382d337200fdbe7699d90",
   "verification": [
     "Guard failed all three scenarios before repair and passed all three afterward using the real journal writer and scratch-filesystem glob selection.",
     "Scratch-copy mutations broad-glob, empty-selection, drop-pending and prior-attempt each fail the named ownership assertion.",
     "Integrated pnpm test:focused-acceptance: 393 passed, 0 failed, 0 skipped. Full pnpm -s lint exited 0 with 853 inherited warnings.",
-    "Independent reviewer reproduced the baseline leak and verified exact final/pending selection across all four wrappers and unchanged always/ignore semantics."
+    "Independent reviewer reproduced the baseline leak and verified exact final/pending selection across all four wrappers and unchanged always/ignore semantics.",
+    "Fresh hosted artifact 11687450662 from workflow source 3aae9d33afebd158f8f5e33478f194afcc45279a contains exactly three valid current-run/current-attempt finals and no historic/prior-attempt/pending journals; independent reviewer PASS. Artifact SHA-256 sha256:6a6ab44a2048e84f9b9da15c99ff00e23f5d954f4782370dec6f3ff27d186a4a.",
+    "Owner reran `node --test scripts/test-hosted-journal-upload.mjs`: 3/3 completed, crashed/pending, and missing scenarios passed across package/browser/guest/startup wrappers; pending startup diagnostics are retained when present and historic/prior-attempt journals excluded."
   ],
   "independent_review": {
     "reviewer": "scrape_t08_independent_review",
     "code_review": "Confirmed path semantics and independently reproduced baseline red; final peer report retained by coordinator.",
-    "hosted_artifact_verification": "pending"
+    "hosted_artifact_verification": "PASS: reviewer inspected hosted run 38099410087 artifact 11687450662, exact 10-file membership, 3 current attempt journals, all valid finals, no historic/pending journals, evidence hashes and candidate provenance.",
+    "report": "docs/stabilization/reports/peer-review-hosted-journal-38099410087.json"
   },
   "closure_requirement": "Independently inspect a fresh hosted acceptance artifact from workflow source containing 8e506501a; confirm only current-run/current-attempt journal paths appear and available resource finals or pending crash diagnostics are retained. Do not close from local guard or source review alone.",
   "transition_history": [
@@ -58,6 +65,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Fix 8e506501a pushed with 393 focused checks and full lint passing; independent source reviewer reproduced baseline and verified selection. Fresh hosted artifact review remains pending."
+    },
+    {
+      "from": "fixed",
+      "to": "retest-pass",
+      "at": "2026-10-11T00:55:46Z",
+      "reason": "Fresh hosted artifact from workflow containing 8e506501a retains exactly the available current-run/current-attempt journal finals, excludes the 27 historic/original-repro journals and has all three resource finals valid; independent artifact/provenance review passed."
+    },
+    {
+      "from": "retest-pass",
+      "to": "closed",
+      "at": "2026-10-11T00:55:46Z",
+      "reason": "Closure requirement met: actual hosted artifact membership and digest reviewed independently; guard regression covers completed, pending crash, missing selection for all four wrappers including startup."
     }
   ]
 }
