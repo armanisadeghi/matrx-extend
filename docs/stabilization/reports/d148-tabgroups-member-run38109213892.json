@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "report_id": "d148-tabgroups-member-run38109213892",
+  "case_id": "EXT-F-4163-T01",
+  "defect_id": "EXT-D-0148",
+  "source_sha": "41976eec14af4964daad9113402316a9559cdb4c",
+  "source_ci": {
+    "run_id": 38108390956,
+    "artifact_id": 11690966917,
+    "artifact_name": "matrx-extend-development-test-41976eec14af4964daad9113402316a9559cdb4c-38108390956-1",
+    "conclusion": "success",
+    "development_version": "0.2.490",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+    "independent_tree_recomputed": true
+  },
+  "independent_source_admission": {
+    "report": "docs/stabilization/reports/d148-tabgroups-source-peer-20261011.json",
+    "verdict": "GO",
+    "scope": "member native tab_groups create collapsed=true only"
+  },
+  "native_run": {
+    "run_id": 38109213892,
+    "artifact_id": 11691052917,
+    "artifact_name": "hosted-guest-38109213892-1",
+    "workflow": "Hosted guest side-panel acceptance",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "case": "tab-groups-member",
+    "status": "failure",
+    "conclusion": "child_failed",
+    "resource_admitted": true,
+    "resource_invalid": false,
+    "resource_observation": "CPU entered RESOURCE_CPU_PENDING during Chromium activity and recovered to RESOURCE_CPU_RECOVERED before the child exited 1. Resource final decision was admitted=true, resourceInvalid=false, exitCode=1, decision=child_failed.",
+    "native_report": {
+      "status": "failed",
+      "stage_at_write": "cleanup",
+      "native_stage": "exercise_panel",
+      "failure_code": "unclassified_failure",
+      "authentication": {
+        "member_signed_in": true,
+        "non_admin_identity": true,
+        "organization_selected": true
+      },
+      "fixture": {
+        "owned_tab_count": 2,
+        "same_window": true,
+        "cleanup_verified": true
+      },
+      "manual_runner": {
+        "opened": false,
+        "all_handlers_selected": false,
+        "canonical_tool": false
+      },
+      "create": null,
+      "readback": null
+    },
+    "classification": "Unclassified harness/native-panel failure before the manual runner opened and before tab_groups was invoked. No product behavior was observed; T01 remains unverified and receives no pass or product-failure credit.",
+    "stage_ambiguity": "The driver's finally block records stage=cleanup before the outer catch serializes the failure, so the original failing stage is lost. The uploaded report retains native_stage=exercise_panel but not the exception. GitHub's failed-step log contains only the wrapper assertion that native acceptance exited 1. Root cause remains unknown.",
+    "cleanup": {
+      "temporary_github_secret_deleted": true,
+      "github_secret_absence_verified": true,
+      "local_single_use_link_deleted": true,
+      "local_single_use_link_absence_verified": true,
+      "preexisting_private_identity_file_preserved": true,
+      "credential_values_recorded": false
+    },
+    "downloaded_evidence_sha256": {
+      "native_report": "692778b3bbf0c1b4f1b47f302736ece38dca1b4440480824080a8af505291f5c",
+      "guest_resource_journal": "63906c6bab3eaba715101f0d650eff09a04de5bb1ac229e92f3d367be41e90bc"
+    },
+    "scratch_evidence_directory": "/Volumes/Samsung2TB/code/.stabilization-scratch/d148-run38109213892"
+  },
+  "limits": [
+    "This run does not verify collapsed=false, update, add, remove, or standalone list behavior.",
+    "No defect state, inventory cell, or coordinator status was changed.",
+    "Do not retry until the original exception/stage is observable and the next attempt has an objective diagnostic change."
+  ],
+  "next_action": "Diagnose the panel failure with stage-preserving, sanitized evidence before any second native attempt."
+}
