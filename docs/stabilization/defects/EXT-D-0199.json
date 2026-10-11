@@ -1,0 +1,115 @@
+{
+  "id": "EXT-D-0199",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T02", "EXT-F-1008-T06"],
+  "surface": "Shared side-panel notices; discovered at SEO Re-audit after history refusal",
+  "auth_mode": "guest observed; shared layout also used by member/admin (native unverified)",
+  "role_org_permissions": {
+    "role": "guest",
+    "organization": "not signed in",
+    "permissions": "owned hosted native side panel"
+  },
+  "title": "Persistent database refusal notice covers enabled recovery controls",
+  "severity": "S2: manual Re-audit is inaccessible until the user dismisses the unrelated notice",
+  "priority": "P1: current SEO guest controlled acceptance",
+  "state": "fixed",
+  "owner": "seo_notice_occlusion_fix",
+  "preconditions": [
+    "Frozen unpublished CI development 0.2.493 source 40ad70d458fd1f6acd16aa04c40c061eb6ef21bb; source-matching imported artifact 11693783976.",
+    "Open SEO and inject controlled 42501 refusal at the exact saved-history GET, then restore the next history GET."
+  ],
+  "reproduction": [
+    "Run the guarded hosted guest-seo controlled history refusal/recovery sequence.",
+    "Use trusted Retry history and observe fresh empty success.",
+    "Navigate the two public pages and attempt trusted manual Re-audit with the refusal notice still present.",
+    "Read history_refused, history_recovered and before_click hit diagnostics: one enabled target; nine notice-owned hit points and zero target-owned hit points each."
+  ],
+  "expected": "Notices remain visible and dismissible without occupying the hit area of page or recovery controls.",
+  "actual": "The fixed bottom z-50 notice card intercepts all sampled Re-audit points before and after successful history retry. The pointer driver correctly refuses to dispatch a click to an occluded target.",
+  "reproducibility": {
+    "hosted_runs": 1,
+    "observations": 3,
+    "notice_hits_per_observation": 9,
+    "target_hits_per_observation": 0
+  },
+  "cause": "NoticeHost mounted outside the panel flex layout uses fixed bottom positioning and interactive cards, reserving no space for the notice stack. A database error notice is persistent until dismissed (only active-organization notices have automatic resolution), so recovery leaves the stack covering controls. Persistence itself does not require removal: layout must accommodate still-visible notices.",
+  "sibling_census": [
+    "One NoticeHost mounted at App root serves every panel surface and every notice tone. No SEO-specific overlay or duplicate NoticeHost exists.",
+    "All error/warning/info notices and guest/member/admin content receive the same frame repair; existing no-organization retirement and tone/icon behavior remain unchanged."
+  ],
+  "hypotheses": [
+    {
+      "cause": "Notice overlay",
+      "prediction": "Native point hits identify the refusal card; putting notices in flow removes overlap by reserving space.",
+      "result": "First prediction confirmed by 27/27 captured point hits and source; native post-fix geometry pending."
+    },
+    {
+      "cause": "Disabled or duplicated Re-audit",
+      "prediction": "More than one visible target or disabled target.",
+      "result": "Ruled out: exactly one visible enabled target."
+    },
+    {
+      "cause": "Pointer driver reports the wrong hit owner",
+      "prediction": "Native point samples disagree with pointer center occluder.",
+      "result": "Ruled out at observed boundary: independent nine-point samples and pointer center all identify database refusal notice."
+    },
+    {
+      "cause": "History retry never succeeds",
+      "prediction": "Error persists and no fresh successful empty read occurs.",
+      "result": "Ruled out: controlled T06 fresh-read/empty assertions passed."
+    }
+  ],
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38157769699",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38157769699/native-report.sanitized.json"
+  ],
+  "build_receipt": {
+    "version": "0.2.493",
+    "source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+    "ci_run": 38118947880,
+    "artifact_id": 11693783976,
+    "tree_sha256": "6ac2233eb04997096e173e0f741c127130a7ee9a245882392befcd49b9fe2206",
+    "publish_state": "not_published"
+  },
+  "fix_commit": null,
+  "verification": [
+    "Focused notice layout/icon/resolution tests: 7 passed.",
+    "Plant restoring original fixed NoticeHost classes: RED assertion expected true to be false; restore identical SHA.",
+    "pnpm compile passed.",
+    "Layout guard checks production frame/tray structure and dismissal; happy-dom supplies no layout geometry. This does not prove native pointer clearance.",
+    "Final focused notice plus SEO history/navigation regressions: 17/17 passed; full lint --diagnostic-level=error passed; diff check clean.",
+    "Independent seo_notice_fix_peer accepted source correction; guard supports structural layout only. Native browser hit-test, widths, warm/reload and other modes remain pending."
+  ],
+  "original_repro_retest_run": null,
+  "surrounding_case_runs": [],
+  "reviewer": "seo_notice_fix_peer: independent source correction PASS; guard PARTIAL (structural-only), native retest pending",
+  "closure_requirement": "Fresh guarded exact-source native test must show Re-audit target-owned hit points and successful trusted click while the database refusal notice is visible; independently review history Retry, Dismiss, multiple/long notices, 360px narrow and normal width, warm and reload behavior. Member/admin and Store remain separate unverified boundaries.",
+  "release_status": "Source only; no local build/release initiated.",
+  "next_action": "Coordinator links D199 to inventory T02/T06 and runs fresh hosted exact-source native hit-test and surrounding notice acceptance. Source repair is fixed, not retest-pass or closed.",
+  "transition_history": [
+    {
+      "at": "2026-10-11T17:10:20.379233+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Hosted native diagnostics identify persistent refusal notice as Re-audit occluder."
+    },
+    {
+      "at": "2026-10-11T17:10:20.379233+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Shared fixed overlay source corroborates native nine-point and pointer-center hit owners; hypotheses recorded."
+    },
+    {
+      "at": "2026-10-11T17:10:20.379233+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Move shared notices into bounded scrolling panel flow and guard structural layout; independent source review and native retest pending."
+    },
+    {
+      "at": "2026-10-11T17:12:37.389397+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Independent source review PASS; focused 17 tests, compile and full lint passed. Native geometry/interaction remains unverified; no closure credit."
+    }
+  ]
+}

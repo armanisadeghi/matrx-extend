@@ -1,6 +1,6 @@
 import { AuthGate } from '@/components/AuthGate';
-import { NoticeHost } from '@/components/NoticeHost';
 import { PermissionPromptModal } from '@/components/PermissionPromptModal';
+import { SidepanelFrame } from '@/components/SidepanelFrame';
 import { SiteAccessControl } from '@/components/SiteAccessControl';
 import { UserMenu } from '@/components/UserMenu';
 import { canAccessSidepanelTab, firstAccessibleSidepanelTab } from '@/config/sidepanel-visibility';
@@ -385,11 +385,6 @@ export function App() {
           surface and works even on auth screens. Renders nothing when
           there's no active prompt; see lib/permissions/gate.ts. */}
         <PermissionPromptModal />
-        {/* Database refusals and other "this did not happen" announcements.
-          Also at App root, outside AuthGate: a refusal raised while the user
-          is on an auth screen still has to be visible. Renders nothing when
-          there is no notice; see lib/supabase/db-failure.ts. */}
-        <NoticeHost />
         {/* THE ONE confirmation host. Every destructive click in the side
           panel goes through `confirmDestructive()` (src/lib/destructive/),
           which calls the shared `confirm()` opener; that opener needs exactly
@@ -398,7 +393,7 @@ export function App() {
           be able to appear over any surface. Renders nothing until something
           asks. Guarded by tests/unit/destructive-confirm-guard.ts. */}
         <ConfirmDialogHost />
-        <div className="flex h-full flex-col bg-background text-foreground">
+        <SidepanelFrame>
           <AuthGate>
             <LocalBrowserApprovalHost signedIn={signedIn} />
             <SavedReplayApprovalHost signedIn={signedIn} />
@@ -785,7 +780,7 @@ export function App() {
               )}
             </Tabs>
           </AuthGate>
-        </div>
+        </SidepanelFrame>
       </AgentCatalogProvider>
     </TooltipProvider>
   );
