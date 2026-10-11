@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "source": "Sanitized GitHub Actions log records for run 38100035139, attempt 1; raw journal paths and process attribution omitted.",
+  "deadline_ms": 8000,
+  "phases": [
+    {
+      "phase": "package",
+      "admission": {
+        "at": "2026-10-11T00:57:31.038Z",
+        "admitted": true,
+        "available_memory_gib": 12.6,
+        "required_memory_gib": 4,
+        "mean_cpu_busy_fraction": 0.0686,
+        "one_minute_load_per_logical_cpu": 2.055,
+        "logical_cpus": 4,
+        "swap_used_mib": 0,
+        "repository_free_gib": 109.66,
+        "reasons": []
+      },
+      "child_exit": { "exit_code": 0 },
+      "final": {
+        "at": "2026-10-11T00:57:33.841Z",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    },
+    {
+      "phase": "browser",
+      "admission": {
+        "at": "2026-10-11T00:59:27.353Z",
+        "admitted": true,
+        "available_memory_gib": 12.6,
+        "required_memory_gib": 4,
+        "mean_cpu_busy_fraction": 0.07,
+        "one_minute_load_per_logical_cpu": 0.47,
+        "logical_cpus": 4,
+        "swap_used_mib": 0,
+        "repository_free_gib": 109.65,
+        "reasons": []
+      },
+      "child_exit": { "exit_code": 0 },
+      "final": {
+        "at": "2026-10-11T00:59:39.786Z",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      }
+    },
+    {
+      "phase": "guest",
+      "admission": {
+        "at": "2026-10-11T01:01:23.907Z",
+        "admitted": true,
+        "available_memory_gib": 12.6,
+        "required_memory_gib": 4,
+        "mean_cpu_busy_fraction": 0.0214,
+        "one_minute_load_per_logical_cpu": 0.3325,
+        "logical_cpus": 4,
+        "swap_used_mib": 0,
+        "repository_free_gib": 109.39,
+        "reasons": []
+      },
+      "transient_watch": {
+        "at": "2026-10-11T01:01:40.223Z",
+        "code": "RESOURCE_WATCH_HEALTHY",
+        "cpu_busy_fraction": 0.58,
+        "one_minute_load": 1.37,
+        "reasons": []
+      },
+      "endpoint_observation": {
+        "at": "2026-10-11T01:02:14.275Z",
+        "failure_code": "owned_cdp_endpoint_timeout",
+        "elapsed_ms": 8023,
+        "deadline_ms": 8000,
+        "endpoint_present": false,
+        "child_exit_code": null
+      },
+      "cpu_pending": {
+        "at": "2026-10-11T01:02:12.556Z",
+        "code": "RESOURCE_CPU_PENDING",
+        "cpu_busy_fraction": 0.93,
+        "one_minute_load": 10.82,
+        "logical_cpus": 4,
+        "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+      },
+      "child_exit": {
+        "at": "2026-10-11T01:02:18.456Z",
+        "exit_code": 1,
+        "signal": null,
+        "recovery_wait_started": false
+      },
+      "final": {
+        "at": "2026-10-11T01:02:19.041Z",
+        "admitted": true,
+        "resource_invalid": true,
+        "exit_code": 3,
+        "decision": "invalid",
+        "reason": "CPU pending had not recovered before the guest child exited."
+      }
+    }
+  ],
+  "policy_verdict": "package and browser phases valid; guest phase invalid; run earns no product credit",
+  "sanitization": "No credential or auth values, arbitrary page text, screenshot, or process attribution is retained."
+}

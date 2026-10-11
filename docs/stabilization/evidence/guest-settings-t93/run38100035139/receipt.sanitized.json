@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T93",
+  "acceptance_case": "settings-controls",
+  "role": "guest",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38100035139,
+    "attempt": 1,
+    "dispatch_ref": "main",
+    "workflow_head_sha": "b20195994e3a65abee9d1d5940fd5873e4bb1f34",
+    "acceptance_lane": "A",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "settings-controls",
+    "conclusion": "failure",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38100035139"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "ci_run_id": 38099299069,
+    "ci_attempt": 1,
+    "artifact_id": 11687570702,
+    "artifact_digest": "sha256:107a6bb9ae18339579098d0cc1c10f9d334f3cde082ad5e2ad6a159c2e7022d6",
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "version": "0.2.490",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
+    "relationship_to_workflow_source": "The diff from product source 3aae9d33a to workflow checkout b20195994 contains only six tests/browser paths; no src, package, lockfile, or WXT config changes. The artifact is correctly identified as source 3aae9d33a, not current-main."
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11687636524,
+    "name": "hosted-guest-38100035139-1",
+    "digest": "sha256:2a47c6ac5fb9267b0e345fe8ad934cb3c8d863ac31b6d63398fa663f0b82bd29",
+    "size_bytes": 4160,
+    "expired": false
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "status": "fail_before_product_interaction",
+    "t93_status": "unverified",
+    "failure_code": "owned_cdp_endpoint_timeout",
+    "product_assertions_run": false
+  },
+  "verdict": "zero_product_credit_resource_invalid",
+  "limitations": [
+    "The native driver did not observe the owned Chromium DevTools endpoint before the existing 8000 ms deadline.",
+    "No Chat version choice was made; panel close/reopen and original-value restoration were not exercised.",
+    "The resource monitor recorded high CPU pressure and an invalid guest resource final. This run does not demonstrate a product defect or a product pass.",
+    "No T93 inventory status was changed."
+  ],
+  "privacy": {
+    "raw_report_persisted": false,
+    "screenshots_persisted": false,
+    "credential_values_persisted": false,
+    "auth_values_persisted": false,
+    "raw_dom_or_errors_persisted": false
+  }
+}
