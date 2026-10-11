@@ -6,6 +6,7 @@ import {
   captureSeoClickFailure,
   clickSeoReaudit,
   observeSeoReauditHit,
+  safeSeoClickEvidence,
 } from './guest-seo-click-diagnostic.mjs';
 
 test('Re-audit hit sample distinguishes a database notice from a clear target', async () => {
@@ -52,6 +53,34 @@ test('Re-audit hit sample distinguishes a database notice from a clear target', 
   } finally {
     window.happyDOM.abort();
   }
+});
+
+test('native sibling notice hit snapshots survive the guarded progress sanitizer', () => {
+  const sample = {
+    active: true,
+    target_count: 1,
+    target_enabled: true,
+    database_refused_notice_count: 1,
+    dismiss_visible: true,
+    hit_point_count: 9,
+    notice_hit_point_count: 0,
+    privatePageText: 'private account text',
+  };
+  const receipt = safeSeoClickEvidence({
+    reaudit_hit_diagnostics: {
+      narrow_warm_navigation: sample,
+      normal_warm_navigation: sample,
+      after_reload: { ...sample, database_refused_notice_count: 0 },
+    },
+  });
+  assert.deepEqual(Object.keys(receipt.reaudit_hit_diagnostics), [
+    'narrow_warm_navigation',
+    'normal_warm_navigation',
+    'after_reload',
+  ]);
+  assert.equal(receipt.reaudit_hit_diagnostics.narrow_warm_navigation.hit_point_count, 9);
+  assert.equal(receipt.reaudit_hit_diagnostics.after_reload.database_refused_notice_count, 0);
+  assert.doesNotMatch(JSON.stringify(receipt), /private account text/);
 });
 
 test('SEO click failure receipt retains pointer boundary without page content', () => {

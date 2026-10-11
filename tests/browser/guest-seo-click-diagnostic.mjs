@@ -181,6 +181,9 @@ export function safeSeoClickEvidence(report) {
     'before_click',
     'after_click',
     'after_dismiss',
+    'narrow_warm_navigation',
+    'normal_warm_navigation',
+    'after_reload',
   ];
   const snapshots = {};
   for (const stage of stages) {

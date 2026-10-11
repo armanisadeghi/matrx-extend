@@ -192,6 +192,16 @@ const unverifiedTarget = (caseId, subtarget, reason) => {
   checkpoint();
 };
 
+function requireVisibleNoticeClearance(sample, label) {
+  assert.equal(sample?.active, true, `${label}: SEO pane is active`);
+  assert.equal(sample.target_count, 1, `${label}: one Re-audit target exists`);
+  assert.equal(sample.target_enabled, true, `${label}: Re-audit is enabled`);
+  assert.equal(sample.database_refused_notice_count, 1, `${label}: real refusal notice persists`);
+  assert.equal(sample.dismiss_visible, true, `${label}: notice Dismiss is visible`);
+  assert.equal(sample.hit_point_count, 9, `${label}: all nine Re-audit points are target-owned`);
+  assert.equal(sample.notice_hit_point_count, 0, `${label}: notice owns no Re-audit point`);
+}
+
 async function buildIdentity() {
   const [receipt, manifest, pkg] = await Promise.all([
     readFile(RECEIPT, 'utf8').then(JSON.parse),
@@ -1504,7 +1514,39 @@ try {
         return;
       }
       const publicPages = [];
+      let normalNoticeViewport = null;
+      if (SEO_CASE_SCOPE === 'controlled') {
+        normalNoticeViewport = await observe('notice_normal_viewport_preflight', () =>
+          evaluate(panel, '({ width: innerWidth, height: innerHeight })'),
+        );
+        assert.ok(
+          Number.isSafeInteger(normalNoticeViewport.width) &&
+            normalNoticeViewport.width > 360 &&
+            Number.isSafeInteger(normalNoticeViewport.height) &&
+            normalNoticeViewport.height > 0,
+          'notice normal viewport must be wider than 360px with positive height',
+        );
+        enter('notice_narrow_viewport_set');
+        await panel.send('Emulation.setDeviceMetricsOverride', {
+          width: 360,
+          height: normalNoticeViewport.height,
+          deviceScaleFactor: 0,
+          mobile: false,
+        });
+        const narrowWidth = await observe('notice_narrow_viewport_width', () =>
+          evaluate(panel, 'innerWidth'),
+        );
+        assert.equal(narrowWidth, 360, 'notice narrow panel is exactly 360px');
+      }
       for (const [index, url] of PAGES.entries()) {
+        if (SEO_CASE_SCOPE === 'controlled' && index === 1) {
+          enter('notice_normal_viewport_restore');
+          await panel.send('Emulation.clearDeviceMetricsOverride');
+          const restoredWidth = await observe('notice_normal_viewport_width', () =>
+            evaluate(panel, 'innerWidth'),
+          );
+          assert.equal(restoredWidth, normalNoticeViewport.width, 'notice normal width restored');
+        }
         enter(`public_page_${index}_navigation`);
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         advance(`public_page_${index}_loaded`, { reachedExpectedPage: page.url() === url });
@@ -1553,6 +1595,21 @@ try {
           headingsPresenceMatches: true,
         });
         advance(`seo_page_${index}_matched`, { title: observedPage.title });
+        if (SEO_CASE_SCOPE === 'controlled') {
+          const stage = index === 0 ? 'narrow_warm_navigation' : 'normal_warm_navigation';
+          const hit = await observe(`notice_${stage}_hit`, () => observeSeoReauditHit(panel));
+          report.reaudit_hit_diagnostics ??= {};
+          report.reaudit_hit_diagnostics[stage] = hit;
+          checkpoint();
+          requireVisibleNoticeClearance(hit, stage);
+          target('T02', `notice_${stage}_reaudit_clearance`, {
+            viewportWidth: index === 0 ? 360 : normalNoticeViewport.width,
+            refusalNoticeVisible: true,
+            targetHitPoints: hit.hit_point_count,
+            noticeHitPoints: hit.notice_hit_point_count,
+            navigatedTitleMatches: content.title === observedPage.title,
+          });
+        }
         await checkGuestCopyFormats(
           { panel, browserSession, panelTarget },
           observedPage,
@@ -1669,6 +1726,38 @@ try {
           !state.error,
         30000,
       );
+      if (SEO_CASE_SCOPE === 'controlled') {
+        const afterReloadHit = await observe('notice_after_panel_reload_hit', () =>
+          observeSeoReauditHit(panel),
+        );
+        report.reaudit_hit_diagnostics.after_reload = afterReloadHit;
+        checkpoint();
+        assert.equal(
+          afterReloadHit?.database_refused_notice_count,
+          0,
+          'dismissed in-memory refusal notice stays cleared after panel reload',
+        );
+        assert.equal(
+          afterReloadHit?.hit_point_count,
+          9,
+          'Re-audit remains target-owned after panel reload',
+        );
+        target('T02', 'dismissed_notice_stays_clear_after_reload', {
+          noticeCount: afterReloadHit.database_refused_notice_count,
+          targetHitPoints: afterReloadHit.hit_point_count,
+          currentTitleMatched: reloadedAudit.title === publicPages[1].title,
+        });
+        unverifiedTarget(
+          'T02',
+          'multiple_and_long_notice_clearance',
+          'owned history refusal produces one fixed-length notice; distinct stacked and long notices need a controlled app notice fixture',
+        );
+        unverifiedTarget(
+          'T02',
+          'visible_notice_full_reload_clearance',
+          'current reload follows Dismiss and cannot prove clearance while a refusal notice is visible',
+        );
+      }
       target('T01', 'reload_audits_current_url', {
         currentUrl: publicPages[1].url,
         currentTitleMatched: reloadedAudit.title === publicPages[1].title,
