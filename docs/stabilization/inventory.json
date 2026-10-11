@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T03:22:14Z",
+  "updated_at": "2026-10-11T03:23:40Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -22324,18 +22324,18 @@
               "run_id": "scrape-save-native-5-browser",
               "build_variant": "development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
               "verified_at": "2026-10-10T01:27:29Z",
-              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl",
+              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl; docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json; docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
               "status": "partial",
               "verified_substeps": [
                 "Named Source 5f25b273-3f3b-4708-808b-b7a290c688cf (\u201cEXT-D-0187 Native Save 5 2026-10-10\u201d) persisted and independently reopened at its Source page with Saved state, page heading, full unique URL and captured content.",
-                "The same Source was listed after reopening the dedicated Project Attach sources panel, confirming persisted association with EXT-D-0187 TEST PROJECT \u2014 native retest (4484ab9c-bb04-4adc-a894-df2e9f18960f)."
+                "The same Source was listed after reopening the dedicated Project Attach sources panel, confirming persisted association with EXT-D-0187 TEST PROJECT \u2014 native retest (4484ab9c-bb04-4adc-a894-df2e9f18960f).",
+                "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified."
               ],
               "remaining_criteria": [
-                "Save without a destination, duplicate-save behavior, precise confirmation latency, controlled refusal/retry, guest/admin behavior, and full T04 coverage remain unverified.",
-                "Save Source UI changes committed in 3e3c2770c remain unverified; the loaded artifact was v0.2.457 at source 7cf16860846756eb0f50cd6d2595b4d7529dda05.",
-                "Dialog URL display, Project-list scrolling, and Tab/Shift+Tab containment and wrap remain unverified."
+                "Only the member/no-destination duplicate-rename controlled 503 refusal and 200 retry subtarget is newly covered; other refusal paths, destinations, Library/File elsewhere, Project display, precise confirmation latency, guest/admin, Store/current-main and full case coverage remain open.",
+                "Project search and scroll-to-late-result acceptance and the remaining Save Source destination flows are still unverified."
               ],
-              "detail": "Resource-valid native member run confirmed exact loaded extension identity, saved Source persistence, and persisted Project association after reopening the Project Attach sources panel. These are bounded substeps only; EXT-D-0187 remains in-fix. See the native receipt for evidence limits. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix.",
+              "detail": "Resource-valid native member run confirmed exact loaded extension identity, saved Source persistence, and persisted Project association after reopening the Project Attach sources panel. These are bounded substeps only; EXT-D-0187 remains in-fix. See the native receipt for evidence limits. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 adds bounded no-destination duplicate rename refusal/retry evidence on unpublished development v0.2.490: HTTP 503 preserved the original name and draft, Retry completed with HTTP 200, one renamed Source and zero associations were independently read, reopened content matched, all resource finals were valid, and cleanup was verified. This does not promote the case; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "bounded_subtarget_evidence": [
                 {
                   "run_id": "38044665604",
@@ -22349,6 +22349,25 @@
                     "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
                   ],
                   "limits": "Member no-destination substep only; Project/Library/multiple destinations, duplicate/refusal/retry, guest/admin, Store/current-main, and full T04/T29 remain unverified."
+                },
+                {
+                  "run_id": "38107457332",
+                  "status": "bounded-pass",
+                  "destination_mode": "none",
+                  "save_scope": "member duplicate rename with controlled refusal and retry",
+                  "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+                  "product_artifact": "unpublished CI development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+                  "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
+                  "reviewed_at": "2026-10-11T03:23:40Z",
+                  "evidence": [
+                    "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+                    "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+                  ],
+                  "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
+                  "resource_finals_valid": true,
+                  "credential_cleanup_verified": "The exact temporary GitHub secret name is absent; the known local one-time link file is absent from temp/workspace locations; no credential values were persisted.",
+                  "verified": "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified.",
+                  "limits": "Member and destination-none duplicate rename/refusal-retry only. T04/T29 remain partial and EXT-D-0187 remains in-fix. No overall feature pass or closure; other refusal paths, destinations/Library/File elsewhere, Project display, latency, guest/admin, current-main and Store behavior remain open."
                 }
               ]
             },
@@ -22438,6 +22457,25 @@
               ],
               "detail": "Real member/non-admin and selected organization verified. First custom-named no-destination save persisted with independent Source readback and zero associations. Same-article duplicate landing returned HTTP 201 with reuse and same Source; one HTTP 200 rename succeeded and persisted. Exactly one Source remained, zero associations, reopened UI matched, and run-owned Source/association cleanup was verified. All three resource finals are valid with resource_invalid=false and child exit 0. This is bounded duplicate-rename evidence only; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "independent_review": "docs/stabilization/reports/peer-review-run38057564851.json"
+            },
+            {
+              "at": "2026-10-11T03:23:40Z",
+              "mode": "member",
+              "run_id": "38107457332",
+              "status": "bounded-partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "destination_mode": "none",
+              "save_scope": "duplicate-rename-retry",
+              "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+              "product_artifact": "unpublished development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+              "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
+              "evidence": [
+                "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+                "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+              ],
+              "detail": "Independent native review accepts this bounded member/no-destination duplicate-rename refusal/retry subtarget. HTTP 503 refusal preserved the original saved name and retry draft; the user-visible retry completed with HTTP 200. Independent service reads confirmed one renamed Source with the same ID and zero associations; reopened UI name/URL/content matched. All package/browser/guest resource finals are valid and cleanup is verified. The run-owned Source was soft-deleted and associations removed; temporary GitHub secret and local one-time link are absent. T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+              "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
             }
           ]
         },
@@ -25764,18 +25802,18 @@
               "run_id": "scrape-save-native-5-browser",
               "build_variant": "development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
               "verified_at": "2026-10-10T01:27:29Z",
-              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl",
+              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl; docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json; docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
               "status": "partial",
               "verified_substeps": [
                 "Save Source exposed editable name and place controls; Projects candidates appeared after choosing Projects.",
-                "Selecting EXT-D-0187 TEST PROJECT \u2014 native retest and saving produced named Source 5f25b273-3f3b-4708-808b-b7a290c688cf; after reopening the Project Attach sources panel, that Source was listed, confirming persisted association."
+                "Selecting EXT-D-0187 TEST PROJECT \u2014 native retest and saving produced named Source 5f25b273-3f3b-4708-808b-b7a290c688cf; after reopening the Project Attach sources panel, that Source was listed, confirming persisted association.",
+                "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified."
               ],
               "remaining_criteria": [
-                "Scroll behavior remains unverified because the attempted scroll produced no accessibility-state change; keyboard movement to the next row is not proof of focus containment or scroll reachability.",
-                "The dialog did not separately display the URL; URL display added in Save Source UI commit 3e3c2770c is unverified on a current exact artifact.",
-                "Duplicate, no-destination, search-to-late-result, multi-target, remove, Library, refusal/retry, File elsewhere, responsive layout, focus containment/wrap, and admin paths remain unverified."
+                "This run covers member/no-destination duplicate rename refusal/retry only. Scroll-to-late-result, search, multi-target/remove, Library/no-Library, File elsewhere, responsive layout, focus containment/wrap and admin behavior remain unverified.",
+                "The run does not establish full T29 or EXT-D-0187 acceptance; guest/member/admin, Store/current-main and remaining destination paths are open."
               ],
-              "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix.",
+              "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 adds bounded no-destination duplicate rename refusal/retry evidence on unpublished development v0.2.490: HTTP 503 preserved the original name and draft, Retry completed with HTTP 200, one renamed Source and zero associations were independently read, reopened content matched, all resource finals were valid, and cleanup was verified. This does not promote the case; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "bounded_subtarget_evidence": [
                 {
                   "run_id": "38044665604",
@@ -25789,6 +25827,25 @@
                     "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
                   ],
                   "limits": "Member no-destination substep only; Project/Library/multiple destinations, duplicate/refusal/retry, guest/admin, Store/current-main, and full T04/T29 remain unverified."
+                },
+                {
+                  "run_id": "38107457332",
+                  "status": "bounded-pass",
+                  "destination_mode": "none",
+                  "save_scope": "member duplicate rename with controlled refusal and retry",
+                  "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+                  "product_artifact": "unpublished CI development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+                  "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
+                  "reviewed_at": "2026-10-11T03:23:40Z",
+                  "evidence": [
+                    "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+                    "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+                  ],
+                  "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
+                  "resource_finals_valid": true,
+                  "credential_cleanup_verified": "The exact temporary GitHub secret name is absent; the known local one-time link file is absent from temp/workspace locations; no credential values were persisted.",
+                  "verified": "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified.",
+                  "limits": "Member and destination-none duplicate rename/refusal-retry only. T04/T29 remain partial and EXT-D-0187 remains in-fix. No overall feature pass or closure; other refusal paths, destinations/Library/File elsewhere, Project display, latency, guest/admin, current-main and Store behavior remain open."
                 }
               ]
             },
@@ -25881,6 +25938,25 @@
               ],
               "detail": "Real member/non-admin and selected organization verified. First custom-named no-destination save persisted with independent Source readback and zero associations. Same-article duplicate landing returned HTTP 201 with reuse and same Source; one HTTP 200 rename succeeded and persisted. Exactly one Source remained, zero associations, reopened UI matched, and run-owned Source/association cleanup was verified. All three resource finals are valid with resource_invalid=false and child exit 0. This is bounded duplicate-rename evidence only; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "independent_review": "docs/stabilization/reports/peer-review-run38057564851.json"
+            },
+            {
+              "at": "2026-10-11T03:23:40Z",
+              "mode": "member",
+              "run_id": "38107457332",
+              "status": "bounded-partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "destination_mode": "none",
+              "save_scope": "duplicate-rename-retry",
+              "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+              "product_artifact": "unpublished development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+              "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
+              "evidence": [
+                "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+                "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+              ],
+              "detail": "Independent native review accepts this bounded member/no-destination duplicate-rename refusal/retry subtarget. HTTP 503 refusal preserved the original saved name and retry draft; the user-visible retry completed with HTTP 200. Independent service reads confirmed one renamed Source with the same ID and zero associations; reopened UI name/URL/content matched. All package/browser/guest resource finals are valid and cleanup is verified. The run-owned Source was soft-deleted and associations removed; temporary GitHub secret and local one-time link are absent. T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+              "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
             }
           ]
         },
@@ -26328,9 +26404,10 @@
             "scrape-save-native-5",
             "scrape-save-native-5-browser",
             "38043392549",
-            "38044665604"
+            "38044665604",
+            "38107457332"
           ],
-          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. Initial native-5 ended resource-invalid at 19.9955GiB before Save/write. Follow-up native-5-browser was resource-valid and confirmed named Source persistence plus its Project association, but only bounded substeps passed; dialog URL, scrolling, focus containment, other save routes, and full T04/T29 remain unverified. Save Source UI changes in 3e3c2770c need a current exact-artifact retest. The D187-specific hosted driver is committed at a8839d016/94a281c8f and awaits green exact-source CI and a member-lane run. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects and focus acceptance remain unverified; association has only bounded native-5-browser evidence. Hosted-lane feasibility: docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json. Latest EXT-D-0187 hosted member run 38043392549 (workflow source 94d7a148) is infrastructure-invalid with zero product credit: `owned_cdp_endpoint_timeout` at inputs/cdp_connect before auth or Save, destination mode none; guest resource journal ended CPU pending/invalid exit 3. The no-destination path remains unverified. Latest run 38044665604 (workflow c6ff0838d; frozen development v0.2.459) independently verified one member no-destination Save: custom-named Source persisted, zero association edges read, original read and reopened content matched, cleanup verified. Bounded substep only; T04/T29 remain partial and EXT-D-0187 remains in-fix."
+          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. Initial native-5 ended resource-invalid at 19.9955GiB before Save/write. Follow-up native-5-browser was resource-valid and confirmed named Source persistence plus its Project association, but only bounded substeps passed; dialog URL, scrolling, focus containment, other save routes, and full T04/T29 remain unverified. Save Source UI changes in 3e3c2770c need a current exact-artifact retest. The D187-specific hosted driver is committed at a8839d016/94a281c8f and awaits green exact-source CI and a member-lane run. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects and focus acceptance remain unverified; association has only bounded native-5-browser evidence. Hosted-lane feasibility: docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json. Latest EXT-D-0187 hosted member run 38043392549 (workflow source 94d7a148) is infrastructure-invalid with zero product credit: `owned_cdp_endpoint_timeout` at inputs/cdp_connect before auth or Save, destination mode none; guest resource journal ended CPU pending/invalid exit 3. The no-destination path remains unverified. Earlier run 38044665604 (workflow c6ff0838d; frozen development v0.2.459) independently verified one member no-destination Save: custom-named Source persisted, zero association edges read, original read and reopened content matched, cleanup verified. Bounded substep only; T04/T29 remain partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 on unpublished development v0.2.490 (CI 38106946361/artifact 11690348157; workflow source 5b01a35f) accepts only the no-destination duplicate-rename controlled refusal/retry subtarget: HTTP 503 preserved the saved name and draft, Retry returned HTTP 200, one same-ID renamed Source and zero associations were independently read, reopened content matched, resource finals and cleanup were valid, and temporary GitHub secret/local link absence was verified. Member Scrape surface and EXT-D-0187 stay partial/in-fix pending the original reproduction and surrounding-case coverage; other destinations, guest/admin, Store/current-main and full-surface acceptance remain open."
         },
         "admin": {
           "test_status": "unverified",
