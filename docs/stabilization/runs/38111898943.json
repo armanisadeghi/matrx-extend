@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "run_id": 38111898943,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_checkout_sha": "8ca2dc0601f6529b0224e7656f5e364916384063",
+  "product_artifact": {
+    "source_sha": "cda49523be8fc568616e0205143982426e766c1a",
+    "ci_run_id": 38111064635,
+    "artifact_id": 11691866852,
+    "artifact_digest": "sha256:23142cf052af5210bbc89f52552a2af6d295be50d2610067eb318bb654a3a6f0",
+    "artifact_tree_sha256": "0ead3f09fc7a2c9501d563e3405266695a845a109a6eb0c3df94a422054ab152"
+  },
+  "workflow_checkout_drift": "cda4952 to 8ca2dc0 changed pnpm-lock.yaml only; current main later advanced to b03ef5026 during this run. No current-main or release claim.",
+  "native_acceptance_status": "success",
+  "resource_journal": "docs/stabilization/resource-journals/hosted-guest-38111898943-1.jsonl",
+  "result": {
+    "schema_version": 1,
+    "feature_id": "EXT-F-1007",
+    "case_id": "EXT-F-1007-T08",
+    "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+    "auth_mode": "guest",
+    "status": "pass",
+    "stage": "complete",
+    "native_stage": "exercise_panel",
+    "artifact": {
+      "kind": "ci_development_test",
+      "source_sha": "cda49523be8fc568616e0205143982426e766c1a",
+      "run_id": 38111064635,
+      "artifact_id": 11691866852,
+      "version": "0.2.492",
+      "tree_sha256": "0ead3f09fc7a2c9501d563e3405266695a845a109a6eb0c3df94a422054ab152"
+    },
+    "observations": {
+      "case_id": "EXT-F-1007-T08",
+      "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+      "fixture": "owned localhost; title only; no body, SEO metadata, links, images, headings or JSON-LD",
+      "seo": {
+        "visible": true,
+        "selected": "SEO",
+        "title_matches": true,
+        "description_dash": true,
+        "groups": ["Title & description", "Performance"]
+      },
+      "schema": {
+        "visible": true,
+        "selected": "Schema",
+        "json_valid": true,
+        "metadata_title_matches": true,
+        "description_absent": true,
+        "canonical_absent": true,
+        "og_count": 0,
+        "twitter_count": 0,
+        "schema_types_count": 0,
+        "ld_json_count": 0
+      },
+      "export_checks": [
+        {
+          "after_pane": "SEO",
+          "identity_unchanged": true,
+          "digest_unchanged": true
+        },
+        {
+          "after_pane": "Schema",
+          "identity_unchanged": true,
+          "digest_unchanged": true
+        }
+      ],
+      "verdict": {
+        "seo_no_signal_baseline": true,
+        "schema_empty": true,
+        "capture_export_unchanged_after_each_pane": true
+      }
+    },
+    "capture_diagnostic": {
+      "before": {
+        "capture_match_count": 1,
+        "capture_inside_scrape": true,
+        "chat_active": false,
+        "active_scrape_count": 1,
+        "scrape_controls_present": true,
+        "scrape_pane_found": true,
+        "scrape_pane_active": true,
+        "result_tablist_count": 0,
+        "selected_count": 0,
+        "article": false,
+        "selected_inside_scrape": false,
+        "result_controls_present": false,
+        "result_pane_found": false,
+        "result_pane_active": false,
+        "result_pane_inside_scrape": false,
+        "result_pane_visible": false,
+        "title_matches": true
+      },
+      "immediate": {
+        "capture_match_count": 1,
+        "capture_inside_scrape": true,
+        "chat_active": false,
+        "active_scrape_count": 1,
+        "scrape_controls_present": true,
+        "scrape_pane_found": true,
+        "scrape_pane_active": true,
+        "result_tablist_count": 0,
+        "selected_count": 0,
+        "article": false,
+        "selected_inside_scrape": false,
+        "result_controls_present": false,
+        "result_pane_found": false,
+        "result_pane_active": false,
+        "result_pane_inside_scrape": false,
+        "result_pane_visible": false,
+        "title_matches": true
+      },
+      "immediate_events": {
+        "pointerdown": 1,
+        "pointerup": 1,
+        "click": 1,
+        "trusted_click": 1,
+        "capture_click": 1,
+        "trusted_capture_click": 1,
+        "last_target_is_capture": true,
+        "last_target_inside_scrape": true
+      },
+      "timeout": null,
+      "pointer_target": {
+        "target_rect": {
+          "x": 12,
+          "y": 695,
+          "width": 164,
+          "height": 36
+        },
+        "clipped_rect": {
+          "x": 12,
+          "y": 695,
+          "width": 164,
+          "height": 36
+        },
+        "viewport": {
+          "width": 360,
+          "height": 743
+        },
+        "clipping_ancestor_count": 0,
+        "tested_point_count": 9,
+        "center_hit_category": "target",
+        "interior_hit_kinds": [
+          "target",
+          "target",
+          "target",
+          "target",
+          "target",
+          "target",
+          "target",
+          "target",
+          "target"
+        ],
+        "center_occluder": null,
+        "first_interior_occluder": null,
+        "selected_point_available": true,
+        "selected_point": {
+          "x": 94,
+          "y": 713
+        },
+        "target_disabled": false,
+        "target_pointer_events_none": false
+      },
+      "pointer_phase": "release_returned",
+      "pointer_failure": null,
+      "events": {
+        "pointerdown": 1,
+        "pointerup": 1,
+        "click": 1,
+        "trusted_click": 1,
+        "capture_click": 1,
+        "trusted_capture_click": 1,
+        "last_target_is_capture": true,
+        "last_target_inside_scrape": true
+      }
+    },
+    "panel_viewport": {
+      "mode": "narrow",
+      "mechanism": "native_default",
+      "observed_px": 360,
+      "minimum_px": null
+    },
+    "failure_code": null,
+    "limits": "One owned localhost guest page; only T08 no-signal SEO and empty Schema panes. No broader T08, role, width, Store, or current-main claim.",
+    "browser_version": "Chrome/141.0.7390.37"
+  },
+  "artifact": {
+    "id": 11692520307,
+    "name": "hosted-guest-38111898943-1",
+    "digest": "sha256:819ef9ee7bbad39895c84610979796e17880d9ac781ae4f162acd5ef5c7d02f1",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38111898943"
+  },
+  "limits": "Bounded observation only; pending independent native peer review before inventory credit. Prior 600px evidence remains separate; no reload, other role, Store or current-main coverage is claimed."
+}

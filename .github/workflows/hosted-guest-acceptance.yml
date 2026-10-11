@@ -370,6 +370,7 @@ jobs:
           DEVELOPMENT_ARTIFACT_ID: ${{ inputs.development_artifact_id }}
           PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx }}
           ACCEPTANCE_CASE: ${{ inputs.acceptance_case }}
+          MEMBER_DATA_SCOPE: ${{ inputs.member_data_scope }}
           SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           SCRAPE_WIDTH_MODE: ${{ inputs.scrape_width_mode }}
@@ -390,8 +391,8 @@ jobs:
           fi
           if [[ "$ACCEPTANCE_CASE" == member-data ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member && "$SCRAPE_WIDTH_MODE" == narrow && -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1
-            [[ '${{ inputs.member_data_scope }}' == lifecycle || '${{ inputs.member_data_scope }}' == auto-extract ]] || exit 1
-          elif [[ '${{ inputs.member_data_scope }}' != lifecycle ]]; then
+            [[ "$MEMBER_DATA_SCOPE" == lifecycle || "$MEMBER_DATA_SCOPE" == auto-extract ]] || exit 1
+          elif [[ "$MEMBER_DATA_SCOPE" != lifecycle ]]; then
             exit 1
           elif [[ "$ACCEPTANCE_CASE" != guest-scrape && "$ACCEPTANCE_CASE" != guest-scrape-development && "$ACCEPTANCE_CASE" != scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == guest && "$SCRAPE_WIDTH_MODE" == narrow && -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1

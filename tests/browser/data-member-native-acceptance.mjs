@@ -695,7 +695,7 @@ try {
       report.observations.member_save_succeeded = true;
     },
   });
-  report.status = AUTO_SCOPE && report.auto_extract?.running !== 'pass' ? 'partial' : 'pass';
+  report.status = report.auto_extract?.running === 'unverified' ? 'partial' : 'pass';
   report.stage = 'complete';
 } catch (error) {
   report.status = 'fail';

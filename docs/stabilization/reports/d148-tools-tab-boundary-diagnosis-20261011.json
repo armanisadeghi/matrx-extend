@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "report_id": "d148-tools-tab-boundary-diagnosis-20261011",
+  "defect_id": "EXT-D-0148",
+  "case_id": "EXT-F-4163-T01",
+  "status": "source_repair_verified_native_pending",
+  "scope": "member Tools tab pointer-selection boundary only",
+  "input_run_id": 38111882984,
+  "diagnosis": {
+    "confirmed_class": "The driver selects the Tools tab by its native title, moves the trusted pointer over it, and re-evaluates that same selector. The shared title tooltip moves title to data-matrx-title on pointerover, so the stable sample loses the existing target before any press/release or tool invocation.",
+    "historical_confidence": "The frozen failure is consistent with this reproduced class. Its fixed-field observer also used title-only queries and recorded zero. The captured report lacks initial/stable samples or preserved-title counts, so historical exclusive causation is not asserted.",
+    "member_access": "Both frozen cda49523be8fc568616e0205143982426e766c1a and current src/config/sidepanel-visibility.ts expose Tools to signed-in members. App.tsx renders trigger/content with that same resolver.",
+    "availability_ready_meaning": "The old observer hardcoded availability=ready after Runtime.evaluate; it did not prove the Tools tab was absent, the member session still rendered, or the catalog ready."
+  },
+  "hypotheses": [
+    {
+      "cause": "Tools restricted to admins",
+      "prediction": "Frozen visibility resolver denies signed-in nonadmin Tools",
+      "result": "ruled out by frozen/current resolver: tools=signed-in"
+    },
+    {
+      "cause": "Tooltip title transfer during trusted pointer movement",
+      "prediction": "Original pointer passes initial sample then fails stable sample after real tooltip pointerover",
+      "result": "reproduced exactly: tab_groups_toolsTab_stable_hit_required; semantic native/preserved selector completes trusted press/release"
+    },
+    {
+      "cause": "Catalog lazy mount delayed",
+      "prediction": "Failure first occurs after Tools click at catalog readiness",
+      "result": "not the reported first boundary; saved step tools_tab_click precedes catalog wait"
+    },
+    {
+      "cause": "Transient auth or tab unmount in frozen run",
+      "prediction": "Preserved/native title counts both zero and signed-in tab census absent at failure",
+      "result": "not testable from saved fixed-field observation; new native/preserved counts improve future discrimination"
+    }
+  ],
+  "package_evidence": {
+    "local_installed_version": "0.86.80",
+    "frozen_lock_version": "0.86.92",
+    "frozen_version_distribution_inspected": true,
+    "distribution_path": "package/dist/carousel.cjs",
+    "mechanism": "0.86.92 lift() sets TITLE_TOOLTIP_ATTR then removeAttribute(title); onPointerOver activates the titled ancestor, matching the locally reproduced behavior.",
+    "archive_sha256": "7db42d592120464b8a4a3ee6f3ace4c43cca20bb6da7a537d926c24611c5b26f"
+  },
+  "fix": {
+    "files": [
+      "tests/browser/tab-groups-manual-runner.mjs",
+      "tests/browser/tab-groups-manual-runner.test.mjs",
+      "tests/browser/tab-groups-member-native-acceptance.mjs"
+    ],
+    "change": "Extract unchanged trusted-pointer routine to a testable driver seam; resolve Tools by native title with preserved-title fallback. Reuse this selector for click, stable recheck, catalog readiness and failure observation. Add separate native/preserved title counts.",
+    "coverage_preserved": "Unique visible hit target and stable position remain required. Native CDP press/release remains required. Member auth, all-handlers selection, canonical tab_groups invocation, native Chrome group readback, get_tab_groups readback and owned-fixture cleanup are unchanged.",
+    "sibling_census": "D148 title-based toolsTab appears in target resolution, catalog readiness, and failure observation; all now share one selector. Other D148 selectors use text/content, not title. Existing settings driver title-click already supports preserved titles."
+  },
+  "verification": [
+    {
+      "command": "node --test tests/browser/tab-groups-manual-runner.test.mjs",
+      "phase": "before fix",
+      "verdict": "RED",
+      "failure": "tab_groups_toolsTab_stable_hit_required",
+      "counts": { "passed": 4, "failed": 1 }
+    },
+    {
+      "command": "node --test tests/browser/tab-groups-manual-runner.test.mjs tests/browser/tab-groups-member-failure.test.mjs",
+      "phase": "after fix",
+      "verdict": "PASS",
+      "passed": 9
+    },
+    {
+      "command": "plant.py pointerTarget early-return mutant; node --test tests/browser/tab-groups-manual-runner.test.mjs",
+      "verdict": "RED",
+      "restored_identical": true
+    },
+    {
+      "command": "plant.py native-title-only selector mutant; node --test tests/browser/tab-groups-manual-runner.test.mjs",
+      "verdict": "RED",
+      "failure": "tab_groups_toolsTab_stable_hit_required",
+      "restored_identical": true
+    },
+    { "command": "pnpm compile", "verdict": "PASS" },
+    {
+      "command": "pnpm exec biome check tests/browser/tab-groups-manual-runner.mjs tests/browser/tab-groups-manual-runner.test.mjs tests/browser/tab-groups-member-native-acceptance.mjs",
+      "verdict": "PASS"
+    },
+    {
+      "command": "pnpm -s lint",
+      "verdict": "PASS",
+      "notes": "2612 files checked; 854 pre-existing repository warnings; no errors."
+    }
+  ],
+  "independent_review": {
+    "status": "source_GO",
+    "reviewer": "d148_pointer_source_peer",
+    "report": "docs/stabilization/reports/d148-pointer-source-peer-20261011.json",
+    "behavior": "PARTIAL: native pending",
+    "guard_quality": "PASS"
+  },
+  "limits": [
+    "DOM simulation verifies the harness boundary, not native Chrome acceptance.",
+    "No hosted/browser heavy run launched; no credentials changed; no inventory or defect state changed.",
+    "Frozen acceptance remains unverified for all tab_groups operations; no product status credit."
+  ],
+  "next_action": "Parent owns fresh-provenance hosted native acceptance; this source-only repair grants no product pass."
+}

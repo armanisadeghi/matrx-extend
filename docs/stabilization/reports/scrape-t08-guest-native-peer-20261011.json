@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "review": "independent_native_evidence_peer",
+  "run_id": 38111898943,
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "verdict_a_behavior_evidence": {
+    "status": "PASS",
+    "finding": "The bounded native run supports that a guest opened SEO and Schema for the owned title-only localhost fixture at native-default 360px width; SEO showed the title and an em dash for description with only Title & description and Performance groups, Schema JSON was valid with title metadata and no description, canonical, OG, Twitter, schema types, or JSON-LD, and full-capture export identity and SHA-256 digest were unchanged after each pane.",
+    "basis": [
+      "Downloaded native test result independently matches the sanitized run receipt and records native_stage=exercise_panel, status=pass, and browser Chrome/141.0.7390.37.",
+      "Harness creates an owned HTML page with only a title and explicitly checks absence of body text, language, description, canonical/social/hreflang metadata, JSON-LD, headings, links, and images.",
+      "Pane assertions require a visible active Scrape result pane, selected pane label, title and empty-field values, and valid empty schema counts.",
+      "Capture exports are read three times through the guest For AI agent clipboard export; fingerprints require the expected URL/title/full-capture form and compare both timestamp identity and SHA-256 payload digest.",
+      "The viewport selector observed innerWidth=360 in narrow/native_default mode without CDP width emulation."
+    ],
+    "resource_validity": "PASS: completed journal has RESOURCE_FINAL_DECISION admitted=true, resourceInvalid=false, exitCode=0, decision=valid. One transient RESOURCE_CPU_PENDING sample cleared and was followed by RESOURCE_CPU_RECOVERED before successful exit.",
+    "limits": [
+      "One owned localhost guest fixture and only the stated T08 no-signal/empty-pane subtarget.",
+      "360px narrow native-default width only; no normal-width or alternate-width coverage.",
+      "Does not establish broader T08 coverage, other roles, Store behavior, reload behavior, current-main acceptance, or release acceptance."
+    ]
+  },
+  "verdict_b_harness_quality_false_pass_risk": {
+    "status": "PARTIAL",
+    "finding": "The executable DOM and export assertions are specific and provide strong evidence for the bounded behavior; provenance and resource records are internally consistent. A visual peer check of the target panes is unavailable because the uploaded screenshots do not show the exercised Scrape result panes.",
+    "false_pass_risk": "Low for the asserted values and export invariance: the case uses native Chrome, confirms a trusted click on the capture control, waits for selected/visible pane states, parses the rendered Schema JSON, validates empty SEO groups and fields, and compares full exported payload fingerprints. Residual risk is limited to selector/DOM interpretation and absence of target-pane screenshots; the screenshot gap does not negate the recorded native assertions.",
+    "provenance": {
+      "hosted_workflow": "Hosted guest side-panel acceptance; run 38111898943 completed successfully on main at 8ca2dc0601f6529b0224e7656f5e364916384063.",
+      "product_artifact": "CI development artifact 11691866852 from run 38111064635, source cda49523be8fc568616e0205143982426e766c1a, version 0.2.492; artifact digest and tree SHA agree between native result and sanitized receipt.",
+      "checkout_drift": "The run checkout differs from artifact source only in pnpm-lock.yaml; current main advanced to b03ef5026 during the run. No current-main or release claim follows."
+    },
+    "screenshot_review": "Downloaded native-side-panel.png shows the guest start panel; normal-target-after-open.png shows an unrelated research-brief page and open-panel control. Neither shows the T08 Scrape, SEO, or Schema pane."
+  },
+  "files_inspected": [
+    "docs/stabilization/runs/38111898943.json",
+    "docs/stabilization/resource-journals/hosted-guest-38111898943-1.jsonl",
+    "tests/browser/scrape-seo-schema-empty-guest.mjs",
+    "tests/browser/scrape-seo-schema-empty-observation.mjs",
+    "tests/browser/scrape-seo-schema-empty-oracle.mjs",
+    "tests/browser/scrape-native-selection.mjs",
+    "tests/browser/scrape-tab-coverage.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "downloaded hosted artifact report and screenshots"
+  ],
+  "open_questions": [],
+  "files_touched": [
+    "docs/stabilization/reports/scrape-t08-guest-native-peer-20261011.json"
+  ]
+}

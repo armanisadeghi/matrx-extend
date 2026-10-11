@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_review",
+  "reviewed_at": "2026-10-11",
+  "subject": "b03ef5026 member Data T08 focused CI repair",
+  "verdict_a_ci_failure_remediation": "PASS",
+  "verdict_b_guard_and_quality": "PASS",
+  "scope": "Independent review of the hosted member Data preflight correction and reload-diagnostic acceptance harness correction; no native browser run or product acceptance claim.",
+  "verdict_a_findings": [
+    {
+      "severity": "Important",
+      "finding": "The workflow preflight previously expanded inputs.member_data_scope directly inside the shell condition instead of providing it as a step environment value. The workflow test extracts and executes the run block as bash, where that GitHub expression is not expanded, so member-data preflight rejected the valid scope. The patch passes MEMBER_DATA_SCOPE through env and consistently reads it from the environment.",
+      "evidence": [
+        ".github/workflows/hosted-guest-acceptance.yml:373",
+        ".github/workflows/hosted-guest-acceptance.yml:394",
+        "scripts/hosted-scrape-route.test.mjs:399"
+      ]
+    },
+    {
+      "severity": "Important",
+      "finding": "The extracted diagnostic test body did not define the top-level AUTO_SCOPE constant, while the member acceptance tail used it to choose the result. With reload diagnostic enabled, the ReferenceError was caught as a native acceptance failure, so the expected diagnostic-only unverified result could not be persisted. The tail now derives the partial status from report.auto_extract?.running, which is present in the exercised SUT path and does not require a hidden top-level constant.",
+      "evidence": [
+        "tests/browser/data-member-native-acceptance.mjs:698",
+        "tests/browser/data-member-reload-diagnostic.test.mjs:21",
+        "tests/browser/data-member-reload-diagnostic.test.mjs:64"
+      ]
+    },
+    {
+      "severity": "Minor",
+      "finding": "The focused workflow-run logs could not be retrieved in this review: GitHub Actions API returned 404 for run 38111942352 with the connected repository identity. The described failing checks were independently reproduced through the focused local test suite, which now passes 23/23.",
+      "evidence": [
+        "node --test scripts/hosted-scrape-route.test.mjs tests/browser/data-member-reload-diagnostic.test.mjs tests/browser/data-member-auto-extract-driver.test.mjs — 23 passed, 0 failed",
+        "github_fetch_workflow_run_jobs returned 404 for run 38111942352"
+      ]
+    }
+  ],
+  "verdict_b_findings": [
+    {
+      "severity": "Minor",
+      "finding": "The updated admission tests preserve the member-only narrow route and prove that lifecycle and auto-extract scopes are admitted only for member-data, unknown scopes are rejected, and auto-extract is rejected for guest-chat. Existing guest, D187, artifact provenance and lane checks remain in the executed suite.",
+      "evidence": [
+        "scripts/hosted-scrape-route.test.mjs:435",
+        "scripts/hosted-scrape-route.test.mjs:461",
+        "focused test suite: workflow admits member Data with member auth while preserving guest and D187 routing"
+      ]
+    },
+    {
+      "severity": "Minor",
+      "finding": "The reload diagnostic remains expressly diagnostic-only: its helper sets status to unverified, adds diagnostic_only_perturbed_lifecycle, and returns a failing process exit status; tests cover both diagnostic flags and an injected browser failure while preserving the original error code. No acceptance credit is granted for perturbed runs.",
+      "evidence": [
+        "tests/browser/scrape-reload-open-diagnostic.mjs:13",
+        "tests/browser/data-member-reload-diagnostic.test.mjs:40",
+        "tests/browser/data-member-reload-diagnostic.test.mjs:52"
+      ]
+    },
+    {
+      "severity": "Minor",
+      "finding": "The auto-extract completion adjustment marks the run partial only when the recorded extraction state is unverified; it does not bypass the extraction observation or rewrite diagnostic admission. The auto-extract driver checks in the focused suite pass.",
+      "evidence": [
+        "tests/browser/data-member-native-acceptance.mjs:698",
+        "tests/browser/data-member-auto-extract-driver.test.mjs"
+      ]
+    }
+  ],
+  "verification": {
+    "focused_tests": "node --test scripts/hosted-scrape-route.test.mjs tests/browser/data-member-reload-diagnostic.test.mjs tests/browser/data-member-auto-extract-driver.test.mjs — 23/23 passed",
+    "diff_check": "git diff --check on the three owned paths passed",
+    "ci_logs": "Unavailable through connected GitHub API; run ID lookup returned 404.",
+    "native_acceptance": "Not run; no heavy native run launched."
+  },
+  "checked_files": [
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "scripts/hosted-scrape-route.test.mjs",
+    "tests/browser/data-member-native-acceptance.mjs",
+    "tests/browser/data-member-reload-diagnostic.test.mjs",
+    "tests/browser/scrape-reload-open-diagnostic.mjs",
+    "tests/browser/data-member-auto-extract-driver.test.mjs"
+  ],
+  "limits": [
+    "This review verifies the test harness and route admission, not a live hosted member-data browser acceptance run.",
+    "The repository code remained uncommitted during this review."
+  ]
+}
