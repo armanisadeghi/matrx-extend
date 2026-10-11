@@ -67,3 +67,20 @@ describe('swipeTargetFromUrl', () => {
     expect(swipeTargetFromUrl(raw as string | null)).toBeNull();
   });
 });
+
+describe('feedTargetFromUrl ("Capture more" pages)', () => {
+  it('accepts profiles and feeds, never a single post or a bare home/login page', async () => {
+    const { feedTargetFromUrl } = await import('@/lib/swipe-file/urls');
+    expect(feedTargetFromUrl('https://www.instagram.com/nasa/?hl=en')).toBe(
+      'https://www.instagram.com/nasa/',
+    );
+    expect(feedTargetFromUrl('https://www.tiktok.com/@nasa')).toBe('https://www.tiktok.com/@nasa');
+    expect(feedTargetFromUrl('https://www.linkedin.com/company/nasa/posts/')).not.toBeNull();
+    expect(feedTargetFromUrl('https://www.instagram.com/p/DeAYvsnn4la/')).toBeNull();
+    expect(feedTargetFromUrl('https://x.com/nasa/status/123')).toBeNull();
+    expect(feedTargetFromUrl('https://www.instagram.com/')).toBeNull();
+    expect(feedTargetFromUrl('https://www.instagram.com/accounts/login/')).toBeNull();
+    expect(feedTargetFromUrl('https://www.youtube.com/@nasa')).toBeNull();
+    expect(feedTargetFromUrl('https://example.com/nasa')).toBeNull();
+  });
+});

@@ -3,7 +3,7 @@ import { SWIPE_PORT, type SwipeClientMsg, type SwipeHostMsg } from '@/lib/swipe-
 import { SWIPE_OPEN_KEY, swipePostWebUrl } from '@/lib/swipe-file/navigation';
 import { captureReceiptSummary, missingSlideNumbers } from '@/lib/swipe-file/receipt';
 import type { SwipeOutcome } from '@/lib/swipe-file/save';
-import { swipeTargetFromUrl } from '@/lib/swipe-file/urls';
+import { feedTargetFromUrl, swipeTargetFromUrl } from '@/lib/swipe-file/urls';
 
 const NEW = '__new__';
 const option = (name: string, value: string) => {
@@ -34,7 +34,8 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
 :focus-visible{outline:2px solid #93c5fd;outline-offset:2px}[hidden]{display:none!important}
 </style>
 <section class="card" aria-label="Matrx swipe file">
- <div class="row"><img class="logo" alt="Matrx" /><div class="controls"><select id="col" aria-label="Collection"></select><button id="save">Save to swipe file</button></div></div>
+ <div class="row"><img class="logo" alt="Matrx" /><div id="postrow" class="controls"><select id="col" aria-label="Collection"></select><button id="save">Save to swipe file</button></div></div>
+ <div id="feedrow" class="row" hidden><span class="msg">Capture posts from this page</span><button id="feed">Capture more</button></div>
  <input id="newname" placeholder="Collection name" aria-label="New collection name" hidden />
  <div id="feedback" class="feedback" hidden>
   <div class="status" role="status" aria-live="polite"><span id="mark" class="mark" aria-hidden="true"></span><span id="msg" class="msg"></span></div>
@@ -56,6 +57,12 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
   const notice = $('notice');
   const links = $('links');
   const web = $<HTMLAnchorElement>('web');
+  const postRow = $('postrow');
+  const feedRow = $('feedrow');
+  const feedBtn = $<HTMLButtonElement>('feed');
+  let feedUrl: string | null = null;
+  /** A feed page the guide has taken over; the card stays away until the person leaves it. */
+  let feedHandedOff: string | null = null;
   const captureSlides = $<HTMLButtonElement>('capture-slides');
   const retrySlides = $<HTMLButtonElement>('retry-slides');
   let port: chrome.runtime.Port | null = null;
@@ -103,6 +110,17 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
     }
   }
   function onHost(message: SwipeHostMsg) {
+    if (message.t === 'feed_started') {
+      if (message.url !== feedUrl) return;
+      feedBtn.disabled = false;
+      if (message.ok) {
+        window.dispatchEvent(new CustomEvent('matrx:guided-wake'));
+        say('');
+        feedHandedOff = feedUrl;
+        host.remove();
+      } else say(message.sentence, 'bad', '!');
+      return;
+    }
     if (message.t === 'collections') {
       loaded = true;
       const selected = col.value;
@@ -163,6 +181,12 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
       }
     }
   }
+  feedBtn.addEventListener('click', () => {
+    if (!feedUrl || feedBtn.disabled) return;
+    feedBtn.disabled = true;
+    say('Opening the capture guide…', '', '◌');
+    send({ t: 'feed_capture', url: feedUrl });
+  });
   col.addEventListener('change', () => {
     newname.hidden = col.value !== NEW;
   });
@@ -228,17 +252,26 @@ button,a{font:inherit}button{background:#2563eb;color:#fff;border:0;border-radiu
       });
   });
   function refresh() {
-    const next = swipeTargetFromUrl(location.href)?.url ?? null;
-    if (next === currentUrl && host.isConnected === !!next) return;
-    currentUrl = next;
+    const post = swipeTargetFromUrl(location.href)?.url ?? null;
+    const rawFeed = post ? null : feedTargetFromUrl(location.href);
+    if (rawFeed !== feedHandedOff) feedHandedOff = null;
+    const feed = rawFeed && rawFeed === feedHandedOff ? null : rawFeed;
+    const next = post ?? feed;
+    if (next === (currentUrl ?? feedUrl) && host.isConnected === !!next) return;
+    if (!next && !host.isConnected && !currentUrl && !feedUrl) return;
+    currentUrl = post;
+    feedUrl = feed;
     clearResult();
     say('');
+    postRow.hidden = !!feed;
+    newname.hidden = !!feed || col.value !== NEW;
+    feedRow.hidden = !feed;
     if (!next) {
       host.remove();
       return;
     }
     if (!host.isConnected) document.documentElement.appendChild(host);
-    if (!loaded) send({ t: 'list' });
+    if (post && !loaded) send({ t: 'list' });
   }
   refresh();
   window.addEventListener('popstate', refresh);

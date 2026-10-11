@@ -7,6 +7,8 @@
  * client's "is there anything to offer here" gate and tracking-param cleanup.
  */
 
+import { recipeForUrl } from '@/lib/guided-capture/recipes';
+
 export type SwipePlatform =
   | 'tiktok'
   | 'instagram'
@@ -109,6 +111,29 @@ export function swipeTargetFromUrl(raw: string | undefined | null): SwipeTarget 
     return null;
   }
   return null;
+}
+
+/**
+ * A profile or feed page we can capture many posts from ("Capture more"): a supported
+ * social place that is not itself one post, and not the bare home/login pages.
+ */
+export function feedTargetFromUrl(raw: string | undefined | null): string | null {
+  if (!raw || swipeTargetFromUrl(raw)) return null;
+  const recipe = recipeForUrl(raw);
+  if (!recipe || recipe.itemKey(raw)) return null;
+  let u: URL;
+  try {
+    u = new URL(raw);
+  } catch {
+    return null;
+  }
+  const first = u.pathname.split('/').filter(Boolean)[0]?.toLowerCase();
+  if (
+    !first ||
+    ['login', 'accounts', 'signup', 'explore', 'search', 'i', 'settings'].includes(first)
+  )
+    return null;
+  return `${u.origin}${u.pathname}`;
 }
 
 /** Hostnames the content script is injected on (kept next to the matcher above). */

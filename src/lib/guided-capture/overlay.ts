@@ -395,5 +395,10 @@ export function mountGuidedOverlay(): void {
     card.innerHTML = head + body;
   }
 
+  // The Swipe card adopts this tab for a capture after the page loaded; ask again when it says so.
+  window.addEventListener('matrx:guided-wake', () => {
+    retriesLeft = 3;
+    if (!job) send({ t: 'hello' });
+  });
   send({ t: 'hello' });
 }

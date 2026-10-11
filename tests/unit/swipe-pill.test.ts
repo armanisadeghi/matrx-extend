@@ -205,3 +205,57 @@ it('retries exactly the missing slides by saving into the same collection again'
   });
   expect(retry.hidden).toBe(true);
 });
+
+it('on a profile page offers Capture more and wakes the guide once the tab is adopted', () => {
+  (window as unknown as { happyDOM: { setURL(url: string): void } }).happyDOM.setURL(
+    'https://www.instagram.com/nasa/',
+  );
+  mountSwipePill();
+  const root = document.querySelector('#matrx-swipe-pill')!.shadowRoot!;
+  expect(root.querySelector<HTMLElement>('#feedrow')!.hidden).toBe(false);
+  expect(root.querySelector<HTMLElement>('#postrow')!.hidden).toBe(true);
+  root.querySelector<HTMLButtonElement>('#feed')!.click();
+  expect(posted).toHaveBeenLastCalledWith({
+    t: 'feed_capture',
+    url: 'https://www.instagram.com/nasa/',
+  });
+  const woke = vi.fn();
+  window.addEventListener('matrx:guided-wake', woke);
+  receive({
+    t: 'feed_started',
+    ok: true,
+    sentence: 'Capture guide opened.',
+    url: 'https://www.instagram.com/nasa/',
+  });
+  expect(woke).toHaveBeenCalledTimes(1);
+  expect(document.querySelector('#matrx-swipe-pill')).toBeNull();
+});
+
+it('tells the person plainly when Capture more cannot start', () => {
+  (window as unknown as { happyDOM: { setURL(url: string): void } }).happyDOM.setURL(
+    'https://www.instagram.com/nasa/',
+  );
+  mountSwipePill();
+  const root = document.querySelector('#matrx-swipe-pill')!.shadowRoot!;
+  root.querySelector<HTMLButtonElement>('#feed')!.click();
+  receive({
+    t: 'feed_started',
+    ok: false,
+    sentence: 'Sign in to Matrx to capture posts.',
+    url: 'https://www.instagram.com/nasa/',
+  });
+  expect(root.querySelector('#msg')!.textContent).toContain('Sign in to Matrx');
+  expect(root.querySelector<HTMLButtonElement>('#feed')!.disabled).toBe(false);
+});
+
+it('does not bring the card back over the guide after Capture more handed the page off', () => {
+  (window as unknown as { happyDOM: { setURL(url: string): void } }).happyDOM.setURL(
+    'https://www.instagram.com/nasa/',
+  );
+  mountSwipePill();
+  const root = document.querySelector('#matrx-swipe-pill')!.shadowRoot!;
+  root.querySelector<HTMLButtonElement>('#feed')!.click();
+  receive({ t: 'feed_started', ok: true, sentence: '', url: 'https://www.instagram.com/nasa/' });
+  vi.advanceTimersByTime(3000);
+  expect(document.querySelector('#matrx-swipe-pill')).toBeNull();
+});
