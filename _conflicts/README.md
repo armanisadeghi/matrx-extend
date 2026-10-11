@@ -23,6 +23,10 @@ agent -> Needs Arman) with ` — <question> — <what was checked> — <who>` ad
 Its files stay as they are.
 
 ## Held files
+- _conflicts/2026-10-11-130723/tests/browser/seo-guest-acceptance.mjs.held — LOCAL latest 2026-10-11 13:07; GITHUB latest 2026-10-11 13:08; LOCAL lacks 11 of GITHUB's 12 new lines; GITHUB lacks 6 of LOCAL's 7 new lines; recover: git show e5edfa1310:'tests/browser/seo-guest-acceptance.mjs' / 7742912787:'tests/browser/seo-guest-acceptance.mjs'
+- _conflicts/2026-10-11-130723/tests/browser/seo-new-coverage-oracle.mjs.held — LOCAL latest 2026-10-11 13:07; GITHUB latest 2026-10-11 13:08; LOCAL lacks 1 of GITHUB's 1 new lines; GITHUB lacks 1 of LOCAL's 1 new lines; recover: git show e5edfa1310:'tests/browser/seo-new-coverage-oracle.mjs' / 7742912787:'tests/browser/seo-new-coverage-oracle.mjs'
+- _conflicts/2026-10-11-130723/tests/browser/seo-new-coverage-oracle.test.mjs.held — LOCAL latest 2026-10-11 13:07; GITHUB latest 2026-10-11 13:08; LOCAL lacks 1 of GITHUB's 1 new lines; GITHUB lacks 1 of LOCAL's 1 new lines; recover: git show e5edfa1310:'tests/browser/seo-new-coverage-oracle.test.mjs' / 7742912787:'tests/browser/seo-new-coverage-oracle.test.mjs'
+- _conflicts/2026-10-11-130723/tests/browser/seo-notice-scope.test.mjs.held — LOCAL latest 2026-10-11 13:07; GITHUB latest 2026-10-11 13:08; LOCAL lacks 44 of GITHUB's 50 new lines; GITHUB lacks 12 of LOCAL's 12 new lines; recover: git show e5edfa1310:'tests/browser/seo-notice-scope.test.mjs' / 7742912787:'tests/browser/seo-notice-scope.test.mjs'
 
 ## Needs a manager
 

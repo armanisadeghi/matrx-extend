@@ -1,0 +1,324 @@
+matrx-auto-git-conflict-file-work-delete-this-when-resolved
+
+HELD CONFLICT, written by scripts/sync-main.py
+File:      tests/browser/seo-new-coverage-oracle.mjs
+Why held:  both sides changed the same code
+GITHUB's version is live in the repo at the path above. LOCAL's version is at the bottom
+of this file, below the FACTS.
+Done with it: the final code is in the live file, this .held file is deleted, and its line
+in _conflicts/README.md is deleted. The list of open items is _conflicts/README.md.
+
+FACTS (computed by sync-main from git)
+
+THE TWO VERSIONS
+  LOCAL  = the version that was on this Mac. It is saved below, in this .held file.
+  GITHUB = the version from GitHub. It is LIVE in the repo right now, at tests/browser/seo-new-coverage-oracle.mjs
+  Both grew from the same COMMON version: commit f84cfbbca0, 2026-10-11 13:07.
+
+WHEN EACH SIDE CHANGED THIS FILE (newest first)
+  LOCAL:
+    2026-10-11 13:07  28e9ff264a  "test(seo): verify fresh refusal after panel reload"
+  GITHUB:
+    2026-10-11 13:08  7742912787  "EXT-D-0199 test reload notice reachability without durable suppression"
+  GITHUB's latest change is 1m AFTER LOCAL's latest change.
+
+SIZE: common version 276 lines, LOCAL 276 lines, GITHUB 276 lines
+
+WHAT EACH SIDE DID, compared with the common version
+  LOCAL added 1 lines and removed 1 lines.
+  GITHUB added 1 lines and removed 1 lines.
+
+CODE ONE SIDE HAS THAT THE OTHER DOES NOT
+  LOCAL has 0 of the 1 lines GITHUB added.
+    Lines GITHUB added that LOCAL does NOT have:
+      | 'notice_reload_reaudit_clearance',
+    (some of those lines also appear in other changed files, which may be a coincidence: tests/browser/seo-new-coverage-oracle.test.mjs)
+  GITHUB has 0 of the 1 lines LOCAL added.
+    Lines LOCAL added that GITHUB does NOT have:
+      | 'visible_notice_full_reload_clearance',
+    (some of those lines also appear in other changed files, which may be a coincidence: tests/browser/seo-new-coverage-oracle.test.mjs)
+
+COMPARE THEM (the labels are correct; '-' lines are GITHUB, '+' lines are LOCAL):
+  diff -u --label 'GITHUB (live)' --label 'LOCAL (held)' <(git show 774291278792:'tests/browser/seo-new-coverage-oracle.mjs') <(git show e5edfa1310af:'tests/browser/seo-new-coverage-oracle.mjs')
+
+RECOVER EITHER VERSION FOREVER (works even after this .held file is deleted):
+  LOCAL : git show e5edfa1310af:'tests/browser/seo-new-coverage-oracle.mjs'
+  GITHUB: git show 774291278792:'tests/browser/seo-new-coverage-oracle.mjs'
+
+---------------- LOCAL VERSION BELOW ----------------
+import assert from 'node:assert/strict';
+
+// The source is read from the owned public tab, independently of the SEO pane.
+// These are the paste-ready tags promised by the social copy action.
+export function expectedMissingSocialTags(source) {
+  const { title, description, canonical, url, social } = source;
+  const esc = (value) => value.replace(/"/g, '&quot;');
+  const lines = [];
+  if (!social.title && title) lines.push(`<meta property="og:title" content="${esc(title)}" />`);
+  if (!social.description && description)
+    lines.push(`<meta property="og:description" content="${esc(description)}" />`);
+  if (!social.url && (canonical || url))
+    lines.push(`<meta property="og:url" content="${esc(canonical || url)}" />`);
+  if (!social.type) lines.push('<meta property="og:type" content="website" />');
+  if (!social.card) lines.push('<meta name="twitter:card" content="summary_large_image" />');
+  if (!social.image)
+    lines.push('<meta property="og:image" content="https://example.com/your-share-image.png" />');
+  return lines.join('\n');
+}
+
+export function verifySocialClipboard(actual, source) {
+  const expected = expectedMissingSocialTags(source);
+  assert.ok(expected.includes('property="og:title"'), 'source must expose a missing social title');
+  assert.equal(actual, expected, 'copied social tags match the owned page metadata exactly');
+  return { copiedTags: expected.split('\n').length, exactClipboardMatch: true };
+}
+
+// This selector matches the native title click primitive: TooltipProvider may
+// move the title to data-matrx-title while the pointer is over the button.
+export function socialCopyButtonObservation(pane, label) {
+  const buttons = [
+    ...(pane?.querySelectorAll('button[title], button[data-matrx-title]') ?? []),
+  ].filter(
+    (button) => (button.getAttribute('title') ?? button.getAttribute('data-matrx-title')) === label,
+  );
+  const button = buttons.length === 1 ? buttons[0] : null;
+  return {
+    buttonCount: buttons.length,
+    visible: !!button && button.getBoundingClientRect().width > 0,
+    hasTitleAttr: !!button?.getAttribute('title'),
+    hasDataTitleAttr: !!button?.getAttribute('data-matrx-title'),
+    check: !!button?.querySelector('svg.lucide-check'),
+    failed: !!button?.querySelector('svg.lucide-x'),
+    idle: !!button?.querySelector('svg.lucide-copy'),
+  };
+}
+
+export function requireSocialCopyTarget(state) {
+  if (state?.scopeValid !== true || state?.buttonCount !== 1 || state?.visible !== true)
+    throw Object.assign(new Error('social_copy_target_invalid'), {
+      code: 'SOCIAL_COPY_TARGET_INVALID',
+      observation: state,
+    });
+  return state;
+}
+
+const containedCopyFailures = new Map([
+  ['SOCIAL_CLIPBOARD_MISMATCH', 'fail'],
+  ['SOCIAL_COPY_FAILURE_FEEDBACK', 'fail'],
+  ['SOCIAL_CLIPBOARD_UNCHANGED', 'unverified'],
+]);
+
+// A missing transient icon is observable; an unreadable native target is not.
+// Unlike the shared general waitFor, this boundary never converts read errors
+// into ordinary false samples before the clipboard or T02 actions run.
+export async function pollSocialFeedback(
+  read,
+  {
+    timeoutMs,
+    intervalMs = 100,
+    now = Date.now,
+    sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+  },
+) {
+  const deadline = now() + timeoutMs;
+  let state;
+  for (;;) {
+    state = requireSocialCopyTarget(await read());
+    if (state?.check || state?.failed) return { state, iconObserved: true };
+    if (now() >= deadline) return { state, iconObserved: false };
+    await sleep(intervalMs);
+  }
+}
+
+export function verifySocialCopyOutcome(actual, source, { feedbackFailed, previousClipboard }) {
+  const expected = expectedMissingSocialTags(source);
+  assert.ok(expected.includes('property="og:title"'), 'source must expose a missing social title');
+  if (actual !== expected)
+    throw Object.assign(new Error('social_clipboard_mismatch'), {
+      code: 'SOCIAL_CLIPBOARD_MISMATCH',
+    });
+  if (feedbackFailed)
+    throw Object.assign(new Error('social_copy_failure_feedback'), {
+      code: 'SOCIAL_COPY_FAILURE_FEEDBACK',
+    });
+  if (actual === previousClipboard)
+    throw Object.assign(new Error('social_clipboard_unchanged'), {
+      code: 'SOCIAL_CLIPBOARD_UNCHANGED',
+    });
+  return verifySocialClipboard(actual, source);
+}
+
+// Shared by the native driver and its boundary guards. Native I/O stays in the
+// callbacks; polling, target validity, clipboard verdict and failure isolation do not.
+export async function observeSocialCopyOutcome({
+  readFeedback,
+  readClipboard,
+  source,
+  previousClipboard,
+  pollOptions,
+}) {
+  const feedback = await pollSocialFeedback(readFeedback, pollOptions);
+  const actual = await readClipboard();
+  // Clipboard permission observation can outlive the pane. Recheck before
+  // accepting either a pass or a contained failure that would allow T02.
+  const finalState = requireSocialCopyTarget(await readFeedback());
+  try {
+    const verified = verifySocialCopyOutcome(actual, source, {
+      feedbackFailed: feedback.state.failed || finalState.failed,
+      previousClipboard,
+    });
+    return { status: 'pass', verified, actual, ...feedback };
+  } catch (error) {
+    const status = containedCopyFailures.get(error?.code);
+    if (!status) throw error;
+    return { status, reason_code: error.code, ...feedback };
+  }
+}
+
+export async function runCopyCheckThenRecapture(copyCheck, recapture) {
+  const copyResult = await copyCheck();
+  if (
+    copyResult?.status !== 'pass' &&
+    (!containedCopyFailures.has(copyResult?.reason_code) ||
+      containedCopyFailures.get(copyResult.reason_code) !== copyResult.status)
+  )
+    throw new Error('social_copy_result_unclassified');
+  const recaptureResult = await recapture();
+  return { copyResult, recaptureResult };
+}
+
+// The controlled page checks use their own public source. A volatile detail
+// fixture must run only after they have produced their native observations.
+// Errors still propagate so a broken source or lost target fails the run.
+export function seoCaseSelection(scope = 'full') {
+  assert.ok(
+    scope === 'full' ||
+      scope === 'controlled' ||
+      scope === 'notice' ||
+      scope === 'readability' ||
+      scope === 'metadata' ||
+      scope === 'narrow',
+    'unknown_seo_case_scope',
+  );
+  if (scope === 'notice')
+    return {
+      scope,
+      selected_cases: ['T02'],
+      selected_subtargets: [
+        'notice_narrow_warm_navigation_reaudit_clearance',
+        'notice_wide_warm_navigation_reaudit_clearance',
+        'manual_button_returns_to_current_page',
+        'visible_notice_full_reload_clearance',
+      ],
+      excluded_cases: ['all other SEO targets; no full T02 or D199 closure'],
+    };
+  if (scope === 'narrow')
+    return {
+      scope,
+      selected_cases: ['T09'],
+      selected_subtargets: ['guest_detail_content_and_controls_reachable_at_360px'],
+      excluded_cases: ['all SEO targets other than the owned T09 narrow-panel dimension'],
+    };
+  if (scope === 'metadata')
+    return {
+      scope,
+      selected_cases: ['T09'],
+      selected_subtargets: ['guest_owned_hreflang_article_doors_match_fixture_dom'],
+      excluded_cases: ['all SEO targets other than the owned T09 metadata door target'],
+    };
+  if (scope === 'readability')
+    return {
+      scope,
+      selected_cases: ['T09'],
+      selected_subtargets: ['guest_manual_readability_matches_two_known_texts'],
+      excluded_cases: ['T01-T08', 'T10-T14', 'all other T09 checks'],
+    };
+  return {
+    scope,
+    selected_cases:
+      scope === 'controlled'
+        ? ['T01', 'T02', 'T03', 'T06', 'T07', 'T09', 'T14']
+        : ['T01', 'T02', 'T03', 'T07', 'T09', 'T14'],
+    excluded_cases:
+      scope === 'controlled' ? ['T09 volatile public detail', 'T09 optional metadata fixture'] : [],
+  };
+}
+
+export function requireNarrowSeoLayout(observation) {
+  assert.equal(observation?.scopeValid, true, 'narrow_seo_pane_scope_valid');
+  assert.equal(observation?.viewportWidth, 360, 'narrow_seo_viewport_is_360px');
+  assert.ok(
+    observation?.documentScrollWidth <= observation?.documentClientWidth,
+    'narrow_seo_document_has_no_horizontal_overflow',
+  );
+  assert.ok(
+    observation?.paneScrollWidth <= observation?.paneClientWidth,
+    'narrow_seo_pane_has_no_horizontal_overflow',
+  );
+  for (const group of ['title', 'international', 'structuredData'])
+    assert.equal(observation?.detailGroups?.[group], true, `narrow_seo_${group}_present`);
+  assert.ok(observation?.hreflangLinks > 0, 'narrow_seo_hreflang_door_present');
+  assert.ok(observation?.schemaChips > 0, 'narrow_seo_schema_chip_present');
+  assert.ok(observation?.buttons?.reAudit > 0, 'narrow_seo_reaudit_control_present');
+  assert.ok(observation?.buttons?.copyAudit > 0, 'narrow_seo_copy_control_present');
+  assert.equal(observation?.unreachableTargets, 0, 'narrow_seo_controls_and_links_reachable');
+  assert.ok(observation?.targetCount > 0, 'narrow_seo_targets_observed');
+  return {
+    viewportWidth: 360,
+    noHorizontalOverflow: true,
+    detailGroups: 3,
+    hreflangLinks: observation.hreflangLinks,
+    schemaChips: observation.schemaChips,
+    buttons: observation.buttons,
+    reachableTargets: observation.targetCount,
+  };
+}
+
+export async function runSeoCaseSequence(
+  runControlledCases,
+  runDynamicDetailCases,
+  scope,
+  runReadabilityCases,
+) {
+  const selectedScope = scope === undefined ? 'full' : scope;
+  seoCaseSelection(selectedScope);
+  if (selectedScope === 'readability') {
+    assert.equal(typeof runReadabilityCases, 'function', 'known_readability_case_required');
+    await runReadabilityCases();
+    return;
+  }
+  await runControlledCases();
+  if (selectedScope === 'full') await runDynamicDetailCases();
+}
+
+export function verifyManualRecapture(before, changed, stale, refreshed) {
+  assert.notEqual(before.title, changed.title, 'owned public title changed before re-audit');
+  assert.notEqual(
+    before.description,
+    changed.description,
+    'owned public description changed before re-audit',
+  );
+  assert.equal(stale.title, before.title, 'old native audit remains before the trusted click');
+  assert.equal(refreshed.title, changed.title, 'native re-audit uses changed public title');
+  assert.equal(refreshed.reAudit, true, 'native re-audit settles to an available action');
+  assert.equal(refreshed.error, false, 'native re-audit has no failure');
+  return {
+    publicTitleChanged: true,
+    publicDescriptionChanged: true,
+    oldAuditVisibleBeforeClick: true,
+    nativeTitleMatchesChangedPublicDom: true,
+  };
+}
+
+export function requireSeoDoorSourceRestoration(observation) {
+  assert.equal(observation?.sourcePageStillOpen, true, 'source page remains open after door click');
+  assert.equal(
+    observation?.sourceUrlUnchanged,
+    true,
+    'source page URL is unchanged after door click',
+  );
+  return {
+    sourcePageStillOpen: true,
+    sourceUrlUnchanged: true,
+  };
+}
