@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T14",
+  "auth_mode": "guest",
+  "status": "partial",
+  "stage": "inputs",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+    "run_id": 38161635790,
+    "artifact_id": 11710458741,
+    "version": "0.2.500",
+    "tree_sha256": "a5de6c0095949b6b55a27c7389656188f852c6cd40dd0d21ef600fac5bf2bdf9"
+  },
+  "observations": {
+    "case_id": "EXT-F-1007-T14",
+    "auth_mode": "guest",
+    "requested_mode": "deep",
+    "browser_configuration": {
+      "enabled_feature": "ExtensionsMenuAccessControl",
+      "flag_observed": true,
+      "default_chrome": false
+    },
+    "access_probes": [
+      {
+        "round": "denial",
+        "phase": "effective_host_access_probe",
+        "operation": "execute_script",
+        "outcome": "rejected",
+        "access": "denied"
+      },
+      {
+        "round": "retry",
+        "phase": "effective_host_access_probe",
+        "operation": "execute_script",
+        "outcome": "resolved",
+        "access": "available"
+      },
+      {
+        "round": "dismiss",
+        "phase": "effective_host_access_probe",
+        "operation": "execute_script",
+        "outcome": "rejected",
+        "access": "denied"
+      }
+    ],
+    "denial": {
+      "host_access": "ON_ALL_SITES",
+      "site_restricted": true,
+      "effective_injection_access": "denied",
+      "page_reloaded_without_access": true,
+      "error_visible": true,
+      "permission_message_visible": true,
+      "try_again_visible": true,
+      "reload_visible": false
+    },
+    "retry": {
+      "host_access": "ON_ALL_SITES",
+      "site_restricted": false,
+      "clicked": true,
+      "error_cleared": true,
+      "deep_only_marker_visible": true
+    },
+    "dismiss": {
+      "host_access": "ON_ALL_SITES",
+      "site_restricted": true,
+      "effective_injection_access": "denied",
+      "error_visible": true,
+      "permission_message_visible": true,
+      "clicked": true,
+      "error_cleared": true
+    },
+    "cleanup": {
+      "original_host_access": "ON_ALL_SITES",
+      "host_access": "ON_ALL_SITES",
+      "original_site_restricted": false,
+      "site_restricted": false,
+      "site_permitted": false,
+      "restored": true
+    },
+    "reload_page": "unverified"
+  },
+  "failure_code": null,
+  "failure_diagnostic": null,
+  "limits": "Non-default Chrome ExtensionsMenuAccessControl feature enabled in the isolated test profile; not default-Chrome or Store acceptance. Bounded guest host-permission denial, Try again, deep-mode preservation, and Dismiss only. Reload page remains unverified because the real second-no-receiver-after-injection condition is a runtime/manifest fault, while a genuine permission denial offers Try again only.",
+  "result": {
+    "status": "partial",
+    "covered": "guest permission-denial Try again and Dismiss; deep retry",
+    "reload_page": "unverified"
+  }
+}

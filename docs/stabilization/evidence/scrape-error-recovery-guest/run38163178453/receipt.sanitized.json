@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T14",
+  "review_scope_case_id": "EXT-F-1007-T02",
+  "verdict": "bounded_partial",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38163178453,
+    "run_attempt": 1,
+    "workflow_head_sha": "c1b3baeda570e86f79e93b10892e5b3fcc9ccabe",
+    "event": "workflow_dispatch",
+    "case": "scrape-error-recovery-guest",
+    "lane": "B",
+    "runner_label": "macos-15",
+    "conclusion": "success",
+    "started_at": "2026-10-11T18:17:22Z",
+    "finished_at": "2026-10-11T18:25:34Z",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38163178453"
+  },
+  "development_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+    "ci_run_id": 38161635790,
+    "ci_run_attempt": 1,
+    "artifact_id": 11710458741,
+    "artifact_digest": "sha256:a1e5fde629f299e6f6c724937dd42aa6e27f9e10bf6a8e4d18c4943cd0c422c6",
+    "tree_sha256": "a5de6c0095949b6b55a27c7389656188f852c6cd40dd0d21ef600fac5bf2bdf9",
+    "version": "0.2.500"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11711626052,
+    "name": "hosted-guest-38163178453-1",
+    "digest": "sha256:fcfecc15073653fd16d65dcb4eccfc566ec2763a14305c88fe3e76857c284081",
+    "expired": false
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "sha256": "8d9f22b6e8eecc0a9f1ff41721a3ad59df5ada398e35371c16fd40b925ca330b",
+    "status": "partial",
+    "case_id": "EXT-F-1007-T14",
+    "reload_page_status": "unverified"
+  },
+  "resource_finals": {
+    "hosted-package-38163178453-1.jsonl": {
+      "path": "resource-journals/hosted-package-38163178453-1.jsonl",
+      "sha256": "8e93051e9ac5c0380649a21bc2d638d7ce719b88a0004cd1324fc4b3000c77ef",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38163178453-1.jsonl": {
+      "path": "resource-journals/hosted-browser-38163178453-1.jsonl",
+      "sha256": "6703df0c0484735eaeed91b0809049c6a783d5e32b2ead64ca405ae2681c07f0",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38163178453-1.jsonl": {
+      "path": "resource-journals/hosted-guest-38163178453-1.jsonl",
+      "sha256": "793e4d63a0d66ebf139c207369be896927da52cc795f765ca765c7092d66d37f",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "scope_limit": "This is a bounded guest host-permission denial and deep Try again subtarget on the frozen v0.2.500 development artifact, plus the separately requested T14 denial/retry/dismiss exercise. Non-default Chrome ExtensionsMenuAccessControl profile only; not default-Chrome or Store acceptance. It does not establish visible scrolling progress, warm/reload acceptance, member/admin behavior, or full T02/Scrape acceptance. Reload page remains unverified.",
+  "sanitization": "Native report and allowlisted resource journals retain fixed observations and artifact identity only. The hosted artifact zip SHA-256 was checked against the GitHub artifact API digest. The hosted workflow driver source at the recorded workflow SHA was inspected. No credentials, raw process values, host paths, page content, or screenshots are included."
+}

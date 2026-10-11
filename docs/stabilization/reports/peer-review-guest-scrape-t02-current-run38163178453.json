@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "review": "fresh independent current-equivalent evidence review of EXT-F-1007-T02 deep permission-denial retry subtarget",
+  "case_id": "EXT-F-1007-T02",
+  "current_equivalent_run": 38163178453,
+  "historical_peer_run": 38044062561,
+  "verdict_a_behavior": {
+    "status": "PASS_BOUNDED_SUBTARGET",
+    "finding": "The current-equivalent native report records a requested deep run, a real effective host-injection denial, the permission error and Try again control, then a successful retry with the deep-only lazy marker visible. At the exact workflow source SHA, the driver requires the marker to be absent before retry, checks the unique deep control, observes effective denial before clicking that control, restores access, probes access again, clicks Try again, and waits for the error to clear and the marker to appear. The marker is created only after the page scrolls past 250 px. The exact product source records the selected mode and retries with activeMode ?? lastModeRef ?? 'fast'. Cleanup records restored access and restriction state.",
+    "bounded_claim": "Guest host-permission denial during a requested deep capture, followed by Try again that preserves deep mode and reaches scroll-triggered lazy content, on the frozen current-equivalent v0.2.500 development artifact.",
+    "t14_separate_result": "The same run is a successful hosted job with a partial T14 native result: denial, Try again, deep marker, second denial, Dismiss, and cleanup are recorded. This does not satisfy T14 reload-page recovery, which is explicitly unverified.",
+    "not_established": [
+      "T02 visible scrolling progress, which remains unverified.",
+      "Warm or reload acceptance, member/admin behavior, default Chrome, Store installation, or full T02/Scrape acceptance.",
+      "T14 reload-page recovery."
+    ]
+  },
+  "verdict_b_provenance_and_resources": {
+    "status": "PASS",
+    "finding": "Hosted guest run 38163178453 attempt 1 completed successfully on workflow source c1b3baeda570e86f79e93b10892e5b3fcc9ccabe. Its native report binds the exercised extension to CI development artifact 11710458741 from run 38161635790, source 01a6160208adadf321cba2f7a1a9283e733dddbe, version 0.2.500, tree SHA-256 a5de6c0095949b6b55a27c7389656188f852c6cd40dd0d21ef600fac5bf2bdf9. GitHub reports the hosted result artifact digest sha256:fcfecc15073653fd16d65dcb4eccfc566ec2763a14305c88fe3e76857c284081, matching the downloaded artifact zip. All three packaged resource journals have admitted=true, resourceInvalid=false, exitCode=0 and decision=valid; their hashes are recorded in the receipt.",
+    "provenance_scope": "Frozen current-equivalent v0.2.500 artifact only. The later CI 38163194796 at ee2e40851 is a separate development artifact and is not the artifact under review. The historical v0.2.459 run 38044062561 remains separate historical evidence and was not reused as current proof."
+  },
+  "limitations": [
+    "The hosted artifact retains the fixed native observation report and resource journals, but no raw browser action timeline or screenshots. The denial-before-click, marker-absent-before-retry, and click/wait sequence are supported by assertions in the workflow-source-bound driver, not a separately retained UI trace.",
+    "The native report is a partial T14 result, not a complete T14 acceptance; reload-page recovery is unverified.",
+    "Although lazy marker appearance proves scroll-triggered deep content was captured, visible scrolling progress was not measured for T02."
+  ],
+  "sources_checked": [
+    "AGENTS.md",
+    "docs/stabilization/reports/inventory-local.json: EXT-F-1007-T02",
+    "docs/stabilization/runs/guest-scrape-t02-deep-retry-crosscase-run38044062561.json",
+    "docs/stabilization/reports/peer-review-guest-scrape-t02-crosscase-run38044062561.json",
+    "docs/stabilization/evidence/scrape-error-recovery-guest/run38163178453/receipt.sanitized.json",
+    "docs/stabilization/evidence/scrape-error-recovery-guest/run38163178453/native-report.sanitized.json",
+    "docs/stabilization/evidence/scrape-error-recovery-guest/run38163178453/resource-journals/hosted-package-38163178453-1.jsonl",
+    "docs/stabilization/evidence/scrape-error-recovery-guest/run38163178453/resource-journals/hosted-browser-38163178453-1.jsonl",
+    "docs/stabilization/evidence/scrape-error-recovery-guest/run38163178453/resource-journals/hosted-guest-38163178453-1.jsonl",
+    "tests/browser/scrape-error-recovery-guest.mjs at workflow SHA c1b3baeda570e86f79e93b10892e5b3fcc9ccabe",
+    "tests/browser/scrape-error-recovery-guest-oracle.mjs at workflow SHA c1b3baeda570e86f79e93b10892e5b3fcc9ccabe",
+    "src/features/scrape/ScrapeView.tsx at product source 01a6160208adadf321cba2f7a1a9283e733dddbe",
+    "GitHub hosted run 38163178453 and artifacts API",
+    "GitHub CI run 38161635790 and artifact 11710458741"
+  ],
+  "scope": "Independent read-only evidence review. No inventory changes or product source changes."
+}
