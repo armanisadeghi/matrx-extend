@@ -1,0 +1,22 @@
+{
+  "source_artifact_id": 11716592501,
+  "source_artifact_digest": "sha256:62ef195b0304e2178e560cf813aed94d5ffe771ebce07b54b33c9783fa26eb5b",
+  "files": [
+    {
+      "path": "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/native-report.sanitized.json",
+      "sha256": "b155e8e117dddaed041919c60189ddf7ad2010c4eec41bdd2aa692b73983f4ed"
+    },
+    {
+      "path": "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-browser-38177486036-1.jsonl",
+      "sha256": "2ac23909a019e309286ca55333222a54f40d98770ad7aefe769745978abacc04"
+    },
+    {
+      "path": "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-guest-38177486036-1.jsonl",
+      "sha256": "49cf6ddc8f04abc7a7440bdea0f26569dc174bb68bfe2f56088e95a8a48821d1"
+    },
+    {
+      "path": "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-package-38177486036-1.jsonl",
+      "sha256": "bbff82315162bf4391deff024df99ad792dcaa122fb4592c7bbf68ea83baeb7b"
+    }
+  ]
+}

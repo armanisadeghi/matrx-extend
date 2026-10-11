@@ -48,6 +48,7 @@
     ["pnpm", "exec", "wxt", "build"],
     ["pnpm", "exec", "wxt"],
     ["pnpm", "compile"],
+    ["pnpm", "test:focused-acceptance"],
     ["pnpm", "check:matrx-packages"],
     ["pnpm", "sync:matrx-packages"],
     ["pnpm", "lint"],

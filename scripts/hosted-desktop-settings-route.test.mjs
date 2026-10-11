@@ -3,6 +3,14 @@ import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import { hostedDesktopSettingsCase } from './hosted-desktop-settings-route.mjs';
 
+// Keep preflight configuration isolated while preserving the host guard's
+// cooperative child ownership and stop boundary.
+const resourceEnvironment = Object.fromEntries(
+  ['MATRX_RESOURCE_OWNER', 'MATRX_RESOURCE_RUN_ID', 'MATRX_RESOURCE_STOP_FILE']
+    .filter((key) => process.env[key] !== undefined)
+    .map((key) => [key, process.env[key]]),
+);
+
 test('hosted Desktop Settings selects remaining only for guest', () => {
   assert.equal(hostedDesktopSettingsCase('desktop-settings-guest', 'remaining'), 'remaining');
   assert.equal(hostedDesktopSettingsCase('desktop-settings-member', 'full'), 'full');
@@ -35,6 +43,7 @@ test('hosted preflight rejects invalid Desktop Settings selection before setup',
   ]) {
     const result = spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
       env: {
+        ...resourceEnvironment,
         GITHUB_ACTIONS: 'true',
         MATRX_HOSTED_PHASE: 'preflight',
         MATRX_HOSTED_ACCEPTANCE_CASE: acceptanceCase,
@@ -51,6 +60,7 @@ test('hosted preflight rejects invalid Desktop Settings selection before setup',
 test('hosted guest pair-forget passes preflight without member or admin credentials', () => {
   const result = spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
     env: {
+      ...resourceEnvironment,
       GITHUB_ACTIONS: 'true',
       MATRX_HOSTED_PHASE: 'preflight',
       MATRX_HOSTED_ACCEPTANCE_CASE: 'desktop-settings-guest',
@@ -65,6 +75,7 @@ test('hosted guest pair-forget passes preflight without member or admin credenti
 test('hosted guest remaining passes preflight without a member or admin credential', () => {
   const result = spawnSync(process.execPath, ['scripts/hosted-guest-acceptance.mjs'], {
     env: {
+      ...resourceEnvironment,
       GITHUB_ACTIONS: 'true',
       MATRX_HOSTED_PHASE: 'preflight',
       MATRX_HOSTED_ACCEPTANCE_CASE: 'desktop-settings-guest',

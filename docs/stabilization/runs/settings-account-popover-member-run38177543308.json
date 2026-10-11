@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "id": "settings-account-popover-member-run38177543308",
+  "created_at_utc": "2026-10-11T21:54:00Z",
+  "feature_id": "EXT-F-1001",
+  "status": "awaiting_independent_review",
+  "scope": "Guarded A ordinary-member T20/T23/T26 retry was resource-stopped before native assertions. Resource-invalid, no product credit.",
+  "hosted_run_id": 38177543308,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38177543308",
+  "workflow_source_sha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+  "inputs": {
+    "acceptance_lane": "A",
+    "acceptance_case": "settings-account-popover-member",
+    "runner_label": "macos-15",
+    "development_run_id": 38176720271,
+    "development_artifact_id": 11716531563
+  },
+  "frozen_product": {
+    "source_sha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+    "ci_run_id": 38176720271,
+    "artifact_id": 11716531563,
+    "artifact_digest": "sha256:969bc868b926c089c51f582970b3c5f57693c54d384337742164cb6c3469205d",
+    "version": "0.2.505"
+  },
+  "terminal": {
+    "workflow_status": "completed",
+    "workflow_conclusion": "failure",
+    "job_conclusion": "failure",
+    "step_exit_code": 3,
+    "last_safe_stage": "resource_guard_stop_before_native_assertions"
+  },
+  "result_artifact": {
+    "artifact_id": 11716801620,
+    "name": "hosted-guest-38177543308-1",
+    "github_digest": "sha256:62f580f17312b21f31412fee92ca9e2d93b3a5589afa16f9863f765575329335"
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid",
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+    }
+  },
+  "evidence": [
+    "docs/stabilization/reports/settings-account-popover-member-run38177543308.json",
+    "docs/stabilization/evidence/settings-account-popover-member/run38177543308/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/settings-account-popover-member/run38177543308/screenshots/native-side-panel.png",
+    "docs/stabilization/evidence/settings-account-popover-member/run38177543308/screenshots/normal-target-after-open.png"
+  ],
+  "fixture_cleanup": "Temporary one-use local link and GitHub secret removed and verified absent at terminal.",
+  "independent_review": "Resource evidence independently reverified: manifest and sanitized journals agree; acceptance final remains invalid. No native member receipt was produced, so T20/T23/T26 remain unverified and earn zero credit."
+}

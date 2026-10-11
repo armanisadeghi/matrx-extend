@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "id": "seo-forced-reload-run38177486036",
+  "created_at_utc": "2026-10-11T21:52:57Z",
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0199",
+  "status": "independently_reviewed_partial_bounded_pass",
+  "scope": "One guarded lane B guest SEO notice run: forced visible refusal after full panel-document reload and trusted second Dismiss at native 360px, plus four repeated bounded T02 targets. No full T02/D199 or Store closure.",
+  "hosted_run_id": 38177486036,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38177486036",
+  "workflow_source_sha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+  "inputs": {
+    "acceptance_lane": "B",
+    "acceptance_case": "guest-seo",
+    "runner_label": "macos-15-intel",
+    "seo_case_scope": "notice",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": "false",
+    "seo_interrupt_after_target": "none",
+    "development_run_id": 38176720271,
+    "development_artifact_id": 11716531563
+  },
+  "frozen_product": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+    "runId": 38176720271,
+    "runAttempt": 1,
+    "artifactId": 11716531563,
+    "githubArtifactDigest": "sha256:969bc868b926c089c51f582970b3c5f57693c54d384337742164cb6c3469205d",
+    "version": "0.2.505",
+    "treeSha256": "6a7adb872403970a6eb28400b25b3a41ad316a8a707d30abd71f73ab9b5654ba",
+    "source": {
+      "originMain": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+      "localHead": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "current_pushed_source"
+    }
+  },
+  "source_scope": {
+    "immediate_pre_dispatch_main": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+    "artifact_and_workflow_match": true,
+    "claim": "exact synchronized main at dispatch; bounded unpublished development acceptance only, not Store eligibility or future-main behavior",
+    "main_at_evidence_import": "d29475ec01a297f1fbc39f917cb3494ba5fc433c",
+    "post_dispatch_changed_paths": [
+      "docs/stabilization/CHECKLIST.md",
+      "docs/stabilization/STATUS.html",
+      "docs/stabilization/STATUS.md",
+      "docs/stabilization/inventory.json",
+      "docs/stabilization/reports/notes-t02-member-source-handoff-20261011.json",
+      "tests/browser/notes-find-fixture.mjs",
+      "tests/browser/notes-find-fixture.test.mjs",
+      "tests/browser/notes-find-native-case.mjs",
+      "tests/browser/notes-native-acceptance.mjs"
+    ],
+    "post_dispatch_equivalence": "Only Notes browser tests and stabilization docs changed; no SEO, runtime source, dependency/lockfile or workflow delta. Artifact remains bound to b348, not an unrestricted future-main pass."
+  },
+  "terminal": {
+    "workflow_status": "completed",
+    "workflow_conclusion": "success",
+    "job_conclusion": "success",
+    "child_exit_code": 0,
+    "last_safe_stage": "notice_only_complete"
+  },
+  "result_artifact": {
+    "artifact_id": 11716592501,
+    "name": "hosted-guest-38177486036-1",
+    "github_digest": "sha256:62ef195b0304e2178e560cf813aed94d5ffe771ebce07b54b33c9783fa26eb5b",
+    "downloaded_archive_digest_matches": true
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "watch_healthy_samples": 0,
+      "post_admission_duration_seconds": 4.809,
+      "journal": "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-package-38177486036-1.jsonl"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "watch_healthy_samples": 0,
+      "post_admission_duration_seconds": 13.853,
+      "journal": "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-browser-38177486036-1.jsonl"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "watch_healthy_samples": 1,
+      "post_admission_duration_seconds": 48.982,
+      "journal": "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-guest-38177486036-1.jsonl"
+    }
+  },
+  "product_verdict": "B_PASS_BOUNDED_EXACT_DISPATCH_SOURCE",
+  "observed_subtargets": [
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+      "status": "pass",
+      "evidence": {
+        "viewportWidth": 360,
+        "viewportSource": "native",
+        "refusalNoticeVisible": true,
+        "targetHitPoints": 9,
+        "noticeHitPoints": 0,
+        "navigatedTitleMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+      "status": "pass",
+      "evidence": {
+        "viewportWidth": 480,
+        "viewportSource": "emulated",
+        "refusalNoticeVisible": true,
+        "targetHitPoints": 9,
+        "noticeHitPoints": 0,
+        "navigatedTitleMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "manual_button_returns_to_current_page",
+      "status": "pass",
+      "evidence": {
+        "currentTitlePreserved": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_reload_reaudit_clearance",
+      "status": "pass",
+      "evidence": {
+        "noticeCount": 1,
+        "dismissVisible": true,
+        "targetHitPoints": 9,
+        "noticeHitPoints": 0,
+        "currentTitleMatched": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "multiple_and_long_notice_clearance",
+      "status": "unverified",
+      "reason": "owned history refusal produces one fixed-length notice; distinct stacked and long notices need a controlled app notice fixture"
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "visible_notice_full_reload_second_dismiss_at_native_360px",
+      "status": "pass",
+      "evidence": {
+        "width": 360,
+        "source": "native",
+        "refusedHistoryReads": 1,
+        "documentChanged": true,
+        "dismissClick": {
+          "trusted": true,
+          "correctButton": true
+        },
+        "currentTitleMatched": true,
+        "visible": {
+          "active": true,
+          "target_count": 1,
+          "target_enabled": true,
+          "database_refused_notice_count": 1,
+          "dismiss_visible": true,
+          "hit_point_count": 9,
+          "notice_hit_point_count": 0
+        },
+        "dismissed": {
+          "active": true,
+          "target_count": 1,
+          "target_enabled": true,
+          "database_refused_notice_count": 0,
+          "dismiss_visible": false,
+          "hit_point_count": 9,
+          "notice_hit_point_count": 0
+        }
+      }
+    }
+  ],
+  "reaudit_transition": {
+    "trusted_click_ms": 238,
+    "running_ms": 244,
+    "settled_ms": 302,
+    "dropped_samples": 0
+  },
+  "dismiss": {
+    "active": true,
+    "target_count": 1,
+    "target_enabled": true,
+    "database_refused_notice_count": 0,
+    "dismiss_visible": false,
+    "hit_point_count": 9,
+    "notice_hit_point_count": 0
+  },
+  "reload": {
+    "active": true,
+    "target_count": 1,
+    "target_enabled": true,
+    "database_refused_notice_count": 1,
+    "dismiss_visible": true,
+    "hit_point_count": 9,
+    "notice_hit_point_count": 0
+  },
+  "forced_notice_reload": {
+    "width": 360,
+    "source": "native",
+    "refusedHistoryReads": 1,
+    "documentChanged": true,
+    "dismissClick": {
+      "trusted": true,
+      "correctButton": true
+    },
+    "currentTitleMatched": true,
+    "visible": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "dismissed": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 0,
+      "dismiss_visible": false,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    }
+  },
+  "viewport_restored": {
+    "width": 360,
+    "source": "native"
+  },
+  "source_binding": {
+    "build_before_equals_after": true,
+    "tree_sha256": "6a7adb872403970a6eb28400b25b3a41ad316a8a707d30abd71f73ab9b5654ba",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/native-report.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/manifest.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-package-38177486036-1.jsonl",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-browser-38177486036-1.jsonl",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-guest-38177486036-1.jsonl",
+    "docs/stabilization/reports/seo-forced-reload-independent-review-38177486036.json"
+  ],
+  "limitations": [
+    "Native 360px and emulated 480px remain distinct; no native normal-width acceptance.",
+    "One fixed-length refusal notice only; multiple and long notices remain unverified.",
+    "Full panel-document reload only; full extension/browser reload remains separate coverage.",
+    "The refusal fixture fulfills the actual exact-URL extend-schema history GET with controlled 403/42501; it does not verify every live backend failure mode.",
+    "Four existing targets are repeats; only forced visible reload plus trusted second Dismiss is new bounded acceptance.",
+    "Full T02, stale advice, other failure behavior, member/admin and Store remain unverified; D199 stays fixed/open.",
+    "Screenshots in upstream artifact show startup; interaction evidence is native DOM, hit samples, request receipt and trusted event witnesses."
+  ],
+  "owned_jobs": "None active; one hosted B run completed with valid final resource journals and cleanup. No local build/browser/release.",
+  "independent_review": "docs/stabilization/reports/seo-forced-reload-independent-review-38177486036.json"
+}

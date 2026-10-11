@@ -201,6 +201,46 @@ try {
             /picked-item[^>]*>[^<]*Cedar chair/,
             'data_guest_t07_pick_missing',
           );
+          await clickPickerDone(page);
+          const c19Selected = await waitFor(
+            'data_guest_t07_c19_selector_returned',
+            () => dataState(panel),
+            (state) => state.selectedFieldValues.length === 1,
+          );
+          const visibleSelector =
+            c19Selected.selectedFieldValues[0]?.match(/^field_1:\s*(.+)$/)?.[1];
+          assert.ok(visibleSelector, 'data_guest_t07_c19_selector_not_visible');
+          const selectorTarget = await page.evaluate((selector) => {
+            const matches = [...document.querySelectorAll(selector)];
+            return {
+              count: matches.length,
+              text: matches[0]?.textContent?.trim() ?? null,
+              isCedarChair: matches[0] === document.querySelector('.product-card .product-name'),
+            };
+          }, visibleSelector);
+          assert.deepEqual(
+            selectorTarget,
+            { count: 1, text: 'Cedar chair', isCedarChair: true },
+            'data_guest_t07_c19_selector_did_not_identify_clicked_element',
+          );
+          report.observations.c19_click_to_select = {
+            preview: 'Cedar chair',
+            visible_field: c19Selected.selectedFieldValues[0],
+            selector_unique_matches: selectorTarget.count,
+            selector_matched_clicked_element: selectorTarget.isCedarChair,
+          };
+
+          // Re-entering the picker clears the Data draft. Keep Clear's selected
+          // entry check independent from the C19 Done/result handoff above.
+          await click(panel, 'data-picker-button', 'Pick fields on this page');
+          await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
+          await clickPickerField(page, '.product-card .product-name');
+          const clearSelection = await pickerText(t07Cdp, '#picked');
+          assert.match(
+            clearSelection,
+            /picked-item[^>]*>[^<]*Cedar chair/,
+            'data_guest_t07_clear_precondition_missing',
+          );
           await clickPickerClear(page);
           const cleared = await pickerText(t07Cdp, '#picked');
           assert.doesNotMatch(cleared, /picked-item/, 'data_guest_t07_clear_kept_field');

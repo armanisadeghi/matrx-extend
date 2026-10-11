@@ -113,5 +113,68 @@
       "to": "fixed",
       "reason": "Independent source review PASS; focused 17 tests, compile and full lint passed. Native geometry/interaction remains unverified; no closure credit."
     }
-  ]
+  ],
+  "retest_status": {
+    "status": "bounded_guest_pass_defect_remains_fixed_open",
+    "run_id": 38177486036,
+    "source_sha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+    "development_artifact_id": 11716531563,
+    "build_version": "0.2.505",
+    "resource_valid": true,
+    "independent_reviewer": "seo_notice_native_peer_1011",
+    "new_passed_subtargets": ["visible_notice_full_reload_second_dismiss_at_native_360px"],
+    "reobserved_subtargets": [
+      "notice_narrow_warm_navigation_reaudit_clearance",
+      "notice_wide_warm_navigation_reaudit_clearance",
+      "manual_button_returns_to_current_page",
+      "notice_reload_reaudit_clearance"
+    ],
+    "native_result": {
+      "width": 360,
+      "source": "native",
+      "refusedHistoryReads": 1,
+      "documentChanged": true,
+      "dismissClick": {
+        "trusted": true,
+        "correctButton": true
+      },
+      "currentTitleMatched": true,
+      "visible": {
+        "active": true,
+        "target_count": 1,
+        "target_enabled": true,
+        "database_refused_notice_count": 1,
+        "dismiss_visible": true,
+        "hit_point_count": 9,
+        "notice_hit_point_count": 0
+      },
+      "dismissed": {
+        "active": true,
+        "target_count": 1,
+        "target_enabled": true,
+        "database_refused_notice_count": 0,
+        "dismiss_visible": false,
+        "hit_point_count": 9,
+        "notice_hit_point_count": 0
+      }
+    },
+    "remaining_unverified": [
+      "Multiple and long notices",
+      "Native normal-width clearance (480px was emulated)",
+      "Full extension/browser reload beyond full panel-document reload",
+      "Other T02 states including stale advice and failure behavior",
+      "Member/admin",
+      "Store"
+    ],
+    "evidence": [
+      "docs/stabilization/runs/seo-forced-reload-run38177486036.json",
+      "docs/stabilization/reports/seo-forced-reload-independent-review-38177486036.json",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/native-report.sanitized.json",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/manifest.json",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-package-38177486036-1.jsonl",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-browser-38177486036-1.jsonl",
+      "docs/stabilization/evidence/seo-notice-occlusion/run38177486036/resource-journals/hosted-guest-38177486036-1.jsonl"
+    ],
+    "closure": "Original bounded guest Re-audit/notice geometry is reobserved, but required sibling dimensions are incomplete. D0199 remains fixed/open; no Store or release claim."
+  }
 }
