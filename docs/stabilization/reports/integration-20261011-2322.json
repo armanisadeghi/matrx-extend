@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "sourceUnderTest": "4eac2ed94240d60df87ad368aa083e0e916f625c",
+  "remoteMergedThrough": "bb18f9f9c09530243d872794bbb66b95c90aa6de",
+  "packageVersion": "0.2.509",
+  "scope": "Integrate peer-reviewed bounded guest Data C19 evidence and native-driver sequence repair, plus resource-invalid member Notes T02 evidence, preserving concurrent Swipe contributions.",
+  "guardedResults": {
+    "dependencies": "integrate-20261011-install-04.jsonl: valid, exit 0, frozen lockfile",
+    "compile": "integrate-20261011-compile-05.jsonl: valid, exit 0 on final merged source",
+    "focusedAcceptance": "integrate-20261011-focused-07.jsonl: valid, 446 passed, 0 failed on final merged source",
+    "lint": "integrate-20261011-lint-05.jsonl: valid, exit 0 on final merged source"
+  },
+  "earlierRuns": "focused-04 used pre-refresh installed packages; focused-05, compile-04, focused-06 and lint-04 preceded one or more unrelated Swipe merges and remain diagnostic receipts.",
+  "productVerdicts": {
+    "dataGuestC19": "bounded pass on frozen v0.2.508 run 38181924184, independently reviewed; later harness failure prevented full T07 completion",
+    "dataT07PostRepair": "unverified until new exact-source native hosted run",
+    "notesMemberT02": "unverified; run 38181935400 resource-invalid with no Notes interaction evidence, independently reviewed"
+  },
+  "next": "Reconcile origin/main before push; require exact-source green CI development artifact, then rerun guarded guest Data native sequence and independently review its original failure and surrounding controls."
+}
