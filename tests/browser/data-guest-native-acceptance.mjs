@@ -207,7 +207,8 @@ try {
             () => dataState(panel),
             (state) => state.selectedFieldValues.length === 1,
           );
-          const visibleSelector = c19Selected.selectedFieldValues[0]?.match(/^field_1:\s*(.+)$/)?.[1];
+          const visibleSelector =
+            c19Selected.selectedFieldValues[0]?.match(/^field_1:\s*(.+)$/)?.[1];
           assert.ok(visibleSelector, 'data_guest_t07_c19_selector_not_visible');
           const selectorTarget = await page.evaluate((selector) => {
             const matches = [...document.querySelectorAll(selector)];
