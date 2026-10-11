@@ -71,7 +71,7 @@
     "tree_sha256": "6ac2233eb04997096e173e0f741c127130a7ee9a245882392befcd49b9fe2206",
     "publish_state": "not_published"
   },
-  "fix_commit": null,
+  "fix_commit": "f3a7f8294805359c619b22571647a0414092c576",
   "verification": [
     "Focused notice layout/icon/resolution tests: 7 passed.",
     "Plant restoring original fixed NoticeHost classes: RED assertion expected true to be false; restore identical SHA.",

@@ -30434,7 +30434,8 @@
             "EXT-D-0076",
             "EXT-D-0174",
             "EXT-D-0176",
-            "EXT-D-0198"
+        "EXT-D-0198",
+        "EXT-D-0199"
           ],
           "run_ids": [
             "seo-guest-001",
@@ -30467,9 +30468,10 @@
             "38041517954",
             "38045276587",
             "38107414974",
-            "38124088927"
+        "38124088927",
+        "38157769699"
           ],
-          "retest_status": "Partial surface. Reviewed frozen129 controlled guest run38041517954 passes 19 named subtargets across T01/T02/T03/T07/T09/T14; all deferred criteria remain open. Earlier known-text readability evidence retains its own frozen-artifact provenance. No full SEO/current-main/Store/member/admin promotion. Reviewed run 38045276587 adds five new passing guest T09 targets and one unverified hreflang/schema-door target; its 19 repeated targets are duplicates of 38041517954. No duplicate credit; all six guest SEO cases and feature remain partial. Frozen v0.2.459, not current-main or Store. Three sanitized completed journals were later recovered and independently reviewed by a separate addendum; the original peer review remains immutable. Reviewed hosted run 38107414974 on exact development v0.2.490 source 5b01a35 (CI 38106946361/artifact 11690348157) and independent native peer report PASS_BOUNDED only for guest T09 guest_detail_content_and_controls_reachable_at_360px. The narrow-panel dimension is covered; the feature cell and T09 remain partial. Report omits numeric layout/target counts, screenshots do not show the SEO pane, and no independent reproduction occurred. All other cases/dimensions, member/admin and Store behavior remain unverified; on-disk promotion receipt records Chrome-loaded state as unverified. Bounded guest T06 synthetic history error/Retry/fresh-empty path passed independently on frozen development v0.2.493 in run 38124088927; overall job later failed at an unattributed Re-audit click, so T02 and full guest SEO gain no pass. Live backend, reload, member/admin, current-main runtime and Store remain unverified."
+      "retest_status": "Partial surface. Reviewed frozen129 controlled guest run38041517954 passes 19 named subtargets across T01/T02/T03/T07/T09/T14; all deferred criteria remain open. Earlier known-text readability evidence retains its own frozen-artifact provenance. No full SEO/current-main/Store/member/admin promotion. Reviewed run 38045276587 adds five new passing guest T09 targets and one unverified hreflang/schema-door target; its 19 repeated targets are duplicates of 38041517954. No duplicate credit; all six guest SEO cases and feature remain partial. Frozen v0.2.459, not current-main or Store. Three sanitized completed journals were later recovered and independently reviewed by a separate addendum; the original peer review remains immutable. Reviewed hosted run 38107414974 on exact development v0.2.490 source 5b01a35 (CI 38106946361/artifact 11690348157) and independent native peer report PASS_BOUNDED only for guest T09 guest_detail_content_and_controls_reachable_at_360px. The narrow-panel dimension is covered; the feature cell and T09 remain partial. Report omits numeric layout/target counts, screenshots do not show the SEO pane, and no independent reproduction occurred. All other cases/dimensions, member/admin and Store behavior remain unverified; on-disk promotion receipt records Chrome-loaded state as unverified. Bounded guest T06 synthetic history error/Retry/fresh-empty path passed independently on frozen development v0.2.493 in run 38124088927; run 38157769699 repeated T06 without new credit and diagnosed all Re-audit hit points blocked by a persistent notice. EXT-D-0199 has a source-reviewed shared layout fix at f3a7f8294, but post-fix native hit testing is pending; T02 and full guest SEO gain no pass. Live backend, reload, member/admin, current-main runtime and Store remain unverified."
         },
         "member": {
           "test_status": "unverified",

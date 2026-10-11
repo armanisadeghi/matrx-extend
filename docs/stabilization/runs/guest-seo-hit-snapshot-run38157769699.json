@@ -2,10 +2,13 @@
   "schema_version": 1,
   "id": "guest-seo-hit-snapshot-run38157769699",
   "created_at_utc": "2026-10-11T16:59:47Z",
-  "status": "queued_unverified",
+  "status": "terminal_failed_unverified",
   "run_id": 38157769699,
   "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38157769699",
   "attempt": 1,
+  "completed_at_utc": "2026-10-11T17:07:05Z",
+  "conclusion": "failure",
+  "hosted_result_artifact_id": 11709716767,
   "lane": "B",
   "runner_label": "macos-15-intel",
   "workflow_source_sha": "226aa489855b637178fa60cde7b7cda7a8c5ef37",
@@ -24,5 +27,8 @@
   },
   "purpose": "Guarded bounded diagnostic for repeated pre-dispatch Re-audit click failure after T06 synthetic history refusal. Reviewed safe hit snapshots at refusal, recovery and pre-click should distinguish the refusal notice from unrelated layout/timing without collecting private content.",
   "credit_rule": "No new product credit or defect attribution until terminal resource/artifact evidence and fresh independent native review. Prior bounded guest T06 pass is already recorded and must not be counted again.",
-  "next_action": "Observe terminal state no more often than once per 60 seconds; verify exact artifact and three finalized journals; independently assess safe hit snapshots and T02 click outcome."
+  "independent_review": "docs/stabilization/reports/seo-hit-snapshot-peer-20261011.json",
+  "sanitized_evidence": "docs/stabilization/evidence/seo-notice-occlusion/run38157769699/native-report.sanitized.json",
+  "result": "All three resource journals finalized and resource-valid; guest child failed at manual_reaudit_click. Repeated T06 observations earn no new credit. At refusal, recovery and before click, the unique enabled Re-audit target had zero hit points while the recognized database refusal notice occupied all nine sampled points. Source diagnosis traced the obstruction to shared fixed NoticeHost positioning; EXT-D-0199 is fixed in source, pending post-fix native retest. T02 remains unverified in this run.",
+  "next_action": "Run guarded native acceptance on an exact-source successful development artifact containing EXT-D-0199; independently verify manual Re-audit, notice visibility/dismissal, narrow layout, reload, and surrounding SEO cases before closing the defect."
 }
