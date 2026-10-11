@@ -16,6 +16,7 @@ import { AdvancedAgentCapabilities } from '@/features/settings/AdvancedAgentCapa
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useAuth } from '@/hooks/use-auth';
 import { useDesktopBridge } from '@/hooks/use-desktop';
+import { matrx2StatusText, useMatrx2 } from '@/hooks/use-matrx2';
 import { getEnginePortOverride, setEnginePortOverride } from '@/lib/desktop/discovery';
 import { clearPairToken, setPairToken } from '@/lib/desktop/http';
 import {
@@ -111,6 +112,7 @@ function updateStatusCopy(status: ExtensionUpdateStatus): string | null {
 export function SettingsView() {
   const { user, signIn, signOut, isAdmin } = useAuth();
   const desktop = useDesktopBridge();
+  const matrx2 = useMatrx2();
   const settings = useSettingsStore();
   const settingsSaveState = useSettingsSaveState();
   const [pairTokenInput, setPairTokenInput] = useState('');
@@ -540,8 +542,9 @@ export function SettingsView() {
 
           <Collapsible label="Desktop bridge">
             <Card>
+              <Row label="Matrx 2" value={<span>{matrx2StatusText(matrx2.state)}</span>} />
               <Row
-                label="Status"
+                label="Matrx Local"
                 value={
                   <span className={desktopColor}>
                     {formatDesktopConnectionLabel(desktop.transport, desktop.health)}

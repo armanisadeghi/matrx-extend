@@ -77,3 +77,24 @@ full Vitest suite, TypeScript compile, `pnpm zip`, and a clean-profile packaged
 test. The installed engine must show each profile as a separate session, and
 an engine-driven `read_page` must return from each selected profile.
 
+
+## Matrx 2 (the new desktop app)
+
+Matrx 2 is a separate channel in `matrx2/`, beside Matrx Local; the two apps can run on the same
+computer. Matrx 2 answers only `GET /v1/health` (`service: "matrx-desktop"`, ports 22140-22159,
+or 22240-22259 for a development copy), never Matrx Local's `/health`.
+
+- Pairing: `POST /v1/pair` from this extension's origin returns the pairing token. It is asked
+  for before every dial, so a code reset in Matrx 2 heals without a step here.
+- The socket lives in the service worker (Chrome 116+ keeps it alive while it carries traffic):
+  subprotocols `matrx.v1` + `bearer.<pair token>`, hello as clientType `extension`, then
+  `browser.register` with this profile's instance id, the browser and the person's access token.
+  Matrx 2 drives this browser only when that account is the one Matrx 2 is signed in to.
+- Each `browser.invoke` runs through `handleWebmcpCall` with initiator `desktop` (action tools
+  always ask the person; privileged tools are refused). While the person is asked,
+  `browser.progress` (awaiting_confirmation) keeps Matrx 2 waiting; the answer is `browser.result`.
+- Disconnect in Matrx 2 holds until the person presses Reconnect (Debug › Bridges) or the browser
+  restarts; Browser connection turned off resumes by itself when it is on again.
+- `desktop_run_command` runs a Matrx 2 operation (`fs.list`, `sysinfo.get`) when Matrx 2 is
+  connected for the same account; other commands still go to Matrx Local.
+- Contract: `@ai-matrx/desktop-protocol` cap `browser`. Tests: `tests/unit/matrx2-*.test.ts`.

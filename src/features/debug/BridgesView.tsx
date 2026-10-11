@@ -14,6 +14,7 @@
  */
 
 import { JsonTree } from '@/components/ui/json-tree';
+import { Matrx2Section } from '@/features/debug/Matrx2Panel';
 import { useDesktopBridge } from '@/hooks/use-desktop';
 import { pingHealth } from '@/lib/api/routes/health';
 import {
@@ -106,6 +107,7 @@ export function BridgesView() {
   return (
     <div className="space-y-2 p-2 text-xs">
       <ChannelAPanel />
+      <Matrx2Panel />
       <ChannelBPanel />
       <ChannelCPanel />
       <ChannelWebMcpPanel />
@@ -252,6 +254,19 @@ function ChannelAPanel() {
           <JsonTree data={loadedByConvo} defaultDepth={2} />
         )}
       </Section>
+    </Panel>
+  );
+}
+
+// ─── Matrx 2 — the new desktop app ──────────────────────────────────────────
+
+function Matrx2Panel() {
+  return (
+    <Panel
+      title="Matrx 2 — desktop app"
+      subtitle="paired socket: agents on this computer drive this browser"
+    >
+      <Matrx2Section Section={Section} KV={KV} />
     </Panel>
   );
 }
