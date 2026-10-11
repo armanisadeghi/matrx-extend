@@ -46,17 +46,20 @@ export const SocialPostResultSchema = z
     handle: z.string().nullable().optional(),
     thumbnail_url: z.string().nullable().optional(),
     trace: SocialTraceSchema.nullable().optional(),
-    media_notes: z.array(z.string()).optional(),
-    media_coverage: MediaCoverageSchema.optional(),
-    media: z.array(SocialPostMediaSchema).optional(),
+    // Everything below the post id is a bonus. A field the server sends as null or in a
+    // newer shape must never turn an already-saved post into "Not saved" (the server
+    // answers `browser_capture: null` for an untouched carousel), so each degrades alone.
+    media_notes: z.array(z.string()).nullish().catch(undefined),
+    media_coverage: MediaCoverageSchema.nullish().catch(undefined),
+    media: z.array(SocialPostMediaSchema).nullish().catch(undefined),
     transcript: z
       .object({
         status: z.enum(['available', 'none']),
-        notes: z.array(z.string()).optional(),
+        notes: z.array(z.string()).nullish(),
       })
       .passthrough()
-      .nullable()
-      .optional(),
+      .nullish()
+      .catch(undefined),
   })
   .passthrough();
 export type SocialPostResult = z.infer<typeof SocialPostResultSchema>;

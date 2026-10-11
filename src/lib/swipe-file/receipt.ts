@@ -24,7 +24,7 @@ export const MediaCoverageSchema = z.object({
       failed_items: z.number().int().nonnegative(),
       notes: z.array(z.string()),
     })
-    .optional(),
+    .nullish(),
 });
 export type MediaCoverage = z.infer<typeof MediaCoverageSchema>;
 
