@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "seo-notice-sibling-run38162261133",
+  "created_at_utc": "2026-10-11T18:04:19Z",
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0199",
+  "status": "running",
+  "scope": "Guarded lane B guest SEO notice with real refusal visible at 360px and restored normal width across warm navigation. Multiple/long notice and visible notice after full reload remain unforced; no product credit before terminal resource-valid independent review.",
+  "hosted_run_id": 38162261133,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38162261133",
+  "workflow_source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+  "inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": "false",
+    "seo_interrupt_after_target": "none"
+  },
+  "frozen_product": {
+    "development_run_id": 38161635790,
+    "development_artifact_id": 11710458741,
+    "source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+    "github_digest": "sha256:a1e5fde629f299e6f6c724937dd42aa6e27f9e10bf6a8e4d18c4943cd0c422c6"
+  },
+  "concurrent_other_hosted_lane": {
+    "acceptance_lane": "A",
+    "hosted_run_id": 38161802335,
+    "scope": "public CRX guest Chat first message and same-conversation follow-up; not Store-installed"
+  },
+  "next_action": "On terminal, verify exact artifact, all resource finals, native width/hit/trusted-click assertions and fixture cleanup; obtain fresh independent peer review before any acceptance credit."
+}
