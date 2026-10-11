@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "hosted_run": {
+    "id": 38107414974,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38107414974",
+    "conclusion": "success",
+    "source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+    "development_artifact": {
+      "ci_run_id": 38106946361,
+      "artifact_id": 11690348157,
+      "tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+      "eligible_store": false
+    }
+  },
+  "target": {
+    "feature_id": "EXT-F-1008",
+    "case_id": "EXT-F-1008-T09",
+    "subtarget": "guest_detail_content_and_controls_reachable_at_360px",
+    "native_report_status": "pass",
+    "native_report_evidence": {
+      "titleMatches": true,
+      "hreflangMatchesSource": true,
+      "schemaTypeMatchesSource": true
+    },
+    "assertion_contract": [
+      "narrow_seo_pane_scope_valid",
+      "narrow_seo_viewport_is_360px",
+      "narrow_seo_document_has_no_horizontal_overflow",
+      "narrow_seo_pane_has_no_horizontal_overflow",
+      "narrow_seo_title_present",
+      "narrow_seo_international_present",
+      "narrow_seo_structuredData_present",
+      "narrow_seo_hreflang_door_present",
+      "narrow_seo_schema_chip_present",
+      "narrow_seo_reaudit_control_present",
+      "narrow_seo_copy_control_present",
+      "narrow_seo_controls_and_links_reachable",
+      "narrow_seo_targets_observed"
+    ],
+    "exact_result_text": "target('T09', 'guest_detail_content_and_controls_reachable_at_360px', { ...layout, titleMatches: true, hreflangMatchesSource: true, schemaTypeMatchesSource: true })",
+    "result_details_in_report": "The report stores the three metadata booleans but does not serialize the observed viewport/scroll widths, link/chip/button counts, reachable target count, or unreachable target count."
+  },
+  "evidence_limits": {
+    "native_side_panel_screenshot": "Not included as target evidence: it shows the generic guest home panel rather than the SEO detail panel.",
+    "normal_target_after_open_screenshot": "Not included as target evidence: it shows the owned article page, not the SEO detail panel.",
+    "independent_native_review": "Pending; do not claim product pass until review."
+  },
+  "resource_finals": {
+    "package": "RESOURCE_FINAL_DECISION valid/admitted; 0 MiB swap",
+    "browser": "RESOURCE_FINAL_DECISION valid/admitted; 0 MiB swap",
+    "guest": "RESOURCE_FINAL_DECISION valid/admitted; 0 MiB swap; transient CPU busy pending sample recovered to CPU busy 0.01 before final admission"
+  },
+  "fixture_and_auth": "Lane B used the isolated owned public SEO article fixture; no credential staging."
+}

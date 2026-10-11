@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_native_product_evidence_review",
+  "reviewer": "seo_t09_native_peer",
+  "status": "PASS",
+  "verdict_a_product_evidence": {
+    "status": "PASS_BOUNDED",
+    "scope": "Guest EXT-F-1008-T09 guest_detail_content_and_controls_reachable_at_360px only",
+    "basis": "The successful hosted result records the target as pass and last_safe_stage as narrow_seo_360px_target_complete. On the exact CI source SHA, the native acceptance path sets the panel viewport width to 360, reads the active linked SEO pane, and calls requireNarrowSeoLayout before recording the target. Every required assertion must return before the target pass is emitted.",
+    "observed_contract": [
+      "active SEO tab and linked visible pane",
+      "360px inner viewport",
+      "no document or pane horizontal overflow",
+      "Title & description, International, and Structured data groups present",
+      "at least one hreflang link and schema chip",
+      "visible Re-audit and Copy audit controls",
+      "every visible button/link target is in pane bounds, vertically in viewport after scrolling, and hit-testable",
+      "at least one target observed and zero unreachable targets"
+    ],
+    "limits": "This supports only the named owned guest T09 viewport subtarget; it does not establish all T09 behavior, other SEO cases, member/admin behavior, or Store behavior."
+  },
+  "verdict_b_driver_and_evidence_quality": {
+    "status": "PASS_WITH_EVIDENCE_LIMIT",
+    "basis": "The assertion path inspects the live native panel DOM and layout and the target status is emitted only after those assertions succeed; no bypass or tautological pass path was found in the reviewed path. The report does not retain the numeric viewport/scroll widths, per-control counts, reachable-target count, or unreachable-target count. The two uploaded screenshots show the generic guest panel and source article, not the SEO detail pane, so those images cannot independently demonstrate its appearance.",
+    "independent_reproduction": "Not performed; the task prohibited a new heavy browser run."
+  },
+  "run_provenance": {
+    "hosted_run_id": 38107414974,
+    "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38107414974",
+    "hosted_conclusion": "success",
+    "hosted_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+    "hosted_job_id": 114375747174,
+    "result_artifact_id": 11689584250,
+    "result_artifact_name": "hosted-guest-38107414974-1",
+    "development_run_id": 38106946361,
+    "development_artifact_id": 11690348157,
+    "development_tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+    "resources": {
+      "package": "valid/admitted, exit 0, no swap",
+      "browser": "valid/admitted, exit 0, no swap",
+      "guest": "valid/admitted, exit 0, no swap; CPU-busy pending sample recovered before final admission"
+    }
+  },
+  "whether_another_run_is_required": "No for this bounded target: the exact hosted run is a successful real native-panel execution of the assertions on the named source artifact. For stronger durable review evidence, a future run should retain the successful layout observation or a detail-panel screenshot; the present omissions lower auditability but do not negate the executed assertions.",
+  "checked_evidence": [
+    "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/review-notes.json",
+    "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/seo-guest-acceptance.json",
+    "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-package-38107414974-1.jsonl",
+    "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-browser-38107414974-1.jsonl",
+    "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-guest-38107414974-1.jsonl",
+    "tests/browser/seo-guest-acceptance.mjs",
+    "tests/browser/seo-new-coverage-oracle.mjs"
+  ]
+}

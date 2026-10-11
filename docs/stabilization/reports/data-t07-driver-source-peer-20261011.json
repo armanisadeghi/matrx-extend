@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_review",
+  "reviewer": "/root/data_t07_driver_source_peer",
+  "reviewed_at": "2026-10-10",
+  "review_provenance": "Reviewed the exact uncommitted three-file diff before commit at the implementer owner’s request; base HEAD and diff hash are recorded. This is source review, not native browser acceptance.",
+  "feature_id": "EXT-F-2005",
+  "case_id": "EXT-F-2005-T07",
+  "source_base_sha": "b637d5f95fedfd6b375c9bc6d49bef251dd8f5ef",
+  "reviewed_diff_sha256": "bbe0a5451a24c492f273f82190395c22a4c90cf76f2c836567baa69a910a9919",
+  "verdict": "SOURCE_READY_NATIVE_PENDING",
+  "peer_verdicts": {
+    "behavior_oracle": "PASS_SOURCE_COVERAGE_FOR_GUEST_SUBTARGET_ONLY",
+    "code_quality_and_admission": "PASS_WITH_LIMITS"
+  },
+  "scope": "Guest picker hover C18, Clear C22, and selected-field Cancel C21 assertions in the existing guarded guest Data native acceptance route.",
+  "source_behavior": [
+    "The real pointer is moved to a visible target-owned point; the closed-shadow #hl element must be visible and its top, left, width, and height must match each of two distinct page-element rectangles within one pixel.",
+    "The controlled Northline Furnishings fixture selection is read from the closed-shadow picker list before Clear; the list is read again and must contain no picked-item afterward.",
+    "A fresh picker selection of the $429 field is confirmed in the overlay before Cancel. The picker must close and Data panel state is compared with the empty baseline, including selected field markers/values, picker button, Cancel state, Save pattern state, and name input.",
+    "A network observer is installed before these actions and the run fails on any non-GET /wbx_pattern request. Success is withheld unless the T07 selected-cancel observation is present.",
+    "The existing hosted guest-data route remains the entry point and retains receipt/artifact binding and native harness cleanup; the source change adds no new route or external-write action."
+  ],
+  "verification": {
+    "focused_node_tests": "node --test tests/browser/data-guest-picker-driver.test.mjs — 5/5 passed in this review.",
+    "syntax": "node --check passed for all three changed JavaScript files.",
+    "biome": "pnpm exec biome check on the three changed files passed.",
+    "diff_check": "git diff --check passed.",
+    "compile": "Implementer reports guarded pnpm compile passed; not independently rerun in this source review.",
+    "mutation_credit": "No independent mutation run. Implementer reports a scratch copy with the highlight hidden failed at data_guest_hover_not_visible; the scratch copy was ephemeral and no durable artifact is available."
+  },
+  "checked_files": [
+    "tests/browser/data-guest-native-acceptance.mjs",
+    "tests/browser/data-guest-picker-driver.mjs",
+    "tests/browser/data-guest-picker-driver.test.mjs",
+    "tests/browser/data-guest-picker-cancel.mjs",
+    "src/lib/data-pattern/picker.ts",
+    "src/features/data/DataView.tsx",
+    "scripts/hosted-guest-acceptance.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "docs/stabilization/inventory.json"
+  ],
+  "limits": [
+    "No hosted browser run was performed. Runtime behavior remains unverified and the inventory T07 guest/member/admin results remain unverified until role-specific evidence is recorded.",
+    "The native report envelope retains case_id EXT-F-2005-T01 and exposes this subtarget under observations.t07; downstream evidence reconciliation must credit only the explicit T07 object and must not relabel the T01 result as complete T07 coverage.",
+    "The T07 inventory procedure requires guest, member, and admin runs; this change exercises only the guest-data route and makes no member/admin claim.",
+    "The unit test validates the highlight oracle against hidden and misplaced highlight markup; it does not assert the mouse.move arguments. The live native assertion is the forcing check for the actual pointer movement, but that assertion has not yet run."
+  ],
+  "next_action": "Commit the reviewed exact three-file change, then run only the authorized guarded hosted guest-data acceptance. Independently inspect the resulting receipt/report and resource finals before granting bounded guest T07 evidence. Keep member/admin results unverified."
+}

@@ -7,7 +7,14 @@ import { join } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { verifyDataGuestArtifact } from './data-guest-artifact-contract.mjs';
 import { verifyEmptyPickerDismissal } from './data-guest-picker-cancel.mjs';
-import { clickPickerDone, clickPickerField, pickerText } from './data-guest-picker-driver.mjs';
+import {
+  clickPickerCancel,
+  clickPickerClear,
+  clickPickerDone,
+  clickPickerField,
+  hoverPickerField,
+  pickerText,
+} from './data-guest-picker-driver.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
   activeTabPanelExpression,
@@ -78,6 +85,9 @@ async function dataState(panel) {
         pickedTwo: text.includes('2 fields selected') &&
           text.includes('field_1:') && text.includes('field_2:'),
         selectedFieldMarkers: (text.match(/field_\\d+:/g) ?? []).length,
+        selectedFieldValues: [...root.querySelectorAll('span')]
+          .filter((span) => /^field_\\d+:$/.test(span.textContent.trim()))
+          .map((span) => span.parentElement?.textContent?.trim() ?? ''),
         pickerButton: buttons.filter((button) => button.textContent.trim() === 'Pick fields on this page').length,
         pickerButtonPresent: pickerButtons.length,
         pickerButtonDisabled: pickerButtons.filter((button) => button.disabled).length,
@@ -161,6 +171,110 @@ try {
       report.observations.picker_cancel_without_selection = true;
       report.observations.picker_cancel_selected_fields_unchanged = true;
       report.observations.picker_cancel_pattern_writes = 0;
+      report.stage = 'picker_controls_t07';
+      const t07Before = await dataState(panel);
+      assert.equal(t07Before.selectedFieldMarkers, 0, 'data_guest_t07_initial_fields_present');
+      assert.deepEqual(t07Before.selectedFieldValues, [], 'data_guest_t07_initial_values_present');
+      await panel.send('Network.enable');
+      const t07Writes = [];
+      const stopT07Network = panel.on('Network.requestWillBeSent', ({ request }) => {
+        if (request?.method !== 'GET' && /\/wbx_pattern(?:\?|$)/.test(request?.url ?? ''))
+          t07Writes.push(request.method);
+      });
+      try {
+        await click(panel, 'data-picker-button', 'Pick fields on this page');
+        await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
+        const firstHover = await hoverPickerField(page, '.product-card .product-name');
+        const secondHover = await hoverPickerField(page, '.product-card .product-price', 1);
+        assert.notDeepEqual(
+          firstHover.target,
+          secondHover.target,
+          'data_guest_t07_hover_did_not_track',
+        );
+        await clickPickerField(page, '.product-card .product-name');
+        const t07Cdp = await page.context().newCDPSession(page);
+        try {
+          await t07Cdp.send('DOM.enable');
+          const selected = await pickerText(t07Cdp, '#picked');
+          assert.match(
+            selected,
+            /picked-item[^>]*>[^<]*Cedar chair/,
+            'data_guest_t07_pick_missing',
+          );
+          await clickPickerClear(page);
+          const cleared = await pickerText(t07Cdp, '#picked');
+          assert.doesNotMatch(cleared, /picked-item/, 'data_guest_t07_clear_kept_field');
+          report.observations.t07_clear = { before: 'Cedar chair', after_entries: 0 };
+        } finally {
+          await t07Cdp.detach();
+        }
+        await clickPickerCancel(page);
+        await page.locator('#matrx-data-picker-host').waitFor({ state: 'detached' });
+        await waitFor(
+          'data_guest_t07_picker_ready_again',
+          () => dataState(panel),
+          (state) => state.pickerButton === 1 && state.cancelSelection === 0,
+        );
+        await click(panel, 'data-picker-button', 'Pick fields on this page');
+        await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
+        await clickPickerField(page, '.product-card .product-price', 1);
+        const selectedCdp = await page.context().newCDPSession(page);
+        try {
+          await selectedCdp.send('DOM.enable');
+          assert.match(
+            await pickerText(selectedCdp, '#picked'),
+            /picked-item[^>]*>[^<]*\$429/,
+            'data_guest_t07_cancel_precondition_missing',
+          );
+        } finally {
+          await selectedCdp.detach();
+        }
+        await clickPickerCancel(page);
+        await page.locator('#matrx-data-picker-host').waitFor({ state: 'detached' });
+        const t07After = await waitFor(
+          'data_guest_t07_cancel_restored',
+          () => dataState(panel),
+          (state) => state.pickerButton === 1 && state.cancelSelection === 0,
+        );
+        assert.deepEqual(
+          {
+            selectedFieldMarkers: t07After.selectedFieldMarkers,
+            selectedFieldValues: t07After.selectedFieldValues,
+            pickerButton: t07After.pickerButton,
+            cancelSelection: t07After.cancelSelection,
+            savePattern: t07After.savePattern,
+            nameInput: t07After.nameInput,
+          },
+          {
+            selectedFieldMarkers: t07Before.selectedFieldMarkers,
+            selectedFieldValues: t07Before.selectedFieldValues,
+            pickerButton: t07Before.pickerButton,
+            cancelSelection: t07Before.cancelSelection,
+            savePattern: t07Before.savePattern,
+            nameInput: t07Before.nameInput,
+          },
+          'data_guest_t07_cancel_changed_data_state',
+        );
+        assert.deepEqual(t07Writes, [], 'data_guest_t07_pattern_write');
+        report.observations.t07 = {
+          hover: [firstHover, secondHover],
+          selected_then_cancel: true,
+          panel_state_restored: true,
+          panel_before: {
+            selected_fields: t07Before.selectedFieldValues,
+            picker_button: t07Before.pickerButton,
+            cancel_selection: t07Before.cancelSelection,
+          },
+          panel_after: {
+            selected_fields: t07After.selectedFieldValues,
+            picker_button: t07After.pickerButton,
+            cancel_selection: t07After.cancelSelection,
+          },
+          pattern_write_requests: 0,
+        };
+      } finally {
+        stopT07Network();
+      }
       report.stage = 'picker';
       try {
         await waitFor(
@@ -263,6 +377,11 @@ try {
     report.observations.picker_cancel_without_selection,
     true,
     'data_guest_picker_cancel_not_exercised',
+  );
+  assert.equal(
+    report.observations.t07?.selected_then_cancel,
+    true,
+    'data_guest_t07_selected_cancel_not_exercised',
   );
   report.status = 'pass';
   report.stage = 'complete';

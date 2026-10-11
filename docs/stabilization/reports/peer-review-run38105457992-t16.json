@@ -1,0 +1,128 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_acceptance_evidence_review",
+  "reviewer_task_id": "/root/settings_t16_run381054_review",
+  "verdict_received_at": "2026-10-11T02:57:55Z",
+  "verdict": "qualified_bounded_pass",
+  "run": {
+    "run_id": 38105457992,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38105457992",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+    "dispatch_ref": "main",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "conclusion": "success",
+    "acceptance_case": "settings-controls",
+    "inventory_case": "EXT-F-1003-T16",
+    "role": "guest"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "version": "0.2.490",
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "ci_run_id": 38102137319,
+    "artifact_id": 11688890496,
+    "artifact_digest": "sha256:b3b92f267456770e473d1a3c0afc28da4aa901b0551084f051ced999e6a63b2a",
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "runtime_equivalence": "The reviewer confirmed exact development artifact provenance and current-equivalent product source at dispatch."
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11690340577,
+    "name": "hosted-guest-38105457992-1",
+    "digest": "sha256:72cbe43d0a825a7147d461ced80404bf1ae101e57405ba1839ecffc696447644",
+    "expired": false
+  },
+  "evidence": [
+    {
+      "path": "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json"
+    },
+    {
+      "path": "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+      "sha256": "8f8e7396b3fb3dc1177078a686c34a08ec248875ff37ae645ead6e93e66e896b"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-package-38105457992-1.jsonl",
+      "sha256": "8d043c395f563ea3043d6e870559397afc2986241ac3c45b94309f9fe4992943"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-browser-38105457992-1.jsonl",
+      "sha256": "13542f8d387b8cb13b1dfebb89222e842faeb932d867579dcb37bab56313f84e"
+    },
+    {
+      "path": "docs/stabilization/resource-journals/hosted-guest-38105457992-1.jsonl",
+      "sha256": "741259f243f3a6a3390d3aac8b0a2d5a14fa376b35577dca5f9bfbfab5ba477d"
+    }
+  ],
+  "verified_assertions": [
+    "The actual guest Settings Privacy switch moved Off and On through trusted native UI interaction.",
+    "For both states, the visible aria-checked value matched the stored sharePageIdentity preference with no reported preference-save error.",
+    "Both Off and On states persisted after actual side-panel document reload.",
+    "All package, browser and guest resource journals terminate in valid decisions with admitted=true, resource_invalid=false and exit_code=0.",
+    "The bounded switch and persistence observations are accepted as a qualified pass; the overall inventory case remains partial."
+  ],
+  "observed_switch_states": [
+    {
+      "phase": "warm",
+      "action": "Switch off changes visible and stored values",
+      "observation": {
+        "activeSettings": true,
+        "privacyOpen": true,
+        "count": 1,
+        "checked": false,
+        "stored": false,
+        "saveError": false
+      }
+    },
+    {
+      "phase": "reload",
+      "action": "Switch off survives panel reload",
+      "observation": {
+        "activeSettings": true,
+        "privacyOpen": true,
+        "count": 1,
+        "checked": false,
+        "stored": false,
+        "saveError": false
+      }
+    },
+    {
+      "phase": "warm",
+      "action": "Switch on changes visible and stored values",
+      "observation": {
+        "activeSettings": true,
+        "privacyOpen": true,
+        "count": 1,
+        "checked": true,
+        "stored": true,
+        "saveError": false
+      }
+    },
+    {
+      "phase": "reload",
+      "action": "Switch on survives panel reload",
+      "observation": {
+        "activeSettings": true,
+        "privacyOpen": true,
+        "count": 1,
+        "checked": true,
+        "stored": true,
+        "saveError": false
+      }
+    }
+  ],
+  "resource_finals": {
+    "package": "valid; admitted=true; resource_invalid=false; exit_code=0",
+    "browser": "valid; admitted=true; resource_invalid=false; exit_code=0",
+    "guest": "valid; admitted=true; resource_invalid=false; exit_code=0"
+  },
+  "limitations": [
+    "The native report omits an explicit final restored-baseline sample. The runner source asserts restoration, but the starting value cannot be independently read from retained evidence.",
+    "Signed-out UI plus role, organization, browser and profile identity were not serialized in the native report for independent inspection.",
+    "Downstream identity and email-content sharing or withholding behavior remains unverified.",
+    "No full extension reload was exercised for T16.",
+    "No current-main runtime, Store, member, admin, or full T16 acceptance claim follows."
+  ],
+  "inventory_outcome": "Keep guest EXT-F-1003-T16 partial; credit only the four switch UI/storage warm and panel-reload criteria."
+}

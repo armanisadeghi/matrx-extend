@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_native_review",
+  "reviewer": "/root/data_t07_native_peer",
+  "reviewed_at": "2026-10-11",
+  "feature_id": "EXT-F-2005",
+  "target_case_id": "EXT-F-2005-T07",
+  "verdict": "PASS_BOUNDED_GUEST_SUBTARGET",
+  "peer_verdicts": {
+    "native_behavior": "PASS_FOR_EXPLICIT_GUEST_T07_OBSERVATIONS",
+    "evidence_quality": "PASS_WITH_VISUAL_AND_CLEANUP_LIMITS"
+  },
+  "scope": "Independent review of the hosted guest Data picker hover, Clear, and selected-field Cancel observations for run 38109155658. No browser was launched by this reviewer.",
+  "provenance": {
+    "hosted_workflow_run_id": 38109155658,
+    "hosted_run_attempt": 1,
+    "hosted_run_conclusion": "success",
+    "hosted_run_head_sha": "41976eec14af4964daad9113402316a9559cdb4c",
+    "hosted_job": "guest",
+    "hosted_job_conclusion": "success",
+    "hosted_result_artifact_id": 11691467347,
+    "hosted_result_artifact_name": "hosted-guest-38109155658-1",
+    "hosted_result_artifact_sha256": "f4774a5a10d85007e1d2b339c921e16dfa498ba41d7eea8e96418b04bfb97f8e",
+    "embedded_raw_report_sha256": "83a1052fc80c9db513900d55a2a026cde33dd3ba1542c300789f25dce2e1c8c5",
+    "development_run_id": 38108390956,
+    "development_artifact_id": 11690966917,
+    "development_artifact_sha256": "3f4de76f2a2795cf7481830a96e087fa06b3a32bccd5b3a35a766552fd8134a7",
+    "development_source_sha": "41976eec14af4964daad9113402316a9559cdb4c",
+    "development_tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+    "source_review_report": "docs/stabilization/reports/data-t07-driver-source-peer-20261011.json",
+    "evidence_receipt": "docs/stabilization/evidence/guest-data-t07/run38109155658/receipt.sanitized.json",
+    "driver_case_mapping": "The hosted driver report retains case_id EXT-F-2005-T01; only its observations.t07 object supports this T07 subtarget."
+  },
+  "observations": {
+    "hover": {
+      "verdict": "pass",
+      "matches": [
+        {
+          "target": { "top": 79.875, "left": 8, "width": 805, "height": 28 },
+          "pointer": "field",
+          "highlight_visible": true
+        },
+        {
+          "target": { "top": 213.59375, "left": 8, "width": 805, "height": 18 },
+          "pointer": "field",
+          "highlight_visible": true
+        }
+      ],
+      "assessment": "The exact hosted report records two distinct fixture-element rectangles and asserts a real mouse.move to a field-owned point before reading the extension's closed-shadow #hl element. The captured highlight must be visible and match top/left/width/height within one pixel; the recorded rectangles differ."
+    },
+    "clear": {
+      "verdict": "pass",
+      "selected_before": "Cedar chair",
+      "picked_entries_after": 0,
+      "assessment": "The driver reads the picked item from the picker's closed shadow DOM, invokes the Clear button through a trusted pointer click whose hit target is checked, then reads the picked list again and asserts no picked-item remains."
+    },
+    "selected_then_cancel": {
+      "verdict": "pass",
+      "selected_precondition": "$429",
+      "panel_before": {
+        "selected_fields": [],
+        "picker_button": 1,
+        "cancel_selection": 0
+      },
+      "panel_after": {
+        "selected_fields": [],
+        "picker_button": 1,
+        "cancel_selection": 0
+      },
+      "panel_state_restored": true,
+      "pattern_write_requests": 0,
+      "assessment": "The selected value is confirmed in the closed-shadow picker DOM before Cancel. The harness waits for the picker host to detach and compares the Data panel to its initial empty baseline, including selected markers/values, picker and Cancel controls, Save pattern state, and name input. It also asserts no non-GET /wbx_pattern request occurred during the observed sequence. The serialized observation exposes only the selected-field/control subset; equality of Save pattern and name-input state is asserted by the exact source but those values are not separately serialized."
+    },
+    "fixture_and_browser_cleanup": {
+      "verdict": "cleanup_path_and_successful_exit_observed_post_run_absence_not_independently_verified",
+      "assessment": "The native harness serves the controlled fixture from an owned in-memory loopback route and its finally block closes that server, stops the exact Chromium child it spawned, and recursively removes the owned temporary profile root. The hosted guest job completed successfully with exit code 0. The receipt explicitly says post-run absence was not independently verified, so cleanup completion is source/exit-backed rather than a separate filesystem inspection."
+    }
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal_sha256_verified": "1f30e2ccd504e12df65d2618352b0640364f81ba53870f07a4841cdd9265094a"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal_sha256_verified": "2bf86802c68b07ce171c31515b39c3542d721e5937b2f020b5f20b1f69e75877"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "journal_sha256_verified": "e14c081cf1c7c47cd2f76f406e66f26dbc6b1c43923848a3f149f0fc135e9ea5"
+    }
+  },
+  "limits": [
+    "This is hosted runtime evidence from one imported development artifact, version 0.2.490, at the recorded source/tree provenance; it does not establish current-main behavior beyond that exact artifact or Chrome Web Store behavior.",
+    "The two archived screenshots are the generic native side panel and the fixture page after panel-open flow; neither shows the Data panel or the intermediate hover, Clear, and selected-Cancel states. The browser run's live CDP/DOM and pointer assertions support the bounded observations, while visual layout confirmation is absent.",
+    "Zero observed writes means no non-GET request matching /wbx_pattern was observed by the attached panel Network listener during this action window; no backend persistence query was made.",
+    "Only the explicit observations.t07 object and associated t07_clear result in a T01 envelope are credited. No T01 full-case, full T07, member, admin, Store, or whole-feature pass is claimed."
+  ],
+  "verification": {
+    "official_hosted_artifact_downloaded_and_inspected": true,
+    "hosted_zip_digest_matches_receipt_and_github_metadata": true,
+    "embedded_report_sha256_matches_receipt": true,
+    "hosted_run_source_and_development_artifact_provenance_match": true,
+    "github_hosted_guest_job_success_confirmed": true,
+    "local_resource_journal_sha256_values_match_receipt": true,
+    "reviewed_exact_driver_source_and_cleanup_finally_block": true,
+    "new_browser_run": false,
+    "inventory_or_tracker_edited": false
+  }
+}

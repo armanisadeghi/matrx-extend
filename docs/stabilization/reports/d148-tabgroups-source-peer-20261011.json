@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "report_id": "d148-tabgroups-source-peer-20261011",
+  "reviewed_commit": "41976eec14af4964daad9113402316a9559cdb4c",
+  "scope": "Source and hosted-route admission for the first native EXT-D-0148 / EXT-F-4163-T01 member retest, create collapsed=true only.",
+  "admission": {
+    "verdict": "GO",
+    "reason": "The case is constrained to lane A, requires a CI development artifact and member link, and the driver makes acceptance depend on a successful canonical Tools Catalog invocation plus independent Chrome-native and canonical-list readbacks. The source is suitable for the requested bounded hosted run.",
+    "required_live_result": "A successful hosted run must report status=passed, member identity checks true, exactly two same-window owned tabs, Chrome native collapsed=true with exact membership/title/color/window, matching get_tab_groups readback, and verified cleanup."
+  },
+  "quality": {
+    "verdict": "SOURCE_ADMISSION_PASS",
+    "findings": [],
+    "evidence": [
+      "Workflow dispatch admits tab-groups-member only on lane A and requires development_run_id plus development_artifact_id with no release or Store artifact. The wrapper verifies imported artifact identity and CI provenance before routing the native driver.",
+      "The driver uses the private member magic-link file. The auth helper validates the known member fingerprint and organization, verifies the same account in web and extension contexts, and checks the canonical non-admin role result. The result report stores only booleans and artifact provenance, not credentials or the member email.",
+      "The driver visibly opens Tools, selects All handlers, searches for the unique tab_groups row, opens its manual form, enters action=create with two owned tab IDs and collapsed=true, and observes a JSON result. This exercises the canonical catalog entry, whose create branch delegates collapsed through to create_tab_group.",
+      "The driver reads chrome.tabGroups.get and chrome.tabs.query for the returned group ID, then separately runs get_tab_groups through the catalog. verifyTabGroupsCreateObservation requires collapsed=true, expected title/color/window, exact two-tab membership, and matching canonical readback before passed is assigned.",
+      "The fixture pages and tabs are owned by this run. A finally block ungroups and removes only those owned tabs, checks their absence and group absence, and fails the case when cleanup cannot be verified. Native resource health is checked around each resource action."
+    ]
+  },
+  "limits": [
+    "This is source/admission review only. No browser was launched and no live result is claimed; EXT-F-4163-T01 remains unverified until the hosted run passes.",
+    "The verdict covers create collapsed=true only. collapsed=false, update, add, remove, list, and the broader tab_groups feature remain unverified.",
+    "The driver does not include arbitrary exception text in its result JSON; unknown errors become unclassified_failure while the process exits nonzero. This preserves fail-closed reporting and avoids accidental secret disclosure."
+  ],
+  "checks": [
+    "Read defect record, native driver, route resolver, canonical handler, member auth helper, native resource boundary, and workflow provenance/admission sections.",
+    "No browser execution or source/inventory edits performed."
+  ],
+  "role": "independent_source_admission_peer",
+  "next": "Proceed with the guarded lane-A hosted tab-groups-member run; retain this report alongside its result and require live native evidence before changing the defect to retest-pass or closed."
+}

@@ -297,7 +297,9 @@ test('owned metadata scope runs exactly the T09 fixture door boundary before ret
   const source = await readFile(DRIVER, 'utf8');
   const ast = ts.createSourceFile('seo-guest-acceptance.mjs', source, ts.ScriptTarget.Latest, true);
   assert.equal(ast.parseDiagnostics.length, 0);
-  const branchStart = source.indexOf("if (SEO_CASE_SCOPE === 'metadata') {");
+  const branchStart = source.indexOf(
+    "if (SEO_CASE_SCOPE === 'metadata' || SEO_CASE_SCOPE === 'narrow') {",
+  );
   const branchEnd = source.indexOf("if (SEO_CASE_SCOPE === 'readability') {", branchStart);
   assert.ok(
     branchStart >= 0 && branchEnd > branchStart,
@@ -341,6 +343,37 @@ test('owned metadata scope runs exactly the T09 fixture door boundary before ret
     /enforces source restoration/,
   );
   assert.match(source, /ownedPages: OWNED_SEO_METADATA_PAGES/);
+});
+
+test('narrow SEO scope runs only the owned 360px observation before returning', async () => {
+  const source = await readFile(DRIVER, 'utf8');
+  const ast = ts.createSourceFile('seo-guest-acceptance.mjs', source, ts.ScriptTarget.Latest, true);
+  assert.equal(ast.parseDiagnostics.length, 0);
+  const branchStart = source.indexOf(
+    "if (SEO_CASE_SCOPE === 'metadata' || SEO_CASE_SCOPE === 'narrow') {",
+  );
+  const branchEnd = source.indexOf("if (SEO_CASE_SCOPE === 'readability') {", branchStart);
+  assert.ok(branchStart >= 0 && branchEnd > branchStart, 'narrow branch precedes broader SEO flow');
+  const branch = source.slice(branchStart, branchEnd);
+  const narrowStart = branch.indexOf("if (SEO_CASE_SCOPE === 'narrow') {");
+  const metadataPathStart = branch.indexOf('assert.equal(candidates.uniqueAlternate.href');
+  assert.ok(narrowStart >= 0 && metadataPathStart > narrowStart);
+  const narrow = branch.slice(narrowStart, metadataPathStart);
+  for (const required of [
+    'Emulation.setDeviceMetricsOverride',
+    'width: 360',
+    'page.goto(fixtureUrl',
+    'narrowSeoLayoutObservation(panel)',
+    'requireNarrowSeoLayout(observation)',
+    "target('T09', 'guest_detail_content_and_controls_reachable_at_360px'",
+    'return;',
+  ])
+    assert.ok(branch.includes(required), `narrow path requires ${required}`);
+  assert.doesNotMatch(narrow, /activateSeoLink/);
+  assert.ok(
+    narrow.indexOf("target('T09', 'guest_detail_content_and_controls_reachable_at_360px'") <
+      narrow.indexOf('return;'),
+  );
 });
 
 test('actual native driver wires independent cases before volatile detail checks', async () => {

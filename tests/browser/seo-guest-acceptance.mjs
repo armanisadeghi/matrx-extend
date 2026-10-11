@@ -714,10 +714,15 @@ async function narrowSeoLayoutObservation(panel) {
       .some((node) => node.textContent.trim() === value);
     const buttons = [...pane.querySelectorAll('button')];
     const allTargets = [...pane.querySelectorAll('button, a[href]')].filter((node) => {
-      const style = getComputedStyle(node), rect = node.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden'
-        && style.display !== 'none' && !node.closest('[inert]');
+      const rect = node.getBoundingClientRect();
+      for (let ancestor = node; ancestor && pane.contains(ancestor); ancestor = ancestor.parentElement) {
+        const style = getComputedStyle(ancestor);
+        if (style.visibility === 'hidden' || style.display === 'none'
+          || Number(style.opacity) === 0 || ancestor.closest('[inert]')) return false;
+      }
+      return rect.width > 0 && rect.height > 0;
     });
+    const visibleButtons = buttons.filter((node) => allTargets.includes(node));
     let unreachableTargets = 0;
     for (const node of allTargets) {
       node.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
@@ -752,8 +757,9 @@ async function narrowSeoLayoutObservation(panel) {
       hreflangLinks: international?.querySelectorAll('a[href]').length ?? 0,
       schemaChips: structuredData?.firstElementChild?.firstElementChild?.children.length ?? 0,
       buttons: {
-        reAudit: buttons.filter((node) => node.textContent.trim() === 'Re-audit').length,
-        copyAudit: buttons.filter((node) => node.getAttribute('aria-label') === 'Copy audit').length,
+        reAudit: visibleButtons.filter((node) => node.textContent.trim() === 'Re-audit').length,
+        copyAudit: visibleButtons.filter((node) => node.getAttribute('aria-label') === 'Copy audit')
+          .length,
       },
       targetCount: allTargets.length,
       unreachableTargets,

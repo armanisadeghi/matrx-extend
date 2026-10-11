@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T02:48:38Z",
+  "updated_at": "2026-10-11T03:55:50Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -7161,17 +7161,20 @@
           "results": {
             "guest": {
               "status": "partial",
-              "run_id": "37994579674",
-              "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
-              "build_version": "0.2.456",
+              "run_id": "38105457992",
+              "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+              "build_version": "0.2.490",
               "resource_valid": true,
-              "detail": "Guest native run passed warm Off/On visible+stored checks and both panel reload observations. During cleanup after the second change, panel reload completed with expected URL, one exact side-panel context, root count 1, runtime ID match, readyState complete and visible target, but Settings tab count was 0; cleanup/restoration did not complete. Candidate duplicate of EXT-D-0167 missing-Settings recovery investigation; cause remains unconfirmed. Reviewed frozen guest run38041519886: 4 passed criteria; native case unverified. Unverified: preference changes its downstream browser behavior.",
+              "detail": "Independent review accepts only a qualified pass for the four guest switch UI/storage Off/On and panel-document reload criteria on current-equivalent development v0.2.490. T16 remains partial because downstream identity/email behavior is unverified. The retained native report has no explicit final baseline sample; runner source asserts cleanup restoration but the initial value and final restoration are not independently evidenced. Signed-out UI, role, organization, browser and profile context were not serialized for independent review.",
               "evidence": [
-                ".research/settings-full-extension-recheck-diagnostics-20261009.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+                "docs/stabilization/resource-journals/hosted-package-38105457992-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-browser-38105457992-1.jsonl",
+                "docs/stabilization/resource-journals/hosted-guest-38105457992-1.jsonl"
               ],
-              "scope": "Hosted lane B run 37994579674; exact frozen development artifact 11643292724, source eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b, v0.2.456; macos-15-intel guest. Member/admin result not tested.",
+              "scope": "Guarded hosted lane A, signed-out guest route as asserted by runner; exact frozen CI development artifact v0.2.490, source 6ed4289da90f19cab72e2d77feb7e845f71c02b7, tree 673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633. Bounded switch/persistence only; no downstream behavior, full extension reload, Store, current-main runtime, member/admin, or full T16 claim.",
               "bounded_subtarget_evidence": [
                 {
                   "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
@@ -7194,8 +7197,33 @@
                   ],
                   "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
                   "passed_criteria_count": 4
+                },
+                {
+                  "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                  "build_version": "0.2.490",
+                  "development_ci_run_id": 38102137319,
+                  "development_artifact_id": 11688890496,
+                  "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+                  "run_id": 38105457992,
+                  "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+                  "hosted_result_artifact_id": 11690340577,
+                  "status": "pass",
+                  "native_case_status": "unverified",
+                  "resource_valid": true,
+                  "unverified": [
+                    "preference changes its downstream browser behavior"
+                  ],
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                    "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                    "docs/stabilization/reports/peer-review-run38105457992-t16.json"
+                  ],
+                  "scope": "Qualified independent PASS for only guest T16 switch Off/On visible+stored state in warm use and after panel-document reload. Overall T16 remains partial. Explicit original-baseline restoration, signed-out UI/role/org/browser/profile serialization, downstream identity/email behavior, full extension reload, Store, member and admin remain unverified.",
+                  "passed_criteria_count": 4,
+                  "independent_review_verdict": "qualified_bounded_pass"
                 }
-              ]
+              ],
+              "independent_review": "docs/stabilization/reports/peer-review-run38105457992-t16.json"
             }
           },
           "linked_defects": [
@@ -7250,6 +7278,141 @@
                 "detail": "Four on/off visible/stored checks pass across warm and panel-document reload. Downstream consumer behavior and full-extension-reload preference behavior unverified. T34 cleanup Settings reacquisition failed and restoration is not proven; this run does not independently expose final restored baseline values for the privacy batch. No Store/current-main/whole-feature health claim."
               },
               "reason": "Preserve preceding guest result when recording hosted run 37994579674."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "partial",
+                "run_id": "38105457992",
+                "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                "build_version": "0.2.490",
+                "resource_valid": true,
+                "detail": "Independent review accepts only a qualified pass for the four guest switch UI/storage Off/On and panel-document reload criteria on current-equivalent development v0.2.490. T16 remains partial because downstream identity/email behavior is unverified. The retained native report has no explicit final baseline sample; runner source asserts cleanup restoration but the initial value and final restoration are not independently evidenced. Signed-out UI, role, organization, browser and profile context were not serialized for independent review.",
+                "evidence": [
+                  "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                  "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+                  "docs/stabilization/resource-journals/hosted-package-38105457992-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38105457992-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38105457992-1.jsonl"
+                ],
+                "scope": "Guarded hosted lane A, signed-out guest route as asserted by runner; exact frozen CI development artifact v0.2.490, source 6ed4289da90f19cab72e2d77feb7e845f71c02b7, tree 673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633. Bounded switch/persistence only; no downstream behavior, full extension reload, Store, current-main runtime, member/admin, or full T16 claim.",
+                "bounded_subtarget_evidence": [
+                  {
+                    "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+                    "build_version": "0.2.459",
+                    "development_ci_run_id": 38036029832,
+                    "development_artifact_id": 11664077690,
+                    "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                    "run_id": 38041519886,
+                    "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+                    "hosted_result_artifact_id": 11665862988,
+                    "status": "partial",
+                    "native_case_status": "unverified",
+                    "resource_valid": true,
+                    "unverified": [
+                      "preference changes its downstream browser behavior"
+                    ],
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                      "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                    ],
+                    "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
+                    "passed_criteria_count": 4
+                  },
+                  {
+                    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                    "build_version": "0.2.490",
+                    "development_ci_run_id": 38102137319,
+                    "development_artifact_id": 11688890496,
+                    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+                    "run_id": 38105457992,
+                    "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+                    "hosted_result_artifact_id": 11690340577,
+                    "status": "pass",
+                    "native_case_status": "unverified",
+                    "resource_valid": true,
+                    "unverified": [
+                      "preference changes its downstream browser behavior"
+                    ],
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                      "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                      "docs/stabilization/reports/peer-review-run38105457992-t16.json"
+                    ],
+                    "scope": "Qualified independent PASS for only guest T16 switch Off/On visible+stored state in warm use and after panel-document reload. Overall T16 remains partial. Explicit original-baseline restoration, signed-out UI/role/org/browser/profile serialization, downstream identity/email behavior, full extension reload, Store, member and admin remain unverified.",
+                    "passed_criteria_count": 4,
+                    "independent_review_verdict": "qualified_bounded_pass"
+                  }
+                ],
+                "result_history": [
+                  {
+                    "mode": "guest",
+                    "result": {
+                      "status": "partial",
+                      "run_id": "37994579674",
+                      "source_sha": "eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b",
+                      "build_version": "0.2.456",
+                      "resource_valid": true,
+                      "detail": "Guest native run passed warm Off/On visible+stored checks and both panel reload observations. During cleanup after the second change, panel reload completed with expected URL, one exact side-panel context, root count 1, runtime ID match, readyState complete and visible target, but Settings tab count was 0; cleanup/restoration did not complete. Candidate duplicate of EXT-D-0167 missing-Settings recovery investigation; cause remains unconfirmed. Reviewed frozen guest run38041519886: 4 passed criteria; native case unverified. Unverified: preference changes its downstream browser behavior.",
+                      "evidence": [
+                        ".research/settings-full-extension-recheck-diagnostics-20261009.json",
+                        "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                        "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                      ],
+                      "scope": "Hosted lane B run 37994579674; exact frozen development artifact 11643292724, source eb5fc114fec75c6be5e0c4e4939aad53cf14ca1b, v0.2.456; macos-15-intel guest. Member/admin result not tested.",
+                      "bounded_subtarget_evidence": [
+                        {
+                          "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
+                          "build_version": "0.2.459",
+                          "development_ci_run_id": 38036029832,
+                          "development_artifact_id": 11664077690,
+                          "tree_sha256": "9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                          "run_id": 38041519886,
+                          "workflow_source_sha": "c7465457fe7c565d5591ac99d9b7f72a379767a0",
+                          "hosted_result_artifact_id": 11665862988,
+                          "status": "partial",
+                          "native_case_status": "unverified",
+                          "resource_valid": true,
+                          "unverified": [
+                            "preference changes its downstream browser behavior"
+                          ],
+                          "evidence": [
+                            "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                            "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                          ],
+                          "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
+                          "passed_criteria_count": 4
+                        }
+                      ]
+                    },
+                    "superseded_at": "2026-10-11T02:57:55Z",
+                    "reason": "Preserve the previous top-level result before recording independently reviewed current-equivalent v0.2.490 run 38105457992."
+                  }
+                ],
+                "independent_review": "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+                "revalidation_history": [
+                  {
+                    "mode": "guest",
+                    "run_id": 38105457992,
+                    "status": "partial",
+                    "build_version": "0.2.490",
+                    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+                    "evidence": [
+                      "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                      "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                      "docs/stabilization/reports/peer-review-run38105457992-t16.json"
+                    ],
+                    "independent_review": "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+                    "resource_valid": true,
+                    "detail": "Four switch UI/storage warm and panel-document reload criteria received a qualified independent PASS. T16 remains partial; downstream identity/email behavior and explicit restoration proof remain open.",
+                    "release_scope": "Frozen unpublished development artifact only; no full extension reload, Store, current-main runtime, member/admin or overall Settings acceptance."
+                  }
+                ]
+              },
+              "superseded_at": "2026-10-11T02:57:55Z",
+              "reason": "Preserve the previous top-level guest result before recording independently reviewed current-equivalent v0.2.490 run 38105457992."
             }
           ],
           "attempt_history": [
@@ -7323,6 +7486,23 @@
               "independent_review": "4a5a8e98",
               "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            },
+            {
+              "mode": "guest",
+              "run_id": 38105457992,
+              "status": "partial",
+              "build_version": "0.2.490",
+              "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+              "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+              "evidence": [
+                "docs/stabilization/evidence/settings-controls-hosted/run38105457992/receipt.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-hosted/run38105457992/native-report.sanitized.json",
+                "docs/stabilization/reports/peer-review-run38105457992-t16.json"
+              ],
+              "independent_review": "docs/stabilization/reports/peer-review-run38105457992-t16.json",
+              "resource_valid": true,
+              "detail": "Four switch UI/storage warm and panel-document reload criteria received a qualified independent PASS. T16 remains partial; downstream identity/email behavior and explicit restoration proof remain open.",
+              "release_scope": "Frozen unpublished development artifact only; no full extension reload, Store, current-main runtime, member/admin or overall Settings acceptance."
             }
           ]
         },
@@ -22144,18 +22324,18 @@
               "run_id": "scrape-save-native-5-browser",
               "build_variant": "development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
               "verified_at": "2026-10-10T01:27:29Z",
-              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl",
+              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl; docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json; docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
               "status": "partial",
               "verified_substeps": [
                 "Named Source 5f25b273-3f3b-4708-808b-b7a290c688cf (\u201cEXT-D-0187 Native Save 5 2026-10-10\u201d) persisted and independently reopened at its Source page with Saved state, page heading, full unique URL and captured content.",
-                "The same Source was listed after reopening the dedicated Project Attach sources panel, confirming persisted association with EXT-D-0187 TEST PROJECT \u2014 native retest (4484ab9c-bb04-4adc-a894-df2e9f18960f)."
+                "The same Source was listed after reopening the dedicated Project Attach sources panel, confirming persisted association with EXT-D-0187 TEST PROJECT \u2014 native retest (4484ab9c-bb04-4adc-a894-df2e9f18960f).",
+                "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified."
               ],
               "remaining_criteria": [
-                "Save without a destination, duplicate-save behavior, precise confirmation latency, controlled refusal/retry, guest/admin behavior, and full T04 coverage remain unverified.",
-                "Save Source UI changes committed in 3e3c2770c remain unverified; the loaded artifact was v0.2.457 at source 7cf16860846756eb0f50cd6d2595b4d7529dda05.",
-                "Dialog URL display, Project-list scrolling, and Tab/Shift+Tab containment and wrap remain unverified."
+                "Only the member/no-destination duplicate-rename controlled 503 refusal and 200 retry subtarget is newly covered; other refusal paths, destinations, Library/File elsewhere, Project display, precise confirmation latency, guest/admin, Store/current-main and full case coverage remain open.",
+                "Project search and scroll-to-late-result acceptance and the remaining Save Source destination flows are still unverified."
               ],
-              "detail": "Resource-valid native member run confirmed exact loaded extension identity, saved Source persistence, and persisted Project association after reopening the Project Attach sources panel. These are bounded substeps only; EXT-D-0187 remains in-fix. See the native receipt for evidence limits. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix.",
+              "detail": "Resource-valid native member run confirmed exact loaded extension identity, saved Source persistence, and persisted Project association after reopening the Project Attach sources panel. These are bounded substeps only; EXT-D-0187 remains in-fix. See the native receipt for evidence limits. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 adds bounded no-destination duplicate rename refusal/retry evidence on unpublished development v0.2.490: HTTP 503 preserved the original name and draft, Retry completed with HTTP 200, one renamed Source and zero associations were independently read, reopened content matched, all resource finals were valid, and cleanup was verified. This does not promote the case; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "bounded_subtarget_evidence": [
                 {
                   "run_id": "38044665604",
@@ -22169,6 +22349,25 @@
                     "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
                   ],
                   "limits": "Member no-destination substep only; Project/Library/multiple destinations, duplicate/refusal/retry, guest/admin, Store/current-main, and full T04/T29 remain unverified."
+                },
+                {
+                  "run_id": "38107457332",
+                  "status": "bounded-pass",
+                  "destination_mode": "none",
+                  "save_scope": "member duplicate rename with controlled refusal and retry",
+                  "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+                  "product_artifact": "unpublished CI development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+                  "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
+                  "reviewed_at": "2026-10-11T03:23:40Z",
+                  "evidence": [
+                    "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+                    "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+                  ],
+                  "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
+                  "resource_finals_valid": true,
+                  "credential_cleanup_verified": "The exact temporary GitHub secret name is absent; the known local one-time link file is absent from temp/workspace locations; no credential values were persisted.",
+                  "verified": "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified.",
+                  "limits": "Member and destination-none duplicate rename/refusal-retry only. T04/T29 remain partial and EXT-D-0187 remains in-fix. No overall feature pass or closure; other refusal paths, destinations/Library/File elsewhere, Project display, latency, guest/admin, current-main and Store behavior remain open."
                 }
               ]
             },
@@ -22258,6 +22457,25 @@
               ],
               "detail": "Real member/non-admin and selected organization verified. First custom-named no-destination save persisted with independent Source readback and zero associations. Same-article duplicate landing returned HTTP 201 with reuse and same Source; one HTTP 200 rename succeeded and persisted. Exactly one Source remained, zero associations, reopened UI matched, and run-owned Source/association cleanup was verified. All three resource finals are valid with resource_invalid=false and child exit 0. This is bounded duplicate-rename evidence only; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "independent_review": "docs/stabilization/reports/peer-review-run38057564851.json"
+            },
+            {
+              "at": "2026-10-11T03:23:40Z",
+              "mode": "member",
+              "run_id": "38107457332",
+              "status": "bounded-partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "destination_mode": "none",
+              "save_scope": "duplicate-rename-retry",
+              "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+              "product_artifact": "unpublished development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+              "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
+              "evidence": [
+                "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+                "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+              ],
+              "detail": "Independent native review accepts this bounded member/no-destination duplicate-rename refusal/retry subtarget. HTTP 503 refusal preserved the original saved name and retry draft; the user-visible retry completed with HTTP 200. Independent service reads confirmed one renamed Source with the same ID and zero associations; reopened UI name/URL/content matched. All package/browser/guest resource finals are valid and cleanup is verified. The run-owned Source was soft-deleted and associations removed; temporary GitHub secret and local one-time link are absent. T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+              "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
             }
           ]
         },
@@ -25584,18 +25802,18 @@
               "run_id": "scrape-save-native-5-browser",
               "build_variant": "development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded",
               "verified_at": "2026-10-10T01:27:29Z",
-              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl",
+              "evidence": "docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl; docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json; docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
               "status": "partial",
               "verified_substeps": [
                 "Save Source exposed editable name and place controls; Projects candidates appeared after choosing Projects.",
-                "Selecting EXT-D-0187 TEST PROJECT \u2014 native retest and saving produced named Source 5f25b273-3f3b-4708-808b-b7a290c688cf; after reopening the Project Attach sources panel, that Source was listed, confirming persisted association."
+                "Selecting EXT-D-0187 TEST PROJECT \u2014 native retest and saving produced named Source 5f25b273-3f3b-4708-808b-b7a290c688cf; after reopening the Project Attach sources panel, that Source was listed, confirming persisted association.",
+                "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified."
               ],
               "remaining_criteria": [
-                "Scroll behavior remains unverified because the attempted scroll produced no accessibility-state change; keyboard movement to the next row is not proof of focus containment or scroll reachability.",
-                "The dialog did not separately display the URL; URL display added in Save Source UI commit 3e3c2770c is unverified on a current exact artifact.",
-                "Duplicate, no-destination, search-to-late-result, multi-target, remove, Library, refusal/retry, File elsewhere, responsive layout, focus containment/wrap, and admin paths remain unverified."
+                "This run covers member/no-destination duplicate rename refusal/retry only. Scroll-to-late-result, search, multi-target/remove, Library/no-Library, File elsewhere, responsive layout, focus containment/wrap and admin behavior remain unverified.",
+                "The run does not establish full T29 or EXT-D-0187 acceptance; guest/member/admin, Store/current-main and remaining destination paths are open."
               ],
-              "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix.",
+              "detail": "Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 adds bounded no-destination duplicate rename refusal/retry evidence on unpublished development v0.2.490: HTTP 503 preserved the original name and draft, Retry completed with HTTP 200, one renamed Source and zero associations were independently read, reopened content matched, all resource finals were valid, and cleanup was verified. This does not promote the case; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "bounded_subtarget_evidence": [
                 {
                   "run_id": "38044665604",
@@ -25609,6 +25827,25 @@
                     "docs/stabilization/evidence/scrape-save-member/run38044665604/resource-journals/hosted-guest-38044665604-1.jsonl"
                   ],
                   "limits": "Member no-destination substep only; Project/Library/multiple destinations, duplicate/refusal/retry, guest/admin, Store/current-main, and full T04/T29 remain unverified."
+                },
+                {
+                  "run_id": "38107457332",
+                  "status": "bounded-pass",
+                  "destination_mode": "none",
+                  "save_scope": "member duplicate rename with controlled refusal and retry",
+                  "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+                  "product_artifact": "unpublished CI development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+                  "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
+                  "reviewed_at": "2026-10-11T03:23:40Z",
+                  "evidence": [
+                    "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+                    "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+                  ],
+                  "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json",
+                  "resource_finals_valid": true,
+                  "credential_cleanup_verified": "The exact temporary GitHub secret name is absent; the known local one-time link file is absent from temp/workspace locations; no credential values were persisted.",
+                  "verified": "Member/non-admin identity and selected organization were verified. Duplicate landing returned HTTP 201 and reused the same Source. A controlled first rename refusal returned HTTP 503 while the original name remained persisted and the retry draft remained available; Retry cleared the error/draft and a second rename returned HTTP 200. Independent reads confirmed one renamed Source with the same ID and zero associations; reopened name, URL and captured article content matched. Run-owned Source cleanup and association cleanup were verified.",
+                  "limits": "Member and destination-none duplicate rename/refusal-retry only. T04/T29 remain partial and EXT-D-0187 remains in-fix. No overall feature pass or closure; other refusal paths, destinations/Library/File elsewhere, Project display, latency, guest/admin, current-main and Store behavior remain open."
                 }
               ]
             },
@@ -25701,6 +25938,25 @@
               ],
               "detail": "Real member/non-admin and selected organization verified. First custom-named no-destination save persisted with independent Source readback and zero associations. Same-article duplicate landing returned HTTP 201 with reuse and same Source; one HTTP 200 rename succeeded and persisted. Exactly one Source remained, zero associations, reopened UI matched, and run-owned Source/association cleanup was verified. All three resource finals are valid with resource_invalid=false and child exit 0. This is bounded duplicate-rename evidence only; T04/T29 remain partial and EXT-D-0187 remains in-fix.",
               "independent_review": "docs/stabilization/reports/peer-review-run38057564851.json"
+            },
+            {
+              "at": "2026-10-11T03:23:40Z",
+              "mode": "member",
+              "run_id": "38107457332",
+              "status": "bounded-partial",
+              "resource_valid": true,
+              "new_acceptance_credit": true,
+              "destination_mode": "none",
+              "save_scope": "duplicate-rename-retry",
+              "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+              "product_artifact": "unpublished development v0.2.490; CI 38106946361/artifact 11690348157; source 5b01a35fd5a15aadbf95062b411e92e833ce0292; tree fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+              "hosted_result_artifact": "11690605351; sha256 255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847",
+              "evidence": [
+                "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+                "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
+              ],
+              "detail": "Independent native review accepts this bounded member/no-destination duplicate-rename refusal/retry subtarget. HTTP 503 refusal preserved the original saved name and retry draft; the user-visible retry completed with HTTP 200. Independent service reads confirmed one renamed Source with the same ID and zero associations; reopened UI name/URL/content matched. All package/browser/guest resource finals are valid and cleanup is verified. The run-owned Source was soft-deleted and associations removed; temporary GitHub secret and local one-time link are absent. T04/T29 remain partial and EXT-D-0187 remains in-fix.",
+              "independent_review": "docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json"
             }
           ]
         },
@@ -26148,9 +26404,10 @@
             "scrape-save-native-5",
             "scrape-save-native-5-browser",
             "38043392549",
-            "38044665604"
+            "38044665604",
+            "38107457332"
           ],
-          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. Initial native-5 ended resource-invalid at 19.9955GiB before Save/write. Follow-up native-5-browser was resource-valid and confirmed named Source persistence plus its Project association, but only bounded substeps passed; dialog URL, scrolling, focus containment, other save routes, and full T04/T29 remain unverified. Save Source UI changes in 3e3c2770c need a current exact-artifact retest. The D187-specific hosted driver is committed at a8839d016/94a281c8f and awaits green exact-source CI and a member-lane run. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects and focus acceptance remain unverified; association has only bounded native-5-browser evidence. Hosted-lane feasibility: docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json. Latest EXT-D-0187 hosted member run 38043392549 (workflow source 94d7a148) is infrastructure-invalid with zero product credit: `owned_cdp_endpoint_timeout` at inputs/cdp_connect before auth or Save, destination mode none; guest resource journal ended CPU pending/invalid exit 3. The no-destination path remains unverified. Latest run 38044665604 (workflow c6ff0838d; frozen development v0.2.459) independently verified one member no-destination Save: custom-named Source persisted, zero association edges read, original read and reopened content matched, cleanup verified. Bounded substep only; T04/T29 remain partial and EXT-D-0187 remains in-fix."
+          "retest_status": "partial: actual headed244 member warm capture, result tabs, image/video/link controls and deep capture observed; undefined empty-media assertion blocked reload. Eight partial cases, zero full case passes. No whole-feature health. EXT-D-0187: native-3 valid bounded title-persistence and wheel/Page_Down selection substeps; modal focus retest-fail, association unverified. Native-4 valid but exact loaded focus build could not be reloaded/verified via allowed CUA. Initial native-5 ended resource-invalid at 19.9955GiB before Save/write. Follow-up native-5-browser was resource-valid and confirmed named Source persistence plus its Project association, but only bounded substeps passed; dialog URL, scrolling, focus containment, other save routes, and full T04/T29 remain unverified. Save Source UI changes in 3e3c2770c need a current exact-artifact retest. The D187-specific hosted driver is committed at a8839d016/94a281c8f and awaits green exact-source CI and a member-lane run. Local release v0.2.457 at 7cf168608 passed 2281 tests/323 files under valid release-4 (journal commit 652fb00b1); receipt .output/release-receipt.json tree SHA256 706dfc66d283741ae23047c55bd0c08fca79bb3368063e17366060a37318b83d. This is a pushed Git/local bundle release, not Web Store submission or native acceptance; final one-click Projects and focus acceptance remain unverified; association has only bounded native-5-browser evidence. Hosted-lane feasibility: docs/stabilization/reports/d187-hosted-lane-feasibility-20261009.json. Latest EXT-D-0187 hosted member run 38043392549 (workflow source 94d7a148) is infrastructure-invalid with zero product credit: `owned_cdp_endpoint_timeout` at inputs/cdp_connect before auth or Save, destination mode none; guest resource journal ended CPU pending/invalid exit 3. The no-destination path remains unverified. Earlier run 38044665604 (workflow c6ff0838d; frozen development v0.2.459) independently verified one member no-destination Save: custom-named Source persisted, zero association edges read, original read and reopened content matched, cleanup verified. Bounded substep only; T04/T29 remain partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 on unpublished development v0.2.490 (CI 38106946361/artifact 11690348157; workflow source 5b01a35f) accepts only the no-destination duplicate-rename controlled refusal/retry subtarget: HTTP 503 preserved the saved name and draft, Retry returned HTTP 200, one same-ID renamed Source and zero associations were independently read, reopened content matched, resource finals and cleanup were valid, and temporary GitHub secret/local link absence was verified. Member Scrape surface and EXT-D-0187 stay partial/in-fix pending the original reproduction and surrounding-case coverage; other destinations, guest/admin, Store/current-main and full-surface acceptance remain open."
         },
         "admin": {
           "test_status": "unverified",
@@ -28303,10 +28560,10 @@
                 "guest_broken_social_preview_shows_failure_fallback",
                 "guest_manual_readability_matches_two_known_texts",
                 "guest_airbnb_hreflang_and_schema_doors_match_public_dom",
-                "guest_owned_hreflang_article_doors_match_fixture_dom"
+                "guest_owned_hreflang_article_doors_match_fixture_dom",
+                "guest_detail_content_and_controls_reachable_at_360px"
               ],
               "unverified_dimensions": [
-                "360px narrow-panel layout and horizontal overflow",
                 "Wikipedia hreflang/schema doors remain unverified: its live DOM had no unique openable candidates",
                 "remaining detail controls",
                 "readability calculation beyond the two known-text fixtures",
@@ -28342,7 +28599,14 @@
                 "docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/receipt.sanitized.json",
                 "docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/native-report.sanitized.json",
                 "docs/stabilization/evidence/guest-seo-wikipedia/run38054415137/resource-finals.sanitized.json",
-                "docs/stabilization/reports/guest-seo-run38054415137-adjudication.json"
+                "docs/stabilization/reports/guest-seo-run38054415137-adjudication.json",
+                "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/seo-guest-acceptance.json",
+                "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/review-notes.json",
+                "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-package-38107414974-1.jsonl",
+                "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-browser-38107414974-1.jsonl",
+                "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-guest-38107414974-1.jsonl",
+                "docs/stabilization/reports/seo-t09-native-peer-20261011.json",
+                "docs/stabilization/runs/dev-artifact-promotion-20261011-01.json"
               ],
               "release_scope": "Bounded controlled guest native observations for EXT-F-1008-T09 on frozen unpublished development artifact from 987a3e08d811c03aa9fc2b82a92d4e51cd45d29a; this run contributes only the listed subtargets. Workflow driver checkout 0d6e69aa7d5fdf9c8f819ac41a5d8f219f29299b. Other cases, remaining dimensions, member/admin modes, current product source and Store behavior are not inferred. Supplemental bounded result: Independent peer A PASS/B PASS for only guest T09 broken social-preview fallback: exact image request 404, changed audit title, explanatory fallback visible, no-image fallback absent, original title/image metadata restored. Hosted run 38024829250 driver fbdbff7374a0b4f93c791ffd7036452ff41f4c35; frozen unpublished dev0.2.458 CI38023323516 source0c1ceda533c2e78e68a006a4a407741d6af8cba1 artifact11659740949 tree a132229fccadc573a8e7540c428b0d4479d5b06416aebbb913a7ad10e5b22a88; all three resource finals valid. Existing subtargets retain their earlier evidence; T09 remains partial with all other gaps retained. No full SEO, current-main, member/admin or Store claim. Supplemental bounded readability result: hosted run 38034766398 independently reviewed PASS for only guest EXT-F-1008-T09 guest_manual_readability_matches_two_known_texts; exact known-text scores and bands matched, both fixture DOM restorations and original-page re-audit matched. Frozen unpublished development artifact source 22d3eed7ff6d8ecd10c8c5b910acd7059d5f033c (CI 38032654367, artifact 11663251990); workflow checkout 6b286a60787da646a9e35c01eb378f9191ed7e60. Three resource finals valid. Only these two known texts are established; general readability behavior, remaining T09, other cases, current-main, member/admin and Store remain unverified. Supplemental bounded result: run 38058774504 independently peer-reviewed PASS for only guest_owned_hreflang_article_doors_match_fixture_dom on frozen development v0.2.466 product source 99bc43a89 (CI 38058143883/artifact 11672166361; workflow checkout cea6702df; only pnpm-lock.yaml differs). The source DOM had exactly one hreflang es and one Article schema candidate; trusted activations reached the expected destinations and source page remained unchanged after each. All three resource finals valid. This adds one owned-fixture target only; current-main 6bca behavior remains unverified, and Wikipedia/other T09 paths, all other guest SEO, member/admin and Store behavior remain open.",
               "bounded_subtarget_evidence": [
@@ -28492,9 +28756,33 @@
                   ],
                   "independent_review": "docs/stabilization/reports/peer-review-run38058774504.json",
                   "detail": "Independent peer PASS for this one owned-fixture T09 target. The native source DOM had one hreflang es candidate and one Article schema candidate; the SEO detail values matched, trusted activations reached the expected destinations, and the source page remained unchanged after both doors. All three resource finals are valid. The overall native report remains partial with only this one selected target; Wikipedia and other SEO behavior remain unverified. Frozen product source 99bc43a89 is not current-main source 6bca and establishes no member/admin, Store, or full SEO behavior."
+                },
+                {
+                  "subtarget": "guest_detail_content_and_controls_reachable_at_360px",
+                  "status": "pass",
+                  "new_acceptance_credit": true,
+                  "resource_valid": true,
+                  "run_id": 38107414974,
+                  "source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+                  "build_version": "0.2.490",
+                  "development_ci_run_id": 38106946361,
+                  "development_artifact_id": 11690348157,
+                  "tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+                  "hosted_result_artifact_id": 11689584250,
+                  "independent_review": "docs/stabilization/reports/seo-t09-native-peer-20261011.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/seo-guest-acceptance.json",
+                    "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/review-notes.json",
+                    "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-package-38107414974-1.jsonl",
+                    "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-browser-38107414974-1.jsonl",
+                    "docs/stabilization/evidence/guest-seo-t09-narrow-360/run38107414974/hosted-guest-38107414974-1.jsonl",
+                    "docs/stabilization/reports/seo-t09-native-peer-20261011.json",
+                    "docs/stabilization/runs/dev-artifact-promotion-20261011-01.json"
+                  ],
+                  "detail": "Independent native peer PASS_BOUNDED for only the owned guest 360px T09 detail-content-and-controls target on exact CI source 5b01a35 (development v0.2.490; CI 38106946361/artifact 11690348157). Assertions covered the active SEO pane at 360px, no document/pane horizontal overflow, required detail groups, hreflang/schema doors, visible Re-audit/Copy controls, and visible/reachable/hit-testable pane targets with zero unreachable targets. All package/browser/guest resource finals were valid. Auditability limit: report retains three metadata booleans but omits numeric viewport/scroll widths and target counts, and screenshots do not show the SEO detail pane. No independent reproduction, full T09, other SEO cases, member/admin, or Store claim."
                 }
               ],
-              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed. Reviewed hosted run 38052238895 adds only the bounded Airbnb hreflang/schema-door target; 25 native targets passed and the Wikipedia door target remains unverified. The other selected target rows are re-observations with no new credit. T09, all six guest SEO cases, and the feature remain partial. Independently reviewed run 38058774504 adds one owned-fixture T09 target on frozen v0.2.466 source 99bc43a89: unique hreflang es and Article candidates matched the displayed SEO doors, trusted activations reached expected destinations, and the source page remained unchanged after each. Resource finals valid. This is not current-main 6bca evidence; T09 and guest SEO remain partial, and Wikipedia remains unverified. Independent repeat confirmation: run 38060126213 was reviewed PASS for the same owned-fixture guest T09 target on frozen v0.2.466 product source 998cfc86 (CI 38059544877/artifact 11672931022); workflow source 663f8bb2. All three resource finals are valid. This confirms the existing target on the newer frozen artifact but adds no distinct subtarget credit. Current-main 663 product bytes, Wikipedia, remaining SEO dimensions, other cases, member/admin, and Store behavior remain unverified."
+              "detail": " Reviewed frozen guest controlled run38041517954 adds 6 passing named subtargets. Remaining case dimensions and prior evidence keep their existing bounds; this is not a full case or SEO pass. Reviewed full guest SEO run 38045276587 adds five passing T09 subtargets and one unverified hreflang/schema-door target. Nineteen targets duplicate controlled run 38041517954 and receive no additional credit. Frozen development v0.2.459 only; case remains partial. Three sanitized completed resource journals were later recovered and independently reviewed by the journal-recovery addendum; the original peer review remains immutable and scoped to its earlier evidence. No product credit changed. Reviewed hosted run 38052238895 adds only the bounded Airbnb hreflang/schema-door target; 25 native targets passed and the Wikipedia door target remains unverified. The other selected target rows are re-observations with no new credit. T09, all six guest SEO cases, and the feature remain partial. Independently reviewed run 38058774504 adds one owned-fixture T09 target on frozen v0.2.466 source 99bc43a89: unique hreflang es and Article candidates matched the displayed SEO doors, trusted activations reached expected destinations, and the source page remained unchanged after each. Resource finals valid. This is not current-main 6bca evidence; T09 and guest SEO remain partial, and Wikipedia remains unverified. Independent repeat confirmation: run 38060126213 was reviewed PASS for the same owned-fixture guest T09 target on frozen v0.2.466 product source 998cfc86 (CI 38059544877/artifact 11672931022); workflow source 663f8bb2. All three resource finals are valid. This confirms the existing target on the newer frozen artifact but adds no distinct subtarget credit. Current-main 663 product bytes, Wikipedia, remaining SEO dimensions, other cases, member/admin, and Store behavior remain unverified. Independent hosted run 38107414974 plus the native peer review passes only guest_detail_content_and_controls_reachable_at_360px on exact development v0.2.490 source 5b01a35 (CI 38106946361/artifact 11690348157); the 360px dimension is covered. Peer auditability remains limited because numeric layout/target counts and a detail-pane screenshot were not retained, and no independent reproduction occurred. Other T09 dimensions, guest SEO cases, member/admin and Store remain open."
             }
           },
           "result_history": [
@@ -29771,9 +30059,10 @@
             "37995400576",
             "38016503649",
             "38041517954",
-            "38045276587"
+            "38045276587",
+            "38107414974"
           ],
-          "retest_status": "Partial surface. Reviewed frozen129 controlled guest run38041517954 passes 19 named subtargets across T01/T02/T03/T07/T09/T14; all deferred criteria remain open. Earlier known-text readability evidence retains its own frozen-artifact provenance. No full SEO/current-main/Store/member/admin promotion. Reviewed run 38045276587 adds five new passing guest T09 targets and one unverified hreflang/schema-door target; its 19 repeated targets are duplicates of 38041517954. No duplicate credit; all six guest SEO cases and feature remain partial. Frozen v0.2.459, not current-main or Store. Three sanitized completed journals were later recovered and independently reviewed by a separate addendum; the original peer review remains immutable."
+          "retest_status": "Partial surface. Reviewed frozen129 controlled guest run38041517954 passes 19 named subtargets across T01/T02/T03/T07/T09/T14; all deferred criteria remain open. Earlier known-text readability evidence retains its own frozen-artifact provenance. No full SEO/current-main/Store/member/admin promotion. Reviewed run 38045276587 adds five new passing guest T09 targets and one unverified hreflang/schema-door target; its 19 repeated targets are duplicates of 38041517954. No duplicate credit; all six guest SEO cases and feature remain partial. Frozen v0.2.459, not current-main or Store. Three sanitized completed journals were later recovered and independently reviewed by a separate addendum; the original peer review remains immutable. Reviewed hosted run 38107414974 on exact development v0.2.490 source 5b01a35 (CI 38106946361/artifact 11690348157) and independent native peer report PASS_BOUNDED only for guest T09 guest_detail_content_and_controls_reachable_at_360px. The narrow-panel dimension is covered; the feature cell and T09 remain partial. Report omits numeric layout/target counts, screenshots do not show the SEO pane, and no independent reproduction occurred. All other cases/dimensions, member/admin and Store behavior remain unverified; on-disk promotion receipt records Chrome-loaded state as unverified."
         },
         "member": {
           "test_status": "unverified",
@@ -40775,6 +41064,15 @@
           "render_condition": "DataView mounts PageIdentityNotice unconditionally at src/features/data/DataView.tsx:448; the notice returns null when tab.pageKey is truthy and otherwise displays tab.identityError or the checking message with Retry. Clicking Retry invokes refreshActiveTabIdentity.",
           "test_design_status": "unverified",
           "test_design_item": "Verify the Data placement's Retry lookup, explicit unresolved error, recovery and current tab/document identity in EXT-F-2005-T05; executable native failure/recovery fixture is design-needed."
+        },
+        {
+          "id": "EXT-F-2005-C33",
+          "label": "Observe automatic extraction no-match state",
+          "action": "See the visible no-match result when automatic extraction finds no matching data",
+          "source_anchor": "src/features/data/DataView.tsx:513-538",
+          "render_condition": "A saved pattern is URL-matched and its automatic run record has status no_match.",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify the automatic no_match badge and explanatory text in EXT-F-2005-T08 for applicable signed-in roles."
         }
       ],
       "source_anchors": [
@@ -40792,7 +41090,8 @@
         "src/entrypoints/content.ts:1",
         "src/lib/data-pattern/picker.ts:1",
         "src/lib/data-pattern/picker.ts:23",
-        "src/components/CopyMenu.tsx:91"
+        "src/components/CopyMenu.tsx:91",
+        "src/hooks/use-auto-extract.ts:49"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -41342,11 +41641,130 @@
             "recovery",
             "warm"
           ]
+        },
+        {
+          "id": "EXT-F-2005-T07",
+          "title": "Picker hover, Clear and selected-field Cancel",
+          "control_ids": [
+            "EXT-F-2005-C18",
+            "EXT-F-2005-C19",
+            "EXT-F-2005-C21",
+            "EXT-F-2005-C22"
+          ],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Use a genuine guest, member or admin profile on a controlled ordinary HTTPS page with at least two visually distinct page elements and a ready Data page identity. For member/admin, record the selected organization; this procedure performs no save."
+          ],
+          "steps": [
+            "Open Data and start field picking. Move the pointer over a page element and verify the highlight tracks it; click the element and verify its entry appears in the picker overlay.",
+            "Click Clear. Verify the picked entry disappears and the picker overlay list is empty.",
+            "Start a fresh pick, click one page element, then click the picker overlay Cancel. Verify the overlay closes and Data has no selected fields. Do not save a pattern.",
+            "Repeat the hover, Clear and selected-then-Cancel sequence in guest, member and admin profiles. Keep the existing guest empty-picker Cancel observation in T01/run 38050967096 scoped to that prior bounded action; it does not count for this selected-field case."
+          ],
+          "expected": [
+            "Hover visibly tracks the page element, and clicking adds its field entry to the picker overlay.",
+            "Clear removes all currently selected picker entries.",
+            "Cancel after selection exits without returning that selected field to Data. No pattern write occurs.",
+            "Each role result is recorded independently. The existing guest empty-picker Cancel pass does not establish these new interaction results."
+          ],
+          "dimensions": [
+            "guest",
+            "member",
+            "admin",
+            "hover-preview",
+            "picker-clear",
+            "selected-picker-cancel",
+            "no-save"
+          ],
+          "results": {
+            "guest": {
+              "status": "partial",
+              "run_id": "38109155658",
+              "source_sha": "41976eec14af4964daad9113402316a9559cdb4c",
+              "development_ci_run_id": 38108390956,
+              "development_artifact_id": 11690966917,
+              "hosted_result_artifact_id": 11691467347,
+              "build_version": "0.2.490",
+              "build_kind": "native_ci_development_artifact",
+              "tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+              "resource_valid": true,
+              "independent_review": "docs/stabilization/reports/data-t07-native-peer-20261011.json",
+              "evidence": [
+                "docs/stabilization/evidence/guest-data-t07/run38109155658/receipt.sanitized.json",
+                "docs/stabilization/reports/data-t07-native-peer-20261011.json"
+              ],
+              "detail": "Independently reviewed bounded guest T07 subtargets on imported development artifact v0.2.490: C18 hover highlight tracked two distinct fixture elements, C22 Clear removed the selected picker entry, and C21 Cancel after selecting a field restored the Data panel baseline. Only observations.t07 and its t07_clear result in the hosted driver report\u2019s T01 envelope are credited; C19 is not credited. The native driver observed zero non-GET /wbx_pattern requests during the action window, with no backend persistence query. Archived screenshots omit picker states; post-run absence was not independently verified. Remaining T07 criteria, reload, member/admin and full Data remain unverified."
+            },
+            "member": {
+              "status": "unverified"
+            },
+            "admin": {
+              "status": "unverified"
+            }
+          },
+          "verification_status": "partial-bounded-guest-subtargets; remaining T07 criteria, reload and signed-in roles unverified"
+        },
+        {
+          "id": "EXT-F-2005-T08",
+          "title": "Automatic extraction running, success, no-match and failure states",
+          "control_ids": [
+            "EXT-F-2005-C29",
+            "EXT-F-2005-C30",
+            "EXT-F-2005-C31",
+            "EXT-F-2005-C33"
+          ],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Use a genuine member or admin profile with a recorded organization, a controlled HTTPS page, and disposable saved patterns/fixtures that can produce automatic running, successful rows, no matching data, and extraction failure outcomes. Guest is not applicable: src/hooks/use-auto-extract.ts returns before starting automatic extraction when signed out (lines 49-53)."
+          ],
+          "steps": [
+            "As a member, open the controlled page with a matching saved pattern whose fixture holds completion long enough to observe the automatic running state.",
+            "Release the successful fixture and observe the automatic success state and rendered rows.",
+            "Open a controlled matched-pattern page whose extraction yields no matching data; observe the automatic no_match badge and explanatory text.",
+            "Open a controlled matched-pattern page whose extraction fails; observe the automatic failure badge/error and verify the manual Extract/Re-run action remains available when page identity is ready.",
+            "Repeat these applicable states as admin. Do not claim that auto-extracted rows have a CopyMenu; the Data view renders those rows as JSON text."
+          ],
+          "expected": [
+            "The automatic running, success, no_match and failure views correspond to their respective controlled fixture outcomes.",
+            "Success shows the automatic rows; no_match has its own visible badge and explanatory text; failure shows an error and leaves the manual action available when page identity is ready.",
+            "Auto-extracted rows are rendered as JSON text. No row-copy menu result is asserted.",
+            "Member and admin results remain independent. Guest is explicitly not applicable to this automatic path because the signed-in guard prevents the hook from starting."
+          ],
+          "dimensions": [
+            "member",
+            "admin",
+            "auto-running",
+            "auto-success",
+            "auto-no-match",
+            "auto-failure",
+            "manual-retry"
+          ],
+          "results": {
+            "guest": {
+              "status": "not-applicable",
+              "detail": "Signed-out useAutoExtract returns before starting the automatic extraction path; this does not waive guest Data or access-control checks."
+            },
+            "member": {
+              "status": "unverified"
+            },
+            "admin": {
+              "status": "unverified"
+            }
+          },
+          "verification_status": "unverified"
         }
       ],
       "cells": {
         "guest": {
-          "test_status": "unverified",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0053",
             "EXT-D-0054"
@@ -41359,13 +41777,14 @@
             "38049410816",
             "38050967096",
             "38071036836",
-            "38072894998"
+            "38072894998",
+            "38109155658"
           ],
-          "retest_status": "Independently reviewed hosted run 38072894998 passes bounded guest EXT-F-2005-T01 on exact v0.2.471 Store ZIP candidate with temporary key adaptation. Native assertions verify Cancel without changed selection or pattern writes, two distinct previews/selections, and the unauthenticated save gate with zero pre-auth pattern writes. Guest Data feature remains unverified; signed-in persistence, other cases/controls, member/admin and published Store installation remain open.",
+          "retest_status": "Guest T01 remains a bounded pass from run 38072894998. Independently reviewed run 38109155658 adds only bounded guest T07 C18 hover, C22 Clear and C21 selected-field Cancel subtargets on exact v0.2.490 development artifact. T07 and full Guest Data remain partial; C19, other cases/controls, reload, signed-in persistence, member/admin and published Store installation remain unverified.",
           "retest_evidence": {
-            "run_id": "38072894998",
-            "report": "docs/stabilization/reports/peer-review-run38072894998.json",
-            "scope": "Bounded guest EXT-F-2005-T01 only; exact v0.2.471 Store ZIP candidate key-adapted and loaded unpacked. No full Guest Data, persistence, member/admin or published Store-install credit."
+            "run_id": "38109155658",
+            "report": "docs/stabilization/reports/data-t07-native-peer-20261011.json",
+            "scope": "Bounded guest T07 subtargets C18, C21 and C22 only on exact v0.2.490 development artifact. C19, remaining T07 criteria, reload, member/admin, backend persistence query and Store-installed behavior receive no credit."
           }
         },
         "member": {

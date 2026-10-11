@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "run_id": "dev-artifact-promotion-20261011-01",
+  "status": "promoted_on_disk",
+  "observed_at": "2026-10-11T03:07:43.524Z",
+  "artifact": {
+    "sourceSha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+    "runId": 38106946361,
+    "runAttempt": 1,
+    "artifactId": 11690348157,
+    "githubArtifactDigest": "sha256:0af4b6dd6d44f278d810c0c82964be46d4f29ef129f29d109f2b4a532957717f",
+    "treeSha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+    "version": "0.2.490",
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "eligibleStore": false,
+    "publish_state": "not_published"
+  },
+  "promotion": {
+    "compatibility": "exact-source",
+    "mainSha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+    "destination": ".output/chrome-mv3-dev",
+    "fileCount": 2009,
+    "promotionReceipt": "test-results/ci-dev-promotion-receipt.json",
+    "importedArtifact": "test-results/ci-artifacts/5b01a35fd5a15aadbf95062b411e92e833ce0292/38106946361-1/chrome-mv3",
+    "importSourceClaim": "exact_pushed_commit_only",
+    "importTrackedDirty": true,
+    "importUntrackedRunnerInputs": []
+  },
+  "verification": {
+    "ciRun": "completed_success",
+    "artifactMetadata": "matched_run_source_attempt_name_and_digest",
+    "importedTreeMatchedReceipt": true,
+    "promotedTreeMatchedImportedTree": true,
+    "manifestVersion": "0.2.490",
+    "manifestExtensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "chromeLoadedFromPath": "unverified",
+    "chromeDisplayedVersion": "unverified",
+    "chromeReloaded": false,
+    "pinnedState": "unverified"
+  },
+  "limits": "The successful main-push CI artifact was imported and promoted to the stable unpacked development path with an exact source SHA and matching tree digest. The import-time source claim remained exact_pushed_commit_only because the shared checkout contained tracked stabilization documentation edits. The promoter independently accepted exact-source compatibility. Chrome's loaded path, displayed version, reload, and pin state were not inspected."
+}

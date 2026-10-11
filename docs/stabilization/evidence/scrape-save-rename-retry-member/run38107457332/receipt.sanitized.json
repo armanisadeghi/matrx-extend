@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "review_state": "pending_independent_native_review",
+  "run_id": 38107457332,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38107457332",
+  "lane": "A",
+  "workflow_source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+  "hosted_artifact": {
+    "id": 11690605351,
+    "name": "hosted-guest-38107457332-1",
+    "digest": "sha256:255f96d89c1cfb18b83f74dfe332e267f5da0ed3f93d352e093f78f26f263847"
+  },
+  "source_report_sha256": "40e021f332b4b9219620c6a591441573b36c66e7b587045d3a38c4b86be1d14e",
+  "scope": {
+    "defect_id": "EXT-D-0187",
+    "case_ids": ["EXT-F-1007-T04", "EXT-F-1007-T29"],
+    "acceptance_case": "scrape-save-member",
+    "auth_mode": "member",
+    "destination": "none",
+    "save_scope": "duplicate-rename-retry"
+  },
+  "native": {
+    "status": "pass",
+    "stage": "complete",
+    "native_stage": "exercise_panel",
+    "failure_stage": null,
+    "error_code": null,
+    "artifact": {
+      "kind": "ci_development_test",
+      "eligible_store": false,
+      "source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+      "run_id": 38106946361,
+      "artifact_id": 11690348157,
+      "tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+      "version": "0.2.490"
+    },
+    "authentication": {
+      "web_signed_in": true,
+      "extension_signed_in": true,
+      "non_admin_role_verified": true,
+      "selected_organization_verified": true
+    },
+    "observations": {
+      "member_logical_organization_request": {
+        "request_observed": true,
+        "authenticated": true,
+        "organization_matches_expected": true,
+        "http_status": 200
+      },
+      "owned_project_fixture_created": false,
+      "capture": {
+        "article_layer_ready": true,
+        "article_title_matches": true,
+        "heading_matches": true,
+        "marker_matches": true
+      },
+      "name_input": {
+        "before_insert": {
+          "count": 1,
+          "focused": true,
+          "value_length": 37,
+          "selection_start": 0,
+          "selection_end": 37,
+          "all_selected": true,
+          "matches_expected": false
+        },
+        "after_insert": {
+          "count": 1,
+          "focused": true,
+          "value_length": 41,
+          "selection_start": 41,
+          "selection_end": 41,
+          "all_selected": false,
+          "matches_expected": true
+        }
+      },
+      "dialog_opened_from_captured_article": true,
+      "prefilled_name_visible": true,
+      "input_focused_on_open": true,
+      "no_destination_selected_by_default": true,
+      "custom_name_entered_by_trusted_keyboard": true,
+      "tab_and_shift_tab_contained": true,
+      "no_destination_retained_before_save": true,
+      "dialog_closed_after_save": true,
+      "saved_confirmation_visible": true,
+      "source_row_read_from_service": true,
+      "custom_name_persisted": true,
+      "organization_scope_persisted": true,
+      "original_file_id_present": true,
+      "project_id": null,
+      "no_destination_associations_persisted": true,
+      "duplicate_recapture_observed": true,
+      "rename_refusal_injection": {
+        "refused": 1,
+        "continued": 0,
+        "failures": 0,
+        "pending": 0
+      },
+      "rename_refusal_saved_with_original_name": true,
+      "rename_refusal_draft_preserved": true,
+      "rename_refusal_no_associations": true,
+      "rename_retry_recovery_cleared": true,
+      "duplicate_responses": {
+        "reused_existing": true,
+        "same_source_id": true,
+        "rename_succeeded": true
+      },
+      "rename_refusal_controller": {
+        "refused": 1,
+        "continued": 1,
+        "failures": 0,
+        "pending": 0
+      },
+      "duplicate_transport": {
+        "ready": true,
+        "landCount": 1,
+        "renameCount": 2,
+        "rename_http_statuses": [503, 200],
+        "land_response_received": true,
+        "land_http_status": 201,
+        "land_status_class": 2,
+        "land_finished": true,
+        "land_transport_failed": false,
+        "land_body_observed": true,
+        "land_reused_existing": true,
+        "land_same_source_id": true,
+        "rename_response_received": true,
+        "rename_http_status": 200,
+        "rename_status_class": 2,
+        "rename_finished": true,
+        "rename_transport_failed": false,
+        "rename_target_matches_source": true
+      },
+      "duplicate_name_persisted": true,
+      "duplicate_one_source_row": true,
+      "duplicate_no_associations": true,
+      "reopen_header": {
+        "detail_open": true,
+        "name_matches": true,
+        "url_matches": true
+      },
+      "saved_original_read_ready": true,
+      "saved_original": {
+        "article_layer_ready": true,
+        "article_title_matches": true,
+        "heading_matches": true,
+        "marker_matches": true
+      },
+      "reopen_ui": {
+        "heading_matches": true,
+        "marker_matches": true
+      },
+      "saved_source_reopened_in_ui": true,
+      "cleanup_verified": true
+    },
+    "cleanup": {
+      "verified": true,
+      "run_owned_source_soft_deleted": true,
+      "source_associations_removed": true
+    },
+    "project_cleanup": null
+  },
+  "resource_finals": {
+    "package": {
+      "journal_present": true,
+      "admission_count": 1,
+      "final_count": 1,
+      "final": {
+        "at": "2026-10-11T03:11:32.395Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      },
+      "child_exit_code": 0
+    },
+    "browser": {
+      "journal_present": true,
+      "admission_count": 1,
+      "final_count": 1,
+      "final": {
+        "at": "2026-10-11T03:13:41.786Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      },
+      "child_exit_code": 0
+    },
+    "guest": {
+      "journal_present": true,
+      "admission_count": 1,
+      "final_count": 1,
+      "final": {
+        "at": "2026-10-11T03:18:14.003Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      },
+      "child_exit_code": 0
+    }
+  },
+  "credential_cleanup": {
+    "github_secret_absent": true,
+    "local_ephemeral_link_absent": true,
+    "credential_values_persisted": false
+  },
+  "credit": "none until independent review; no full T04/T29 or defect closure"
+}

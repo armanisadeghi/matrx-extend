@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "report_id": "data-control-gap-20261011",
+  "reviewed_head": "3df45c14bf7939236573807962e86cf83564e565",
+  "scope": "Source audit of rendered Data side-panel controls against EXT-F-2005 and docs/feature-tests.md. No runtime behavior is claimed.",
+  "source_census": {
+    "feature_id": "EXT-F-2005",
+    "inventory_control_count": 32,
+    "source_reviewed": [
+      "src/features/data/DataView.tsx:28-750",
+      "src/lib/data-pattern/picker.ts:24-160",
+      "src/components/PageIdentityNotice.tsx:1-17",
+      "src/components/CopyMenu.tsx:102-225",
+      "src/lib/supabase/queries.ts:905-920",
+      "docs/stabilization/inventory.json:40712-41548",
+      "docs/feature-tests.md:1577-1579",
+      "docs/feature-tests.md:1975-2003"
+    ],
+    "result": "The rendered DataView actions found in these sources correspond to existing inventory controls C01-C32. No additional direct DataView button was confidently identified. One proposed inventory delta, C33, is the visible automatic no_match state; remaining findings concern procedures or the pre-existing T05 fixture prerequisite."
+  },
+  "gaps": [
+    {
+      "kind": "missing_executable_control_procedure",
+      "proposed_case_id": "EXT-F-2005-T07",
+      "existing_control_ids": [
+        "EXT-F-2005-C18",
+        "EXT-F-2005-C21",
+        "EXT-F-2005-C22"
+      ],
+      "applicability": {
+        "guest": "applicable",
+        "member": "applicable",
+        "admin": "applicable"
+      },
+      "why_missing": "No targeted procedure checks picker hover highlight, Clear, or Cancel after at least one field has been selected. The reviewed guest run 38050967096 covers only Cancel with an empty picker; it does not cover the selected-then-Cancel path. The existing two-field guest path exercises picking and Done, but not these interactions.",
+      "source_anchors": [
+        "docs/stabilization/inventory.json:40825-40829",
+        "docs/stabilization/inventory.json:40839-40876",
+        "docs/stabilization/inventory.json:40995-41015",
+        "docs/stabilization/inventory.json:41217-41228",
+        "src/lib/data-pattern/picker.ts:80-84",
+        "src/lib/data-pattern/picker.ts:100-133",
+        "src/lib/data-pattern/picker.ts:148-160",
+        "src/features/data/DataView.tsx:239-243",
+        "src/features/data/DataView.tsx:196-203",
+        "docs/stabilization/reports/peer-review-run38050967096.json:61",
+        "docs/stabilization/evidence/guest-data-behavior/run38050967096/receipt.sanitized.json:78"
+      ],
+      "procedure": [
+        "In a controlled ordinary page, start Data field picking and move the pointer over a page element; observe the highlight, then click the element and observe its picker-list entry.",
+        "Click Clear and verify the picked entry disappears and the picker list is empty.",
+        "Start a fresh pick, select one page element, and click the picker overlay Cancel. Verify the overlay closes without returning that selected field; Data shows no selected fields. Do not save a pattern.",
+        "Repeat hover, Clear and selected-then-Cancel as guest, member and admin. Keep the earlier guest empty-picker Cancel result scoped to run 38050967096."
+      ],
+      "expected": [
+        "Hover visibly tracks the page element and clicking adds a field entry.",
+        "Clear removes every currently picked entry.",
+        "Cancel after a selection exits without returning the picked field. Data remains without selected fields; no pattern write occurs.",
+        "Record each role separately; existing guest empty-picker Cancel evidence does not establish these remaining interactions."
+      ],
+      "current_status": "unverified for C18, C21 selected-then-Cancel, and C22 in all roles; bounded guest empty-picker Cancel was peer-reviewed in run 38050967096 only.",
+      "prior_evidence": {
+        "scope": "Guest empty-picker Cancel only",
+        "run_id": "38050967096",
+        "review": "docs/stabilization/reports/peer-review-run38050967096.json",
+        "result": "Peer-reviewed pass for empty-picker Cancel with no selection, no observed pattern write, and unchanged selection state. This does not cover hover, Clear, or Cancel after selecting a field and is not full Guest Data credit."
+      }
+    },
+    {
+      "kind": "missing_executable_control_procedure",
+      "proposed_case_id": "EXT-F-2005-T08",
+      "existing_control_ids": [
+        "EXT-F-2005-C29",
+        "EXT-F-2005-C30",
+        "EXT-F-2005-C31",
+        "EXT-F-2005-C33"
+      ],
+      "applicability": {
+        "guest": "not applicable; src/hooks/use-auto-extract.ts:49-53 returns before automatic extraction unless signed in",
+        "member": "applicable",
+        "admin": "applicable"
+      },
+      "why_missing": "No existing case maps the auto-extraction running, success, no_match, or error states. T02 exercises a user-triggered matching-pattern run and does not establish the automatic state badges or rows. The auto-extract hook returns early when signed out, so guest is not applicable to this automatic path.",
+      "source_anchors": [
+        "docs/stabilization/inventory.json:40927-40948",
+        "src/hooks/use-auto-extract.ts:49-53",
+        "src/hooks/use-auto-extract.ts:99-167",
+        "src/features/data/DataView.tsx:494-545",
+        "src/features/data/DataView.tsx:557-563",
+        "src/state/auto-extract.ts:1-20"
+      ],
+      "procedure": [
+        "As a member with a disposable saved pattern matching a controlled page, open that page with Data available and observe the automatic extraction running state.",
+        "Use a controlled successful extraction fixture; inspect the automatic success state and rows.",
+        "Use a controlled matching-pattern fixture that produces no matching data; inspect the visible auto \u00b7 no match state and its explanatory text.",
+        "Use a separate controlled failure fixture; inspect the auto failed state and visible error, then verify the manual Extract/Re-run action remains available when page identity is ready. Repeat these applicable states as admin."
+      ],
+      "expected": [
+        "The running, success-with-rows, no_match, and failure states each correspond to their controlled fixture outcome.",
+        "For failure, the error is visible and manual Extract/Re-run remains available when page identity is ready.",
+        "Auto-extracted rows render as JSON text in the Data view; this procedure does not claim or test a CopyMenu for those rows.",
+        "Member and admin results are recorded separately. Guest is not applicable to the automatic path because the source guard requires signed-in state."
+      ],
+      "fixture_status": "Deterministic running, success, no_match, and failure fixtures are not identified in the reviewed source or existing case procedures; fixture preparation is required before execution.",
+      "current_status": "unverified; source guard establishes guest non-applicability, not member/admin runtime behavior.",
+      "proposed_control": {
+        "id": "EXT-F-2005-C33",
+        "label": "Observe automatic extraction no-match state",
+        "action": "See the visible no-match result for automatic extraction that finds no matching data",
+        "source_anchor": "src/features/data/DataView.tsx:513-538"
+      }
+    },
+    {
+      "kind": "existing_known_fixture_prerequisite",
+      "existing_case_id": "EXT-F-2005-T05",
+      "existing_control_ids": [
+        "EXT-F-2005-C32",
+        "EXT-F-2005-C14",
+        "EXT-F-2005-C15",
+        "EXT-F-2005-C02",
+        "EXT-F-2005-C07"
+      ],
+      "applicability": {
+        "guest": "applicable",
+        "member": "applicable",
+        "admin": "applicable"
+      },
+      "why_missing": "EXT-F-2005-T05 already records that its native fixture is design-needed and that no method is established to cause an unresolved first identity lookup followed by recovery and an active-tab switch. The referenced DataView unit route mocks useActiveTab/refreshActiveTabIdentity and cannot exercise the Chrome lookup boundary. This report does not claim to newly discover the prerequisite.",
+      "source_anchors": [
+        "docs/stabilization/inventory.json:41440-41484",
+        "src/components/PageIdentityNotice.tsx:4-16",
+        "src/features/data/DataView.tsx:239-240",
+        "src/features/data/DataView.tsx:343-345",
+        "tests/unit/saved-run-data-view-health.test.tsx"
+      ],
+      "exact_action_and_expected_result": "Once an owned native fixture exists, follow T05's documented action sequence: open Data with identity unresolved, press Retry, capture sanitized active-tab/top-frame identity evidence, observe an explicit unresolved error and withheld page-dependent actions, allow a later lookup to resolve, then switch active tabs during a pending lookup. Expected result is that Retry resolves only the current tab/document and no stale identity enables picker or extraction work.",
+      "current_status": "unverified; case procedure is not executable until its stated native fixture/runner prerequisite is designed and available.",
+      "novelty": "This design-needed prerequisite is already explicit in EXT-F-2005-T05; included for completeness, not presented as a new discovery."
+    }
+  ],
+  "limitations": [
+    "Read-only source and documentation audit. No browser session, live role profile, runtime interaction, or additional test was run.",
+    "The source audit includes peer-reviewed evidence cited for guest empty-picker Cancel only; all newly scoped picker interactions and automatic extraction states remain unverified. Source expectations are test oracles, not runtime proof.",
+    "Shared checkout already contained staged D187 changes and an unrelated untracked run artifact before this report was written; those paths were not modified."
+  ],
+  "validation": {
+    "json_parse": "passed with python3 -m json.tool after corrections",
+    "diff_check": "passed; git diff --no-index --check /dev/null report emitted no whitespace diagnostics",
+    "report_only_created_by_this_task": true
+  }
+}

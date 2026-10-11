@@ -5,7 +5,7 @@ function safeHttpStatus(status) {
 }
 
 /** Observe only the two bounded Source responses; never retain response text. */
-export function observeDuplicateSourceSave(panel, serverOrigin) {
+export function observeDuplicateSourceSave(panel, serverOrigin, renameStatuses = [200]) {
   const requests = new Map();
   const offRequest = panel.on('Network.requestWillBeSent', ({ requestId, request }) => {
     try {
@@ -84,15 +84,19 @@ export function observeDuplicateSourceSave(panel, serverOrigin) {
       const land = entries().filter((entry) => entry.kind === 'land');
       const rename = entries().filter((entry) => entry.kind === 'rename');
       const landing = land.length === 1 ? land[0] : null;
-      const renaming = rename.length === 1 ? rename[0] : null;
+      const renaming = rename.at(-1) ?? null;
       return {
         ready:
           land.length === 1 &&
           landing.finished &&
           (landing.body?.reused === false ||
-            (rename.length === 1 && entries().every((entry) => entry.finished))),
+            (rename.length === renameStatuses.length &&
+              entries().every((entry) => entry.finished))),
         landCount: land.length,
         renameCount: rename.length,
+        ...(renameStatuses.length > 1
+          ? { rename_http_statuses: rename.map((entry) => entry.status) }
+          : {}),
         land_response_received: landing?.responseReceived === true,
         land_http_status: landing?.status ?? null,
         land_status_class: landing?.status ? Math.floor(landing.status / 100) : null,
@@ -119,14 +123,21 @@ export function observeDuplicateSourceSave(panel, serverOrigin) {
       assert.equal(land[0].status, 201, 'scrape_save_duplicate_land_response_failed');
       assert.equal(land[0].body?.reused, true, 'scrape_save_duplicate_reuse_not_observed');
       assert.equal(land[0].body?.id, firstSourceId, 'scrape_save_duplicate_landed_new_source');
-      assert.equal(rename.length, 1, 'scrape_save_duplicate_rename_count');
-      assert.equal(rename[0].finished, true, 'scrape_save_duplicate_rename_unfinished');
-      assert.equal(
-        rename[0].path,
-        `/sources/${firstSourceId}/edit`,
-        'scrape_save_duplicate_rename_target_changed',
-      );
-      assert.equal(rename[0].status, 200, 'scrape_save_duplicate_rename_response_failed');
+      assert.equal(rename.length, renameStatuses.length, 'scrape_save_duplicate_rename_count');
+      for (const [index, entry] of rename.entries()) {
+        assert.equal(entry.finished, true, 'scrape_save_duplicate_rename_unfinished');
+        assert.equal(entry.failed, false, 'scrape_save_duplicate_rename_transport_failed');
+        assert.equal(
+          entry.path,
+          `/sources/${firstSourceId}/edit`,
+          'scrape_save_duplicate_rename_target_changed',
+        );
+        assert.equal(
+          entry.status,
+          renameStatuses[index],
+          'scrape_save_duplicate_rename_response_failed',
+        );
+      }
       return { reused_existing: true, same_source_id: true, rename_succeeded: true };
     },
     async run(firstSourceId, observations, action) {

@@ -211,6 +211,21 @@ test('D187 duplicate rename is isolated to the member no-destination route', () 
   );
 });
 
+test('D187 controlled rename refusal/retry is member-only with no destination', () => {
+  assert.equal(
+    hostedScrapeSaveScope('scrape-save-member', 'duplicate-rename-retry', 'none'),
+    'duplicate-rename-retry',
+  );
+  assert.throws(
+    () => hostedScrapeSaveScope('scrape-save-member', 'duplicate-rename-retry', 'project'),
+    /scrape_save_duplicate_destination_refused/,
+  );
+  assert.throws(
+    () => hostedScrapeSaveScope('guest-chat', 'duplicate-rename-retry', 'none'),
+    /scrape_save_scope_case_refused/,
+  );
+});
+
 test('guest T14 recovery is development-artifact and guest-only', async () => {
   assert.deepEqual(
     requireHostedScrapeRoute('scrape-error-recovery-guest', 'development', development, 'guest'),
@@ -438,12 +453,50 @@ test('workflow admits member Data with member auth while preserving guest and D1
     }).status,
     0,
   );
+  assert.equal(
+    runWorkflowStep(laneAdmission, {
+      ...shared,
+      ACCEPTANCE_CASE: 'scrape-save-member',
+      SCRAPE_AUTH_MODE: 'member',
+      SCRAPE_SAVE_DESTINATION: 'none',
+      SCRAPE_SAVE_SCOPE: 'duplicate-rename-retry',
+    }).status,
+    0,
+  );
+  assert.notEqual(
+    runWorkflowStep(laneAdmission, {
+      ...shared,
+      ACCEPTANCE_CASE: 'scrape-save-member',
+      SCRAPE_AUTH_MODE: 'member',
+      SCRAPE_SAVE_SCOPE: 'duplicate-rename-retry',
+    }).status,
+    0,
+  );
   assert.notEqual(
     runWorkflowStep(laneAdmission, {
       ...shared,
       ACCEPTANCE_CASE: 'scrape-save-member',
       SCRAPE_AUTH_MODE: 'member',
       SCRAPE_SAVE_SCOPE: 'duplicate-rename',
+    }).status,
+    0,
+  );
+  assert.equal(
+    runWorkflowStep(laneAdmission, {
+      ...shared,
+      ACCEPTANCE_CASE: 'scrape-save-member',
+      SCRAPE_AUTH_MODE: 'member',
+      SCRAPE_SAVE_DESTINATION: 'none',
+      SCRAPE_SAVE_SCOPE: 'duplicate-rename-retry',
+    }).status,
+    0,
+  );
+  assert.notEqual(
+    runWorkflowStep(laneAdmission, {
+      ...shared,
+      ACCEPTANCE_CASE: 'scrape-save-member',
+      SCRAPE_AUTH_MODE: 'member',
+      SCRAPE_SAVE_SCOPE: 'duplicate-rename-retry',
     }).status,
     0,
   );

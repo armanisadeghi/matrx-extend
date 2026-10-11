@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
 /** Keep the click trusted while refusing points owned by the picker's overlay. */
-export async function clickPickerField(page, selector, index = 0) {
+async function pickerFieldPoint(page, selector, index = 0) {
   await page.locator(selector).nth(index).scrollIntoViewIfNeeded();
   const sample = await page.evaluate(
     ({ selector: targetSelector, index: targetIndex }) => {
@@ -65,8 +65,41 @@ export async function clickPickerField(page, selector, index = 0) {
     error.pickerFieldDiagnostic = diagnostic;
     throw error;
   }
-  await page.mouse.click(sample.chosen.x, sample.chosen.y);
+  return { point: sample.chosen, diagnostic };
+}
+
+export async function clickPickerField(page, selector, index = 0) {
+  const { point, diagnostic } = await pickerFieldPoint(page, selector, index);
+  await page.mouse.click(point.x, point.y);
   return diagnostic;
+}
+
+/** Move a real pointer and read the closed-shadow highlight drawn by the extension. */
+export async function hoverPickerField(page, selector, index = 0) {
+  const { point, diagnostic } = await pickerFieldPoint(page, selector, index);
+  const before = await page.evaluate(
+    ({ selector: targetSelector, index: targetIndex }) => {
+      const rect = document.querySelectorAll(targetSelector)[targetIndex].getBoundingClientRect();
+      return { top: rect.top, left: rect.left, width: rect.width, height: rect.height };
+    },
+    { selector, index },
+  );
+  await page.mouse.move(point.x, point.y);
+  const session = await page.context().newCDPSession(page);
+  try {
+    await session.send('DOM.enable');
+    const html = await pickerText(session, '#hl');
+    const style = html.match(/style="([^"]*)"/)?.[1] ?? '';
+    assert.match(style, /(?:^|;)\s*display:\s*block\s*(?:;|$)/, 'data_guest_hover_not_visible');
+    for (const key of ['top', 'left', 'width', 'height']) {
+      const value = Number(style.match(new RegExp(`(?:^|;)\\s*${key}:\\s*(-?[\\d.]+)px`))?.[1]);
+      assert.ok(Number.isFinite(value), `data_guest_hover_${key}_missing`);
+      assert.ok(Math.abs(value - before[key]) <= 1, `data_guest_hover_${key}_wrong`);
+    }
+    return { target: before, pointer: diagnostic.chosen_hit, highlight_visible: true };
+  } finally {
+    await session.detach();
+  }
 }
 
 /** Resolve a button inside the picker's closed shadow root through Chrome's DOM domain. */
@@ -134,4 +167,8 @@ export async function clickPickerDone(page) {
 
 export async function clickPickerCancel(page) {
   await clickPickerButton(page, 'cancel');
+}
+
+export async function clickPickerClear(page) {
+  await clickPickerButton(page, 'clear');
 }

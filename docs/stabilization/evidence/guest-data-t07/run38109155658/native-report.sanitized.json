@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "driver_report_case_id": "EXT-F-2005-T01",
+  "target_case_id": "EXT-F-2005-T07",
+  "driver_status": "pass",
+  "stage": "complete",
+  "failure_stage": null,
+  "artifact": {
+    "source_sha": "41976eec14af4964daad9113402316a9559cdb4c",
+    "run_id": 38108390956,
+    "artifact_id": 11690966917,
+    "tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+    "version": "0.2.490"
+  },
+  "observations": {
+    "guest": true,
+    "controlled_rows": 3,
+    "t07_clear": {
+      "before": "Cedar chair",
+      "after_entries": 0
+    },
+    "t07": {
+      "hover": [
+        {
+          "target": {
+            "top": 79.875,
+            "left": 8,
+            "width": 805,
+            "height": 28
+          },
+          "pointer": "field",
+          "highlight_visible": true
+        },
+        {
+          "target": {
+            "top": 213.59375,
+            "left": 8,
+            "width": 805,
+            "height": 18
+          },
+          "pointer": "field",
+          "highlight_visible": true
+        }
+      ],
+      "selected_then_cancel": true,
+      "panel_state_restored": true,
+      "panel_before": {
+        "selected_fields": [],
+        "picker_button": 1,
+        "cancel_selection": 0
+      },
+      "panel_after": {
+        "selected_fields": [],
+        "picker_button": 1,
+        "cancel_selection": 0
+      },
+      "pattern_write_requests": 0
+    }
+  },
+  "limits": "Bounded guest T07 observation in the T01 driver; no member/admin, Store, or saved pattern claim."
+}

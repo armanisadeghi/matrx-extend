@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_native_evidence_review",
+  "reviewer": "/root/d187_rename_retry_native_peer",
+  "recorded_by": "/root/d187_scrape_save_remaining",
+  "defect_id": "EXT-D-0187",
+  "case_ids": [
+    "EXT-F-1007-T04",
+    "EXT-F-1007-T29"
+  ],
+  "run_id": 38107457332,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38107457332",
+  "workflow_conclusion": "success",
+  "scope": {
+    "acceptance_case": "scrape-save-member",
+    "auth_mode": "member",
+    "destination": "none",
+    "save_scope": "duplicate-rename-retry",
+    "development_artifact_version": "0.2.490",
+    "source_sha": "5b01a35fd5a15aadbf95062b411e92e833ce0292",
+    "ci_run_id": 38106946361,
+    "ci_artifact_id": 11690348157,
+    "store_eligible": false
+  },
+  "verdict": "PASS_BOUNDED_NATIVE_BEHAVIOR",
+  "source_harness_verdict": "PASS_WITH_LIMITS",
+  "evidence_review": {
+    "sanitized_receipt": "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+    "downloaded_artifact_id": 11690605351,
+    "downloaded_artifact_name": "hosted-guest-38107457332-1",
+    "raw_acceptance_report": "hosted artifact 11690605351: matrx-extend/matrx-extend/test-results/scrape-save-native-acceptance.json",
+    "raw_report_sha256": "40e021f332b4b9219620c6a591441573b36c66e7b587045d3a38c4b86be1d14e",
+    "raw_report_sha256_matches_receipt": true,
+    "harness_checkout_sha_matches_run_sha": true,
+    "run_source_hashes_match_worktree_for": [
+      "tests/browser/scrape-save-native-acceptance.mjs",
+      "tests/browser/scrape-save-rename-refusal.mjs",
+      "tests/browser/scrape-save-duplicate-observer.mjs"
+    ],
+    "screenshots_downloaded": [
+      "native-side-panel.png",
+      "normal-target-after-open.png"
+    ],
+    "screenshot_interpretation": "The native-side-panel screenshot is captured before exercise_panel and shows the initial guest shell. It is not used as member-auth or rename behavior proof; the report's later member auth assertions and service observations are the relevant evidence."
+  },
+  "behavior_oracle": {
+    "verdict": "PASS",
+    "observed": [
+      "The native report is status=pass, stage=complete, failure_stage=null, and binds to the exact imported CI development artifact and matching harness checkout SHA.",
+      "Member web and extension sign-in, non-admin role, selected organization, and a successful authenticated organization request are asserted in the native report.",
+      "The first edit POST to the run-owned Source is intercepted at request stage and fulfilled with a controlled HTTP 503; the refusal controller reports refused=1, continued=0, failures=0, pending=0 at the refusal point.",
+      "After refusal, the UI reports the saved-original-name state, visible rename error, and preserved retry name. An independent service read finds exactly one row with the original name and same Source ID; the association read returns an empty list before retry.",
+      "The user-visible Retry name action clears the retry draft and error. The network observer verifies one duplicate landing response (201, reused_existing=true, same Source ID) and exactly two completed, transport-successful edit responses [503, 200] targeting that same Source endpoint.",
+      "After retry, an independent service read verifies exactly one active row with the renamed value and unchanged Source ID, and the association read is still empty.",
+      "The saved Source reopens with the expected name and URL and the captured article content markers. Run-owned Source soft deletion and association cleanup are verified."
+    ],
+    "false_pass_assessment": "No false-pass indicator found for this bounded subtarget. The controlled refusal is corroborated by both the Fetch controller counts and the browser network response sequence; state before and after retry is checked through independent service reads and UI reopen."
+  },
+  "resource_journals": {
+    "hosted-package-38107457332-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38107457332-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38107457332-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "transient_observation": "CPU-busy pending samples later recovered; terminal decision remained valid."
+    }
+  },
+  "credential_cleanup": {
+    "sanitized_terminal_receipt_says_github_secret_absent": true,
+    "sanitized_terminal_receipt_says_local_ephemeral_link_absent": true,
+    "sanitized_terminal_receipt_says_no_credential_values_persisted": true,
+    "current_github_secret_name_metadata_absent": true,
+    "current_temp_and_workspace_named_link_file_count": 0,
+    "raw_acceptance_report_credential_field_paths_count": 0,
+    "method": "Checked only the exact GitHub Actions secret name in name-only secret metadata and the known temporary link filename in temp/workspace paths. No credential or link values were read or persisted."
+  },
+  "limits": [
+    "Credit is limited to the member, no-destination, controlled duplicate rename refusal and retry subtarget exercised by this run.",
+    "This is development-artifact evidence and is not Store or release acceptance.",
+    "Other refusal paths, additional destinations, Library/File-elsewhere flows, timing, Project display, and guest/admin roles remain unverified.",
+    "EXT-F-1007-T04 and EXT-F-1007-T29 remain partial; this bounded pass does not close either case or establish overall EXT-D-0187 resolution."
+  ],
+  "state_recommendation": {
+    "defect": "remain_in_fix_retest_pending",
+    "case_ids": "remain_partial",
+    "acceptance_credit": "bounded_pass_for_member_none_duplicate_rename_retry_only"
+  },
+  "files_reviewed": [
+    "docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json",
+    "docs/stabilization/reports/d187-rename-retry-source-peer-20261011.json",
+    "tests/browser/scrape-save-native-acceptance.mjs",
+    "tests/browser/scrape-save-rename-refusal.mjs",
+    "tests/browser/scrape-save-duplicate-observer.mjs",
+    "tests/browser/scrape-save-duplicate-observer.test.mjs",
+    "scripts/hosted-scrape-route.test.mjs"
+  ],
+  "checks_performed": [
+    "Downloaded and inspected the actual hosted artifact, including raw native acceptance report and all three run-matched resource journals.",
+    "Confirmed the raw native report hash equals the sanitized receipt source_report_sha256.",
+    "Matched driver and observer source file hashes to the exact native run source SHA.",
+    "Inspected driver assertions, refusal controller, duplicate network observer, source readback, reopen, and cleanup paths.",
+    "Checked current GitHub secret name metadata and current temp/workspace metadata without reading credential values.",
+    "No browser run, code change, tracker edit, inventory edit, defect edit, commit, or push was performed."
+  ]
+}

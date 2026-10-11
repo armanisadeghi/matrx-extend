@@ -15,6 +15,7 @@ import {
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { observeDuplicateSourceSave } from './scrape-save-duplicate-observer.mjs';
 import { cleanupProjectFixture, projectFixtureRequest } from './scrape-save-project-fixture.mjs';
+import { refuseFirstSourceRename } from './scrape-save-rename-refusal.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import { activeTabPanelExpression, click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -27,6 +28,7 @@ const runId = process.env.GITHUB_RUN_ID;
 const runAttempt = process.env.GITHUB_RUN_ATTEMPT;
 const destinationMode = process.env.MATRX_SCRAPE_SAVE_DESTINATION ?? 'project';
 const saveScope = process.env.MATRX_SCRAPE_SAVE_SCOPE ?? 'single';
+const renameRetry = saveScope === 'duplicate-rename-retry';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const captureTitle = `Northline source intake ${runId}-${runAttempt}`;
 const captureHeading = `Preparing a Northline appointment ${runId}-${runAttempt}`;
@@ -53,7 +55,7 @@ const report = {
   observations: {},
   cleanup: null,
   failure_stage: null,
-  limits: `Exact imported CI development artifact, real member sign-in, ${saveScope === 'duplicate-rename' ? 'same-article duplicate landing and custom rename' : 'one custom-named Source saved'} with ${destinationMode === 'project' ? 'one disposable owned Project association' : 'no destination'}, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, controlled rename refusal/retry, responsive timing, or full T04/T29 closure.`,
+  limits: `Exact imported CI development artifact, real member sign-in, ${saveScope !== 'single' ? 'same-article duplicate landing and custom rename' : 'one custom-named Source saved'} with ${destinationMode === 'project' ? 'one disposable owned Project association' : 'no destination'}, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, ${renameRetry ? 'other refusal paths' : 'controlled rename refusal/retry'}, responsive timing, or full T04/T29 closure.`,
 };
 
 function safeFailureCode(error) {
@@ -438,6 +440,8 @@ async function dialogState(panel) {
         saveButtonCount: dialog ? [...dialog.querySelectorAll('button')].filter((button) => button.textContent.trim() === 'Save Source').length : 0,
         targetChipCount: chips?.querySelectorAll(':scope > li').length ?? 0,
         targetLabel: chips?.querySelector(':scope > li span')?.textContent?.trim() ?? null,
+        retryName: pane?.querySelector('input[aria-label="Retry Source name"]')?.value ?? null,
+        renameError: pane?.textContent?.includes('Source saved, but its name could not be updated.') === true,
         savedButton: [...(pane?.querySelectorAll('button') ?? [])].some((button) => button.textContent.trim() === 'Saved')
       };
     })()`,
@@ -469,8 +473,11 @@ try {
     'scrape_save_dev_channel_required',
   );
   assert.ok(['project', 'none'].includes(destinationMode), 'scrape_save_destination_invalid');
-  assert.ok(['single', 'duplicate-rename'].includes(saveScope), 'scrape_save_scope_invalid');
-  if (saveScope === 'duplicate-rename')
+  assert.ok(
+    ['single', 'duplicate-rename', 'duplicate-rename-retry'].includes(saveScope),
+    'scrape_save_scope_invalid',
+  );
+  if (saveScope !== 'single')
     assert.equal(destinationMode, 'none', 'scrape_save_duplicate_destination_refused');
   assert.equal(
     process.env.MATRX_SCRAPE_AUTH_MODE,
@@ -953,7 +960,7 @@ try {
           report.observations.no_destination_associations_persisted = true;
         }
 
-        if (saveScope === 'duplicate-rename') {
+        if (saveScope !== 'single') {
           report.stage = 'duplicate_recapture';
           await resourceAction(() =>
             click(panel, 'title', 'Capture the page exactly as it is right now'),
@@ -982,7 +989,11 @@ try {
           const duplicateResponses = observeDuplicateSourceSave(
             panel,
             'https://server.app.matrxserver.com',
+            renameRetry ? [503, 200] : [200],
           );
+          const refusal = renameRetry
+            ? refuseFirstSourceRename(panel, 'https://server.app.matrxserver.com', sourceId)
+            : null;
           await duplicateResponses.run(sourceId, report.observations, async () => {
             report.stage = 'duplicate_save_dialog';
             await resourceAction(() => click(panel, 'button-text', 'Save'));
@@ -1012,14 +1023,78 @@ try {
               'scrape_save_duplicate_saved_before_submit',
             );
             report.stage = 'duplicate_save_submit';
-            await resourceAction(() => click(panel, 'button-text', 'Save Source'));
-            await waitFor(
-              'scrape_save_duplicate_responses',
-              () => duplicateResponses.snapshot(),
-              (state) => state.ready,
-              30000,
-            );
-            report.observations.duplicate_responses = duplicateResponses.verify(sourceId);
+            try {
+              if (refusal) await refusal.start();
+              await resourceAction(() => click(panel, 'button-text', 'Save Source'));
+              if (refusal) {
+                report.stage = 'duplicate_rename_refused';
+                const refused = await waitFor(
+                  'scrape_save_rename_refusal_visible',
+                  () => dialogState(panel),
+                  (state) =>
+                    state?.open === false &&
+                    state.savedButton === true &&
+                    state.renameError === true &&
+                    state.retryName === renamedSourceName,
+                );
+                assert.equal(refused.retryName, renamedSourceName, 'scrape_save_rename_draft_lost');
+                report.observations.rename_refusal_injection = refusal.verify();
+                const beforeRetry = await querySources(
+                  panel,
+                  canonicalIdentity,
+                  selectedOrganizationId,
+                  null,
+                );
+                const unchanged = verifySourceRows(
+                  beforeRetry,
+                  canonicalIdentity,
+                  selectedOrganizationId,
+                  sourceName,
+                );
+                assert.equal(unchanged.id, sourceId, 'scrape_save_refusal_source_changed');
+                const edgesBeforeRetry = await associationRpc(
+                  panel,
+                  'assoc_for_entity',
+                  selectedOrganizationId,
+                  { p_type: 'processed_document', p_id: sourceId },
+                );
+                assert.equal(edgesBeforeRetry.status, 200, 'scrape_save_refusal_edges_read_failed');
+                assert.deepEqual(
+                  edgesBeforeRetry.value,
+                  [],
+                  'scrape_save_refusal_association_added',
+                );
+                report.observations.rename_refusal_saved_with_original_name = true;
+                report.observations.rename_refusal_draft_preserved = true;
+                report.observations.rename_refusal_no_associations = true;
+                report.stage = 'duplicate_rename_retry';
+                await resourceAction(() => click(panel, 'button-text', 'Retry name'));
+                await waitFor(
+                  'scrape_save_rename_retry_recovered',
+                  () => dialogState(panel),
+                  (state) =>
+                    state?.savedButton === true &&
+                    state.retryName === null &&
+                    state.renameError === false,
+                );
+                report.observations.rename_retry_recovery_cleared = true;
+              }
+              await waitFor(
+                'scrape_save_duplicate_responses',
+                () => duplicateResponses.snapshot(),
+                (state) => state.ready,
+                30000,
+              );
+              report.observations.duplicate_responses = duplicateResponses.verify(sourceId);
+            } finally {
+              if (refusal) {
+                try {
+                  await refusal.stop();
+                } finally {
+                  report.observations.rename_refusal_controller = refusal.snapshot();
+                }
+              }
+            }
           });
           const renamedConfirmation = await waitFor(
             'scrape_save_duplicate_confirmation',
@@ -1067,7 +1142,7 @@ try {
           reopenSavedSourceUi(
             panel,
             {
-              name: saveScope === 'duplicate-rename' ? renamedSourceName : sourceName,
+              name: saveScope !== 'single' ? renamedSourceName : sourceName,
               url: sourceUrl,
               title: captureTitle,
               heading: captureHeading,

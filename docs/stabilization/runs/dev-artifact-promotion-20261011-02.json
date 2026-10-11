@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "run_id": "dev-artifact-promotion-20261011-02",
+  "status": "promoted_local_artifact_browser_install_unverified",
+  "observed_at": "2026-10-11T03:41:12.702Z",
+  "source": {
+    "repository": "armanisadeghi/matrx-extend",
+    "branch": "main",
+    "commit": "41976eec14af4964daad9113402316a9559cdb4c",
+    "compatibility": "exact-source"
+  },
+  "artifact": {
+    "workflow": ".github/workflows/ci.yml",
+    "event": "push",
+    "run_id": 38108390956,
+    "run_attempt": 1,
+    "artifact_id": 11690966917,
+    "github_digest": "sha256:3f4de76f2a2795cf7481830a96e087fa06b3a32bccd5b3a35a766552fd8134a7",
+    "eligible_store": false,
+    "publish_state": "not_published"
+  },
+  "promotion": {
+    "source_path": "test-results/ci-artifacts/41976eec14af4964daad9113402316a9559cdb4c/38108390956-1/chrome-mv3",
+    "destination_path": ".output/chrome-mv3-dev",
+    "version": "0.2.490",
+    "manifest_version": 3,
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "fd25e2c402e471bc1644059ce28c629c29b64da93d1179330e03867fd502fb87",
+    "file_count": 2009
+  },
+  "browser_acceptance": {
+    "loaded_from_path": "unverified",
+    "displayed_version": "unverified",
+    "reload_and_panel_smoke": "unverified",
+    "extension_pins": "unverified",
+    "reason": "Browser Use auto-review refused; no direct or indirect Chrome extension controls were used."
+  }
+}
