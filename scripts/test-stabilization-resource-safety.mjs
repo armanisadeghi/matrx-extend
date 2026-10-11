@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, readFile, rm, stat } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
+import { copyFile, mkdir, mkdtemp, readFile, rm, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
@@ -10,6 +11,111 @@ import {
   sampleDiskSpace,
   writeSafetyState,
 } from './stabilization-resource-safety.mjs';
+import { copyResourceGuardModules } from './stabilization-resource-test-measurements.mjs';
+
+test('focused acceptance admits only its exact command before profile validation', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'focused-command-admission-'));
+  const scripts = join(scratch, 'scripts');
+  const docs = join(scratch, 'docs/stabilization');
+  try {
+    await mkdir(scripts);
+    await mkdir(docs, { recursive: true });
+    await copyResourceGuardModules(import.meta.dirname, scripts);
+    await copyFile(
+      new URL('../docs/stabilization/resource-policy.json', import.meta.url),
+      join(docs, 'resource-policy.json'),
+    );
+    // A regular file stops the real guard after command validation, before any
+    // host lease or test workload. Admission and near-miss refusal stay real.
+    const profile = join(scratch, 'profile-file');
+    await writeFile(profile, 'not a directory');
+    for (const [index, command] of [
+      ['pnpm', 'test:focused-acceptance'],
+      ['pnpm', 'test:focused-acceptance', '--'],
+      ['pnpm', 'test:focused-acceptance', '--test-concurrency=1'],
+      ['pnpm', 'test:focused-acceptance-extra'],
+      ['pnpm', 'run', 'test:focused-acceptance'],
+    ].entries()) {
+      const result = spawnSync(
+        process.execPath,
+        [
+          join(scripts, 'stabilization-resource.mjs'),
+          'run',
+          '--run-id',
+          `focused-${index}`,
+          '--profile-dir',
+          profile,
+          '--',
+          ...command,
+        ],
+        { encoding: 'utf8' },
+      );
+      assert.equal(result.status, 2, result.stderr);
+      const events = result.stdout.trim().split('\n').map(JSON.parse);
+      assert.equal(
+        events.at(-2).code,
+        index === 0
+          ? 'RESOURCE_PROFILE_INVALID'
+          : 'RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json',
+      );
+      assert.equal(events.at(-1).admitted, false);
+    }
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test('Desktop preflight test descendants preserve the resource owner without inheriting unrelated environment', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'focused-owner-inheritance-'));
+  const preload = join(scratch, 'require-owner.mjs');
+  try {
+    // Wrap the external spawn boundary, then execute the real route tests and
+    // their real preflight children. A scrubbed token must fail at that seam.
+    await writeFile(
+      preload,
+      `import assert from 'node:assert/strict';
+import childProcess from 'node:child_process';
+import { syncBuiltinESMExports } from 'node:module';
+const original = childProcess.spawnSync;
+childProcess.spawnSync = (command, args, options) => {
+  assert.equal(options?.env?.MATRX_RESOURCE_OWNER, process.env.MATRX_RESOURCE_OWNER, 'preflight child lost resource owner');
+  assert.equal(options?.env?.MATRX_RESOURCE_RUN_ID, process.env.MATRX_RESOURCE_RUN_ID, 'preflight child lost run identity');
+  assert.equal(options?.env?.MATRX_RESOURCE_STOP_FILE, process.env.MATRX_RESOURCE_STOP_FILE, 'preflight child lost stop boundary');
+  assert.equal(options?.env?.MATRX_UNRELATED_ENV_PROBE, undefined, 'isolated preflight inherited unrelated configuration');
+  return original(command, args, options);
+};
+syncBuiltinESMExports();
+`,
+    );
+    const { NODE_TEST_CONTEXT: _testContext, ...environment } = process.env;
+    const result = spawnSync(
+      process.execPath,
+      [
+        '--import',
+        preload,
+        '--test',
+        '--test-reporter=tap',
+        'scripts/hosted-desktop-settings-route.test.mjs',
+      ],
+      {
+        cwd: join(import.meta.dirname, '..'),
+        encoding: 'utf8',
+        env: {
+          ...environment,
+          MATRX_RESOURCE_OWNER: process.env.MATRX_RESOURCE_OWNER ?? 'focused-owner-inheritance',
+          MATRX_RESOURCE_RUN_ID: process.env.MATRX_RESOURCE_RUN_ID ?? 'focused-inheritance',
+          MATRX_RESOURCE_STOP_FILE:
+            process.env.MATRX_RESOURCE_STOP_FILE ?? join(scratch, 'stop.json'),
+          MATRX_UNRELATED_ENV_PROBE: 'must-stay-isolated',
+        },
+      },
+    );
+    assert.equal(result.status, 0, result.stdout + result.stderr);
+    assert.match(result.stdout, /# pass 5/);
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
 
 test('CPU sampler uses the second interval and refuses a missing reading', async () => {
   const rows = [
