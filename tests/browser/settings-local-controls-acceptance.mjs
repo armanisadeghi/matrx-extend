@@ -48,6 +48,7 @@ import {
   waitFor,
   waitForReplacementSettingsTab,
 } from './settings-panel-driver.mjs';
+import { passwordApiReadinessMatches } from './settings-readiness-oracle.mjs';
 import {
   classifyReloadSettingsFailure,
   observeReloadSettingsPanel,
@@ -1006,13 +1007,7 @@ try {
         criterion(
           c,
           'password-flow API readiness label and remedy',
-          warm.passwordApis
-            ? ['Ready', 'Available'].includes(warm.readiness)
-              ? 'pass'
-              : 'fail'
-            : warm.readiness === 'Unavailable' && warm.unavailableRemedy
-              ? 'pass'
-              : 'fail',
+          passwordApiReadinessMatches(warm) ? 'pass' : 'fail',
           warm,
         );
         criterion(

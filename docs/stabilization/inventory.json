@@ -12324,7 +12324,7 @@
           ],
           "expected": [
             "Identity fields match the running extension and browser.",
-            "Supported password-flow APIs show Ready; missing APIs show Unavailable with a reload/reinstall remedy.",
+            "Required local browser APIs show Available; missing APIs show Unavailable with a reload/reinstall remedy.",
             "Supported update checks report the browser result accurately, never claim the update is installed, and recover visibly from errors/throttling.",
             "When update checks are unavailable, instructions direct the person to their browser Extensions page."
           ],
