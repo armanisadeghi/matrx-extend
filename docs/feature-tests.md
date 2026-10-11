@@ -2622,6 +2622,7 @@ Every entry follows this shape:
 - **Where to test:** SEO, then Settings and another available panel; guest and signed-in sessions; normal and 360 px width.
 - **Steps:** Trigger the controlled saved-history refusal, retry successfully, and leave the database refusal notice visible. Use Re-audit through a real pointer. Repeat with multiple long notices, scroll both the panel and notice tray, then dismiss notices individually. Repeat after panel and extension reload.
 - **Expected:** The notice tray reserves space below the content; all notices remain readable, scrollable and dismissible. Panel controls remain reachable without dismissing notices; Re-audit receives the click and starts an audit. Dismissing the final notice restores the content space. Error/warning announcements and polite confirmations retain their roles.
+- **Reload acceptance:** A fresh history read after panel reload may raise a new refusal notice or no notice. Require Re-audit to remain reachable and any visible refusal to retain Dismiss. This check requires neither forced notice creation nor durable suppression of later notices; a forced visible-notice reload fixture remains separate coverage.
 - **Automated:** `tests/unit/notice-layout.test.tsx` guards frame placement, bounded scrolling, normal flow and Dismiss. It does not establish native geometry or pointer clearance; guarded browser acceptance remains required.
 
 ### SEO audit — verdicts + one-click fixes (2026-08-09)

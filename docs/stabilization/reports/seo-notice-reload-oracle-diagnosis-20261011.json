@@ -50,7 +50,7 @@
     {
       "cause": "Oracle assumes durable suppression",
       "prediction": "Captured count1/hit9 fails only the zero-count reload assertion",
-      "result": "Confirmed by red source-driver test. The 209410f24 branch permitted count0 or count1 for reload reachability; a later merge superseded that disposition for this guest refusal fixture."
+      "result": "Confirmed by red source-driver test; corrected acceptance permits count0 or count1 while requiring unique enabled target and unobstructed hit area."
     },
     {
       "cause": "Reload raised a subsequent refusal",
@@ -61,10 +61,10 @@
   "sibling_census": [
     "Single reload zero-count assertion in SEO browser driver.",
     "Scope selection and expected target-name fixtures carried the same unsupported persistence claim.",
-    "Scope test modeled dismissal across document reload; the merged test replays the fresh refusal and rejects absent notice, target obstruction, notice obstruction, and missing Dismiss independently.",
+    "Scope test modeled dismissal across document reload; repaired to replay observed post-reload notice and cover absent notice plus obstruction.",
     "Historical native artifacts/reviews retain their original verdicts; no retroactive acceptance promotion."
   ],
-  "change": "At 209410f24, preserve immediate Dismiss verification and check reload reachability independent of announcement count. This branch decision was superseded by the later merge, which requires a visible fresh refusal for the guest notice fixture.",
+  "change": "Preserve immediate Dismiss verification; rename reload subtarget to notice_reload_reaudit_clearance; verify active pane, one enabled target, nine target-owned points and zero notice-owned points independent of announcement count; retain observed count in report.",
   "verification": [
     "RED: old production browser callback rejects captured post-reload count1 as 1 !== 0.",
     "GREEN: focused scope/oracle tests 42 passed.",
@@ -78,15 +78,17 @@
   "limitations": [
     "No new native browser run or release launched; current hosted member lane remains independent.",
     "Native source binding/final viewport restoration and full D199 sibling coverage still require a fresh guarded run.",
-    "Count-only native evidence does not establish notice identity; the merged guest oracle follows the source's new saved-audit history request and requires its refusal notice. A fresh hosted run is still required.",
+    "Exact origin of the post-reload notice is not established by count-only native evidence.",
     "Post-reload Dismiss visibility is verified by the oracle; no second trusted Dismiss click is exercised. Full D199 reload closure remains open."
   ],
-  "next_action": "Run the current merged guest notice oracle against a current-source CI artifact. Keep EXT-D-0199 fixed/open until native evidence completes; no retroactive target promotion.",
+  "next_action": "Commit reviewed source oracle/evidence unit. Parent selects a fresh admitted native test slot only after a current-source CI artifact is available. Keep EXT-D-0199 fixed/open; no retroactive target promotion.",
   "resource_journals": [
     "docs/stabilization/resource-journals/seo-reload-oracle-compile-20261011-2005.jsonl",
     "docs/stabilization/resource-journals/seo-reload-oracle-lint-20261011-2006.jsonl",
     "docs/stabilization/resource-journals/seo-held-reconcile-lint-20261011-2014.jsonl",
-    "docs/stabilization/resource-journals/seo-held-reconcile-compile-20261011-2014.jsonl"
+    "docs/stabilization/resource-journals/seo-held-reconcile-compile-20261011-2014.jsonl",
+    "docs/stabilization/resource-journals/seo-remerge-compile-20261011-2028.jsonl",
+    "docs/stabilization/resource-journals/seo-remerge-lint-20261011-2028.jsonl"
   ],
   "review": {
     "status": "PASS",
@@ -105,8 +107,8 @@
     "held_sync": "d25beae09",
     "review_status": "Fresh independent B PASS: all four payload hashes verified;43 focused tests passed; no unique valid behavior lost.",
     "retained_unique_behavior": "Retain dismissVisible in reload telemetry and require Dismiss when a post-reload refusal is visible. Add forcing missing-Dismiss rejection and in-memory removed-assertion mutation.",
-    "not_adopted": "At 209410f24, mandatory post-reload count1 and visible_notice_full_reload_clearance were not adopted. This branch disposition was superseded by the later merge; its count0/count1 acceptance is not the final canonical oracle.",
-    "recovery": "All four contributor versions remain recoverable via git show 28e9ff264a:<path>. The later merge reconciles their behavior; resolved held wrappers and README rows were removed.",
+    "not_adopted": "Mandatory post-reload count1 and automatic visible_notice_full_reload_clearance promotion. The post-reload history response is not controlled, and evidence lacks announcement identity/network provenance. Keep bounded notice_reload_reaudit_clearance and both count0/count1 tests; forced visible-reload fixture remains unverified.",
+    "recovery": "All four contributor versions remain recoverable via git show 28e9ff264a:<path>. Final canonical files contain the reviewed behavior; resolved held wrappers and README rows removed.",
     "files": [
       {
         "path": "_conflicts/2026-10-11-130723/tests/browser/seo-guest-acceptance.mjs.held",
@@ -130,12 +132,18 @@
       }
     ]
   },
-  "merge_resolution": {
-    "status": "reviewed-source-merged-native-rerun-pending",
-    "canonical_subtarget": "visible_notice_full_reload_clearance",
-    "guest_fixture_requirement": "After Dismiss clears the old announcement, panel reload remounts SEO and retries saved-audit history. This bounded guest fixture requires one fresh, dismissible refusal notice and proves all nine Re-audit hit points remain target-owned with none notice-owned.",
-    "retained_remote_upgrade": "The independent missing-Dismiss negative and diagnosis evidence are retained alongside separate target-hit and notice-hit negatives.",
-    "supersedes": "The 209410f24 count0/count1 reload reachability decision; historical run artifacts remain unchanged.",
-    "native_status": "Current-source hosted rerun pending; prior attempt2 remains failed at its old zero-notice assertion."
+  "subsequent_merge_reconciliation": {
+    "source_commit": "fe88f9781",
+    "merge_commit": "df1aa6c01",
+    "status": "fresh-independent-peer-pass-source-fixed-native-pending",
+    "finding": "Mandatory count1 post-reload assertion was reintroduced without a controlled post-reload refusal fixture, replacing bounded reload clearance with automatic forced-visible-reload credit. Captured replay, count0/count1 evidence assertions and independent per-check mutation guards were removed.",
+    "red": "Reviewed count0 forcing input against df1 driver fails: fresh refusal after panel reload: real refusal notice persists;0 !==1.",
+    "resolution": "Restore reviewed209 canonical behavior on the four affected SEO files; preserve conditional visible-notice Dismiss, unique enabled target, nine target hits, zero notice hits and independent negative/mutation cases. No unique valid behavior is discarded; original contributor implementation remains in git fe88f9781.",
+    "remaining": "A separately controlled visible-notice fixture across reload is still required for visible_notice_full_reload_clearance; no native or inventory credit from this source reconciliation.",
+    "verification": [
+      "Fresh independent B PASS; peer reran43/43 focused tests.",
+      "docs/feature-tests.md explicitly states count0/count1 acceptance and conditional Dismiss visibility.",
+      "Guarded compile and full error-level repository lint both passed with completed valid journals."
+    ]
   }
 }

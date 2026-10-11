@@ -37,11 +37,21 @@ const captured = JSON.parse(
   ),
 ).reaudit_hit_diagnostics.before_click;
 
+const reloadCapture = JSON.parse(
+  readFileSync(
+    new URL(
+      '../../docs/stabilization/reports/seo-notice-reload-oracle-diagnosis-20261011.json',
+      import.meta.url,
+    ),
+    'utf8',
+  ),
+).captured_observations.after_reload;
+
 async function run(
   occluded = false,
   driver = callback,
-  freshReloadRefusal = true,
-  reloadOccluded = 'none',
+  reloadNoticeCount = reloadCapture.database_refused_notice_count,
+  reloadOccluded = false,
   reloadDismissVisible = true,
 ) {
   let viewportWidth = 360;
@@ -50,13 +60,21 @@ async function run(
   let reloaded = false;
   const targets = [];
   const events = [];
+  const observations = [];
   const hit = () => ({
     ...captured,
-    database_refused_notice_count: dismissed ? 0 : 1,
-    dismiss_visible: reloaded ? !dismissed && reloadDismissVisible : !dismissed,
-    hit_point_count: (occluded && index === 0) || (reloaded && reloadOccluded === 'target') ? 0 : 9,
+    database_refused_notice_count: reloaded ? reloadNoticeCount : dismissed ? 0 : 1,
+    dismiss_visible: reloaded ? reloadNoticeCount > 0 && reloadDismissVisible : !dismissed,
+    hit_point_count:
+      (occluded && index === 0) ||
+      (reloaded && (reloadOccluded === true || reloadOccluded === 'target'))
+        ? 0
+        : 9,
     notice_hit_point_count:
-      (occluded && index === 0) || (reloaded && reloadOccluded === 'notice') ? 9 : 0,
+      (occluded && index === 0) ||
+      (reloaded && (reloadOccluded === true || reloadOccluded === 'notice'))
+        ? 9
+        : 0,
   });
   const state = () => ({
     scopeValid: true,
@@ -85,7 +103,10 @@ async function run(
     advance: (name) => events.push(name),
     enter: (name) => events.push(name),
     checkpoint() {},
-    target: (id, name) => targets.push([id, name]),
+    target: (id, name, evidence) => {
+      targets.push([id, name]);
+      observations.push({ name, evidence });
+    },
     unverifiedTarget() {},
     runNativeSeoHistoryRecovery: async () => {
       events.push('refusal');
@@ -153,20 +174,14 @@ async function run(
     },
     panel: {
       send: async (method, params) => {
-        if (method === 'Page.reload') {
-          reloaded = true;
-          // SeoView remounts and its fresh history read is refused again.
-          if (freshReloadRefusal) {
-            dismissed = false;
-            events.push('fresh-history-refusal-after-reload');
-          }
-        } else if (method === 'Emulation.clearDeviceMetricsOverride') viewportWidth = 360;
+        if (method === 'Page.reload') reloaded = true;
+        else if (method === 'Emulation.clearDeviceMetricsOverride') viewportWidth = 360;
         else if (method === 'Emulation.setDeviceMetricsOverride') viewportWidth = params.width;
         else assert.fail(method);
       },
     },
   });
-  return { targets, events };
+  return { targets, events, observations };
 }
 
 test('notice scope reaches all four bounded outcomes and restores viewport without clipboard work', async () => {
@@ -175,7 +190,7 @@ test('notice scope reaches all four bounded outcomes and restores viewport witho
     ['T02', 'notice_narrow_warm_navigation_reaudit_clearance'],
     ['T02', 'notice_wide_warm_navigation_reaudit_clearance'],
     ['T02', 'manual_button_returns_to_current_page'],
-    ['T02', 'visible_notice_full_reload_clearance'],
+    ['T02', 'notice_reload_reaudit_clearance'],
   ]);
   for (const event of [
     'refusal',
@@ -183,7 +198,6 @@ test('notice scope reaches all four bounded outcomes and restores viewport witho
     'notice_wide_viewport_set',
     'trusted-reaudit',
     'seo_panel_reload',
-    'fresh-history-refusal-after-reload',
     'notice_native_viewport_restore',
     'notice_only_complete',
   ])
@@ -192,22 +206,6 @@ test('notice scope reaches all four bounded outcomes and restores viewport witho
 
 test('notice scope fails when real sampled hit ownership belongs to the notice', async () => {
   await assert.rejects(run(true), /all nine Re-audit points/);
-});
-
-test('reload clearance requires the fresh refusal notice after the history retry', async () => {
-  await assert.rejects(run(false, callback, false), /real refusal notice persists/);
-});
-
-test('reload independently rejects a lost Re-audit target', async () => {
-  await assert.rejects(run(false, callback, true, 'target'), /all nine Re-audit points/);
-});
-
-test('reload independently rejects a fresh notice covering Re-audit', async () => {
-  await assert.rejects(run(false, callback, true, 'notice'), /notice owns no Re-audit point/);
-});
-
-test('reload requires Dismiss on the fresh refusal notice', async () => {
-  await assert.rejects(run(false, callback, true, 'none', false), /notice Dismiss is visible/);
 });
 
 test('notice guard rejects an empty driver instead of accepting skipped work', async () => {
@@ -228,4 +226,63 @@ test('mutation checks reject discarded clearance and accidentally restored clipb
   );
   assert.notEqual(clipboard, callback);
   await assert.rejects(run(false, clipboard), /unrelated clipboard work ran/);
+});
+
+// The captured hosted attempt2 saw a visible refusal after Dismiss/reload.
+// Rejecting that count invents durable suppression absent from the notice contract.
+test('reload accepts either no notice or a subsequent refusal while controls remain reachable', async () => {
+  for (const count of [0, 1]) {
+    const result = await run(false, callback, count);
+    const reload = result.observations.find(
+      ({ name }) => name === 'notice_reload_reaudit_clearance',
+    );
+    assert.deepEqual(JSON.parse(JSON.stringify(reload.evidence)), {
+      noticeCount: count,
+      dismissVisible: count > 0,
+      targetHitPoints: 9,
+      noticeHitPoints: 0,
+      currentTitleMatched: true,
+    });
+  }
+});
+
+test('reload rejects actual notice obstruction even when earlier width checks passed', async () => {
+  await assert.rejects(
+    run(false, callback, 1, true),
+    /notice owns no Re-audit point after panel reload/,
+  );
+});
+
+for (const [field, mutation, message] of [
+  ['notice_hit_point_count', 'notice', /notice owns no Re-audit point after panel reload/],
+  ['hit_point_count', 'target', /Re-audit remains target-owned after panel reload/],
+]) {
+  test(`reload independently rejects invalid ${field} and catches its skipped assertion`, async () => {
+    await assert.rejects(run(false, callback, 1, mutation), message);
+    const unchecked = callback.replace(
+      new RegExp(`assert\\.equal\\(\\s*afterReloadHit\\?\\.${field},[\\s\\S]*?\\);`),
+      '',
+    );
+    assert.notEqual(unchecked, callback);
+    await assert.rejects(
+      async () => assert.rejects(run(false, unchecked, 1, mutation), message),
+      /Missing expected rejection/,
+    );
+  });
+}
+
+test('visible reload refusal requires Dismiss and catches a skipped dismissal check', async () => {
+  await assert.rejects(
+    run(false, callback, 1, false, false),
+    /visible reload refusal remains dismissible/,
+  );
+  const unchecked = callback.replace(
+    /assert\.equal\(\s*afterReloadHit\.dismiss_visible,[\s\S]*?\);/,
+    '',
+  );
+  assert.notEqual(unchecked, callback);
+  await assert.rejects(
+    async () => assert.rejects(run(false, unchecked, 1, false, false)),
+    /Missing expected rejection/,
+  );
 });

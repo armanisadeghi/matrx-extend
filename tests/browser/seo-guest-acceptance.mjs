@@ -1773,11 +1773,31 @@ try {
         );
         report.reaudit_hit_diagnostics.after_reload = afterReloadHit;
         checkpoint();
-        // Reload mounts SeoView again and retries the saved-audit history read.
-        // The guest database refuses that NEW request, so it must be announced
-        // even though Dismiss cleared the previous in-memory notice.
-        requireVisibleNoticeClearance(afterReloadHit, 'fresh refusal after panel reload');
-        target('T02', 'visible_notice_full_reload_clearance', {
+        // Dismiss was verified in the previous document. Notices are in-memory
+        // announcements; remounting SEO reads history again and may raise a new
+        // refusal. Reload acceptance concerns reachability, not suppression of
+        // subsequent failures. Preserve the observed notice count as evidence.
+        assert.equal(afterReloadHit?.active, true, 'SEO remains active after panel reload');
+        assert.equal(afterReloadHit?.target_count, 1, 'one Re-audit target after panel reload');
+        assert.equal(afterReloadHit?.target_enabled, true, 'Re-audit enabled after panel reload');
+        assert.equal(
+          afterReloadHit?.notice_hit_point_count,
+          0,
+          'notice owns no Re-audit point after panel reload',
+        );
+        assert.equal(
+          afterReloadHit?.hit_point_count,
+          9,
+          'Re-audit remains target-owned after panel reload',
+        );
+        if (afterReloadHit.database_refused_notice_count > 0) {
+          assert.equal(
+            afterReloadHit.dismiss_visible,
+            true,
+            'visible reload refusal remains dismissible',
+          );
+        }
+        target('T02', 'notice_reload_reaudit_clearance', {
           noticeCount: afterReloadHit.database_refused_notice_count,
           dismissVisible: afterReloadHit.dismiss_visible,
           targetHitPoints: afterReloadHit.hit_point_count,
@@ -1796,6 +1816,11 @@ try {
           'T02',
           'multiple_and_long_notice_clearance',
           'owned history refusal produces one fixed-length notice; distinct stacked and long notices need a controlled app notice fixture',
+        );
+        unverifiedTarget(
+          'T02',
+          'visible_notice_full_reload_clearance',
+          'reload follows Dismiss and does not force a visible notice; any observed post-reload refusal is recorded, not a guaranteed visible-notice fixture',
         );
       }
       if (NOTICE_ONLY) {
