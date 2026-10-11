@@ -1,5 +1,68 @@
 // A failed native pointer must leave a useful receipt, even when the panel
 // contains account data. Keep only the driver's fixed categories and counts.
+import { evaluate } from './settings-panel-driver.mjs';
+
+// Sample the same footer button and hit points as the trusted pointer driver.
+// This is observation only: no click, notice dismissal, DOM text, or geometry
+// leaves the page. Run it while the synthetic refusal is visible, after Retry,
+// and immediately before the manual click to separate persistence from timing.
+export async function observeSeoReauditHit(panel) {
+  try {
+    return await evaluate(
+      panel,
+      `(() => {
+    const tabs = [...document.querySelectorAll('button[role="tab"][title="SEO"]')]
+      .filter((button) => !button.closest('[role="tabpanel"]'));
+    const tab = tabs.length === 1 ? tabs[0] : null;
+    const pane = tab && document.getElementById(tab.getAttribute('aria-controls') ?? '');
+    const active = tab?.getAttribute('aria-selected') === 'true' &&
+      pane?.getAttribute('data-state') === 'active';
+    const buttons = active ? [...pane.querySelectorAll('button')]
+      .filter((button) => button.textContent.trim() === 'Re-audit') : [];
+    const target = buttons.length === 1 ? buttons[0] : null;
+    const notices = [...document.querySelectorAll('[role="alert"]')]
+      .filter((alert) => alert.querySelector('.font-medium')?.textContent?.trim() ===
+        'Saved audits unavailable' &&
+        alert.querySelector('p')?.textContent?.includes(
+          'the database refused the request because your account is not allowed'));
+    if (!target) return { active: active === true, target_count: buttons.length,
+      target_enabled: null, database_refused_notice_count: notices.length,
+      hit_point_count: null, notice_hit_point_count: null };
+    target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
+    const rect = target.getBoundingClientRect();
+    const bounds = { left: Math.max(0, rect.left), top: Math.max(0, rect.top),
+      right: Math.min(innerWidth, rect.right), bottom: Math.min(innerHeight, rect.bottom) };
+    for (let ancestor = target.parentElement; ancestor; ancestor = ancestor.parentElement) {
+      const style = getComputedStyle(ancestor), box = ancestor.getBoundingClientRect();
+      const clips = (overflow) => /^(auto|scroll|hidden|clip)$/.test(overflow);
+      if (clips(style.overflowX)) {
+        bounds.left = Math.max(bounds.left, box.left + ancestor.clientLeft);
+        bounds.right = Math.min(bounds.right, box.left + ancestor.clientLeft + ancestor.clientWidth);
+      }
+      if (clips(style.overflowY)) {
+        bounds.top = Math.max(bounds.top, box.top + ancestor.clientTop);
+        bounds.bottom = Math.min(bounds.bottom, box.top + ancestor.clientTop + ancestor.clientHeight);
+      }
+    }
+    const points = [];
+    if (bounds.right > bounds.left && bounds.bottom > bounds.top) {
+      for (const fy of [0.5, 0.25, 0.75]) for (const fx of [0.5, 0.25, 0.75])
+        points.push({ x: bounds.left + (bounds.right - bounds.left) * fx,
+          y: bounds.top + (bounds.bottom - bounds.top) * fy });
+    }
+    const hits = points.map(({ x, y }) => document.elementFromPoint(x, y));
+    return { active: active === true, target_count: buttons.length,
+      target_enabled: !target.disabled, database_refused_notice_count: notices.length,
+      hit_point_count: hits.filter((hit) => hit === target || target.contains(hit)).length,
+      notice_hit_point_count: hits.filter((hit) => notices.some((notice) =>
+        notice === hit || notice.contains(hit))).length };
+  })()`,
+    );
+  } catch {
+    return { sample_unavailable: true };
+  }
+}
+
 const PHASES = new Set([
   'before_target_resolution',
   'target_selected',

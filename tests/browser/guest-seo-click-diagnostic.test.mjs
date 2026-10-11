@@ -1,7 +1,55 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { captureSeoClickFailure, clickSeoReaudit } from './guest-seo-click-diagnostic.mjs';
+import { Window } from 'happy-dom';
+import {
+  captureSeoClickFailure,
+  clickSeoReaudit,
+  observeSeoReauditHit,
+} from './guest-seo-click-diagnostic.mjs';
+
+test('Re-audit hit sample distinguishes a database notice from a clear target', async () => {
+  const window = new Window();
+  try {
+    window.document.body.innerHTML = `<button role="tab" title="SEO" aria-selected="true"
+      aria-controls="seo-pane"></button><div id="seo-pane" role="tabpanel" data-state="active">
+      <button>Re-audit</button></div><div role="alert"><div class="font-medium">
+      Saved audits unavailable</div><p>the database refused the request because your account is not allowed</p></div>`;
+    const button = window.document.querySelector('#seo-pane button');
+    const notice = window.document.querySelector('[role="alert"]');
+    const rect = { x: 0, y: 0, left: 0, top: 0, right: 90, bottom: 30, width: 90, height: 30 };
+    for (const element of window.document.querySelectorAll('*')) {
+      element.getBoundingClientRect = () => rect;
+      element.scrollIntoView = () => {};
+    }
+    let occluded = true;
+    window.document.elementFromPoint = () => (occluded ? notice : button);
+    const panel = {
+      async send(_method, args) {
+        return { result: { value: JSON.parse(JSON.stringify(window.eval(args.expression))) } };
+      },
+    };
+    assert.deepEqual(await observeSeoReauditHit(panel), {
+      active: true,
+      target_count: 1,
+      target_enabled: true,
+      database_refused_notice_count: 1,
+      hit_point_count: 0,
+      notice_hit_point_count: 9,
+    });
+    occluded = false;
+    assert.deepEqual(await observeSeoReauditHit(panel), {
+      active: true,
+      target_count: 1,
+      target_enabled: true,
+      database_refused_notice_count: 1,
+      hit_point_count: 9,
+      notice_hit_point_count: 0,
+    });
+  } finally {
+    window.happyDOM.abort();
+  }
+});
 
 test('SEO click failure receipt retains pointer boundary without page content', () => {
   const error = new Error('private account text');

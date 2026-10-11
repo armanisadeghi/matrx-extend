@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { observeSeoReauditHit } from './guest-seo-click-diagnostic.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REFUSAL = JSON.stringify({
@@ -76,7 +77,12 @@ async function historyState(panel) {
 
 // Only the precise owned-page history GET is intercepted. The panel, Supabase
 // query builder, fetch, React state, trusted clicks and rendered DOM stay real.
-export async function runNativeSeoHistoryRecovery({ panel, page, onStage = () => {} }) {
+export async function runNativeSeoHistoryRecovery({
+  panel,
+  page,
+  onStage = () => {},
+  onHit = () => {},
+}) {
   const pageUrl = new URL('/seo-metadata-article', page.url()).href;
   let failed = 0;
   let succeeded = 0;
@@ -147,6 +153,7 @@ export async function runNativeSeoHistoryRecovery({ panel, page, onStage = () =>
       (state) => state?.linked && state.expanded && state.alert && state.retryCount === 1,
       15000,
     );
+    onHit('history_refused', await observeSeoReauditHit(panel));
     onStage('history_retry_click');
     await click(panel, 'title', 'Read saved audits for this URL again.');
     const loading = await waitFor(
@@ -162,6 +169,7 @@ export async function runNativeSeoHistoryRecovery({ panel, page, onStage = () =>
       (state) => state?.linked && state.expanded && state.empty && !state.alert && succeeded === 1,
       15000,
     );
+    onHit('history_recovered', await observeSeoReauditHit(panel));
     assert.equal(interceptionFailure, false, 'history retry CDP response was delivered');
     return requireSeoHistoryRecovery(failure, loading, recovered, { failed, succeeded });
   } finally {

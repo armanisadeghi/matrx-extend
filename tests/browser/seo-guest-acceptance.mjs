@@ -19,7 +19,7 @@ import {
 } from '../../scripts/hosted-seo-route.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
-import { clickSeoReaudit } from './guest-seo-click-diagnostic.mjs';
+import { clickSeoReaudit, observeSeoReauditHit } from './guest-seo-click-diagnostic.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
 import { runNativeSeoHistoryRecovery } from './seo-history-native-recovery.mjs';
@@ -1316,6 +1316,10 @@ try {
           panel,
           page,
           onStage: (stage) => enter(stage),
+          onHit: (stage, state) => {
+            report.reaudit_hit_diagnostics ??= {};
+            report.reaudit_hit_diagnostics[stage] = state;
+          },
         });
         target('T06', 'guest_history_error_retry_fresh_empty_read', history);
         advance('guest_history_recovery_complete', history);
@@ -1559,6 +1563,8 @@ try {
       target('T01', 'new_url_replaces_visible_title', { twoDistinctPublicTitles: true });
 
       await observe('manual_reaudit_preflight', () => seoContent(panel));
+      report.reaudit_hit_diagnostics ??= {};
+      report.reaudit_hit_diagnostics.before_click = await observeSeoReauditHit(panel);
       enter('manual_reaudit_click');
       await clickSeoReaudit(panel, report, click);
       advance('manual_reaudit_click_dispatched', { trustedInput: true });

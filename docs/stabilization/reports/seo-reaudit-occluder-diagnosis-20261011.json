@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "subject": "guest SEO Re-audit pre-dispatch pointer failure after controlled T06",
+  "source_run_id": 38124088927,
+  "source_sha": "9b8511eecac2853eb1d091f2e3681d42ce2f99b0",
+  "frozen_product_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+  "verdict": "CAUSE_UNCONFIRMED_DIAGNOSTIC_GAP_NARROWED",
+  "observed": {
+    "t06": "A controlled 403 to the owned SEO history GET rendered an error; Retry issued a fresh GET and rendered an empty history.",
+    "later_click": "The pointer driver found one visible Re-audit button, but no stable hit point before dispatch. Its final sample reported hit_target=false, selected_point_available=false, center_hit_category=other_element, and a database_refused alert outside any tab panel.",
+    "no_dispatch": "manual_reaudit_click_dispatched was absent; T02 is unverified.",
+    "source_boundary": "The SEO history refusal calls failDbCall, which pushes a global notice. NoticeHost places pointer-enabled alert cards in a fixed bottom overlay above the SEO footer. This makes overlap plausible, but the archived receipt does not identify notice title, actual overlap across all tested points, or the timing of notice arrival."
+  },
+  "hypotheses": [
+    {
+      "cause": "The controlled T06 refusal notice persists after Retry and covers all nine Re-audit hit points.",
+      "falsifiable_prediction": "At history_refused and history_recovered, the sampled Saved audits unavailable refusal count is one and notice_hit_point_count is nine; before_click it remains nine while hit_point_count is zero.",
+      "one_variable_test": "Compare the three new snapshots in a same-artifact controlled hosted run; a future no-refusal counterpart must hold page, viewport, artifact and sequence constant."
+    },
+    {
+      "cause": "A different database refusal notice, unrelated to T06, covers the footer.",
+      "falsifiable_prediction": "The specific Saved audits unavailable refusal count is zero or its hit count is zero while the pointer driver still reports database_refused as the occluder.",
+      "one_variable_test": "Compare the allowlisted specific-notice sample with the existing generic pointer receipt at before_click."
+    },
+    {
+      "cause": "The footer is clipped or covered by the panel layout independently of the notice.",
+      "falsifiable_prediction": "The specific refusal notice has zero sampled hits, but the enabled Re-audit target still has zero hits in the same viewport.",
+      "one_variable_test": "Read hit_point_count and notice_hit_point_count from one before_click snapshot; use the existing pointer driver's clipping and interior-hit data if it fails."
+    },
+    {
+      "cause": "A transient layout or animation moves the button between preflight and the trusted click.",
+      "falsifiable_prediction": "before_click has target hit points greater than zero, yet the immediately following pointer stability loop ends with stable_samples zero.",
+      "one_variable_test": "Compare the new before_click snapshot to the existing click_failure_diagnostic in the same run."
+    }
+  ],
+  "instrumentation": {
+    "stages": ["history_refused", "history_recovered", "before_click"],
+    "fields": ["active", "target_count", "target_enabled", "database_refused_notice_count", "hit_point_count", "notice_hit_point_count"],
+    "privacy": "Only fixed booleans and counts leave the panel; no DOM text, URLs, geometry, screenshots, or credentials are retained.",
+    "local_guard": "node --test tests/browser/guest-seo-click-diagnostic.test.mjs tests/browser/seo-history-native-recovery.test.mjs"
+  },
+  "next_discriminating_run": "With run-owner coordination, execute the existing guarded hosted guest-seo controlled case on one frozen development artifact and inspect reaudit_hit_diagnostics at all three stages plus the pointer failure receipt. If the specific refusal occupies every point after Retry, run a same-artifact controlled counterpart with only the synthetic refusal disabled, or a guarded trusted dismissal of only that notice, before classifying a product overlay defect. Do not credit T02 until the real click dispatches and its behavior passes.",
+  "limits": [
+    "The local happy-dom fixture proves the sampler distinguishes an occluding alert from an exposed button; it cannot reproduce native CSS stacking or prove the hosted failure's cause.",
+    "No hosted run was dispatched in this lane and no product source was changed."
+  ]
+}
