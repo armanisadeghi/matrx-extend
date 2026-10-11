@@ -2554,7 +2554,9 @@ Every entry follows this shape:
 - **What it does:** the SEO tab used to render one thing from the previous saved
   audit — its timestamp. It now states the VERDICT ("3 fewer images missing alt
   text"), lists only what changed, and lets you open every saved audit for the URL.
-- **Where to test:** SEO tab. Requires sign-in (rows are RLS-scoped by `created_by`).
+- **Where to test:** SEO tab. Saving and browsing real rows require sign-in
+  (rows are RLS-scoped by `created_by`); the controlled guest error/retry check
+  uses an owned page and an intercepted read.
 - **Steps:**
   1. Open any page you can edit (a local dev page is easiest) → SEO tab → **Save**.
   2. Change something measurable on the page: edit the `<title>`, add an `alt=""`
@@ -2600,6 +2602,15 @@ Every entry follows this shape:
   - Restore the history response, click **Retry history**, and verify a fresh
     read for this URL displays the saved row and clears the failure. A delayed
     response from the previous URL must not replace the new page's history.
+- **Native guest boundary:** The guarded hosted `guest-seo` controlled scope
+  opens an owned page and lets the real SEO pane issue its saved-history GET.
+  CDP answers only that exact history request with a PostgREST 42501 refusal.
+  Verify the open History control, error alert and Retry history; click Retry
+  through a trusted pointer. Hold the second exact GET and verify **Loading
+  saved audits…** before returning an empty success. Verify the error clears
+  and **No saved audits for this URL.** appears. This
+  covers the guest UI transition only; member/admin and live backend error
+  behavior still require native retests.
 - **Automated:** `tests/unit/seo-history-recovery.test.tsx` covers real query
   failures, loading/empty access, user retry through a fresh read, and navigation
   races. `tests/unit/seo-diff.test.ts` pins every verdict string, the

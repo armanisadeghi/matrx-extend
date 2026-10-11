@@ -21,6 +21,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
+import { runNativeSeoHistoryRecovery } from './seo-history-native-recovery.mjs';
 import {
   observeSocialCopyOutcome,
   requireNarrowSeoLayout,
@@ -112,7 +113,14 @@ const report = {
     { case: 'T01', part: 'one audit per URL and slow-old-result race' },
     { case: 'T02', part: 'stale advice replacement and failure report after re-audit' },
     { case: 'T03', part: 'unreachable HTTP(S), other restricted schemes, and reload dimension' },
-    { case: 'T04-T06,T08', part: 'database save, history, and diff flows' },
+    { case: 'T04,T05,T08', part: 'database save, saved-row history, and diff flows' },
+    {
+      case: 'T06',
+      part:
+        SEO_CASE_SCOPE === 'controlled'
+          ? 'guest live-backend and member/admin history failure modes'
+          : 'guest/member/admin history failure and retry modes',
+    },
     {
       case: 'T07',
       part: 'member/admin role gates and JSON contents; guest clipboard formats are checked separately',
@@ -1302,6 +1310,15 @@ try {
     ownedPages: OWNED_SEO_METADATA_PAGES,
     exercisePanel: async ({ page, panel, browserSession, panelTarget }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
+      if (SEO_CASE_SCOPE === 'controlled') {
+        const history = await runNativeSeoHistoryRecovery({
+          panel,
+          page,
+          onStage: (stage) => enter(stage),
+        });
+        target('T06', 'guest_history_error_retry_fresh_empty_read', history);
+        advance('guest_history_recovery_complete', history);
+      }
       if (SEO_CASE_SCOPE === 'metadata' || SEO_CASE_SCOPE === 'narrow') {
         if (SEO_CASE_SCOPE === 'narrow') {
           const currentViewport = await evaluate(

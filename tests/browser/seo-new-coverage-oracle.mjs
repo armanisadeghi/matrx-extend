@@ -174,7 +174,10 @@ export function seoCaseSelection(scope = 'full') {
     };
   return {
     scope,
-    selected_cases: ['T01', 'T02', 'T03', 'T07', 'T09', 'T14'],
+    selected_cases:
+      scope === 'controlled'
+        ? ['T01', 'T02', 'T03', 'T06', 'T07', 'T09', 'T14']
+        : ['T01', 'T02', 'T03', 'T07', 'T09', 'T14'],
     excluded_cases:
       scope === 'controlled' ? ['T09 volatile public detail', 'T09 optional metadata fixture'] : [],
   };
