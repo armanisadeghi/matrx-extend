@@ -1,0 +1,39 @@
+{
+  "review_id": "notes-startup-diagnostic-peer-20261011",
+  "status": "local_instrumentation_review_pass",
+  "case_id": "EXT-F-2006-T02",
+  "historical_run_id": 38181935400,
+  "scope": "Notes startup diagnostic instrumentation only; no hosted retry or product verification",
+  "changed_files": [
+    "tests/browser/notes-native-acceptance.mjs",
+    "tests/browser/notes-startup-diagnostic.mjs",
+    "tests/browser/notes-startup-diagnostic.test.mjs"
+  ],
+  "peer_review": {
+    "source": "Fresh independent peer result relayed by the owning task before commit",
+    "A": { "verdict": "PASS" },
+    "B": { "verdict": "PASS" },
+    "blocking_findings": [],
+    "focused_tests": "15/15 passed",
+    "biome": "pass",
+    "diff_check": "pass",
+    "limitation": "Peer did not independently observe the pre-change RED run. Builder RED and mutation evidence is separate below."
+  },
+  "builder_verification": {
+    "test_command": "node --test tests/browser/notes-startup-diagnostic.test.mjs tests/browser/notes-native-contract.test.mjs",
+    "focused_tests": "11/11 passed: seven diagnostics and four Notes contracts",
+    "initial_red": "Four startup-report assertions failed before driver instrumentation because startup_failure was absent; the same four passed after wiring.",
+    "mutation_proofs": [
+      "plant.py constant filesystem_missing category: RED with incorrect attribution assertion; restored IDENTICAL",
+      "plant.py dropped native stage forwarding: RED with incorrect attribution assertion; restored IDENTICAL"
+    ],
+    "real_harness_seam": "Missing-receipt failure executes runNativeSidepanelQa through the actual driver report boundary without browser spawn.",
+    "safe_output": "Injected credential-bearing message, URL, untrusted stage and error code remain absent from startup diagnostics; operation and category are fixed labels.",
+    "boundary": "Authentication failure after exercisePanel entry does not receive a startup diagnostic.",
+    "checks": ["Biome exact changed code paths passed", "Notes driver syntax check passed"]
+  },
+  "unchanged": ["Resource policy", "Resource admission", "Native harness", "Authentication", "Owned browser cleanup"],
+  "product_verdict": "unverified_zero_product_credit",
+  "causal_limit": "Historical caught startup failure remains unknown; CPU resource invalidation does not establish the child failure cause.",
+  "next_action": "Owning task reconciles and checks the full suite before pushing. A separately authorized, resource-valid hosted native member run is still required for T02 product credit."
+}

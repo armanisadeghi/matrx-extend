@@ -20,6 +20,10 @@ import {
   shouldHoldOwnedNotesPatch,
   verifyNotesSnapshot,
 } from './notes-native-contract.mjs';
+import {
+  notesNativeStartupOperation,
+  notesStartupErrorCategory,
+} from './notes-startup-diagnostic.mjs';
 import { MEMBER_TEST_ORGANIZATION_NAME, signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -46,6 +50,7 @@ const draftA = 'Confirm insurance eligibility before the patient arrives.';
 const draftB = `${draftA}\nCall the patient if coverage needs an updated card.`;
 const draftC = `${draftB}\nFlag the intake coordinator before check-in.`;
 let stage = 'receipt';
+let startupPending = true;
 const report = {
   schema_version: 1,
   cases:
@@ -69,11 +74,15 @@ function fail(code) {
 }
 async function identity() {
   if (!RECEIPT) fail('dev_receipt_required');
+  if (startupPending) stage = 'dev_receipt_read';
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
+  if (startupPending) stage = 'dev_receipt_validate';
   const extensionDir = receipt.extensionDir;
   requireLocalDevReceipt(receipt, extensionDir);
   if (!/^[a-f0-9]{40}$/.test(EXPECTED_SOURCE_SHA ?? '')) fail('expected_source_sha_required');
+  if (startupPending) stage = 'manifest_read';
   const manifest = JSON.parse(await readFile(join(extensionDir, 'manifest.json'), 'utf8'));
+  if (startupPending) stage = 'snapshot_verify';
   verifyNotesSnapshot({
     receipt,
     manifest,
@@ -830,11 +839,14 @@ async function clickOwnedNoteRow(panel) {
 try {
   const before = await identity();
   report.build = { before, after: null };
+  stage = 'imported_artifact_verify';
   report.imported_artifact = await verifyImportedNativeEvidence(before.extensionDir, RECEIPT);
   if (report.imported_artifact.sourceSha !== EXPECTED_SOURCE_SHA) fail('unexpected_source_sha');
+  stage = 'supabase_origin_read';
   const origin = await supabaseOrigin();
   if (origin !== 'https://db.matrxserver.com') fail('unexpected_supabase_origin');
   if (HOSTED_FIND) {
+    stage = 'hosted_provenance_verify';
     assert.equal(ROLE, 'member');
     assert.equal(CASE, 't02');
     assert.equal(report.imported_artifact.runId, Number(process.env.NOTES_EXPECTED_CI_RUN_ID));
@@ -843,13 +855,19 @@ try {
       Number(process.env.NOTES_EXPECTED_ARTIFACT_ID),
     );
   }
+  stage = 'private_config_read';
   const config = HOSTED_FIND ? null : await privateConfig();
+  stage = 'native_start';
   const native = await runNativeSidepanelQa({
+    onStage: (value) => {
+      if (startupPending) stage = notesNativeStartupOperation(value);
+    },
     headed: ROLE === 'member',
     extensionDir: before.extensionDir,
     expectedRelease: before,
     localDevReceiptPath: RECEIPT,
     exercisePanel: async ({ page, panel }) => {
+      startupPending = false;
       stage = 'real_signin';
       const hostedIdentity = HOSTED_FIND
         ? await signInSettings({
@@ -1326,7 +1344,12 @@ try {
     fail('unexpected_source_sha_after');
   report.status = 'pass';
   stage = 'complete';
-} catch {
+} catch (error) {
+  if (startupPending)
+    report.observations.startup_failure = {
+      operation: stage,
+      category: notesStartupErrorCategory(error),
+    };
   report.failure_stage = stage;
   report.failure_code ??= 'stage_operation_failed';
   process.exitCode = 1;
