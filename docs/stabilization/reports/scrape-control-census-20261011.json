@@ -1,0 +1,64 @@
+{
+  "task": "scrape-control-census-20261011",
+  "scope": "EXT-F-1007 primary Capture/Recapture/export toolbar and adjacent directly visible controls",
+  "source_sha": "b89fbe5f5c7940b6de42fcb1cf14aac1a2408c17",
+  "result": "no-control-or-case-gap-found",
+  "source_mapping": [
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:418-419",
+      "controls": [
+        "EXT-F-1007-C19",
+        "EXT-F-1007-C09"
+      ],
+      "behavior": "Adjacent Add to Project and Copy capture actions; C19 covers the project chooser, C09/T09 covers capture export."
+    },
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:493-499,830-834",
+      "controls": [
+        "EXT-F-1007-C01"
+      ],
+      "behavior": "Fast Capture/Re-capture action, disabled without page identity or while loading; T01 is the registered case."
+    },
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:485-491,223-252",
+      "controls": [
+        "EXT-F-1007-C03",
+        "EXT-F-1007-C04"
+      ],
+      "behavior": "Unsaved-edit recapture guard and Save Source entry; T03 and T04 cover confirmation and source landing."
+    },
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:843-858",
+      "controls": [
+        "EXT-F-1007-C02"
+      ],
+      "behavior": "Scroll & capture deep mode with progress state; T02 is the registered case."
+    },
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:534-550,596,635-636,703,745,790-802",
+      "controls": [
+        "EXT-F-1007-C08",
+        "EXT-F-1007-C09"
+      ],
+      "behavior": "Six result tabs and adjacent per-section copy menus; T08 and T09 are registered."
+    },
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:395-405",
+      "controls": [
+        "EXT-F-1007-C34"
+      ],
+      "behavior": "Retry page check when identity is unavailable; already separately registered."
+    }
+  ],
+  "role_cells": {
+    "guest": "EXT-F-1007 applicability true; feature cell remains partial; associated capture/export case evidence is bounded and does not close the whole role.",
+    "member": "Applicable; feature cell remains partial; current evidence does not establish full toolbar/case completion.",
+    "admin": "Applicable; feature cell remains unverified."
+  },
+  "inventory_decision": "No new IDs or cases added. Every actionable control in the bounded toolbar and its directly visible neighbors maps to an existing stable control ID and registered case(s). Existing incomplete and role-specific coverage remains explicitly open in the inventory.",
+  "limitations": [
+    "Source mapping does not establish runtime behavior or product acceptance.",
+    "Existing case procedures and feature cells remain as recorded; member/admin and full-surface acceptance are not promoted.",
+    "No browser or hosted run was performed."
+  ]
+}
