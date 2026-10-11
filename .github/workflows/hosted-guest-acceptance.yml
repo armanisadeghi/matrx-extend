@@ -77,7 +77,7 @@ on:
           - profile-member
           - startup-resource-diagnostic
       seo_case_scope:
-        description: Guest SEO checks to run; metadata runs one owned T09 metadata-door target
+        description: Guest SEO checks to run; metadata and narrow select bounded owned T09 targets
         required: false
         default: full
         type: choice
@@ -86,6 +86,7 @@ on:
           - controlled
           - readability
           - metadata
+          - narrow
       seo_metadata_fixture:
         description: Metadata source for full SEO continuation or the single owned T09 metadata target
         required: false
@@ -173,13 +174,14 @@ on:
           - project
           - none
       scrape_save_scope:
-        description: Single Save or bounded duplicate rename on the same owned article
+        description: Single Save, duplicate rename, or controlled rename refusal and retry
         required: false
         default: single
         type: choice
         options:
           - single
           - duplicate-rename
+          - duplicate-rename-retry
       scrape_width_mode:
         description: Scrape side-panel viewport mode (normal uses CDP viewport emulation)
         required: false
@@ -248,8 +250,8 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'D187 Save Source requires member auth.' >&2; exit 1; }
             [[ "$SCRAPE_SAVE_DESTINATION" == project || "$SCRAPE_SAVE_DESTINATION" == none ]] || { echo 'Unknown Save Source destination.' >&2; exit 1; }
-            [[ "$SCRAPE_SAVE_SCOPE" == single || "$SCRAPE_SAVE_SCOPE" == duplicate-rename ]] || { echo 'Unknown Save Source scope.' >&2; exit 1; }
-            [[ "$SCRAPE_SAVE_SCOPE" != duplicate-rename || "$SCRAPE_SAVE_DESTINATION" == none ]] || { echo 'Duplicate rename requires no destination.' >&2; exit 1; }
+            [[ "$SCRAPE_SAVE_SCOPE" == single || "$SCRAPE_SAVE_SCOPE" == duplicate-rename || "$SCRAPE_SAVE_SCOPE" == duplicate-rename-retry ]] || { echo 'Unknown Save Source scope.' >&2; exit 1; }
+            [[ "$SCRAPE_SAVE_SCOPE" == single || "$SCRAPE_SAVE_DESTINATION" == none ]] || { echo 'Duplicate rename requires no destination.' >&2; exit 1; }
           else
             [[ "$SCRAPE_SAVE_DESTINATION" == project ]] || { echo 'Save Source destination applies only to scrape-save-member.' >&2; exit 1; }
             [[ "$SCRAPE_SAVE_SCOPE" == single ]] || { echo 'Save Source scope applies only to scrape-save-member.' >&2; exit 1; }
@@ -264,7 +266,7 @@ jobs:
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'Member Data requires member auth.' >&2; exit 1; }
           fi
           [[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining || "$DESKTOP_SETTINGS_CASE" == pair-forget ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }
-          [[ "$SEO_CASE_SCOPE" == full || "$SEO_CASE_SCOPE" == controlled || "$SEO_CASE_SCOPE" == readability || "$SEO_CASE_SCOPE" == metadata ]] || { echo 'Unknown SEO case scope.' >&2; exit 1; }
+          [[ "$SEO_CASE_SCOPE" == full || "$SEO_CASE_SCOPE" == controlled || "$SEO_CASE_SCOPE" == readability || "$SEO_CASE_SCOPE" == metadata || "$SEO_CASE_SCOPE" == narrow ]] || { echo 'Unknown SEO case scope.' >&2; exit 1; }
           [[ "$SEO_CASE_SCOPE" != readability || "$ACCEPTANCE_CASE" == guest-seo ]] || { echo 'Readability SEO scope requires guest-seo.' >&2; exit 1; }
           [[ "$SEO_CASE_SCOPE" == full || "$ACCEPTANCE_CASE" == guest-seo ]] || { echo 'Controlled SEO scope requires guest-seo.' >&2; exit 1; }
           [[ "$SEO_METADATA_FIXTURE" == none || "$SEO_METADATA_FIXTURE" == airbnb || "$SEO_METADATA_FIXTURE" == owned ]] || { echo 'Unknown SEO metadata fixture.' >&2; exit 1; }
@@ -276,8 +278,8 @@ jobs:
           if [[ "$SEO_METADATA_FIXTURE" == airbnb ]]; then
             [[ "$ACCEPTANCE_CASE" == guest-seo && "$SEO_CASE_SCOPE" == full ]] || { echo 'SEO metadata fixture requires full guest-seo.' >&2; exit 1; }
           fi
-          if [[ "$SEO_METADATA_FIXTURE" == owned || "$SEO_CASE_SCOPE" == metadata ]]; then
-            [[ "$SEO_METADATA_FIXTURE" == owned && "$ACCEPTANCE_CASE" == guest-seo && "$SEO_CASE_SCOPE" == metadata && "$ACCEPTANCE_LANE" == B ]] || { echo 'Owned metadata target requires lane B guest-seo metadata scope.' >&2; exit 1; }
+          if [[ "$SEO_METADATA_FIXTURE" == owned || "$SEO_CASE_SCOPE" == metadata || "$SEO_CASE_SCOPE" == narrow ]]; then
+            [[ "$SEO_METADATA_FIXTURE" == owned && "$ACCEPTANCE_CASE" == guest-seo && ( "$SEO_CASE_SCOPE" == metadata || "$SEO_CASE_SCOPE" == narrow ) && "$ACCEPTANCE_LANE" == B ]] || { echo 'Owned SEO target requires lane B guest-seo metadata or narrow scope.' >&2; exit 1; }
           fi
           if [[ "${SEO_INTERRUPT_AFTER_TARGET:-none}" != none ]]; then
             [[ "$SEO_INTERRUPT_AFTER_TARGET" == manual_button_returns_to_current_page && "$ACCEPTANCE_CASE" == guest-seo && "$SEO_CASE_SCOPE" == controlled && "$SEO_METADATA_FIXTURE" == none && "$ACCEPTANCE_LANE" == B ]] || { echo 'SEO interruption requires lane B controlled guest-seo without fixture.' >&2; exit 1; }

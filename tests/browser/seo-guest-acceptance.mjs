@@ -23,6 +23,7 @@ import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { verifyGuestCopy } from './seo-guest-clipboard.mjs';
 import {
   observeSocialCopyOutcome,
+  requireNarrowSeoLayout,
   requireSeoDoorSourceRestoration,
   requireSocialCopyTarget,
   runCopyCheckThenRecapture,
@@ -63,10 +64,13 @@ const METADATA_FIXTURE_PAGE = 'https://www.airbnb.com/';
 const RUN_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'airbnb';
 const RUN_OWNED_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'owned';
 const SEO_CASE_SCOPE = process.env.SEO_GUEST_CASE_SCOPE ?? 'full';
-if (SEO_CASE_SCOPE === 'metadata')
+if (SEO_CASE_SCOPE === 'metadata' || SEO_CASE_SCOPE === 'narrow')
   assert.equal(RUN_OWNED_METADATA_FIXTURE, true, 'owned_metadata_scope_requires_owned_fixture');
 if (RUN_OWNED_METADATA_FIXTURE)
-  assert.equal(SEO_CASE_SCOPE, 'metadata', 'owned_metadata_fixture_requires_metadata_scope');
+  assert.ok(
+    SEO_CASE_SCOPE === 'metadata' || SEO_CASE_SCOPE === 'narrow',
+    'owned_metadata_fixture_requires_metadata_or_narrow_scope',
+  );
 if (SEO_CASE_SCOPE === 'readability')
   assert.equal(
     process.env.MATRX_HOSTED_ACCEPTANCE_CASE,
@@ -100,7 +104,9 @@ const report = {
       ? 'known-text guest SEO readability in an owned native side panel'
       : SEO_CASE_SCOPE === 'metadata'
         ? 'owned guest SEO hreflang and Article schema doors in a native side panel'
-        : 'public-page guest SEO actions in an owned native side panel',
+        : SEO_CASE_SCOPE === 'narrow'
+          ? 'owned guest SEO detail links and controls at a 360px native side-panel viewport'
+          : 'public-page guest SEO actions in an owned native side panel',
   targets: [],
   deferred: [
     { case: 'T01', part: 'one audit per URL and slow-old-result race' },
@@ -698,6 +704,64 @@ async function seoNextDetailState(panel) {
   );
 }
 
+async function narrowSeoLayoutObservation(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    ${SEO_SCOPE}
+    if (!linked || tab?.getAttribute('aria-selected') !== 'true') return { scopeValid: false };
+    const text = (value) => [...pane.querySelectorAll('span')]
+      .some((node) => node.textContent.trim() === value);
+    const buttons = [...pane.querySelectorAll('button')];
+    const allTargets = [...pane.querySelectorAll('button, a[href]')].filter((node) => {
+      const style = getComputedStyle(node), rect = node.getBoundingClientRect();
+      return rect.width > 0 && rect.height > 0 && style.visibility !== 'hidden'
+        && style.display !== 'none' && !node.closest('[inert]');
+    });
+    let unreachableTargets = 0;
+    for (const node of allTargets) {
+      node.scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'instant' });
+      const rect = node.getBoundingClientRect();
+      const paneRect = pane.getBoundingClientRect();
+      const x = Math.min(innerWidth - 1, Math.max(0, rect.left + rect.width / 2));
+      const y = Math.min(innerHeight - 1, Math.max(0, rect.top + rect.height / 2));
+      const hit = document.elementFromPoint(x, y);
+      if (rect.left < paneRect.left - 1 || rect.right > paneRect.right + 1
+        || rect.top < 0 || rect.bottom > innerHeight
+        || !(hit === node || node.contains(hit))) unreachableTargets += 1;
+    }
+    const international = [...pane.querySelectorAll('span')]
+      .find((node) => node.textContent.trim() === 'International')?.parentElement
+      ?.nextElementSibling;
+    const structuredData = [...pane.querySelectorAll('span')]
+      .find((node) => node.textContent.trim() === 'Structured data')?.parentElement
+      ?.nextElementSibling;
+    const documentRoot = document.documentElement;
+    return {
+      scopeValid: true,
+      viewportWidth: innerWidth,
+      documentScrollWidth: documentRoot.scrollWidth,
+      documentClientWidth: documentRoot.clientWidth,
+      paneScrollWidth: pane.scrollWidth,
+      paneClientWidth: pane.clientWidth,
+      detailGroups: {
+        title: text('Title & description'),
+        international: !!international,
+        structuredData: !!structuredData,
+      },
+      hreflangLinks: international?.querySelectorAll('a[href]').length ?? 0,
+      schemaChips: structuredData?.firstElementChild?.firstElementChild?.children.length ?? 0,
+      buttons: {
+        reAudit: buttons.filter((node) => node.textContent.trim() === 'Re-audit').length,
+        copyAudit: buttons.filter((node) => node.getAttribute('aria-label') === 'Copy audit').length,
+      },
+      targetCount: allTargets.length,
+      unreachableTargets,
+    };
+  })()`,
+  );
+}
+
 async function runKnownReadabilityAcceptance({ page, panel, originalTitle, originalReadability }) {
   const knownReadabilityResults = await runKnownReadabilityFixtures({
     page,
@@ -1232,7 +1296,26 @@ try {
     ownedPages: OWNED_SEO_METADATA_PAGES,
     exercisePanel: async ({ page, panel, browserSession, panelTarget }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
-      if (SEO_CASE_SCOPE === 'metadata') {
+      if (SEO_CASE_SCOPE === 'metadata' || SEO_CASE_SCOPE === 'narrow') {
+        if (SEO_CASE_SCOPE === 'narrow') {
+          const currentViewport = await evaluate(
+            panel,
+            '({ width: innerWidth, height: innerHeight })',
+          );
+          assert.ok(
+            Number.isSafeInteger(currentViewport?.height) && currentViewport.height > 0,
+            'narrow_seo_panel_height_unobserved',
+          );
+          await panel.send('Emulation.setDeviceMetricsOverride', {
+            width: 360,
+            height: currentViewport.height,
+            deviceScaleFactor: 0,
+            mobile: false,
+          });
+          advance('narrow_seo_viewport_set', {
+            viewportWidth: await evaluate(panel, 'innerWidth'),
+          });
+        }
         const fixtureUrl = new URL(OWNED_SEO_METADATA_PATH, page.url()).href;
         enter('owned_metadata_fixture_navigation');
         const response = await page.goto(fixtureUrl, { waitUntil: 'load' });
@@ -1285,6 +1368,20 @@ try {
           assert.equal(details.title, expected.title, 'native audit belongs to the owned article');
           schemaDoors = assertNextDoors(details, source);
         });
+        if (SEO_CASE_SCOPE === 'narrow') {
+          const observation = await observe('narrow_seo_layout_and_reachability', () =>
+            narrowSeoLayoutObservation(panel),
+          );
+          const layout = assertNext('narrow_layout', () => requireNarrowSeoLayout(observation));
+          target('T09', 'guest_detail_content_and_controls_reachable_at_360px', {
+            ...layout,
+            titleMatches: true,
+            hreflangMatchesSource: true,
+            schemaTypeMatchesSource: true,
+          });
+          advance('narrow_seo_360px_target_complete', layout);
+          return;
+        }
         assert.equal(candidates.uniqueAlternate.href, expected.alternate.href);
         assert.equal(candidates.uniqueSchema.href, 'https://schema.org/Article');
         enter('owned_metadata_hreflang_outbound_activation');

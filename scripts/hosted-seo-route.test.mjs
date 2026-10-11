@@ -101,6 +101,23 @@ test('owned metadata fixture routes one T09 target only on lane-B metadata scope
   );
 });
 
+test('owned metadata fixture routes the isolated 360px T09 dimension', () => {
+  assert.deepEqual(
+    hostedGuestSeoRoute('guest-seo', 'development', selected, 'narrow', 'owned').env,
+    {
+      SEO_GUEST_EXTENSION_DIR: selected.extensionDir,
+      SEO_GUEST_DEV_BUILD_RECEIPT: selected.relocatedReceipt,
+      SEO_GUEST_CASE_SCOPE: 'narrow',
+      SEO_GUEST_METADATA_FIXTURE: 'owned',
+      SEO_GUEST_INTERRUPT_AFTER_TARGET: undefined,
+    },
+  );
+  assert.throws(
+    () => hostedGuestSeoRoute('guest-seo', 'development', selected, 'narrow', 'none'),
+    /owned_metadata_fixture_requires_metadata_scope/,
+  );
+});
+
 test('resource bracket requires explicit full Airbnb SEO diagnostic and cannot produce acceptance targets', () => {
   assert.equal(hostedSeoResourceDiagnostic('guest-seo', 'full', 'airbnb', '0'), false);
   assert.equal(hostedSeoResourceDiagnostic('guest-seo', 'full', 'airbnb', '1'), true);
@@ -394,6 +411,7 @@ test('hosted preflight rejects invalid metadata, resource diagnostic, and interr
   assert.equal(preflight('guest-seo', 'full', 'airbnb').status, 0);
   assert.equal(preflight('guest-seo', 'full', 'airbnb', '1').status, 0);
   assert.equal(preflight('guest-seo', 'metadata', 'owned').status, 0);
+  assert.equal(preflight('guest-seo', 'narrow', 'owned').status, 0);
   assert.equal(
     preflight('guest-seo', 'controlled', 'none', '0', 'manual_button_returns_to_current_page')
       .status,
@@ -405,6 +423,8 @@ test('hosted preflight rejects invalid metadata, resource diagnostic, and interr
     ['guest-seo', 'full', 'owned'],
     ['guest-seo', 'metadata', 'none'],
     ['guest-seo', 'metadata', 'airbnb'],
+    ['guest-seo', 'narrow', 'none'],
+    ['guest-seo', 'narrow', 'airbnb'],
     ['guest-chat', 'full', 'airbnb'],
   ])
     assert.notEqual(preflight(acceptanceCase, scope, fixture).status, 0);
@@ -571,8 +591,9 @@ test('hosted workflow admits guest SEO on lane B with one exact development arti
   assert.match(workflow, /- guest-seo\n/);
   assert.match(workflow, /- readability\n/);
   assert.match(workflow, /- metadata\n/);
+  assert.match(workflow, /- narrow\n/);
   assert.match(workflow, /- owned\n/);
-  assert.match(workflow, /Owned metadata target requires lane B guest-seo metadata scope/);
+  assert.match(workflow, /Owned SEO target requires lane B guest-seo metadata or narrow scope/);
   assert.match(workflow, /SEO_CASE_SCOPE" == readability/);
   assert.match(workflow, /Readability SEO scope requires guest-seo/);
   assert.match(workflow, /guest-chat\|guest-seo\|guest-data\|member-data\|guest-scrape/);

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "run_id": 38105457992,
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    }
+  }
+}
