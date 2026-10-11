@@ -1,0 +1,50 @@
+{
+  "id": "EXT-D-0200",
+  "feature_id": "EXT-F-0003",
+  "case_ids": [],
+  "surface": "Generated stabilization release status and checklist",
+  "auth_mode": "infrastructure; no product auth mode exercised",
+  "role_org_permissions": {
+    "role": "not applicable",
+    "organization": "not applicable",
+    "permissions": "read-only daily release evidence"
+  },
+  "title": "Generated current release truth uses a frozen historical coverage checkpoint",
+  "severity": "S2: stale release status misrepresents pending Store review",
+  "priority": "P1: stabilization evidence correctness",
+  "state": "fixed",
+  "owner": "tracker_current_release_truth_1011",
+  "preconditions": ["October 1 coverage audit and newer dated daily Store records exist."],
+  "reproduction": [
+    "Run python3 scripts/generate-stabilization-tracker.py.",
+    "Read current release paragraphs in STATUS.md and CHECKLIST.md."
+  ],
+  "expected": "Current release observations derive from latest valid dated daily Store record with observation time and separate public/private evidence boundaries; old audit is historical.",
+  "actual": "Generator reads only fixed October 1 audit and labels its no-pending-review release claim current despite October 11 authenticated pending review evidence.",
+  "cause": "Both Markdown sections source current release text from read_coverage_audit; daily Store records were never read.",
+  "sibling_census": [
+    "STATUS.md and CHECKLIST.md share the repaired daily record renderer. STATUS.html had no release paragraph; its coverage matrix remains generated."
+  ],
+  "evidence": [
+    "docs/stabilization/reports/store-release-followthrough-20261011.json",
+    "docs/stabilization/reports/coverage-audit-20261001.json",
+    "scripts/test_stabilization_release_truth.py"
+  ],
+  "verification": [
+    "Old generator RED: missing public listing release paragraph assertion.",
+    "Real render regression PASS for October 11, October 10 dashboard-unavailable evidence, malformed newer JSON and absence of valid daily records.",
+    "In-memory constant and skipped release renderer mutants rejected."
+  ],
+  "reviewer": "pending independent generator/output verification",
+  "closure_requirement": "Independent verification of generator, regression and generated current/historical release sections.",
+  "release_status": "Infrastructure documentation generator only; no Store mutation, build or release.",
+  "next_action": "Independent review before closing; Store dashboard and product acceptance out of scope.",
+  "transition_history": [
+    {
+      "at": "2026-10-11T21:17:50.674120+00:00",
+      "from": null,
+      "to": "fixed",
+      "reason": "Reproduced stale current claim, repaired shared rendering boundary and verified regression; independent verification pending."
+    }
+  ]
+}

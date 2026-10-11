@@ -28,6 +28,40 @@ def read_coverage_audit():
     return json.loads(path.read_text()) if path.exists() else {}
 
 
+def current_store_release_lines():
+    """Select dated observations, never interpret listing visibility as review approval."""
+    records = []
+    for path in (BASE / "reports").glob("store-release-followthrough-????????.json"):
+        try:
+            data = json.loads(path.read_text())
+            observed = datetime.datetime.fromisoformat(data["observed_at"].replace("Z", "+00:00"))
+            day = datetime.datetime.strptime(path.stem[-8:], "%Y%m%d").date()
+            if data.get("schema_version") != 1 or not all(isinstance(data.get(key, {}), dict) for key in ("private_status", "authenticated_dashboard")):
+                continue
+            listing = data["public_listing"]
+            version = listing["rendered_details_version"]
+            if observed.tzinfo is None or observed.date() != day or not isinstance(version, str) or not version:
+                continue
+            records.append((observed, path.name, data))
+        except (ValueError, KeyError, TypeError, AttributeError):
+            continue
+    if not records:
+        return ["No valid dated daily Store record; current public version and private review state are unverified."]
+    _, name, data = max(records, key=lambda record: (record[0], record[1]))
+    lines = [f"Last observed **{data['observed_at']}**; [daily Store record](reports/{name}).",
+             f"**Public listing:** {data['public_listing']['rendered_details_version']}. Public listing does not establish private review state."]
+    private = data.get("private_status", {})
+    dashboard = data.get("authenticated_dashboard", {})
+    if private.get("authenticated_dashboard_observation"):
+        lines.append(f"**Authenticated dashboard:** {private['authenticated_dashboard_observation']}. Observer: {private.get('authenticated_dashboard_observer', 'time not separately recorded')}.")
+    elif dashboard.get("last_verified_at"):
+        lines.append(f"**Authenticated dashboard:** current dashboard unavailable; last verified {dashboard['last_verified_at']}: published {dashboard.get('last_verified_public_version', 'unverified')}, pending {dashboard.get('last_verified_pending_version', 'unverified')}. {dashboard.get('limitation', '')}")
+    else:
+        lines.append("**Authenticated dashboard:** private review state unverified; no authenticated observation recorded.")
+    lines.append("These observations are bounded to their recorded times; source versions and local artifacts do not establish Store publication or product acceptance.")
+    return lines
+
+
 def inventory_source_delta(inventory):
     """Find changed source paths since the inventory base; exact anchor matching is only a triage hint."""
     source_sha = inventory.get("source_sha")
@@ -322,14 +356,15 @@ def render(inventory, defects):
                         " | " + ", ".join(f"{k.lower()} {sum(case_counts[m][k] for m in MODES)}" for k in ("Pass", "Partial", "Fail", "Unverified", "N/A")) +
                         f" | {len(active_defects)} |")
     md_lines += ["", "Role counts include only case-role combinations listed in each case. The all-role column includes every applicable recorded or unrecorded slot. Open each feature for case evidence, defects, and next action.", ""]
+    md_lines += ["## Current Store release observations", "", *current_store_release_lines(), ""]
     if coverage_audit:
         current = coverage_audit.get("current_verified_checkpoint", {})
-        md_lines += ["## Current artifact and bounded acceptance", "",
+        md_lines += ["## Historical audit checkpoint (coverage-audit-20261001.json)", "",
                      f"**Release:** {current.get('source_release', 'not recorded')} at `{current.get('release_commit', 'commit not recorded')}`. " +
                      current.get("release_claim", "Release gate status not recorded."),
                      f"**Local artifact:** {current.get('local_artifact', 'No receipt recorded.')}",
                      f"**Native evidence:** {current.get('native_notes', 'No current native evidence overlay recorded.')}",
-                     "These current-build checks supplement the inventory matrix; they do not promote unobserved cases or certify whole features.", ""]
+                     "These historical checks retain their original artifact boundary; they do not establish current Store state or certify whole features.", ""]
     for surface, items, _, _, _ in summary:
         md_lines += [f"## {surface}", ""]
         if surface == TOOL_SURFACE:
@@ -340,7 +375,7 @@ def render(inventory, defects):
 
     # Concise action sheet generated from the same inventory and current evidence overlay.
     checklist = ["# Stabilization checklist", "",
-                 f"Generated {generated_at} from inventory.json, defect records, and the current coverage audit. Inventory updated {inventory_updated}.", "",
+                 f"Generated {generated_at} from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated {inventory_updated}.", "",
                  "## Current truth", "",
                  f"- Scope: {len(features)} feature records, {total_cases} cases, {total_controls} controls, {sum(mode_slot_counts[m].total() for m in MODES)} applicable case-role slots.",
                  f"- Case results: " + ", ".join(f"{k.lower()} {slot_counts[k]}" for k in ("Pass", "Partial", "Fail", "Unverified", "N/A")) +
@@ -348,7 +383,8 @@ def render(inventory, defects):
                  f"- Fully verified feature-role pairs: {fully_verified_pairs}/{feature_role_pairs} under the rule that every applicable case passes and every control maps to a case.",
                  f"- Procedure gaps: {procedure_gaps['missing_steps']} missing steps; {procedure_gaps['missing_expected']} missing expected outcomes; {procedure_gaps['missing_control_links']} missing control links.",
                  "- Defect states: " + ", ".join(f"{state} {defect_counts[state]}" for state in ("closed", "retest-pass", "fixed", "in-fix", "open") if defect_counts[state]) + ". A fixed or closed defect is not a feature-level UI pass.", "",
-                 "## Current-build evidence", ""]
+                 "## Current Store release observations", "", *current_store_release_lines(), "",
+                 "## Historical audit checkpoint (coverage-audit-20261001.json)", ""]
     if coverage_audit:
         current = coverage_audit.get("current_verified_checkpoint", {})
         checklist += [f"- **Release {current.get('source_release', 'unknown')}:** {current.get('release_claim', 'No release-gate evidence recorded.')}",

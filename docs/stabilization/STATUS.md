@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-11 21:12 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T20:03:52Z. 205 features · 792 cases · 1367 controls · 199 linked defect records.
+Generated 2026-10-11 21:18 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T20:03:52Z. 205 features · 792 cases · 1367 controls · 200 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -17,7 +17,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 4 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 1, unverified 19, n/a 0 | 7 |
-| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
+| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 11 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 4, partial 6, fail 0, unverified 23, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 18 pass · 6 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 32, partial 16, fail 0, unverified 49, n/a 1 | 3 |
@@ -55,12 +55,19 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 
 Role counts include only case-role combinations listed in each case. The all-role column includes every applicable recorded or unrecorded slot. Open each feature for case evidence, defects, and next action.
 
-## Current artifact and bounded acceptance
+## Current Store release observations
+
+Last observed **2026-10-11T17:25:49Z**; [daily Store record](reports/store-release-followthrough-20261011.json).
+**Public listing:** 0.2.205. Public listing does not establish private review state.
+**Authenticated dashboard:** Pending review; Draft package 0.2.479; Published package 0.2.205; Upload new package disabled. Observer: Owning release session, 2026-10-11 about 17:25 UTC; exact primary item under Matrx publisher.
+These observations are bounded to their recorded times; source versions and local artifacts do not establish Store publication or product acceptance.
+
+## Historical audit checkpoint (coverage-audit-20261001.json)
 
 **Release:** 0.2.205 at `2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3`. Last authenticated primary Store observation, October7 at16:23UTC: published/draft0.2.205, public, no pending review or reviewer action. No newer eligible Store ZIP established. Evidence .research/daily-store-20261007.json and daily-release-inventory-20261007.json. D97/D112 actual Store-installed acceptance and D96 owner-table/published verification remain open; no overall health claim. October8 dashboard observation was not admitted by the local resource guard; no newer dashboard status is claimed.
 **Local artifact:** Exact submitted Store 0.2.205 ZIP from hosted strict release run 37180303468, artifact 11294843385, source 2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3, SHA-256 6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26. This is a release package, not an installed Store build. Separate Profile development 0.2.189 evidence remains scoped to that older artifact.
 **Native evidence:** October8 original public205 adapted-unpacked guest regression passes in native37770686993 on stablelive32f3a398789e0a56b590089ff47b90aff6abe159 containing7ec6c76205. Opening/same-conversation follow-up/full-panel-reload new conversation each produced grounded visible terminal answers; postreload page tool completed and continuation ended complete/success. All3 current resourcejournals valid. Independent4a72d8b0 resolves earlier cross-turn diagnostic objection and confirms boundedpass. EXT-D-0172 closed; T10 guest pass preserves priorfailhistory. No StoreUIinstallation or overallChat/extensionhealth claim. Evidence .research/guest-position-fix-live-retest-20261008.json and .research/guest-position-native-adjudication-20261008.json. Earlier build-specific evidence follows and does not override this failure. October7 hosted37649504416 tested publicCRX205 unpacked: first, same-conversation follow-up and new conversation after reload returned actual terminal answers over HTTP200 against stable server8fe201b44e7a4c8fe3bf726b77546ad533926a60; all three owned guard journals valid. Evidence .research/daily-guest-20261007.json. This is not Store UI installation proof or broad health. Historical candidate/allowance/nonadmin evidence follows: Independent exact 0.2.205 Store payload loaded unpacked with only its public manifest key adapted: four real fresh-guest answers, fifth live HTTP 402 guest_ai_allowance_used with free-account remedy/no Retry, and returning exhausted-guest panel reload/New chat with a second distinct live HTTP 402 and same remedy. Signed-in non-admin Chat answered with admin check HTTP 200/zero rows. The organization-present probe was source-fixed at bef9a4de after its string/object mismatch, and independent source/narrow-guard review 216c24c0 passed. The historical local receipt remains false. Corrected hosted local-development-ZIP 0.2.205 member run 37182939504 passed organization presence, canonical non-admin HTTP 200/zero rows and a real Chat answer; D113 is closed. Evidence: .research/hosted-member205-final.json. That hosted member run does not verify the Store ZIP, full organization lifecycle, or a Store installation. See .research/guest-402-native-acceptance.json, .research/guest-returning-final-acceptance.json, and .research/member-org-diagnostic-repair.json. Historical Profile 0.2.189 bounded results are retained in inventory; none certify Store 0.2.205.
-These current-build checks supplement the inventory matrix; they do not promote unobserved cases or certify whole features.
+These historical checks retain their original artifact boundary; they do not establish current Store state or certify whole features.
 
 ## Development installation
 
@@ -194,9 +201,9 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 11. **Controls:** 8.
 
-**Next:** Run the remaining role cases in the extension and attach a result.
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0200
 
-**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed), [EXT-D-0188](defects/EXT-D-0188.json) (closed)
+**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed), [EXT-D-0188](defects/EXT-D-0188.json) (closed), [EXT-D-0200](defects/EXT-D-0200.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

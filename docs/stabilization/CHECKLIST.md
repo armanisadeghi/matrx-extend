@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-11 21:12 UTC from inventory.json, defect records, and the current coverage audit. Inventory updated 2026-10-11T20:03:52Z.
+Generated 2026-10-11 21:18 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-11T20:03:52Z.
 
 ## Current truth
 
@@ -8,9 +8,16 @@ Generated 2026-10-11 21:12 UTC from inventory.json, defect records, and the curr
 - Case results: pass 99, partial 92, fail 2, unverified 1066, n/a 2; 138 explicitly unverified and 928 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/396 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 0 missing steps; 0 missing expected outcomes; 1 missing control links.
-- Defect states: closed 127, retest-pass 9, fixed 51, in-fix 10, open 1. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 127, retest-pass 9, fixed 52, in-fix 10, open 1. A fixed or closed defect is not a feature-level UI pass.
 
-## Current-build evidence
+## Current Store release observations
+
+Last observed **2026-10-11T17:25:49Z**; [daily Store record](reports/store-release-followthrough-20261011.json).
+**Public listing:** 0.2.205. Public listing does not establish private review state.
+**Authenticated dashboard:** Pending review; Draft package 0.2.479; Published package 0.2.205; Upload new package disabled. Observer: Owning release session, 2026-10-11 about 17:25 UTC; exact primary item under Matrx publisher.
+These observations are bounded to their recorded times; source versions and local artifacts do not establish Store publication or product acceptance.
+
+## Historical audit checkpoint (coverage-audit-20261001.json)
 
 - **Release 0.2.205:** Last authenticated primary Store observation, October7 at16:23UTC: published/draft0.2.205, public, no pending review or reviewer action. No newer eligible Store ZIP established. Evidence .research/daily-store-20261007.json and daily-release-inventory-20261007.json. D97/D112 actual Store-installed acceptance and D96 owner-table/published verification remain open; no overall health claim. October8 dashboard observation was not admitted by the local resource guard; no newer dashboard status is claimed.
 - **Artifact:** Exact submitted Store 0.2.205 ZIP from hosted strict release run 37180303468, artifact 11294843385, source 2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3, SHA-256 6cc56340e928376db57d31460d3c06eb894fbd0415c87b0ff372f633c5f44a26. This is a release package, not an installed Store build. Separate Profile development 0.2.189 evidence remains scoped to that older artifact.
@@ -19,7 +26,7 @@ Generated 2026-10-11 21:12 UTC from inventory.json, defect records, and the curr
 
 ## Inventory freshness review
 
-Since inventory source `636d00857f774a7b15fe70032dd9c35cef44c015`, **182 `src/` paths changed** through `a752090d1e86e75083c2631a2b088d7421c508c7`. A direct path-anchor comparison matched 24 and left 158 without an exact inventory anchor.
+Since inventory source `636d00857f774a7b15fe70032dd9c35cef44c015`, **182 `src/` paths changed** through `45126fa1fc7c4b18a4e83296b612bb1399f4e512`. A direct path-anchor comparison matched 24 and left 158 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
