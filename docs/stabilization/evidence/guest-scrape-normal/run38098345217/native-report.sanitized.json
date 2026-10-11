@@ -1,0 +1,268 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1007",
+  "subtarget": "guest_normal_width_T08",
+  "status": "bounded_pass_guest_candidate",
+  "auth_mode": "guest",
+  "artifact": {
+    "kind": "native_store_zip_candidate_key_adapted",
+    "channel": "store",
+    "version": "0.2.479",
+    "source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "adapted_runtime_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0"
+  },
+  "browser_version": "Chrome/141.0.7390.37",
+  "extension_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "guest_account_observed": true,
+  "guest_auth_storage": {
+    "hasAccessToken": false,
+    "hasUserProfile": false
+  },
+  "width_mode": "normal",
+  "native_stage": "exercise_panel",
+  "t01_supporting_observation": {
+    "status": "partial",
+    "full_extension_reload_and_post_reload_fast_capture": true,
+    "remaining": ["member/admin modes remain unverified by this receipt."]
+  },
+  "t20_supporting_observation": {
+    "status": "passed",
+    "evidence": {
+      "initial_empty": true,
+      "initial_url": "http://localhost:49200/intake",
+      "navigation_url": "http://localhost:49200/referrals",
+      "previous_content_cleared": true,
+      "reload_origin_url": "http://localhost:49200/",
+      "previous_content_cleared_before_reload": true,
+      "reload_normal_page_url": "http://localhost:49200/referrals",
+      "reload_title": "Harbor Dental referral hours",
+      "reload_capture_enabled": true,
+      "extension_reload_empty": true
+    }
+  },
+  "reload_open_diagnostic": {
+    "enabled": false,
+    "evidence_class": "acceptance_eligible",
+    "perturbation": "none"
+  },
+  "replacement_panel_lifecycle": {
+    "management_reload_clicked": true,
+    "old_worker_execution_retired": true,
+    "old_panel_absent": true,
+    "replacement_worker_present": true,
+    "opener_received": true,
+    "opener_ok": true,
+    "opener_opened": true,
+    "callback_entered": true,
+    "callback_has_reply": true,
+    "replacement_panel_target_final_predicate": true,
+    "context_boundary": {
+      "first": {
+        "side_panel_count": 1,
+        "exact_expected_count": 0,
+        "elapsed_ms": 35
+      },
+      "last": {
+        "side_panel_count": 1,
+        "exact_expected_count": 1,
+        "elapsed_ms": 160
+      },
+      "attempts": 2,
+      "exact_expected_appeared": true
+    },
+    "scrape_tab_boundary": {
+      "first": {
+        "matched": 0,
+        "visible": 0
+      },
+      "last": {
+        "matched": 1,
+        "visible": 1
+      },
+      "attempts": 3
+    },
+    "post_reload_capture_boundary": {
+      "pointer_phase": "release_returned",
+      "click_events": 1,
+      "busy_observed": true,
+      "owned_edited_badge_visible": true,
+      "branch": "discard_confirmation",
+      "discard_dialog_visible": true,
+      "trusted_confirmation_returned": true,
+      "ready": true,
+      "article_selected": true,
+      "visible": true,
+      "fixture_title_matches": true,
+      "fixture_text_present": true
+    },
+    "milestones": [
+      {
+        "name": "reload_extension",
+        "at": "2026-10-11T00:33:42.485Z"
+      },
+      {
+        "name": "open_scrape_in_replacement_panel",
+        "at": "2026-10-11T00:33:45.726Z"
+      },
+      {
+        "name": "observe_replacement_scrape",
+        "at": "2026-10-11T00:33:46.003Z"
+      },
+      {
+        "name": "replacement_scrape_observed",
+        "at": "2026-10-11T00:33:46.425Z"
+      }
+    ]
+  },
+  "t08": {
+    "status": "partial",
+    "tabs_selected": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+    "matching_content": {
+      "article": true,
+      "images": {
+        "pane": "Images",
+        "state": "matching_content",
+        "count": 3,
+        "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+        "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+        "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+      },
+      "video": {
+        "pane": "Video",
+        "state": "matching_content",
+        "count": 2,
+        "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+      },
+      "links": true,
+      "seo": true,
+      "schema": true,
+      "images_empty": {
+        "pane": "Images",
+        "state": "empty",
+        "count": 0,
+        "paths": [],
+        "alt": [],
+        "natural_sizes": []
+      },
+      "video_empty": {
+        "pane": "Video",
+        "state": "empty",
+        "count": 0,
+        "paths": []
+      },
+      "links_empty": {
+        "pane": "Links",
+        "state": "empty",
+        "count": 0,
+        "add_control_visible": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1152,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      },
+      "article_empty": {
+        "pane": "Article",
+        "state": "empty",
+        "fallback_visible": true,
+        "pane_unchanged": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1058,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      }
+    },
+    "capture_invariance": {
+      "warm": {
+        "panes_compared": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+        "unchanged": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 4106,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      },
+      "reload": {
+        "panes_compared": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+        "unchanged": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 4106,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      }
+    },
+    "post_reload_populated_panes": {
+      "article": true,
+      "links": true,
+      "seo": true,
+      "schema": true,
+      "images": {
+        "pane": "Images",
+        "state": "matching_content",
+        "count": 3,
+        "paths": ["/intake.svg", "/appointment-card.svg", "/clinic-icon.svg"],
+        "alt": ["New patient intake desk", "Appointment card", "Clinic icon"],
+        "natural_sizes": [[640, 480], [96, 96], [32, 32]]
+      },
+      "video": {
+        "pane": "Video",
+        "state": "matching_content",
+        "count": 2,
+        "paths": ["/intake-walkthrough.mp4", "/referral-walkthrough.mp4"]
+      }
+    },
+    "post_reload_empty_panes": {
+      "images": {
+        "pane": "Images",
+        "state": "empty",
+        "count": 0,
+        "paths": [],
+        "alt": [],
+        "natural_sizes": []
+      },
+      "video": {
+        "pane": "Video",
+        "state": "empty",
+        "count": 0,
+        "paths": []
+      },
+      "links": {
+        "pane": "Links",
+        "state": "empty",
+        "count": 0,
+        "add_control_visible": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1152,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      },
+      "article": {
+        "pane": "Article",
+        "state": "empty",
+        "fallback_visible": true,
+        "pane_unchanged": true,
+        "export": {
+          "export_format": "full_capture_ai_markdown",
+          "bytes_compared": 1058,
+          "identity_unchanged": true,
+          "exported_payload_unchanged": true
+        }
+      }
+    },
+    "remaining": ["member/admin modes remain unverified by this receipt."]
+  },
+  "scope_limits": [
+    "Guest candidate-key-adapted unpacked artifact only; not Store-installed behavior.",
+    "Member/admin modes remain unverified.",
+    "600px CDP-emulated normal width; physical resize not tested.",
+    "Empty SEO/Schema states not asserted."
+  ]
+}

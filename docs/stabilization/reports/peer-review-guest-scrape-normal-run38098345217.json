@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_guest_scrape_t08_reload_reopen_review",
+  "reviewer": "/root/scrape_t08_independent_review",
+  "run_id": 38098345217,
+  "reviewed_at": "2026-10-11T00:38:00Z",
+  "verdict_a_behavior": {
+    "status": "PASS_BOUNDED_GUEST_ASSERTIONS",
+    "scope": "Guest T08 normal-width run on the exact v0.2.479 Store ZIP candidate, loaded unpacked after test-key adaptation.",
+    "findings": [
+      "The replacement worker received and answered the opener request; its callback entered and returned a reply.",
+      "The replacement panel target appeared after full extension reload, and the reopened Scrape capture was observed.",
+      "T08 capture invariance passed across all six panes warm and after reload; matching content and empty Article, Images, Video, and Links states were observed."
+    ],
+    "limits": [
+      "This is a bounded guest result; it does not establish a full T08 or EXT-F-1007 pass.",
+      "Member/admin, empty SEO/Schema states, physical resize, and actual Store-installed behavior remain unverified."
+    ]
+  },
+  "verdict_b_evidence_and_provenance": {
+    "status": "PARTIAL_UPLOAD_HYGIENE",
+    "provenance": "PASS",
+    "resource_finals": "All three current hosted journals are admitted, resourceValid=false is not present, and each final decision is valid with exit code 0. The local preflight is also valid.",
+    "evidence_integrity": "PASS; all ten hashes in receipt.sanitized.json match the retained package.",
+    "finding": "The uploaded hosted result artifact contains 27 resource journal files, mostly from earlier runs, because the workflow uses a broad upload glob. The retained package includes only this run's three sanitized hosted journals, so historic journals do not contribute to this verdict.",
+    "follow_up": "Narrow future workflow uploads to the current run's journal IDs."
+  },
+  "provenance": {
+    "workflow_source_sha": "232aee3bdd26a2de25d2999e996f162be740fc56",
+    "workflow_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38098345217",
+    "hosted_result_artifact_id": 11686544216,
+    "hosted_result_artifact_digest": "sha256:65ab22005e5acd886eb0705f43d98e5431dd7a46c2db0f25054cb65cad425b86",
+    "candidate_release_run_id": 38080281242,
+    "candidate_release_artifact_id": 11680078743,
+    "candidate_version": "0.2.479",
+    "candidate_source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+    "candidate_store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+    "adapted_runtime_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0"
+  },
+  "evidence": {
+    "receipt": "docs/stabilization/evidence/guest-scrape-normal/run38098345217/receipt.sanitized.json",
+    "native_report": "docs/stabilization/evidence/guest-scrape-normal/run38098345217/native-report.sanitized.json",
+    "resource_finals": "docs/stabilization/evidence/guest-scrape-normal/run38098345217/resource-finals.sanitized.json",
+    "screenshots": "docs/stabilization/evidence/guest-scrape-normal/run38098345217/screenshots/",
+    "hosted_artifact": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38098345217/artifacts/11686544216"
+  }
+}

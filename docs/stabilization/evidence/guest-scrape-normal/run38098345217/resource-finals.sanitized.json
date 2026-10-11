@@ -1,0 +1,32 @@
+{
+  "hosted_resource_finals": {
+    "hosted-package-38098345217-1.jsonl": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "sha256": "667ab5d04f906de26f2185a4dac2007172db7a51bcfdfc2d1bce10efd8efc37e"
+    },
+    "hosted-browser-38098345217-1.jsonl": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "sha256": "136801a994f17b231f15aeefc449efdd6b867995abf9aef89cbed1353b1833a0"
+    },
+    "hosted-guest-38098345217-1.jsonl": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "sha256": "4e5ae80b97edc8acf20e1a9192a16d6d32220757707050be576ccd4ebdfb1e04"
+    }
+  },
+  "local_preflight_final": {
+    "decision": "valid",
+    "admitted": true,
+    "resourceInvalid": false,
+    "exitCode": 0,
+    "sha256": "80ba356fff68b801c4e25eb1627105c0cab1bfe265a92a5449bb75e28925a38f"
+  }
+}

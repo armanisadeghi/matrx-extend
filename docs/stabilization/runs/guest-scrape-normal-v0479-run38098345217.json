@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "run_id": 38098345217,
+  "title": "Candidate v0.2.479 guest Scrape T08 normal-width reload/reopen retest",
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38098345217",
+  "product_verdict": "bounded_guest_candidate_pass_pending_independent_review",
+  "evidence_verdict": "post_reload_reopen_capture_and_surrounding_warm_assertions_observed",
+  "scope": "Guest only; exact candidate v0.2.479 Store ZIP key-adapted and loaded unpacked; controlled localhost fixture; 600px CDP emulated width.",
+  "tested": "All six populated panes, empty Article/Images/Video/Links states, capture/export invariance warm and after reload; full extension reload; replacement worker, opener callback/reply, replacement panel target and reopened Scrape capture observed.",
+  "unverified": "Member/admin, physical resize, Store-installed behavior, empty SEO/Schema states, and full EXT-F-1007 acceptance.",
+  "resource_valid": true,
+  "workflow_source_sha": "232aee3bdd26a2de25d2999e996f162be740fc56",
+  "candidate_source_sha": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "candidate_artifact_id": 11680078743,
+  "candidate_version": "0.2.479",
+  "evidence_dir": "docs/stabilization/evidence/guest-scrape-normal/run38098345217",
+  "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-normal-run38098345217.json",
+  "review_verdict": "PASS_BOUNDED_GUEST_ASSERTIONS; PARTIAL_UPLOAD_HYGIENE",
+  "upload_hygiene_followup": "Hosted upload included 27 resource journals, mostly historical; retained package includes only current-run sanitized journals. Restrict future uploads by current run ID."
+}
