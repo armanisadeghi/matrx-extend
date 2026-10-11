@@ -34,6 +34,7 @@ import {
   socialCopyButtonObservation,
   verifyManualRecapture,
 } from './seo-new-coverage-oracle.mjs';
+import { runForcedNoticeReload } from './seo-notice-reload-fixture.mjs';
 import {
   planNoticeViewports,
   restoreNativeNoticeViewport,
@@ -1817,11 +1818,21 @@ try {
           'multiple_and_long_notice_clearance',
           'owned history refusal produces one fixed-length notice; distinct stacked and long notices need a controlled app notice fixture',
         );
-        unverifiedTarget(
+        enter('forced_notice_native_reload');
+        report.forced_notice_reload = await runForcedNoticeReload({
+          panel,
+          pageUrl: publicPages[1].url,
+          title: publicPages[1].title,
+          selectedSeo,
+          seoContent,
+        });
+        checkpoint();
+        target(
           'T02',
-          'visible_notice_full_reload_clearance',
-          'reload follows Dismiss and does not force a visible notice; any observed post-reload refusal is recorded, not a guaranteed visible-notice fixture',
+          'visible_notice_full_reload_second_dismiss_at_native_360px',
+          report.forced_notice_reload,
         );
+        advance('forced_notice_native_reload_complete');
       }
       if (NOTICE_ONLY) {
         advance('notice_only_complete', { noticeChecksComplete: true });

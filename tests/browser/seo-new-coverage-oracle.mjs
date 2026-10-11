@@ -161,6 +161,7 @@ export function seoCaseSelection(scope = 'full') {
         'notice_wide_warm_navigation_reaudit_clearance',
         'manual_button_returns_to_current_page',
         'notice_reload_reaudit_clearance',
+        'visible_notice_full_reload_second_dismiss_at_native_360px',
       ],
       excluded_cases: ['all other SEO targets; no full T02 or D199 closure'],
     };
