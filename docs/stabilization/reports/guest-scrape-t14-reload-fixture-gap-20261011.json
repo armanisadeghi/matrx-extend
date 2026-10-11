@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "report_id": "guest-scrape-t14-reload-fixture-gap-20261011",
+  "created_at_utc": "2026-10-11T20:13:00Z",
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T14",
+  "mode": "guest",
+  "status": "blocked_unverified_natural_fixture_missing",
+  "scope": "Source and procedure feasibility trace for the T14 Reload page subtarget. No browser, build, test, workflow, or inventory status change.",
+  "source_revision": "d25beae09ebfe18fd4c206875d00322097071715",
+  "current_workflow": {
+    "path": ".github/workflows/hosted-guest-acceptance.yml",
+    "selector": {
+      "acceptance_lane": "A",
+      "acceptance_case": "scrape-error-recovery-guest",
+      "scrape_auth_mode": "guest",
+      "runner_label": "macos-15-intel",
+      "product_artifact": "exact successful main-push CI development_run_id and development_artifact_id"
+    },
+    "limitation": "The existing driver asserts that genuine host-permission denial displays Try again and no Reload page button. It does not exercise the T14 Reload page action."
+  },
+  "prior_run": {
+    "run_id": 38163178453,
+    "run_record": "docs/stabilization/runs/guest-scrape-t02-current-retry-run38163178453.json",
+    "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-current-run38163178453.json",
+    "result": "Valid bounded guest deep permission-denial/Try again/Dismiss behavior on frozen v0.2.500; T14 Reload page remains explicitly unverified."
+  },
+  "source_findings": [
+    {
+      "path": "src/lib/scrape/capture-error.ts",
+      "finding": "A genuine denied host permission produces only Try again. The Reload page action appears for a missing content script, no-result response, or other recoverable capture error; restricted URLs have no recovery actions."
+    },
+    {
+      "path": "src/lib/scrape/capture-with-fallback.ts",
+      "finding": "A missing receiver triggers real script injection and one retry. A second missing receiver is classified as no-content-script, described in code as a likely manifest/runtime issue."
+    },
+    {
+      "path": "tests/browser/scrape-error-recovery-guest.mjs",
+      "finding": "The existing hosted case drives an effective host-permission denial and asserts reloadPage is zero. Its scope and report do not claim Reload page behavior."
+    },
+    {
+      "path": ".research/scrape-deep-retry-preparation-20261008.json",
+      "finding": "Prior feasibility diagnosis records NO_EXECUTABLE_NATIVE_PROCEDURE_YET and rejects mocks, injected exceptions, restricted pages, changed/closed tabs, and stale pages as proof of a real recoverable error."
+    }
+  ],
+  "acceptance_fixture_prerequisites": [
+    "An owned ordinary HTTP(S) page with the same active tab and document identity throughout the failure and recovery sequence.",
+    "A reproducible real browser condition that makes the product capture path return a recoverable error and render the actual Reload page control, without mocks or injected app state.",
+    "Retained native evidence identifying the actual error class and ordered user action, page reload, and successful subsequent capture.",
+    "Successful exact-current-main development artifact, then independent review and valid package/browser/guest resource finals before any T14 subtarget credit."
+  ],
+  "inventory_effect": "None. EXT-F-1007-T14 guest remains partial/unverified for Reload page; no case or feature pass is claimed.",
+  "next_action": "Do not dispatch a T14-only hosted run until a legitimate same-document recoverable-error fixture is demonstrated and the native driver can assert the Reload page action. Continue with a separately executable Scrape case on a successful exact-current-main artifact if admitted by lane ownership and host resource policy.",
+  "open_question": "No supported product fixture currently demonstrates a natural recoverable capture error on an owned HTTP(S) page after content-script injection and retry."
+}
