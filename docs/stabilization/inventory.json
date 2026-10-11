@@ -5662,6 +5662,12 @@
           "id": "EXT-F-1003-C39",
           "label": "Open Organizations to restore an archived organization",
           "action": "Open the configured frontend Organizations page from the archived membership section; navigation does not itself restore or switch organizations."
+        },
+        {
+          "id": "EXT-F-1003-C40",
+          "label": "Chat version selector",
+          "action": "Choose Current or New chat surface and verify the choice is retained when the side panel is reopened.",
+          "source_anchor": "src/features/settings/SettingsView.tsx"
         }
       ],
       "source_anchors": [
@@ -13429,6 +13435,90 @@
               "detail": "Independent review confirms original guest criteria.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
             }
+          ]
+        },
+        {
+          "id": "EXT-F-1003-T93",
+          "title": "guest: Chat version selector persistence",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C40"
+          ],
+          "preconditions": [
+            "Use an isolated profile and a receipt-bound current extension build; establish the selected signed-out or signed-in role in the actual UI.",
+            "Open Settings > Chat and record the initial Chat version value before changing it."
+          ],
+          "steps": [
+            "Select New, close the side panel, reopen it, and verify Settings > Chat still displays New.",
+            "Select Current, close the side panel, reopen it, and verify Settings > Chat still displays Current.",
+            "Restore the profile\u2019s original value and reopen the panel to verify restoration."
+          ],
+          "expected": [
+            "Both choices persist across side-panel close and reopen, and the selector reflects the saved choice.",
+            "Restoring the initial value leaves the profile in its original state."
+          ],
+          "dimensions": [
+            "warm",
+            "panel-reopen",
+            "preference-restoration"
+          ]
+        },
+        {
+          "id": "EXT-F-1003-T94",
+          "title": "member: Chat version selector persistence",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C40"
+          ],
+          "preconditions": [
+            "Use an isolated profile and a receipt-bound current extension build; establish the selected signed-out or signed-in role in the actual UI.",
+            "Open Settings > Chat and record the initial Chat version value before changing it."
+          ],
+          "steps": [
+            "Select New, close the side panel, reopen it, and verify Settings > Chat still displays New.",
+            "Select Current, close the side panel, reopen it, and verify Settings > Chat still displays Current.",
+            "Restore the profile\u2019s original value and reopen the panel to verify restoration."
+          ],
+          "expected": [
+            "Both choices persist across side-panel close and reopen, and the selector reflects the saved choice.",
+            "Restoring the initial value leaves the profile in its original state."
+          ],
+          "dimensions": [
+            "warm",
+            "panel-reopen",
+            "preference-restoration"
+          ]
+        },
+        {
+          "id": "EXT-F-1003-T95",
+          "title": "admin: Chat version selector persistence",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1003-C40"
+          ],
+          "preconditions": [
+            "Use an isolated profile and a receipt-bound current extension build; establish the selected signed-out or signed-in role in the actual UI.",
+            "Open Settings > Chat and record the initial Chat version value before changing it."
+          ],
+          "steps": [
+            "Select New, close the side panel, reopen it, and verify Settings > Chat still displays New.",
+            "Select Current, close the side panel, reopen it, and verify Settings > Chat still displays Current.",
+            "Restore the profile\u2019s original value and reopen the panel to verify restoration."
+          ],
+          "expected": [
+            "Both choices persist across side-panel close and reopen, and the selector reflects the saved choice.",
+            "Restoring the initial value leaves the profile in its original state."
+          ],
+          "dimensions": [
+            "warm",
+            "panel-reopen",
+            "preference-restoration"
           ]
         }
       ],

@@ -1,0 +1,37 @@
+{
+  "reviewer_lane": "settings-navigation-source-to-inventory-peer",
+  "reviewed_at": "2026-10-10",
+  "reviewer_identity": "settings_inventory_review",
+  "source_head": "232aee3bdd26a2de25d2999e996f162be740fc56",
+  "inventory_file": "docs/stabilization/inventory.json",
+  "scope": {
+    "feature_ids": [
+      "EXT-F-1001",
+      "EXT-F-1003"
+    ],
+    "navigation_controls_surveyed": 8,
+    "settings_controls_surveyed": 40,
+    "settings_cases_added": [
+      "EXT-F-1003-T93",
+      "EXT-F-1003-T94",
+      "EXT-F-1003-T95"
+    ]
+  },
+  "review_type": "source-to-inventory coverage review; no browser or product behavior execution",
+  "findings": [
+    {
+      "kind": "omitted_control_resolved",
+      "feature_id": "EXT-F-1003",
+      "control_id": "EXT-F-1003-C40",
+      "source_anchor": "src/features/settings/SettingsView.tsx",
+      "detail": "The Chat section renders a Current/New Chat version selector; C40 and guest/member/admin persistence procedures T93-T95 now represent it."
+    }
+  ],
+  "review_verdict": "No additional concrete Settings or Navigation control omissions found in the reviewed source slice. Existing coverage includes nested Advanced Agent Capabilities and Audit actions, role gating, confirmation dialogs, retries, auth footer actions, and navigation controls.",
+  "behavioral_verdict": "not-run; all newly added cases remain unverified",
+  "validation": {
+    "unique_control_and_case_ids": true,
+    "case_control_references_resolve": true,
+    "all_new_cases_have_steps_and_expected_outcomes": true
+  }
+}
