@@ -29,7 +29,7 @@ const mocks = vi.hoisted(() => {
     store,
     watchers,
     getCurrentUser: vi.fn(),
-    rpc: vi.fn(),
+    membershipRead: vi.fn(),
     orgSelect: vi.fn(),
     prefsSelect: vi.fn(),
     schemaRpc: vi.fn(),
@@ -51,15 +51,13 @@ const mocks = vi.hoisted(() => {
 
 vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: mocks.getCurrentUser }));
 vi.mock('@/lib/supabase/client', () => ({
-  readOrganizationBootstrapMemberships: () =>
-    mocks.rpc('mbr_for_user', { p_container_type: 'organization' }),
+  readOrganizationBootstrapMemberships: mocks.membershipRead,
   readOrganizationBootstrapLabels: (ids: string[], filter: string) => {
     if (filter !== 'active') throw new Error('Archive filter missing');
     return mocks.orgSelect('id', ids, 'archived_at', null);
   },
   readOrganizationBootstrapAccountChoice: mocks.prefsSelect,
   getSupabase: () => ({
-    rpc: mocks.rpc,
     schema: (name: string) => ({
       rpc: (fn: string, args: unknown) => mocks.schemaRpc(name, fn, args),
     }),
@@ -91,7 +89,7 @@ vi.mock('@/lib/debug/log', () => ({
 
 /** Memberships in the order given are oldest first (created_at ascending). */
 function membershipsFor(...ids: string[]) {
-  mocks.rpc.mockResolvedValue({
+  mocks.membershipRead.mockResolvedValue({
     data: ids.map((id, i) => ({
       container_id: id,
       status: 'active',
@@ -175,7 +173,7 @@ describe('the load ladder — the organization this install acts in', () => {
     await expect(getActiveOrganizationId()).resolves.toBe(ORG_B);
     expect(mocks.store.get(ACTIVE)).toBeUndefined();
     expect(mocks.schemaRpc).not.toHaveBeenCalled();
-    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.membershipRead).toHaveBeenCalledTimes(1);
     expect(mocks.prefsSelect).toHaveBeenCalledTimes(1);
   });
 
@@ -264,7 +262,7 @@ describe('the load ladder — the organization this install acts in', () => {
 
     await expect(getActiveOrganizationId()).resolves.toBeNull();
     expect(mocks.store.get(ACTIVE)).toBeNull();
-    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.membershipRead).toHaveBeenCalledTimes(1);
   });
 
   it('shares the first validation and reuses it for warm requests of the same identity', async () => {
@@ -276,7 +274,7 @@ describe('the load ladder — the organization this install acts in', () => {
       Promise.all([getActiveOrganizationId(), getActiveOrganizationId()]),
     ).resolves.toEqual([ORG_A, ORG_A]);
     await expect(getActiveOrganizationId()).resolves.toBe(ORG_A);
-    expect(mocks.rpc).toHaveBeenCalledTimes(1);
+    expect(mocks.membershipRead).toHaveBeenCalledTimes(1);
     expect(mocks.orgSelect).toHaveBeenCalledTimes(1);
   });
 
@@ -308,7 +306,7 @@ describe('the load ladder — the organization this install acts in', () => {
     mocks.getCurrentUser.mockResolvedValue(null);
     const { getActiveOrganizationId } = await import('@/lib/org/active-org');
     await expect(getActiveOrganizationId()).resolves.toBeNull();
-    expect(mocks.rpc).not.toHaveBeenCalled();
+    expect(mocks.membershipRead).not.toHaveBeenCalled();
   });
 
   it('refuses to store an organization the person is not a member of', async () => {

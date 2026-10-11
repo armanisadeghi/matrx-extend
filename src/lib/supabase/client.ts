@@ -10,10 +10,11 @@
  */
 
 import { ENV, STORAGE_KEYS } from '@/config/env';
+import { readAccountOrganizationChoices } from '@ai-matrx/data/organizations';
 import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 import { organizationFetch } from './organization-fetch';
-import { iamDb, usersDb } from './schemas';
+import { iamDb } from './schemas';
 
 /**
  * DD-131 — the client-channel actor declaration.
@@ -69,21 +70,26 @@ export type WriteActor = 'person' | 'agent';
 let client: SupabaseClient | null = null;
 let agentAuthoredClient: SupabaseClient | null = null;
 
-export function getSupabase(): SupabaseClient {
-  if (client) return client;
-  client = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
+/** One SDK construction path; each actor still owns an isolated singleton. */
+function createExtensionClient(
+  headers: Record<string, string> = {},
+  requestFetch: typeof fetch = organizationFetch,
+): SupabaseClient {
+  return createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
     accessToken: async () => {
       const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
       const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
       return typeof token === 'string' && token.length > 0 ? token : null;
     },
     global: {
-      fetch: organizationFetch,
-      headers: {
-        'X-Client-Info': 'matrx-extend',
-      },
+      fetch: requestFetch,
+      headers: { 'X-Client-Info': 'matrx-extend', ...headers },
     },
   });
+}
+
+export function getSupabase(): SupabaseClient {
+  if (!client) client = createExtensionClient();
   return client;
 }
 
@@ -96,22 +102,12 @@ export function getSupabase(): SupabaseClient {
 let organizationBootstrapClient: SupabaseClient | null = null;
 function getOrganizationBootstrapClient(): SupabaseClient {
   if (organizationBootstrapClient) return organizationBootstrapClient;
-  organizationBootstrapClient = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
-    accessToken: async () => {
-      const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
-      const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
-      return typeof token === 'string' && token.length > 0 ? token : null;
-    },
-    global: {
-      headers: { 'X-Client-Info': 'matrx-extend' },
-      fetch: async (input, init) => {
-        const request = new Request(input, init);
-        const resolver = await import('@/lib/org/active-org');
-        const organizationId = await resolver.getResolvedActiveOrganizationId();
-        if (organizationId) request.headers.set('X-Organization-Id', organizationId);
-        return globalThis.fetch(request);
-      },
-    },
+  organizationBootstrapClient = createExtensionClient({}, async (input, init) => {
+    const request = new Request(input, init);
+    const resolver = await import('@/lib/org/active-org');
+    const organizationId = await resolver.getResolvedActiveOrganizationId();
+    if (organizationId) request.headers.set('X-Organization-Id', organizationId);
+    return globalThis.fetch(request);
   });
   return organizationBootstrapClient;
 }
@@ -140,11 +136,21 @@ export async function readOrganizationBootstrapAccountChoice() {
   const { getCurrentUser } = await import('@/lib/auth/flow');
   const user = await getCurrentUser();
   if (!user?.id) throw new Error('Organization bootstrap requires a signed-in account.');
-  return usersDb(getOrganizationBootstrapClient())
-    .from('user_preferences')
-    .select('last_active_organization_id,startup_organization_id')
-    .eq('user_id', user.id)
-    .maybeSingle();
+  try {
+    const choice = await readAccountOrganizationChoices(getOrganizationBootstrapClient(), user.id);
+    return {
+      data: {
+        last_active_organization_id: choice.lastActiveOrganizationId,
+        startup_organization_id: choice.startupOrganizationId,
+      },
+      error: null,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: { message: error instanceof Error ? error.message : String(error) },
+    };
+  }
 }
 
 /**
@@ -164,20 +170,9 @@ export async function readOrganizationBootstrapAccountChoice() {
 export function getAgentAuthoredSupabase(): SupabaseClient {
   if (agentAuthoredClient) return agentAuthoredClient;
   try {
-    agentAuthoredClient = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
-      accessToken: async () => {
-        const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
-        const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
-        return typeof token === 'string' && token.length > 0 ? token : null;
-      },
-      global: {
-        fetch: organizationFetch,
-        headers: {
-          'X-Client-Info': 'matrx-extend',
-          [ACTOR_TIER_HEADER]: ACTOR_TIER_AGENT,
-          [ACTOR_SYSTEM_HEADER]: ACTOR_SYSTEM_AGENT,
-        },
-      },
+    agentAuthoredClient = createExtensionClient({
+      [ACTOR_TIER_HEADER]: ACTOR_TIER_AGENT,
+      [ACTOR_SYSTEM_HEADER]: ACTOR_SYSTEM_AGENT,
     });
   } catch (cause) {
     const detail = cause instanceof Error ? cause.message : String(cause);
@@ -215,20 +210,9 @@ let machineryAuthoredClient: SupabaseClient | null = null;
 export function getMachineryAuthoredSupabase(): SupabaseClient {
   if (machineryAuthoredClient) return machineryAuthoredClient;
   try {
-    machineryAuthoredClient = createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
-      accessToken: async () => {
-        const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
-        const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
-        return typeof token === 'string' && token.length > 0 ? token : null;
-      },
-      global: {
-        fetch: organizationFetch,
-        headers: {
-          'X-Client-Info': 'matrx-extend',
-          [ACTOR_TIER_HEADER]: ACTOR_TIER_SYSTEM,
-          [ACTOR_SYSTEM_HEADER]: ACTOR_SYSTEM_MACHINERY,
-        },
-      },
+    machineryAuthoredClient = createExtensionClient({
+      [ACTOR_TIER_HEADER]: ACTOR_TIER_SYSTEM,
+      [ACTOR_SYSTEM_HEADER]: ACTOR_SYSTEM_MACHINERY,
     });
   } catch (cause) {
     const detail = cause instanceof Error ? cause.message : String(cause);
