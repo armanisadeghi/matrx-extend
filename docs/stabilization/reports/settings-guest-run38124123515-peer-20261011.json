@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_acceptance_evidence_review",
+  "reviewer_task": "/root/settings_guest_peer",
+  "reviewed_at": "2026-10-11",
+  "verdict_a_behavior": "PARTIAL",
+  "verdict_b_evidence_reliability": "PARTIAL",
+  "run": {
+    "id": 38124123515,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38124123515",
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_source_sha": "e18564655b882fb333ca0fa4350b68ed44fc0e30",
+    "job": "guest",
+    "job_conclusion": "success",
+    "lane": "A",
+    "selected_case": "settings-controls",
+    "mode": "signed-out guest"
+  },
+  "product_artifact": {
+    "source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+    "ci_run_id": 38118947880,
+    "artifact_id": 11693783976,
+    "artifact_sha256": "sha256:162c745cbcc558f3d9f45c23560be63a0c4b9473c76109bd18405f636217549c",
+    "artifact_digest_independently_recomputed": true,
+    "version": "0.2.493",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256_receipt": "6ac2233eb04997096e173e0f741c127130a7ee9a245882392befcd49b9fe2206",
+    "tree_sha256_independently_recomputed": true,
+    "publish_state": "not_published",
+    "eligible_store": false
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11696965482,
+    "artifact_name": "hosted-guest-38124123515-1",
+    "size_bytes": 72609,
+    "sha256": "sha256:0df85940de694cce19da7a6a95b342c261b99044c3cdbd12ee8440addd250f71",
+    "digest_independently_recomputed": true,
+    "native_report_path": "test-results/settings-local-controls-acceptance.json",
+    "native_report_sha256": "sha256:c2c69c35089ee0d17d50cae578f4ae1f44aa8d3558a43ac7ab7e8821d95011d4",
+    "raw_artifact_downloaded_and_inspected": true
+  },
+  "case_verdicts": {
+    "EXT-F-1003-T22": {
+      "verdict": "bounded_guest_pass",
+      "criteria": [
+        "Warm native Settings DOM showed no Advanced agent capabilities section/text, no admin controls, and zero permission controls.",
+        "Settings reload observation repeated the same absence."
+      ],
+      "guest_mode_basis": "The same native report declares signed-out guest scope; the run's native T63 observation independently records signedOut=true in warm and reload phases, and the artifact screenshot shows a visible Sign in control in generic guest Chat."
+    },
+    "EXT-F-1003-T37": {
+      "verdict": "bounded_guest_pass",
+      "criteria": [
+        "Native Settings DOM showed the Deep clean coming-soon hint.",
+        "The toggle changed false to true and the true state plus hint remained after Settings reload.",
+        "The run restored the original false preference."
+      ]
+    },
+    "EXT-F-1003-T46": {
+      "verdict": "bounded_guest_pass",
+      "criteria": [
+        "Port 65001 saved and remained after Settings reload.",
+        "The trace recorded rediscovery entry and completion breakpoints after Save and a subsequent GET /health.",
+        "Ports 1 and 65535 saved and persisted after reload.",
+        "Invalid 65536 showed the range error and retained saved port 65535; clearing in the same rendered view removed the error and override, which remained clear after reload."
+      ],
+      "limits": [
+        "This is one frozen guest run and bounded to the recorded DOM/storage/worker trace.",
+        "It does not establish signed-in admin or member behavior or full Settings health."
+      ]
+    },
+    "EXT-F-1003-T70": {
+      "verdict": "unverified",
+      "bounded_observations_only": [
+        "Runtime/browser/manifest identity fields matched on the captured observations.",
+        "Chrome returned a real no-update result, shown accurately.",
+        "Identity and API readiness observation remained the same after Settings reload."
+      ],
+      "withheld_criterion": {
+        "name": "password-flow API readiness label and remedy",
+        "inventory_expected_when_apis_present": "Ready",
+        "observed": "Available",
+        "runner_oracle": "Accepts either Ready or Available when APIs exist",
+        "disposition": "No credit: runner acceptance is broader than the exact inventory wording. Treat as an oracle/contract mismatch, not as a product defect or a pass."
+      },
+      "unverified_dimensions": [
+        "password-flow API unavailable",
+        "update available",
+        "throttled",
+        "update error",
+        "update API unavailable"
+      ]
+    }
+  },
+  "evidence_reliability": {
+    "supported": [
+      "GitHub metadata binds the hosted result artifact to run 38124123515 and workflow source e18564655; the downloaded ZIP byte count and recomputed SHA-256 match the GitHub artifact digest.",
+      "GitHub metadata binds development artifact 11693783976 to CI run 38118947880 and product source 40ad70d; its ZIP digest matches GitHub, its manifest and receipt identify version 0.2.493, and the extracted output tree hash independently matches the receipt.",
+      "Raw hosted native JSON contains the observations summarized above. The DOM assertions are panel-targeted and report Settings active, actual sections/control counts and saved values; T63 supplies direct signed-out checks in both warm and reload phases.",
+      "All three run-scoped resource journals in the raw hosted ZIP end with matching RESOURCE_FINAL_DECISION records: admitted=true, resourceInvalid=false, exitCode=0, decision=valid. The committed sanitized journals retain the same run IDs, ordered event timestamps and final decisions; they omit host telemetry and null child-signal fields.",
+      "The workflow's guest job shows success, including artifact matching, browser preparation, native side-panel case, and result/screenshot upload."
+    ],
+    "limitations": [
+      "The two uploaded PNGs do not show Settings interactions: one shows generic signed-out guest Chat with Sign in visible; the other shows the normal target webpage. They do not visually corroborate T22, T37, T46 or T70 control states.",
+      "This peer independently downloaded, hashed and inspected the hosted artifacts and source assertions; it did not rerun or manually operate the hosted browser.",
+      "The runner reports 20 Settings cases overall; this verdict covers only T22, T37, T46 and T70.",
+      "The tested build is an unpublished local development artifact, not current-main runtime, release, Store installation, or signed-in behavior.",
+      "The T70 inventory/runner readiness-label mismatch needs an owner/coordinator contract decision before readiness-label credit is assigned."
+    ],
+    "raw_resource_journals": [
+      {
+        "name": "hosted-package-38124123515-1.jsonl",
+        "sha256": "sha256:000a923d6b546662b6e46ad04408383abd7debb7ef5cda1e8a8e396986b799b7"
+      },
+      {
+        "name": "hosted-browser-38124123515-1.jsonl",
+        "sha256": "sha256:b239cb2f97398685e736bdad79ca21208f1877499ebbbc3503821920c21ed227"
+      },
+      {
+        "name": "hosted-guest-38124123515-1.jsonl",
+        "sha256": "sha256:487fe2af5c26df7c1e2083093e29394bc9f4d0e72a61082759c3f5b925f5853f"
+      }
+    ]
+  },
+  "next_action": "Coordinator may record bounded guest credit for T22, T37 and T46 against the frozen development artifact. Keep T70 unverified, preserve its observed identity/no-update subcriteria as bounded observations, and reconcile Ready versus Available in the acceptance contract before assigning readiness-label credit; alternate T70 branches still need genuine evidence."
+}
