@@ -25,7 +25,7 @@
         "EXT-F-1007-C03",
         "EXT-F-1007-C04"
       ],
-      "behavior": "Unsaved-edit recapture guard and Save Source entry; T03 and T04 cover confirmation and source landing."
+      "behavior": "Unsaved-edit recapture guard is in ScrapeView.tsx:223-252 and maps to C03/T03. The not-yet-a-Source banner Save as a Source action is at 485-491 and maps to C04/T04."
     },
     {
       "source": "src/features/scrape/ScrapeView.tsx:843-858",
@@ -48,6 +48,13 @@
         "EXT-F-1007-C34"
       ],
       "behavior": "Retry page check when identity is unavailable; already separately registered."
+    },
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:864-873",
+      "controls": [
+        "EXT-F-1007-C04"
+      ],
+      "behavior": "Primary bottom Save button, visible for a current capture not held by the unsaved-capture card; opens Save Source and is covered by T04."
     }
   ],
   "role_cells": {

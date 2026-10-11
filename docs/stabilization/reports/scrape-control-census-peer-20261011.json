@@ -1,0 +1,74 @@
+{
+  "task": "scrape-control-census-peer-20261011",
+  "target_report": "docs/stabilization/reports/scrape-control-census-20261011.json",
+  "reviewed_commit": "bba828c0941343bad8335a964ce8f4065e175107",
+  "source_sha_reviewed": "b89fbe5f5c7940b6de42fcb1cf14aac1a2408c17",
+  "verdict_a_mapping_completeness": {
+    "result": "complete-for-control-and-case-identifiers-with-one-source-anchor-omission",
+    "finding": "The bounded visible controls map to existing IDs and registered cases. No new control or case ID is warranted by this source review. The report does not map the primary Save button, even though it is part of the directly visible toolbar and is covered by C04/T04; its source mapping therefore understates the visible action inventory.",
+    "evidence": [
+      {
+        "source": "src/features/scrape/ScrapeView.tsx:418-419",
+        "inventory": ["EXT-F-1007-C19", "EXT-F-1007-C09"],
+        "assessment": "Add to Project and Copy capture are adjacent header actions; both IDs/cases exist. Copy is conditional on a current capture."
+      },
+      {
+        "source": "src/features/scrape/ScrapeView.tsx:829-862",
+        "inventory": ["EXT-F-1007-C01", "EXT-F-1007-C02"],
+        "assessment": "Fast Capture/Re-capture and Scroll & capture are distinct mode controls, disabled while loading or without pageKey. T01 and T02 exist for guest/member/admin."
+      },
+      {
+        "source": "src/features/scrape/ScrapeView.tsx:223-252",
+        "inventory": ["EXT-F-1007-C03", "EXT-F-1007-T03"],
+        "assessment": "Unsaved-edit guard records and replays the requested fast/deep mode after confirmation; T03 asks to exercise either capture control and both cancel and confirm."
+      },
+      {
+        "source": "src/features/scrape/ScrapeView.tsx:827-881",
+        "inventory": ["EXT-F-1007-C04", "EXT-F-1007-T04"],
+        "assessment": "The conditional bottom Save button is a directly visible Save Source entry. C04/T04 cover it, but the reviewed report's cited source range 485-491 points to the separate 'Save as a Source' banner action and omits this primary button."
+      },
+      {
+        "source": "src/features/scrape/ScrapeView.tsx:534-550,596,635-636,703,745,790-802",
+        "inventory": ["EXT-F-1007-C08", "EXT-F-1007-C09"],
+        "assessment": "Six result tabs and section copy menus are registered as T08/T09."
+      },
+      {
+        "source": "src/features/scrape/ScrapeView.tsx:395-405",
+        "inventory": ["EXT-F-1007-C34", "EXT-F-1007-T32"],
+        "assessment": "Retry page check is registered; T32 also includes the fast/deep availability and stale-identity checks."
+      }
+    ],
+    "adjacent_actions_checked": [
+      "The not-yet-a-Source banner offers Save as a Source when a current capture exists or Capture this page otherwise (ScrapeView.tsx:475-500); C28 covers the state/action and C04 or C01 covers the action.",
+      "The landed-source success state conditionally offers Open (web app) (ScrapeView.tsx:449-463); C21/T04 and T21 cover following the landed Source.",
+      "Other controls inside result panes (article edit, resource edits, diagnosis, and recovery) have their own existing controls/cases; they are outside the primary toolbar but do not reveal a missing toolbar ID."
+    ]
+  },
+  "verdict_b_record_quality": {
+    "result": "adequate-with-narrow-precision-fixes",
+    "finding": "The report correctly preserves the guest/member/admin applicability distinctions and does not claim runtime acceptance. Its no-new-ID decision is supported. Improve precision by explicitly mapping the bottom Save button to C04/T04 and by describing the three registered capture paths accurately: T01 fast, T02 deep, and T03 the unsaved-edit confirmation guard for either mode.",
+    "validated_ids": [
+      "EXT-F-1007-C01/T01",
+      "EXT-F-1007-C02/T02",
+      "EXT-F-1007-C03/T03",
+      "EXT-F-1007-C04/T04",
+      "EXT-F-1007-C08/T08",
+      "EXT-F-1007-C09/T09",
+      "EXT-F-1007-C19/T19",
+      "EXT-F-1007-C21/T04 and T21",
+      "EXT-F-1007-C28",
+      "EXT-F-1007-C34/T32"
+    ],
+    "role_and_procedure_limits": "T01, T02, T03, T04, T08, and T09 list guest/member/admin modes. T04 explicitly requests a guest repetition and controlled refusal; the cases are procedures, not evidence that those runs passed. The inventory's feature-level cells remain partial/unverified as the target report states. The six tabs and copy menus are not all visible simultaneously: they are exposed after a current capture and per selected pane.",
+    "unverified_product_behavior": [
+      "No browser/native run was performed, so enabled states, progress, chooser behavior, clipboard output, actual capture results, and save outcomes were not observed.",
+      "This review establishes source-to-inventory mapping only; it does not establish feature acceptance in guest, member, or admin mode."
+    ]
+  },
+  "scoped_recheck": {
+    "finding": "ADDRESSED",
+    "source_report_status": "Updated mapping is present in the shared checkout and remains uncommitted pending owner batch.",
+    "verdict_a_mapping_completeness": "Complete for the bounded controls. The primary bottom Save button at ScrapeView.tsx:864-873 maps to C04/T04. The recapture guard at 223-252 maps to C03/T03, while the banner Save as a Source action at 485-491 maps to C04/T04.",
+    "verdict_b_report_quality": "Clear and appropriately limited. Existing control/case identifiers and role-cell caveats remain accurate; the report makes no browser or product-acceptance claim. No further issue found."
+  }
+}
