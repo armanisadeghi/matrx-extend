@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "lane": "independent_source_peer",
+  "reviewed_files": [
+    "tests/browser/tab-groups-manual-runner.mjs",
+    "tests/browser/tab-groups-manual-runner.test.mjs",
+    "tests/browser/tab-groups-member-native-acceptance.mjs"
+  ],
+  "verdict_a_behavior_coverage": {
+    "status": "PARTIAL",
+    "findings": [],
+    "evidence": [
+      "The shared design-system title takeover lifts title into data-matrx-title on pointerover and restores title on pointerout or pointerdown. The member Tools selector uses native-title-first semantic lookup across both attributes, so the post-mouseMoved stable target sample still finds the same tab.",
+      "Manual-runner readiness after clicking Tools, its observation fields, and active-tab readiness all use the semantic selector. Existing downstream search/result/form selectors do not depend on the Tools title. This covers the reviewed path from tab click through the canonical tab_groups create manual runner.",
+      "Ran node --test tests/browser/tab-groups-manual-runner.test.mjs: 5/5 passed. The passing lifecycle test uses the real installed acquireTitleTooltips implementation, transfers the title on pointerover, allows pointerTarget's stable resample and trusted input sequence, and checks title restoration on pointerdown.",
+      "The test refuses missing and duplicate Tools matches, a blocked hit target, and a preserved title with the wrong semantic value. The prior observed native report of zero title-only matches is consistent with this root cause."
+    ],
+    "limits": [
+      "No hosted/native browser run or actual tab_groups invocation was performed by this reviewer, so successful canonical tool execution is not established.",
+      "The local installed package is design-system 0.86.80 while the frozen hosted artifact lock records 0.86.92. The reproduced transfer behavior matches the current implementation contract, but this local test does not independently execute the exact frozen package binary.",
+      "Historical exclusivity is unproven: the zero title-only observation supports the diagnosis, but absent captured DOM cannot show that this was the only cause of run 38111882984 stopping before invocation."
+    ]
+  },
+  "verdict_b_guard_doctrine_quality": {
+    "status": "PASS",
+    "findings": [],
+    "evidence": [
+      "The pointer helper retains exact-one-match, visibility, hit-target, and stable-coordinate checks before dispatching input. The semantic selector is specific to role=tab and the Tools label, and the failure tests demonstrate it does not admit missing, duplicate, wrong-label, or occluded targets.",
+      "The integration records native and preserved title match counts alongside the semantic count, keeping the attribute migration observable instead of masking it.",
+      "Ran the focused regression file successfully; git diff --check over the reviewed files reported no whitespace errors."
+    ],
+    "limits": [
+      "The harness failure may occur after the selector succeeds; this peer review does not claim a full acceptance result."
+    ]
+  }
+}
