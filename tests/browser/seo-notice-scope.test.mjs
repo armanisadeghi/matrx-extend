@@ -108,6 +108,10 @@ async function run(
       observations.push({ name, evidence });
     },
     unverifiedTarget() {},
+    runForcedNoticeReload: async () => {
+      events.push('forced-reload-io');
+      return {};
+    },
     runNativeSeoHistoryRecovery: async () => {
       events.push('refusal');
       return {};
@@ -184,13 +188,14 @@ async function run(
   return { targets, events, observations };
 }
 
-test('notice scope reaches all four bounded outcomes and restores viewport without clipboard work', async () => {
+test('notice scope reaches all five bounded outcomes and restores viewport without clipboard work', async () => {
   const result = await run();
   assert.deepEqual(result.targets, [
     ['T02', 'notice_narrow_warm_navigation_reaudit_clearance'],
     ['T02', 'notice_wide_warm_navigation_reaudit_clearance'],
     ['T02', 'manual_button_returns_to_current_page'],
     ['T02', 'notice_reload_reaudit_clearance'],
+    ['T02', 'visible_notice_full_reload_second_dismiss_at_native_360px'],
   ]);
   for (const event of [
     'refusal',

@@ -1,0 +1,21 @@
+{
+  "scope": "SEO forced visible-on-reload notice fixture",
+  "verdict_a": {
+    "status": "NOT ADDRESSED",
+    "reason": "No hosted/live browser run was authorized; authentic extension behavior remains unobserved."
+  },
+  "verdict_b": {
+    "status": "ADDRESSED",
+    "evidence": [
+      "New fixture intercepts only the precise current-URL GET after Page.reload; validates distinct document and delivered 42501 refusal.",
+      "Occlusion defects are phase-gated on reloaded/dismissed state; mutation tests remove each hit-ownership assertion and prove the corresponding occlusion fixture then passes.",
+      "Second Dismiss is checked as trusted and matched to the actual refusal alert; post-dismiss target and notice hit ownership are checked.",
+      "Fixture imported into SEO guest acceptance and selected as fifth bounded notice target; package focused-acceptance list includes its test."
+    ],
+    "tests": "node --test tests/browser/seo-notice-reload-fixture.test.mjs tests/browser/seo-notice-scope.test.mjs tests/browser/seo-new-coverage-oracle.test.mjs \u2014 59 passed, 0 failed"
+  },
+  "findings": [],
+  "limitations": [
+    "Hosted browser test intentionally not run per task constraint."
+  ]
+}
