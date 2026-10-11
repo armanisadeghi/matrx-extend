@@ -3,7 +3,7 @@
   "feature_id": "EXT-F-1007",
   "case_id": "EXT-F-1007-T02",
   "at": "2026-10-11T02:41:35Z",
-  "status": "bounded-pass-pending-independent-review",
+  "status": "bounded-pass-reviewed",
   "scope": "Guest T02 post-full-extension-reload deep recapture on an owned lazy-content fixture; credit limited to this subtarget.",
   "hosted_run_id": 38105535841,
   "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
@@ -31,12 +31,18 @@
     "viewport": "600px CDP-emulated normal width"
   },
   "evidence": "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/",
-  "independent_review": "pending",
+  "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-run38105535841.json",
   "limitations": [
     "Hosted route runs the broader guest Scrape procedure; this record claims only T02 post-reload deep recapture.",
     "Deep failure retry mode remains unverified.",
     "T14 Reload page recovery remains unverified; the prior real permission-denial state offers Try again but no Reload page control.",
     "No full T02, Scrape, signed-in, default-Chrome, Store-installed, or overall-health claim."
   ],
-  "product_defect_inference": false
+  "product_defect_inference": false,
+  "review_verdict": "bounded_guest_post_reload_deep_capture_pass",
+  "review_limitations": [
+    "Raw native payload and detailed reload timeline were not retained, so reviewer could not inspect them.",
+    "Warm deep capture was not re-proven in this run.",
+    "Deep-failure retry mode and T14 Reload page recovery remain unverified."
+  ]
 }

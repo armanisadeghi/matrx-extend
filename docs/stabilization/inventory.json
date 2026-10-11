@@ -21685,31 +21685,79 @@
           ],
           "results": {
             "guest": {
-              "run_id": 38021736744,
-              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
-              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
-              "development_ci_run_id": 38019685913,
-              "development_artifact_id": 11657971729,
-              "hosted_result_artifact_id": 11658643132,
-              "build_version": "0.2.458",
-              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
-              "resource_valid": true,
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
-                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
-              ],
-              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
               "status": "partial",
+              "run_id": 38105535841,
+              "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+              "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+              "development_ci_run_id": 38102137319,
+              "development_artifact_id": 11688890496,
+              "build_version": "0.2.490",
+              "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+              "resource_valid": true,
               "passed_subtargets": [
-                "Warm and post-full-extension-reload deep captures showed Scrolling progress and included lazy-loaded fixture text in the page and Article pane."
+                "Post-full-extension-reload deep recapture: lazy marker began absent, then appeared in both the owned page DOM and selected Article result; Scrolling progress was observed."
               ],
               "unverified": [
-                "A natural deep-capture failure followed by Try again with deep mode preserved remains unverified."
+                "Warm deep capture was not re-proven in this run.",
+                "Natural deep-capture failure and retry with deep mode preserved remain unverified."
               ],
-              "detail": "Warm and post-reload deep capture passed on the exact frozen artifact. Deep failure/retry mode preservation remains unverified."
+              "evidence": [
+                "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/native-result.sanitized.json",
+                "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/resource-finals.sanitized.json",
+                "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/resource-journals/hosted-package-38105535841-1.jsonl",
+                "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/resource-journals/hosted-browser-38105535841-1.jsonl",
+                "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/resource-journals/hosted-guest-38105535841-1.jsonl",
+                "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/scrape-reload-deep-article.png"
+              ],
+              "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-run38105535841.json",
+              "detail": "Independently reviewed bounded pass for the post-extension-reload deep recapture subtarget only. Raw native payload and detailed reload timeline were not retained; warm behavior was not re-proven; deep-failure retry remains unverified. T02 stays partial.",
+              "release_scope": "Guest, normal 600px CDP-emulated width, current-equivalent v0.2.490 development artifact. Does not establish warm behavior on this artifact, deep failure/retry, member/admin, Store-installed behavior, or full T02/Scrape acceptance.",
+              "previous_bounded_result": {
+                "run_id": 38021736744,
+                "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+                "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+                "development_ci_run_id": 38019685913,
+                "development_artifact_id": 11657971729,
+                "hosted_result_artifact_id": 11658643132,
+                "build_version": "0.2.458",
+                "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+                "resource_valid": true,
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                  "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+                ],
+                "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+                "status": "partial",
+                "passed_subtargets": [
+                  "Warm and post-full-extension-reload deep captures showed Scrolling progress and included lazy-loaded fixture text in the page and Article pane."
+                ],
+                "unverified": [
+                  "A natural deep-capture failure followed by Try again with deep mode preserved remains unverified."
+                ],
+                "detail": "Latest reviewed run 38105535841 passes only the guest post-extension-reload deep recapture subtarget. Warm behavior was not re-proven; deep-failure retry remains unverified. T02 stays partial.",
+                "latest_reviewed_subtarget": {
+                  "run_id": 38105535841,
+                  "status": "bounded-pass",
+                  "subtarget": "guest_post_extension_reload_deep_recapture",
+                  "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                  "development_ci_run_id": 38102137319,
+                  "development_artifact_id": 11688890496,
+                  "build_version": "0.2.490",
+                  "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-run38105535841.json",
+                  "evidence": "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/",
+                  "review_limitations": [
+                    "Raw native payload and detailed reload timeline were not retained, so the reviewer could not inspect them.",
+                    "Warm deep capture was not re-proven in this run.",
+                    "Deep-failure retry and T14 Reload page recovery remain unverified."
+                  ]
+                }
+              }
             },
             "member": {
               "status": "partial",

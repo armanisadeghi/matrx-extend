@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/scrape_t02_run381055_review",
+  "reviewed_at": "2026-10-11T02:44:05Z",
+  "hosted_run_id": 38105535841,
+  "case_id": "EXT-F-1007-T02",
+  "verdict": "bounded_guest_post_reload_deep_capture_pass",
+  "scope": "Independent review of the native guest T02 post-extension-reload deep-capture subtarget on owned fixture.",
+  "checks": [
+    "The runner requires the lazy marker absent before capture, then present in the page DOM and selected Article result, with Scrolling progress observed.",
+    "Source review confirms reload assertions require the extension management reload, retired prior targets, a replacement worker and panel, and a changed panel target.",
+    "All three sanitized resource-journal hashes match their recorded valid finals; each final is admitted, resourceInvalid=false, exitCode=0.",
+    "The retained screenshot hash matches the receipt and shows the Scrape Article pane with the owned fixture title and intake path."
+  ],
+  "limitations": [
+    "The raw native payload and detailed reload timeline were not retained, so those exact fields could not be inspected independently.",
+    "Warm deep capture was not re-proven in this run.",
+    "Deep-failure retry mode and EXT-F-1007-T14 Reload page recovery remain unverified.",
+    "No full T02, Scrape, member/admin, default-Chrome, Store-installed, or product-health promotion."
+  ],
+  "status_update": "Credit only the guest post-extension-reload deep recapture subtarget; keep T02 partial."
+}
