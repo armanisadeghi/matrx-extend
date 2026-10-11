@@ -59,6 +59,32 @@ async function forgetTab(tabId: number): Promise<void> {
 export type OpenGuidedResult = { ok: true; tabId: number } | { ok: false; sentence: string };
 
 /**
+ * Put the guide on a tab the person is ALREADY on ("Capture more" from the Swipe card), for a
+ * job this person just created. Same checks as openGuidedTab; no new tab.
+ */
+export async function adoptGuidedTab(args: {
+  handoffId: string;
+  organizationId: string;
+  tabId: number;
+}): Promise<OpenGuidedResult> {
+  const row = await getHandoff(args.handoffId).catch(() => null);
+  if (!row || row.organization_id !== args.organizationId || row.rung !== 'human_drive')
+    return { ok: false, sentence: 'The capture could not be opened. Try again.' };
+  const social = (row.metadata?.social ?? {}) as { platform?: unknown; target?: unknown };
+  await rememberTab(args.tabId, {
+    handoffId: row.id,
+    organizationId: row.organization_id,
+    url: row.url,
+    title: row.title,
+    platform: typeof social.platform === 'string' ? social.platform : null,
+    target: typeof social.target === 'string' ? social.target : null,
+    rowSteps: row.what_to_do ?? '',
+    openerTabId: null,
+  });
+  return { ok: true, tabId: args.tabId };
+}
+
+/**
  * Open the job's page in front of the person and remember the tab.
  * Refuses (with a sentence) a row that is not a job a person can drive.
  */

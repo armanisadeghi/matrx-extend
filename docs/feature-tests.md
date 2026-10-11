@@ -3709,6 +3709,12 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - Browser agent tools: use `read_page`, `find`, `query_elements`, text search and inspection on the floating control and nested open-shadow controls. References must work for click/type/select/focus; normal page controls still work. Inspecting the host identifies its open shadow root. Closed roots require accessibility/CDP.
 - Discovery must advertise held required permissions (including debugger) along with optional grants; an ungranted optional permission stays absent. Assistant and Pilot start/resume requests carry their declared `client.surface`, with matching context-rule provenance.
 
+### Capture more (from the Swipe card) and retrying missing slides
+
+- On any supported profile or feed (Instagram, TikTok, X, Facebook, LinkedIn; not a single post) the bottom-right Matrx card shows **Capture more**. Press it: the capture guide opens on this same tab (no new tab), then use **Scroll for me** and **Capture** below. The card does not return over the guide. A failure says one plain sentence on the card.
+- After saving a carousel with missing slides the card names them ("Slides 2, 5 missing") and offers **Retry slides 2, 5**; it saves again into the same collection and only the missing items are fetched.
+- **Automated:** `tests/unit/swipe-pill.test.ts`, `swipe-coverage.test.ts`, `swipe-file-urls.test.ts`; headless real page: `node tests/browser/swipe-feed-entry-e2e.mjs` (env `MATRX_FEED_URL`, `MATRX_LADDER_ORGANIZATION_ID`, `MATRX_PLAYWRIGHT_MODULE`).
+
 ### Scroll for me (guided capture on a feed or profile)
 
 - **What it does:** on a guided capture tab, the card offers a number (25 to 500 posts, or Until the end) and **Scroll for me**. The page scrolls itself at a human pace, the counter reads "142 posts · scrolling…", and it stops at the number, at the end of the feed, on **Stop (Esc)**, on Capture, or on Close. It never starts without the click and costs no points; Capture then files what it collected through the usual guided handoff.

@@ -19,6 +19,7 @@ export const SWIPE_PORT = 'matrx.swipe-file';
 export type SwipeClientMsg =
   | { t: 'list' }
   | { t: 'capture_slides'; postId: string; organizationId: string; url: string }
+  | { t: 'feed_capture'; url: string }
   | { t: 'save'; url: string; collectionId: string | null; newCollectionName?: string };
 
 export type SwipeHostMsg =
@@ -26,6 +27,7 @@ export type SwipeHostMsg =
   | { t: 'collections_error'; reason: string }
   | { t: 'progress'; label: string }
   | { t: 'capture_started'; ok: boolean; sentence: string; url: string }
+  | { t: 'feed_started'; ok: boolean; sentence: string; url: string }
   | { t: 'result'; outcome: SwipeOutcome };
 
 export function describeOutcome(o: SwipeOutcome): string {
@@ -105,6 +107,21 @@ export function registerSwipeFileHost(): void {
           url: msg.url,
           ok: result.ok,
           sentence: result.ok ? 'Swipe through every slide, then press Capture.' : result.sentence,
+        });
+        return;
+      }
+      if (msg.t === 'feed_capture') {
+        const tabId = port.sender?.tab?.id;
+        const { startFeedCapture } = await import('@/lib/swipe-file/browser-capture');
+        const result =
+          typeof tabId === 'number'
+            ? await startFeedCapture({ url: msg.url, tabId })
+            : { ok: false as const, sentence: 'Open this page in a normal tab to capture it.' };
+        post({
+          t: 'feed_started',
+          url: msg.url,
+          ok: result.ok,
+          sentence: result.ok ? 'Capture guide opened.' : result.sentence,
         });
         return;
       }
