@@ -2,7 +2,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { Window } from 'happy-dom';
-import { isOwnedDomainPatternRead, memberAutoCard } from './data-member-auto-extract-driver.mjs';
+import {
+  isOwnedDomainPatternRead,
+  memberAutoCard,
+  observeMemberAutoRunning,
+} from './data-member-auto-extract-driver.mjs';
 
 function panelFor(markup) {
   const window = new Window();
@@ -13,6 +17,9 @@ function panelFor(markup) {
       return { result: { value: JSON.parse(JSON.stringify(window.eval(expression))) } };
     },
     close: () => window.close(),
+    replace: (markup) => {
+      window.document.querySelector('[role="tabpanel"]').innerHTML = markup;
+    },
   };
 }
 
@@ -73,6 +80,29 @@ test('member T08 separates no-match and failure from success and disabled manual
   } finally {
     empty.close();
     failed.close();
+  }
+});
+
+test('member T08 latches the rendered running badge across a fast completion', async () => {
+  const running = panelFor(card('Extract', 'Matches this URL'));
+  try {
+    assert.equal((await memberAutoCard(running, 'Owned T08 pattern')).running, false);
+    assert.deepEqual(await observeMemberAutoRunning(running, 'Owned T08 pattern', 'install'), {
+      installed: true,
+      seen: false,
+    });
+    running.replace(card('auto', 'Matches this URL'));
+    await Promise.resolve();
+    await Promise.resolve();
+    assert.equal((await memberAutoCard(running, 'Owned T08 pattern')).running, true);
+    running.replace(card('auto · 1 rows', 'Auto-extracted on page load'));
+    await Promise.resolve();
+    await Promise.resolve();
+    assert.deepEqual(await observeMemberAutoRunning(running, 'Owned T08 pattern'), { seen: true });
+    assert.equal(await observeMemberAutoRunning(running, 'Owned T08 pattern', 'clear'), true);
+    assert.deepEqual(await observeMemberAutoRunning(running, 'Owned T08 pattern'), { seen: false });
+  } finally {
+    running.close();
   }
 });
 
