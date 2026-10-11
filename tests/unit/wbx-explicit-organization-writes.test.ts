@@ -1,4 +1,5 @@
 import { createHighlight } from '@/lib/highlights/queries';
+import { DbFailureError } from '@/lib/supabase/db-failure';
 import {
   deleteDemoRow,
   savePattern,
@@ -7,7 +8,6 @@ import {
   upsertDemoRow,
   upsertGuidanceRow,
 } from '@/lib/supabase/queries';
-import { DbFailureError } from '@/lib/supabase/db-failure';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
@@ -164,9 +164,9 @@ describe('extend.wbx_* explicit organization writes', () => {
 
   it('reports a missing workspace when saving a demo', async () => {
     mocks.requireRequestOrganizationId.mockRejectedValue(new Error('No request organization'));
-    await expect(writers.find((writer) => writer.name === 'demo')!.run()).rejects.toBeInstanceOf(
-      DbFailureError,
-    );
+    const writer = writers.find((candidate) => candidate.name === 'demo');
+    if (!writer) throw new Error('demo writer missing');
+    await expect(writer.run()).rejects.toBeInstanceOf(DbFailureError);
     expect(mocks.getSupabase).not.toHaveBeenCalled();
   });
 
