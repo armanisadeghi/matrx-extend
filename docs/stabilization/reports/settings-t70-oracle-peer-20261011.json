@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-t70-oracle-peer-20261011",
+  "reviewed_commit": "d33342f7047104a62f9e7ddfda48cab5b131bb44",
+  "review_type": "zero_authorship_peer_review",
+  "verdict_a": {
+    "status": "pass",
+    "basis": [
+      "The product contract in c7e98585c789e3d5918e00f331b78719eefbcabd emits Available for the required local APIs and Unavailable with a reload/reinstall remedy when APIs are missing.",
+      "T70 expected text now requires Available; the guest result remains partial and its unobserved API/update branches remain unverified.",
+      "The retired broad Ready-or-Available predicate receives no retrospective credit; no native case result or inventory status was promoted."
+    ]
+  },
+  "verdict_b": {
+    "status": "pass",
+    "basis": [
+      "The focused guard rejects Ready when APIs are present and rejects Available or a missing remedy when APIs are absent.",
+      "The guarded unavailable value is the UI's exact Unavailable label; the runner derives its API availability from the same four browser API capabilities exposed by SettingsView.",
+      "The test specifies both branches and negative cases against the oracle contract, without invoking or copying the component implementation."
+    ]
+  },
+  "verification": {
+    "focused_test": "pass: node --test tests/browser/settings-readiness-oracle.test.mjs (2 passed)",
+    "targeted_biome": "pass: pnpm exec biome check on the native runner, focused oracle, focused test, and inventory; 4 applicable files checked",
+    "diff_check": "pass: git diff --check d33342f70^ d33342f70",
+    "json_parse": "pass: inventory.json and package.json parse",
+    "native_browser": "not_run: source/oracle peer review only; no hosted or local browser run",
+    "build": "not_run: no product TypeScript changed"
+  },
+  "limitations_and_follow_up": [
+    "T70 remains partial: native API-unavailable, update-available, throttled, error, and update-check-unavailable branches remain unverified.",
+    "The inventory retest_status narrative still describes a Ready/Available oracle mismatch as current. The mismatch is resolved in source and guard; that phrase should be clarified as historical when the inventory owner next updates the narrative. This review did not edit inventory or generated views.",
+    "Review confirms the committed source-level oracle contract only; it does not establish native Settings behavior or current-main runtime behavior."
+  ]
+}
