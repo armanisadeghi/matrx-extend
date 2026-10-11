@@ -1538,7 +1538,15 @@ export async function runDeviceToolCall(p: DeviceToolCallPayload): Promise<Webmc
 
 export async function handleWebmcpCall(
   payload: WebmcpCallPayload,
-  opts: { permissionMode: 'ask' | 'act'; initiator?: ConfirmInitiator; assignedTabId?: number },
+  opts: {
+    permissionMode: 'ask' | 'act';
+    initiator?: ConfirmInitiator;
+    assignedTabId?: number;
+    /** The person is about to be asked to confirm (Matrx 2 keeps waiting: browser.progress). */
+    onAwaitingConfirmation?: () => void;
+    /** The tool is running (after any confirmation). */
+    onRunning?: () => void;
+  },
 ): Promise<WebmcpCallResponse> {
   const { callId, toolName, args } = payload;
   const initiator: ConfirmInitiator = opts.initiator ?? 'page';
@@ -1630,6 +1638,7 @@ export async function handleWebmcpCall(
   // External action calls ALWAYS confirm — the user's act-mode preference
   // applies to their own agent, never to a page/frontend/desktop caller.
   if (effectiveTier === 'action') {
+    opts.onAwaitingConfirmation?.();
     const allowed = await requestConfirmation(handler, parsed.data, ctx, undefined, {
       effectiveTier,
       initiator,
@@ -1637,6 +1646,7 @@ export async function handleWebmcpCall(
     if (!allowed.allow) {
       return { ok: false, error: allowed.reason ?? 'User denied this action' };
     }
+    opts.onRunning?.();
   }
 
   // Roadmap item #8 (receipt-coverage gap fix) — WebMCP calls do NOT

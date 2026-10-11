@@ -124,13 +124,14 @@ async function readLastPort(): Promise<number | null> {
 }
 
 /** Why pairing failed, in words a person can act on. */
+export type Matrx2PairErrorCode = 'browser_connection_off' | 'forbidden' | 'unreachable' | 'bad_answer';
+
 export class Matrx2PairError extends Error {
-  constructor(
-    message: string,
-    readonly code: 'browser_connection_off' | 'forbidden' | 'unreachable' | 'bad_answer',
-  ) {
+  readonly code: Matrx2PairErrorCode;
+  constructor(message: string, code: Matrx2PairErrorCode) {
     super(message);
     this.name = 'Matrx2PairError';
+    this.code = code;
   }
 }
 

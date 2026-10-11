@@ -221,6 +221,10 @@ export const CHANNELS = {
   // goes through here so it acts on the process that owns the state.
   DESKTOP_REDISCOVER: 'desktop:rediscover',
   WS_RECONNECT: 'ws:reconnect', // extension page → SW: stop / start / restart the socket
+  // Matrx 2 (the new desktop app) — its own paired socket in the SW (src/lib/desktop/matrx2/).
+  MATRX2_STATE: 'matrx2:state', // SW → extension pages: the connection's state changed
+  MATRX2_GET_STATE: 'matrx2:get-state', // extension page → SW: read the state now
+  MATRX2_RECONNECT: 'matrx2:reconnect', // extension page → SW: a person pressed Reconnect
   // Private local-browser lifecycle fencing. These never cross the desktop
   // socket unchanged: socket_epoch exists only between the SW and offscreen.
   WS_EPOCH_HANDSHAKE: 'ws:epoch-handshake', // offscreen → SW: invalidate then acknowledge epoch

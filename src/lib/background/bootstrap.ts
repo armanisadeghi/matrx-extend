@@ -42,6 +42,13 @@ import type { DesktopHealth } from '@/lib/desktop/types';
 import { desktopHealthSnapshotKey } from '@/lib/desktop/types';
 import { connectWs, installWsRouter, shouldBackgroundReopenWs } from '@/lib/desktop/ws-client';
 import { registerWsReverseInvocationHandler } from '@/lib/desktop/ws-invoke';
+import {
+  ensureMatrx2Connection,
+  getMatrx2State,
+  reconnectMatrx2,
+} from '@/lib/desktop/matrx2/connection';
+import { resetMatrx2DiscoveryBackoff } from '@/lib/desktop/matrx2/discovery';
+import { wireMatrx2 } from '@/lib/desktop/matrx2/wire';
 import { connectBroadcast, disconnectBroadcast } from '@/lib/frontend-bridge/broadcast';
 import {
   FRONTEND_RPC_CHANNEL,
@@ -188,6 +195,8 @@ export function bootstrapBackground(): void {
   //       Broadcast channels could fail their first subscribe.
   void staleOffscreenCleanup.then(async () => {
     await rehydrateSupabaseSession();
+    // Matrx 2 (the new desktop app): its own paired socket, registered with the person's token.
+    void ensureMatrx2Connection();
     const state = await probeDesktop();
     lastDesktopTransport = state.transport;
     lastDesktopHealthKey = desktopHealthSnapshotKey(state.health);
@@ -239,6 +248,12 @@ export function bootstrapBackground(): void {
   //       we skip WS.
   startLocalBrowserController();
   registerWsReverseInvocationHandler();
+  wireMatrx2();
+  on<unknown, ReturnType<typeof getMatrx2State>>(CHANNELS.MATRX2_GET_STATE, () => getMatrx2State());
+  on<unknown, ReturnType<typeof getMatrx2State>>(CHANNELS.MATRX2_RECONNECT, async () => {
+    resetMatrx2DiscoveryBackoff();
+    return reconnectMatrx2();
+  });
 
   // ── 7b. Right-click context menus. "Ask Matrx about \"%s\"" pre-fills
   //        the chat draft with the page selection; "Open Matrx side panel"
@@ -309,6 +324,7 @@ function setupAlarms(): void {
       }
       await rehydrateSupabaseSession();
     } else if (alarm.name === ALARMS.DESKTOP_PROBE) {
+      void ensureMatrx2Connection();
       const state = await probeDesktop();
       const healthKey = desktopHealthSnapshotKey(state.health);
       // Broadcast when transport or managed-service health changes.
@@ -1036,6 +1052,8 @@ function registerDesktopRediscoverHandler(): void {
     async () => {
       resetEngineDiscoveryBackoff();
       resetNativeProbeBackoff();
+      resetMatrx2DiscoveryBackoff();
+      void ensureMatrx2Connection();
       await invalidateEnginePortCache();
       const state = await probeDesktop();
       lastDesktopTransport = state.transport;
@@ -1065,6 +1083,8 @@ function registerSchedulerHostUserWatcher(): void {
       // live here in the SW. Rehydrate this context before reconnecting
       // Broadcast or querying owner-RLS app_instances for a remote desktop.
       void rehydrateSupabaseSession().then(async () => {
+        // A new sign-in re-registers with Matrx 2, which re-checks the account.
+        void ensureMatrx2Connection();
         await connectBroadcast();
         const desktop = await probeDesktop();
         if (desktop.transport === 'http') void connectWs();
@@ -1073,6 +1093,8 @@ function registerSchedulerHostUserWatcher(): void {
       void stopSchedulerHost();
       void stopAgendaScanner();
       void disconnectBroadcast();
+      // Signed out: register again with no token, so Matrx 2 stops driving this browser at once.
+      void ensureMatrx2Connection();
       // Both holders are gone; drop the realm's realtime manager too. Its write
       // ledger and its actor identity belong to the user who just left, and a
       // manager kept across a user switch would classify the NEXT user's events
