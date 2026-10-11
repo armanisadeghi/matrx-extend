@@ -1,0 +1,100 @@
+{
+  "reviewed_at_utc": "2026-10-11T18:00:00Z",
+  "reviewer_lane": "guest_visibility_census_independent_peer",
+  "status": "partial_census_valid_evidence_no_product_verdict",
+  "scope": {
+    "run_id": 38157797924,
+    "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38157797924",
+    "run_record": "docs/stabilization/runs/guest-visibility-census-20261011.json",
+    "artifact_id": 11709512136,
+    "artifact_digest": "sha256:ef818f34385e14c63d92ffbe7ec24d4650ea9daf1f923be734f1efba78dc0b24",
+    "product_source_sha": "b53735e2c275dff7c10b752a695b64cb0c64ea1a",
+    "workflow_source_sha": "9a3a8b95d202ea78ad7ea12b343e586394ccdd3d",
+    "classification": "evidence review and source inventory comparison; no product behavior tested"
+  },
+  "provenance": {
+    "receipt_matches_run_and_artifact": true,
+    "native_report_matches_product_sha_version_tree_and_extension_id": true,
+    "resource_journals_match_run_and_all_admitted_without_resource_invalidity": true,
+    "package_and_browser_children_exit_zero": true,
+    "guest_child_exit_one_after_driver_incomplete": true,
+    "conclusion": "Hosted workflow failure reflects the census driver's incomplete result; the journals do not indicate resource admission failure."
+  },
+  "evidence_findings": {
+    "behavior_credit": "none",
+    "product_defect_verdict": "none",
+    "native_panel_verified": true,
+    "signed_out_before_and_after": true,
+    "authentication_state": {
+      "access_token_present": false,
+      "refresh_token_present": false,
+      "profile_present": false,
+      "admin_role": false,
+      "sign_in_visible": true,
+      "sign_out_visible": false
+    },
+    "visible_guest_navigation": [
+      "Chat",
+      "Scrape",
+      "Data",
+      "SEO",
+      "Settings"
+    ],
+    "known_admin_only_navigation_labels_absent": [
+      "Pilot",
+      "Showcase",
+      "Token broker",
+      "Debug"
+    ],
+    "limits": "Absence in the observed labels is not a denial-path test. No setting or surface action was exercised; hidden controls, profile menu and all behavior cells remain unverified."
+  },
+  "unmapped_review": {
+    "reported_total": 36,
+    "reconciled_group_counts": {
+      "navigation_outside_panel_buttons": 2,
+      "settings_section_button": 1,
+      "settings_chat_combobox": 1,
+      "chat_surface_controls": 16,
+      "data_surface_controls": 2,
+      "seo_surface_controls": 14
+    },
+    "classification_counts": {
+      "non_product_outside_panel_observations": 2,
+      "existing_inventory_equivalent_or_duplicate_class": 2,
+      "unresolved_individual_identity_due_to_sanitization": 32,
+      "confirmed_missing_stable_inventory_controls": 0
+    },
+    "rationale": [
+      "The two navigation observations are explicitly located outside_panel in the preceding same-driver census, which also reported two action buttons there; they are not extension navigation controls. The current sanitized report omits per-observation provenance, so this is class-level corroboration, not a run-specific fingerprint match.",
+      "The settings section is already represented by EXT-F-1003-C10; the extra button is the section trigger itself, not evidence of an additional stable Settings control.",
+      "The sole Chat settings combobox corresponds to the existing Default agent control EXT-F-1003-C03 (inventory source record); the census should map it rather than add another control.",
+      "Source inventory already enumerates guest-visible Chat controls (EXT-F-2013, including New chat, history, customization, composer, suggestions and copy) and Data/SEO features. Yet this artifact gives only kind counts and irreversible label fingerprints, so the 32 Chat, Data and SEO observations cannot be individually matched or safely declared duplicates. Treat these 32 as unresolved inventory reconciliation, not newly missing controls."
+    ],
+    "source_checks": [
+      "docs/stabilization/inventory.json: EXT-F-1001-C01, EXT-F-1003-C10, EXT-F-1003-C03, EXT-F-2013 control catalog, plus Data and SEO feature catalogs.",
+      "docs/stabilization/reports/settings-nav-inventory-source-peer-20261010.json: previous source-to-inventory review found navigation/Settings coverage and specifically added Chat version selector C40; source-only, not behavior evidence.",
+      "docs/stabilization/reports/seo-inventory-gap-peer-20261010.json: source-level SEO reconciliation; native control identity remains a runtime question."
+    ],
+    "interpretation": "No source-confirmed missing stable inventory control is established by this sanitized evidence. The 32 surface observations remain unclassified individually because labels, accessible names, selectors and DOM provenance were not retained. Do not edit inventory from these aggregate counts."
+  },
+  "incomplete_census": {
+    "about": "Settings > About was visibly listed but content inspection failed, leaving settings_content:About missing. The artifact does not expose the failure cause or retry diagnostics; this is a harness inspection gap, not a reproduced product issue.",
+    "blocked_rpc": "One database:rpc_post_unclassified request was aborted by the documented observation-only non-GET guard. Its procedure/path, caller and purpose are absent; it is not evidence of a product failure and must not be replayed until source-level purpose and read/write semantics are known.",
+    "effect": "The driver correctly emitted incomplete/exit 2 and the wrapper failed on nonzero. This is a harness completeness failure, separate from product defect status."
+  },
+  "next_focused_runner_change": "Before another full census, add a diagnostic-only inventory mode that emits one sanitized row per observation: region, stable accessible name/visible label (or explicit unlabeled marker), role/tag, bounded DOM locator, source inventory candidate IDs, and an explicit structural/outside-panel flag. Preserve no text values or user content. For About, record the section click result and inspection exception category/timeout, then retry one read-only inspection once. For the blocked RPC, record method plus sanitized pathname/RPC name and initiator only (never body/token); statically resolve it against the source callsite and classify read/write before any policy change. Re-run only after this runner patch, and retain the current behavior_credit=none gate.",
+  "open_questions": [
+    "What exact visible labels and inventory candidates correspond to the 16 Chat, 2 Data and 14 SEO buttons/textarea? Current sanitized artifact cannot answer this.",
+    "Why did About content inspection fail, and is the cause a runner locator/timing issue or an inaccessible panel state?",
+    "Which RPC path/callsite generated the blocked POST, and is it read-only or mutating?"
+  ],
+  "evidence_files_reviewed": [
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/guest-account-readiness.png",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/native-guest-panel.png",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/resource-journals/hosted-package-38157797924-1.jsonl",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/resource-journals/hosted-browser-38157797924-1.jsonl",
+    "docs/stabilization/evidence/guest-visibility-census/run38157797924/resource-journals/hosted-guest-38157797924-1.jsonl"
+  ]
+}
