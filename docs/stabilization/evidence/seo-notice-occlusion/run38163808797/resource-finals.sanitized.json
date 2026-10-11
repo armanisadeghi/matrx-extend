@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "run_id": 38163808797,
+  "source": "Final hosted artifact 11711567076; each journal copied through scripts/copy-hosted-resource-journal.mjs and validated for one final decision.",
+  "phases": {
+    "package": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-package-38163808797-1.jsonl"
+    },
+    "browser": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      "journal": "resource-journals/hosted-browser-38163808797-1.jsonl"
+    },
+    "guest": {
+      "final": {
+        "admitted": true,
+        "resource_invalid": true,
+        "exit_code": 3,
+        "decision": "invalid"
+      },
+      "journal": "resource-journals/hosted-guest-38163808797-1.jsonl"
+    }
+  },
+  "policy_verdict": "Package and browser journals are valid; the guest child was admitted but resource-invalid and terminated with exit code 3."
+}

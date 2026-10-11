@@ -4,7 +4,7 @@
   "created_at_utc": "2026-10-11T18:26:21Z",
   "feature_id": "EXT-F-1008",
   "defect_id": "EXT-D-0199",
-  "status": "running",
+  "status": "reviewed_resource_invalid_no_credit",
   "scope": "Guarded hosted lane B native guest SEO rerun after fixing the 360px native viewport preflight. The driver distinguishes native 360px from explicitly emulated 480px; it cannot establish a wider native panel. Multiple/long notices and visible-notice full reload remain unforced.",
   "hosted_run_id": 38163808797,
   "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38163808797",
@@ -24,5 +24,107 @@
     "source_sha": "ee2e4085167cfa78c706c75f82c781d685d347d7",
     "github_digest": "sha256:c88796b7fc226e6c44966bf1ef6a54f848877d59b73e207db76f08e4b656e488"
   },
-  "next_action": "Await terminal artifact and independent review of native viewport widths/sources, notice-visible hit points, trusted Re-audit, Dismiss, reload, cleanup and all resource finals before assigning any bounded credit."
+  "next_action": "Keep EXT-D-0199 fixed/open. Resolve hosted guest resource contention without weakening the watchdog, then rerun the full bounded native sequence; multiple/long notices and visible-notice full reload remain separate forced coverage.",
+  "terminal": {
+    "workflow_status": "completed",
+    "workflow_conclusion": "failure",
+    "job_conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "failure_stage": "resource_watchdog_abort",
+    "failure_reason": "Guest resource watchdog stopped Chromium at a safe boundary after sustained CPU pressure; one-minute load reached 10.52 on 4 logical CPUs and cpuBusyFraction 0.96.",
+    "child_exit_code": 3
+  },
+  "result_artifact": {
+    "artifact_id": 11711567076,
+    "name": "hosted-guest-38163808797-1",
+    "github_digest": "sha256:cc801cbb68185ac9febd2525736fe7dfebb716a94a0b210c1041c26d0399fc44",
+    "downloaded_archive_digest_matches": true,
+    "native_report": "evidence/seo-notice-occlusion/run38163808797/native-report.sanitized.json",
+    "resource_finals": "evidence/seo-notice-occlusion/run38163808797/resource-finals.sanitized.json"
+  },
+  "product_artifact": {
+    "development_run_id": 38163194796,
+    "artifact_id": 11711043469,
+    "source_sha": "ee2e4085167cfa78c706c75f82c781d685d347d7",
+    "version": "0.2.500",
+    "github_digest": "sha256:c88796b7fc226e6c44966bf1ef6a54f848877d59b73e207db76f08e4b656e488",
+    "downloaded_archive_digest_matches": true,
+    "tree_sha256": "a5de6c0095949b6b55a27c7389656188f852c6cd40dd0d21ef600fac5bf2bdf9",
+    "publish_state": "not_published"
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid"
+    }
+  },
+  "observed_before_failure": {
+    "native_viewport_baseline": {
+      "width": 360,
+      "height": 373,
+      "source": "native"
+    },
+    "notice_viewport_plan": {
+      "narrow": {
+        "width": 360,
+        "source": "emulated"
+      },
+      "wide": {
+        "width": 480,
+        "source": "emulated"
+      }
+    },
+    "narrow_warm_navigation": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0,
+      "subtarget_status": "pass"
+    },
+    "last_safe_stage": "notice_wide_viewport_width",
+    "current_operation": "public_page_1_navigation",
+    "other_completed_targets": [
+      "T06 guest history error retry fresh empty read",
+      "T09 page_0 title and headings",
+      "T07 guest actual clipboard text and AI page 0"
+    ]
+  },
+  "not_run": [
+    "480px emulated warm-navigation hit assertion",
+    "trusted Re-audit while the refusal notice remains visible",
+    "Dismiss assertion",
+    "panel reload / notice-after-reload assertion",
+    "native-width restoration assertion"
+  ],
+  "cleanup": "Resource watchdog terminated the guest child and the hosted job completed, but uploaded evidence does not prove explicit browser/profile/fixture restoration; cleanup remains unverified.",
+  "acceptance_credit": "none; partial narrow warm-navigation hit observation is recorded, but this guest run is resource-invalid and the full required interaction sequence did not complete.",
+  "independent_review": "docs/stabilization/reports/seo-notice-viewport-independent-review-38163808797.json",
+  "evidence": [
+    "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/receipt.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/product-artifact.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/native-report.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/resource-journals/hosted-package-38163808797-1.jsonl",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/resource-journals/hosted-browser-38163808797-1.jsonl",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/resource-journals/hosted-guest-38163808797-1.jsonl",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/screenshots/native-side-panel.png",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/screenshots/normal-target-after-open.png"
+  ]
 }

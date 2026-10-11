@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_seo_notice_viewport_run_review",
+  "reviewer": "seo_viewport_native_peer_381638",
+  "reviewed_at_utc": "2026-10-11T18:36:07Z",
+  "run_id": 38163808797,
+  "verdict_a_product_behavior": {
+    "verdict": "PARTIAL_PREINTERRUPT_OBSERVATIONS; NO_D0199_ACCEPTANCE_CREDIT",
+    "reason": "The viewport preflight repair worked and the native baseline measured 360×373. One emulated 360px warm-navigation notice hit test passed before the hosted resource watchdog invalidated the guest child during the second page navigation. The remaining wide warm-navigation hit test, trusted Re-audit, Dismiss, reload, and native restoration did not run to recorded completion.",
+    "observations": {
+      "native_baseline": {
+        "width": 360,
+        "height": 373,
+        "source": "native panel measurement before any CDP override"
+      },
+      "narrow_variant": {
+        "width": 360,
+        "source": "emulated via Emulation.setDeviceMetricsOverride",
+        "warm_navigation": {
+          "notice_visible": true,
+          "target_hit_points": 9,
+          "notice_hit_points": 0,
+          "target_enabled": true
+        },
+        "subtarget": "notice_narrow_warm_navigation_reaudit_clearance passed"
+      },
+      "wide_variant": {
+        "planned_width": 480,
+        "source": "emulated",
+        "last_safe_stage": "notice_wide_viewport_width",
+        "current_operation": "public_page_1_navigation",
+        "warm_navigation_hit_snapshot": "not recorded"
+      },
+      "other_completed_targets": [
+        "T06 guest history error, trusted retry, fresh empty read",
+        "T09 first public page title and headings",
+        "T07 actual guest clipboard text/AI page 0"
+      ]
+    },
+    "not_established": [
+      "A notice-visible hit test at a naturally native width above 360px; this runner baseline was exactly 360px.",
+      "A notice-visible hit test after warm navigation at emulated 480px.",
+      "Trusted Re-audit while the refusal notice is visible.",
+      "Dismiss behavior and reload after Dismiss.",
+      "Restoration assertion confirming native width after the emulated variants.",
+      "Multiple or long notices, full reload while a notice is visible, member/admin, current-main runtime, and Store behavior."
+    ],
+    "screenshots": "Both uploaded images were inspected: the native panel image shows “Preparing chat...” and the target image shows the public page; neither shows SEO or the notice, so they do not prove notice visibility or hit clearance.",
+    "root_cause_classification": "This was not the prior viewport preflight defect and no product assertion failure was recorded. The hosted resource watchdog stopped the guest child when CPU busy/load crossed its safety boundary. A process attribution snapshot included Chromium processes and unrelated runner processes, so the evidence establishes a resource-invalid host interval but does not prove a single process caused it."
+  },
+  "verdict_b_provenance_resource_and_run_quality": {
+    "verdict": "PROVENANCE_PASS; PACKAGE_BROWSER_RESOURCE_PASS; GUEST_RESOURCE_INVALID; PRODUCT_PARTIAL",
+    "provenance": "PASS: workflow head and imported CI development product both use ee2e4085167cfa78c706c75f82c781d685d347d7; product CI run 38163194796/artifact 11711043469 is v0.2.500 unpublished. Downloaded product archive SHA-256 matches GitHub metadata c88796b7fc226e6c44966bf1ef6a54f848877d59b73e207db76f08e4b656e488. The fix commit f3a7f8294805359c619b22571647a0414092c576 is an ancestor of the workflow source.",
+    "result_artifact": "PASS: artifact 11711567076 downloaded and its SHA-256 cc801cbb68185ac9febd2525736fe7dfebb716a94a0b210c1041c26d0399fc44 matches GitHub artifact metadata; all six uploaded members were enumerated, with native report and both screenshots inspected.",
+    "resource_finals": "Package and browser each have one final decision admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Guest has one final decision admitted=true, resourceInvalid=true, exitCode=3, decision=invalid. Its sanitizer-processed journal records CPU pending, unsafe, safe-boundary stop and watchdog SIGTERM; process-attribution details are omitted by the allowlist sanitizer.",
+    "native_report_integrity": "PASS: the report records native 360×373, a 480px emulated wide plan, the narrow warm-navigation T02 subtarget as pass, and the last safe stage/current operation. It remains status=unverified, receipt_state=in_progress; the absence of later targets is not a pass.",
+    "cleanup_and_scope": "PARTIAL: the disposable hosted job ended after watchdog termination and the uploaded artifact is terminal, but no explicit browser/profile or fixture restoration assertion is present. Mark cleanup unverified. Only controlled guest SEO scope ran.",
+    "evidence": {
+      "run_record": "docs/stabilization/runs/seo-notice-viewport-retry-run38163808797.json",
+      "receipt": "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/receipt.sanitized.json",
+      "product_artifact": "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/product-artifact.sanitized.json",
+      "native_report": "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/native-report.sanitized.json",
+      "resource_finals": "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/resource-finals.sanitized.json",
+      "resource_journals": [
+        "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/resource-journals/hosted-package-38163808797-1.jsonl",
+        "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/resource-journals/hosted-browser-38163808797-1.jsonl",
+        "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/resource-journals/hosted-guest-38163808797-1.jsonl"
+      ],
+      "screenshots": [
+        "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/screenshots/native-side-panel.png",
+        "docs/stabilization/evidence/seo-notice-occlusion/run38163808797/screenshots/normal-target-after-open.png"
+      ]
+    }
+  },
+  "overall": "NO_D0199_ACCEPTANCE_CREDIT; VIEWPORT_PREFLIGHT_REPAIR_CONFIRMED; RESOURCE_INVALID_BEFORE_REMAINING_INTERACTIONS",
+  "next_action": "Keep EXT-D-0199 fixed/open. Resolve hosted guest resource contention without weakening the watchdog, then rerun the complete bounded native sequence and separately add forced multiple/long-notice and visible-notice reload fixtures. Do not call the 480px emulation native width."
+}

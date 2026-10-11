@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "kind": "ci_development_test",
+  "publish_state": "not_published",
+  "development_run_id": 38163194796,
+  "artifact_id": 11711043469,
+  "source_sha": "ee2e4085167cfa78c706c75f82c781d685d347d7",
+  "version": "0.2.500",
+  "github_digest": "sha256:c88796b7fc226e6c44966bf1ef6a54f848877d59b73e207db76f08e4b656e488",
+  "downloaded_archive_sha256": "c88796b7fc226e6c44966bf1ef6a54f848877d59b73e207db76f08e4b656e488",
+  "digest_matches": true,
+  "tree_sha256": "a5de6c0095949b6b55a27c7389656188f852c6cd40dd0d21ef600fac5bf2bdf9",
+  "provenance": "Exact uploaded CI development artifact; source matches hosted workflow SHA. Not published or Store-eligible."
+}
