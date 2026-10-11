@@ -1,6 +1,6 @@
 {
   "id": "chrome-dev-profile-20261011",
-  "observed_at_utc": "2026-10-11T19:17:00Z",
+  "observed_at_utc": "2026-10-11T21:02:25Z",
   "profile": "Arman (armansadeghi.com)",
   "development": {
     "version": "0.2.502",
@@ -12,7 +12,19 @@
     "ci_run_id": 38166523824,
     "ci_artifact_id": 11711963526,
     "source_sha": "67f3c3d398909f4e1316a221800afee798d45906",
-    "tree_sha256": "490c43018ba2ed898101fb37dfd76ec217c9ad9bf79973e17aa0a2cada7ae170"
+    "tree_sha256": "490c43018ba2ed898101fb37dfd76ec217c9ad9bf79973e17aa0a2cada7ae170",
+    "current_main_sync": "stale: Chrome still displays 0.2.502 after 0.2.505 files were promoted; current-main browser installation remains unverified",
+    "promoted_files": {
+      "version": "0.2.505",
+      "ci_run_id": 38173924574,
+      "ci_artifact_id": 11714649963,
+      "source_sha": "fca97c646a6834c673e040b6c14874535d0e9316",
+      "main_sha": "0c49d48f2dabfcd57ea81b457489a77638071517",
+      "compatibility": "runtime-equivalent",
+      "tree_sha256": "74ff58d1b20030f5ecb87796b083db96a851b46b4ee639c773423d3d04b8b231",
+      "manifest_version_verified": true,
+      "chrome_version_verified": false
+    }
   },
   "store_installed": {
     "version": "0.2.205",
@@ -26,5 +38,5 @@
     "published_version": "0.2.205",
     "upload_new_package_enabled": false
   },
-  "limits": "Chrome's extension details and reload confirmation establish installation, version, ID, path and pins. They do not establish product behavior or Store approval."
+  "limits": "Chrome details currently establish the 0.2.502 installation, ID, path and pin. The promoted 0.2.505 files do not establish that Chrome loaded them. No current-main Chrome product behavior or Store approval is claimed. Next action: reload by reselecting the stable folder with Load unpacked, then verify Chrome's displayed version and pin without removing either extension."
 }
