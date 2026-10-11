@@ -33,6 +33,34 @@ export async function waitFor(
   throw new Error(`${label}_not_observed:${JSON.stringify(diagnostic(last))}`);
 }
 
+// Profile is an account-menu destination with a TabsContent, not a tab-strip
+// trigger. Observe its actual active pane and controls after the native click.
+export async function profilePaneState(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    const active = [...document.querySelectorAll('[role="tabpanel"][data-state="active"]')]
+      .filter((pane) => pane.getBoundingClientRect().width > 0);
+    const profile = active.filter((pane) =>
+      pane.querySelector('button[title="Back"]') &&
+      pane.querySelector('button[aria-label="Save profile"]') &&
+      [...pane.querySelectorAll('span')].some((span) => span.textContent.trim() === 'Profile'));
+    return { activePaneCount: active.length, profilePaneCount: profile.length,
+      backCount: profile.length === 1 ? profile[0].querySelectorAll('button[title="Back"]').length : 0,
+      saveCount: profile.length === 1 ? profile[0].querySelectorAll('button[aria-label="Save profile"]').length : 0 };
+  })()`,
+  );
+}
+
+export function profilePaneReady(state) {
+  return (
+    state?.activePaneCount === 1 &&
+    state.profilePaneCount === 1 &&
+    state.backCount === 1 &&
+    state.saveCount === 1
+  );
+}
+
 // A replacement CDP target can exist before React mounts its tabs. Do not
 // dispatch a native pointer until the same visible Settings target is ready.
 export async function waitForReplacementSettingsTab(panel, timeoutMs = 10000) {

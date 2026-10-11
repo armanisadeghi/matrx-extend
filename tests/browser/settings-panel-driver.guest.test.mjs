@@ -2,7 +2,12 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { Window } from 'happy-dom';
-import { guestSettingsChecks, guestSettingsState } from './settings-panel-driver.mjs';
+import {
+  guestSettingsChecks,
+  guestSettingsState,
+  profilePaneReady,
+  profilePaneState,
+} from './settings-panel-driver.mjs';
 
 test('admin completion failure reaches the acceptance receipt as safe categories', async () => {
   let authenticatedState = false;
@@ -353,4 +358,59 @@ test('each guest control rejects its own visible or network regression', () => {
   ]) {
     assert.equal(guestSettingsChecks({ ...guest, ...changed }, 0).archivedManagement, false);
   }
+});
+
+test('account Profile destination is the active pane, without a tab-strip trigger', async () => {
+  const document = new Window().document;
+  let observedExpression;
+  const panel = {
+    async send(_method, { expression }) {
+      observedExpression = expression;
+      return { result: { value: new Function('document', `return ${expression}`)(document) } };
+    },
+  };
+  const observe = async (markup) => {
+    document.body.innerHTML = markup;
+    for (const pane of document.querySelectorAll('[role="tabpanel"]')) {
+      pane.getBoundingClientRect = () => ({ width: 340 });
+    }
+    return profilePaneState(panel);
+  };
+  const profile = `<button role="tab" data-state="inactive" title="Chat"></button>
+    <div role="tabpanel" data-state="active">
+      <button title="Back"></button><span>Profile</span>
+      <button aria-label="Save profile"></button>
+    </div>`;
+  const active = await observe(profile);
+  assert.equal(
+    document.querySelectorAll('button[role="tab"][data-state="active"][title="Profile"]').length,
+    0,
+    'the old trigger oracle cannot observe this real destination shape',
+  );
+  assert.equal(profilePaneReady(active), true);
+  assert.deepEqual(active, { activePaneCount: 1, profilePaneCount: 1, backCount: 1, saveCount: 1 });
+
+  const inactive = await observe(profile.replace('data-state="active"', 'data-state="inactive"'));
+  assert.equal(profilePaneReady(inactive), false);
+  const ignoresActive = observedExpression.replace(
+    '[role="tabpanel"][data-state="active"]',
+    '[role="tabpanel"]',
+  );
+  assert.notEqual(
+    ignoresActive,
+    observedExpression,
+    'the active-state mutant must change the oracle',
+  );
+  const mutantState = new Function('document', `return ${ignoresActive}`)(document);
+  assert.equal(
+    profilePaneReady(mutantState),
+    true,
+    'without active-state check, inactive Profile falsely passes',
+  );
+  const wrongDestination = await observe(
+    profile.replace('aria-label="Save profile"', 'aria-label="Save settings"'),
+  );
+  assert.equal(profilePaneReady(wrongDestination), false);
+  const duplicateActive = await observe(`${profile}${profile.slice(profile.indexOf('<div'))}`);
+  assert.equal(profilePaneReady(duplicateActive), false);
 });

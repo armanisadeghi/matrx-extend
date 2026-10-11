@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-account-popover-member-run38168272292",
+  "recorded_at": "2026-10-11T19:31:57Z",
+  "scope": "Guarded hosted lane A attempt to run member account-popover cases T20, T23 and T26 on frozen unpublished development v0.2.502. No Chrome or product behavior was exercised.",
+  "run": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38168272292",
+    "id": 38168272292,
+    "conclusion": "failure",
+    "acceptance_case": "settings-account-popover-member",
+    "workflow_head_sha": "a54def2f8ec9fd581dbbce95ce174a8a925004d5",
+    "tested_artifact_source_sha": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f",
+    "development_ci_run_id": 38167324502,
+    "development_artifact_id": 11712499031,
+    "hosted_result_artifacts": 0
+  },
+  "failure_boundary": "The selected-authentication preflight rejected an empty MATRX_HOSTED_MEMBER_LINK_JSON with hosted_member_link_secret_required. The workflow's MATRX_REVIEWER_MAGIC_LINK_JSON secret was unavailable to this run. Resource admission, browser setup, member sign-in and account-popover driver did not start.",
+  "product_verdict": {
+    "cases": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+    "status": "unverified",
+    "credit": 0
+  },
+  "next": "Supply an authorized isolated ordinary-member fixture through the existing hosted secret boundary, then rerun this case with a successful exact development CI artifact. Keep admin serialized and independently fixture-gated."
+}
