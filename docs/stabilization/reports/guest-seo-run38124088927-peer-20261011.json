@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_run_evidence_review",
+  "reviewed_at": "2026-10-11",
+  "run_id": 38124088927,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38124088927",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "source_sha": "9b8511eecac2853eb1d091f2e3681d42ce2f99b0",
+    "job": "guest",
+    "job_conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "dispatch": {
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "controlled",
+      "seo_metadata_fixture": "none",
+      "lane": "B"
+    }
+  },
+  "frozen_product": {
+    "ci_run_id": 38118947880,
+    "artifact_id": 11693783976,
+    "artifact_name": "matrx-extend-development-test-40ad70d458fd1f6acd16aa04c40c061eb6ef21bb-38118947880-1",
+    "artifact_digest": "sha256:162c745cbcc558f3d9f45c23560be63a0c4b9473c76109bd18405f636217549c",
+    "source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+    "version": "0.2.493",
+    "tree_sha256": "6ac2233eb04997096e173e0f741c127130a7ee9a245882392befcd49b9fe2206",
+    "binding": "GitHub artifact metadata and downloaded ZIP SHA-256 match; imported artifact receipt in the native report matches run, artifact, source, version, GitHub digest, and tree digest; native build-before tree digest matches the receipt.",
+    "artifact_size_in_bytes": 39480263,
+    "ci_conclusion": "success",
+    "publish_state": "not_published"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11696518188,
+    "name": "hosted-guest-38124088927-1",
+    "size_in_bytes": 61351,
+    "github_digest": "sha256:2d80b5df7ee6aff1112e397ee63a77addc415e1ed4e2e8df233e64e73abc52d0",
+    "downloaded_zip_sha256": "2d80b5df7ee6aff1112e397ee63a77addc415e1ed4e2e8df233e64e73abc52d0",
+    "contents": "Sanitized native SEO acceptance report, three completed resource journals, and two screenshots retained privately and not inspected or committed."
+  },
+  "behavior_verdict": {
+    "verdict": "BOUNDED_GUEST_T06_PASS_ORIGINAL_SYNTHETIC_REPRO_NOT_REPRODUCED",
+    "defect_id": "EXT-D-0198",
+    "case_id": "EXT-F-1008-T06",
+    "native_result": "The native report records the T06 target as pass with errorRendered=true, retryFreshRead=true, and emptyRendered=true before the later Re-audit failure.",
+    "path_review": "At the exact workflow source SHA, the controlled runner intercepts only the owned metadata page's GET to /rest/v1/wbx_seo_audit with Accept-Profile=extend. The real side panel, Supabase query builder/fetch, React state and rendered DOM remain in use. The native path verifies one 403 refusal, visible history error and history-specific Retry, a second GET held pending while loading renders, then a successful 200 [] response and the empty-history UI.",
+    "bounded_credit": "This earns bounded guest native credit for the synthetic non-absence query-error and Retry behavior on the frozen unpublished development artifact. The original EXT-D-0198 error-to-empty-without-retry reproduction does not reproduce in this controlled path.",
+    "limits": [
+      "The refusal is deliberately synthesized by the test harness; this does not prove guest live-backend behavior.",
+      "Member/admin history behavior and production data conditions remain unverified.",
+      "The later whole-run failure prevents full guest SEO or T02 acceptance; no feature-level promotion follows."
+    ]
+  },
+  "evidence_verdict": {
+    "verdict": "VALID_RESOURCE_RUN_WITH_UNRELATED_PRE_DISPATCH_CLICK_FAILURE",
+    "resource_finals": {
+      "hosted-package-38124088927-1": "finalized, admitted, resourceInvalid=false, exitCode=0, decision=valid",
+      "hosted-browser-38124088927-1": "finalized, admitted, resourceInvalid=false, exitCode=0, decision=valid",
+      "hosted-guest-38124088927-1": "finalized, admitted, resourceInvalid=false, exitCode=1, decision=child_failed"
+    },
+    "first_failure": {
+      "last_safe_stage": "manual_reaudit_preflight",
+      "failure_stage": "manual_reaudit_click",
+      "click_phase": "before_target_resolution",
+      "diagnostic": {
+        "source": "pointer_driver",
+        "code": "pointer_stable_hit_not_observed",
+        "sample_stage": null,
+        "matched_target_count": 1,
+        "visible_match_count": 1,
+        "hit_target": false,
+        "stable_samples": 0,
+        "selected_point_available": false,
+        "center_hit_category": "other_element",
+        "center_occluder": {
+          "owning_panel": "none",
+          "known_notice": "database_refused"
+        }
+      },
+      "dispatch_checkpoint": "manual_reaudit_click_dispatched was not reached; T02 and subsequent checks are unverified.",
+      "classification": "A visible unique Re-audit target was reported, but the pointer driver could not establish a stable hit point before dispatch. The retained safe diagnostic identifies an occluding element and a database-refused notice, but cannot attribute why it occupied the target. This is an unattributed click/harness observation and does not establish a product defect."
+    },
+    "resource_basis": "All three attached resource journals are finalized with RESOURCE_FINAL_DECISION and agree with the guest wrapper child failure; the guest journal records resourceInvalid=false and decision=child_failed, so resource validity does not erase the completed T06 observation.",
+    "independent_artifact_checks": [
+      "GitHub run head SHA and guest job conclusion checked for run 38124088927.",
+      "GitHub metadata and downloaded ZIP digest checked for hosted artifact 11696518188.",
+      "GitHub metadata and downloaded ZIP digest checked for frozen CI artifact 11693783976.",
+      "Imported product receipt and native build identity checked in the actual sanitized native report.",
+      "All three finalized resource journals and the bounded T06 runner path checked."
+    ],
+    "native_report_status": "unverified_overall; bounded T06 target passed before click failure"
+  },
+  "inventory_credit": {
+    "new_credit": true,
+    "credit_scope": "EXT-F-1008-T06 guest controlled synthetic history error, visible retry, fresh read and empty result only",
+    "overall_guest_seo_state": "partial; run failed at the later manual Re-audit click and does not pass T02 or the whole feature",
+    "no_credit_for": [
+      "T02 manual re-audit behavior",
+      "member/admin modes or live-backend history errors",
+      "unrelated SEO subtargets already represented by prior evidence"
+    ]
+  },
+  "next_action": "Carry the bounded T06 guest result into inventory reconciliation separately from the failed T02 observation. Investigate the reported database-refused occluder only if a later admitted run needs the Re-audit click; retain the safe pre-dispatch diagnostic and do not classify this run as a product failure.",
+  "privacy": "No credentials, raw exception messages, URLs from private user content, runner paths, extension ID, screenshots, or unrestricted logs are included."
+}
