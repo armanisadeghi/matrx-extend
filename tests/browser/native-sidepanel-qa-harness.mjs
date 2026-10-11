@@ -1226,24 +1226,55 @@ async function waitForSettledGuestPanel(cdp, targetId) {
   throw new Error(`native_sidepanel_render_not_settled:${previousFingerprint ?? 'no_state'}`);
 }
 
-async function captureTarget(cdp, targetId, output) {
-  const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
+export async function captureTarget(cdp, targetId, output) {
+  const panel = await attachTargetSession(cdp, targetId);
   try {
-    await cdp.send('Page.enable', {}, sessionId);
-    const { data } = await cdp.send('Page.captureScreenshot', { format: 'png' }, sessionId);
+    await panel.send('Page.enable');
+    const { data } = await panel.send('Page.captureScreenshot', { format: 'png' });
     if (typeof data !== 'string' || data.length < 100)
       throw new Error('native_sidepanel_png_missing');
     await writeFile(output, Buffer.from(data, 'base64'), { mode: 0o600 });
   } finally {
-    await cdp.send('Target.detachFromTarget', { sessionId }).catch(() => {});
+    await panel.detach();
   }
 }
 
-async function attachTargetSession(cdp, targetId) {
-  const { sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true });
+export async function attachTargetSession(cdp, targetId) {
+  let sessionId;
+  let retired = false;
+  let detachPromise;
+  const earlyRetirements = new Set();
+  const markRetired = () => {
+    retired = true;
+    cdp.off('Target.detachedFromTarget', onDetached);
+  };
+  const onDetached = (params) => {
+    if (sessionId === undefined) earlyRetirements.add(params.sessionId);
+    else if (params.sessionId === sessionId) markRetired();
+  };
+  // Subscribe before attaching: Chrome can retire the session between its
+  // attach response and the promise continuation that receives the new id.
+  cdp.on('Target.detachedFromTarget', onDetached);
+  try {
+    ({ sessionId } = await cdp.send('Target.attachToTarget', { targetId, flatten: true }));
+  } catch (error) {
+    cdp.off('Target.detachedFromTarget', onDetached);
+    throw error;
+  }
+  if (earlyRetirements.has(sessionId)) markRetired();
+  earlyRetirements.clear();
+  const detachSession = () => {
+    if (detachPromise) return detachPromise;
+    if (retired) return Promise.resolve();
+    // Target closure already detaches its sessions. Never send a redundant
+    // detach: Chrome's protocol refusal would poison the shared owned socket.
+    detachPromise = cdp.send('Target.detachFromTarget', { sessionId }).then(markRetired);
+    return detachPromise;
+  };
   return Object.freeze({
     targetId,
     async send(method, params = {}) {
+      if (retired) throw new Error('native_target_session_retired');
       return cdp.send(method, params, sessionId);
     },
     on(method, listener) {
@@ -1254,10 +1285,10 @@ async function attachTargetSession(cdp, targetId) {
       return () => cdp.off(method, scoped);
     },
     async detach() {
-      await cdp.send('Target.detachFromTarget', { sessionId }).catch(() => {});
+      await detachSession().catch(() => {});
     },
     async detachVerified() {
-      await cdp.send('Target.detachFromTarget', { sessionId });
+      await detachSession();
     },
   });
 }

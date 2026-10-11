@@ -27,6 +27,8 @@ function environment({
   let detached = 0;
   const calls = [];
   const cdp = {
+    on() {},
+    off() {},
     async send(method, params, sessionId) {
       calls.push(method);
       if (method === 'Target.getTargets') {
