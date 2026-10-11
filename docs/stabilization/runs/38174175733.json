@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "run_id": 38174175733,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_checkout_sha": "fca97c646a6834c673e040b6c14874535d0e9316",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "ci_run_id": 38172909785,
+    "ci_artifact_id": 11715051290,
+    "source_sha": "acb5506d55f972b22619c775b56154adeba694e3",
+    "version": "0.2.504",
+    "artifact_digest": "sha256:e8e77a95c599ec4a6bfd0e49f973d0c0a4903cdbc8d607849bc20127425c4f84",
+    "tree_sha256": "b9a0d28b32c58dc1fc3f1ec3f941cf6383fad83d297fcc18e1d8fcc4712118cd",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11714944719,
+    "digest": "sha256:b319c8513e433a32f8e298ecfd58cb6fda1e1d9eaa6a451baea4b935c849a52b",
+    "digest_verified_against_downloaded_zip": true
+  },
+  "native_acceptance_status": "success",
+  "resource_valid": true,
+  "independent_review_status": "pending",
+  "inventory_credit": "none pending fresh independent peer review",
+  "evidence": {
+    "directory": "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38174175733",
+    "receipt": "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38174175733/receipt.sanitized.json",
+    "native_report": "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38174175733/native-report.sanitized.json",
+    "resource_finals": "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38174175733/resource-finals.sanitized.json",
+    "resource_journals": [
+      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38174175733/resource-journals/hosted-package-38174175733-1.jsonl",
+      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38174175733/resource-journals/hosted-browser-38174175733-1.jsonl",
+      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38174175733/resource-journals/hosted-guest-38174175733-1.jsonl"
+    ],
+    "hosted_artifact": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38174175733"
+  },
+  "result": {
+    "feature_id": "EXT-F-1007",
+    "case_id": "EXT-F-1007-T08",
+    "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+    "auth_mode": "guest",
+    "status": "bounded_pass_pending_peer",
+    "findings": [
+      "On the owned title-only guest page at native-default 360px width, SEO displayed the matching title, empty description, and only Title & description and Performance groups.",
+      "Schema displayed valid JSON with the matching title and no description, canonical, Open Graph, Twitter, schema types, or JSON-LD.",
+      "Full-capture export identity and digest remained unchanged after selecting each pane. The report records a trusted click on the capture control and selected, visible target panes."
+    ],
+    "limits": [
+      "Only the guest no-signal SEO and empty Schema T08 subtarget is covered.",
+      "The tested product is frozen v0.2.504/source acb5506d5; no current-main, Store, release, or broader Scrape claim follows.",
+      "Target-pane behavior evidence is serialized DOM output; the uploaded screenshots do not show the exercised Scrape, SEO, or Schema panes.",
+      "Inventory remains unchanged until a fresh independent peer verifies behavior and provenance."
+    ]
+  }
+}

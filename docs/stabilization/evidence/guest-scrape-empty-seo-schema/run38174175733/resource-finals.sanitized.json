@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "run_id": 38174175733,
+  "resource_valid": true,
+  "finals": {
+    "package": {
+      "run_id": "hosted-package-38174175733-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "run_id": "hosted-browser-38174175733-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest_acceptance": {
+      "run_id": "hosted-guest-38174175733-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "watch_notes": [
+    "The guest journal recorded transient CPU_PENDING events during the native interaction, followed by RESOURCE_CPU_RECOVERED before child exit.",
+    "No resource invalidation occurred; the final guest decision is valid."
+  ]
+}

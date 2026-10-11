@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "run_id": 38174175733,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38174175733",
+  "workflow_source_sha": "fca97c646a6834c673e040b6c14874535d0e9316",
+  "lane": "B",
+  "runner": {
+    "label": "macos-15-intel",
+    "architecture": "X64",
+    "machine": "x86_64"
+  },
+  "acceptance_case": "guest-scrape-development",
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "auth_mode": "guest",
+  "fixture": {
+    "kind": "owned_localhost_page",
+    "path": "/seo-schema-empty",
+    "title": "Harbor Dental appointment information",
+    "content": "Empty body and no description, canonical, social metadata, heading, link, image, or JSON-LD signals."
+  },
+  "artifact": {
+    "kind": "ci_development_test",
+    "ci_run_id": 38172909785,
+    "ci_artifact_id": 11715051290,
+    "source_sha": "acb5506d55f972b22619c775b56154adeba694e3",
+    "version": "0.2.504",
+    "artifact_digest": "sha256:e8e77a95c599ec4a6bfd0e49f973d0c0a4903cdbc8d607849bc20127425c4f84",
+    "tree_sha256": "b9a0d28b32c58dc1fc3f1ec3f941cf6383fad83d297fcc18e1d8fcc4712118cd",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11714944719,
+    "name": "hosted-guest-38174175733-1",
+    "digest": "sha256:b319c8513e433a32f8e298ecfd58cb6fda1e1d9eaa6a451baea4b935c849a52b",
+    "digest_verified_against_downloaded_zip": true
+  },
+  "browser": {
+    "version": "Chrome/141.0.7390.37",
+    "viewport_mode": "narrow",
+    "viewport_mechanism": "native_default",
+    "observed_viewport_px": 360
+  },
+  "execution": {
+    "login_method": "none; fresh guest profile",
+    "real_backend_reads_or_writes": false,
+    "mocks_or_response_interception": false,
+    "owned_fixture_only": true,
+    "target_pane_dom_evidence": "native-report.sanitized.json"
+  },
+  "result": {
+    "native_case_status": "pass",
+    "resource_valid": true,
+    "product_verdict": "bounded_guest_subtarget_pass_pending_fresh_native_peer",
+    "limits": "Frozen prior-dependency v0.2.504 only. No broader T08, member/admin, Store, current-main, or release acceptance is claimed. The uploaded screenshots do not show the exercised Scrape result panes; target-pane DOM assertions are retained in the native report."
+  },
+  "resource_finals": "resource-finals.sanitized.json",
+  "resource_journals": [
+    "resource-journals/hosted-package-38174175733-1.jsonl",
+    "resource-journals/hosted-browser-38174175733-1.jsonl",
+    "resource-journals/hosted-guest-38174175733-1.jsonl"
+  ],
+  "native_report": "native-report.sanitized.json",
+  "evidence_sha256": {
+    "native-report.sanitized.json": "1414b88a06a2ade47d7b1504a92c74943f4fdcf06090d7882cd20a0de224cc28",
+    "resource-finals.sanitized.json": "09076d7224987d19dadd5441c3a3174b278c6dea7190d8a8bdb0d16c3f80b7c7",
+    "resource-journals/hosted-package-38174175733-1.jsonl": "12ab6477d40eab686634d01df3ba156441f1e76d60c0e04c9aafb1a0aef52c29",
+    "resource-journals/hosted-browser-38174175733-1.jsonl": "ddb27784f4c2c0727c68dae55025a9e55d1a0d66b4c742a007b3b3f966731197",
+    "resource-journals/hosted-guest-38174175733-1.jsonl": "abd3e10cf34bbc8c27e91c104f6470798531be5a19938c96bad9a58d88bcd9de"
+  }
+}
