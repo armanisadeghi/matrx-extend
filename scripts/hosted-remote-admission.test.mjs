@@ -214,6 +214,28 @@ test('hosted verification refuses a same-name successful run whose exact checkou
       }),
     /HOSTED_PHASE_GUARD_MISSING/,
   );
+  const commented = workflow.replace(
+    /^(\s*)(node scripts\/stabilization-resource\.mjs run --run-id "hosted-(?:package|browser|guest)-)/gm,
+    '$1# $2',
+  );
+  assert.equal(
+    (commented.match(/^\s*# node scripts\/stabilization-resource\.mjs run/gm) ?? []).length,
+    3,
+  );
+  assert.throws(
+    () => verifyHostedWorkflowCheckout(run, () => response(commented)),
+    /HOSTED_WORKFLOW_BLOB_UNREVIEWED/,
+  );
+  assert.throws(
+    () =>
+      planHostedMemberData({
+        lane: 'A',
+        developmentRunId: '38116138170',
+        developmentArtifactId: '11700000000',
+        workflow: commented,
+      }),
+    /HOSTED_WORKFLOW_BLOB_UNREVIEWED/,
+  );
 });
 
 test('hosted archive must contain exactly the current package, browser, and guest finals', () => {

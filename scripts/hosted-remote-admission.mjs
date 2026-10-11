@@ -9,6 +9,8 @@ import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mj
 
 const OWNER = 'armanisadeghi/matrx-extend';
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
+// Reviewed bytes of this narrow lane's active hosted workflow. Any workflow edit needs review.
+const REVIEWED_WORKFLOW_SHA256 = '1cb3d900ed62405504e6d7c90cf7dab79716299a70f9318bd8005f476b12c75a';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );
@@ -65,6 +67,8 @@ export function requireHostedWorkflowContract(workflow) {
         refuse('HOSTED_JOURNAL_UPLOAD_MISSING');
     }
   }
+  if (createHash('sha256').update(workflow, 'utf8').digest('hex') !== REVIEWED_WORKFLOW_SHA256)
+    refuse('HOSTED_WORKFLOW_BLOB_UNREVIEWED');
   return true;
 }
 
@@ -85,6 +89,7 @@ export function verifyHostedWorkflowCheckout(run, fetchContent = ghJson) {
   const bytes = Buffer.from(encoded, 'base64');
   if (bytes.toString('base64') !== encoded) refuse('HOSTED_WORKFLOW_SOURCE_INVALID');
   const workflow = bytes.toString('utf8');
+  if (!bytes.equals(Buffer.from(workflow, 'utf8'))) refuse('HOSTED_WORKFLOW_SOURCE_INVALID');
   requireHostedWorkflowContract(workflow);
   return {
     workflowSha: run.head_sha,
