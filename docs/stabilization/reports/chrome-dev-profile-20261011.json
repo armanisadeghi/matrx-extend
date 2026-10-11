@@ -38,5 +38,5 @@
     "published_version": "0.2.205",
     "upload_new_package_enabled": false
   },
-  "limits": "Chrome details currently establish the 0.2.502 installation, ID, path and pin. The promoted 0.2.505 files do not establish that Chrome loaded them. No current-main Chrome product behavior or Store approval is claimed. Next action: reload by reselecting the stable folder with Load unpacked, then verify Chrome's displayed version and pin without removing either extension."
+  "limits": "Chrome details currently establish the 0.2.502 installation, ID, path and pin. The promoted 0.2.505 files do not establish that Chrome loaded them. No current-main Chrome product behavior or Store approval is claimed. Browser Use auto-review refused extension-management automation and barred alternate control methods; no such method will be used. The remaining Chrome UI step is to reselect the stable folder with Load unpacked, then verify displayed version and pin without removing either extension."
 }
