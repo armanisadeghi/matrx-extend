@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-account-popover-member-run38168526559",
+  "recorded_at": "2026-10-11T19:42:33Z",
+  "scope": "Guarded hosted lane A attempt at member account-popover cases T20, T23 and T26 on frozen unpublished development v0.2.502. The run reached real member sign-in and a native menu click but has no product acceptance credit.",
+  "run": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38168526559",
+    "id": 38168526559,
+    "conclusion": "failure",
+    "acceptance_case": "settings-account-popover-member",
+    "workflow_head_sha": "034be43f6207c4f5603876301b2f607449a0db22",
+    "tested_artifact_source_sha": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f",
+    "development_ci_run_id": 38167324502,
+    "development_artifact_id": 11712499031,
+    "sanitized_artifact": {
+      "id": 11713785086,
+      "name": "hosted-guest-38168526559-1",
+      "digest": "sha256:1e8cb54132a43af9783cce6643c0b3e98a6a2e9a971d0b6db3b040576027da75"
+    }
+  },
+  "resource_finals": {
+    "package": { "decision": "valid", "admitted": true, "resourceInvalid": false, "exitCode": 0 },
+    "browser": { "decision": "valid", "admitted": true, "resourceInvalid": false, "exitCode": 0 },
+    "guest": { "decision": "invalid", "admitted": true, "resourceInvalid": true, "exitCode": 3, "reason": "RESOURCE_CPU_BUSY" }
+  },
+  "native_observation": "A real ordinary-member session was established: access token and profile present, isAdmin=false. The opened account menu contained one Profile, one Preferences and one Sign out action. After clicking Profile, the driver timed out with profile_selected_not_observed and serialized selected-tab count 0. T23 and T26 did not run.",
+  "driver_diagnosis": "The failed oracle searched for a Profile tab-strip trigger. src/features/profile/ProfileView.tsx explicitly says Profile is not advertised in the tab strip; src/entrypoints/sidepanel/App.tsx renders Profile as a TabsContent destination without a Profile TabsTrigger. The failed assertion therefore cannot distinguish a successful Profile navigation from a product failure. A new active-tabpanel oracle is under source review.",
+  "product_verdict": {
+    "cases": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+    "status": "unverified",
+    "credit": 0,
+    "reason": "Resource final invalid, and the Profile destination assertion was unsound."
+  },
+  "fixture_cleanup": "The single-use link was generated from the existing verified reviewer identity, staged as a temporary GitHub secret through stdin, then the local file was removed. Immediately after terminal run, MATRX_REVIEWER_MAGIC_LINK_JSON was deleted and a secret-name lookup verified its absence; the local link file was also verified absent. No link, email, token or profile identifier is stored here.",
+  "next": "After independent source review and green exact-source CI artifact, rerun the member case with a newly minted single-use link and preserve the resource-invalid boundary if it repeats. Admin remains serialized and independently fixture-gated."
+}

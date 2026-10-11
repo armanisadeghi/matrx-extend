@@ -4,7 +4,13 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { panelIdentity, signInSettings } from './settings-native-auth-driver.mjs';
-import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+import {
+  click,
+  evaluate,
+  profilePaneReady,
+  profilePaneState,
+  waitFor,
+} from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
 const MODE = process.env.MATRX_ACCOUNT_POPOVER_ROLE;
@@ -128,12 +134,12 @@ async function runCases(panel, baseline) {
     assert.equal(firstMenu.profile, 1, 'signed_in_profile_menu_missing');
     await click(panel, 'account-menu', 'Profile');
     await closedMenu(panel);
-    const selected = await waitFor(
-      'profile_selected',
-      () => selectedTab(panel),
-      (s) => s?.title === 'Profile' && s.paneActive === true,
+    const destination = await waitFor(
+      'profile_pane_active',
+      () => profilePaneState(panel),
+      profilePaneReady,
     );
-    profile.observations.push({ selected, identity: await retainedIdentity(panel, baseline) });
+    profile.observations.push({ destination, identity: await retainedIdentity(panel, baseline) });
   }
   profile.status = 'pass';
 
