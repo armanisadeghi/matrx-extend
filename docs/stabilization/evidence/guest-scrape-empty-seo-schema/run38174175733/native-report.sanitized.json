@@ -24,10 +24,7 @@
       "selected": "SEO",
       "title_matches": true,
       "description_dash": true,
-      "groups": [
-        "Title & description",
-        "Performance"
-      ]
+      "groups": ["Title & description", "Performance"]
     },
     "schema": {
       "visible": true,
