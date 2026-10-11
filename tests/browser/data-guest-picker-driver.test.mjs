@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   clickPickerCancel,
+  clickPickerClear,
   clickPickerDone,
   clickPickerField,
+  hoverPickerField,
 } from './data-guest-picker-driver.mjs';
 
 test('Data guest field click uses a visible owned point when the picker covers its center', async () => {
@@ -131,4 +133,70 @@ test('C16 Cancel targets the picker exit button and refuses a covered hit', asyn
     covered.calls.some((call) => call.method === 'click'),
     false,
   );
+});
+
+test('T07 Clear targets the exact closed-shadow button and refuses a covered hit', async () => {
+  const exact = ownedPage(74);
+  await clickPickerClear(exact.page);
+  assert.ok(
+    exact.calls.some(
+      (call) => call.method === 'DOM.querySelector' && call.params.selector === '#clear',
+    ),
+  );
+  assert.equal(exact.calls.filter((call) => call.method === 'click').length, 1);
+
+  const covered = ownedPage(91);
+  await assert.rejects(clickPickerClear(covered.page), /data_guest_clear_hit_target_changed/);
+  assert.equal(
+    covered.calls.some((call) => call.method === 'click'),
+    false,
+  );
+});
+
+test('T07 hover oracle rejects a hidden or misplaced real highlight', async () => {
+  const previous = {
+    document: globalThis.document,
+    innerWidth: globalThis.innerWidth,
+    innerHeight: globalThis.innerHeight,
+  };
+  const rect = { left: 8, top: 24, right: 108, bottom: 64, width: 100, height: 40 };
+  const target = { getBoundingClientRect: () => rect, contains: () => false };
+  globalThis.innerWidth = 600;
+  globalThis.innerHeight = 500;
+  globalThis.document = {
+    querySelectorAll: () => [target],
+    querySelector: () => null,
+    elementFromPoint: () => target,
+  };
+  let highlight = 'display: block; top: 24px; left: 8px; width: 100px; height: 40px;';
+  const page = {
+    locator: () => ({ nth: () => ({ scrollIntoViewIfNeeded: async () => {} }) }),
+    evaluate: async (callback, args) => callback(args),
+    mouse: { move: async () => {} },
+    context: () => ({
+      newCDPSession: async () => ({
+        async send(method, params) {
+          if (method === 'DOM.enable') return {};
+          if (method === 'DOM.getDocument') return { root: { nodeId: 1 } };
+          if (method === 'DOM.querySelector')
+            return { nodeId: params.selector === '#matrx-data-picker-host' ? 2 : 4 };
+          if (method === 'DOM.describeNode')
+            return { node: { shadowRoots: [{ nodeId: 3, shadowRootType: 'closed' }] } };
+          if (method === 'DOM.getOuterHTML')
+            return { outerHTML: `<div id="hl" style="${highlight}"></div>` };
+          throw new Error(`unexpected_cdp_method:${method}`);
+        },
+        async detach() {},
+      }),
+    }),
+  };
+  try {
+    assert.equal((await hoverPickerField(page, '.product-name')).highlight_visible, true);
+    highlight = 'display: none; top: 24px; left: 8px; width: 100px; height: 40px;';
+    await assert.rejects(hoverPickerField(page, '.product-name'), /data_guest_hover_not_visible/);
+    highlight = 'display: block; top: 24px; left: 35px; width: 100px; height: 40px;';
+    await assert.rejects(hoverPickerField(page, '.product-name'), /data_guest_hover_left_wrong/);
+  } finally {
+    Object.assign(globalThis, previous);
+  }
 });
