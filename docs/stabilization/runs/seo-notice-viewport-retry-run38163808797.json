@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "seo-notice-viewport-retry-run38163808797",
+  "created_at_utc": "2026-10-11T18:26:21Z",
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0199",
+  "status": "running",
+  "scope": "Guarded hosted lane B native guest SEO rerun after fixing the 360px native viewport preflight. The driver distinguishes native 360px from explicitly emulated 480px; it cannot establish a wider native panel. Multiple/long notices and visible-notice full reload remain unforced.",
+  "hosted_run_id": 38163808797,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38163808797",
+  "workflow_source_sha": "ee2e4085167cfa78c706c75f82c781d685d347d7",
+  "inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": "false",
+    "seo_interrupt_after_target": "none"
+  },
+  "frozen_product": {
+    "development_run_id": 38163194796,
+    "development_artifact_id": 11711043469,
+    "source_sha": "ee2e4085167cfa78c706c75f82c781d685d347d7",
+    "github_digest": "sha256:c88796b7fc226e6c44966bf1ef6a54f848877d59b73e207db76f08e4b656e488"
+  },
+  "next_action": "Await terminal artifact and independent review of native viewport widths/sources, notice-visible hit points, trusted Re-audit, Dismiss, reload, cleanup and all resource finals before assigning any bounded credit."
+}
