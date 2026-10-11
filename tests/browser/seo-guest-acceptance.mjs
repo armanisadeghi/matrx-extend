@@ -50,6 +50,10 @@ import {
   SEO_READABILITY_FIXTURES,
   runKnownReadabilityFixtures,
 } from './seo-readability-known-text.mjs';
+import {
+  captureReauditWaitFailure,
+  startSeoReauditTrace,
+} from './seo-reaudit-transition-diagnostic.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
@@ -1632,24 +1636,43 @@ try {
       report.reaudit_hit_diagnostics ??= {};
       report.reaudit_hit_diagnostics.before_click = await observeSeoReauditHit(panel);
       checkpoint();
-      enter('manual_reaudit_click');
-      await clickSeoReaudit(panel, report, click, checkpoint);
-      advance('manual_reaudit_click_dispatched', { trustedInput: true });
-      await waitObserved(
-        'manual_reaudit_running_wait',
-        () => seoContent(panel),
-        (state) => state?.scopeValid && state.reAudit === false,
-      );
-      await waitObserved(
-        'manual_reaudit_settle_wait',
-        () => seoContent(panel),
-        (state) =>
-          state?.scopeValid &&
-          state.title === publicPages[1].title &&
-          state.reAudit &&
-          !state.error,
-        30000,
-      );
+      const reauditTrace = await startSeoReauditTrace(panel, report, checkpoint);
+      try {
+        enter('manual_reaudit_click');
+        await clickSeoReaudit(panel, report, click, checkpoint);
+        advance('manual_reaudit_click_dispatched', { trustedInput: true });
+        await reauditTrace.sample('after_release');
+        await waitObserved(
+          'manual_reaudit_running_wait',
+          async () => {
+            await reauditTrace.sample('running_wait');
+            return seoContent(panel);
+          },
+          (state) => state?.scopeValid && state.reAudit === false,
+        );
+        await waitObserved(
+          'manual_reaudit_settle_wait',
+          async () => {
+            await reauditTrace.sample('settle_wait');
+            return seoContent(panel);
+          },
+          (state) =>
+            state?.scopeValid &&
+            state.title === publicPages[1].title &&
+            state.reAudit &&
+            !state.error,
+          30000,
+        );
+      } catch (error) {
+        report.reaudit_transition_diagnostic.failure = captureReauditWaitFailure(
+          error,
+          report.current_operation,
+          report.last_safe_observable,
+        );
+        throw error;
+      } finally {
+        await reauditTrace.stop();
+      }
       target('T02', 'manual_button_returns_to_current_page', { currentTitlePreserved: true });
       advance('manual_reaudit_settled', { currentTitlePreserved: true });
       report.reaudit_hit_diagnostics.after_click = await observeSeoReauditHit(panel);

@@ -95,6 +95,7 @@ async function run(occluded = false, driver = callback) {
       if (selector === 'seo-database-refused-dismiss') dismissed = true;
     },
     clickSeoReaudit: async () => events.push('trusted-reaudit'),
+    startSeoReauditTrace: async () => ({ sample: async () => {}, stop: async () => {} }),
     waitFor: async (_name, read, accept) => {
       const value = await read();
       assert.ok(accept(value));

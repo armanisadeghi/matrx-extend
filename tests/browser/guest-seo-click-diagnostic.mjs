@@ -1,3 +1,4 @@
+import { safeReauditTrace } from './seo-reaudit-transition-diagnostic.mjs';
 // A failed native pointer must leave a useful receipt, even when the panel
 // contains account data. Keep only the driver's fixed categories and counts.
 import { evaluate } from './settings-panel-driver.mjs';
@@ -208,6 +209,9 @@ export function safeSeoClickEvidence(report) {
           };
   }
   return {
+    ...(report.reaudit_transition_diagnostic && {
+      reaudit_transition_diagnostic: safeReauditTrace(report.reaudit_transition_diagnostic),
+    }),
     ...(Object.keys(snapshots).length && { reaudit_hit_diagnostics: snapshots }),
     ...(report.notice_viewport_plan && {
       notice_viewport_plan: {
