@@ -1,0 +1,30 @@
+{
+  "id": "chrome-dev-profile-20261011",
+  "observed_at_utc": "2026-10-11T18:53:00Z",
+  "profile": "Arman (armansadeghi.com)",
+  "development": {
+    "version": "0.2.501",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "source": "Unpacked extension",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "pin_to_toolbar": true,
+    "chrome_reload_observed": true,
+    "ci_run_id": 38164967463,
+    "ci_artifact_id": 11712111232,
+    "source_sha": "994daa1dfbb31c6dfbb40f61e869b6439315a844",
+    "tree_sha256": "114dbad54c7250840d492621ce692e05620b51b5108ee033f83ae49a227a63fb"
+  },
+  "store_installed": {
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "source": "Chrome Web Store",
+    "pin_to_toolbar": true
+  },
+  "dashboard": {
+    "last_observed_status": "Pending review",
+    "draft_version": "0.2.479",
+    "published_version": "0.2.205",
+    "upload_new_package_enabled": false
+  },
+  "limits": "Chrome's extension details and reload confirmation establish installation, version, ID, path and pins. They do not establish product behavior or Store approval."
+}
