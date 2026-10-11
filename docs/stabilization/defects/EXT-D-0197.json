@@ -1,0 +1,49 @@
+{
+  "id": "EXT-D-0197",
+  "feature_id": "EXT-F-2005",
+  "case_ids": ["EXT-F-2005-T08"],
+  "surface": "Data side-panel saved-pattern creation",
+  "auth_mode": "signed-in non-admin member; hosted fixture setup",
+  "title": "Saved Data pattern creation omits the selected organization request header",
+  "severity": "S2: the authenticated pattern write violates the repository per-request organization contract even though the body carries the selected organization",
+  "priority": "P1: confirm or repair the request contract before promoting member Data T08",
+  "state": "open",
+  "triage_status": "provisional_pending_Sol_implementation_lane_contract_diagnosis",
+  "provisional": true,
+  "owner": "Sol implementation lane",
+  "preconditions": [
+    "Use the frozen CI development v0.2.492 artifact and a signed-in non-admin member with a verified selected organization.",
+    "Create the disposable pattern through the Data side-panel Save pattern action."
+  ],
+  "reproduction": [
+    "Inspect the native request observation in hosted run 38113237641: the POST to https://db.matrxserver.com/rest/v1/wbx_pattern returned HTTP 201, the body organization matched the selected organization, and headerOrganizationPresent was false.",
+    "At the exact product artifact source SHA, DataView passes organization_id to savePattern; savePattern uses the ordinary Supabase client; that client configures X-Client-Info but no X-Organization-Id global header."
+  ],
+  "expected": "Every authenticated backend request carries X-Organization-Id matching the selected organization, and an organization-scoped write carries that same organization_id in its body.",
+  "actual": "The captured authenticated pattern-create POST carried the selected organization_id in its body and returned 201, but had no X-Organization-Id header. Exact row readback found the saved pattern under the selected organization, and cleanup deleted that exact row.",
+  "cause": "Source and native observation agree that this Data save path uses the ordinary Supabase client, whose global headers contain X-Client-Info only. Whether this direct PostgREST sink is covered by the per-request header contract is awaiting Sol implementation-lane diagnosis; defect triage remains provisional.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38113237641",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/native-report.sanitized.json",
+    "docs/stabilization/runs/data-member-auto-extract-run38113237641.json",
+    "docs/stabilization/reports/data-t08-member-native-peer-20261011.json",
+    "Product artifact source 83cd72b6c9a0b6cce5887c1f561668539e6d8259; workflow checkout 46c31547517484946d16472ecaeab534354f60e1."
+  ],
+  "fix_commit": null,
+  "verification": [
+    "Independent native peer inspected the exact hosted artifact and sanitized result; request observation reports body organization matched selected, headerOrganizationPresent=false, and HTTP 201.",
+    "Independent source inspection of the exact product artifact confirms the Save pattern path uses savePattern through the ordinary client; the client global headers only add X-Client-Info.",
+    "The hosted run remains partial. Automatic success, no_match, error, and manual Extract were observed; running was unverified. All four resource finals were valid; the temporary root selector was restored/read back and the exact owned row was deleted.",
+    "No code fix or rerun was performed in this bookkeeping task. Sol implementation-lane contract diagnosis is pending."
+  ],
+  "closure_requirement": "Sol implementation lane confirms whether direct authenticated PostgREST requests to extend.wbx_pattern must carry X-Organization-Id under the current contract. If required, repair the product path and rerun a controlled member pattern creation/automatic extraction, observing matching request header/body and completing restoration/deletion. If not required, record the authoritative exception and re-evaluate this finding. Keep T08 and the member feature-role cell partial until all applicable dimensions, including running, are verified.",
+  "next_action": "Pending Sol implementation-lane confirmation or refutation of the request-header contract; no code change or T08 promotion is authorized by this record.",
+  "transition_history": [
+    {
+      "at": "2026-10-11T05:12:57Z",
+      "from": null,
+      "to": "open",
+      "reason": "Fresh independent review of hosted member T08 run 38113237641 found a successful authenticated pattern-create POST with selected organization in the body but no X-Organization-Id header; exact source corroborates. Contract scope is provisional pending Sol diagnosis."
+    }
+  ]
+}

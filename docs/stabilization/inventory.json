@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T05:05:00Z",
+  "updated_at": "2026-10-11T05:18:35Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -41799,13 +41799,48 @@
               "detail": "Signed-out useAutoExtract returns before starting the automatic extraction path; this does not waive guest Data or access-control checks."
             },
             "member": {
-              "status": "unverified"
+              "status": "partial",
+              "run_id": 38113237641,
+              "source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+              "workflow_source_sha": "46c31547517484946d16472ecaeab534354f60e1",
+              "development_ci_run_id": 38112620925,
+              "development_artifact_id": 11691669564,
+              "hosted_result_artifact_id": 11692014833,
+              "build_version": "0.2.492",
+              "resource_valid": true,
+              "independent_review": "docs/stabilization/reports/data-t08-member-native-peer-20261011.json",
+              "defect_ids": [
+                "EXT-D-0197"
+              ],
+              "passed_subtargets": [
+                "Signed-in non-admin member automatic success rendered the exact JSON row [{\"field_1\":\"Cedar chair\",\"field_2\":\"$429\"}].",
+                "Controlled empty fixture rendered the named auto no-match state and explanation with no rows.",
+                "Owned invalid-root fixture rendered the named automatic failure state and visible detail; the manual Extract action remained enabled."
+              ],
+              "unverified": [
+                "Transient automatic running state was not sampled by the bounded probe.",
+                "Admin mode and full EXT-F-2005 T08 acceptance remain unverified.",
+                "Data pattern creation omitted the required X-Organization-Id request header; provisional EXT-D-0197 awaits Sol implementation-lane contract diagnosis and repair/re-observation or refutation."
+              ],
+              "evidence": [
+                "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/native-report.sanitized.json",
+                "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-local-preflight-20261011.jsonl",
+                "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-package-38113237641.jsonl",
+                "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-browser-38113237641.jsonl",
+                "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-guest-38113237641.jsonl",
+                "docs/stabilization/runs/data-member-auto-extract-run38113237641.json",
+                "docs/stabilization/reports/data-t08-member-native-peer-20261011.json",
+                "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-native-sidepanel.png",
+                "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-normal-target-after-open.png"
+              ],
+              "screenshots": "Hosted artifact screenshots are generic guest Chat and an unrelated Research brief page; neither shows Data T08 states or member identity.",
+              "detail": "Reviewed partial native member result on frozen CI development v0.2.492. The driver observed the real rendered Data card success with exact rows, no_match badge/explanation, error badge/detail, and enabled manual Extract. Running remains unverified. Exact original null list_root_selector was read, temporary invalid selector [ was PATCHed and read back on the exact id/organization, and null was restored and read back; the exact generated name/organization row was then deleted (one row). All four local/package/browser/hosted exercise resource finals are valid. The authenticated pattern-create POST returned 201 with body organization matching the selected organization but lacked X-Organization-Id, a provisional contract defect pending Sol diagnosis. No T08 case or feature pass is claimed; no current-main, release, Store, admin, or guest claim."
             },
             "admin": {
               "status": "unverified"
             }
           },
-          "verification_status": "unverified"
+          "verification_status": "partial-member-bounded-outcomes; running-unverified; org-header-contract-provisional; admin-unverified"
         }
       ],
       "cells": {
@@ -41834,15 +41869,17 @@
           }
         },
         "member": {
-          "test_status": "unverified",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0053",
-            "EXT-D-0054"
+            "EXT-D-0054",
+            "EXT-D-0197"
           ],
           "run_ids": [
-            "38045479599"
+            "38045479599",
+            "38113237641"
           ],
-          "retest_status": "Run 38045479599 was diagnostic-only and earns zero T03 lifecycle credit: after sender refresh and replacement open settlement, visibility_filter found zero visible Data targets (`pointer_target_not_unique`). T03 member and feature member remain unverified for reload lifecycle; no product defect is proven. Cleanup had no post-delete active-row readback."
+          "retest_status": "Run 38045479599 was diagnostic-only and earns zero T03 lifecycle credit: after sender refresh and replacement open settlement, visibility_filter found zero visible Data targets (`pointer_target_not_unique`). T03 member and feature member remain unverified for reload lifecycle; no product defect is proven. Cleanup had no post-delete active-row readback. T08 member run 38113237641 is independently reviewed partial: rendered success, no_match, error, and enabled manual Extract passed on frozen v0.2.492; running remains unverified. Generic screenshots do not show the Data exercise. Exact temporary selector PATCH/readback/restore and one exact owned-row deletion passed; four resource finals and temporary credential cleanup are valid. Provisional EXT-D-0197 records the captured body-only organization on the pattern-create POST and awaits Sol contract diagnosis; no T08/cell pass, current-main, release, Store, or admin claim."
         },
         "admin": {
           "test_status": "unverified",

@@ -1,0 +1,90 @@
+{
+  "id": "data-member-auto-extract-run38113237641",
+  "feature_id": "EXT-F-2005",
+  "case_id": "EXT-F-2005-T08",
+  "at": "2026-10-11T05:05:06Z",
+  "status": "partial",
+  "scope": "One guarded hosted lane-A member T08 automatic extraction run on frozen CI development v0.2.492; only the owned fixtures and exact saved pattern row were used.",
+  "hosted_run_id": 38113237641,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38113237641",
+  "workflow_source_sha": "46c31547517484946d16472ecaeab534354f60e1",
+  "workflow_source_drift": "Frozen product artifact source is 83cd72b6c9a0b6cce5887c1f561668539e6d8259. Current workflow checkout adds only package/version/catalog release metadata; the T08 driver and hosted route are unchanged. No current-main or release-runtime claim.",
+  "lane": "A",
+  "runner_label": "macos-15-intel",
+  "resource": {
+    "local_preflight": "valid",
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid"
+  },
+  "product_artifact": {
+    "development_run_id": 38112620925,
+    "development_artifact_id": 11691669564,
+    "source_sha": "83cd72b6c9a0b6cce5887c1f561668539e6d8259",
+    "github_artifact_digest": "sha256:09dad80186549b94f08f48090834997cf709801a3628f35f6cc4a28b925aef38",
+    "github_artifact_digest_independently_rehashed": true,
+    "version": "0.2.492",
+    "tree_sha256": "f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c"
+  },
+  "hosted_evidence_artifact": {
+    "artifact_id": 11692014833,
+    "name": "hosted-guest-38113237641-1",
+    "digest": "sha256:31e33036c13914c3817ae159cee0885df618eccd200d8e6b324eb885cc718f1a",
+    "digest_independently_rehashed": true
+  },
+  "native_subtarget": {
+    "member_identity": "verified signed-in non-admin",
+    "pattern_setup_write": "HTTP 201 and request body organization matched the selected organization; X-Organization-Id was absent from this request.",
+    "success": "pass; exact rendered row JSON was [{\"field_1\":\"Cedar chair\",\"field_2\":\"$429\"}]",
+    "no_match": "pass; named no-match state and explanation appeared, with no rows",
+    "error": "pass; invalid selector on the owned row showed the named failure state and detail",
+    "manual_extract_action": "pass; enabled after the automatic extraction error",
+    "running": "unverified; transient state was not sampled",
+    "exact_pattern_reads": "six signed-in domain reads returned HTTP 200",
+    "owned_selector_mutation": "original null selector read back; temporary invalid selector PATCH and readback passed; original null selector restored and read back",
+    "fixture_cleanup": "verified exact-name and organization lookup; one owned row deleted"
+  },
+  "credential_cleanup": {
+    "temporary_github_secret_absent": true,
+    "local_one_time_link_absent": true
+  },
+  "evidence": [
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/native-report.sanitized.json",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-local-preflight-20261011.jsonl",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-package-38113237641.jsonl",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-browser-38113237641.jsonl",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/resource-guest-38113237641.jsonl",
+    "docs/stabilization/reports/data-t08-member-native-peer-20261011.json",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-native-sidepanel.png",
+    "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-normal-target-after-open.png"
+  ],
+  "independent_review": {
+    "status": "reviewed_partial",
+    "report": "docs/stabilization/reports/data-t08-member-native-peer-20261011.json",
+    "behavior_verdict": "PARTIAL",
+    "harness_quality_verdict": "PARTIAL",
+    "inventory_credit": "partial_member_subtargets_only",
+    "reason": "Success, no_match, error and enabled manual Extract are supported by native rendered-panel DOM assertions; running was not sampled, screenshots are unrelated to Data, and provisional EXT-D-0197 records the missing organization request header."
+  },
+  "limitations": [
+    "The transient running state remains unverified, so this run is partial even if the independent peer accepts the remaining observations.",
+    "This run covers the member T08 scope only; guest, admin, Store-installed, current-main runtime, and full Data feature acceptance are unverified.",
+    "No inventory cell was edited or promoted."
+  ],
+  "next_action": "Sol implementation lane confirms/refutes the direct PostgREST X-Organization-Id contract and repairs if applicable; then rerun/reconcile. Keep member T08 and the feature-role cell partial and running unverified until all applicable dimensions pass.",
+  "case_review": {
+    "behavior_verdict": "PARTIAL",
+    "harness_quality_verdict": "PARTIAL",
+    "observed_branches": ["success", "no_match", "error", "manual Extract enabled"],
+    "running": "unverified",
+    "screenshots": "generic guest Chat and unrelated Research brief fixture; no Data T08 states shown",
+    "fix_required_defect": "EXT-D-0197",
+    "defect_triage_status": "provisional pending Sol implementation-lane contract diagnosis",
+    "no_case_or_feature_pass": true,
+    "independent_review_report": "docs/stabilization/reports/data-t08-member-native-peer-20261011.json",
+    "screenshot_artifact_files": [
+      "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-native-sidepanel.png",
+      "docs/stabilization/evidence/data-member-auto-extract-member/run38113237641/artifact-normal-target-after-open.png"
+    ]
+  }
+}
