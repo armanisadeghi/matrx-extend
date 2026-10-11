@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "report_id": "data-control-inventory-peer-20261011",
+  "reviewed_head": "3df45c14bf7939236573807962e86cf83564e565",
+  "outcome": "GO",
+  "scope": "Independent read-only review of the Data-control inventory draft, generated CHECKLIST.md / STATUS.md / STATUS.html, current Data UI source, and data-control-gap-20261011.json. No runtime behavior or test execution is claimed.",
+  "reviewed_files": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html",
+    "docs/stabilization/reports/data-control-gap-20261011.json",
+    "src/features/data/DataView.tsx",
+    "src/lib/data-pattern/picker.ts",
+    "src/hooks/use-auto-extract.ts"
+  ],
+  "findings": [],
+  "checks": {
+    "T07_picker_controls_and_roles": "Pass: maps C18 hover, C19 page-element selection, C21 Cancel, and C22 Clear; asks for the hover/Clear/selected-then-Cancel sequence independently for guest, member, and admin. All results remain unverified, and the prior empty-picker Cancel evidence is explicitly kept scoped to T01/run 38050967096.",
+    "T08_auto_extraction_and_roles": "Pass: maps running, success, failure and C33 no_match to the visible DataView states. Member/admin are applicable and unverified; guest is N/A because useAutoExtract returns before scheduling work while signed out. Auto rows are accurately described as JSON text, and the manual action condition matches the source.",
+    "C33_source_support": "Pass: DataView renders a distinct auto · no match badge and explanatory note when the matched automatic run has status no_match; the source anchor covers the render branch.",
+    "T01_prior_guest_pass": "Pass: T01 retains the reviewed guest pass and the bounded empty-picker Cancel scope; it does not claim T07 interactions or full guest Data coverage.",
+    "T05_fixture_blocker": "Pass: T05 remains design-needed/unverified with its native identity lookup/recovery fixture prerequisite intact.",
+    "no_false_runtime_pass": "Pass: T07 and T08 are unverified; the T08 guest cell is N/A. Source expectations are not presented as runtime results.",
+    "generated_tracker_counts": "Pass: inventory totals are 205 features, 783 cases, 1364 controls; CHECKLIST reports 1252 case-role slots and 138 explicitly unverified / 2 N/A overall. STATUS and STATUS.html both report 783 cases and 1364 controls. Data tracker row reports 8 cases, 33 controls, 15 unverified cells and 1 N/A, consistent with the two new cases and their role results.",
+    "validation": "JSON parses successfully; review made no edits outside this report."
+  },
+  "limitations": [
+    "Read-only source/documentation review. No browser session, runtime interaction, role-profile test, or generated-tracker command was run.",
+    "The unrelated staged and untracked shared-checkout files were not modified."
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T02:57:55Z",
+  "updated_at": "2026-10-11T03:18:15Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -40955,6 +40955,15 @@
           "render_condition": "DataView mounts PageIdentityNotice unconditionally at src/features/data/DataView.tsx:448; the notice returns null when tab.pageKey is truthy and otherwise displays tab.identityError or the checking message with Retry. Clicking Retry invokes refreshActiveTabIdentity.",
           "test_design_status": "unverified",
           "test_design_item": "Verify the Data placement's Retry lookup, explicit unresolved error, recovery and current tab/document identity in EXT-F-2005-T05; executable native failure/recovery fixture is design-needed."
+        },
+        {
+          "id": "EXT-F-2005-C33",
+          "label": "Observe automatic extraction no-match state",
+          "action": "See the visible no-match result when automatic extraction finds no matching data",
+          "source_anchor": "src/features/data/DataView.tsx:513-538",
+          "render_condition": "A saved pattern is URL-matched and its automatic run record has status no_match.",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify the automatic no_match badge and explanatory text in EXT-F-2005-T08 for applicable signed-in roles."
         }
       ],
       "source_anchors": [
@@ -40972,7 +40981,8 @@
         "src/entrypoints/content.ts:1",
         "src/lib/data-pattern/picker.ts:1",
         "src/lib/data-pattern/picker.ts:23",
-        "src/components/CopyMenu.tsx:91"
+        "src/components/CopyMenu.tsx:91",
+        "src/hooks/use-auto-extract.ts:49"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -41522,6 +41532,111 @@
             "recovery",
             "warm"
           ]
+        },
+        {
+          "id": "EXT-F-2005-T07",
+          "title": "Picker hover, Clear and selected-field Cancel",
+          "control_ids": [
+            "EXT-F-2005-C18",
+            "EXT-F-2005-C19",
+            "EXT-F-2005-C21",
+            "EXT-F-2005-C22"
+          ],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Use a genuine guest, member or admin profile on a controlled ordinary HTTPS page with at least two visually distinct page elements and a ready Data page identity. For member/admin, record the selected organization; this procedure performs no save."
+          ],
+          "steps": [
+            "Open Data and start field picking. Move the pointer over a page element and verify the highlight tracks it; click the element and verify its entry appears in the picker overlay.",
+            "Click Clear. Verify the picked entry disappears and the picker overlay list is empty.",
+            "Start a fresh pick, click one page element, then click the picker overlay Cancel. Verify the overlay closes and Data has no selected fields. Do not save a pattern.",
+            "Repeat the hover, Clear and selected-then-Cancel sequence in guest, member and admin profiles. Keep the existing guest empty-picker Cancel observation in T01/run 38050967096 scoped to that prior bounded action; it does not count for this selected-field case."
+          ],
+          "expected": [
+            "Hover visibly tracks the page element, and clicking adds its field entry to the picker overlay.",
+            "Clear removes all currently selected picker entries.",
+            "Cancel after selection exits without returning that selected field to Data. No pattern write occurs.",
+            "Each role result is recorded independently. The existing guest empty-picker Cancel pass does not establish these new interaction results."
+          ],
+          "dimensions": [
+            "guest",
+            "member",
+            "admin",
+            "hover-preview",
+            "picker-clear",
+            "selected-picker-cancel",
+            "no-save"
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "New T07 hover, Clear and selected-then-Cancel assertions have not been executed. Existing empty-picker Cancel evidence remains scoped to T01/run 38050967096."
+            },
+            "member": {
+              "status": "unverified"
+            },
+            "admin": {
+              "status": "unverified"
+            }
+          },
+          "verification_status": "unverified"
+        },
+        {
+          "id": "EXT-F-2005-T08",
+          "title": "Automatic extraction running, success, no-match and failure states",
+          "control_ids": [
+            "EXT-F-2005-C29",
+            "EXT-F-2005-C30",
+            "EXT-F-2005-C31",
+            "EXT-F-2005-C33"
+          ],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Use a genuine member or admin profile with a recorded organization, a controlled HTTPS page, and disposable saved patterns/fixtures that can produce automatic running, successful rows, no matching data, and extraction failure outcomes. Guest is not applicable: src/hooks/use-auto-extract.ts returns before starting automatic extraction when signed out (lines 49-53)."
+          ],
+          "steps": [
+            "As a member, open the controlled page with a matching saved pattern whose fixture holds completion long enough to observe the automatic running state.",
+            "Release the successful fixture and observe the automatic success state and rendered rows.",
+            "Open a controlled matched-pattern page whose extraction yields no matching data; observe the automatic no_match badge and explanatory text.",
+            "Open a controlled matched-pattern page whose extraction fails; observe the automatic failure badge/error and verify the manual Extract/Re-run action remains available when page identity is ready.",
+            "Repeat these applicable states as admin. Do not claim that auto-extracted rows have a CopyMenu; the Data view renders those rows as JSON text."
+          ],
+          "expected": [
+            "The automatic running, success, no_match and failure views correspond to their respective controlled fixture outcomes.",
+            "Success shows the automatic rows; no_match has its own visible badge and explanatory text; failure shows an error and leaves the manual action available when page identity is ready.",
+            "Auto-extracted rows are rendered as JSON text. No row-copy menu result is asserted.",
+            "Member and admin results remain independent. Guest is explicitly not applicable to this automatic path because the signed-in guard prevents the hook from starting."
+          ],
+          "dimensions": [
+            "member",
+            "admin",
+            "auto-running",
+            "auto-success",
+            "auto-no-match",
+            "auto-failure",
+            "manual-retry"
+          ],
+          "results": {
+            "guest": {
+              "status": "not-applicable",
+              "detail": "Signed-out useAutoExtract returns before starting the automatic extraction path; this does not waive guest Data or access-control checks."
+            },
+            "member": {
+              "status": "unverified"
+            },
+            "admin": {
+              "status": "unverified"
+            }
+          },
+          "verification_status": "unverified"
         }
       ],
       "cells": {

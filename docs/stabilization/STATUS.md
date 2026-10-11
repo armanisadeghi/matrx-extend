@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-11 02:58 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T02:57:55Z. 205 features · 781 cases · 1363 controls · 196 linked defect records.
+Generated 2026-10-11 03:18 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T03:18:15Z. 205 features · 783 cases · 1364 controls · 196 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1246** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1059 · N/A: 1.
-Unverified splits into **133 explicitly marked unverified** and **926 with no result record**.
+Applicable case-by-role slots: **1252** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1064 · N/A: 2.
+Unverified splits into **138 explicitly marked unverified** and **926 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -38,7 +38,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
 | [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 10, n/a 0 | 0 |
 | [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
-| [Data side-panel](#data-side-panel) | 1 | 1 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 1, partial 2, fail 0, unverified 10, n/a 0 | 1 |
+| [Data side-panel](#data-side-panel) | 1 | 1 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 1, partial 2, fail 0, unverified 15, n/a 1 | 1 |
 | [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 3 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 3 |
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
@@ -1457,7 +1457,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Extract structured data from the active page (EXT-F-2005)
 
-**Role status:** guest: Unverified · member: Partial · admin: Partial. **Cases:** 6. **Controls:** 32.
+**Role status:** guest: Unverified · member: Partial · admin: Partial. **Cases:** 8. **Controls:** 33.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0054
 
@@ -1471,6 +1471,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2005-T04 Non-matching page and active-tab boundary | N/A | Unverified | Unverified | EXT-F-2005-C02, EXT-F-2005-C07 |
 | EXT-F-2005-T05 Data page identity Retry, failure and recovery | Unverified | Unverified | Unverified | EXT-F-2005-C32, EXT-F-2005-C14, EXT-F-2005-C15, EXT-F-2005-C02, EXT-F-2005-C07 |
 | EXT-F-2005-T06 Data page identity during navigation and Retry recovery | Unverified | Unverified | Unverified | EXT-F-2005-C32, EXT-F-2005-C14, EXT-F-2005-C02, EXT-F-2005-C07 |
+| EXT-F-2005-T07 Picker hover, Clear and selected-field Cancel | Unverified | Unverified | Unverified | EXT-F-2005-C18, EXT-F-2005-C19, EXT-F-2005-C21, EXT-F-2005-C22 |
+| EXT-F-2005-T08 Automatic extraction running, success, no-match and failure states | N/A | Unverified | Unverified | EXT-F-2005-C29, EXT-F-2005-C30, EXT-F-2005-C31, EXT-F-2005-C33 |
 
 **Recorded case details and evidence:**
 
@@ -1481,7 +1483,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 - EXT-F-2005-T03 · admin: Partial. Actualfieldpicker/manualCSSsave/Data+Showcase replay JSON/AI/TSV preserve719594charbookfield identicalhash; Data refreshreplaypasses. D53closed; D54quotes/spreadsheetpaste open; ShowcaseAIURLmissingD55; broaderauth/cancel/failurestatesunverified.
   Evidence / build / date recorded: data-picker-long-native-20260928-01, ['docs/stabilization/reports/data-picker-long-native.json', 'docs/stabilization/reports/showcase-export-guarded-runtime.json']
 
-**Controls without a mapped case:** EXT-F-2005-C18 Picker hover highlight; EXT-F-2005-C19 Picker click page element; EXT-F-2005-C20 Picker Done; EXT-F-2005-C21 Picker Cancel; EXT-F-2005-C22 Picker Clear; EXT-F-2005-C23 Copy saved pattern Selectors text; EXT-F-2005-C24 Copy saved pattern For AI agent; EXT-F-2005-C25 Copy saved pattern Full JSON admin option; EXT-F-2005-C26 Copy extracted rows TSV; EXT-F-2005-C27 Copy extracted rows JSON; EXT-F-2005-C28 Copy extracted rows For AI agent; EXT-F-2005-C29 Observe auto extraction running; EXT-F-2005-C30 Observe auto extraction success; EXT-F-2005-C31 Observe auto extraction failure
+**Controls without a mapped case:** EXT-F-2005-C20 Picker Done; EXT-F-2005-C23 Copy saved pattern Selectors text; EXT-F-2005-C24 Copy saved pattern For AI agent; EXT-F-2005-C25 Copy saved pattern Full JSON admin option; EXT-F-2005-C26 Copy extracted rows TSV; EXT-F-2005-C27 Copy extracted rows JSON; EXT-F-2005-C28 Copy extracted rows For AI agent
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 
