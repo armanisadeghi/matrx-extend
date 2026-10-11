@@ -1,0 +1,50 @@
+{
+  "reviewed_at_utc": "2026-10-11T19:00:00Z",
+  "reviewer_lane": "visibility_census_diagnostics_fresh_peer",
+  "scope": {
+    "files": [
+      "tests/browser/takeover-visible-census.mjs",
+      "tests/browser/takeover-visible-census.test.mjs"
+    ],
+    "purpose": "Independent source review of diagnostic-only guest visibility census runner changes",
+    "prior_evidence": "docs/stabilization/reports/guest-visibility-census-peer-20261011.json",
+    "product_behavior_credit": "none"
+  },
+  "verdict_a": {
+    "status": "PASS",
+    "findings": [],
+    "confirmed": [
+      "Each observation carries a bounded eight-level structural DOM path, safe role/tag, region, explicit structural/outside-panel flags, and either a matched literal source attribute or a redaction/unlabeled marker. Runtime element and label text cannot promote a name, including exact text collisions.",
+      "About diagnostics distinguish click-stage failure from content inspection failure, categorize timeout/runtime/transport cases, and make at most one read-only inspection retry. A failed first inspection remains incomplete even if retry returns data.",
+      "Blocked requests remain aborted for non-GET/HEAD/OPTIONS HTTP(S) methods. Diagnostic output omits query strings and request bodies; known RPC paths are restricted to source-discovered literal RPC names and unknown paths are redacted. Fixed sidepanel/extension_worker target labels identify the observation boundary.",
+      "Known RPC read/write classifications align with the inspected source callsites: knob_snapshot, knob_resolve, and mbr_for_user are reads; log_client_error and set_last_active_organization are writes. Unmapped names retain unclassified semantics.",
+      "About diagnostics preserve fixed pointer-driver failure codes while dropping the error message and attached private detail."
+    ],
+    "unsupported_claims": [
+      "The patch does not establish product behavior or a product defect verdict.",
+      "The patch does not by itself explain why the original About inspection failed; it adds diagnostics for a future run."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "tests": {
+      "command": "node --test tests/browser/takeover-visible-census.test.mjs",
+      "passed": 33,
+      "failed": 0,
+      "new_tests": 3,
+      "forcing_evidence": [
+        "The identity test fails when the diagnostic identity field is renamed away, rejects a constant observation result against distinct expected identities, and redacts exact text collisions from visible text and label contents.",
+        "The About test distinguishes runtime failure from click timeout and a pointer-specific failure code, asserts exact click/read counts, and proves a successful retry cannot erase the first failure.",
+        "The blocked-RPC test checks read/write/unknown classifications and verifies secret-like query/body material is absent from serialized diagnostics. Existing mutationGuard coverage still asserts Fetch.failRequest for POST and continuation for GET."
+      ]
+    },
+    "lint": {
+      "command": "pnpm exec biome check tests/browser/takeover-visible-census.mjs tests/browser/takeover-visible-census.test.mjs",
+      "result": "pass"
+    },
+    "evidence": "The RPC test calls the diagnostic helper directly; interception behavior is separately covered by the existing mutationGuard test."
+  },
+  "open_items": [
+    "No full hosted census was run as part of this source review; no runtime observation or product behavior claim is made."
+  ]
+}
