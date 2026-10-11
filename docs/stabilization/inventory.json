@@ -21265,6 +21265,32 @@
           "id": "EXT-F-1007-C34",
           "label": "Retry page check",
           "action": "Request active page identity again when pageKey is unavailable; capture availability must follow the resolved identity."
+        },
+        {
+          "id": "EXT-F-1007-C35",
+          "label": "Retry a failed Source rename after duplicate landing",
+          "action": "After a duplicate Source lands but its requested rename fails, edit the inline Source name and retry; verify the same Source is renamed without creating a duplicate.",
+          "source_anchor": "src/features/scrape/ScrapeView.tsx:891",
+          "modes": [
+            "member",
+            "admin"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-C36",
+          "label": "Create a new destination in Save Source",
+          "action": "From the Save Source destination picker, create a new supported place and verify it is selected and attached to the landed Source in the active organization.",
+          "source_anchor": "src/features/scrape/SaveSourceForm.tsx",
+          "modes": [
+            "member",
+            "admin"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-C37",
+          "label": "Retry or dismiss a failed Diagnose picker launch",
+          "action": "When page-element picker injection fails, use Retry picker after restoring the page permission or dismiss the actionable error.",
+          "source_anchor": "src/features/scrape/DiagnoseCard.tsx:218"
         }
       ],
       "source_anchors": [
@@ -25641,6 +25667,230 @@
           "source_evidence": ".research/contained-inventory-drift-census.json",
           "readiness_gaps": [
             "Exact owned native identity-transport fault fixture and late-response control remain to be implemented before execution."
+          ]
+        },
+        {
+          "id": "EXT-F-1007-T33",
+          "title": "member: Recover a failed rename after duplicate Source landing",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C35"
+          ],
+          "preconditions": [
+            "Use a receipt-bound current extension build, isolated profile, and genuine UI role; record the selected organization when signed in. Do not infer runtime behavior from source alone or use mocked service responses.",
+            "Use a controlled owned Source and page in a disposable test organization; the existing Source must be visible by authenticated readback before the duplicate save. Preserve its original name for restoration.",
+            "Use the native network harness to fail only the actual rename request after the duplicate landing succeeds; fail the request without fabricating an HTTP response or changing the successful landing response."
+          ],
+          "steps": [
+            "Capture the same page again, enter a distinct requested Source name, and save so the server reuses the existing Source.",
+            "Confirm the duplicate landing succeeds, then observe the inline Retry Source name field and Retry name button after the rename request fails.",
+            "Restore network access, enter the requested name, click Retry name, then re-read the Source through the authenticated Sources view.",
+            "Restore the original name and verify the exact owned Source ID remains the only Source for the fixture URL."
+          ],
+          "expected": [
+            "The duplicate landing remains confirmed while rename failure is reported with an actionable Retry name control.",
+            "Retry updates the existing Source name, preserves its ID, and does not create a duplicate.",
+            "Cleanup restores the owned fixture name without modifying unrelated records."
+          ],
+          "dimensions": [
+            "duplicate-landing",
+            "rename-network-failure",
+            "retry",
+            "owned-data-restoration"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-T34",
+          "title": "admin: Recover a failed rename after duplicate Source landing",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C35"
+          ],
+          "preconditions": [
+            "Use a receipt-bound current extension build, isolated profile, and genuine UI role; record the selected organization when signed in. Do not infer runtime behavior from source alone or use mocked service responses.",
+            "Use a controlled owned Source and page in a disposable test organization; the existing Source must be visible by authenticated readback before the duplicate save. Preserve its original name for restoration.",
+            "Use the native network harness to fail only the actual rename request after the duplicate landing succeeds; fail the request without fabricating an HTTP response or changing the successful landing response."
+          ],
+          "steps": [
+            "Capture the same page again, enter a distinct requested Source name, and save so the server reuses the existing Source.",
+            "Confirm the duplicate landing succeeds, then observe the inline Retry Source name field and Retry name button after the rename request fails.",
+            "Restore network access, enter the requested name, click Retry name, then re-read the Source through the authenticated Sources view.",
+            "Restore the original name and verify the exact owned Source ID remains the only Source for the fixture URL."
+          ],
+          "expected": [
+            "The duplicate landing remains confirmed while rename failure is reported with an actionable Retry name control.",
+            "Retry updates the existing Source name, preserves its ID, and does not create a duplicate.",
+            "Cleanup restores the owned fixture name without modifying unrelated records."
+          ],
+          "dimensions": [
+            "duplicate-landing",
+            "rename-network-failure",
+            "retry",
+            "owned-data-restoration"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-T35",
+          "title": "member: Create a new Save Source destination",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C36"
+          ],
+          "preconditions": [
+            "Use a receipt-bound current extension build, isolated profile, and genuine UI role; record the selected organization when signed in. Do not infer runtime behavior from source alone or use mocked service responses.",
+            "Use a disposable active organization and reserve a unique test-owned Project name after confirming it is absent. Use a controlled page whose capture can be safely saved and removed after the case."
+          ],
+          "steps": [
+            "Capture the controlled page and open Save Source, then open Choose a place and select Projects.",
+            "Choose Create new project, enter a temporary unique name, and click Cancel; confirm the draft closes and an authenticated organization read finds no Project with that name.",
+            "Choose Create new project again, enter the reserved unique name, and activate Create. Verify the resulting Project appears selected in the destination list.",
+            "Save the Source and use authenticated reads to verify it landed in the active organization with exactly the created Project association.",
+            "Remove only the exact test-owned Source and Project after confirming their IDs, organization, creator, and unchanged ownership."
+          ],
+          "expected": [
+            "Cancel closes the creation draft without creating a Project; the subsequent Create action adds one selected Project through the actual picker.",
+            "The Source lands once and is associated with that Project in the selected organization; no unrelated row is created or changed.",
+            "Cleanup acts only on the exact test-owned records and restores the original absence."
+          ],
+          "dimensions": [
+            "create-destination",
+            "organization-scope",
+            "source-landing",
+            "owned-data-restoration"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-T36",
+          "title": "admin: Create a new Save Source destination",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C36"
+          ],
+          "preconditions": [
+            "Use a receipt-bound current extension build, isolated profile, and genuine UI role; record the selected organization when signed in. Do not infer runtime behavior from source alone or use mocked service responses.",
+            "Use a disposable active organization and reserve a unique test-owned Project name after confirming it is absent. Use a controlled page whose capture can be safely saved and removed after the case."
+          ],
+          "steps": [
+            "Capture the controlled page and open Save Source, then open Choose a place and select Projects.",
+            "Choose Create new project, enter a temporary unique name, and click Cancel; confirm the draft closes and an authenticated organization read finds no Project with that name.",
+            "Choose Create new project again, enter the reserved unique name, and activate Create. Verify the resulting Project appears selected in the destination list.",
+            "Save the Source and use authenticated reads to verify it landed in the active organization with exactly the created Project association.",
+            "Remove only the exact test-owned Source and Project after confirming their IDs, organization, creator, and unchanged ownership."
+          ],
+          "expected": [
+            "Cancel closes the creation draft without creating a Project; the subsequent Create action adds one selected Project through the actual picker.",
+            "The Source lands once and is associated with that Project in the selected organization; no unrelated row is created or changed.",
+            "Cleanup acts only on the exact test-owned records and restores the original absence."
+          ],
+          "dimensions": [
+            "create-destination",
+            "organization-scope",
+            "source-landing",
+            "owned-data-restoration"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-T37",
+          "title": "guest: Retry or dismiss a failed Diagnose picker launch",
+          "modes": [
+            "guest"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C16",
+            "EXT-F-1007-C37"
+          ],
+          "preconditions": [
+            "Use a receipt-bound current extension build, isolated profile, and genuine UI role; record the selected organization when signed in. Do not infer runtime behavior from source alone or use mocked service responses.",
+            "Capture a controlled HTTPS page in Scrape, then use Chrome Site access controls to withhold this extension origin permission while keeping the same page loaded. Record the role positively in the actual UI."
+          ],
+          "steps": [
+            "Choose Missing in Diagnose and click Pick on page while site access is withheld.",
+            "Verify the actual injection failure is shown with Retry picker and Dismiss; do not manufacture a launchError or inject picker state.",
+            "Restore the origin permission through Chrome\u2019s UI and click Retry picker on the same page. Select a known harmless element and verify the Diagnose result opens.",
+            "With permission withheld again, reproduce the failure and click Dismiss; verify the failure card clears and no picker remains active."
+          ],
+          "expected": [
+            "The failed launch remains visible with actionable Retry picker and Dismiss controls.",
+            "After the real permission is restored, Retry picker starts the picker and the selected element appears in Diagnose.",
+            "Dismiss clears the launch error without leaving a picker active."
+          ],
+          "dimensions": [
+            "role",
+            "site-access-denial",
+            "retry",
+            "dismiss"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-T38",
+          "title": "member: Retry or dismiss a failed Diagnose picker launch",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C16",
+            "EXT-F-1007-C37"
+          ],
+          "preconditions": [
+            "Use a receipt-bound current extension build, isolated profile, and genuine UI role; record the selected organization when signed in. Do not infer runtime behavior from source alone or use mocked service responses.",
+            "Capture a controlled HTTPS page in Scrape, then use Chrome Site access controls to withhold this extension origin permission while keeping the same page loaded. Record the role positively in the actual UI."
+          ],
+          "steps": [
+            "Choose Missing in Diagnose and click Pick on page while site access is withheld.",
+            "Verify the actual injection failure is shown with Retry picker and Dismiss; do not manufacture a launchError or inject picker state.",
+            "Restore the origin permission through Chrome\u2019s UI and click Retry picker on the same page. Select a known harmless element and verify the Diagnose result opens.",
+            "With permission withheld again, reproduce the failure and click Dismiss; verify the failure card clears and no picker remains active."
+          ],
+          "expected": [
+            "The failed launch remains visible with actionable Retry picker and Dismiss controls.",
+            "After the real permission is restored, Retry picker starts the picker and the selected element appears in Diagnose.",
+            "Dismiss clears the launch error without leaving a picker active."
+          ],
+          "dimensions": [
+            "role",
+            "site-access-denial",
+            "retry",
+            "dismiss"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-T39",
+          "title": "admin: Retry or dismiss a failed Diagnose picker launch",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C16",
+            "EXT-F-1007-C37"
+          ],
+          "preconditions": [
+            "Use a receipt-bound current extension build, isolated profile, and genuine UI role; record the selected organization when signed in. Do not infer runtime behavior from source alone or use mocked service responses.",
+            "Capture a controlled HTTPS page in Scrape, then use Chrome Site access controls to withhold this extension origin permission while keeping the same page loaded. Record the role positively in the actual UI."
+          ],
+          "steps": [
+            "Choose Missing in Diagnose and click Pick on page while site access is withheld.",
+            "Verify the actual injection failure is shown with Retry picker and Dismiss; do not manufacture a launchError or inject picker state.",
+            "Restore the origin permission through Chrome\u2019s UI and click Retry picker on the same page. Select a known harmless element and verify the Diagnose result opens.",
+            "With permission withheld again, reproduce the failure and click Dismiss; verify the failure card clears and no picker remains active."
+          ],
+          "expected": [
+            "The failed launch remains visible with actionable Retry picker and Dismiss controls.",
+            "After the real permission is restored, Retry picker starts the picker and the selected element appears in Diagnose.",
+            "Dismiss clears the launch error without leaving a picker active."
+          ],
+          "dimensions": [
+            "role",
+            "site-access-denial",
+            "retry",
+            "dismiss"
           ]
         }
       ],

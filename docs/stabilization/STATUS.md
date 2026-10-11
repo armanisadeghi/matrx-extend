@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-11 00:25 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-10T12:43:34Z. 205 features · 772 cases · 1359 controls · 195 linked defect records.
+Generated 2026-10-11 00:31 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-10T12:43:34Z. 205 features · 779 cases · 1362 controls · 195 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1233** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1046 · N/A: 1.
-Unverified splits into **132 explicitly marked unverified** and **914 with no result record**.
+Applicable case-by-role slots: **1240** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1053 · N/A: 1.
+Unverified splits into **132 explicitly marked unverified** and **921 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -24,7 +24,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 9 pass · 4 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 22 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 32 unverified · 0 deferred; 0/1 full | pass 9, partial 14, fail 0, unverified 68, n/a 0 | 11 |
+| [Scrape](#scrape) | 1 | 9 pass · 4 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 35 unverified · 0 deferred; 0/1 full | pass 9, partial 14, fail 0, unverified 75, n/a 0 | 11 |
 | [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 36, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -832,7 +832,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Capture and manage current page scrape (EXT-F-1007)
 
-**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 32. **Controls:** 34.
+**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 39. **Controls:** 37.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166, EXT-D-0187, EXT-D-0192
 
@@ -872,6 +872,13 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1007-T30 Late save cannot mark another workspace or capture saved | N/A | Unverified | Unverified | EXT-F-1007-C32 |
 | EXT-F-1007-T31 Unsaved retry owns the held URL save action | Unverified | Unverified | Unverified | EXT-F-1007-C22, EXT-F-1007-C23, EXT-F-1007-C33 |
 | EXT-F-1007-T32 Retry unavailable active page identity without stale capture | Unverified | Unverified | Unverified | EXT-F-1007-C34, EXT-F-1007-C01, EXT-F-1007-C02 |
+| EXT-F-1007-T33 member: Recover a failed rename after duplicate Source landing | N/A | Unverified | N/A | EXT-F-1007-C35 |
+| EXT-F-1007-T34 admin: Recover a failed rename after duplicate Source landing | N/A | N/A | Unverified | EXT-F-1007-C35 |
+| EXT-F-1007-T35 member: Create a new Save Source destination | N/A | Unverified | N/A | EXT-F-1007-C36 |
+| EXT-F-1007-T36 admin: Create a new Save Source destination | N/A | N/A | Unverified | EXT-F-1007-C36 |
+| EXT-F-1007-T37 guest: Retry or dismiss a failed Diagnose picker launch | Unverified | N/A | N/A | EXT-F-1007-C16, EXT-F-1007-C37 |
+| EXT-F-1007-T38 member: Retry or dismiss a failed Diagnose picker launch | N/A | Unverified | N/A | EXT-F-1007-C16, EXT-F-1007-C37 |
+| EXT-F-1007-T39 admin: Retry or dismiss a failed Diagnose picker launch | N/A | N/A | Unverified | EXT-F-1007-C16, EXT-F-1007-C37 |
 
 **Recorded case details and evidence:**
 

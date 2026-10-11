@@ -1,0 +1,58 @@
+{
+  "reviewer_lane": "scrape-source-to-inventory-peer",
+  "reviewed_at": "2026-10-10",
+  "reviewer_identity": "scrape_inventory_review",
+  "source_head": "4d13d86fe46e99f991e703e7d37f802c8b5431e5",
+  "inventory_file": "docs/stabilization/inventory.json",
+  "scope": {
+    "feature_id": "EXT-F-1007",
+    "controls_surveyed": 34,
+    "controls_added": [
+      "EXT-F-1007-C35",
+      "EXT-F-1007-C36",
+      "EXT-F-1007-C37"
+    ],
+    "cases_added": [
+      "EXT-F-1007-T33",
+      "EXT-F-1007-T34",
+      "EXT-F-1007-T35",
+      "EXT-F-1007-T36",
+      "EXT-F-1007-T37",
+      "EXT-F-1007-T38",
+      "EXT-F-1007-T39"
+    ]
+  },
+  "review_type": "current-source and inventory mapping review; no product behavior execution",
+  "findings": [
+    {
+      "control_id": "EXT-F-1007-C35",
+      "review": "Accepted as distinct from normal duplicate landing and name persistence in C04/T04/T21; the failed rename branch exposes a separate retry field and action.",
+      "source_anchor": "src/features/scrape/ScrapeView.tsx:891"
+    },
+    {
+      "control_id": "EXT-F-1007-C36",
+      "review": "Accepted as distinct from choosing existing destinations in C30/T29 after checking registry reachability.",
+      "source_anchor": "src/features/scrape/SaveSourceForm.tsx"
+    },
+    {
+      "control_id": "EXT-F-1007-C37",
+      "review": "Accepted as distinct from active picker cancellation in C16; Retry picker and Dismiss appear on the launch-error card for all roles.",
+      "source_anchor": "src/features/scrape/DiagnoseCard.tsx:218"
+    }
+  ],
+  "project_create_reachability": {
+    "status": "source-verified",
+    "package": "@ai-matrx/associations 0.14.23",
+    "registry_token": "project",
+    "title_column": "name",
+    "list_candidates_override": null,
+    "result": "The SaveSourceForm PlaceResults condition for rendering Create is true for Projects in the installed extension registry."
+  },
+  "review_verdict": "The three added behaviors are not subsumed by existing cases. Role applicability and procedures are coherent with source gates.",
+  "behavioral_verdict": "not-run; all added cases remain unverified",
+  "validation": {
+    "new_case_steps_and_expected_outcomes_present": true,
+    "all_control_references_resolve": true,
+    "unique_feature_control_and_case_ids": true
+  }
+}
