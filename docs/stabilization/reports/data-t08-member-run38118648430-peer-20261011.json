@@ -1,0 +1,52 @@
+{
+  "review": "fresh independent A/B review of hosted member Data T08 run 38118648430",
+  "run": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38118648430",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_sha": "7d3d9d877eda1da5e32544f61026cdd227a7db18",
+    "attempt": 1,
+    "conclusion": "success",
+    "product_ci_run": 38118062600,
+    "product_artifact_id": 11694303227,
+    "product_source_sha": "a98c46a7d01cbf99af88aa90e4cabc296546a46f",
+    "product_artifact_digest": "sha256:360490be9da6b954ebf27d973a6cd0573b286eeaef7ac70f2d12f079503255fd",
+    "hosted_artifact_id": 11693984833,
+    "hosted_artifact_digest": "sha256:a13b4c7edffec2050d4956cfee8bf26e3db13a78ad2fc7d9d8fb975d70a2d850"
+  },
+  "A_product_behavior": {
+    "verdict": "PASS for the bounded signed-in non-admin member T08 run",
+    "identity_and_org": "Native report records web and extension signed-in, non-admin verified, canonical non-admin check passed, and selected organization verified.",
+    "saved_pattern_write": "One POST returned 201; request body organization matched selected organization; captured X-Organization-Id matched both body and selected organization. The exact saved row was read back.",
+    "rendered_data_states": {
+      "running": "pass; MutationObserver latched the rendered auto badge",
+      "success": "pass; rendered auto success and parsed rows matched the owned product fixture",
+      "no_match": "pass; rendered no-match state and explanation; no extracted rows",
+      "error": "pass; rendered auto failure with detail after an owned invalid-selector mutation",
+      "manual_extract": "pass; rendered Extract action was enabled after the automatic error"
+    },
+    "cleanup": "Verified exact owned name and organization lookup; one owned pattern row deleted. Original null root selector restored and read back.",
+    "scope": "No guest, admin, Store-installed, current-main runtime, or whole-feature claim."
+  },
+  "B_evidence_and_reliability": {
+    "verdict": "PASS for artifact and hosted-resource evidence integrity",
+    "hosted_zip_digest": "Independently downloaded ZIP SHA-256 matches GitHub artifact digest.",
+    "product_zip_digest": "Independently downloaded product ZIP SHA-256 matches GitHub artifact digest.",
+    "admission_verifier": "scripts/hosted-remote-admission.mjs verify passed with run 38118648430, attempt 1, and exact source SHA a98c46a7d01cbf99af88aa90e4cabc296546a46f.",
+    "workflow_source": "Verifier fetched and accepted workflow checkout SHA 7d3d9d877eda1da5e32544f61026cdd227a7db18; reviewed workflow source SHA-256 matched.",
+    "resource_journals": {
+      "hosted-package-38118648430-1": "valid",
+      "hosted-browser-38118648430-1": "valid",
+      "hosted-guest-38118648430-1": "valid"
+    },
+    "native_oracle": "At exact product source, the CDP observer captures the outgoing wbx_pattern POST headers and body; the assertion requires both to match the independently selected organization. Auto-extract assertions inspect rendered Data-card DOM, including a MutationObserver latch for the brief running badge.",
+    "screenshot_note": "The two ancillary screenshots show generic guest Chat and do not support T08 state claims; those claims are supported by native rendered-DOM observations in the report and the exact-source driver assertions.",
+    "credentials": "No credential values were retrieved or included in this report."
+  },
+  "limitations": [
+    "This verdict applies to the bounded hosted member T08 case only.",
+    "The prior partial run's missing organization header is corrected in this run and directly observed at the outgoing request."
+  ],
+  "independent_peer": true,
+  "no_code_or_database_changes": true,
+  "no_commit_or_push": true
+}

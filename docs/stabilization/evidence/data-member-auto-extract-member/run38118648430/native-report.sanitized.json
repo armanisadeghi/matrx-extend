@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "reload_open_diagnostic": {
+    "enabled": false,
+    "evidence_class": "acceptance_eligible",
+    "perturbation": "none"
+  },
+  "reload_sender_document_diagnostic": {
+    "enabled": false,
+    "evidence_class": "acceptance_eligible",
+    "perturbation": "none"
+  },
+  "case_id": "EXT-F-2005-T08",
+  "auth_mode": "member",
+  "status": "pass",
+  "stage": "complete",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "a98c46a7d01cbf99af88aa90e4cabc296546a46f",
+    "run_id": 38118062600,
+    "artifact_id": 11694303227,
+    "tree_sha256": "96e6ab485117f2c6ca06fea6ac82124e025eae1d607ff8cba632c6d59f1d3b40",
+    "version": "0.2.493"
+  },
+  "observations": {
+    "picker_field_clicks_landed": true,
+    "two_distinct_previews": true,
+    "save_pattern_visible": true,
+    "pattern_name_visible": true,
+    "pattern_write_requests": 1,
+    "pattern_write_status": 201,
+    "pattern_response_body_capture": "body_id_valid",
+    "saved_row_lookup_verified": true,
+    "request_body_organization_present": true,
+    "request_body_organization_matched_selected": true,
+    "request_header_organization_matched_body": true,
+    "request_header_organization_matched_selected": true,
+    "saved_pattern_refreshed": true,
+    "pattern_write_observation": [
+      {
+        "status": 201,
+        "failed": false,
+        "patternIdPresent": true,
+        "bodyCapture": "body_id_valid",
+        "requestBodyCapture": "request_body_valid",
+        "requestOrganizationPresent": true,
+        "requestNameMatches": true,
+        "requestOrganizationMatchesSelected": true,
+        "headerOrganizationPresent": true,
+        "headerOrganizationMatchesBody": true,
+        "headerOrganizationMatchesSelected": true
+      }
+    ]
+  },
+  "cleanup": {
+    "verified": true,
+    "deleted_rows": 1,
+    "exact_owned_name_organization_lookup": true
+  },
+  "failure_stage": null,
+  "limits": "Signed-in nonadmin member automatic extraction on an owned page and exact saved row; no admin, guest, or Store claim.",
+  "auth_stage": "member_logical_organization_proof",
+  "auto_extract": {
+    "running": "pass",
+    "success": "pass",
+    "no_match": "pass",
+    "error": "pass",
+    "manual_action": "pass",
+    "pattern_reads": [
+      {
+        "signed_in": true,
+        "status": 200
+      },
+      {
+        "signed_in": true,
+        "status": 200
+      },
+      {
+        "signed_in": true,
+        "status": 200
+      },
+      {
+        "signed_in": true,
+        "status": 200
+      },
+      {
+        "signed_in": true,
+        "status": 200
+      },
+      {
+        "signed_in": true,
+        "status": 200
+      }
+    ],
+    "original_root_read_verified": true,
+    "invalid_root_write_verified": true,
+    "original_root_restored": true
+  }
+}

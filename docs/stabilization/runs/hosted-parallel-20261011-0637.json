@@ -1,7 +1,7 @@
 {
   "id": "hosted-parallel-20261011-0637",
   "opened_at_utc": "2026-10-11T06:37:34Z",
-  "status": "running_unverified",
+  "status": "terminal_reviewed_bounded_A_pass_B_inconclusive",
   "product_artifact": {
     "source_sha": "a98c46a7d01cbf99af88aa90e4cabc296546a46f",
     "ci_run_id": 38118062600,
@@ -18,10 +18,12 @@
       "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38118648430",
       "case_id": "EXT-F-2005-T08",
       "scope": "member Data auto-extract and EXT-D-0197 retest",
-      "state": "dispatched_unverified",
+      "state": "success_independently_reviewed_bounded_member_T08_pass",
       "admission": "reviewed remote-only plan/dispatch passed; separate hosted package/browser/guest resource guards remain required",
-      "temporary_reviewer_secret": "MATRX_REVIEWER_MAGIC_LINK_JSON staged immediately before dispatch; cleanup required after terminal run",
-      "local_one_time_link": "removed after secret staging and dispatch"
+      "temporary_reviewer_secret": "deleted after terminal run; GitHub secret-name absence independently verified",
+      "local_one_time_link": "removed after secret staging and dispatch",
+      "peer_review": "docs/stabilization/reports/data-t08-member-run38118648430-peer-20261011.json",
+      "run_record": "docs/stabilization/runs/data-member-auto-extract-run38118648430.json"
     },
     {
       "lane": "B",
@@ -29,9 +31,11 @@
       "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38118666272",
       "case_id": "guest SEO controlled scope",
       "scope": "guest SEO controlled behavior, not the EXT-D-0198 signed-in history-error retest",
-      "state": "dispatched_unverified",
-      "admission": "reviewed hosted A/B workflow; separate runner and resource journals required"
+      "state": "failure_child_failed_no_new_credit",
+      "admission": "reviewed hosted A/B workflow; separate runner and resource journals required",
+      "peer_review": "docs/stabilization/reports/guest-seo-controlled-run38118666272-peer-20261011.json"
     }
   ],
-  "next_action": "Wait for both run handles. Delete and verify absence of the temporary GitHub reviewer secret when lane A is terminal. Download exact artifacts; verify digests and three finalized journals; independently review native behavior before inventory credit. Reconcile intervening main changes."
+  "next_action": "Diagnose guest SEO manual_reaudit_click before rerun. Run new EXT-D-0198 native history driver only on a successful exact-source CI artifact; keep guest SEO result zero new credit. Continue admin T08 and other Data/SEO cases.",
+  "closed_at_utc": "2026-10-11T06:52:00Z"
 }

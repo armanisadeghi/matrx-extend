@@ -1,0 +1,32 @@
+{
+  "hosted_run_id": 38118648430,
+  "attempt": 1,
+  "product_ci_run_id": 38118062600,
+  "product_source_sha": "a98c46a7d01cbf99af88aa90e4cabc296546a46f",
+  "workflow_sha": "7d3d9d877eda1da5e32544f61026cdd227a7db18",
+  "product_artifact_id": 11694303227,
+  "product_artifact_zip_sha256": "360490be9da6b954ebf27d973a6cd0573b286eeaef7ac70f2d12f079503255fd",
+  "product_artifact_github_digest": "sha256:360490be9da6b954ebf27d973a6cd0573b286eeaef7ac70f2d12f079503255fd",
+  "hosted_artifact_id": 11693984833,
+  "hosted_artifact_name": "hosted-guest-38118648430-1",
+  "hosted_artifact_zip_sha256": "a13b4c7edffec2050d4956cfee8bf26e3db13a78ad2fc7d9d8fb975d70a2d850",
+  "hosted_artifact_github_digest": "sha256:a13b4c7edffec2050d4956cfee8bf26e3db13a78ad2fc7d9d8fb975d70a2d850",
+  "admission_verification": {
+    "command": "node scripts/hosted-remote-admission.mjs verify --run-id 38118648430 --attempt 1 --artifact-zip <hosted ZIP> --source-sha a98c46a7d01cbf99af88aa90e4cabc296546a46f",
+    "result": "valid",
+    "workflow_source_sha256": "1cb3d900ed62405504e6d7c90cf7dab79716299a70f9318bd8005f476b12c75a",
+    "archive_digest_sha256": "a13b4c7edffec2050d4956cfee8bf26e3db13a78ad2fc7d9d8fb975d70a2d850",
+    "raw_journal_sha256": {
+      "hosted-package-38118648430-1": "91a729191c8c2b6e09ecc562809ec7d205ac5d59bba6609a65cf26eb4da2c05d",
+      "hosted-browser-38118648430-1": "49b1382a978e1d59029f8cdda592c2e78d1878cfe54da8c17673861f73480811",
+      "hosted-guest-38118648430-1": "7c61952bc7f983947141983a4c3ca0c5ea54bbe6b3248cf9595eb1447bacdcad"
+    }
+  },
+  "sanitized_files_sha256": {
+    "native-report.sanitized.json": "6bf591f18f676331e3aadb93e3324761cfef60d6a7d67ddf30d52575fcdf12a4",
+    "hosted-package-38118648430-1.jsonl": "91a729191c8c2b6e09ecc562809ec7d205ac5d59bba6609a65cf26eb4da2c05d",
+    "hosted-browser-38118648430-1.jsonl": "49b1382a978e1d59029f8cdda592c2e78d1878cfe54da8c17673861f73480811",
+    "hosted-guest-38118648430-1.jsonl": "1521c7ec60c3c92b023ba68e4a1606ee65923fb4d2ad01765fa4afaebb8ce53a"
+  },
+  "sanitization": "Native report authentication object removed; three journals passed scripts/copy-hosted-resource-journal.mjs. Files scanned for credentials and authentication links; none found."
+}

@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_hosted_run_evidence_review",
+  "reviewed_at": "2026-10-11",
+  "run_id": 38118666272,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38118666272",
+  "verdict": "VALID_RESOURCE_RUN_UNATTRIBUTED_FAILURE_NO_NEW_CREDIT",
+  "scope": "Controlled guest SEO native run on frozen unpublished development artifact; this run does not exercise the later D0198 history-error native coverage.",
+  "evidence": {
+    "workflow": {
+      "source_sha": "7d3d9d877eda1da5e32544f61026cdd227a7db18",
+      "job": "guest",
+      "job_conclusion": "failure",
+      "dispatch": {
+        "acceptance_case": "guest-seo",
+        "seo_case_scope": "controlled",
+        "seo_metadata_fixture": "none",
+        "lane": "B"
+      }
+    },
+    "frozen_product": {
+      "ci_run_id": 38118062600,
+      "artifact_id": 11694303227,
+      "artifact_digest": "sha256:360490be9da6b954ebf27d973a6cd0573b286eeaef7ac70f2d12f079503255fd",
+      "source_sha": "a98c46a7d01cbf99af88aa90e4cabc296546a46f",
+      "version": "0.2.493",
+      "tree_sha256": "96e6ab485117f2c6ca06fea6ac82124e025eae1d607ff8cba632c6d59f1d3b40",
+      "binding": "GitHub artifact metadata, downloaded ZIP digest, imported native receipt, and PREPARED_DEVELOPMENT log agree on run, artifact, source, version, and tree digest."
+    },
+    "hosted_result_artifact": {
+      "artifact_id": 11694638453,
+      "digest": "sha256:34f1c1343f762d8efdc2213c2e0ee555e18a22afef3c9b3a5378fdfad6cbe4f0",
+      "contents": "Sanitized native report, three completed resource journals, and two setup screenshots."
+    },
+    "native_result": {
+      "status": "unverified",
+      "last_safe_stage": "manual_reaudit_preflight",
+      "current_operation": "manual_reaudit_click",
+      "failure_stage": "manual_reaudit_click",
+      "passed_before_failure": [
+        "T09 page 0 title/headings matched public DOM",
+        "T07 text and AI copy matched on page 0 with trusted clicks and clipboard readback",
+        "T09 page 1 title/headings matched public DOM",
+        "T07 text and AI copy matched on page 1 with trusted clicks and clipboard readback",
+        "T01 distinct-page navigation replaced the visible title"
+      ],
+      "not_reached": ["T02 manual re-audit completion", "later T03/T14 checks"]
+    },
+    "failure_classification": "Resource-valid child failure; product-versus-harness cause is unverified. The native receipt records an enabled Re-audit control at preflight, then fails while the click helper is running. No click-dispatched checkpoint or sanitized click failure diagnostic was retained. The wrapper only reports child exit 1. This does not establish a product defect."
+  },
+  "resource_finals": {
+    "package": "valid, exit 0",
+    "browser": "valid, exit 0",
+    "guest": "valid resource decision, resourceInvalid=false, child exit 1, decision=child_failed"
+  },
+  "fixtures_and_cleanup": {
+    "metadata_fixture": "none",
+    "owned_fixture_or_database_mutation": "none reported; public pages only",
+    "cleanup": "No owned product fixture cleanup required. Native report says clipboard observation permission was restored for completed T07 checks."
+  },
+  "inventory_credit": {
+    "new_credit": false,
+    "reason": "The five passed subtargets are re-observations already represented in the canonical guest SEO inventory. The failed T02 action receives no credit, and the run neither reaches nor covers D0198 history-error behavior.",
+    "overall_state": "Guest SEO and its T01/T02/T07/T09 cases remain partial; no feature-level promotion."
+  },
+  "limits": [
+    "The retained native report does not expose the click helper's specific failure reason, so attribution remains open.",
+    "The run uses the frozen v0.2.493 product artifact and controlled SEO route; it is not evidence for later native D0198 coverage, current-main behavior, member/admin modes, Store behavior, or full guest SEO."
+  ],
+  "privacy": "Only sanitized report fields, resource journals, artifact metadata, and source-level workflow/driver review retained; no screenshot, runner path, extension ID, credentials, or raw diagnostics retained."
+}
