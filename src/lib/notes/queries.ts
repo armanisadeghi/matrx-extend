@@ -17,7 +17,9 @@ import {
   NoteSchema,
   type UpdateNotePatch,
 } from '@/lib/notes/types';
-import { customDb, iamDb, platformDb, workbenchDb } from '@/lib/supabase/schemas';
+import { listMemberOrganizations } from '@/lib/org/active-org';
+import { openSpanningClient } from '@/lib/records/store';
+import { platformDb, workbenchDb } from '@/lib/supabase/schemas';
 
 const LIST_COLUMNS = 'id, created_by, label, home_scope_id, tags, updated_at, position';
 const FULL_COLUMNS = `${LIST_COLUMNS}, content, metadata, deleted_at, version, created_at`;
@@ -52,35 +54,25 @@ export async function listMyNotes(): Promise<NoteListItem[]> {
  * visible homes share a name.
  */
 export async function listMyHomes(): Promise<NoteHomeChoice[]> {
-  const { data, error } = await customDb()
-    .from('context_scopes')
-    .select('id, organization_id, name')
-    .order('name', { ascending: true });
-  if (error) {
-    console.warn('[notes] listMyHomes error', error.message);
-    throw new Error(`Could not load homes: ${error.message}`);
+  const { client, organizationIds } = await openSpanningClient();
+  const result = await client.scopes.tree(organizationIds);
+  if (!result.ok) {
+    throw new Error(`Could not load homes: ${result.error.message}`);
   }
   const homes: NoteHome[] = [];
-  for (const row of data ?? []) {
+  for (const row of result.data.flatMap((type) => type.scopes)) {
     const parsed = NoteHomeSchema.safeParse(row);
     if (parsed.success) homes.push(parsed.data);
   }
+  homes.sort((a, b) => a.name.localeCompare(b.name));
   const taken = new Map<string, number>();
   for (const h of homes)
     taken.set(h.name.toLowerCase(), (taken.get(h.name.toLowerCase()) ?? 0) + 1);
   const needsOrg = homes.some((h) => (taken.get(h.name.toLowerCase()) ?? 0) > 1);
   const orgNames = new Map<string, string>();
   if (needsOrg) {
-    const ids = Array.from(
-      new Set(homes.map((h) => h.organization_id).filter((v): v is string => !!v)),
-    );
-    const { data: orgs, error: orgError } = await iamDb()
-      .from('organizations')
-      .select('id, name')
-      .in('id', ids);
-    if (orgError) console.warn('[notes] listMyHomes organization names error', orgError.message);
-    for (const o of (orgs ?? []) as { id: string; name: string | null }[]) {
-      if (o.name) orgNames.set(o.id, o.name);
+    for (const org of await listMemberOrganizations('active')) {
+      orgNames.set(org.id, org.name);
     }
   }
   return homes.map((h) => {

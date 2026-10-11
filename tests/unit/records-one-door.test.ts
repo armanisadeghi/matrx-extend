@@ -12,7 +12,7 @@
  *
  * This test is the census, not the instance. It scans every source file in the
  * repo for two shapes:
- *   1. any reach into the `custom` schema beyond the Notes home read, and
+ *   1. any reach into the `custom` schema that is not the package, and
  *   2. any import of a store door name by hand.
  *
  * PROVEN FAILING: written against a deliberate `supabase.schema('custom')
@@ -58,28 +58,15 @@ describe('the record store has exactly one door in this repo', () => {
     expect(files.length).toBeGreaterThan(200);
   });
 
-  it('only the Notes home read reaches `custom` outside @ai-matrx/records', () => {
+  it('nothing reaches the `custom` schema except @ai-matrx/records', () => {
     const offenders: string[] = [];
     for (const file of files) {
       // No file is exempt from this one, INCLUDING the seam: the seam is
       // exactly where a second door would be added first.
       const rel = relative(REPO, file);
       const text = readFileSync(file, 'utf8');
-      const customSchemaCalls = text.match(/\.schema\(\s*['"]custom['"]\s*\)/g) ?? [];
-      const isSharedSchemaAccessor =
-        rel === 'src/lib/supabase/schemas.ts' &&
-        text.includes("export const customDb = () => getSupabase().schema('custom');") &&
-        customSchemaCalls.length === 1;
-      if (customSchemaCalls.length > 0 && !isSharedSchemaAccessor) {
-        offenders.push(`${rel} opens the custom schema outside the shared accessor`);
-      }
-      const customDbCalls = text.match(/\bcustomDb\s*\(\s*\)/g) ?? [];
-      const isNotesHomeRead =
-        rel === 'src/lib/notes/queries.ts' &&
-        customDbCalls.length === 1 &&
-        /customDb\(\)\s*\.from\(['"]context_scopes['"]\)/.test(text);
-      if (customDbCalls.length > 0 && !isSharedSchemaAccessor && !isNotesHomeRead) {
-        offenders.push(`${rel} uses the custom schema outside the notes home read`);
+      if (/\.schema\(\s*['"]custom['"]\s*\)/.test(text)) {
+        offenders.push(`${rel} reaches the record store outside @ai-matrx/records`);
       }
       if (/\.from\(\s*['"]record['"]\s*\)/.test(text)) {
         offenders.push(`${rel} reaches the record table outside @ai-matrx/records`);

@@ -74,9 +74,6 @@ export const TABLE_SCHEMA = {
   sch_agent_task: 'scheduler',
   // workbench — notes
   notes: 'workbench',
-  // custom.context_scopes — the homes (scopes) the person can see: id,
-  // organization_id, name. READ-ONLY; a note moves with platform.set_home.
-  context_scopes: 'custom',
   // chat — conversation history hydration
   conversation: 'chat',
   message: 'chat',
@@ -187,8 +184,6 @@ export const adminDb = () => getSupabase().schema('admin');
 export const toolDb = () => getSupabase().schema('tool');
 
 /** `platform` — scoped feature-knob resolution and other platform primitives. */
-/** `custom` — user-facing views (context_scopes = the homes the person can see). */
-export const customDb = () => getSupabase().schema('custom');
 
 export const platformDb = () => getSupabase().schema('platform');
 

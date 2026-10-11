@@ -3,11 +3,18 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const db = vi.hoisted(() => ({
   workbenchDb: vi.fn(),
-  customDb: vi.fn(),
-  iamDb: vi.fn(),
   platformDb: vi.fn(),
 }));
 vi.mock('@/lib/supabase/schemas', () => db);
+const records = vi.hoisted(() => ({
+  openSpanningClient: vi.fn(),
+  tree: vi.fn(),
+  listMemberOrganizations: vi.fn(),
+}));
+vi.mock('@/lib/org/active-org', () => ({
+  listMemberOrganizations: records.listMemberOrganizations,
+}));
+vi.mock('@/lib/records/store', () => ({ openSpanningClient: records.openSpanningClient }));
 vi.mock('@/lib/api/routes/auth', () => ({
   requireRequestOrganizationId: async () => '33333333-3333-4333-8333-333333333333',
 }));
@@ -20,6 +27,15 @@ const ORG_B = '55555555-5555-4555-8555-555555555555';
 beforeEach(() => vi.clearAllMocks());
 
 describe('Notes homes boundary', () => {
+  it('preserves a refused scope read as an error, not an empty home picker', async () => {
+    records.openSpanningClient.mockResolvedValue({
+      client: { scopes: { tree: records.tree } },
+      organizationIds: [ORG_A, ORG_B],
+    });
+    records.tree.mockResolvedValue({ ok: false, error: { message: 'Scope access refused' } });
+    await expect(listMyHomes()).rejects.toThrow('Could not load homes: Scope access refused');
+  });
+
   it('moves a note with the set_home RPC, never a direct column write', async () => {
     const rpc = vi.fn(async () => ({ error: null }));
     db.platformDb.mockReturnValue({ rpc });
@@ -46,38 +62,32 @@ describe('Notes homes boundary', () => {
   });
 
   it('appends the organization to a home label only when two homes share a name', async () => {
-    db.customDb.mockReturnValue({
-      from: () => ({
-        select: () => ({
-          order: async () => ({
-            data: [
-              { id: A, organization_id: ORG_A, name: 'General' },
-              { id: B, organization_id: ORG_B, name: 'General' },
-              {
-                id: '66666666-6666-4666-8666-666666666666',
-                organization_id: ORG_A,
-                name: 'ABC Legal',
-              },
-            ],
-            error: null,
-          }),
-        }),
-      }),
+    records.openSpanningClient.mockResolvedValue({
+      client: { scopes: { tree: records.tree } },
+      organizationIds: [ORG_A, ORG_B],
     });
-    db.iamDb.mockReturnValue({
-      from: () => ({
-        select: () => ({
-          in: async () => ({
-            data: [
-              { id: ORG_A, name: 'AI Matrx' },
-              { id: ORG_B, name: 'Law Firm' },
-            ],
-            error: null,
-          }),
-        }),
-      }),
+    records.tree.mockResolvedValue({
+      ok: true,
+      data: [
+        {
+          scopes: [
+            { id: A, organization_id: ORG_A, name: 'General' },
+            { id: B, organization_id: ORG_B, name: 'General' },
+            {
+              id: '66666666-6666-4666-8666-666666666666',
+              organization_id: ORG_A,
+              name: 'ABC Legal',
+            },
+          ],
+        },
+      ],
     });
+    records.listMemberOrganizations.mockResolvedValue([
+      { id: ORG_A, name: 'AI Matrx' },
+      { id: ORG_B, name: 'Law Firm' },
+    ]);
     const labels = (await listMyHomes()).map((h) => h.label).sort();
+    expect(records.tree).toHaveBeenCalledWith([ORG_A, ORG_B]);
     expect(labels).toEqual(['ABC Legal', 'General · AI Matrx', 'General · Law Firm']);
   });
 });
