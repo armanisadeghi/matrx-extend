@@ -503,6 +503,12 @@ export async function click(panel, kind, label, onPhase = undefined) {
         .filter((el) => el.textContent.trim() === label);
       dataPanelDiagnostic = ${dataPanelDiagnosticExpression()};
     }
+    else if (kind === 'data-cancel-button') {
+      const pane = ${activeTabPanelExpression('Data')};
+      candidates = [...(pane?.querySelectorAll('button') ?? [])]
+        .filter((el) => el.textContent.trim() === label && label === 'Cancel');
+      dataPanelDiagnostic = ${dataPanelDiagnosticExpression()};
+    }
     else if (kind === 'data-save-button') {
       const pane = ${activeTabPanelExpression('Data')};
       candidates = [...(pane?.querySelectorAll('button') ?? [])]

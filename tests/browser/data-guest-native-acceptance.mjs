@@ -230,8 +230,24 @@ try {
             selector_matched_clicked_element: selectorTarget.isCedarChair,
           };
 
-          // Re-entering the picker clears the Data draft. Keep Clear's selected
-          // entry check independent from the C19 Done/result handoff above.
+          // Done returns one selected field to Data, whose guest UI now shows
+          // Data-level Cancel instead of the picker button. Clear that draft
+          // through the real control before starting the independent T07 Clear
+          // observation; the picker cannot be re-entered while fields exist.
+          await click(panel, 'data-cancel-button', 'Cancel');
+          const c19DraftCancelled = await waitFor(
+            'data_guest_t07_clear_draft_cancelled',
+            () => dataState(panel),
+            (state) => state.pickerButton === 1 && state.selectedFieldMarkers === 0,
+          );
+          assert.deepEqual(
+            c19DraftCancelled.selectedFieldValues,
+            [],
+            'data_guest_t07_clear_cancel_kept_c19_field',
+          );
+          assert.deepEqual(t07Writes, [], 'data_guest_t07_c19_cancel_wrote_pattern');
+
+          // Keep Clear's selected entry check independent from C19 Done/result.
           await click(panel, 'data-picker-button', 'Pick fields on this page');
           await page.locator('#matrx-data-picker-host').waitFor({ state: 'attached' });
           await clickPickerField(page, '.product-card .product-name');

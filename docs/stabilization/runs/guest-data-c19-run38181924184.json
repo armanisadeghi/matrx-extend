@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "run_id": 38181924184,
+  "scope": "Guarded hosted native guest Data interaction; bounded EXT-F-2005-C19 with T07 follow-on harness failure.",
+  "mode": "guest",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_source_sha": "1b1c400f71e6be024d733d3cfb8bb96eb3f0df55",
+  "workflow_lane": "B",
+  "started_at": "2026-10-11T22:49:24Z",
+  "finished_at": "2026-10-11T22:57:03Z",
+  "outcome": "partial_bounded_c19_harness_failure_after_credit",
+  "build": {
+    "kind": "native_ci_development_artifact",
+    "source_sha": "1b1c400f71e6be024d733d3cfb8bb96eb3f0df55",
+    "ci_run_id": 38181243134,
+    "artifact_id": 11718336129,
+    "artifact_name": "matrx-extend-development-test-1b1c400f71e6be024d733d3cfb8bb96eb3f0df55-38181243134-1",
+    "tree_sha256": "2f26dd74a7819a03d7f61dc5675e37dfc03843a900b6721da41b6b1d02df7bbe",
+    "version": "0.2.508"
+  },
+  "hosted_result_artifact": {
+    "id": 11718088327,
+    "name": "hosted-guest-38181924184-1",
+    "digest": "sha256:c4b4a0957211c2e4d1d8e6c9d116a19d11f346e7d4b59025ec0c87ad3d5976c8",
+    "expired": false
+  },
+  "case_results": {
+    "EXT-F-2005-C19": {
+      "guest": "pass_bounded",
+      "observations": [
+        "Trusted click previewed Cedar chair.",
+        "Data displayed the derived field_1 selector.",
+        "The visible selector matched exactly one page node and that node was the clicked heading."
+      ],
+      "resource_valid": true,
+      "independent_review": "docs/stabilization/reports/data-c19-independent-review-38181924184.json"
+    },
+    "EXT-F-2005-T07": {
+      "guest": "partial",
+      "observations": [
+        "The driver failed after C19 when it tried to reopen the picker while a selected field was displayed in Data; the UI correctly exposed Cancel and Sign in to save, not the picker button.",
+        "This run adds no credit for C18, selected-field C21, or C22; retain prior independent evidence only."
+      ],
+      "resource_valid": true,
+      "new_acceptance_credit": "EXT-F-2005-C19 only",
+      "independent_review": "docs/stabilization/reports/data-c19-independent-review-38181924184.json"
+    }
+  },
+  "resource_admission": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "acceptance": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-data-c19/run38181924184/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-c19/run38181924184/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-c19/run38181924184/resource-finals.sanitized.json",
+    "docs/stabilization/reports/data-c19-independent-review-38181924184.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38181924184",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38181243134"
+  ],
+  "limits": [
+    "Only guest C19 is independently credited from this run. C18, C21 and C22 remain linked to prior independently reviewed runs.",
+    "T07 remains partial; no signed-in, reload, Store or full Data acceptance is established."
+  ]
+}

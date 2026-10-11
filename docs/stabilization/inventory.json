@@ -42645,7 +42645,30 @@
                 "docs/stabilization/evidence/guest-data-t07/run38109155658/receipt.sanitized.json",
                 "docs/stabilization/reports/data-t07-native-peer-20261011.json"
               ],
-              "detail": "Independently reviewed bounded guest T07 subtargets on imported development artifact v0.2.490: C18 hover highlight tracked two distinct fixture elements, C22 Clear removed the selected picker entry, and C21 Cancel after selecting a field restored the Data panel baseline. Only observations.t07 and its t07_clear result in the hosted driver report\u2019s T01 envelope are credited; C19 is not credited. The native driver observed zero non-GET /wbx_pattern requests during the action window, with no backend persistence query. Archived screenshots omit picker states; post-run absence was not independently verified. Remaining T07 criteria, reload, member/admin and full Data remain unverified."
+              "detail": "Independently reviewed bounded guest T07 subtargets on imported development artifact v0.2.490: C18 hover highlight tracked two distinct fixture elements, C22 Clear removed the selected picker entry, and C21 Cancel after selecting a field restored the Data panel baseline. Only observations.t07 and its t07_clear result in the hosted driver report\u2019s T01 envelope are credited; C19 is not credited. The native driver observed zero non-GET /wbx_pattern requests during the action window, with no backend persistence query. Archived screenshots omit picker states; post-run absence was not independently verified. Remaining T07 criteria, reload, member/admin and full Data remain unverified.",
+              "additional_bounded_runs": [
+                {
+                  "run_id": "38181924184",
+                  "control_ids": ["EXT-F-2005-C19"],
+                  "status": "bounded_guest_pass",
+                  "source_sha": "1b1c400f71e6be024d733d3cfb8bb96eb3f0df55",
+                  "development_ci_run_id": 38181243134,
+                  "development_artifact_id": 11718336129,
+                  "hosted_result_artifact_id": 11718088327,
+                  "build_version": "0.2.508",
+                  "build_kind": "native_ci_development_artifact",
+                  "tree_sha256": "2f26dd74a7819a03d7f61dc5675e37dfc03843a900b6721da41b6b1d02df7bbe",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/data-c19-independent-review-38181924184.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-data-c19/run38181924184/receipt.sanitized.json",
+                    "docs/stabilization/evidence/guest-data-c19/run38181924184/native-report.sanitized.json",
+                    "docs/stabilization/evidence/guest-data-c19/run38181924184/resource-finals.sanitized.json",
+                    "docs/stabilization/reports/data-c19-independent-review-38181924184.json"
+                  ],
+                  "detail": "Independent runtime review credits only guest C19: native report records a trusted click previewing Cedar chair, Data displays the derived field_1 selector, that selector uniquely matches one page node, and the node is the exact clicked heading. The subsequent T07 sequence fails in the test driver because it tries to reopen the picker while the selected field is in Data; the product correctly exposes Data-level Cancel and Sign in to save instead. Package/browser resource finals are valid and the guest exercise final is admitted/resourceInvalid=false/exitCode=1 due the harness failure. C18, selected-field C21 and C22 receive no new credit from this run; prior independent run 38109155658 remains their evidence. T07 and Guest Data stay partial; member/admin, reload, Store and full feature remain unverified."
+                }
+              ]
             },
             "member": {
               "status": "unverified"
@@ -42756,9 +42779,15 @@
             "38050967096",
             "38071036836",
             "38072894998",
-            "38109155658"
+            "38109155658",
+            "38181924184"
           ],
-          "retest_status": "Guest T01 remains a bounded pass from run 38072894998. Independently reviewed run 38109155658 adds only bounded guest T07 C18 hover, C22 Clear and C21 selected-field Cancel subtargets on exact v0.2.490 development artifact. T07 and full Guest Data remain partial; C19, other cases/controls, reload, signed-in persistence, member/admin and published Store installation remain unverified.",
+          "retest_status": "Guest T01 remains a bounded pass from run 38072894998. Independently reviewed run 38109155658 adds bounded guest T07 C18 hover, C22 Clear and C21 selected-field Cancel subtargets on exact v0.2.490 development artifact. Independently reviewed run 38181924184 adds only guest C19 click-to-unique-selector on exact v0.2.508 development artifact; its later T07 follow-on failed at a stale picker-button sequence and earns no C18/C21/C22 credit. T07 and full Guest Data remain partial; other cases/controls, reload, signed-in persistence, member/admin and published Store installation remain unverified.",
+          "additional_retest_evidence": {
+            "run_id": "38181924184",
+            "report": "docs/stabilization/reports/data-c19-independent-review-38181924184.json",
+            "scope": "Bounded guest EXT-F-2005-C19 only on exact v0.2.508 development artifact; T07 remains partial; this run adds no C18, selected-field C21 or C22 credit and no member/admin, reload, Store or full Data acceptance."
+          },
           "retest_evidence": {
             "run_id": "38109155658",
             "report": "docs/stabilization/reports/data-t07-native-peer-20261011.json",

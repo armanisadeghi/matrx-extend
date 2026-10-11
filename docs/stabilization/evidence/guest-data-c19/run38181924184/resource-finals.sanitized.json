@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38181924184,
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted_exercise": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "cpu_pressure": {
+    "initial_observation": "RESOURCE_CPU_PENDING",
+    "recovered_before_failure": true,
+    "final_observation": "RESOURCE_CPU_RECOVERED"
+  },
+  "source": "Hosted workflow log for https://github.com/armanisadeghi/matrx-extend/actions/runs/38181924184; no raw resource process attribution or credentials copied."
+}

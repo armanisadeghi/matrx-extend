@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "run_id": 38181924184,
+  "case_id": "guest-data",
+  "lane": "B",
+  "workflow_source_sha": "1b1c400f71e6be024d733d3cfb8bb96eb3f0df55",
+  "workflow_artifact": {
+    "id": 11718088327,
+    "name": "hosted-guest-38181924184-1",
+    "digest": "sha256:c4b4a0957211c2e4d1d8e6c9d116a19d11f346e7d4b59025ec0c87ad3d5976c8",
+    "expired": false
+  },
+  "product_artifact": {
+    "ci_run_id": 38181243134,
+    "artifact_id": 11718336129,
+    "artifact_name": "matrx-extend-development-test-1b1c400f71e6be024d733d3cfb8bb96eb3f0df55-38181243134-1",
+    "source_sha": "1b1c400f71e6be024d733d3cfb8bb96eb3f0df55",
+    "tree_sha256": "2f26dd74a7819a03d7f61dc5675e37dfc03843a900b6721da41b6b1d02df7bbe",
+    "version": "0.2.508"
+  },
+  "run_conclusion": "failure",
+  "native_case_status": "partial_bounded_c19_pass_after_independent_review",
+  "first_failing_boundary": "The test driver attempted to reopen the field picker after C19 Done had returned one selected field to the Data panel. The real guest UI correctly exposed Data-level Cancel and Sign in to save, with no picker button; the driver reported pointer_target_not_unique, matched=0, visible=0.",
+  "bounded_observation": {
+    "control_id": "EXT-F-2005-C19",
+    "preview_text": "Cedar chair",
+    "visible_field": "field_1: body > main > section > article.product-card:nth-of-type(1) > h2.product-name",
+    "selector_unique_match_count": 1,
+    "selector_matched_clicked_element": true,
+    "verdict": "bounded_guest_pass"
+  },
+  "adjacent_controls": {
+    "C18": "No new credit from this run; existing independently reviewed run 38109155658 remains the credited bounded subtarget.",
+    "C21": "No new credit from this run; the initial empty-picker cancel is separately credited in prior run 38050967096. Selected-field picker Cancel was not reached.",
+    "C22": "Not reached in this run; retain only prior independently reviewed credit from run 38109155658."
+  },
+  "resource_finals": "docs/stabilization/evidence/guest-data-c19/run38181924184/resource-finals.sanitized.json",
+  "native_report": "docs/stabilization/evidence/guest-data-c19/run38181924184/native-report.sanitized.json",
+  "screenshots": {
+    "native_side_panel": "Generic guest Chat; does not show Data interaction.",
+    "normal_target_after_open": "Unrelated Research brief fixture; does not show Data interaction."
+  },
+  "independent_review": "docs/stabilization/reports/data-c19-independent-review-38181924184.json",
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38181924184",
+  "limitations": [
+    "The C19 selector/result chain is bounded evidence on unpublished development 0.2.508 only.",
+    "The overall T07 case remains partial; C18, selected-field C21 and C22 receive no new credit from this run.",
+    "No member/admin, Store, reload, or full Data feature acceptance is established."
+  ]
+}

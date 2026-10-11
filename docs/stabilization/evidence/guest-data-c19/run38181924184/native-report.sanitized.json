@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T01",
+  "status": "fail",
+  "stage": "picker_controls_t07",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "source_sha": "1b1c400f71e6be024d733d3cfb8bb96eb3f0df55",
+    "run_id": 38181243134,
+    "artifact_id": 11718336129,
+    "tree_sha256": "2f26dd74a7819a03d7f61dc5675e37dfc03843a900b6721da41b6b1d02df7bbe",
+    "version": "0.2.508"
+  },
+  "observations": {
+    "picker_cancel_without_selection": true,
+    "picker_cancel_selected_fields_unchanged": true,
+    "picker_cancel_pattern_writes": 0,
+    "c19_click_to_select": {
+      "preview": "Cedar chair",
+      "visible_field": "field_1: body > main > section > article.product-card:nth-of-type(1) > h2.product-name",
+      "selector_unique_matches": 1,
+      "selector_matched_clicked_element": true
+    }
+  },
+  "failure_stage": "picker_controls_t07",
+  "limits": "Guest native behavior on the selected imported artifact; no signed-in save or published Store claim.",
+  "driver_failure": {
+    "code": "pointer_target_not_unique",
+    "sample_stage": "visibility_filter",
+    "matched_target_count": 0,
+    "visible_match_count": 0,
+    "unique_visible_target": false,
+    "hit_target": false,
+    "animating": false,
+    "stable_samples": 0,
+    "position_stable": false,
+    "data_panel": {
+      "active_tab_count": 1,
+      "pane_id": "radix-_r_3_-content-data",
+      "pane_active": true,
+      "button_count": 3,
+      "buttons": [
+        {
+          "label": "other",
+          "disabled": false,
+          "visible": true
+        },
+        {
+          "label": "other",
+          "disabled": false,
+          "visible": true
+        },
+        {
+          "label": "Sign in to save",
+          "disabled": false,
+          "visible": true
+        }
+      ],
+      "picker_prompt_present": false,
+      "guest_explanation_present": true
+    }
+  }
+}

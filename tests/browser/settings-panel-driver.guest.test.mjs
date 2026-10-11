@@ -3,11 +3,66 @@ import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { Window } from 'happy-dom';
 import {
+  click,
   guestSettingsChecks,
   guestSettingsState,
   profilePaneReady,
   profilePaneState,
 } from './settings-panel-driver.mjs';
+
+test('Data cancel resolves only the active Data pane and rejects the stale picker after Done', async () => {
+  const window = new Window();
+  const { document } = window;
+  window.innerWidth = 800;
+  window.innerHeight = 600;
+  document.body.innerHTML = `
+    <button role="tab" data-state="active" title="Data" aria-controls="data"></button>
+    <div id="data" role="tabpanel" data-state="active"><button>Cancel</button></div>
+    <button role="tab" data-state="inactive" title="Settings" aria-controls="settings"></button>
+    <div id="settings" role="tabpanel" data-state="inactive"><button>Cancel</button></div>`;
+  const cancel = document.querySelector('#data button');
+  cancel.getBoundingClientRect = () => ({
+    x: 20,
+    y: 20,
+    left: 20,
+    top: 20,
+    right: 120,
+    bottom: 60,
+    width: 100,
+    height: 40,
+  });
+  cancel.scrollIntoView = () => {};
+  cancel.getAnimations = () => [];
+  document.elementFromPoint = () => cancel;
+  const dispatched = [];
+  const panel = {
+    async send(method, params) {
+      if (method === 'Runtime.evaluate') {
+        return { result: { value: await window.eval(params.expression) } };
+      }
+      dispatched.push(params.type);
+      return {};
+    },
+  };
+
+  await click(panel, 'data-cancel-button', 'Cancel');
+  assert.deepEqual(dispatched, ['mousePressed', 'mouseReleased']);
+  document.querySelector('#data').innerHTML =
+    '<button>Cancel</button><button>Sign in to save</button>';
+  const stalePickerFailure = (error) => {
+    assert.equal(error.driverFailure?.code, 'pointer_target_not_unique');
+    assert.equal(error.driverFailure?.matchedTargetCount, 0);
+    assert.equal(error.driverFailure?.visibleMatchCount, 0);
+    return true;
+  };
+  const before = dispatched.length;
+  await assert.rejects(
+    () => click(panel, 'data-picker-button', 'Pick fields on this page'),
+    stalePickerFailure,
+  );
+  assert.equal(dispatched.length, before, 'the stale picker is refused before trusted input');
+  window.happyDOM.abort();
+});
 
 test('admin completion failure reaches the acceptance receipt as safe categories', async () => {
   let authenticatedState = false;
