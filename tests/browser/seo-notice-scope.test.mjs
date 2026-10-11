@@ -37,7 +37,7 @@ const captured = JSON.parse(
   ),
 ).reaudit_hit_diagnostics.before_click;
 
-async function run(occluded = false, driver = callback) {
+async function run(occluded = false, driver = callback, freshReloadRefusal = true) {
   let viewportWidth = 360;
   let index = 0;
   let dismissed = false;
@@ -145,8 +145,14 @@ async function run(occluded = false, driver = callback) {
     },
     panel: {
       send: async (method, params) => {
-        if (method === 'Page.reload') reloaded = true;
-        else if (method === 'Emulation.clearDeviceMetricsOverride') viewportWidth = 360;
+        if (method === 'Page.reload') {
+          reloaded = true;
+          // SeoView remounts and its fresh history read is refused again.
+          if (freshReloadRefusal) {
+            dismissed = false;
+            events.push('fresh-history-refusal-after-reload');
+          }
+        } else if (method === 'Emulation.clearDeviceMetricsOverride') viewportWidth = 360;
         else if (method === 'Emulation.setDeviceMetricsOverride') viewportWidth = params.width;
         else assert.fail(method);
       },
@@ -161,7 +167,7 @@ test('notice scope reaches all four bounded outcomes and restores viewport witho
     ['T02', 'notice_narrow_warm_navigation_reaudit_clearance'],
     ['T02', 'notice_wide_warm_navigation_reaudit_clearance'],
     ['T02', 'manual_button_returns_to_current_page'],
-    ['T02', 'dismissed_notice_stays_clear_after_reload'],
+    ['T02', 'visible_notice_full_reload_clearance'],
   ]);
   for (const event of [
     'refusal',
@@ -169,6 +175,7 @@ test('notice scope reaches all four bounded outcomes and restores viewport witho
     'notice_wide_viewport_set',
     'trusted-reaudit',
     'seo_panel_reload',
+    'fresh-history-refusal-after-reload',
     'notice_native_viewport_restore',
     'notice_only_complete',
   ])
@@ -177,6 +184,10 @@ test('notice scope reaches all four bounded outcomes and restores viewport witho
 
 test('notice scope fails when real sampled hit ownership belongs to the notice', async () => {
   await assert.rejects(run(true), /all nine Re-audit points/);
+});
+
+test('reload clearance requires the fresh refusal notice after the history retry', async () => {
+  await assert.rejects(run(false, callback, false), /real refusal notice persists/);
 });
 
 test('notice guard rejects an empty driver instead of accepting skipped work', async () => {

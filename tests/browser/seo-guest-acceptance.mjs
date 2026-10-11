@@ -1773,19 +1773,15 @@ try {
         );
         report.reaudit_hit_diagnostics.after_reload = afterReloadHit;
         checkpoint();
-        assert.equal(
-          afterReloadHit?.database_refused_notice_count,
-          0,
-          'dismissed in-memory refusal notice stays cleared after panel reload',
-        );
-        assert.equal(
-          afterReloadHit?.hit_point_count,
-          9,
-          'Re-audit remains target-owned after panel reload',
-        );
-        target('T02', 'dismissed_notice_stays_clear_after_reload', {
+        // Reload mounts SeoView again and retries the saved-audit history read.
+        // The guest database refuses that NEW request, so it must be announced
+        // even though Dismiss cleared the previous in-memory notice.
+        requireVisibleNoticeClearance(afterReloadHit, 'fresh refusal after panel reload');
+        target('T02', 'visible_notice_full_reload_clearance', {
           noticeCount: afterReloadHit.database_refused_notice_count,
+          dismissVisible: afterReloadHit.dismiss_visible,
           targetHitPoints: afterReloadHit.hit_point_count,
+          noticeHitPoints: afterReloadHit.notice_hit_point_count,
           currentTitleMatched: reloadedAudit.title === publicPages[1].title,
         });
         enter('notice_native_viewport_restore');
@@ -1800,11 +1796,6 @@ try {
           'T02',
           'multiple_and_long_notice_clearance',
           'owned history refusal produces one fixed-length notice; distinct stacked and long notices need a controlled app notice fixture',
-        );
-        unverifiedTarget(
-          'T02',
-          'visible_notice_full_reload_clearance',
-          'current reload follows Dismiss and cannot prove clearance while a refusal notice is visible',
         );
       }
       if (NOTICE_ONLY) {
