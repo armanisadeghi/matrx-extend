@@ -40,13 +40,13 @@
   "closure_requirement": "Implement a distinguishable history loading/empty/error flow and a history retry path consistent with T06, then verify the query error is surfaced and retry performs a fresh read. Independently retest the controlled real SEO UI and relevant guest/member/admin modes; retain the source/unit result as supporting evidence only.",
   "transition_history": [
     {
-      "at": "2026-10-11T23:13:00Z",
+      "at": "2026-10-11T06:13:00Z",
       "from": null,
       "to": "open",
       "reason": "Inventory T06 requires distinct history failure handling and retry; source inspection identified a concrete error-to-empty path."
     },
     {
-      "at": "2026-10-11T23:13:00Z",
+      "at": "2026-10-11T06:13:00Z",
       "from": "open",
       "to": "triaged",
       "reason": "A focused synthetic unit diagnostic reproduced the production query returning [] and the real SeoView hiding history on a non-absence PostgREST error. Native impact remains unverified."
