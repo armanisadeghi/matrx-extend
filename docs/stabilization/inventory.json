@@ -8266,6 +8266,26 @@
               "independent_review": "4a5a8e98",
               "detail": "Independent review confirms original guest criteria.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            },
+            {
+              "mode": "guest",
+              "run_id": 38124123515,
+              "status": "pass",
+              "build_version": "0.2.493",
+              "source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+              "development_ci_run_id": 38118947880,
+              "development_artifact_id": 11693783976,
+              "hosted_result_artifact_id": 11696965482,
+              "workflow_source_sha": "e18564655b882fb333ca0fa4350b68ed44fc0e30",
+              "resource_valid": true,
+              "independent_review": "docs/stabilization/reports/settings-guest-run38124123515-peer-20261011.json",
+              "evidence": [
+                "docs/stabilization/runs/settings-guest-controls-20261011.json",
+                "docs/stabilization/evidence/settings-guest-controls/run38124123515/native-report.sanitized.json",
+                "docs/stabilization/reports/settings-guest-run38124123515-peer-20261011.json"
+              ],
+              "detail": "Fresh independent bounded guest revalidation: Advanced agent capabilities and permission controls absent in warm and Settings reload DOM (2/2 criteria).",
+              "release_scope": "Frozen unpublished development artifact only; no current-main, member/admin, Store or full Settings claim."
             }
           ]
         },
@@ -9456,6 +9476,26 @@
               "independent_review": "4a5a8e98",
               "detail": "Independent review confirms original guest criteria.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            },
+            {
+              "mode": "guest",
+              "run_id": 38124123515,
+              "status": "pass",
+              "build_version": "0.2.493",
+              "source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+              "development_ci_run_id": 38118947880,
+              "development_artifact_id": 11693783976,
+              "hosted_result_artifact_id": 11696965482,
+              "workflow_source_sha": "e18564655b882fb333ca0fa4350b68ed44fc0e30",
+              "resource_valid": true,
+              "independent_review": "docs/stabilization/reports/settings-guest-run38124123515-peer-20261011.json",
+              "evidence": [
+                "docs/stabilization/runs/settings-guest-controls-20261011.json",
+                "docs/stabilization/evidence/settings-guest-controls/run38124123515/native-report.sanitized.json",
+                "docs/stabilization/reports/settings-guest-run38124123515-peer-20261011.json"
+              ],
+              "detail": "Fresh independent bounded guest revalidation: Deep clean coming-soon hint, false-to-true toggle, reload persistence and original false preference restored (3/3 criteria).",
+              "release_scope": "Frozen unpublished development artifact only; no current-main, member/admin, Store or full Settings claim."
             }
           ]
         },
@@ -10510,6 +10550,26 @@
               "independent_review": "4a5a8e98",
               "detail": "Independent review confirms original guest criteria.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            },
+            {
+              "mode": "guest",
+              "run_id": 38124123515,
+              "status": "pass",
+              "build_version": "0.2.493",
+              "source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+              "development_ci_run_id": 38118947880,
+              "development_artifact_id": 11693783976,
+              "hosted_result_artifact_id": 11696965482,
+              "workflow_source_sha": "e18564655b882fb333ca0fa4350b68ed44fc0e30",
+              "resource_valid": true,
+              "independent_review": "docs/stabilization/reports/settings-guest-run38124123515-peer-20261011.json",
+              "evidence": [
+                "docs/stabilization/runs/settings-guest-controls-20261011.json",
+                "docs/stabilization/evidence/settings-guest-controls/run38124123515/native-report.sanitized.json",
+                "docs/stabilization/reports/settings-guest-run38124123515-peer-20261011.json"
+              ],
+              "detail": "Fresh independent bounded guest revalidation: valid port save and rediscovery trace, boundary ports 1/65535, invalid 65536 refusal, clear override and reload persistence (8/8 criteria).",
+              "release_scope": "Frozen unpublished development artifact only; no current-main, member/admin, Store or full Settings claim."
             }
           ]
         },
@@ -12462,6 +12522,26 @@
               "independent_review": "4a5a8e98",
               "detail": "Original missing dimensions remain; T04 theme-specific full reload not inferred from general guest reload. See report and prior case result.",
               "release_scope": "Unpublished artifact11568846736; all3currentjournals valid. Full extension reload succeeded this run; prior intermittent cause remains unknown. No Store/member/admin/latestmain claim."
+            },
+            {
+              "mode": "guest",
+              "run_id": 38124123515,
+              "status": "partial",
+              "build_version": "0.2.493",
+              "source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+              "development_ci_run_id": 38118947880,
+              "development_artifact_id": 11693783976,
+              "hosted_result_artifact_id": 11696965482,
+              "workflow_source_sha": "e18564655b882fb333ca0fa4350b68ed44fc0e30",
+              "resource_valid": true,
+              "independent_review": "docs/stabilization/reports/settings-guest-run38124123515-peer-20261011.json",
+              "evidence": [
+                "docs/stabilization/runs/settings-guest-controls-20261011.json",
+                "docs/stabilization/evidence/settings-guest-controls/run38124123515/native-report.sanitized.json",
+                "docs/stabilization/reports/settings-guest-run38124123515-peer-20261011.json"
+              ],
+              "detail": "Native identity and real no-update observations only. The runner accepts Available or Ready while the inventory explicitly expects Ready; readiness-label criterion has no credit. API-unavailable, update-available, throttled, error and update-API-unavailable dimensions remain unverified.",
+              "release_scope": "Frozen unpublished development artifact only; no current-main, member/admin, Store or full Settings claim."
             }
           ]
         },
@@ -14060,9 +14140,10 @@
             "37722572578",
             "settings-local397-native-20261008",
             "38041519886",
-            38089377803
+            38089377803,
+            "38124123515"
           ],
-          "retest_status": "Partial surface. Reviewed frozen129 guest Settings controls run38041519886 observed 12/19 native case passes and seven unverified rows; per-case criteria and stronger historical evidence retain their own provenance. Independent D186 adjudication closes only the guest repeated-target full-extension reload and saved-baseline scope for T04/T10/T67; absent-key restoration remains unverified. T16/T19/T31/T34 downstream behavior, T40 capture in this run, T63 member denial, T70 branches and T67 nested capture remain unverified. No full Settings/current-main/Store/member/admin promotion."
+          "retest_status": "Partial surface. Reviewed frozen129 guest Settings controls run38041519886 observed 12/19 native case passes and seven unverified rows; per-case criteria and stronger historical evidence retain their own provenance. Independent D186 adjudication closes only the guest repeated-target full-extension reload and saved-baseline scope for T04/T10/T67; absent-key restoration remains unverified. T16/T19/T31/T34 downstream behavior, T40 capture in this run, T63 member denial, T70 branches and T67 nested capture remain unverified. No full Settings/current-main/Store/member/admin promotion. Fresh hosted guest Settings controls run 38124123515 independently revalidated T22, T37 and T46 on frozen development v0.2.493. T70 remains partial: identity/no-update observations, but Ready/Available oracle mismatch and alternate branches unverified. Generic screenshots do not show Settings. Whole feature, signed-in modes, current-main runtime and Store remain unverified."
         },
         "member": {
           "test_status": "unverified",
