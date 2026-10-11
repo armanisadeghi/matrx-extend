@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T19:29:47Z",
+  "updated_at": "2026-10-11T19:31:17Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -3021,7 +3021,17 @@
           "dimensions": [
             "warm",
             "navigation"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "38167323328",
+              "detail": "Native guest avatar menu rendered no Profile entry while Preferences and Sign out were present; selected tab and guest identity stayed unchanged on the exact driver's pass path. Frozen unpublished development v0.2.502 only.",
+              "evidence": "docs/stabilization/reports/settings-account-popover-guest-run38167323328.json",
+              "source_sha": "67f3c3d398909f4e1316a221800afee798d45906",
+              "workflow_source_sha": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f"
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T20",
@@ -3096,7 +3106,17 @@
           "dimensions": [
             "warm",
             "navigation"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "38167323328",
+              "detail": "Trusted native pointer chose Preferences; the menu closed, Settings tab and pane became active, and guest identity remained unchanged on frozen unpublished development v0.2.502.",
+              "evidence": "docs/stabilization/reports/settings-account-popover-guest-run38167323328.json",
+              "source_sha": "67f3c3d398909f4e1316a221800afee798d45906",
+              "workflow_source_sha": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f"
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T23",
@@ -3171,7 +3191,17 @@
           "dimensions": [
             "warm",
             "navigation"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "pass",
+              "run_id": "38167323328",
+              "detail": "Trusted native pointer chose Sign out; the menu closed, guest session and rendered Guest header persisted through reopening and full panel document reload on frozen unpublished development v0.2.502.",
+              "evidence": "docs/stabilization/reports/settings-account-popover-guest-run38167323328.json",
+              "source_sha": "67f3c3d398909f4e1316a221800afee798d45906",
+              "workflow_source_sha": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f"
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T26",
