@@ -3394,6 +3394,41 @@
    "application/json"
   ]
  },
+ "/google-workspace/linked/documents/from-markdown": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/linked/documents/push": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/linked/documents/to-markdown": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/linked/sheets/from-workbook": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/linked/sheets/push": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/linked/sheets/to-workbook": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/google-workspace/linked/version": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/google-workspace/sheets/create": {
   "post": [
    "application/json"
@@ -7886,6 +7921,26 @@
  "/synccom/public/status": {
   "get": []
  },
+ "/synced-tables/cell": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/synced-tables/link": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/synced-tables/link/preview": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/synced-tables/refresh": {
+  "post": [
+   "application/json"
+  ]
+ },
  "/syncplicity/public/status": {
   "get": []
  },
@@ -8541,6 +8596,11 @@
   "delete": []
  },
  "/v1/tables/{table}/aggregate": {
+  "post": [
+   "application/json"
+  ]
+ },
+ "/v1/tables/{table}/ai-columns/{field_id}/run": {
   "post": [
    "application/json"
   ]
