@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_peer_review",
+  "reviewer": "/root/data_t08_transient_source_peer",
+  "reviewed_at": "2026-10-11",
+  "source_commit": "07843a4c3c78ca1c54fddf15437059246e73fca2",
+  "feature_id": "EXT-F-2005",
+  "case_id": "EXT-F-2005-T08",
+  "verdicts": {
+    "A_behavior_and_evidence": "PARTIAL",
+    "B_harness_and_quality": "FAIL"
+  },
+  "behavior_evidence": {
+    "rendered_state_source": "The observer inspects the named pattern card under the active rendered Data tab and latches only a child span with exact text 'auto'. The instantaneous reader uses the same rendered-badge criterion. This observes UI DOM and does not manufacture an extraction result.",
+    "fast_completion": "The focused happy-dom test changes the rendered badge from Extract to auto to auto · 1 rows; the MutationObserver latch retains the intermediate rendered state after completion. Focused test passed 5/5.",
+    "false_positive": "Reproduced an unguarded pre-target state: installing the observer while the named card already rendered the exact auto badge returned {installed:true,seen:true}; after replacing that card with success, the latch still returned {seen:true} while the current card reader returned running:false. runMemberAutoExtract ignores install.seen and checks only the persistent latch after success. Thus an existing running badge before open('success') can satisfy the running assertion without observing the run initiated by that navigation.",
+    "native_observation": "UNVERIFIED: no browser or hosted run was launched. The existing reviewed member run remains partial and has no running-state observation. This source change alone does not establish that the native member page emits the transient badge during a fast real completion."
+  },
+  "organization_and_cleanup": {
+    "header_assertion": "The changed files do not alter the pattern-create request observer or assertPatternWriteOrganization. Existing assertions still require captured request organization to match both body and selected organization. The new direct exact-row read/PATCH helper sends X-Organization-Id on authenticated requests.",
+    "owned_cleanup": "The diff does not alter cleanupOwnedDataPattern, its exact generated-name plus organization lookup, exact id/org delete, or post-delete verification. Existing native-driver finally path still invokes owned cleanup after a save attempt."
+  },
+  "harness_quality": {
+    "finding": "The observer is correctly tied to a rendered card, but its evidence window is not bounded to the success navigation: install-time seen state is retained and accepted. The focused test only starts with Extract and does not assert that install-time seen is false or that a prior auto badge cannot earn credit.",
+    "required_follow_up": "Make the latch evidence specific to the tested navigation, for example refuse/reset a preexisting running state before navigation and only accept a subsequent observed transition, then add a regression case where install begins with auto and must not count it. Keep native running unverified until a resource-admitted member run records the latched rendered state."
+  },
+  "verification": {
+    "focused_command": "node --test tests/browser/data-member-auto-extract-driver.test.mjs",
+    "focused_result": "5 passed, 0 failed",
+    "false_positive_probe": "Inline happy-dom probe reproduced a stale pre-navigation auto badge remaining latched after the card changed to success; no source file was modified.",
+    "compile": "pnpm compile passed (tsc --noEmit)",
+    "lint": "pnpm -s lint --diagnostic-level=error passed (2629 files)",
+    "disk": "Native launches remain disallowed: /System/Volumes/Data had 319 MiB available at review time, below the documented 20 GiB floor.",
+    "mutant_claim": "The source report records two earlier mutations that failed as expected and were restored byte-for-byte. I did not repeat those mutations; the independent stale-state probe exposes an additional unguarded false-positive case."
+  },
+  "limits": [
+    "Source and focused harness only; no native product, hosted run, credentials, or product pass was observed.",
+    "COORDINATOR.md and the disk-recovery report were modified by concurrent work when review began; both changes were incorporated into commit d0b2a8cf3 during review. This review did not edit them."
+  ],
+  "files_reviewed": [
+    "CLAUDE.md",
+    "docs/stabilization/PLAN.md",
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/reports/data-t08-transient-driver-20261011.json",
+    "tests/browser/data-member-auto-extract-driver.mjs",
+    "tests/browser/data-member-auto-extract-driver.test.mjs",
+    "tests/browser/data-member-native-acceptance.mjs",
+    "tests/browser/data-member-save-observer.mjs",
+    "tests/browser/data-member-pattern-cleanup.mjs"
+  ]
+}
