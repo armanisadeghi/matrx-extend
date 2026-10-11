@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-t70-hosted-forcing-path-20261011",
+  "status": "diagnostic_no_native_forcing_path",
+  "case_id": "EXT-F-1003-T70",
+  "lane": "A",
+  "checked_at": "2026-10-11",
+  "source": {
+    "checkout_sha_at_review": "b7f6834cd81d5d4af60784047fec3be4cb8330fa",
+    "origin_main_fetched": true,
+    "working_tree_clean_at_start": true
+  },
+  "latest_native_run": {
+    "run_id": 38124123515,
+    "workflow": "Hosted guest side-panel acceptance",
+    "workflow_source_sha": "e18564655b882fb333ca0fa4350b68ed44fc0e30",
+    "lane": "A",
+    "acceptance_case": "settings-controls",
+    "job_conclusion": "success",
+    "product_source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+    "product_version": "0.2.493",
+    "development_ci_run_id": 38118947880,
+    "development_artifact_id": 11693783976,
+    "development_artifact_sha256": "sha256:162c745cbcc558f3d9f45c23560be63a0c4b9473c76109bd18405f636217549c",
+    "publish_state": "not_published",
+    "hosted_result_artifact_id": 11696965482,
+    "resource_journals": [
+      "docs/stabilization/evidence/settings-guest-controls/run38124123515/resource-journals/hosted-package-38124123515-1.jsonl",
+      "docs/stabilization/evidence/settings-guest-controls/run38124123515/resource-journals/hosted-browser-38124123515-1.jsonl",
+      "docs/stabilization/evidence/settings-guest-controls/run38124123515/resource-journals/hosted-guest-38124123515-1.jsonl"
+    ],
+    "resource_verdict": "valid",
+    "case_verdict": "unverified",
+    "bounded_observations": [
+      "Runtime/browser/manifest identity fields matched.",
+      "Chrome returned and displayed a real no-update result.",
+      "Identity and API readiness observations remained consistent after Settings reload."
+    ],
+    "unverified_branches": [
+      "password-flow API unavailable",
+      "update available",
+      "throttled",
+      "update error",
+      "update API unavailable"
+    ],
+    "records": [
+      "docs/stabilization/runs/settings-guest-controls-20261011.json",
+      "docs/stabilization/evidence/settings-guest-controls/run38124123515/receipt.sanitized.json",
+      "docs/stabilization/evidence/settings-guest-controls/run38124123515/native-report.sanitized.json",
+      "docs/stabilization/reports/settings-guest-run38124123515-peer-20261011.json"
+    ]
+  },
+  "current_route_assessment": {
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "driver": "tests/browser/settings-local-controls-acceptance.mjs",
+    "frozen_artifact_acceptance": "The workflow validates an exact successful CI development run and artifact before the settings-controls route.",
+    "forcing_gap": "The T70 driver reads the real Chrome API surface, clicks the real update control only when present, and explicitly records the API-unavailable, update-available, throttled, error, and update-API-unavailable branches as unverified because it does not fabricate browser APIs or outcomes. Lane A only isolates the shared credential fixture; it adds no branch trigger.",
+    "artifact_limit": "The exact frozen development artifact is unpacked and unpublished. The current route does not install a signed update package from a controlled update manifest, and the hosted browser is Chromium with the APIs available. Repeating this run can only record whatever real outcome Chrome returns (the last outcome was no_update).",
+    "source_oracle": "The 2026-10-11 T70 reconciliation corrected Available/Unavailable oracle semantics and focused source guards, but explicitly left every alternate native branch unverified; it did not create a native forcing mechanism.",
+    "decision": "Do not dispatch another lane-A run for T70 branch credit. It would repeat an already observed natural no-update path and cannot answer the remaining branch question. No new browser run was started and no product verdict was changed."
+  },
+  "independent_review": {
+    "reviewer_task": "/root/settings_t70_lane/t70_peer",
+    "authorship": "zero-authorship read-only review",
+    "verdict": "No runnable native forcing path exists in lane A with the frozen artifact and current driver.",
+    "basis": "The driver exercises actual Chrome APIs and explicitly leaves alternate branches unverified; lane A supplies no mechanism to force those APIs or outcomes.",
+    "reviewed_evidence": [
+      "docs/stabilization/reports/settings-t70-oracle-reconciliation-20261011.json",
+      "docs/stabilization/reports/settings-t70-oracle-peer-20261011.json",
+      "docs/stabilization/reports/settings-guest-run38124123515-peer-20261011.json",
+      "tests/browser/settings-local-controls-acceptance.mjs",
+      ".github/workflows/hosted-guest-acceptance.yml"
+    ]
+  },
+  "next_executable_step": {
+    "objective": "Force one T70 alternate outcome through a real browser boundary, with no page or extension API stubbing.",
+    "action": "Add a dedicated hosted acceptance route that installs the exact test extension identity from a controlled signed update package and update manifest served by a run-owned local HTTP server, triggers Chrome's real requestUpdateCheck, and verifies the resulting UI state and cleanup. First confirm the artifact pipeline can produce the matching signed package; if it cannot, record that as the precise blocker and use an actually supported browser environment for the API-unavailable case. Freeze the resulting artifact, source-review the runner and sanitized failure boundaries, then dispatch lane A against its exact CI run/artifact IDs.",
+    "behavior_credit_gate": "Fresh independent peer review of the native artifact and resource finals is required before any T70 branch credit."
+  }
+}
