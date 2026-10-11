@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "id": "seo-notice-only-run38167373687",
+  "created_at_utc": "2026-10-11T19:17:17Z",
+  "feature_id": "EXT-F-1008",
+  "defect_id": "EXT-D-0199",
+  "status": "reviewed_partial_bounded_geometry_child_failed",
+  "scope": "Guarded lane B guest SEO notice-only attempt; only the native 360px and emulated 480px warm-navigation notice-clearance geometry subtargets pass. No full T02 or D199 closure.",
+  "hosted_run_id": 38167373687,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38167373687",
+  "workflow_source_sha": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f",
+  "inputs": {
+    "acceptance_lane": "B",
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "notice",
+    "seo_metadata_fixture": "none",
+    "seo_resource_diagnostic": "false",
+    "seo_interrupt_after_target": "none"
+  },
+  "frozen_product": {
+    "development_run_id": 38166523824,
+    "development_artifact_id": 11711963526,
+    "source_sha": "67f3c3d398909f4e1316a221800afee798d45906",
+    "version": "0.2.502",
+    "tree_sha256": "490c43018ba2ed898101fb37dfd76ec217c9ad9bf79973e17aa0a2cada7ae170",
+    "github_digest": "sha256:63d30075b21e65599bcd25312fd618fefb4a8118c6bb5946e34bfbf221daf6d5",
+    "publish_state": "not_published"
+  },
+  "terminal": {
+    "workflow_status": "completed",
+    "workflow_conclusion": "failure",
+    "job_conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "failure_stage": "manual_reaudit_running_wait_sample",
+    "child_exit_code": 1
+  },
+  "result_artifact": {
+    "artifact_id": 11712024079,
+    "name": "hosted-guest-38167373687-1",
+    "github_digest": "sha256:5abb0178c0f9b441e8756f68c04349b461b58ab2c632a8f3bdce80f29b4ebe49",
+    "downloaded_archive_digest_matches": true
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "product_verdict": "PARTIAL_BOUNDED_T02_GEOMETRY_ONLY",
+  "observed_subtargets": [
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+      "status": "pass",
+      "viewport": {
+        "width": 360,
+        "source": "native"
+      },
+      "refusal_notice_visible": true,
+      "target_hit_points": 9,
+      "notice_hit_points": 0
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+      "status": "pass",
+      "viewport": {
+        "width": 480,
+        "source": "emulated"
+      },
+      "refusal_notice_visible": true,
+      "target_hit_points": 9,
+      "notice_hit_points": 0
+    }
+  ],
+  "failure_boundary": {
+    "operation": "manual_reaudit_running_wait",
+    "click_phase": "release_returned",
+    "last_safe_observable": {
+      "scopeValid": true,
+      "page_title_matches_expected": true,
+      "auditButtonPresent": true,
+      "auditButtonDisabled": false,
+      "auditSpinner": false,
+      "reAudit": true,
+      "error": false
+    },
+    "interpretation": "The wait expects scope-valid reAudit=false within its default 10-second timeout. The last retained sample still has reAudit=true, no spinner and no error. One run does not establish a reproducible product defect; the error handler omits the wait diagnostic and transition trace."
+  },
+  "not_run": [
+    "Dismiss and post-Dismiss reload",
+    "Multiple/long notice fixture",
+    "Native normal-width notice geometry",
+    "Member/admin modes",
+    "Store behavior"
+  ],
+  "evidence": [
+    "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/receipt.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/native-report.sanitized.json",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/resource-journals/hosted-package-38167373687-1.jsonl",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/resource-journals/hosted-browser-38167373687-1.jsonl",
+    "docs/stabilization/evidence/seo-notice-occlusion/run38167373687/resource-journals/hosted-guest-38167373687-1.jsonl",
+    "docs/stabilization/reports/seo-notice-only-run-independent-review-38167373687.json"
+  ],
+  "independent_review": "docs/stabilization/reports/seo-notice-only-run-independent-review-38167373687.json",
+  "next_action": "Keep EXT-D-0199 fixed/open. Credit only the two recorded geometry subtargets. A fresh admitted exact-artifact run should retain privacy-safe Re-audit/button/spinner/error state transitions and the wait timeout diagnostic before any product-bug claim; do not weaken resource policy."
+}

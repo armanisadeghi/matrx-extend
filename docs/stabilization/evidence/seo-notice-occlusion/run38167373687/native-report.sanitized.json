@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "unverified",
+  "scope": "bounded guest SEO refusal notice widths, trusted Re-audit, Dismiss and reload",
+  "targets": [
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+      "status": "pass",
+      "evidence": {
+        "viewportWidth": 360,
+        "viewportSource": "native",
+        "refusalNoticeVisible": true,
+        "targetHitPoints": 9,
+        "noticeHitPoints": 0,
+        "navigatedTitleMatches": true
+      }
+    },
+    {
+      "case_id": "EXT-F-1008-T02",
+      "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+      "status": "pass",
+      "evidence": {
+        "viewportWidth": 480,
+        "viewportSource": "emulated",
+        "refusalNoticeVisible": true,
+        "targetHitPoints": 9,
+        "noticeHitPoints": 0,
+        "navigatedTitleMatches": true
+      }
+    }
+  ],
+  "deferred": [
+    {
+      "case": "T01",
+      "part": "one audit per URL and slow-old-result race"
+    },
+    {
+      "case": "T02",
+      "part": "stale advice replacement and failure report after re-audit"
+    },
+    {
+      "case": "T03",
+      "part": "unreachable HTTP(S), other restricted schemes, and reload dimension"
+    },
+    {
+      "case": "T04,T05,T08",
+      "part": "database save, saved-row history, and diff flows"
+    },
+    {
+      "case": "T06",
+      "part": "guest/member/admin history failure and retry modes"
+    },
+    {
+      "case": "T07",
+      "part": "member/admin role gates and JSON contents; guest clipboard formats are checked separately"
+    },
+    {
+      "case": "T09",
+      "part": "detail controls beyond the bounded next batch; optional metadata-fixture phase is excluded by controlled scope"
+    },
+    {
+      "case": "T10-T13",
+      "part": "recommendations and Chat staging"
+    },
+    {
+      "case": "T14",
+      "part": "social snippet behavior beyond the two controlled public page states"
+    },
+    {
+      "case": "all",
+      "part": "member and admin modes"
+    }
+  ],
+  "last_safe_stage": "manual_reaudit_running_wait_sample",
+  "last_safe_observable": {
+    "scopeValid": true,
+    "title": "IANA-managed Reserved Domains",
+    "headings": true,
+    "auditButtonPresent": true,
+    "auditButtonDisabled": false,
+    "auditSpinner": false,
+    "identityRetryVisible": false,
+    "identityChecking": false,
+    "reAudit": true,
+    "error": false
+  },
+  "current_operation": "manual_reaudit_running_wait",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "publishState": "not_published",
+      "version": "0.2.502",
+      "treeSha256": "490c43018ba2ed898101fb37dfd76ec217c9ad9bf79973e17aa0a2cada7ae170"
+    },
+    "after": null
+  },
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "67f3c3d398909f4e1316a221800afee798d45906",
+    "runId": 38166523824,
+    "runAttempt": 1,
+    "artifactId": 11711963526,
+    "githubArtifactDigest": "sha256:63d30075b21e65599bcd25312fd618fefb4a8118c6bb5946e34bfbf221daf6d5",
+    "version": "0.2.502",
+    "treeSha256": "490c43018ba2ed898101fb37dfd76ec217c9ad9bf79973e17aa0a2cada7ae170",
+    "source": {
+      "originMain": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f",
+      "localHead": "4e4e93cc76067e9c019912a11af49ea1bfd2b79f",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "case_selection": {
+    "scope": "notice",
+    "selected_cases": ["T02"],
+    "selected_subtargets": [
+      "notice_narrow_warm_navigation_reaudit_clearance",
+      "notice_wide_warm_navigation_reaudit_clearance",
+      "manual_button_returns_to_current_page",
+      "dismissed_notice_stays_clear_after_reload"
+    ],
+    "excluded_cases": ["all other SEO targets; no full T02 or D199 closure"]
+  },
+  "resource_diagnostic_enabled": false,
+  "operation_start_sample": {
+    "at": "2026-10-11T19:23:50.890Z",
+    "user": 1714158,
+    "system": 643015
+  },
+  "boundary_sample": {
+    "at": "2026-10-11T19:23:50.852Z",
+    "user": 1713873,
+    "system": 642175
+  },
+  "reaudit_hit_diagnostics": {
+    "history_refused": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "history_recovered": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "narrow_warm_navigation": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "wide_warm_navigation": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    },
+    "before_click": {
+      "active": true,
+      "target_count": 1,
+      "target_enabled": true,
+      "database_refused_notice_count": 1,
+      "dismiss_visible": true,
+      "hit_point_count": 9,
+      "notice_hit_point_count": 0
+    }
+  },
+  "notice_viewport_plan": {
+    "native": {
+      "width": 360,
+      "height": 373
+    },
+    "wideWidth": 480,
+    "wideSource": "emulated"
+  },
+  "click_phase": "release_returned",
+  "failure_stage": "manual_reaudit_running_wait"
+}
