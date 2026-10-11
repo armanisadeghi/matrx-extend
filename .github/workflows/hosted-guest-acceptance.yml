@@ -541,7 +541,14 @@ jobs:
           name: hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}
           if-no-files-found: ignore
           path: |
-            docs/stabilization/resource-journals/hosted-*.jsonl
+            docs/stabilization/resource-journals/hosted-package-${{ github.run_id }}-${{ github.run_attempt }}.jsonl
+            docs/stabilization/resource-journals/hosted-package-${{ github.run_id }}-${{ github.run_attempt }}.pending.jsonl
+            docs/stabilization/resource-journals/hosted-browser-${{ github.run_id }}-${{ github.run_attempt }}.jsonl
+            docs/stabilization/resource-journals/hosted-browser-${{ github.run_id }}-${{ github.run_attempt }}.pending.jsonl
+            docs/stabilization/resource-journals/hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}.jsonl
+            docs/stabilization/resource-journals/hosted-guest-${{ github.run_id }}-${{ github.run_attempt }}.pending.jsonl
+            docs/stabilization/resource-journals/hosted-startup-${{ github.run_id }}-${{ github.run_attempt }}.jsonl
+            docs/stabilization/resource-journals/hosted-startup-${{ github.run_id }}-${{ github.run_attempt }}.pending.jsonl
             test-results/guest-chat-store-*.json
             test-results/scrape-guest-native-*.json
             test-results/scrape-seo-schema-empty-guest-native.json
