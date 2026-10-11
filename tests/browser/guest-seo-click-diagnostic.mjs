@@ -117,6 +117,7 @@ const NOTICE_CATEGORIES = new Set([
   'database_unreachable',
   'other_alert',
 ]);
+const VIEWPORT_SOURCES = new Set(['native', 'emulated']);
 
 function category(value, allowed) {
   return allowed.has(value) ? value : null;
@@ -124,6 +125,10 @@ function category(value, allowed) {
 
 function count(value) {
   return Number.isSafeInteger(value) && value >= 0 && value <= 100 ? value : null;
+}
+
+function dimension(value) {
+  return Number.isSafeInteger(value) && value > 0 && value <= 10000 ? value : null;
 }
 
 function flag(value) {
@@ -182,7 +187,7 @@ export function safeSeoClickEvidence(report) {
     'after_click',
     'after_dismiss',
     'narrow_warm_navigation',
-    'normal_warm_navigation',
+    'wide_warm_navigation',
     'after_reload',
   ];
   const snapshots = {};
@@ -204,6 +209,22 @@ export function safeSeoClickEvidence(report) {
   }
   return {
     ...(Object.keys(snapshots).length && { reaudit_hit_diagnostics: snapshots }),
+    ...(report.notice_viewport_plan && {
+      notice_viewport_plan: {
+        native: {
+          width: dimension(report.notice_viewport_plan.native?.width),
+          height: dimension(report.notice_viewport_plan.native?.height),
+        },
+        wide_width: dimension(report.notice_viewport_plan.wideWidth),
+        wide_source: category(report.notice_viewport_plan.wideSource, VIEWPORT_SOURCES),
+      },
+    }),
+    ...(report.notice_viewport_restored && {
+      notice_viewport_restored: {
+        width: dimension(report.notice_viewport_restored.width),
+        source: category(report.notice_viewport_restored.source, VIEWPORT_SOURCES),
+      },
+    }),
     ...(PHASES.has(report.click_phase) && { click_phase: report.click_phase }),
     ...(report.click_failure_diagnostic && {
       click_failure_diagnostic: captureSeoClickFailure(

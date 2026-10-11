@@ -69,18 +69,47 @@ test('native sibling notice hit snapshots survive the guarded progress sanitizer
   const receipt = safeSeoClickEvidence({
     reaudit_hit_diagnostics: {
       narrow_warm_navigation: sample,
-      normal_warm_navigation: sample,
+      wide_warm_navigation: sample,
       after_reload: { ...sample, database_refused_notice_count: 0 },
     },
   });
   assert.deepEqual(Object.keys(receipt.reaudit_hit_diagnostics), [
     'narrow_warm_navigation',
-    'normal_warm_navigation',
+    'wide_warm_navigation',
     'after_reload',
   ]);
   assert.equal(receipt.reaudit_hit_diagnostics.narrow_warm_navigation.hit_point_count, 9);
   assert.equal(receipt.reaudit_hit_diagnostics.after_reload.database_refused_notice_count, 0);
   assert.doesNotMatch(JSON.stringify(receipt), /private account text/);
+});
+
+test('hosted notice receipt distinguishes native panel size from emulated wider viewport', () => {
+  const receipt = safeSeoClickEvidence({
+    notice_viewport_plan: {
+      native: { width: 360, height: 373, privatePageText: 'private account text' },
+      wideWidth: 480,
+      wideSource: 'emulated',
+    },
+    notice_viewport_restored: { width: 360, source: 'native' },
+  });
+  assert.deepEqual(receipt.notice_viewport_plan, {
+    native: { width: 360, height: 373 },
+    wide_width: 480,
+    wide_source: 'emulated',
+  });
+  assert.deepEqual(receipt.notice_viewport_restored, { width: 360, source: 'native' });
+  assert.doesNotMatch(JSON.stringify(receipt), /private account text/);
+});
+
+test('hosted notice receipt refuses unknown viewport source labels', () => {
+  const receipt = safeSeoClickEvidence({
+    notice_viewport_plan: {
+      native: { width: 360, height: 373 },
+      wideWidth: 480,
+      wideSource: 'inferred',
+    },
+  });
+  assert.equal(receipt.notice_viewport_plan.wide_source, null);
 });
 
 test('SEO click failure receipt retains pointer boundary without page content', () => {

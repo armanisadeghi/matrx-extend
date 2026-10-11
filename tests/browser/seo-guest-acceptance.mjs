@@ -35,6 +35,11 @@ import {
   verifyManualRecapture,
 } from './seo-new-coverage-oracle.mjs';
 import {
+  planNoticeViewports,
+  restoreNativeNoticeViewport,
+  setNoticeViewport,
+} from './seo-notice-viewport.mjs';
+import {
   OWNED_SEO_METADATA_PAGES,
   OWNED_SEO_METADATA_PATH,
   OWNED_SEO_METADATA_TITLE,
@@ -1324,6 +1329,7 @@ try {
     ownedPages: OWNED_SEO_METADATA_PAGES,
     exercisePanel: async ({ page, panel, browserSession, panelTarget }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
+      let noticeViewportPlan = null;
       if (SEO_CASE_SCOPE === 'controlled') {
         const history = await runNativeSeoHistoryRecovery({
           panel,
@@ -1514,38 +1520,30 @@ try {
         return;
       }
       const publicPages = [];
-      let normalNoticeViewport = null;
+      let narrowNoticeViewport = null;
+      let wideNoticeViewport = null;
       if (SEO_CASE_SCOPE === 'controlled') {
-        normalNoticeViewport = await observe('notice_normal_viewport_preflight', () =>
+        const nativeNoticeViewport = await observe('notice_native_viewport_preflight', () =>
           evaluate(panel, '({ width: innerWidth, height: innerHeight })'),
         );
-        assert.ok(
-          Number.isSafeInteger(normalNoticeViewport.width) &&
-            normalNoticeViewport.width > 360 &&
-            Number.isSafeInteger(normalNoticeViewport.height) &&
-            normalNoticeViewport.height > 0,
-          'notice normal viewport must be wider than 360px with positive height',
-        );
+        noticeViewportPlan = planNoticeViewports(nativeNoticeViewport);
+        report.notice_viewport_plan = {
+          native: nativeNoticeViewport,
+          wideWidth: noticeViewportPlan.wideWidth,
+          wideSource: noticeViewportPlan.wideSource,
+        };
+        checkpoint();
         enter('notice_narrow_viewport_set');
-        await panel.send('Emulation.setDeviceMetricsOverride', {
-          width: 360,
-          height: normalNoticeViewport.height,
-          deviceScaleFactor: 0,
-          mobile: false,
-        });
-        const narrowWidth = await observe('notice_narrow_viewport_width', () =>
-          evaluate(panel, 'innerWidth'),
+        narrowNoticeViewport = await setNoticeViewport(panel, noticeViewportPlan, 'narrow', () =>
+          observe('notice_narrow_viewport_width', () => evaluate(panel, 'innerWidth')),
         );
-        assert.equal(narrowWidth, 360, 'notice narrow panel is exactly 360px');
       }
       for (const [index, url] of PAGES.entries()) {
         if (SEO_CASE_SCOPE === 'controlled' && index === 1) {
-          enter('notice_normal_viewport_restore');
-          await panel.send('Emulation.clearDeviceMetricsOverride');
-          const restoredWidth = await observe('notice_normal_viewport_width', () =>
-            evaluate(panel, 'innerWidth'),
+          enter('notice_wide_viewport_set');
+          wideNoticeViewport = await setNoticeViewport(panel, noticeViewportPlan, 'wide', () =>
+            observe('notice_wide_viewport_width', () => evaluate(panel, 'innerWidth')),
           );
-          assert.equal(restoredWidth, normalNoticeViewport.width, 'notice normal width restored');
         }
         enter(`public_page_${index}_navigation`);
         await page.goto(url, { waitUntil: 'domcontentloaded' });
@@ -1596,14 +1594,15 @@ try {
         });
         advance(`seo_page_${index}_matched`, { title: observedPage.title });
         if (SEO_CASE_SCOPE === 'controlled') {
-          const stage = index === 0 ? 'narrow_warm_navigation' : 'normal_warm_navigation';
+          const stage = index === 0 ? 'narrow_warm_navigation' : 'wide_warm_navigation';
           const hit = await observe(`notice_${stage}_hit`, () => observeSeoReauditHit(panel));
           report.reaudit_hit_diagnostics ??= {};
           report.reaudit_hit_diagnostics[stage] = hit;
           checkpoint();
           requireVisibleNoticeClearance(hit, stage);
           target('T02', `notice_${stage}_reaudit_clearance`, {
-            viewportWidth: index === 0 ? 360 : normalNoticeViewport.width,
+            viewportWidth: index === 0 ? narrowNoticeViewport.width : wideNoticeViewport.width,
+            viewportSource: index === 0 ? narrowNoticeViewport.source : wideNoticeViewport.source,
             refusalNoticeVisible: true,
             targetHitPoints: hit.hit_point_count,
             noticeHitPoints: hit.notice_hit_point_count,
@@ -1747,6 +1746,14 @@ try {
           targetHitPoints: afterReloadHit.hit_point_count,
           currentTitleMatched: reloadedAudit.title === publicPages[1].title,
         });
+        enter('notice_native_viewport_restore');
+        report.notice_viewport_restored = await restoreNativeNoticeViewport(
+          panel,
+          noticeViewportPlan,
+          () =>
+            observe('notice_restored_native_viewport_width', () => evaluate(panel, 'innerWidth')),
+        );
+        checkpoint();
         unverifiedTarget(
           'T02',
           'multiple_and_long_notice_clearance',
