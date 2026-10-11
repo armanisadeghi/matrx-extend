@@ -1,0 +1,18 @@
+{
+  "observed_at_utc": "2026-10-11T06:30:00Z",
+  "feature_id": "EXT-F-1001",
+  "controls": ["EXT-F-1001-C09", "EXT-F-1001-C10", "EXT-F-1001-C11"],
+  "cases": ["EXT-F-1001-T19", "EXT-F-1001-T20", "EXT-F-1001-T21", "EXT-F-1001-T22", "EXT-F-1001-T23", "EXT-F-1001-T24", "EXT-F-1001-T25", "EXT-F-1001-T26", "EXT-F-1001-T27"],
+  "scope": "Controlled lightweight component interaction probe of the real UserMenu with mocked auth, tab store and popover adapter; no native extension or backend session was exercised.",
+  "result": "source_component_probe_passed_native_unverified",
+  "checks": [
+    "Guest: Profile hidden; Preferences and Sign out present; Preferences selects Settings and closes; Sign out invokes callback and closes.",
+    "Member and admin: Profile, Preferences and Sign out present; Profile selects Profile; Preferences selects Settings; navigation closes the popover.",
+    "The temporary probe passed 4/4 checks and was removed. Source inspection found signOut clears local auth state and publishes signed-out state, but that flow was not run."
+  ],
+  "limits": [
+    "Mocked callbacks and popover adapter do not prove native UI, design-system popover, persisted auth or real role identity.",
+    "No inventory case or feature-role cell receives product acceptance credit."
+  ],
+  "next_action": "Run guarded native guest/member/admin T19-T27 controls and observe real tab navigation and persisted sign-out behavior."
+}

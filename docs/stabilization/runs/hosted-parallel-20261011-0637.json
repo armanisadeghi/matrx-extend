@@ -1,0 +1,37 @@
+{
+  "id": "hosted-parallel-20261011-0637",
+  "opened_at_utc": "2026-10-11T06:37:34Z",
+  "status": "running_unverified",
+  "product_artifact": {
+    "source_sha": "a98c46a7d01cbf99af88aa90e4cabc296546a46f",
+    "ci_run_id": 38118062600,
+    "ci_artifact_id": 11694303227,
+    "github_digest": "sha256:360490be9da6b954ebf27d973a6cd0573b286eeaef7ac70f2d12f079503255fd",
+    "version": "0.2.493",
+    "scope_limit": "Frozen main source at CI time; origin/main later advanced through package and gate updates. Neither run establishes current-main or Store behavior."
+  },
+  "workflow_dispatch_source_sha": "7d3d9d877eda1da5e32544f61026cdd227a7db18",
+  "lanes": [
+    {
+      "lane": "A",
+      "run_id": 38118648430,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38118648430",
+      "case_id": "EXT-F-2005-T08",
+      "scope": "member Data auto-extract and EXT-D-0197 retest",
+      "state": "dispatched_unverified",
+      "admission": "reviewed remote-only plan/dispatch passed; separate hosted package/browser/guest resource guards remain required",
+      "temporary_reviewer_secret": "MATRX_REVIEWER_MAGIC_LINK_JSON staged immediately before dispatch; cleanup required after terminal run",
+      "local_one_time_link": "removed after secret staging and dispatch"
+    },
+    {
+      "lane": "B",
+      "run_id": 38118666272,
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38118666272",
+      "case_id": "guest SEO controlled scope",
+      "scope": "guest SEO controlled behavior, not the EXT-D-0198 signed-in history-error retest",
+      "state": "dispatched_unverified",
+      "admission": "reviewed hosted A/B workflow; separate runner and resource journals required"
+    }
+  ],
+  "next_action": "Wait for both run handles. Delete and verify absence of the temporary GitHub reviewer secret when lane A is terminal. Download exact artifacts; verify digests and three finalized journals; independently review native behavior before inventory credit. Reconcile intervening main changes."
+}
