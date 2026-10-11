@@ -160,7 +160,7 @@ export function seoCaseSelection(scope = 'full') {
         'notice_narrow_warm_navigation_reaudit_clearance',
         'notice_wide_warm_navigation_reaudit_clearance',
         'manual_button_returns_to_current_page',
-        'notice_reload_reaudit_clearance',
+        'visible_notice_full_reload_clearance',
       ],
       excluded_cases: ['all other SEO targets; no full T02 or D199 closure'],
     };
