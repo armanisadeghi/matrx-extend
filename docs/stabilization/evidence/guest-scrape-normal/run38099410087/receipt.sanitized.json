@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38099410087,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38099410087",
+  "workflow_source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+  "workflow_conclusion": "success",
+  "hosted_job": "guest",
+  "runner_label": "macos-15-intel",
+  "lane": "B",
+  "case": "guest-scrape",
+  "auth_mode": "guest",
+  "width_mode": "normal",
+  "minimum_and_observed_viewport_width_px": 600,
+  "release_run_id": 38080281242,
+  "release_artifact_id": 11680078743,
+  "release_artifact_name": "matrx-extend-v0.2.479",
+  "release_artifact_digest": "sha256:c87235495c86e0634ee8a3346e8f74060d151466df6211548369186098db2e1e",
+  "release_tag_commit": "47a9b1c9c8e966bcbf4bb27a07542a795420c80e",
+  "package_version": "0.2.479",
+  "package_tree_sha256": "c1f031c444892d84422ffa4e4c6c4edbbaf49ca9b93ef64304c69c0fd3c292e8",
+  "store_zip_sha256": "f481eea8d31911fbb81b095b2a2e71aa1f0d031942269afc3dfab7be67d1be55",
+  "adapted_runtime_tree_sha256": "267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0",
+  "hosted_artifact": {
+    "id": 11687450662,
+    "name": "hosted-guest-38099410087-1",
+    "digest": "sha256:6a6ab44a2048e84f9b9da15c99ff00e23f5d954f4782370dec6f3ff27d186a4a"
+  },
+  "native_result": "partial_guest_candidate_full_scrape_suite",
+  "browser_version": "Chrome/141.0.7390.37",
+  "extension_runtime_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "profile": "isolated ephemeral hosted guest profile",
+  "login_method": "none; guest auth storage observed empty",
+  "fixture": "owned localhost Harbor Dental intake/referral fixture",
+  "backend": "not used for T08 assertions; controlled page capture",
+  "response_interception": "none recorded",
+  "mocks_or_injected_sessions": "none; actual Chrome extension UI exercised",
+  "hosted_resource_finals": {
+    "hosted-browser-38099410087-1.jsonl": {
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "events": 4
+    },
+    "hosted-guest-38099410087-1.jsonl": {
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "events": 9
+    },
+    "hosted-package-38099410087-1.jsonl": {
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "events": 4
+    }
+  },
+  "d0196_upload_verification": {
+    "fix_commit": "8e506501acd3eee52f2382d337200fdbe7699d90",
+    "prior_repro_run_id": 38098345217,
+    "prior_repro_artifact_historical_journal_count": 27,
+    "uploaded_journal_paths": [
+      "hosted-browser-38099410087-1.jsonl",
+      "hosted-guest-38099410087-1.jsonl",
+      "hosted-package-38099410087-1.jsonl"
+    ],
+    "nonmatching_historic_or_prior_attempt_journals_present": false,
+    "pending_crash_diagnostics_present": false,
+    "assessment": "exact current run/attempt finals only; no prior-run or pending journals; all three resource wrappers produced valid finals"
+  },
+  "uploaded_artifact_paths": [
+    "docs/stabilization/resource-journals/hosted-browser-38099410087-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-guest-38099410087-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-package-38099410087-1.jsonl",
+    "test-results/native-sidepanel-qa-mwEGEx/native-side-panel.png",
+    "test-results/native-sidepanel-qa-mwEGEx/normal-target-after-open.png",
+    "test-results/native-sidepanel-qa-mwEGEx/scrape-deep-article.png",
+    "test-results/native-sidepanel-qa-mwEGEx/scrape-fast-article.png",
+    "test-results/native-sidepanel-qa-mwEGEx/scrape-reload-deep-article.png",
+    "test-results/native-sidepanel-qa-mwEGEx/scrape-restricted-error.png",
+    "test-results/scrape-guest-native-99618650-6829-490b-a5bb-4f914ca055f5.json"
+  ],
+  "native_report": "native-report.sanitized.json",
+  "resource_finals": "resource-finals.sanitized.json",
+  "screenshots": "screenshots/",
+  "evidence_files": {
+    "d0196-original-artifact-journal-membership.sanitized.json": {
+      "sha256": "3aff7ba4b1a21f8c3a338833dc41186f531b787a82a893082d170d76eb775785"
+    },
+    "native-report.sanitized.json": {
+      "sha256": "024bc8b41f5f5672167c0968959a1cf66557b8554817a33ccf67ef9bacbb2398"
+    },
+    "resource-finals.sanitized.json": {
+      "sha256": "81260b4f4ab432515c7624ccfb017181be6adb6c50cfbb1e99a6b1d43f839947"
+    },
+    "resource-journals/hosted-browser-38099410087-1.jsonl": {
+      "sha256": "aa9396305695588ed0b56d44c9448e9b07efa75952c62c095d17882f98f6659f"
+    },
+    "resource-journals/hosted-guest-38099410087-1.jsonl": {
+      "sha256": "6f4937d0d045b7ec54b7f53f39a0be8f0b4efa21764e52e5874ac1b4b386e8e3"
+    },
+    "resource-journals/hosted-package-38099410087-1.jsonl": {
+      "sha256": "818eb5abec4c93d0d30c1b6f080c9fb724951fec2f20ba2096b735969f1e9e9d"
+    },
+    "resource-journals/local-preflight.jsonl": {
+      "sha256": "da15982e4bbebef325021570dd3f293e4b920cb98ed9773365075985671dbd95"
+    },
+    "screenshots/native-side-panel.png": {
+      "sha256": "bd0971bed42cd3c5fdb62360b28cb8b0ac645da8d961f2a9242c85b3aa63acff"
+    },
+    "screenshots/normal-target-after-open.png": {
+      "sha256": "fb1191c2cbd2a6e88c3d4e9a167c3c6cd55f39a2c7e75f7022ead9e929b4263d"
+    },
+    "screenshots/scrape-fast-article.png": {
+      "sha256": "42189e2cc09feadab50623fb0a2a370f0ed04091b1c3e33bb25fd9b1b3c9d9b9"
+    },
+    "screenshots/scrape-reload-deep-article.png": {
+      "sha256": "c8d46a45040e4ce1f1d77633e121bc77ee87cbcc0a3988195db6f7c8955015e6"
+    }
+  }
+}

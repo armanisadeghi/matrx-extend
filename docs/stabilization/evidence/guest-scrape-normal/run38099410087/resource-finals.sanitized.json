@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38099410087,
+  "resource_finals": {
+    "hosted-browser-38099410087-1.jsonl": {
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "events": 4
+    },
+    "hosted-guest-38099410087-1.jsonl": {
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "events": 9
+    },
+    "hosted-package-38099410087-1.jsonl": {
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "events": 4
+    },
+    "local-preflight.jsonl": {
+      "decision": "valid",
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "events": 3,
+      "run_id": "guest-scrape-journal-20261011-01-preflight"
+    }
+  },
+  "uploaded_journal_names": [
+    "hosted-browser-38099410087-1.jsonl",
+    "hosted-guest-38099410087-1.jsonl",
+    "hosted-package-38099410087-1.jsonl"
+  ],
+  "pending_journals": [],
+  "local_preflight_run_id": "guest-scrape-journal-20261011-01-preflight"
+}
