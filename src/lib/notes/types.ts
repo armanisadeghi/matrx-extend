@@ -1,8 +1,9 @@
 /**
  * Notes — types for the extension's Notes tab.
  *
- * The same `notes` and `note_folders` tables are used by the main React app at
- * matrx-frontend. They live in the `workbench` Postgres schema (NOT `public`).
+ * The same `notes` table is used by the main React app at
+ * matrx-frontend. Every note has exactly ONE home (`home_scope_id`, a scope);
+ * note folders are retired. They live in the `workbench` Postgres schema (NOT `public`).
  * We deliberately mirror only the columns the extension reads or writes; the
  * main app keeps using its full schema. RLS in Supabase scopes every row to the
  * owner via `created_by`, so we never need to filter manually.
@@ -19,8 +20,7 @@ export const NoteListItemSchema = z.object({
   id: z.string().uuid(),
   created_by: z.string().uuid().nullable(),
   label: z.string(),
-  folder_name: z.string().nullable(),
-  folder_id: z.string().uuid().nullable(),
+  home_scope_id: z.string().uuid(),
   tags: z.array(z.string()).nullable(),
   updated_at: z.string(),
   position: z.number().nullable(),
@@ -36,28 +36,29 @@ export const NoteSchema = NoteListItemSchema.extend({
 });
 export type Note = z.infer<typeof NoteSchema>;
 
-export const NoteFolderSchema = z.object({
+/** A home the person can see: `custom.context_scopes` (id, organization_id, name). */
+export const NoteHomeSchema = z.object({
   id: z.string().uuid(),
-  created_by: z.string().uuid().nullable(),
+  organization_id: z.string().uuid().nullable(),
   name: z.string(),
-  position: z.number().nullable(),
-  deleted_at: z.string().nullable(),
-  created_at: z.string(),
-  updated_at: z.string(),
 });
-export type NoteFolder = z.infer<typeof NoteFolderSchema>;
+export type NoteHome = z.infer<typeof NoteHomeSchema>;
 
+/** A home with the label to show: its name, plus the organization's name only
+ * when two visible homes share a name ("General · AI Matrx"). */
+export interface NoteHomeChoice extends NoteHome {
+  label: string;
+}
+
+/** A new note carries the active organization and NO home: the database files
+ * it in that organization's General. */
 export interface CreateNoteInput {
   label?: string;
   content?: string;
-  folder_name?: string | null;
-  folder_id?: string | null;
 }
 
 export interface UpdateNotePatch {
   label?: string;
   content?: string;
-  folder_name?: string | null;
-  folder_id?: string | null;
   tags?: string[] | null;
 }

@@ -12,22 +12,22 @@ export type NoteViewMode = 'edit' | 'preview';
 
 interface NotesUiState {
   selectedNoteId: string | null;
-  selectedFolder: string | null;
+  selectedHome: string | null;
   searchQuery: string;
   viewMode: NoteViewMode;
   setSelectedNoteId: (id: string | null) => void;
-  setSelectedFolder: (folder: string | null) => void;
+  setSelectedHome: (home: string | null) => void;
   setSearchQuery: (q: string) => void;
   setViewMode: (m: NoteViewMode) => void;
 }
 
 export const useNotesUiStore = create<NotesUiState>((set) => ({
   selectedNoteId: null,
-  selectedFolder: null,
+  selectedHome: null,
   searchQuery: '',
   viewMode: 'edit',
   setSelectedNoteId: (id) => set({ selectedNoteId: id }),
-  setSelectedFolder: (folder) => set({ selectedFolder: folder }),
+  setSelectedHome: (home) => set({ selectedHome: home }),
   setSearchQuery: (q) => set({ searchQuery: q }),
   setViewMode: (m) => set({ viewMode: m }),
 }));

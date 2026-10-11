@@ -1,7 +1,7 @@
 /**
- * Note editor — title, folder, textarea/preview, append-from-page, delete.
+ * Note editor — title, home, textarea/preview, append-from-page, delete.
  *
- * Auto-save: label / content / folder_name changes flush to Supabase ~600ms
+ * Auto-save: label / content changes flush to Supabase ~600ms
  * after the last keystroke. Appends from page-extract bypass the debounce
  * and persist immediately so the new content lands in the textarea
  * deterministically.
@@ -12,31 +12,34 @@
  */
 
 import { MarkdownView } from '@/components/MarkdownView';
-import { getNote, softDeleteNote, updateNote } from '@/lib/notes/queries';
+import {
+  getNote,
+  listMyHomes,
+  moveNoteHome,
+  softDeleteNote,
+  updateNote,
+} from '@/lib/notes/queries';
 import type { NoteListItem } from '@/lib/notes/types';
-import { formatRelativeTime, uniqueFolderNames } from '@/lib/notes/utils';
+import { formatRelativeTime } from '@/lib/notes/utils';
 import { useNotesUiStore } from '@/state/notes';
 import { ConfirmDialog } from '@ai-matrx/design-system';
 import { Button, BasicInput as Input, Skeleton } from '@ai-matrx/design-system';
 import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Eye, Pencil, Trash2 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AppendFromPagePanel } from './AppendFromPagePanel';
+import { HomePicker } from './HomePicker';
 
 const SAVE_DEBOUNCE_MS = 600;
-const FOLDERS_LIST_ID = 'matrx-notes-folder-suggestions';
 
 interface DraftState {
   label: string;
   content: string;
-  folderName: string;
 }
 
 function sameDraft(a: DraftState | null, b: DraftState | null): boolean {
-  return (
-    !!a && !!b && a.label === b.label && a.content === b.content && a.folderName === b.folderName
-  );
+  return !!a && !!b && a.label === b.label && a.content === b.content;
 }
 
 // Keep unsaved edits available when switching notes while a write fails. This
@@ -57,6 +60,35 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   });
 
   const note = detailQuery.data ?? null;
+
+  const homesQuery = useQuery({
+    queryKey: ['notes', 'homes'],
+    queryFn: listMyHomes,
+    staleTime: 60_000,
+    retry: false,
+  });
+  const homes = homesQuery.data ?? [];
+  const [movingHome, setMovingHome] = useState(false);
+  const [homeError, setHomeError] = useState<string | null>(null);
+
+  // Moving a note is set_home as the signed-in person, immediately (it is not
+  // part of the debounced autosave of label/content).
+  const onMoveHome = async (scopeId: string) => {
+    if (!note || scopeId === note.home_scope_id) return;
+    setMovingHome(true);
+    setHomeError(null);
+    try {
+      const ok = await moveNoteHome(noteId, scopeId);
+      if (!ok) {
+        setHomeError('Could not move the note to that home.');
+        return;
+      }
+      await queryClient.invalidateQueries({ queryKey: ['notes', 'detail', noteId] });
+      await queryClient.invalidateQueries({ queryKey: ['notes', 'list'] });
+    } finally {
+      setMovingHome(false);
+    }
+  };
 
   const [draft, setDraft] = useState<DraftState | null>(null);
   const [savingState, setSavingState] = useState<'idle' | 'saving' | 'saved' | 'error' | 'unsaved'>(
@@ -111,7 +143,6 @@ export function NoteEditor({ noteId }: { noteId: string }) {
       const seed: DraftState = {
         label: note.label ?? '',
         content: note.content ?? '',
-        folderName: note.folder_name ?? '',
       };
       savedRef.current = seed;
       const recovered = unsavedDrafts.get(noteId);
@@ -123,9 +154,6 @@ export function NoteEditor({ noteId }: { noteId: string }) {
       setLastSavedAt(note.updated_at);
     }
   }, [note, noteId]);
-
-  const allNotes = queryClient.getQueryData<NoteListItem[]>(['notes', 'list']) ?? [];
-  const folderSuggestions = useMemo(() => uniqueFolderNames(allNotes), [allNotes]);
 
   const persist = useCallback(
     async (snapshot: DraftState) => {
@@ -150,7 +178,6 @@ export function NoteEditor({ noteId }: { noteId: string }) {
             updated = await updateNote(noteId, {
               label: writing.label.trim() || 'Untitled',
               content: writing.content,
-              folder_name: writing.folderName.trim() ? writing.folderName.trim() : null,
             });
           } catch (error) {
             console.warn('[notes] autosave failed', error);
@@ -435,18 +462,22 @@ export function NoteEditor({ noteId }: { noteId: string }) {
           className="h-8 border-0 bg-transparent px-0 text-base font-semibold focus-visible:ring-0 focus-visible:ring-offset-0"
         />
         <div className="flex items-center gap-2">
-          <Input
-            value={draft.folderName}
-            onChange={(e) => updateDraft({ folderName: e.target.value })}
-            placeholder="Folder"
-            list={FOLDERS_LIST_ID}
-            className="h-7 max-w-[200px] text-xs"
-          />
-          <datalist id={FOLDERS_LIST_ID}>
-            {folderSuggestions.map((f) => (
-              <option key={f} value={f} />
-            ))}
-          </datalist>
+          <div className="w-[200px] shrink-0">
+            <HomePicker
+              homes={homes}
+              value={note?.home_scope_id ?? null}
+              placeholder="Home"
+              disabled={!note || movingHome}
+              onChange={(id) => {
+                if (id) void onMoveHome(id);
+              }}
+            />
+          </div>
+          {homeError && (
+            <span role="alert" className="text-[10px] text-destructive">
+              {homeError}
+            </span>
+          )}
           <SaveStatus
             state={savingState}
             lastSavedAt={lastSavedAt}

@@ -4,7 +4,11 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const api = vi.hoisted(() => ({ create: vi.fn() }));
-vi.mock('@/lib/notes/queries', () => ({ createNote: api.create }));
+vi.mock('@/lib/notes/queries', () => ({
+  createNote: api.create,
+  listMyHomes: async () => [],
+  moveNoteHome: async () => true,
+}));
 
 import { NotesList } from './NotesList';
 
@@ -15,7 +19,7 @@ const createdNote = {
 
 beforeEach(() => {
   api.create.mockReset();
-  useNotesUiStore.setState({ selectedNoteId: null, selectedFolder: null, searchQuery: '' });
+  useNotesUiStore.setState({ selectedNoteId: null, selectedHome: null, searchQuery: '' });
 });
 
 afterEach(cleanup);

@@ -26,7 +26,7 @@
  *
  * The moved tables adopted a common base-entity template. Two consequences:
  *
- * 1. `extend.*` and `workbench.notes` / `workbench.note_folders` have NO
+ * 1. `extend.*` and `workbench.notes` have NO
  *    `user_id` column anymore — ownership is `created_by`. Filter on that.
  *    (`scheduler.sch_task` / `sch_run` / `sch_trigger`, `admin.admins`,
  *    and `users.user_form_profile` DID keep `user_id` —
@@ -74,7 +74,9 @@ export const TABLE_SCHEMA = {
   sch_agent_task: 'scheduler',
   // workbench — notes
   notes: 'workbench',
-  note_folders: 'workbench',
+  // custom.context_scopes — the homes (scopes) the person can see: id,
+  // organization_id, name. READ-ONLY; a note moves with platform.set_home.
+  context_scopes: 'custom',
   // chat — conversation history hydration
   conversation: 'chat',
   message: 'chat',
@@ -185,6 +187,9 @@ export const adminDb = () => getSupabase().schema('admin');
 export const toolDb = () => getSupabase().schema('tool');
 
 /** `platform` — scoped feature-knob resolution and other platform primitives. */
+/** `custom` — user-facing views (context_scopes = the homes the person can see). */
+export const customDb = () => getSupabase().schema('custom');
+
 export const platformDb = () => getSupabase().schema('platform');
 
 /** `social` — Social Intelligence (swipe_collection). READ-ONLY from this client. */

@@ -9,16 +9,17 @@ import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import {
   type CreateNoteInput,
   type Note,
-  type NoteFolder,
-  NoteFolderSchema,
+  type NoteHome,
+  type NoteHomeChoice,
+  NoteHomeSchema,
   type NoteListItem,
   NoteListItemSchema,
   NoteSchema,
   type UpdateNotePatch,
 } from '@/lib/notes/types';
-import { workbenchDb } from '@/lib/supabase/schemas';
+import { customDb, iamDb, platformDb, workbenchDb } from '@/lib/supabase/schemas';
 
-const LIST_COLUMNS = 'id, created_by, label, folder_name, folder_id, tags, updated_at, position';
+const LIST_COLUMNS = 'id, created_by, label, home_scope_id, tags, updated_at, position';
 const FULL_COLUMNS = `${LIST_COLUMNS}, content, metadata, deleted_at, version, created_at`;
 
 // ─── Reads ──────────────────────────────────────────────────────────────────
@@ -45,22 +46,65 @@ export async function listMyNotes(): Promise<NoteListItem[]> {
   return out;
 }
 
-export async function listMyFolders(): Promise<NoteFolder[]> {
-  const { data, error } = await workbenchDb()
-    .from('note_folders')
-    .select('*')
-    .is('deleted_at', null)
-    .order('position', { ascending: true });
+/**
+ * Every home the person can see (each organization's General + scopes), with
+ * a display label: the home's name, plus " · <organization>" only when two
+ * visible homes share a name.
+ */
+export async function listMyHomes(): Promise<NoteHomeChoice[]> {
+  const { data, error } = await customDb()
+    .from('context_scopes')
+    .select('id, organization_id, name')
+    .order('name', { ascending: true });
   if (error) {
-    console.warn('[notes] listMyFolders error', error.message);
-    return [];
+    console.warn('[notes] listMyHomes error', error.message);
+    throw new Error(`Could not load homes: ${error.message}`);
   }
-  const out: NoteFolder[] = [];
+  const homes: NoteHome[] = [];
   for (const row of data ?? []) {
-    const parsed = NoteFolderSchema.safeParse(row);
-    if (parsed.success) out.push(parsed.data);
+    const parsed = NoteHomeSchema.safeParse(row);
+    if (parsed.success) homes.push(parsed.data);
   }
-  return out;
+  const taken = new Map<string, number>();
+  for (const h of homes)
+    taken.set(h.name.toLowerCase(), (taken.get(h.name.toLowerCase()) ?? 0) + 1);
+  const needsOrg = homes.some((h) => (taken.get(h.name.toLowerCase()) ?? 0) > 1);
+  const orgNames = new Map<string, string>();
+  if (needsOrg) {
+    const ids = Array.from(
+      new Set(homes.map((h) => h.organization_id).filter((v): v is string => !!v)),
+    );
+    const { data: orgs, error: orgError } = await iamDb()
+      .from('organizations')
+      .select('id, name')
+      .in('id', ids);
+    if (orgError) console.warn('[notes] listMyHomes organization names error', orgError.message);
+    for (const o of (orgs ?? []) as { id: string; name: string | null }[]) {
+      if (o.name) orgNames.set(o.id, o.name);
+    }
+  }
+  return homes.map((h) => {
+    const shared = (taken.get(h.name.toLowerCase()) ?? 0) > 1;
+    const org = h.organization_id ? orgNames.get(h.organization_id) : undefined;
+    return { ...h, label: shared && org ? `${h.name} \u00b7 ${org}` : h.name };
+  });
+}
+
+/**
+ * Move a note to another home as the signed-in person. Never writes
+ * `organization_id` or `home_scope_id` directly: the database refuses it.
+ */
+export async function moveNoteHome(noteId: string, scopeId: string): Promise<boolean> {
+  const { error } = await platformDb().rpc('set_home', {
+    p_entity_type: 'note',
+    p_entity_id: noteId,
+    p_scope_id: scopeId,
+  });
+  if (error) {
+    console.warn('[notes] moveNoteHome error', error.message);
+    return false;
+  }
+  return true;
 }
 
 export async function getNote(id: string): Promise<Note | null> {
@@ -96,8 +140,6 @@ export async function createNote(input: CreateNoteInput): Promise<Note | null> {
     organization_id: organizationId,
     label: input.label?.trim() || 'Untitled',
     content: input.content ?? '',
-    folder_name: input.folder_name ?? null,
-    folder_id: input.folder_id ?? null,
   };
   const { data, error } = await workbenchDb()
     .from('notes')

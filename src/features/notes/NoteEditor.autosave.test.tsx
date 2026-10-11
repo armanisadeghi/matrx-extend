@@ -5,6 +5,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 const api = vi.hoisted(() => ({ get: vi.fn(), list: vi.fn(), update: vi.fn(), delete: vi.fn() }));
 vi.mock('@/lib/notes/queries', () => ({
+  listMyHomes: async () => [],
+  moveNoteHome: async () => true,
   getNote: api.get,
   listMyNotes: api.list,
   updateNote: api.update,
@@ -45,8 +47,7 @@ const initial = new Map<string, Note>([
       id: A,
       created_by: A,
       label: 'Harbor Dental intake',
-      folder_name: 'Patients',
-      folder_id: null,
+      home_scope_id: '11111111-1111-4111-8111-111111111111',
       tags: [],
       updated_at: stamp,
       position: 1,
@@ -63,8 +64,7 @@ const initial = new Map<string, Note>([
       id: B,
       created_by: A,
       label: 'Harbor Dental supplies',
-      folder_name: 'Operations',
-      folder_id: null,
+      home_scope_id: '11111111-1111-4111-8111-111111111111',
       tags: [],
       updated_at: stamp,
       position: 2,

@@ -1,19 +1,19 @@
 /**
- * Notes list — search + cascading folder→note picker + scrollable list.
+ * Notes list — search + cascading home→note picker + scrollable list.
  *
  * The cascade matches the user's mental model from the main app: pick a
- * "category" (folder_name), then a specific note. Selecting a note in
+ * "home", then a specific note. Selecting a note in
  * either dropdown OR the row list sets `selectedNoteId` and the parent
  * view swaps to the editor.
  */
 
-import { createNote } from '@/lib/notes/queries';
+import { createNote, listMyHomes } from '@/lib/notes/queries';
 import type { NoteListItem } from '@/lib/notes/types';
 import {
   filterNotes,
   formatRelativeTime,
   generateUniqueLabel,
-  uniqueFolderNames,
+  homeLabelFor,
 } from '@/lib/notes/utils';
 import { useNotesUiStore } from '@/state/notes';
 import {
@@ -25,45 +25,39 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@ai-matrx/design-system';
-import { useQueryClient } from '@tanstack/react-query';
-import { FolderClosed, NotebookPen, Plus, Search } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Home, NotebookPen, Plus, Search } from 'lucide-react';
 import { useDeferredValue, useMemo, useState } from 'react';
-
-const ALL_FOLDERS = '__all__';
-const NO_FOLDER = '__none__';
+import { HomePicker } from './HomePicker';
 
 export function NotesList({ notes }: { notes: NoteListItem[] }) {
   const queryClient = useQueryClient();
   const setSelectedNoteId = useNotesUiStore((s) => s.setSelectedNoteId);
   const searchQuery = useNotesUiStore((s) => s.searchQuery);
   const setSearchQuery = useNotesUiStore((s) => s.setSearchQuery);
-  const selectedFolder = useNotesUiStore((s) => s.selectedFolder);
-  const setSelectedFolder = useNotesUiStore((s) => s.setSelectedFolder);
+  const selectedHome = useNotesUiStore((s) => s.selectedHome);
+  const setSelectedHome = useNotesUiStore((s) => s.setSelectedHome);
+  const homesQuery = useQuery({
+    queryKey: ['notes', 'homes'],
+    queryFn: listMyHomes,
+    staleTime: 60_000,
+    retry: false,
+  });
+  const homes = homesQuery.data ?? [];
   const [creating, setCreating] = useState(false);
   const [createFailed, setCreateFailed] = useState(false);
 
   const deferredSearch = useDeferredValue(searchQuery);
 
-  const folders = useMemo(() => uniqueFolderNames(notes), [notes]);
-
-  const folderFilteredNotes = useMemo(() => {
-    if (selectedFolder === null) return notes;
-    return notes.filter((n) => (n.folder_name ?? null) === selectedFolder);
-  }, [notes, selectedFolder]);
+  const homeFilteredNotes = useMemo(() => {
+    if (selectedHome === null) return notes;
+    return notes.filter((n) => n.home_scope_id === selectedHome);
+  }, [notes, selectedHome]);
 
   const visibleNotes = useMemo(
-    () => filterNotes(folderFilteredNotes, { search: deferredSearch }),
-    [folderFilteredNotes, deferredSearch],
+    () => filterNotes(homeFilteredNotes, { search: deferredSearch }),
+    [homeFilteredNotes, deferredSearch],
   );
-
-  const onFolderChange = (v: string) => {
-    if (v === ALL_FOLDERS) setSelectedFolder(null);
-    else if (v === NO_FOLDER) setSelectedFolder('');
-    else setSelectedFolder(v);
-  };
-
-  const folderValue =
-    selectedFolder === null ? ALL_FOLDERS : selectedFolder === '' ? NO_FOLDER : selectedFolder;
 
   const onPickNote = (id: string) => setSelectedNoteId(id);
 
@@ -73,8 +67,7 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
     setCreateFailed(false);
     try {
       const label = generateUniqueLabel(notes, 'Untitled');
-      const folderForCreate = selectedFolder && selectedFolder !== '' ? selectedFolder : null;
-      const note = await createNote({ label, folder_name: folderForCreate });
+      const note = await createNote({ label });
       if (note) {
         setSelectedNoteId(note.id);
         void queryClient.invalidateQueries({ queryKey: ['notes', 'list'] });
@@ -150,38 +143,31 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
           />
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <Select value={folderValue} onValueChange={onFolderChange}>
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue placeholder="All folders" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={ALL_FOLDERS}>All folders</SelectItem>
-              <SelectItem value={NO_FOLDER}>(no folder)</SelectItem>
-              {folders.map((f) => (
-                <SelectItem key={f} value={f}>
-                  {f}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <HomePicker
+            homes={homes}
+            value={selectedHome}
+            placeholder="All homes"
+            clearLabel="All homes"
+            onChange={setSelectedHome}
+          />
           <Select
             value={''}
             onValueChange={(id) => {
               if (id) onPickNote(id);
             }}
           >
-            <SelectTrigger className="h-8 text-xs" disabled={folderFilteredNotes.length === 0}>
+            <SelectTrigger className="h-8 text-xs" disabled={homeFilteredNotes.length === 0}>
               <SelectValue
-                placeholder={`${folderFilteredNotes.length} note${folderFilteredNotes.length === 1 ? '' : 's'}`}
+                placeholder={`${homeFilteredNotes.length} note${homeFilteredNotes.length === 1 ? '' : 's'}`}
               />
             </SelectTrigger>
             <SelectContent>
-              {folderFilteredNotes.length === 0 ? (
+              {homeFilteredNotes.length === 0 ? (
                 <SelectItem value="__empty__" disabled>
                   No notes
                 </SelectItem>
               ) : (
-                folderFilteredNotes.map((n) => (
+                homeFilteredNotes.map((n) => (
                   <SelectItem key={n.id} value={n.id}>
                     {n.label}
                   </SelectItem>
@@ -211,10 +197,10 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
                   <div className="min-w-0 flex-1">
                     <div className="truncate text-sm font-medium">{n.label || 'Untitled'}</div>
                     <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] font-mono text-muted-foreground">
-                      {n.folder_name && (
+                      {homeLabelFor(homes, n.home_scope_id) && (
                         <span className="inline-flex items-center gap-1 rounded bg-secondary/40 px-1.5 py-0.5">
-                          <FolderClosed className="size-2.5" />
-                          {n.folder_name}
+                          <Home className="size-2.5" />
+                          {homeLabelFor(homes, n.home_scope_id)}
                         </span>
                       )}
                       <span>updated {formatRelativeTime(n.updated_at)}</span>

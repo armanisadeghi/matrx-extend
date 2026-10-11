@@ -19,38 +19,33 @@ import { formatRelativeTime as kitFormatRelativeTime } from '@ai-matrx/kit/forma
 
 export interface NoteFilter {
   search?: string;
-  folder_name?: string | null;
+  home_scope_id?: string | null;
 }
 
 export function filterNotes<T extends NoteListItem>(notes: T[], filter: NoteFilter): T[] {
   const q = (filter.search ?? '').trim().toLowerCase();
-  const folder = filter.folder_name ?? null;
+  const home = filter.home_scope_id ?? null;
   return notes.filter((n) => {
-    if (folder !== null && (n.folder_name ?? null) !== folder) return false;
+    if (home !== null && n.home_scope_id !== home) return false;
     if (!q) return true;
     return n.label.toLowerCase().includes(q);
   });
 }
 
-export function uniqueFolderNames<T extends Pick<NoteListItem, 'folder_name'>>(
-  notes: T[],
-): string[] {
-  const set = new Set<string>();
-  for (const n of notes) {
-    if (n.folder_name && n.folder_name.trim().length > 0) set.add(n.folder_name);
-  }
-  return Array.from(set).sort((a, b) => a.localeCompare(b));
+/** Display label for a note's home, or null while homes are still loading. */
+export function homeLabelFor(
+  homes: ReadonlyArray<{ id: string; label: string }>,
+  homeScopeId: string | null | undefined,
+): string | null {
+  if (!homeScopeId) return null;
+  return homes.find((h) => h.id === homeScopeId)?.label ?? null;
 }
 
-export function groupNotesByFolder<T extends NoteListItem>(notes: T[]): Map<string, T[]> {
-  const groups = new Map<string, T[]>();
-  for (const n of notes) {
-    const key = n.folder_name ?? '(uncategorized)';
-    const arr = groups.get(key);
-    if (arr) arr.push(n);
-    else groups.set(key, [n]);
-  }
-  return groups;
+/** Homes whose label contains `query` (case-insensitive); empty query = all. */
+export function searchHomes<T extends { label: string }>(homes: T[], query: string): T[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return homes;
+  return homes.filter((h) => h.label.toLowerCase().includes(q));
 }
 
 /**
