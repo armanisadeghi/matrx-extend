@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_hosted_seo_notice_only_run_review",
+  "reviewer": "seo_notice_latest_peer",
+  "reviewed_at_utc": "2026-10-11T19:55:00Z",
+  "defect_id": "EXT-D-0199",
+  "feature_id": "EXT-F-1008",
+  "hosted_run": {
+    "id": 38169337463,
+    "run_attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38169337463",
+    "status": "completed",
+    "conclusion": "failure",
+    "workflow_source_sha": "98123b8e6dedc7cfa2b1888b451199e61fa401d5",
+    "inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-seo",
+      "seo_case_scope": "notice",
+      "seo_metadata_fixture": "none",
+      "seo_resource_diagnostic": "false",
+      "seo_interrupt_after_target": "none"
+    }
+  },
+  "product_provenance": {
+    "status": "verified_exact_main_development_artifact",
+    "ci_run_id": 38168717226,
+    "ci_run_conclusion": "success",
+    "ci_head_sha": "1880fcb06b314704aaa10e0b285ae43275bcfa38",
+    "artifact_id": 11713341619,
+    "artifact_digest": "sha256:a82f264065ece1be7cbbb85ee0532c8ba9226fa7ff66bb956970e5c6b431a2c2",
+    "product_source_sha": "1880fcb06b314704aaa10e0b285ae43275bcfa38",
+    "version": "0.2.502",
+    "tree_sha256": "dde4175c5d0dcc25f12e0195a728139e51e39de68381c0cae3fa3ae5a1423bfa",
+    "publish_state": "not_published"
+  },
+  "result_artifact": {
+    "artifact_id": 11713546261,
+    "artifact_name": "hosted-guest-38169337463-1",
+    "github_digest": "sha256:6e37f1e555cd54815e3dee836d2870de8e87de9d9f8cb49cdb658c9cd010ffd8",
+    "downloaded_archive_digest": "6e37f1e555cd54815e3dee836d2870de8e87de9d9f8cb49cdb658c9cd010ffd8",
+    "digest_match": true,
+    "contents": [
+      "docs/stabilization/resource-journals/hosted-package-38169337463-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38169337463-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38169337463-1.jsonl",
+      "test-results/seo-guest-acceptance.json",
+      "test-results/native-sidepanel-qa-YVYLGQ/native-side-panel.png",
+      "test-results/native-sidepanel-qa-YVYLGQ/normal-target-after-open.png"
+    ]
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "decision": "invalid"
+    }
+  },
+  "product_behavior": {
+    "verdict": "RESOURCE_INVALID_RUN_NO_ACCEPTANCE_CREDIT",
+    "diagnostic_finding": "The trusted click was delivered and the native transition trace observed reAudit=false with a disabled button and spinner, then settled to the current page with reAudit=true, enabled button, and no error. This run did not reproduce a product failure; it supplies a useful bounded diagnostic only.",
+    "observed_click_transition": [
+      {
+        "stage": "before_click",
+        "elapsed_ms": 1,
+        "click_trusted": null,
+        "button_disabled": false,
+        "spinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "click_event",
+        "elapsed_ms": 259,
+        "click_trusted": true,
+        "button_disabled": false,
+        "spinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "dom_transition",
+        "elapsed_ms": 266,
+        "click_trusted": null,
+        "button_disabled": true,
+        "spinner": true,
+        "reAudit": false,
+        "error": false
+      },
+      {
+        "stage": "dom_transition",
+        "elapsed_ms": 326,
+        "click_trusted": null,
+        "button_disabled": false,
+        "spinner": false,
+        "reAudit": true,
+        "error": false
+      },
+      {
+        "stage": "finished",
+        "elapsed_ms": 345,
+        "click_trusted": null,
+        "button_disabled": false,
+        "spinner": false,
+        "reAudit": true,
+        "error": false
+      }
+    ],
+    "target_results_recorded": [
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "notice_narrow_warm_navigation_reaudit_clearance",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "notice_wide_warm_navigation_reaudit_clearance",
+        "status": "pass"
+      },
+      {
+        "case_id": "EXT-F-1008-T02",
+        "subtarget": "manual_button_returns_to_current_page",
+        "status": "pass"
+      }
+    ],
+    "acceptance_credit": [],
+    "not_reached": [
+      "Dismiss and post-Dismiss reload",
+      "Multiple/long notice fixture",
+      "Native normal-width notice geometry",
+      "Member/admin modes",
+      "Store behavior",
+      "Full EXT-F-1008-T02 or EXT-D-0199 retest-pass/closure"
+    ],
+    "failure_boundary": {
+      "stage": "manual_reaudit_notice_dismiss",
+      "prior_operation": "manual_reaudit_settled",
+      "classification": "resource watchdog invalidated the hosted run at the next safe boundary; not a product defect or a Re-audit timeout",
+      "evidence": "Guest journal records CPU high-load busy, RESOURCE_WATCH_UNSAFE, stop-at-safe-boundary, watchdog SIGTERM, then resourceInvalid=true/exitCode=3/decision=invalid. The diagnostic shows trusted Re-audit settled before this boundary; Dismiss/reload did not execute."
+    }
+  },
+  "evidence": {
+    "source_artifact": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38169337463/artifacts/11713546261",
+    "verified_archive_sha256": "6e37f1e555cd54815e3dee836d2870de8e87de9d9f8cb49cdb658c9cd010ffd8",
+    "artifact_contents_reviewed": [
+      "test-results/seo-guest-acceptance.json",
+      "docs/stabilization/resource-journals/hosted-package-38169337463-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38169337463-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38169337463-1.jsonl"
+    ],
+    "github_log": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38169337463"
+  },
+  "next_action": "Keep EXT-D-0199 fixed/open. Preserve this diagnostic as bounded evidence only; no acceptance credit because the guest resource final invalidated the run. A future admitted run is needed for Dismiss/reload and remaining notice siblings. Do not treat this resource watchdog termination as a product failure."
+}
