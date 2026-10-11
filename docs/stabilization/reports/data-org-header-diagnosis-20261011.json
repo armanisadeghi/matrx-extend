@@ -42,11 +42,7 @@
     "actor_attribution": "Person sends no actor declaration; agent and machinery actor headers preserved."
   },
   "census": {
-    "covered_clients": [
-      "getSupabase",
-      "getAgentAuthoredSupabase",
-      "getMachineryAuthoredSupabase"
-    ],
+    "covered_clients": ["getSupabase", "getAgentAuthoredSupabase", "getMachineryAuthoredSupabase"],
     "affected_consumers": "All schema accessors, ordinary direct REST/RPC writes, and shared package consumers of these clients inherit the repair. No per-Data handler patch.",
     "excluded_client": "verify-claims.ts dedicated verification client only verifies claims/JWKS and refuses auth/user; it is not an authenticated organization data client.",
     "bootstrap_helper_callers": "Source census finds only active-org.ts calling the three bootstrap read helpers."
@@ -63,9 +59,10 @@
     "compile": "PASS",
     "schema_routing_strict": "PASS",
     "full_lint": "PASS exit0; existing warnings remain, new fetch/test files clean.",
-    "full_regression": "Final full suite rerunning after adapting two legacy resolver test doubles; intermediate final pass found exactly26 failures in those two files. Those files now45/45 pass. Earlier suite337 files2381 tests passed before helper redesign.",
+    "full_regression": "PASS final source: pnpm test --reporter=verbose,337 files2382 tests passed;2 files5 tests skipped are existing live-only gates. Exit0,162.60s.",
     "docs_lint": "Common-docs okf_lint exit1:81 existing violations182 warnings outside changed STATE path; no STATE finding. Whitespace checks pass.",
-    "independent_source_peer": "PASS A/B after fresh source review and scoped re-review of private helper narrowing, canonical STATE and two legacy doubles. Peer independently ran6 files75 tests; no Critical/Important findings. Report: supabase-org-header-source-peer-20261011.json."
+    "independent_source_peer": "PASS A/B after fresh source review and scoped re-review of private helper narrowing, canonical STATE and two legacy doubles. Peer independently ran6 files75 tests; no Critical/Important findings. Report: supabase-org-header-source-peer-20261011.json.",
+    "teardown_discriminator": "An intermediate whole-suite run ended without a normal verdict. The same happy-dom AbortError teardown stack exists in the earlier successful whole suite. A narrow74-test auth/Scrape/boundary/row-rendering check passed without it. Verbose attribution tied the baseline stack to document-network-saved-ui teardown; final full suite completed exit0 despite that baseline stderr. No org-boundary assertion failed after double adaptation."
   },
   "limits": [
     "No native hosted run launched.",
