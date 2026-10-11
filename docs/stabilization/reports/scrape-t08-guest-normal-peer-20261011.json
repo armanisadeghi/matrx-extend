@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "review": "independent_native_peer",
+  "run_id": 38113131426,
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "verdict_a_behavior_evidence": {
+    "status": "PASS",
+    "finding": "The bounded native run supports the guest no-signal SEO and empty Schema behavior on the owned title-only localhost fixture at an observed 600px CDP-emulated side-panel viewport. SEO reported the expected title and em dash description with only Title & description and Performance groups; Schema JSON was valid with matching title and zero description/canonical/social/schema/JSON-LD signals. The full-capture guest export identity and SHA-256 digest were unchanged after each pane.",
+    "basis": [
+      "The downloaded hosted native report and native-report.sanitized.json have equivalent parsed JSON content. Their only byte-level difference is Biome formatting of the SEO groups array; the retained sanitized report SHA-256 is 7c0ab67a6857f7a6e067a5fe4939f4b97f589d4a01c8ba866b5c244df831dcfc. Both agree with the sanitized receipt.",
+      "GitHub identifies hosted run 38113131426 as completed successfully on main at workflow SHA 46c31547517484946d16472ecaeab534354f60e1; hosted artifact 11692124403 has digest sha256:1e3cc5b46177d8164c5865f1f504afa5c0f7e54955b35894b88c83fba38c45b5 and belongs to that run.",
+      "The product artifact metadata agrees with CI run 38112620925, source SHA 83cd72b6c9a0b6cce5887c1f561668539e6d8259, artifact 11691669564, version 0.2.492, artifact digest sha256:09dad80186549b94f08f48090834997cf709801a3628f35f6cc4a28b925aef38, and recorded tree SHA.",
+      "The source driver verifies the owned fixture has an empty body and no language, SEO/social/canonical/JSON-LD metadata, headings, links, or images; it requires the SEO and Schema panes to be visible and selected, parses the rendered Schema JSON, and validates three full-capture exports by identity and payload digest.",
+      "The native diagnostic records viewport width 600 with minimum 600 and confirms an unoccluded trusted click on the capture control before the result panes are read."
+    ],
+    "resource_validity": "PASS: package, browser, and guest resource journals each end admitted=true, resourceInvalid=false, exitCode=0, decision=valid.",
+    "limits": [
+      "The 600px width is a CDP-emulated viewport observed through innerWidth; this does not prove a physically resized side panel or device width.",
+      "One owned localhost guest fixture and only the no-signal SEO / empty Schema subtarget are covered.",
+      "Does not establish broader T08 coverage, member/admin behavior, reload behavior for this subtarget, alternate widths, Store behavior, current-main acceptance, or release acceptance."
+    ]
+  },
+  "verdict_b_harness_quality_false_pass_risk": {
+    "status": "PARTIAL",
+    "finding": "The executable native assertions and provenance are strong and internally consistent. A fresh visual check of the target panes is not possible from the uploaded screenshots: native-side-panel.png shows the guest start panel, while normal-target-after-open.png shows an unrelated research-brief page and open-panel control.",
+    "false_pass_risk": "Low for the asserted DOM values and export invariance: the driver requires a trusted capture click, waits for the active Scrape/result panes, checks exact SEO values and groups, parses Schema JSON, and compares full exported payload fingerprints. Residual risk is that the pane content and its visual presentation were not captured for independent inspection; viewport evidence is emulated and does not demonstrate physical side-panel sizing.",
+    "actionable_finding": "For a stronger visual peer record, upload screenshots captured while the SEO and Schema result panes are selected and include a contemporaneous viewport readout. No harness or product defect was found in this bounded run."
+  },
+  "resource_journals": [
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-package-38113131426-1.jsonl",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-browser-38113131426-1.jsonl",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-guest-38113131426-1.jsonl"
+  ],
+  "files_inspected": [
+    "docs/stabilization/runs/38113131426.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-finals.sanitized.json",
+    "tests/browser/scrape-seo-schema-empty-guest.mjs",
+    "tests/browser/scrape-seo-schema-empty-observation.mjs",
+    "tests/browser/scrape-seo-schema-empty-oracle.mjs",
+    "tests/browser/scrape-native-selection.mjs",
+    "tests/browser/scrape-tab-coverage.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "downloaded hosted workflow artifact report and screenshots"
+  ],
+  "open_questions": [],
+  "files_touched": [
+    "docs/stabilization/reports/scrape-t08-guest-normal-peer-20261011.json"
+  ]
+}

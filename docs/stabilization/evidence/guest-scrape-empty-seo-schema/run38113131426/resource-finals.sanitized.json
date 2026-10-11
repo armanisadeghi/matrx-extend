@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "run_id": 38113131426,
+  "resource_valid": true,
+  "finals": {
+    "package": {
+      "run_id": "hosted-package-38113131426-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "run_id": "hosted-browser-38113131426-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest_acceptance": {
+      "run_id": "hosted-guest-38113131426-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  }
+}
