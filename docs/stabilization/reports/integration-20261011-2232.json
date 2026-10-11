@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "date": "2026-10-11",
+  "sourceUnderTest": "0013350a1e04863beced81ab176f243c4d7f0636",
+  "remoteMergedThrough": "2bb34da95",
+  "scope": "Shared-main integration of reviewed Notes T02 route, Data C19 assertion, SEO D0199 evidence, Settings member resource-invalid evidence, and focused-suite guard repair",
+  "verification": {
+    "install": "integrate-20261011-install-02.jsonl: valid, exit 0",
+    "focusedAcceptance": "integrate-20261011-focused-02.jsonl: valid, 445 passed, 0 failed",
+    "compile": "integrate-20261011-compile-01.jsonl: valid, exit 0",
+    "lint": "integrate-20261011-lint-02.jsonl: valid, exit 0, 854 non-blocking warnings"
+  },
+  "resolvedGateFailures": [
+    "integrate-20261011-focused-01.jsonl: three stale reviewed-workflow hash failures; independently reviewed workflow digest repair 58060eadd",
+    "integrate-20261011-lint-01.jsonl: one formatter error in Data C19 assertion; corrected by 0013350a1"
+  ],
+  "productVerdicts": {
+    "seoForcedReloadD0199": "bounded guest pass from independently reviewed hosted run 38177486036; defect remains open pending broader retest",
+    "settingsMemberAccountPopover": "unverified; run 38177543308 resource-invalid",
+    "notesMemberT02": "unverified; hosted route is source-reviewed, no native run yet",
+    "dataGuestC19": "unverified; native assertion source-reviewed, no current-artifact hosted run yet"
+  },
+  "next": "Fetch and reconcile origin/main immediately before push; require exact-main green CI development artifact before new hosted product lanes; keep pending Store 0.2.479 untouched."
+}
