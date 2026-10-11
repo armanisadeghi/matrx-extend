@@ -42,6 +42,7 @@ async function run(
   driver = callback,
   freshReloadRefusal = true,
   reloadOccluded = 'none',
+  reloadDismissVisible = true,
 ) {
   let viewportWidth = 360;
   let index = 0;
@@ -52,6 +53,7 @@ async function run(
   const hit = () => ({
     ...captured,
     database_refused_notice_count: dismissed ? 0 : 1,
+    dismiss_visible: reloaded ? !dismissed && reloadDismissVisible : !dismissed,
     hit_point_count: (occluded && index === 0) || (reloaded && reloadOccluded === 'target') ? 0 : 9,
     notice_hit_point_count:
       (occluded && index === 0) || (reloaded && reloadOccluded === 'notice') ? 9 : 0,
@@ -202,6 +204,10 @@ test('reload independently rejects a lost Re-audit target', async () => {
 
 test('reload independently rejects a fresh notice covering Re-audit', async () => {
   await assert.rejects(run(false, callback, true, 'notice'), /notice owns no Re-audit point/);
+});
+
+test('reload requires Dismiss on the fresh refusal notice', async () => {
+  await assert.rejects(run(false, callback, true, 'none', false), /notice Dismiss is visible/);
 });
 
 test('notice guard rejects an empty driver instead of accepting skipped work', async () => {
