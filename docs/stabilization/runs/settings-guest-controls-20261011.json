@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-guest-controls-20261011",
+  "status": "running",
+  "scope": {
+    "workflow": "hosted-guest-acceptance.yml",
+    "acceptance_case": "settings-controls",
+    "acceptance_lane": "B",
+    "auth_mode": "guest",
+    "shared_credentials": false,
+    "fixture_mutation": false,
+    "frozen_product_source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+    "development_run_id": 38118947880,
+    "development_artifact_id": 11693783976
+  },
+  "dispatch": {
+    "ref": "main",
+    "workflow_source_sha": "e18564655b882fb333ca0fa4350b68ed44fc0e30",
+    "run_id": 38124123515,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38124123515",
+    "started_at": "2026-10-11T08:14:46Z",
+    "superseded_dispatches": [
+      {
+        "run_id": 38124099741,
+        "lane": "B",
+        "status": "cancelled",
+        "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38124099741",
+        "workflow_source_sha": "9b8511eecac2853eb1d091f2e3681d42ce2f99b0",
+        "job_steps_started": false,
+        "acceptance_credit": false,
+        "reason": "Accidental lane selection; cancellation reached terminal state before any workflow step began."
+      }
+    ],
+    "main_sha_at_dispatch": "e18564655b882fb333ca0fa4350b68ed44fc0e30"
+  },
+  "result": null,
+  "evidence": [],
+  "limitations": [
+    "No behavior result until the hosted A run reaches a terminal state and its native artifact and resource journals are reviewed."
+  ]
+}
