@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "report_id": "d148-tabgroups-member-run38111882984",
+  "case_id": "EXT-F-4163-T01",
+  "defect_id": "EXT-D-0148",
+  "source_sha": "cda49523be8fc568616e0205143982426e766c1a",
+  "workflow_checkout_sha": "8ca2dc0601f6529b0224e7656f5e364916384063",
+  "current_main_at_report": "b03ef5026d101437d04de19478d7ef5b493e3409",
+  "source_ci": {
+    "run_id": 38111064635,
+    "artifact_id": 11691866852,
+    "artifact_name": "matrx-extend-development-test-cda49523be8fc568616e0205143982426e766c1a-38111064635-1",
+    "conclusion": "success",
+    "development_version": "0.2.492",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "0ead3f09fc7a2c9501d563e3405266695a845a109a6eb0c3df94a422054ab152",
+    "independent_tree_recomputed": true
+  },
+  "source_drift": {
+    "cda_to_workflow_checkout": [
+      "pnpm-lock.yaml"
+    ],
+    "workflow_driver_diagnostic_drift": false,
+    "workflow_checkout_to_current_main": [
+      ".github/workflows/hosted-guest-acceptance.yml",
+      "docs/stabilization/reports/data-t08-member-source-peer-20261011.json",
+      "tests/browser/data-member-auto-extract-driver.mjs",
+      "tests/browser/data-member-auto-extract-driver.test.mjs",
+      "tests/browser/data-member-native-acceptance.mjs",
+      "tests/unit/auto-extract-owned-fixture.test.tsx"
+    ],
+    "classification": "bounded frozen-artifact diagnostic; not current-main or release evidence"
+  },
+  "independent_source_admission": {
+    "report": "docs/stabilization/reports/d148-runner-diagnostic-peer-20261011.json",
+    "verdict": "GO_DIAGNOSTIC_REPAIR_SOURCE_ONLY",
+    "scope": "member native tab_groups create collapsed=true only"
+  },
+  "native_run": {
+    "run_id": 38111882984,
+    "job_id": 114388978114,
+    "artifact_id": 11692197058,
+    "artifact_name": "hosted-guest-38111882984-1",
+    "workflow": "Hosted guest side-panel acceptance",
+    "lane": "A",
+    "runner_label": "macos-15",
+    "case": "tab-groups-member",
+    "status": "failure",
+    "conclusion": "child_failed",
+    "resource_admitted": true,
+    "resource_invalid": false,
+    "resource_observation": "The guest resource journal recorded admission, two healthy samples, and final decision admitted=true, resourceInvalid=false, exitCode=1, decision=child_failed.",
+    "native_report": {
+      "status": "failed",
+      "failure_stage": "tools_manual_runner",
+      "failure_step": "tools_tab_click",
+      "failure_code": "tab_groups_manual_tools_tab_click_failed",
+      "native_stage": "exercise_panel",
+      "authentication": {
+        "member_signed_in": true,
+        "non_admin_identity": true,
+        "organization_selected": true
+      },
+      "fixture": {
+        "owned_tab_count": 2,
+        "same_window": true,
+        "cleanup_verified": true
+      },
+      "manual_runner": {
+        "opened": false,
+        "all_handlers_selected": false,
+        "canonical_tool": false,
+        "observation": {
+          "availability": "ready",
+          "tools_tab_matches": 0,
+          "tools_tab_active": 0,
+          "catalog_search_matches": 0,
+          "surface_filter_matches": 0,
+          "all_handlers_option_matches": 0,
+          "all_handlers_trigger_matches": 0,
+          "tab_groups_row_matches": 0,
+          "tab_groups_form_matches": 0
+        }
+      },
+      "create": null,
+      "readback": null,
+      "fixture_group_id": null
+    },
+    "classification": "Native member/manual-runner harness selection failure before the Tools tab matched and before the canonical tab_groups tool was selected or invoked. No product behavior was observed; the bounded collapsed=true acceptance receives no pass or product-failure credit.",
+    "earliest_boundary": "The authenticated member session and owned-tab fixture were ready. The native driver failed at tools_tab_click because its fixed selector observation found zero Tools tab matches while availability was ready. The report captures the original stage, step, symbolic code, and sanitized fixed-field counts.",
+    "cleanup": {
+      "fixture_cleanup_verified": true,
+      "temporary_github_secret_deleted": true,
+      "github_secret_absence_verified": true,
+      "local_single_use_link_deleted": true,
+      "local_single_use_link_absence_verified": true,
+      "preexisting_private_identity_file_preserved": true,
+      "credential_values_recorded": false
+    },
+    "downloaded_evidence_sha256": {
+      "native_report": "275ef293b1bba844945028a1134e395f3a99f2953082b23e2344d76f4695412f",
+      "guest_resource_journal": "ca4718af3160288f2e1982f87b22bc68a30d1a4d396da32881b57c86f4cd2125"
+    },
+    "scratch_evidence_directory": "/Volumes/Samsung2TB/code/.stabilization-scratch/d148-run38111882984"
+  },
+  "limits": [
+    "This run does not verify collapsed=false, update, add, remove, or standalone list behavior.",
+    "Artifact source and workflow checkout are frozen historical SHAs; intervening lock-only drift and later current-main changes make this diagnostic evidence ineligible for current-main or release acceptance.",
+    "No defect state, inventory cell, or coordinator status was changed.",
+    "The run did not reach tab_groups invocation; diagnose the member Tools-tab selector/UI boundary before any further hosted attempt."
+  ],
+  "next_action": "No third blind launch. Obtain a source-reviewed diagnosis for the zero-match Tools-tab selector at the manual-runner boundary, then require fresh current-main/artifact provenance and independent native review before any future product-status credit."
+}
