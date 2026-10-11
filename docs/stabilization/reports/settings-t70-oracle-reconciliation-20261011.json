@@ -1,0 +1,31 @@
+{
+  "task_id": "settings-t70-oracle-reconciliation-20261011",
+  "feature_id": "EXT-F-1003-T70",
+  "status": "source_and_oracle_reconciled_native_gaps_unverified",
+  "basis": {
+    "product_intent_commit": "c7e98585c789e3d5918e00f331b78719eefbcabd",
+    "product_contract": "SettingsView labels the required local browser APIs for saved logins Available and explains Vault evaluates browser/site usability when chosen. It reports Unavailable with a reload/reinstall remedy when required APIs are missing.",
+    "prior_oracle_defect": "Inventory required Ready while native runner accepted either Ready or Available. This allowed the runner to tolerate a label the product intentionally retired and failed to test the exact contract."
+  },
+  "changes": [
+    "Updated only the T70 expected readiness sentence to require Available for present APIs.",
+    "Made the native runner use an exact readiness predicate: Available when APIs are present; Unavailable plus the remedy when absent.",
+    "Added focused regression assertions that reject Ready on the available branch and reject incorrect unavailable label/remedy combinations."
+  ],
+  "verification": {
+    "focused_test": "pass: node --test tests/browser/settings-readiness-oracle.test.mjs tests/browser/settings-guest-scrape-controls.test.mjs tests/browser/settings-replacement-tab.test.mjs (12 passed)",
+    "compile": "not_run: no product TypeScript changed; runner and contract guard are JavaScript",
+    "lint": "pass: pnpm lint; 2,654 files checked, zero errors, 854 warnings",
+    "tracker_regeneration": "pass: python3 scripts/generate-stabilization-tracker.py",
+    "focused_acceptance_suite": "pass: pnpm test:focused-acceptance (409 passed)"
+  },
+  "inventory_verdict": "partial",
+  "unverified": [
+    "Required browser APIs unavailable branch in native browser",
+    "Update available outcome",
+    "Throttled update outcome",
+    "Update error outcome",
+    "Update-check API unavailable instructions"
+  ],
+  "promotion": "No T70 pass promotion. Existing partial status remains; source/oracle correction is not native feature evidence."
+}
