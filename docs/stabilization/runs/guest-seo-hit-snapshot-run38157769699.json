@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "id": "guest-seo-hit-snapshot-run38157769699",
+  "created_at_utc": "2026-10-11T16:59:47Z",
+  "status": "queued_unverified",
+  "run_id": 38157769699,
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38157769699",
+  "attempt": 1,
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "workflow_source_sha": "226aa489855b637178fa60cde7b7cda7a8c5ef37",
+  "inputs": {
+    "acceptance_case": "guest-seo",
+    "seo_case_scope": "controlled",
+    "seo_metadata_fixture": "none"
+  },
+  "product_artifact": {
+    "ci_run_id": 38118947880,
+    "artifact_id": 11693783976,
+    "source_sha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+    "github_digest": "sha256:162c745cbcc558f3d9f45c23560be63a0c4b9473c76109bd18405f636217549c",
+    "ci_conclusion": "success",
+    "version": "0.2.493"
+  },
+  "purpose": "Guarded bounded diagnostic for repeated pre-dispatch Re-audit click failure after T06 synthetic history refusal. Reviewed safe hit snapshots at refusal, recovery and pre-click should distinguish the refusal notice from unrelated layout/timing without collecting private content.",
+  "credit_rule": "No new product credit or defect attribution until terminal resource/artifact evidence and fresh independent native review. Prior bounded guest T06 pass is already recorded and must not be counted again.",
+  "next_action": "Observe terminal state no more often than once per 60 seconds; verify exact artifact and three finalized journals; independently assess safe hit snapshots and T02 click outcome."
+}
