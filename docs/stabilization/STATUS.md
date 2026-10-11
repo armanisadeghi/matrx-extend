@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-11 00:40 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-10T12:43:34Z. 205 features · 779 cases · 1362 controls · 195 linked defect records.
+Generated 2026-10-11 01:06 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T01:05:38.231Z. 205 features · 780 cases · 1362 controls · 196 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1240** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1053 · N/A: 1.
-Unverified splits into **132 explicitly marked unverified** and **921 with no result record**.
+Applicable case-by-role slots: **1243** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1056 · N/A: 1.
+Unverified splits into **132 explicitly marked unverified** and **924 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -38,7 +38,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
 | [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 10, n/a 0 | 0 |
 | [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
-| [Data side-panel](#data-side-panel) | 1 | 1 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 1, partial 2, fail 0, unverified 7, n/a 0 | 1 |
+| [Data side-panel](#data-side-panel) | 1 | 1 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 1, partial 2, fail 0, unverified 10, n/a 0 | 1 |
 | [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 3 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 3 |
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
@@ -836,7 +836,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166, EXT-D-0187, EXT-D-0192
 
-**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (closed), [EXT-D-0127](defects/EXT-D-0127.json) (fixed), [EXT-D-0128](defects/EXT-D-0128.json) (fixed), [EXT-D-0129](defects/EXT-D-0129.json) (closed), [EXT-D-0130](defects/EXT-D-0130.json) (closed), [EXT-D-0131](defects/EXT-D-0131.json) (closed), [EXT-D-0132](defects/EXT-D-0132.json) (closed), [EXT-D-0133](defects/EXT-D-0133.json) (fixed), [EXT-D-0135](defects/EXT-D-0135.json) (closed), [EXT-D-0137](defects/EXT-D-0137.json) (closed), [EXT-D-0138](defects/EXT-D-0138.json) (fixed), [EXT-D-0139](defects/EXT-D-0139.json) (fixed), [EXT-D-0154](defects/EXT-D-0154.json) (closed), [EXT-D-0163](defects/EXT-D-0163.json) (closed), [EXT-D-0164](defects/EXT-D-0164.json) (closed), [EXT-D-0166](defects/EXT-D-0166.json) (in-fix), [EXT-D-0175](defects/EXT-D-0175.json) (closed), [EXT-D-0178](defects/EXT-D-0178.json) (closed), [EXT-D-0180](defects/EXT-D-0180.json) (closed), [EXT-D-0187](defects/EXT-D-0187.json) (in-fix), [EXT-D-0192](defects/EXT-D-0192.json) (fixed), [EXT-D-0194](defects/EXT-D-0194.json) (closed)
+**Linked defects:** [EXT-D-0001](defects/EXT-D-0001.json) (closed), [EXT-D-0018](defects/EXT-D-0018.json) (closed), [EXT-D-0022](defects/EXT-D-0022.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0115](defects/EXT-D-0115.json) (retest-pass), [EXT-D-0118](defects/EXT-D-0118.json) (fixed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0123](defects/EXT-D-0123.json) (retest-pass), [EXT-D-0124](defects/EXT-D-0124.json) (closed), [EXT-D-0125](defects/EXT-D-0125.json) (closed), [EXT-D-0126](defects/EXT-D-0126.json) (closed), [EXT-D-0127](defects/EXT-D-0127.json) (fixed), [EXT-D-0128](defects/EXT-D-0128.json) (fixed), [EXT-D-0129](defects/EXT-D-0129.json) (closed), [EXT-D-0130](defects/EXT-D-0130.json) (closed), [EXT-D-0131](defects/EXT-D-0131.json) (closed), [EXT-D-0132](defects/EXT-D-0132.json) (closed), [EXT-D-0133](defects/EXT-D-0133.json) (fixed), [EXT-D-0135](defects/EXT-D-0135.json) (closed), [EXT-D-0137](defects/EXT-D-0137.json) (closed), [EXT-D-0138](defects/EXT-D-0138.json) (fixed), [EXT-D-0139](defects/EXT-D-0139.json) (fixed), [EXT-D-0154](defects/EXT-D-0154.json) (closed), [EXT-D-0163](defects/EXT-D-0163.json) (closed), [EXT-D-0164](defects/EXT-D-0164.json) (closed), [EXT-D-0166](defects/EXT-D-0166.json) (in-fix), [EXT-D-0175](defects/EXT-D-0175.json) (closed), [EXT-D-0178](defects/EXT-D-0178.json) (closed), [EXT-D-0180](defects/EXT-D-0180.json) (closed), [EXT-D-0187](defects/EXT-D-0187.json) (in-fix), [EXT-D-0192](defects/EXT-D-0192.json) (fixed), [EXT-D-0194](defects/EXT-D-0194.json) (closed), [EXT-D-0196](defects/EXT-D-0196.json) (closed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1454,7 +1454,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Extract structured data from the active page (EXT-F-2005)
 
-**Role status:** guest: Unverified · member: Partial · admin: Partial. **Cases:** 5. **Controls:** 32.
+**Role status:** guest: Unverified · member: Partial · admin: Partial. **Cases:** 6. **Controls:** 32.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0054
 
@@ -1467,6 +1467,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-2005-T03 Manual field pattern lifecycle and extracted rows | N/A | Partial | Partial | EXT-F-2005-C14, EXT-F-2005-C15, EXT-F-2005-C03, EXT-F-2005-C12, EXT-F-2005-C11, EXT-F-2005-C07, EXT-F-2005-C08, EXT-F-2005-C09, EXT-F-2005-C10 |
 | EXT-F-2005-T04 Non-matching page and active-tab boundary | N/A | Unverified | Unverified | EXT-F-2005-C02, EXT-F-2005-C07 |
 | EXT-F-2005-T05 Data page identity Retry, failure and recovery | Unverified | Unverified | Unverified | EXT-F-2005-C32, EXT-F-2005-C14, EXT-F-2005-C15, EXT-F-2005-C02, EXT-F-2005-C07 |
+| EXT-F-2005-T06 Data page identity during navigation and Retry recovery | Unverified | Unverified | Unverified | EXT-F-2005-C32, EXT-F-2005-C14, EXT-F-2005-C02, EXT-F-2005-C07 |
 
 **Recorded case details and evidence:**
 

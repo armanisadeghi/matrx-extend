@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-10T12:43:34Z",
+  "updated_at": "2026-10-11T01:05:38.231Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -40512,7 +40512,7 @@
           "id": "EXT-F-2005-C23",
           "label": "Copy saved pattern Selectors text",
           "action": "Copy name-selector pairs",
-          "source_anchor": "src/lib/data-pattern/picker.ts",
+          "source_anchor": "src/features/data/DataView.tsx:604",
           "test_design_status": "unverified",
           "test_design_item": "Verify Copy saved pattern Selectors text (Copy name-selector pairs) on Data side-panel in source-applicable roles; include refusal and reload where state persists."
         },
@@ -40520,7 +40520,7 @@
           "id": "EXT-F-2005-C24",
           "label": "Copy saved pattern For AI agent",
           "action": "Copy wrapped pattern payload",
-          "source_anchor": "src/lib/data-pattern/picker.ts",
+          "source_anchor": "src/features/data/DataView.tsx:604",
           "test_design_status": "unverified",
           "test_design_item": "Verify Copy saved pattern For AI agent (Copy wrapped pattern payload) on Data side-panel in source-applicable roles; include refusal and reload where state persists."
         },
@@ -40528,7 +40528,7 @@
           "id": "EXT-F-2005-C25",
           "label": "Copy saved pattern Full JSON admin option",
           "action": "Copy complete pattern only when admin",
-          "source_anchor": "src/lib/data-pattern/picker.ts",
+          "source_anchor": "src/features/data/DataView.tsx:604",
           "test_design_status": "unverified",
           "test_design_item": "Verify Copy saved pattern Full JSON admin option (Copy complete pattern only when admin) on Data side-panel in source-applicable roles; include refusal and reload where state persists."
         },
@@ -40536,7 +40536,7 @@
           "id": "EXT-F-2005-C26",
           "label": "Copy extracted rows TSV",
           "action": "Copy tab-separated rows",
-          "source_anchor": "src/lib/data-pattern/picker.ts",
+          "source_anchor": "src/features/data/DataView.tsx:664",
           "test_design_status": "unverified",
           "test_design_item": "Verify Copy extracted rows TSV (Copy tab-separated rows) on Data side-panel in source-applicable roles; include refusal and reload where state persists."
         },
@@ -40544,7 +40544,7 @@
           "id": "EXT-F-2005-C27",
           "label": "Copy extracted rows JSON",
           "action": "Copy row JSON",
-          "source_anchor": "src/lib/data-pattern/picker.ts",
+          "source_anchor": "src/features/data/DataView.tsx:664",
           "test_design_status": "unverified",
           "test_design_item": "Verify Copy extracted rows JSON (Copy row JSON) on Data side-panel in source-applicable roles; include refusal and reload where state persists."
         },
@@ -40552,7 +40552,7 @@
           "id": "EXT-F-2005-C28",
           "label": "Copy extracted rows For AI agent",
           "action": "Copy wrapped row payload",
-          "source_anchor": "src/lib/data-pattern/picker.ts",
+          "source_anchor": "src/features/data/DataView.tsx:664",
           "test_design_status": "unverified",
           "test_design_item": "Verify Copy extracted rows For AI agent (Copy wrapped row payload) on Data side-panel in source-applicable roles; include refusal and reload where state persists."
         },
@@ -40560,7 +40560,7 @@
           "id": "EXT-F-2005-C29",
           "label": "Observe auto extraction running",
           "action": "See background matched-pattern progress",
-          "source_anchor": "src/lib/data-pattern/picker.ts",
+          "source_anchor": "src/features/data/DataView.tsx:501",
           "test_design_status": "unverified",
           "test_design_item": "Verify Observe auto extraction running (See background matched-pattern progress) on Data side-panel in source-applicable roles; include refusal and reload where state persists."
         },
@@ -40568,7 +40568,7 @@
           "id": "EXT-F-2005-C30",
           "label": "Observe auto extraction success",
           "action": "See automatically extracted rows",
-          "source_anchor": "src/lib/data-pattern/picker.ts",
+          "source_anchor": "src/features/data/DataView.tsx:507",
           "test_design_status": "unverified",
           "test_design_item": "Verify Observe auto extraction success (See automatically extracted rows) on Data side-panel in source-applicable roles; include refusal and reload where state persists."
         },
@@ -40576,7 +40576,7 @@
           "id": "EXT-F-2005-C31",
           "label": "Observe auto extraction failure",
           "action": "See error and retain manual Re-run",
-          "source_anchor": "src/lib/data-pattern/picker.ts",
+          "source_anchor": "src/features/data/DataView.tsx:513",
           "test_design_status": "unverified",
           "test_design_item": "Verify Observe auto extraction failure (See error and retain manual Re-run) on Data side-panel in source-applicable roles; include refusal and reload where state persists."
         },
@@ -41115,6 +41115,46 @@
             "reload"
           ],
           "verification_status": "unverified"
+        },
+        {
+          "id": "EXT-F-2005-T06",
+          "title": "Data page identity during navigation and Retry recovery",
+          "control_ids": [
+            "EXT-F-2005-C32",
+            "EXT-F-2005-C14",
+            "EXT-F-2005-C02",
+            "EXT-F-2005-C07"
+          ],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Use a genuine guest, member, or admin profile and the exact fresh unpacked development build; record source/lock/output hashes, extension ID, Chrome version, role, organization, permissions, backend and controlled fixture. Obtain the stabilization resource permit and complete the build/reload preflight in PLAN.md.",
+            "Use an owned controlled HTTPS page with a same-tab link to a second controlled HTTPS page served by a controlled test server that can hold and then release the second page response. Keep Data open in the side panel and verify the first page identity is ready before navigation."
+          ],
+          "steps": [
+            "On page A, open Data and confirm the page identity notice is absent and the field picker is enabled.",
+            "Click the fixture link to page B and keep its response pending at the controlled server. While navigation is in flight, use Data\u2019s Retry control; record only sanitized tab ID/document ID and whether the notice shows its checking state.",
+            "Release page B. After Chrome reports navigation complete, use Retry if the identity notice remains. Record the new page URL and top-frame document identity, then inspect the notice and page-dependent picker/extraction controls.",
+            "Select one field on page B, finish the picker, and verify the returned field appears in Data for page B. Do not save a pattern."
+          ],
+          "expected": [
+            "While navigation is pending, the identity notice is shown and pageKey is withheld; page-dependent actions remain disabled, so page A identity cannot authorize work on page B.",
+            "After the controlled server releases page B and Chrome reports navigation complete, Retry or the normal identity refresh resolves the current page and document; the notice disappears and page-dependent actions become available for page B.",
+            "The picker result belongs to page B. Guest mode still withholds pattern saving and signed-in modes do not write a pattern in this procedure."
+          ],
+          "dimensions": [
+            "guest",
+            "member",
+            "admin",
+            "same-tab-navigation",
+            "top-frame-document",
+            "retry",
+            "recovery",
+            "warm"
+          ]
         }
       ],
       "cells": {

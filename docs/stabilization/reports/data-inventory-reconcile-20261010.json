@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_source_to_inventory_review",
+  "surface": "Data side-panel",
+  "feature_id": "EXT-F-2005",
+  "source_files_reviewed": [
+    "src/features/data/DataView.tsx",
+    "src/lib/data-pattern/picker.ts",
+    "src/components/CopyMenu.tsx",
+    "src/components/PageIdentityNotice.tsx",
+    "src/hooks/use-active-tab.ts",
+    "src/config/sidepanel-visibility.ts",
+    "src/entrypoints/sidepanel/App.tsx"
+  ],
+  "independent_reviewer": "data_inventory_review agent",
+  "verdict": "PASS_BOUNDED_INVENTORY_RECONCILIATION",
+  "before": {
+    "feature_count": 1,
+    "control_count": 32,
+    "case_count": 5
+  },
+  "after": {
+    "feature_count": 1,
+    "control_count": 32,
+    "case_count": 6
+  },
+  "gaps_fixed": [
+    {
+      "type": "missing_procedure",
+      "id": "EXT-F-2005-T06",
+      "detail": "Added an executable controlled same-tab navigation case that observes identity withholding while a response is pending, Retry/recovery after commit, and field picking bound to the new top-frame document. Guest, member, and admin applicability is explicit; runtime status remains unverified."
+    },
+    {
+      "type": "incorrect_source_anchors",
+      "controls": [
+        "EXT-F-2005-C23",
+        "EXT-F-2005-C24",
+        "EXT-F-2005-C25",
+        "EXT-F-2005-C26",
+        "EXT-F-2005-C27",
+        "EXT-F-2005-C28",
+        "EXT-F-2005-C29",
+        "EXT-F-2005-C30",
+        "EXT-F-2005-C31"
+      ],
+      "detail": "Copy and auto-extraction status controls were incorrectly anchored to picker.ts; anchors now point to their DataView rendering sites."
+    }
+  ],
+  "independent_review_findings": [
+    "T06 is distinct from T04 stale-result clearing and T05 induced unresolved lookup/cross-tab race.",
+    "Source supports withholding pageKey/documentId during navigation, disabling page-dependent actions, and binding picker responses to tab/document/page identity.",
+    "No missing DataView, CopyMenu, PageIdentityNotice, or picker control was found in this bounded source review.",
+    "The controlled server fixture is feasible; its runner must provide a way to hold and release page B's response."
+  ],
+  "remaining_unverified": [
+    "T06 is a procedure only; no browser or product behavior run was performed.",
+    "EXT-F-2005-T05 still covers native lookup failure and cross-tab stale-response behavior and remains design-needed/unverified.",
+    "Data feature guest/member/admin runtime acceptance and signed-in persistence remain incomplete."
+  ],
+  "validation": {
+    "tracker_generated": true,
+    "lint": "pnpm -s lint exited 0; 854 existing warnings reported",
+    "browser_or_product_tests": "not run; this task was source-to-inventory reconciliation only",
+    "stable_id_duplicate_check": "passed across 205 features, 1,362 controls, and 780 cases; no duplicate IDs"
+  },
+  "changed_files": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html",
+    "docs/stabilization/reports/data-inventory-reconcile-20261010.json"
+  ]
+}
