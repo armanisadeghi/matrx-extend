@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-control-census-peer-20261011",
+  "reviewed_head": "7458f16802012a14f1de8e3be6934baaedec545e",
+  "outcome": "GO",
+  "scope": "Independent source-to-inventory review of the account-popover census in EXT-F-1001, its source-gap report, and the generated stabilization views. No browser or product behavior execution is claimed.",
+  "verdict_a_census_correctness": {
+    "verdict": "PASS",
+    "findings": [],
+    "control_mapping": {
+      "EXT-F-1001-C09": "Profile is rendered only when canAccessSidepanelTab(profile, { signedIn: user !== null, isAdmin }) is true. Source gate resolves to hidden for guests and visible for signed-in members and admins. The goto('profile') handler closes the popover then selects the profile tab.",
+      "EXT-F-1001-C10": "Preferences is gated by canAccessSidepanelTab(settings, ...); settings audience is everyone. The goto('settings') handler closes the popover then selects the settings tab for guest, member, and admin.",
+      "EXT-F-1001-C11": "Sign out is rendered without a role condition. Its click handler closes the popover and invokes signOut. useAuth signOut runs the local sign-out flow, clears the local admin gate, and sets user to null; the guest case is a valid already-signed-out invocation."
+    },
+    "sibling_control_survey": "No actionable sibling entry is omitted from the bounded UserMenu popover. Its only menu buttons are Profile, Preferences, and Sign out. The avatar trigger and desktop connection indicator are already represented under C04; the header's name/email and desktop status text are informational, not actions."
+  },
+  "verdict_b_record_quality": {
+    "verdict": "PASS",
+    "findings": [],
+    "generated_views": "The 3 new controls and 9 new cases are represented in inventory.json; each new case links to its corresponding control and has steps and expected outcomes. CHECKLIST.md and STATUS.md agree on 205 features, 792 cases, and 1367 controls; the Navigation / shell section reports 27 cases and 11 controls. STATUS.html includes T19-T27 with the same role-specific unverified/N/A mapping and control IDs as STATUS.md."
+  },
+  "unknowns": [
+    "No native UI run was performed. Actual rendering, role identity, click behavior, tab selection, dismissal, and auth state after sign-out remain unverified as the census report states.",
+    "No claim is made about behavior outside the bounded UserMenu component and its cited visibility/auth bindings."
+  ],
+  "reviewed_files": [
+    "CLAUDE.md",
+    "docs/stabilization/PLAN.md",
+    "src/components/UserMenu.tsx",
+    "src/config/sidepanel-visibility.ts",
+    "src/hooks/use-auth.ts",
+    "src/lib/auth/flow.ts",
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html",
+    "docs/stabilization/reports/settings-control-census-20261011.json"
+  ],
+  "validation": {
+    "inventory_json_parses": true,
+    "new_control_ids_unique_and_present": true,
+    "new_cases_have_resolving_control_links_steps_and_expected_outcomes": true,
+    "generated_counts_and_case_role_control_references_consistent": true,
+    "browser_or_product_behavior_run": false,
+    "heavy_launch_or_build_run": false
+  }
+}

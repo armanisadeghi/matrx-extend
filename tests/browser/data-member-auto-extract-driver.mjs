@@ -30,6 +30,8 @@ export async function memberAutoCard(panel, patternName) {
       while (card && !card.classList?.contains('bg-emerald-500/10')) card = card.parentElement;
       if (!card) return { active: true, present: false };
       const text = card.textContent ?? '';
+      const runningBadge = [...card.querySelectorAll('span')]
+        .some((node) => node.textContent?.trim() === 'auto');
       const detail = name.parentElement?.nextElementSibling?.textContent?.trim() ?? '';
       const label = [...root.querySelectorAll('div')]
         .find((node) => /^Auto-extracted \\(\\d+ rows\\)$/.test(node.firstElementChild?.textContent?.trim() ?? ''));
@@ -40,7 +42,7 @@ export async function memberAutoCard(panel, patternName) {
       return {
         active: true,
         present: true,
-        running: text.includes('auto') && !text.includes('auto ·') && !text.includes('auto failed'),
+        running: runningBadge,
         success: text.includes('auto · 1 rows'),
         noMatch: text.includes('auto · no match'),
         failed: text.includes('auto failed'),
@@ -52,6 +54,57 @@ export async function memberAutoCard(panel, patternName) {
       };
     })()`,
   );
+}
+
+/** Latch the real rendered running badge so a short state cannot fall between polls. */
+export async function observeMemberAutoRunning(panel, patternName, operation = 'read') {
+  const key = `Symbol.for('matrx.data-member-auto-running:${JSON.stringify(patternName)}')`;
+  if (operation === 'install') {
+    return evaluate(
+      panel,
+      `(() => {
+        const key = ${key};
+        const existing = window[key];
+        existing?.observer?.disconnect();
+        const state = { seen: false, lastRunning: false, observer: null };
+        const readRunning = () => {
+          const root = ${activeTabPanelExpression('Data')};
+          if (!root) return false;
+          const name = [...root.querySelectorAll('span')]
+            .find((node) => node.textContent?.trim() === ${JSON.stringify(patternName)});
+          let card = name;
+          while (card && !card.classList?.contains('bg-emerald-500/10')) card = card.parentElement;
+          return Boolean(card && [...card.querySelectorAll('span')]
+            .some((node) => node.textContent?.trim() === 'auto'));
+        };
+        const inspect = () => {
+          const running = readRunning();
+          if (running && !state.lastRunning) state.seen = true;
+          state.lastRunning = running;
+        };
+        state.observer = new MutationObserver(inspect);
+        state.observer.observe(document.documentElement, {
+          subtree: true, childList: true, characterData: true,
+        });
+        window[key] = state;
+        state.lastRunning = readRunning();
+        return { installed: true, seen: state.seen };
+      })()`,
+    );
+  }
+  if (operation === 'clear') {
+    return evaluate(
+      panel,
+      `(() => {
+        const key = ${key};
+        const state = window[key];
+        state?.observer?.disconnect();
+        delete window[key];
+        return Boolean(state);
+      })()`,
+    );
+  }
+  return evaluate(panel, `(() => ({ seen: window[${key}]?.seen === true }))()`);
 }
 
 /** Exact-row, signed-in DB probe for the disposable pattern created by the Data UI. */
@@ -143,6 +196,7 @@ export async function runMemberAutoExtract({
     });
   let originalRoot;
   let rootWriteStarted = false;
+  let runningObserverInstalled = false;
   const requests = new Map();
   const host = new URL(page.url()).host;
   await panel.send('Network.enable');
@@ -169,13 +223,8 @@ export async function runMemberAutoExtract({
       await resourceAction(() => page.goto(`${origin}/products?auto=${variant}`));
       assert.equal(new URL(page.url()).searchParams.get('auto'), variant);
     };
-    const runningProbe = waitFor(
-      'data_member_auto_running',
-      () => memberAutoCard(panel, patternName),
-      (state) => state?.running === true,
-      2_000,
-      (state) => ({ active: state?.active, present: state?.present, running: state?.running }),
-    ).catch(() => null);
+    await observeMemberAutoRunning(panel, patternName, 'install');
+    runningObserverInstalled = true;
     await open('success');
     const success = await waitFor(
       'data_member_auto_success',
@@ -190,7 +239,7 @@ export async function runMemberAutoExtract({
       'data_member_auto_success_rows_mismatch',
     );
     result.success = 'pass';
-    if (await runningProbe) result.running = 'pass';
+    if ((await observeMemberAutoRunning(panel, patternName)).seen) result.running = 'pass';
 
     await open('empty');
     assert.equal(
@@ -262,6 +311,8 @@ export async function runMemberAutoExtract({
     }
     offRequest();
     offResponse();
+    if (runningObserverInstalled)
+      await observeMemberAutoRunning(panel, patternName, 'clear').catch(() => {});
     await panel.send('Network.disable').catch(() => {});
   }
 }

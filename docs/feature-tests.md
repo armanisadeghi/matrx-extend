@@ -2589,8 +2589,20 @@ Every entry follows this shape:
   - A saved row written by an older build that lacks `links`/`schema_types`: those
     fields are silently skipped — they appear neither as a change nor as
     "Unchanged" (we never claim a field is unchanged when one side never had it).
-  - A URL with no saved audits: no history chip, no diff card, unchanged behavior.
-- **Automated:** `tests/unit/seo-diff.test.ts` pins every verdict string, the
+  - A URL with no saved audits: the **History** chip remains available; opening
+    it shows **No saved audits for this URL.**, with no diff card.
+  - Delay the saved-history response and open **History**: **Loading saved
+    audits…** appears until the read completes.
+  - Return a controlled history permission, missing-table, or network error:
+    **Saved audits could not load. Try again.** and **Retry history** appear.
+    Closing/reopening History must keep access and the failure visible; it must
+    never display the empty-history message for a failed read.
+  - Restore the history response, click **Retry history**, and verify a fresh
+    read for this URL displays the saved row and clears the failure. A delayed
+    response from the previous URL must not replace the new page's history.
+- **Automated:** `tests/unit/seo-history-recovery.test.tsx` covers real query
+  failures, loading/empty access, user retry through a fresh read, and navigation
+  races. `tests/unit/seo-diff.test.ts` pins every verdict string, the
   unchanged-collapse rule, the multiset heading comparison, and defensive parsing
   of a stored `signals` blob.
 

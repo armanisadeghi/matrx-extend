@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "task_id": "settings-control-census-20261011",
+  "status": "source_gap_added_unverified",
+  "scope": {
+    "feature_id": "EXT-F-1001",
+    "subarea": "User avatar account popover actions"
+  },
+  "source_snapshot": {
+    "source_sha": "0d42b84ec8c9d20220b5a4c6754b993485ec63f1",
+    "observed_at": "2026-10-11T05:59:43Z"
+  },
+  "finding": {
+    "summary": "The account popover had a broad avatar control and Profile was mentioned as an indirect navigation route, but its three actionable menu entries were not individually represented in the navigation control list.",
+    "added_controls": [
+      "EXT-F-1001-C09",
+      "EXT-F-1001-C10",
+      "EXT-F-1001-C11"
+    ],
+    "added_cases": [
+      "EXT-F-1001-T19",
+      "EXT-F-1001-T20",
+      "EXT-F-1001-T21",
+      "EXT-F-1001-T22",
+      "EXT-F-1001-T23",
+      "EXT-F-1001-T24",
+      "EXT-F-1001-T25",
+      "EXT-F-1001-T26",
+      "EXT-F-1001-T27"
+    ],
+    "role_cells": {
+      "guest": "unverified",
+      "member": "unverified",
+      "admin": "unverified"
+    },
+    "source_references": [
+      {
+        "path": "src/components/UserMenu.tsx",
+        "lines": "86-95",
+        "evidence": "Profile is gated by the Profile audience; Preferences is gated by Settings audience and both menu items call goto."
+      },
+      {
+        "path": "src/components/UserMenu.tsx",
+        "lines": "100-109",
+        "evidence": "Sign out is rendered unconditionally, closes the popover, and invokes signOut."
+      },
+      {
+        "path": "src/config/sidepanel-visibility.ts",
+        "lines": "37-38",
+        "evidence": "Profile is signed-in only; Settings is available to everyone."
+      },
+      {
+        "path": "docs/stabilization/inventory.json",
+        "feature_id": "EXT-F-1001",
+        "evidence": "Prior control list ended at C08 and case list at T18; existing C01 noted Profile navigation but did not separately enumerate menu actions."
+      }
+    ]
+  },
+  "coverage_limits": [
+    "Source mapping only; no browser, product, role, persistence or accessibility behavior was observed.",
+    "Guest/member/admin feature cells remain unverified. The nine new role-specific cases have no results or run IDs.",
+    "Case steps describe future UI checks and do not establish auth sign-out success, view rendering, menu dismissal, or actual role visibility."
+  ],
+  "files_expected": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html",
+    "docs/stabilization/reports/settings-control-census-20261011.json"
+  ]
+}

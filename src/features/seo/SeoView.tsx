@@ -39,7 +39,7 @@ import {
   TrendingDown,
   TrendingUp,
 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 /** A saved row plus its parsed signals + the verdict vs the row before it. */
 interface HistoryEntry {
@@ -58,6 +58,7 @@ export function SeoView() {
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [history, setHistory] = useState<SeoAuditRow[]>([]);
+  const [historyStatus, setHistoryStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [showHistory, setShowHistory] = useState(false);
   /** When set, the body renders that saved snapshot instead of the live audit. */
   const [viewingId, setViewingId] = useState<string | null>(null);
@@ -69,30 +70,39 @@ export function SeoView() {
    */
   const lastAutoRunUrlRef = useRef<string | null>(null);
   const auditRunRef = useRef(0);
+  const historyRunRef = useRef(0);
+  const tabRef = useRef(tab);
+  tabRef.current = tab;
 
-  const reloadHistory = async (url: string) => {
-    const rows = await fetchSeoAuditHistoryForUrl(url);
-    setHistory(rows);
-  };
+  const reloadHistory = useCallback(async (url: string) => {
+    // Save refreshes, retries, and navigation share one request generation.
+    // An old URL or superseded read must never replace the current baseline.
+    if (tabRef.current.url !== url) return;
+    const run = ++historyRunRef.current;
+    setHistoryStatus('loading');
+    try {
+      const rows = await fetchSeoAuditHistoryForUrl(url);
+      if (run !== historyRunRef.current || tabRef.current.url !== url) return;
+      setHistory(rows);
+      setHistoryStatus('ready');
+    } catch {
+      if (run !== historyRunRef.current || tabRef.current.url !== url) return;
+      setHistoryStatus('error');
+    }
+  }, []);
 
   useEffect(() => {
+    setHistory([]);
+    setViewingId(null);
     if (!tab.url) {
-      setHistory([]);
-      setViewingId(null);
+      setHistoryStatus('ready');
       return;
     }
-    let cancelled = false;
-    const url = tab.url;
-    void (async () => {
-      const rows = await fetchSeoAuditHistoryForUrl(url);
-      if (cancelled) return;
-      setHistory(rows);
-      setViewingId(null);
-    })();
+    void reloadHistory(tab.url);
     return () => {
-      cancelled = true;
+      historyRunRef.current += 1;
     };
-  }, [tab.url]);
+  }, [tab.url, reloadHistory]);
 
   // Auto-run an audit when the SEO tab gets a fresh URL — first mount, or
   // user navigates the active tab. Manual "Re-audit" stays as the way to
@@ -117,9 +127,6 @@ export function SeoView() {
   }, [tab.pageKey]);
 
   const [auditError, setAuditError] = useState<string | null>(null);
-  // Live tab snapshot for the out-of-order guard above.
-  const tabRef = useRef(tab);
-  tabRef.current = tab;
 
   const runAudit = async () => {
     if (!tab.id || !tab.pageKey) return;
@@ -202,7 +209,7 @@ export function SeoView() {
     });
   }, [history]);
 
-  const latestSaved = entries[0];
+  const latestSaved = historyStatus === 'ready' ? entries[0] : undefined;
   const viewing = viewingId ? entries.find((e) => e.row.id === viewingId) : undefined;
 
   /** Live audit vs the most recent SAVED audit — the "did my change help?" answer. */
@@ -221,15 +228,18 @@ export function SeoView() {
     <div className="flex h-full flex-col">
       <div className="flex h-9 shrink-0 items-center gap-1 px-3">
         <span className="shrink-0 text-sm font-medium">SEO audit</span>
-        {history.length > 0 && (
+        {tab.url && (
           <button
             type="button"
             onClick={() => setShowHistory((v) => !v)}
             className="flex min-w-0 items-center gap-1 rounded-full px-1.5 py-0.5 text-xs text-muted-foreground hover:bg-secondary/60"
             title="Saved audits for this URL"
+            aria-label="Saved audits for this URL"
+            aria-expanded={showHistory}
           >
             <History className="size-3 shrink-0" />
-            <span className="tabular-nums">{history.length}</span>
+            <span>History</span>
+            <span className="tabular-nums">{historyStatus === 'ready' ? history.length : '—'}</span>
             <ChevronDown
               className={`size-3 shrink-0 transition-transform ${showHistory ? 'rotate-180' : ''}`}
             />
@@ -269,7 +279,36 @@ export function SeoView() {
 
       <div className="flex-1 overflow-y-auto">
         <div className="space-y-4 px-3 pb-3">
-          {showHistory && (
+          {historyStatus === 'error' && (
+            <div
+              role="alert"
+              className="space-y-2 rounded-xl border border-border/60 p-2.5 text-xs"
+            >
+              <div>Saved audits could not load. Try again.</div>
+              <Button
+                size="sm"
+                variant="secondary"
+                title="Read saved audits for this URL again."
+                onClick={() => {
+                  if (!tab.url) return;
+                  setShowHistory(true);
+                  void reloadHistory(tab.url);
+                }}
+              >
+                Retry history
+              </Button>
+            </div>
+          )}
+          {showHistory && historyStatus === 'loading' && (
+            <output className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Loader2 className="size-3 animate-spin" />
+              Loading saved audits…
+            </output>
+          )}
+          {showHistory && historyStatus === 'ready' && history.length === 0 && (
+            <div className="text-xs text-muted-foreground">No saved audits for this URL.</div>
+          )}
+          {showHistory && historyStatus === 'ready' && history.length > 0 && (
             <HistoryList
               entries={entries}
               viewingId={viewingId}

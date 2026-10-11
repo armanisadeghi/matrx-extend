@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-control-census-peer-20261011",
+  "reviewed_commit": "7303df1eacee746c7f2d401749de28dff7641712",
+  "reviewed_report": "docs/stabilization/reports/seo-control-census-20261011.json",
+  "feature_id": "EXT-F-1008",
+  "verdict_a": {
+    "mapping_and_expected_behavior": "supported_with_scope_boundary",
+    "scope": "The census report explicitly covers visible history navigation, snapshot selection, Live return, and audit copy/export controls; its seven IDs are C01-C07. It does not claim a census of the entire SEO feature, whose inventory also includes C08-C15.",
+    "no_missing_control_conclusion": "Supported for the stated in-scope visible/actionable controls. Each reviewed inventory control exists and has a stable matching case: C01→T01, C02→T02, C03→T03, C04→T04, C05→T05, C06→T06, C07→T07. The case control_ids confirm each one-to-one mapping. C06 describes empty/loading/error scenarios rather than a separately visible control; it still has a stable case mapping, but its steps cannot literally open History when the returned list is empty because the History button is rendered only when history.length > 0.",
+    "mode_applicability": {
+      "guest": "Inventory says applicable. SEO audit/history surface and text/AI copy options are rendered without a role branch in SeoView; CopyMenu filters only adminOnly options. Source supports those visibility claims, but does not establish backend/RLS success for guest history.",
+      "member": "Inventory says applicable. Same source-level visibility as guest; runtime persistence/access is not established by this census.",
+      "admin": "Inventory says applicable. Same surface plus JSON option, which CopyMenu exposes when isAdmin is true."
+    },
+    "stable_case_mapping": [
+      {"control_id": "EXT-F-1008-C01", "case_id": "EXT-F-1008-T01", "source": "inventory.json:EXT-F-1008.cases[T01].control_ids"},
+      {"control_id": "EXT-F-1008-C02", "case_id": "EXT-F-1008-T02", "source": "inventory.json:EXT-F-1008.cases[T02].control_ids"},
+      {"control_id": "EXT-F-1008-C03", "case_id": "EXT-F-1008-T03", "source": "inventory.json:EXT-F-1008.cases[T03].control_ids"},
+      {"control_id": "EXT-F-1008-C04", "case_id": "EXT-F-1008-T04", "source": "inventory.json:EXT-F-1008.cases[T04].control_ids"},
+      {"control_id": "EXT-F-1008-C05", "case_id": "EXT-F-1008-T05", "source": "inventory.json:EXT-F-1008.cases[T05].control_ids"},
+      {"control_id": "EXT-F-1008-C06", "case_id": "EXT-F-1008-T06", "source": "inventory.json:EXT-F-1008.cases[T06].control_ids"},
+      {"control_id": "EXT-F-1008-C07", "case_id": "EXT-F-1008-T07", "source": "inventory.json:EXT-F-1008.cases[T07].control_ids"}
+    ],
+    "source_references": [
+      "docs/stabilization/PLAN.md:21,47-67 (source census, independent check, inventory coverage and new-control disposition)",
+      "docs/stabilization/inventory.json:EXT-F-1008.controls and cases T01-T07 (stable IDs, modes, control_ids and expectations)",
+      "src/features/seo/SeoView.tsx:220-266 (history count button and text/AI/JSON copy choices)",
+      "src/features/seo/SeoView.tsx:272-281,450-488 (snapshot list and selection)",
+      "src/components/CopyMenu.tsx:110-115 (adminOnly visibility gate)"
+    ]
+  },
+  "verdict_b": {
+    "record_quality": "revise_t06_classification",
+    "conclusion": "The peer report correctly says runtime was not checked and does not claim case pass. Its characterization of all T06 expectations as merely unverified source limitations is too soft: the source itself confirms behavior contrary to T06's current expected contract. The resulting distinction is a source-established product gap, with runtime impact still unverified.",
+    "t06_source_analysis": {
+      "expected_contract": "Empty history should be honest; loading/failure must not masquerade as a saved audit; retry/reopen should refresh.",
+      "observed_source_behavior": "History fetch begins automatically on URL change with no loading state. On zero rows, the History toggle is absent, so the user cannot open an empty history view. The query converts a missing relation and every other query error to [], logging only non-missing-relation errors. SeoView then stores [] and renders neither an error nor retry affordance. The same [] state represents genuinely empty history and failed/unavailable history.",
+      "classification": "A real product gap against inventory T06's explicit expected behavior: backend failure is indistinguishable in the UI from no saved rows, and retry/reopen is unavailable when there are no rows. This is not a browser-verified failure; no runtime test was run. The empty-state wording is only partially applicable because the UI has no openable empty-history panel. If the intended product contract does not require these states/retry, T06's expectation should be corrected explicitly rather than calling the mismatch unverified.",
+      "references": [
+        "src/features/seo/SeoView.tsx:60-61 (history state, no history loading/error state)",
+        "src/features/seo/SeoView.tsx:73-75 (reloadHistory has no surfaced error/result state)",
+        "src/features/seo/SeoView.tsx:78-95 (automatic fetch and [] state assignment)",
+        "src/features/seo/SeoView.tsx:224-237 (History button only when history.length > 0)",
+        "src/features/seo/SeoView.tsx:272-281 (HistoryList visibility depends on showHistory)",
+        "src/lib/supabase/queries.ts:1154-1166 (both missing relation and other query errors return [])",
+        "docs/stabilization/inventory.json:EXT-F-1008-T06.expected and steps"
+      ]
+    },
+    "runtime_status": "No browser, hosted, or runtime behavior was checked. T06 source mismatch is established from code; guest/member/admin query outcomes and actual user-visible timing remain unverified.",
+    "recommendation": "Keep C06/T06 in the inventory. Record the T06 source mismatch as an actionable gap or revise its expected contract through the inventory owner; do not describe it solely as unverified behavior."
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_peer_review",
+  "reviewer": "/root/data_t08_transient_source_peer",
+  "reviewed_at": "2026-10-11",
+  "source_commit": "9cdb8622e71867dcf2cb324501d6b014a00370f4",
+  "feature_id": "EXT-F-2005",
+  "case_id": "EXT-F-2005-T08",
+  "finding_status": "ADDRESSED",
+  "verdicts": {
+    "A_behavior_and_evidence": "PARTIAL",
+    "B_harness_and_quality": "PASS"
+  },
+  "behavior_evidence": {
+    "rendered_state_source": "The observer inspects the named pattern card under the active rendered Data tab and latches only a child span with exact text 'auto'. The instantaneous reader uses the same rendered-badge criterion. This observes UI DOM and does not manufacture an extraction result.",
+    "fast_completion": "The focused happy-dom test changes the rendered badge from Extract to auto to auto · 1 rows; the MutationObserver latch retains the intermediate rendered state after completion. Focused test passed 5/5.",
+    "false_positive": "The original false positive is addressed. The observer now seeds lastRunning from the currently rendered card without crediting it, and latches only a later false-to-true transition. Focused regression and independent probe both show a preexisting auto badge followed by success remains uncredited; an idle-to-auto transition after observer installation is credited, and the latch remains true after success.",
+    "native_observation": "UNVERIFIED: no browser or hosted run was launched. The existing reviewed member run remains partial and has no running-state observation. This source change alone does not establish that the native member page emits the transient badge during a fast real completion."
+  },
+  "organization_and_cleanup": {
+    "header_assertion": "The changed files do not alter the pattern-create request observer or assertPatternWriteOrganization. Existing assertions still require captured request organization to match both body and selected organization. The new direct exact-row read/PATCH helper sends X-Organization-Id on authenticated requests.",
+    "owned_cleanup": "The diff does not alter cleanupOwnedDataPattern, its exact generated-name plus organization lookup, exact id/org delete, or post-delete verification. Existing native-driver finally path still invokes owned cleanup after a save attempt."
+  },
+  "harness_quality": {
+    "finding": "The preexisting-badge false-positive is fixed by requiring an observed post-install rising edge, with a regression test for an install-time auto badge. A separate fast-transition test verifies an idle-to-auto DOM transition is latched through completion.",
+    "required_follow_up": "Keep native running unverified until a resource-admitted member run records the latched rendered state."
+  },
+  "verification": {
+    "focused_command": "node --test tests/browser/data-member-auto-extract-driver.test.mjs",
+    "focused_result": "6 passed, 0 failed",
+    "false_positive_probe": "Inline happy-dom probe verified stale auto at install then success returns seen=false; after an idle-to-auto post-install transition it returns seen=true. Current card reports running=false after success. No source file was modified.",
+    "compile": "pnpm compile passed (tsc --noEmit)",
+    "lint": "pnpm -s lint --diagnostic-level=error passed (2629 files)",
+    "disk": "Native launches remain disallowed: /System/Volumes/Data had 319 MiB available at review time, below the documented 20 GiB floor.",
+    "fix_review": "Exact 9cdb8622e diff adds lastRunning edge detection plus a regression test for a preexisting auto badge. Existing fast completion test covers a genuine post-install transition."
+  },
+  "limits": [
+    "Source and focused harness only; no native product, hosted run, credentials, or product pass was observed.",
+    "No native member T08 run was started or reviewed in this follow-up."
+  ],
+  "files_reviewed": [
+    "CLAUDE.md",
+    "docs/stabilization/PLAN.md",
+    "docs/stabilization/COORDINATOR.md",
+    "docs/stabilization/reports/data-t08-transient-driver-20261011.json",
+    "tests/browser/data-member-auto-extract-driver.mjs",
+    "tests/browser/data-member-auto-extract-driver.test.mjs",
+    "tests/browser/data-member-native-acceptance.mjs",
+    "tests/browser/data-member-save-observer.mjs",
+    "tests/browser/data-member-pattern-cleanup.mjs"
+  ]
+}

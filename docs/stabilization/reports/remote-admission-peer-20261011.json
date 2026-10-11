@@ -1,0 +1,28 @@
+{
+  "reviewed_at_utc": "2026-10-11T06:22:04Z",
+  "source_commit": "0e58330ec7b427a1c552ff257d5771c14eb4a620",
+  "status": "source_review_passed_hosted_execution_unverified",
+  "policy_verdict": "pass_for_remote_only_boundary",
+  "code_verdict": "pass_after_two_corrections",
+  "finding": "verify checks workflow path, name, event, success and attempt but does not bind run.head_sha to a source verified to contain the guarded admission workflow. A historical same-name successful run could therefore pass the archive and journal checks without proving that the workflow used this guard contract.",
+  "checks": [
+    "Focused remote-admission and hosted-lane tests passed 10/10.",
+    "Full focused acceptance passed 406/406.",
+    "Three-second valid package phase passed; missing, pending, invalid and foreign journals refused.",
+    "CI artifact provenance checks and lane A shared-fixture serialization appeared correct.",
+    "No hosted/native run was launched; local Mac resource guard remains unchanged."
+  ],
+  "second_finding": "Commit 8a1284002 fetched workflow source at run.head_sha but accepted three live guard commands when they were changed into shell comments while retaining their text. The textual-presence check did not prove active guards.",
+  "resolution": {
+    "commit": "55337817cb9fb0a9d9a93ae5f6537f96bbf4e078",
+    "reviewed_workflow_sha256": "1cb3d900ed62405504e6d7c90cf7dab79716299a70f9318bd8005f476b12c75a",
+    "verdict": "pass",
+    "evidence": [
+      "Plan/dispatch and verification check the same pinned reviewed workflow bytes; verification fetches them at the run's immutable head_sha.",
+      "An adversarial comment-out mutation now refuses with HOSTED_WORKFLOW_BLOB_UNREVIEWED in plan and verify.",
+      "Read-only historical run 38113237641 replay matches the pinned workflow hash; it is diagnostic only.",
+      "Targeted tests passed 12/12 and focused acceptance passed 407/407; no hosted/native run was launched."
+    ]
+  },
+  "next_action": "Wait for a successful exact-main CI development artifact, then dispatch one guarded hosted member Data T08 run and independently review its native evidence and finalized journals."
+}

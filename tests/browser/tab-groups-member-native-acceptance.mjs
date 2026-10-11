@@ -3,10 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { verifyFrozenArtifactIdentity } from '../../scripts/frozen-artifact-identity.mjs';
-import {
-  allHandlersTriggerSelected,
-  verifyTabGroupsCreateObservation,
-} from '../../scripts/hosted-tab-groups-route.mjs';
+import { allHandlersTriggerSelected } from '../../scripts/hosted-tab-groups-route.mjs';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -14,6 +11,10 @@ import { signInSettings } from './settings-native-auth-driver.mjs';
 import { tabGroupsFailureCode, withOwnedTabCleanup } from './tab-groups-member-failure.mjs';
 
 import { pointerTarget, toolsTab } from './tab-groups-manual-runner.mjs';
+import {
+  runTabGroupsMemberScenarios,
+  stableTabGroupSnapshot,
+} from './tab-groups-member-scenarios.mjs';
 
 const REPO = resolve(import.meta.dirname, '../..');
 const extensionDir = process.env.MATRX_TAB_GROUPS_EXTENSION_DIR;
@@ -25,10 +26,11 @@ const stage = (value) => {
   report.stage = value;
 };
 const report = {
-  schema_version: 1,
+  schema_version: 2,
   case_id: 'EXT-F-4163-T01',
   status: 'unverified',
-  scope: 'member Tools > Catalog manual runner; tab_groups create collapsed=true only',
+  scope:
+    'member Tools > Catalog manual runner; tab_groups create true/false, update true/false, add/remove/list with Chrome and get_tab_groups readbacks',
   stage: 'inputs',
   artifact: null,
   authentication: null,
@@ -37,6 +39,8 @@ const report = {
   create: null,
   readback: null,
   fixture_group_id: null,
+  fixture_group_ids: [],
+  branches: {},
   failure_code: null,
   failure_stage: null,
   failure_step: null,
@@ -255,7 +259,13 @@ async function createOwnedTabs(panel, origin, onCreated) {
   );
   assert.ok(Number.isSafeInteger(windowId), 'tab_groups_fixture_window_missing');
   const tabs = [];
-  for (const path of ['/tab-group-a', '/tab-group-b']) {
+  for (const path of [
+    '/tab-group-a',
+    '/tab-group-b',
+    '/tab-group-c',
+    '/tab-group-d',
+    '/tab-group-e',
+  ]) {
     const tab = await evaluate(
       panel,
       `(async()=>{const t=await chrome.tabs.create({windowId:${windowId},url:${JSON.stringify(`${origin}${path}`)},active:false});return {id:t.id,windowId:t.windowId}})()`,
@@ -274,7 +284,7 @@ async function createOwnedTabs(panel, origin, onCreated) {
   return { windowId, tabs };
 }
 
-async function removeOwnedTabs(panel, ids, groupId) {
+async function removeOwnedTabs(panel, ids, groupIds) {
   if (!ids.length) return false;
   try {
     const result = await evaluate(
@@ -290,7 +300,7 @@ async function removeOwnedTabs(panel, ids, groupId) {
         const remaining=[];
         for (const id of ids) { try { await chrome.tabs.get(id); remaining.push(id); } catch {} }
         const groups=await chrome.tabGroups.query({});
-        return { remaining:remaining.length, removed:existing.length, groupRemaining:groups.some((group)=>group.id===${Number.isSafeInteger(groupId) ? groupId : -1}) };
+        return { remaining:remaining.length, removed:existing.length, groupRemaining:groups.some((group)=>${JSON.stringify(groupIds)}.includes(group.id)) };
       })()`,
     );
     return (
@@ -299,6 +309,52 @@ async function removeOwnedTabs(panel, ids, groupId) {
   } catch {
     return false;
   }
+}
+
+async function observeChrome(panel) {
+  return evaluate(
+    panel,
+    `(async () => {
+    const [groups,tabs] = await Promise.all([chrome.tabGroups.query({}),chrome.tabs.query({})]);
+    return {groups:groups.map(({id,windowId,title,color,collapsed})=>({id,windowId,title,color,collapsed})),
+      tabs:tabs.map(({id,windowId,groupId,url})=>({id,windowId,groupId,url}))};
+  })()`,
+  );
+}
+
+async function runCanonicalTool(panel, name, args) {
+  const row = name === 'get_tab_groups' ? 'getTabGroupsRow' : 'tabGroupsRow';
+  const form = name === 'get_tab_groups' ? 'getTabGroupsTextarea' : 'tabGroupsTextarea';
+  await typeInto(panel, 'searchInput', name);
+  await waitFor(
+    'tab_groups_manual_row_not_ready',
+    () => selectorCount(panel, row),
+    (count) => count === 1,
+  );
+  // Re-mount the detail before each invocation: previous output must never prove a new run.
+  if (await selectorCount(panel, form)) {
+    await pointer(panel, row);
+    await waitFor(
+      'tab_groups_manual_form_not_closed',
+      () => selectorCount(panel, form),
+      (count) => count === 0,
+    );
+  }
+  await pointer(panel, row);
+  await waitFor(
+    'tab_groups_manual_form_not_ready',
+    () => selectorCount(panel, form),
+    (count) => count === 1,
+  );
+  assert.equal(
+    await evaluate(
+      panel,
+      `(() => (${selectors[name === 'get_tab_groups' ? 'getTabGroupsResult' : 'tabGroupsResult'].toString()})()?.textContent ?? null)()`,
+    ),
+    null,
+    'tab_groups_stale_manual_result',
+  );
+  return enterTool(panel, name, args);
 }
 
 async function main() {
@@ -345,6 +401,12 @@ async function main() {
         '<!doctype html><title>Northline Furnishings order desk</title><main>Order desk A</main>',
       '/tab-group-b':
         '<!doctype html><title>Northline Furnishings delivery schedule</title><main>Delivery schedule B</main>',
+      '/tab-group-c':
+        '<!doctype html><title>Northline Furnishings inventory</title><main>Inventory</main>',
+      '/tab-group-d':
+        '<!doctype html><title>Northline Furnishings dispatch</title><main>Dispatch</main>',
+      '/tab-group-e':
+        '<!doctype html><title>Northline Furnishings returns</title><main>Returns</main>',
     },
     onStage: (value) => {
       report.native_stage = value;
@@ -357,6 +419,7 @@ async function main() {
       requireResourceHealth,
     }) => {
       const ids = [];
+      let baseline = null;
       await withOwnedTabCleanup(
         report,
         async () => {
@@ -409,7 +472,7 @@ async function main() {
                 panel,
                 `(async()=>Promise.all(${JSON.stringify(ids)}.map(async id=>{try{return (await chrome.tabs.get(id)).status==='complete'}catch{return false}})))()`,
               ),
-            (state) => Array.isArray(state) && state.length === 2 && state.every(Boolean),
+            (state) => Array.isArray(state) && state.length === 5 && state.every(Boolean),
           );
 
           stage('tools_manual_runner');
@@ -444,62 +507,38 @@ async function main() {
           );
           report.manual_runner.opened = true;
           report.manual_runner.canonical_tool = true;
-          const createArgs = { action: 'create', tab_ids: ids, title, color, collapsed: true };
-          stage('tab_groups_create');
-          const createResult = await resourceAction(() =>
-            enterTool(panel, 'tab_groups', createArgs),
-          );
-          const groupId = Number.isSafeInteger(createResult?.group_id)
-            ? createResult.group_id
-            : null;
-          report.fixture_group_id = groupId;
-          report.create = {
-            ok: createResult?.ok === true,
-            group_id_observed: groupId !== null,
-            collapsed_requested: true,
-          };
-          assert.equal(createResult?.ok, true, 'tab_groups_create_refused');
-          assert.ok(groupId !== null, 'tab_groups_create_group_id_missing');
-          const nativeGroup = await evaluate(
-            panel,
-            `(async()=>{ const group=await chrome.tabGroups.get(${groupId}); const tabs=await chrome.tabs.query({groupId:${groupId}}); return {group:{id:group.id,collapsed:group.collapsed,title:group.title,color:group.color,windowId:group.windowId},tabIds:tabs.map(tab=>tab.id)} })()`,
-          );
-          stage('tab_groups_get_tab_groups');
-          await resourceAction(() => typeInto(panel, 'searchInput', 'get_tab_groups'));
-          await waitFor(
-            'get_tab_groups_manual_row_not_ready',
-            () => selectorCount(panel, 'getTabGroupsRow'),
-            (count) => count === 1,
-          );
-          await resourceAction(() => pointer(panel, 'getTabGroupsRow'));
-          await waitFor(
-            'get_tab_groups_manual_form_not_ready',
-            () => selectorCount(panel, 'getTabGroupsTextarea'),
-            (count) => count === 1,
-          );
-          const readback = await resourceAction(() => enterTool(panel, 'get_tab_groups', {}));
-          const proof = verifyTabGroupsCreateObservation({
-            createResult,
-            chromeGroup: nativeGroup.group,
-            chromeTabIds: nativeGroup.tabIds,
-            readback,
-            expectedTabIds: ids,
-            expectedWindowId: fixture.windowId,
-            expectedTitle: title,
-            expectedColor: color,
+          await runTabGroupsMemberScenarios({
+            report,
+            ids,
+            windowId: fixture.windowId,
+            title,
+            color,
+            runTool: (name, args) => resourceAction(() => runCanonicalTool(panel, name, args)),
+            observeChrome: () => resourceAction(() => observeChrome(panel)),
+            onBaseline: (snapshot) => {
+              baseline = snapshot;
+            },
+            onGroupCreated: (id) => {
+              report.fixture_group_ids.push(id);
+            },
           });
-          report.create = { ...proof, collapsed_requested: true };
-          report.readback = {
-            list_count: Number.isSafeInteger(readback?.count) ? readback.count : null,
-            group_match: proof.readback_matches,
-          };
-          assert.equal(proof.passed, true, 'tab_groups_create_collapsed_native_readback_mismatch');
           report.status = 'passed';
         },
         async () => {
           report.fixture.cleanup_verified = await resourceAction(() =>
-            removeOwnedTabs(panel, ids, report.fixture_group_id),
+            removeOwnedTabs(panel, ids, report.fixture_group_ids),
           );
+          if (baseline) {
+            const afterCleanup = await resourceAction(() => observeChrome(panel));
+            report.fixture.non_owned_cleanup_unchanged =
+              JSON.stringify(stableTabGroupSnapshot(afterCleanup)) ===
+              JSON.stringify(stableTabGroupSnapshot(baseline, ids));
+            assert.equal(
+              report.fixture.non_owned_cleanup_unchanged,
+              true,
+              'tab_groups_cleanup_non_owned_mutation',
+            );
+          }
           if (ids.length)
             assert.equal(
               report.fixture.cleanup_verified,

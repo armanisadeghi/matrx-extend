@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-D-0148-remaining-native-driver",
+  "lane": "implementation",
+  "status": "source-ready",
+  "feature_ids": ["EXT-F-4163"],
+  "case_ids": ["EXT-F-4163-T01"],
+  "defect_ids": ["EXT-D-0148"],
+  "recorded_at": "2026-10-11T05:50:46.092261+00:00",
+  "base_sha": "f65f1a4365fad26a5849993185e887abedbc5246",
+  "summary": "Expanded the existing guarded member manual runner to retain independent create true/false, update true/false, add, remove and list observations on five disposable owned tabs and two groups. Source preparation only; no new native product pass or defect/inventory transition.",
+  "changed_files": [
+    "tests/browser/tab-groups-member-native-acceptance.mjs",
+    "tests/browser/tab-groups-member-failure.mjs",
+    "tests/browser/tab-groups-member-failure.test.mjs",
+    "tests/browser/tab-groups-member-scenarios.mjs",
+    "tests/browser/tab-groups-member-scenarios.test.mjs",
+    "docs/stabilization/reports/d148-remaining-native-driver-20261011.json",
+    "docs/stabilization/reports/d148-remaining-driver-source-peer-20261011.json"
+  ],
+  "source_sha256": {
+    "tests/browser/tab-groups-member-native-acceptance.mjs": "fcfc0d764f88dc74df7a6b1c7781769699e5be4f36ed16fcd4e159bdbb44dd46",
+    "tests/browser/tab-groups-member-failure.mjs": "1953b663bfad55942bdda07e2c0a435c958f91c81346bbf3bef7614de44da7a3",
+    "tests/browser/tab-groups-member-failure.test.mjs": "846c9a0e38a68ac8a43c3729444f5f3e8f36198db733c3241c8899400edd0dc4",
+    "tests/browser/tab-groups-member-scenarios.mjs": "38c2136dc393e8ad0a69c1026b7f73f1f5709ab6f2f300933160b20b6b874fc8",
+    "tests/browser/tab-groups-member-scenarios.test.mjs": "4bf1e0b703bf95e53fbc3e24037919b4c3b1e956a3cdc67af37629c0d514f45d"
+  },
+  "implementation": [
+    "Each branch has its own report.branches key; completed earlier observations remain retained after a later failure.",
+    "Each operation invokes tab_groups through trusted side-panel input, queries actual Chrome tabs/tabGroups APIs, invokes get_tab_groups through the manual runner, and compares exact group identity, title/color/collapsed, membership, window and complete canonical list.",
+    "Canonical action=list is also compared against Chrome separately from get_tab_groups; no helper success response alone constitutes a pass.",
+    "Five owned same-window tabs begin ungrouped. Baseline comparisons enforce unchanged non-owned tabs/groups in every window and preserve the untouched true-create group.",
+    "Tool detail remounts and an empty output is required before each run, preventing prior tool output from satisfying a new branch.",
+    "All observed created groups are registered before subsequent readbacks. Cleanup ungroups/removes owned tabs only, checks every recorded owned group is absent, and compares final non-owned state against baseline.",
+    "Original true-create proof and first-failure stage/code remain retained. Allowlisted codes now recognize the first line of real Node AssertionError messages; appended actual values never enter the report."
+  ],
+  "verification": [
+    {
+      "command": "node --test tests/browser/tab-groups-member-scenarios.test.mjs tests/browser/tab-groups-member-failure.test.mjs tests/browser/tab-groups-manual-runner.test.mjs scripts/hosted-tab-groups-route.test.mjs",
+      "verdict": "PASS",
+      "passed": 30,
+      "failed": 0,
+      "evidence_type": "source guards only"
+    },
+    {
+      "command": "pnpm compile",
+      "verdict": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "pnpm -s lint",
+      "verdict": "PASS",
+      "exit_code": 0,
+      "warnings": 854,
+      "note": "Repository-wide warnings; no fixes applied by lint."
+    },
+    {
+      "command": "pnpm exec biome check <five changed source/test files>",
+      "verdict": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "node --check tests/browser/tab-groups-member-native-acceptance.mjs",
+      "verdict": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check -- <owned paths>",
+      "verdict": "PASS",
+      "exit_code": 0
+    }
+  ],
+  "mutation_runner": ".claude/skills/forcing-function-tests/plant.py",
+  "mutation_test_file_commands": [
+    "node --test tests/browser/tab-groups-member-scenarios.test.mjs",
+    "node --test tests/browser/tab-groups-member-failure.test.mjs"
+  ],
+  "mutations": [
+    {
+      "name": "gut-oracle-constant-success",
+      "exit_code": 0,
+      "verdict": "VERDICT: RED (rc=1, expected RED)",
+      "must_mention": "oracle refuses empty"
+    },
+    {
+      "name": "gut-sequence-constant-return",
+      "exit_code": 0,
+      "verdict": "VERDICT: RED (rc=1, expected RED)",
+      "must_mention": "all branches require actual snapshots"
+    },
+    {
+      "name": "skip-add",
+      "exit_code": 0,
+      "verdict": "VERDICT: RED (rc=1, expected RED)",
+      "must_mention": "all branches require actual snapshots"
+    },
+    {
+      "name": "wrong-add-argument",
+      "exit_code": 0,
+      "verdict": "VERDICT: RED (rc=1, expected RED)",
+      "must_mention": "all branches require actual snapshots"
+    },
+    {
+      "name": "wrong-false-create",
+      "exit_code": 0,
+      "verdict": "VERDICT: RED (rc=1, expected RED)",
+      "must_mention": "all branches require actual snapshots"
+    },
+    {
+      "name": "ignore-isolation",
+      "exit_code": 0,
+      "verdict": "VERDICT: RED (rc=1, expected RED)",
+      "must_mention": "add refuses non_owned_group"
+    },
+    {
+      "name": "ignore-canonical-list",
+      "exit_code": 0,
+      "verdict": "VERDICT: RED (rc=1, expected RED)",
+      "must_mention": "list cannot pass"
+    },
+    {
+      "name": "assertion-multiline-code-loss",
+      "exit_code": 0,
+      "verdict": "VERDICT: RED (rc=1, expected RED)",
+      "must_mention": "assertion detail keeps"
+    },
+    {
+      "name": "cleanup-overwrites-primary",
+      "exit_code": 0,
+      "verdict": "VERDICT: RED (rc=1, expected RED)",
+      "must_mention": "cleanup error stays secondary"
+    }
+  ],
+  "independent_source_review": "docs/stabilization/reports/d148-remaining-driver-source-peer-20261011.json",
+  "native_verification": {
+    "status": "unverified",
+    "run_id": null,
+    "note": "No hosted run, browser launch, credential staging, release or Store operation was performed in this lane. Prior bounded native run38114610597 remains evidence only for create collapsed=true/readback."
+  },
+  "limitations": [
+    "Real rendered manual-runner interactions, Chrome semantics, expanded coverage and fixture cleanup still require a guarded hosted native run and independent artifact review.",
+    "Current driver exercises member role only; reload, invalid-schema behavior, admin, permissions and full T01 acceptance remain outside this preparation scope.",
+    "Source tests simulate only external Chrome/UI boundaries and cannot replace native evidence.",
+    "The new standalone guard file is run by the explicit targeted command above; the existing package focused-acceptance list was not changed in this bounded lane."
+  ],
+  "open_questions": [],
+  "next_action": "Commit/push independently source-reviewed driver, then coordinator can dispatch guarded tab-groups-member against an explicitly verified frozen development artifact and retain unique hosted evidence. Keep defect fixed/open until native coverage is independently accepted."
+}

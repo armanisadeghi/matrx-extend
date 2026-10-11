@@ -1159,9 +1159,15 @@ export async function fetchSeoAuditHistoryForUrl(url: string, limit = 25): Promi
     .order('audited_at', { ascending: false })
     .limit(limit);
   if (error) {
-    if (/relation .* does not exist/i.test(error.message)) return [];
-    console.warn('[matrx-extend] fetchSeoAuditHistoryForUrl error', error.message);
-    return [];
+    failDbCall(
+      {
+        table: 'extend.wbx_seo_audit',
+        operation: 'select',
+        what: 'load saved SEO audits',
+        title: 'Saved audits unavailable',
+      },
+      error,
+    );
   }
   return parseRowsSafe(SeoAuditRowSchema, data ?? [], 'fetchSeoAuditHistoryForUrl').rows;
 }

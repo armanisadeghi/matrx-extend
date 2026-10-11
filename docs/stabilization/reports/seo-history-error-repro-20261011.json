@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-history-error-repro-20261011",
+  "source_sha": "7303df1eacee746c7f2d401749de28dff7641712",
+  "feature_id": "EXT-F-1008",
+  "case_id": "EXT-F-1008-T06",
+  "defect_id": "EXT-D-0198",
+  "status": "reproduced_synthetic_source_unit",
+  "scope": "Controlled unit diagnostic only; no live credentials, browser, hosted runner, or backend request.",
+  "diagnostic": {
+    "command": "pnpm test tests/unit/seo-history-error-diagnostic.tmp.test.tsx",
+    "temporary_file": "tests/unit/seo-history-error-diagnostic.tmp.test.tsx (removed after verification)",
+    "production_paths_exercised": [
+      "fetchSeoAuditHistoryForUrl in src/lib/supabase/queries.ts",
+      "SeoView in src/features/seo/SeoView.tsx"
+    ],
+    "controlled_response": {
+      "data": null,
+      "error": {
+        "code": "42501",
+        "message": "permission denied for table wbx_seo_audit"
+      }
+    },
+    "assertions_observed": [
+      "The real query resolves to an empty array and logs the non-missing-relation error.",
+      "The real component render omits the Saved audits for this URL history button.",
+      "The render contains no history-specific error message. The active-page identity Retry button is separately visible and unrelated to history."
+    ],
+    "result": "1 test passed"
+  },
+  "interpretation": "This confirms the source-level failure path and resulting component state for a synthetic query error. It does not prove a real user encounters this backend error, establish role-specific RLS behavior, or count as native/browser acceptance.",
+  "references": [
+    "src/lib/supabase/queries.ts:1154-1166",
+    "src/features/seo/SeoView.tsx:60-61",
+    "src/features/seo/SeoView.tsx:73-95",
+    "src/features/seo/SeoView.tsx:224-237",
+    "src/features/seo/SeoView.tsx:272-281"
+  ]
+}

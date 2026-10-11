@@ -1,0 +1,20 @@
+{
+  "defect_id": "EXT-D-0198",
+  "reviewed_at_utc": "2026-10-11T06:22:04Z",
+  "fix_commit": "9ea9401ed75d3d21cf1bb370eec81a3b8027df0f",
+  "record_commit": "d04ac8a8e434040261c2cfb2e0686a6b8cd187eb",
+  "reviewer": "fresh_independent_testing_lane",
+  "source_and_unit_verdict": "pass",
+  "native_product_verdict": "unverified",
+  "evidence": [
+    "Pre-fix source returned [] for a synthetic non-absence history query error and hid History when the array was empty; the retained repro report records the real query/UI diagnostic.",
+    "The current focused regression passed 5/5 using the real history query and SeoView with controlled query responses. It checks 42501 classification, missing-table rejection, loading and empty states, visible error and Retry history, a second query on retry, and stale old-URL failure isolation.",
+    "The query remains on extendDb() and documented table RLS. No new auth or organization filter or write was added."
+  ],
+  "limits": [
+    "No native browser or live backend run was performed.",
+    "Guest, member and admin behavior and surrounding cases remain independently unverified.",
+    "The peer's compile process produced no diagnostics but had no definitive exit status; the implementer's recorded full compile pass is the definitive compile evidence."
+  ],
+  "next_action": "Run guarded native guest/member/admin T06 reproduction and surrounding SEO cases on a frozen exact-source artifact; keep EXT-D-0198 fixed and open until independent retest passes."
+}

@@ -1,0 +1,71 @@
+{
+  "id": "EXT-D-0198",
+  "feature_id": "EXT-F-1008",
+  "case_ids": ["EXT-F-1008-T06"],
+  "surface": "SEO saved audit history error handling",
+  "auth_mode": "guest/member/admin; synthetic non-absence query error only, mode-specific backend behavior unverified",
+  "title": "SEO history query failure is rendered as unavailable history without an error or history retry",
+  "severity": "S2: a failed history read hides saved audit navigation and diffs, with no history-specific recovery path",
+  "priority": "P1: current Wave B SEO stabilization case EXT-F-1008-T06",
+  "state": "fixed",
+  "owner": "seo-history implementation lane",
+  "preconditions": [
+    "Open the SEO surface for a page URL while the active page identity is unresolved so auto-audit does not issue unrelated capture work.",
+    "The history query returns a non-absence backend error such as PostgREST code 42501 with message 'permission denied for table wbx_seo_audit'.",
+    "Treat this as a controlled synthetic query response; no live account, credentials, or native backend request is involved."
+  ],
+  "reproduction": [
+    "Call the production fetchSeoAuditHistoryForUrl with the page URL and a Supabase query builder resolving {data:null,error:{code:'42501',message:'permission denied for table wbx_seo_audit'}}.",
+    "Observe the real function log the non-missing-relation error and resolve to an empty array rather than returning a distinguishable failure.",
+    "Render the real SeoView with the same synthetic query response for its history load.",
+    "Observe that the Saved audits for this URL history button is absent, the history list and permission-error message are absent, and no history-specific retry action is shown. The separate Retry control for active-page identity is present and unrelated."
+  ],
+  "expected": "Per EXT-F-1008-T06, an unavailable history backend is distinguishable from genuinely empty history; the failure does not masquerade as no saved audits and the user can retry/reopen history.",
+  "actual": "fetchSeoAuditHistoryForUrl returns [] for a non-absence query error. SeoView stores that array and renders the history toggle only when history.length > 0, leaving no history-specific failure message or retry action. This matches the synthetic source/unit reproduction; native user impact remains unverified.",
+  "cause": "Confirmed by RED regression: history reads returned [] on both permission and missing-table errors, and SeoView exposed history only for nonempty arrays. Fixed through failDbCall and one history loader with explicit loading/ready/error state, fresh retry, and request-generation/URL guards.",
+  "evidence": [
+    "docs/stabilization/reports/seo-history-error-repro-20261011.json",
+    "src/lib/supabase/queries.ts:1154-1166",
+    "src/features/seo/SeoView.tsx:60-61",
+    "src/features/seo/SeoView.tsx:73-95",
+    "src/features/seo/SeoView.tsx:224-237",
+    "src/features/seo/SeoView.tsx:272-281",
+    "docs/stabilization/reports/seo-history-error-fix-20261011.json"
+  ],
+  "fix_commit": "9ea9401ed75d3d21cf1bb370eec81a3b8027df0f",
+  "verification": [
+    "A temporary focused Vitest diagnostic invoked the real fetchSeoAuditHistoryForUrl and rendered the real SeoView with a controlled synthetic PostgREST 42501 permission error; it passed the assertions that the query resolves to [], the History toggle is absent, and no history-specific error is shown.",
+    "The temporary diagnostic test file was removed after the run and is not committed.",
+    "No browser, hosted, live backend, auth-mode, or native impact check was performed.",
+    "RED: 4 regression assertions failed for the reported production query/UI defects before source changes. GREEN: 28 focused SEO tests passed; compile, lint (854 existing warnings), schema routing and diff checks passed. Interface-text has 0 novel candidates. See fix report; native/role/Store retest remains open."
+  ],
+  "closure_requirement": "Implement a distinguishable history loading/empty/error flow and a history retry path consistent with T06, then verify the query error is surfaced and retry performs a fresh read. Independently retest the controlled real SEO UI and relevant guest/member/admin modes; retain the source/unit result as supporting evidence only.",
+  "transition_history": [
+    {
+      "at": "2026-10-11T06:13:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Inventory T06 requires distinct history failure handling and retry; source inspection identified a concrete error-to-empty path."
+    },
+    {
+      "at": "2026-10-11T06:13:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "A focused synthetic unit diagnostic reproduced the production query returning [] and the real SeoView hiding history on a non-absence PostgREST error. Native impact remains unverified."
+    },
+    {
+      "at": "2026-10-11T06:18:06.743130+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Implement distinct query failure and saved-history loading/empty/error states with a fresh-read retry; independent native retest remains open."
+    },
+    {
+      "at": "2026-10-11T06:21:03.108015+00:00",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair pushed to main in 9ea9401ed75d3d21cf1bb370eec81a3b8027df0f after RED\u2192GREEN regression, 28 focused SEO tests, compile/lint/schema checks. Independent native and role-specific retest remains open; not shipped or closed."
+    }
+  ],
+  "retest_status": "open \u2014 independent native T06 and relevant guest/member/admin checks required; no browser or live-backend acceptance claimed",
+  "release_status": "unreleased source repair; root task owns guarded hosted release after independent review and remote resource-admission correction"
+}

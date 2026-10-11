@@ -9,6 +9,14 @@ const KNOWN_FAILURES = new Set([
   'tab_groups_create_group_id_missing',
   'tab_groups_create_collapsed_native_readback_mismatch',
   'tab_groups_owned_tab_cleanup_unverified',
+  'tab_groups_five_owned_tabs_required',
+  'tab_groups_owned_fixture_not_ready',
+  'tab_groups_operation_refused',
+  'tab_groups_created_group_not_owned',
+  'tab_groups_operation_native_readback_mismatch',
+  'tab_groups_list_native_readback_mismatch',
+  'tab_groups_cleanup_non_owned_mutation',
+  'tab_groups_stale_manual_result',
 ]);
 
 const MANUAL_STEPS = new Set([
@@ -25,9 +33,16 @@ const MANUAL_STEPS = new Set([
 ]);
 
 export function tabGroupsFailureCode(error, report) {
-  if (KNOWN_FAILURES.has(error?.message)) return error.message;
+  const firstLine = typeof error?.message === 'string' ? error.message.split('\n', 1)[0] : null;
+  if (KNOWN_FAILURES.has(firstLine)) return firstLine;
   if (report.stage === 'tools_manual_runner' && MANUAL_STEPS.has(report.manual_runner_step))
     return `tab_groups_manual_${report.manual_runner_step}_failed`;
+  if (
+    /^tab_groups_(create_true|create_false|update_true|update_false|add|remove|list)(_get_tab_groups)?$/.test(
+      report.stage,
+    )
+  )
+    return `${report.stage}_failed`;
   return 'unclassified_failure';
 }
 

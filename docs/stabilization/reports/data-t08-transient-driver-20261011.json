@@ -1,0 +1,32 @@
+{
+  "case": "Member Data T08 transient running-state driver preparation",
+  "date": "2026-10-11",
+  "status": "source-only driver improvement; native observation remains unverified",
+  "change": {
+    "driver": "The panel observer now latches the named pattern's actual rendered `auto` badge with a MutationObserver, then reports the latched result after the successful extraction settles.",
+    "state_detection": "The instantaneous card reader recognizes `running` only when the named card renders a span whose text is exactly `auto`; success, no-match, and failure continue to use their separate visible badges.",
+    "preserved_contracts": [
+      "Exact selected-organization X-Organization-Id assertions in the authenticated pattern-create POST path were not changed.",
+      "Owned-pattern root read, invalid-root write/readback, restoration/readback, and owned-row cleanup paths were not changed."
+    ]
+  },
+  "evidence": {
+    "focused_test": "node --test tests/browser/data-member-auto-extract-driver.test.mjs: 5 passed, 0 failed.",
+    "mutation_1": "With the running-badge reader forced false, the transient-state test failed at its rendered-running assertion; plant.py restored the original driver byte-for-byte.",
+    "mutation_2": "With the observer latch forced false, the transient-state test failed at the post-completion latched-state assertion; plant.py restored the original driver byte-for-byte.",
+    "format": "Biome formatted the two owned source files.",
+    "lint": "pnpm -s lint --diagnostic-level=error passed across 2,629 files.",
+    "compile": "pnpm compile (tsc --noEmit) passed."
+  },
+  "native_limit": "No hosted or local browser run was started under the current resource-admission constraint. The MutationObserver is covered against real DOM transitions in the focused harness, but this change has not yet established that the native member page renders the transient badge during T08. The previously reviewed member run remains partial with running unverified.",
+  "next_action": "On the next admitted native member T08 run, inspect the sanitized running observation alongside the existing exact organization-header evidence and owned-fixture cleanup. Keep T08 partial unless the native report records the latched rendered badge.",
+  "independent_review_follow_up": {
+    "finding": "The source peer reproduced a false positive when the observer was installed while the named card already rendered the `auto` badge.",
+    "fix": "Installation now records the current rendered badge as a baseline without crediting it. The latch is set only by a later observed transition from no running badge to the exact `auto` badge.",
+    "red_green": "Added a stale-badge regression first. It failed on the prior driver because install returned seen=true; after the fix it passes and confirms replacing the stale badge with success does not create evidence.",
+    "focused_test_after_fix": "node --test tests/browser/data-member-auto-extract-driver.test.mjs: 6 passed, 0 failed.",
+    "lint": "pnpm -s lint --diagnostic-level=error passed across 2,629 files; focused Biome check passed for both owned code files.",
+    "compile": "pnpm compile (tsc --noEmit) passed.",
+    "native_status": "Still unverified; no browser or hosted run was started under the resource-admission constraint."
+  }
+}
