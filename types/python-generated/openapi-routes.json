@@ -5729,6 +5729,9 @@
  "/project-gutenberg/latest-ebook": {
   "get": []
  },
+ "/prompt-blocks/resolve": {
+  "get": []
+ },
  "/proof-runs/checks": {
   "get": []
  },
