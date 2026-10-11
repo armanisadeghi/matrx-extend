@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "report_type": "organization_header_class_diagnosis",
+  "finding_id": "DATA-T08-ORG-HEADER-01",
+  "source_run_id": 38113237641,
+  "status": "source_fix_verified_native_reobservation_pending",
+  "confirmed_cause": "All three ordinary Supabase clients omitted X-Organization-Id at their HTTP boundary. Data savePattern already supplied the correct captured organization_id in its row body. The missing header is a shared transport defect, not a Data body defect.",
+  "hypotheses": [
+    {
+      "cause": "Shared Supabase clients omit the header",
+      "prediction": "Real SDK outgoing fetch has null header for every actor channel",
+      "result": "CONFIRMED: original tests failed four null-header assertions before product edits."
+    },
+    {
+      "cause": "CDP observer drops an existing header",
+      "prediction": "Real SDK outgoing fetch contains header despite native observer absence",
+      "result": "REFUTED: real SDK fetch reproduces null header; frozen source independently has no organization-header wiring."
+    },
+    {
+      "cause": "Data Save captured the wrong organization",
+      "prediction": "Native body does not match selected organization",
+      "result": "REFUTED: native POST201 body organization matched selected org."
+    }
+  ],
+  "capture_assessment": {
+    "native_observer": "tests/browser/data-member-save-observer.mjs reads requestWillBeSent request.headers case-insensitively. Header absence is independently corroborated by frozen source and real SDK fetch seam.",
+    "limit": "No new native CDP capture was run; the fixed artifact still requires native re-observation."
+  },
+  "contract": {
+    "scope": "Authenticated direct Supabase data calls are included in the repository organization-header contract. Anonymous requests remain independent. Aidream request gating is unchanged.",
+    "bootstrap_basis": "Organizations VISION section10 (2026-10-07) establishes the UI selection at load, then applies the active organization to subsequent requests. Membership and account preference reads precede that selection.",
+    "runtime_evidence": "Frozen native report resolves a verified organization via load_ladder with the old headerless client and records a headerless authenticated PostgREST POST returning201. Individual bootstrap request statuses were not separately captured.",
+    "bounded_exception": "Only three named fixed read helpers use a private non-exported bootstrap client: membership RPC, organization labels for membership ids, and current-user account choice. Once cached verified selection exists they carry it. Ordinary requests cannot bypass resolution by matching endpoint or query shape.",
+    "canonical_doc": "common-docs/systems/apps/extension/STATE.md rule16 reconciled with the newer load ladder; removed picker hold claim replaced by honest pending native coverage."
+  },
+  "fix": {
+    "boundary": "src/lib/supabase/organization-fetch.ts installed on person, agent and machinery Supabase clients.",
+    "captured_write_context": "Only explicit top-level organization_id/p_organization_id controls scoped JSON write header. Header matches captured context even after active org switch; bodies are never rewritten.",
+    "conflicts": "Disagreeing top-level context keys or bulk row organizations refuse before network I/O; nested incidental fields are ignored.",
+    "reads": "Other authenticated requests use the sole active-org resolver; zero memberships refuses ordinary requests.",
+    "bootstrap": "Private fixed helper calls prevent first-load recursion and remove automatic URL-shaped exceptions.",
+    "actor_attribution": "Person sends no actor declaration; agent and machinery actor headers preserved."
+  },
+  "census": {
+    "covered_clients": [
+      "getSupabase",
+      "getAgentAuthoredSupabase",
+      "getMachineryAuthoredSupabase"
+    ],
+    "affected_consumers": "All schema accessors, ordinary direct REST/RPC writes, and shared package consumers of these clients inherit the repair. No per-Data handler patch.",
+    "excluded_client": "verify-claims.ts dedicated verification client only verifies claims/JWKS and refuses auth/user; it is not an authenticated organization data client.",
+    "bootstrap_helper_callers": "Source census finds only active-org.ts calling the three bootstrap read helpers."
+  },
+  "guard_evidence": {
+    "original_red": "pnpm test src/lib/supabase/client.organization.test.ts: 4 failures of5, each reported null outgoing header; anonymous catalog test passed.",
+    "caller_mutation_red": "Removed actual global fetch wiring temporarily. Real savePattern\u2192Supabase SDK\u2192fetch test failed expected captured organization UUID, received null; exit1. Exact original file restored.",
+    "caller_restored_green": "Same real Data Save caller test exit0 after restoration.",
+    "boundary_green": "18 tests passed with actual Supabase SDK and actual active-org resolver, stubbing only storage auth identity and final network.",
+    "limits": "Network seam returns deterministic responses and proves outgoing requests/recursion, not live RLS persistence. Native frozen run is prior live evidence; fixed native verification remains pending."
+  },
+  "verification": {
+    "focused_org_regressions": "18 real SDK/resolver boundary tests pass; legacy auth/ladder focused set24 passed before eighteenth test; two additional resolver/Scrape Save double adapters45/45 pass.",
+    "compile": "PASS",
+    "schema_routing_strict": "PASS",
+    "full_lint": "PASS exit0; existing warnings remain, new fetch/test files clean.",
+    "full_regression": "Final full suite rerunning after adapting two legacy resolver test doubles; intermediate final pass found exactly26 failures in those two files. Those files now45/45 pass. Earlier suite337 files2381 tests passed before helper redesign.",
+    "docs_lint": "Common-docs okf_lint exit1:81 existing violations182 warnings outside changed STATE path; no STATE finding. Whitespace checks pass.",
+    "independent_source_peer": "PASS A/B after fresh source review and scoped re-review of private helper narrowing, canonical STATE and two legacy doubles. Peer independently ran6 files75 tests; no Critical/Important findings. Report: supabase-org-header-source-peer-20261011.json."
+  },
+  "limits": [
+    "No native hosted run launched.",
+    "No Data inventory or defect state edited in this lane.",
+    "No release, Store or current installed-runtime acceptance claimed.",
+    "No feature-tests update required: transport contract repair adds no user-visible UI."
+  ],
+  "owned_paths": [
+    "src/lib/supabase/client.ts",
+    "src/lib/supabase/organization-fetch.ts",
+    "src/lib/supabase/client.organization.test.ts",
+    "src/lib/supabase/schemas.ts",
+    "src/lib/org/active-org.ts",
+    "src/lib/api/client-organization-ladder.test.ts",
+    "src/lib/api/client-organization-no-memberships.test.ts",
+    "src/lib/supabase/FEATURE.md",
+    "docs/stabilization/reports/data-org-header-diagnosis-20261011.json",
+    "common-docs/systems/apps/extension/STATE.md",
+    "tests/unit/auth-route.test.ts",
+    "tests/unit/save-never-loses-input.test.tsx"
+  ]
+}

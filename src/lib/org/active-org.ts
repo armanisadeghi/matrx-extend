@@ -36,8 +36,12 @@ import { ENV, STORAGE_KEYS } from '@/config/env';
 import { getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { getOne, onChange, setOne } from '@/lib/storage/chrome-local';
-import { getSupabase } from '@/lib/supabase/client';
-import { iamDb, usersDb } from '@/lib/supabase/schemas';
+import {
+  getSupabase,
+  readOrganizationBootstrapAccountChoice,
+  readOrganizationBootstrapLabels,
+  readOrganizationBootstrapMemberships,
+} from '@/lib/supabase/client';
 import { pushNotice } from '@/state/notices';
 import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 
@@ -140,9 +144,7 @@ interface MembershipRow {
 export async function listMemberOrganizations(
   archiveFilter: ArchiveFilterValue = 'active',
 ): Promise<MemberOrganization[]> {
-  const { data, error } = await getSupabase().rpc('mbr_for_user', {
-    p_container_type: 'organization',
-  });
+  const { data, error } = await readOrganizationBootstrapMemberships();
   if (error) {
     log.error('auth', 'listMemberOrganizations: membership read failed', error);
     throw new Error(`Could not read your organizations: ${error.message}`);
@@ -161,10 +163,10 @@ export async function listMemberOrganizations(
   const ids = [...joinedAtById.keys()];
   if (ids.length === 0) return [];
 
-  let query = iamDb().from('organizations').select('id,name,archived_at').in('id', ids);
-  if (archiveFilter === 'active') query = query.is('archived_at', null);
-  if (archiveFilter === 'archived') query = query.not('archived_at', 'is', null);
-  const { data: orgRows, error: orgError } = await query;
+  const { data: orgRows, error: orgError } = await readOrganizationBootstrapLabels(
+    ids,
+    archiveFilter,
+  );
   if (orgError) {
     log.error('auth', 'listMemberOrganizations: organization read failed', orgError);
     throw new Error(`Could not read your organizations: ${orgError.message}`);
@@ -187,14 +189,11 @@ export async function listMemberOrganizations(
  * ladder and nothing else (STATE rules 12 and 14). A failed read throws — a
  * guessed first organization would hide the person's real last choice.
  */
-async function readAccountOrganizationChoice(
-  userId: string,
-): Promise<{ lastActive: string | null; startup: string | null }> {
-  const { data, error } = await usersDb()
-    .from('user_preferences')
-    .select('last_active_organization_id,startup_organization_id')
-    .eq('user_id', userId)
-    .maybeSingle();
+async function readAccountOrganizationChoice(): Promise<{
+  lastActive: string | null;
+  startup: string | null;
+}> {
+  const { data, error } = await readOrganizationBootstrapAccountChoice();
   if (error) {
     log.error('auth', 'organization ladder: account read failed', error);
     throw new Error(`Could not read your saved organization: ${error.message}`);
@@ -253,7 +252,7 @@ async function validateActiveOrganization(userId: string): Promise<MemberOrganiz
   // membership. The result is NOT written back as the device choice — only a
   // deliberate switch does that.
   if (organizations.length === 0) return null;
-  const account = await readAccountOrganizationChoice(userId);
+  const account = await readAccountOrganizationChoice();
   if (selectionGeneration !== generation) return null;
   const chosen =
     (account.lastActive ? byId.get(account.lastActive) : undefined) ??
@@ -289,6 +288,19 @@ async function persistSelection(org: MemberOrganization): Promise<void> {
     id: org.id,
     name: org.name,
   });
+}
+
+/**
+ * Read only a previously validated selection; never starts database resolution.
+ * The Supabase transport uses this for the three identity-scoped bootstrap reads
+ * needed by the load ladder itself, so its first request cannot await itself.
+ */
+export async function getResolvedActiveOrganizationId(): Promise<string | null> {
+  const user = await getCurrentUser();
+  if (!user?.id || validatedSelection?.userId !== user.id) return null;
+  const stored = await readStoredSelection();
+  if (stored?.id === validatedSelection.organizationId) return stored.id;
+  return !stored && validatedSelection.viaLadder ? validatedSelection.organizationId : null;
 }
 
 /**

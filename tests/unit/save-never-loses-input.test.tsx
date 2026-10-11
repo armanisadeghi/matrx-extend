@@ -34,6 +34,18 @@ vi.mock('@/lib/auth/flow', () => ({
 // only for the workspace that received the Source. Model its live membership
 // read, including the archive filter, instead of assuming storage is enough.
 vi.mock('@/lib/supabase/client', () => ({
+  readOrganizationBootstrapMemberships: async () => ({
+    data: [
+      { container_id: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f' },
+      { container_id: '8e530f1e-a236-4bca-8131-f15327796301' },
+    ],
+    error: null,
+  }),
+  readOrganizationBootstrapLabels: async (ids: string[], filter: string) => {
+    if (filter !== 'active') throw new Error('Archive filter missing');
+    return { data: ids.map((id) => ({ id, name: 'Workspace' })), error: null };
+  },
+  readOrganizationBootstrapAccountChoice: async () => ({ data: null, error: null }),
   getSupabase: () => ({
     rpc: async () => ({
       data: [

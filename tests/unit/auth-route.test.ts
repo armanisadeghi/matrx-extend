@@ -51,6 +51,13 @@ const mocks = vi.hoisted(() => {
 
 vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: mocks.getCurrentUser }));
 vi.mock('@/lib/supabase/client', () => ({
+  readOrganizationBootstrapMemberships: () =>
+    mocks.rpc('mbr_for_user', { p_container_type: 'organization' }),
+  readOrganizationBootstrapLabels: (ids: string[], filter: string) => {
+    if (filter !== 'active') throw new Error('Archive filter missing');
+    return mocks.orgSelect('id', ids, 'archived_at', null);
+  },
+  readOrganizationBootstrapAccountChoice: mocks.prefsSelect,
   getSupabase: () => ({
     rpc: mocks.rpc,
     schema: (name: string) => ({

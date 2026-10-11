@@ -45,6 +45,8 @@
  *    defect, never a writer contract. See common-docs/no-db-assigned-org.
  */
 
+import type { SupabaseClient } from '@supabase/supabase-js';
+
 import {
   getAgentAuthoredSupabase,
   getMachineryAuthoredSupabase,
@@ -151,14 +153,14 @@ export const workbenchDb = () => getSupabase().schema('workbench');
 export const chatDb = () => getSupabase().schema('chat');
 
 /** `users` — user_form_profile, user_preferences. Ownership: `user_id` (kept). */
-export const usersDb = () => getSupabase().schema('users');
+export const usersDb = (client: SupabaseClient = getSupabase()) => client.schema('users');
 
 /**
  * `iam` — organizations. READ-ONLY from this client: the extension resolves
  * which organization it acts in (src/lib/org/active-org.ts) but never creates,
  * renames, or joins one — that is the web app's job.
  */
-export const iamDb = () => getSupabase().schema('iam');
+export const iamDb = (client: SupabaseClient = getSupabase()) => client.schema('iam');
 
 /**
  * `media` — the capture ladder's `capture_handoff` queue. READ-ONLY from this
