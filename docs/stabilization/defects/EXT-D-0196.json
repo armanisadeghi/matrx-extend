@@ -1,0 +1,63 @@
+{
+  "id": "EXT-D-0196",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T08"],
+  "surface": "Hosted guest acceptance resource-journal artifact upload",
+  "auth_mode": "all supported hosted acceptance modes; infrastructure-only, zero product behavior credit",
+  "title": "Hosted acceptance artifacts include unrelated historical resource journals",
+  "severity": "S3: artifacts contain unrelated historical resource evidence and obscure run ownership",
+  "priority": "P1: keep hosted acceptance evidence attributable to its actual run and attempt",
+  "state": "fixed",
+  "owner": "hosted_journal_upload_fix",
+  "preconditions": [
+    "Tracked historic hosted resource journals exist in the checkout.",
+    "Any hosted acceptance case reaches the always-run artifact upload step."
+  ],
+  "reproduction": [
+    "Inspect artifact from hosted guest Scrape run 38098345217: resource-journals includes 27 unrelated tracked historical journals.",
+    "Run scripts/test-hosted-journal-upload.mjs against the former workflow broad glob in a scratch copy using HOSTED_JOURNAL_WORKFLOW_FILE: completed, crashed and missing scenarios all fail the ownership assertion."
+  ],
+  "expected": "Artifact includes only available package, browser, guest or startup journal finals and pending crash diagnostics for the current GitHub run ID and attempt.",
+  "actual": "hosted-*.jsonl sweeps historical, other-run and prior-attempt journals into the artifact, even when the current run creates no journal.",
+  "cause": "Upload selection is repository-wide while all four resource wrappers and the journal writer already use exact run-and-attempt-owned filenames.",
+  "sibling_census": "All four hosted acceptance resource wrapper IDs are covered: hosted-package, hosted-browser, hosted-guest and hosted-startup. Each can emit .jsonl or .pending.jsonl; test checks wrapper coverage.",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38098345217",
+    "scripts/test-hosted-journal-upload.mjs"
+  ],
+  "fix_commit": "8e506501acd3eee52f2382d337200fdbe7699d90",
+  "verification": [
+    "Guard failed all three scenarios before repair and passed all three afterward using the real journal writer and scratch-filesystem glob selection.",
+    "Scratch-copy mutations broad-glob, empty-selection, drop-pending and prior-attempt each fail the named ownership assertion.",
+    "Integrated pnpm test:focused-acceptance: 393 passed, 0 failed, 0 skipped. Full pnpm -s lint exited 0 with 853 inherited warnings.",
+    "Independent reviewer reproduced the baseline leak and verified exact final/pending selection across all four wrappers and unchanged always/ignore semantics."
+  ],
+  "independent_review": {
+    "reviewer": "scrape_t08_independent_review",
+    "code_review": "Confirmed path semantics and independently reproduced baseline red; final peer report retained by coordinator.",
+    "hosted_artifact_verification": "pending"
+  },
+  "closure_requirement": "Independently inspect a fresh hosted acceptance artifact from workflow source containing 8e506501a; confirm only current-run/current-attempt journal paths appear and available resource finals or pending crash diagnostics are retained. Do not close from local guard or source review alone.",
+  "transition_history": [
+    {
+      "from": null,
+      "to": "open",
+      "reason": "Reviewed hosted run 38098345217 includes 27 unrelated historical journals."
+    },
+    {
+      "from": "open",
+      "to": "triaged",
+      "reason": "Repository-wide upload glob disagrees with already run-owned resource writer paths; baseline guard reproduces leak."
+    },
+    {
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Replace broad glob with eight exact final/pending paths and integrate regression guard into focused acceptance."
+    },
+    {
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fix 8e506501a pushed with 393 focused checks and full lint passing; independent source reviewer reproduced baseline and verified selection. Fresh hosted artifact review remains pending."
+    }
+  ]
+}
