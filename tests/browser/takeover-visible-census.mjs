@@ -2,7 +2,7 @@
 /** Receipt-bound, read-only native visibility discovery for a fresh role profile. */
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
-import { open, readFile, writeFile } from 'node:fs/promises';
+import { open, readFile, readdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
@@ -69,6 +69,20 @@ const uniqueControlIds = new Map(
     .filter(([, ids]) => ids.length === 1)
     .map(([label, ids]) => [label, ids[0]]),
 );
+// Only literal source-owned accessible attributes are eligible for cleartext diagnostics.
+// Never harvest runtime text, input values, IDs, hrefs, or user-generated labels.
+const diagnosticSourceFiles = [
+  'src/features/chat/ChatView.tsx',
+  'src/features/data/DataView.tsx',
+  'src/features/seo/SeoView.tsx',
+];
+const diagnosticLabels = new Set();
+for (const file of diagnosticSourceFiles) {
+  const source = await readFile(join(ROOT, file), 'utf8');
+  for (const match of source.matchAll(/(?:aria-label|title|placeholder)="([^"\n]{1,256})"/g))
+    diagnosticLabels.add(match[1]);
+}
+
 const controlAliases = new Map([
   ['Offer to save logins to the Vault', 'EXT-F-1003-C07'],
   ['Local engine port', 'EXT-F-1003-C16'],
@@ -265,7 +279,9 @@ function fingerprintScript(key) {
 
 // Only structural DOM facts and source-owned anchors leave the page. Attribute text,
 // hrefs, input values, and generated IDs can contain private data.
-const provenanceScript = `const safeRole = (el) => {
+const provenanceScript = `const diagnosticLabels = new Set(${JSON.stringify([...diagnosticLabels])});
+const diagnosticCandidates = ${JSON.stringify(Object.fromEntries(globalControlLabels))};
+const safeRole = (el) => {
   const role = el.getAttribute('role');
   return /^(tablist|tab|tabpanel|button|link|switch|combobox|checkbox|radio|menuitem|option)$/.test(role ?? '') ? role : null;
 };
@@ -283,6 +299,19 @@ const provenance = (el, order) => {
   const anchor = el.getAttribute('data-census-id');
   return { tag: el.tagName.toLowerCase(), role: safeRole(el),
     dom_order: order, region, dom_path: path.join('/'),
+    diagnostic_identity: (() => {
+      const candidates = ['aria-label', 'title', 'placeholder'].map(attribute =>
+        ({ attribute, value: el.getAttribute(attribute)?.trim() })).filter(item => item.value);
+      // Visible/runtime text never promotes a name, even on an exact allowlist collision.
+      // Return the source literal, not a runtime string; attribute origin stays explicit.
+      const sourceLabel = [...diagnosticLabels].find(label => candidates.some(item => item.value === label));
+      const hasUntrustedLabel = candidates.length > 0 || Boolean(el.textContent?.trim());
+      return { accessible_name: sourceLabel ?? (hasUntrustedLabel ? '[redacted_unrecognized_label]' : '[unlabeled]'),
+        name_source: sourceLabel ? candidates.find(item => item.value === sourceLabel).attribute : 'marker',
+        inventory_candidate_ids: sourceLabel ? (diagnosticCandidates[sourceLabel] ?? []) : [],
+        structural: el.matches('[role="tablist"], [role="tabpanel"]'),
+        outside_panel: region === 'outside_panel' };
+    })(),
     ...(anchor && /^EXT-F-[0-9]{4}-C[0-9]{2}$/.test(anchor) ? { source_anchor: anchor } : {}) };
 };`;
 
@@ -531,9 +560,52 @@ async function prepareGuestObservation(panel, fingerprintKey) {
   );
 }
 
-export async function mutationGuard(panel) {
+export function blockedRequestDiagnostic(request, initiator = 'unavailable') {
+  const url = new URL(request.url);
+  const rpc = /^\/rest\/v1\/rpc\/([a-z][a-z0-9_]{0,95})$/.exec(url.pathname)?.[1];
+  // RPC names are source contracts; refuse arbitrary paths and unknown names.
+  const source = rpcSourceClassifications[rpc];
+  const callsites = rpcSourceCallsites.get(rpc);
+  return {
+    method: ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method?.toUpperCase())
+      ? request.method.toUpperCase()
+      : 'OTHER',
+    path: callsites ? `/rest/v1/rpc/${rpc}` : '[redacted_path]',
+    rpc_name: callsites ? rpc : '[unclassified]',
+    initiator,
+    source_classification: source?.semantics ?? 'unclassified',
+    source_callsites: callsites ?? [],
+    policy: 'blocked_non_GET',
+  };
+}
+const rpcSourceClassifications = {
+  knob_snapshot: { semantics: 'read', callsites: ['src/lib/settings/platform-knobs.ts:snapshot'] },
+  knob_resolve: {
+    semantics: 'read',
+    callsites: ['src/lib/credentials/generation-limits.ts', 'src/lib/api/routes/vault.ts'],
+  },
+  mbr_for_user: { semantics: 'read', callsites: ['src/lib/supabase/client.ts'] },
+  log_client_error: { semantics: 'write', callsites: ['src/lib/supabase/db-failure.ts'] },
+  set_last_active_organization: { semantics: 'write', callsites: ['src/lib/org/active-org.ts'] },
+};
+
+// Resolve every literal source RPC, retaining unknown semantics rather than guessing.
+const rpcSourceCallsites = new Map();
+for (const entry of await readdir(join(ROOT, 'src'), { recursive: true })) {
+  if (!/\.tsx?$/.test(entry)) continue;
+  const source = await readFile(join(ROOT, 'src', entry), 'utf8');
+  for (const match of source.matchAll(/\.rpc\(\s*['"]([a-z][a-z0-9_]{0,95})['"]/g)) {
+    const paths = rpcSourceCallsites.get(match[1]) ?? [];
+    const path = `src/${entry}`;
+    if (!paths.includes(path)) paths.push(path);
+    rpcSourceCallsites.set(match[1], paths);
+  }
+}
+
+export async function mutationGuard(panel, target = 'sidepanel') {
   let attempts = 0;
   const blocked = {};
+  const diagnostics = [];
   const off = panel.on('Fetch.requestPaused', (event) => {
     try {
       const url = new URL(event.request.url);
@@ -542,6 +614,7 @@ export async function mutationGuard(panel) {
         !['GET', 'HEAD', 'OPTIONS'].includes(event.request.method?.toUpperCase())
       ) {
         attempts++;
+        diagnostics.push(blockedRequestDiagnostic(event.request, target));
         const boundary =
           url.hostname === 'db.matrxserver.com'
             ? 'database'
@@ -568,6 +641,7 @@ export async function mutationGuard(panel) {
   return {
     count: () => attempts,
     blocked: () => ({ ...blocked }),
+    diagnostics: () => structuredClone(diagnostics),
     close: async () => {
       off();
       await panel.send('Fetch.disable');
@@ -718,6 +792,64 @@ export async function collectTabSurface(panel, tabLabel, fingerprintKey, timeout
   }
 }
 
+export function inspectionFailureCategory(error) {
+  const pointerCode = error?.driverFailure?.code;
+  if (
+    [
+      'pointer_target_not_unique',
+      'pointer_stable_hit_not_observed',
+      'pointer_followup_evaluation_failed',
+      'pointer_page_sample_failed',
+      'pointer_press_dispatch_failed',
+      'pointer_release_dispatch_failed',
+    ].includes(pointerCode)
+  )
+    return pointerCode;
+  const message = String(error?.message ?? '');
+  return message.includes('_not_observed:')
+    ? 'timeout'
+    : message === 'panel_runtime_exception'
+      ? 'runtime_exception'
+      : 'transport_or_driver_failure';
+}
+
+export async function inspectSettingsSection(panel, section, fingerprintKey, open = openSection) {
+  let stage = 'section_click';
+  try {
+    await open(panel, section);
+    stage = 'content_inspection';
+    const raw = await settingsControls(panel, section, fingerprintKey);
+    if (raw !== null && raw !== undefined) return { raw };
+    throw new Error('content_missing');
+  } catch (error) {
+    const diagnostic = {
+      region: 'settings_section',
+      label: section,
+      reason: 'inspection_failed',
+      stage,
+      click_result: stage === 'section_click' ? 'failed' : 'opened',
+      failure_category:
+        error?.message === 'content_missing' ? 'content_missing' : inspectionFailureCategory(error),
+    };
+    if (section === 'About') {
+      // Retry inspection only; never click again or grant completeness from a failed click.
+      try {
+        const retry = await settingsControls(panel, section, fingerprintKey);
+        diagnostic.read_only_retry = {
+          result: retry == null ? 'content_missing' : 'inspected',
+          visible_control_count: retry?.length ?? 0,
+        };
+      } catch (retryError) {
+        diagnostic.read_only_retry = {
+          result: 'failed',
+          failure_category: inspectionFailureCategory(retryError),
+        };
+      }
+    }
+    return { raw: null, diagnostic };
+  }
+}
+
 async function census(panel, fingerprintKey) {
   const navigationRaw = await evaluate(panel, discoveryExpression('navigation', fingerprintKey));
   const navigation = mapObservation('navigation', navigationRaw);
@@ -818,23 +950,9 @@ async function census(panel, fingerprintKey) {
       continue;
     }
     navigation_actions.push({ kind: 'settings_section', label: section.label });
-    try {
-      await openSection(panel, section.label);
-      const sectionRawControls = await settingsControls(panel, section.label, fingerprintKey);
-      if (!sectionRawControls)
-        inaccessible_regions.push({
-          region: 'settings_section',
-          label: section.label,
-          reason: 'content_missing',
-        });
-      else controls[section.label] = mapObservation('settings_control', sectionRawControls);
-    } catch {
-      inaccessible_regions.push({
-        region: 'settings_section',
-        label: section.label,
-        reason: 'inspection_failed',
-      });
-    }
+    const inspected = await inspectSettingsSection(panel, section.label, fingerprintKey);
+    if (inspected.raw) controls[section.label] = mapObservation('settings_control', inspected.raw);
+    if (inspected.diagnostic) inaccessible_regions.push(inspected.diagnostic);
   }
   const identity = await evaluate(
     panel,
@@ -955,7 +1073,7 @@ async function main() {
       let workerGuard;
       try {
         panelGuard = await mutationGuard(panel);
-        workerGuard = await mutationGuard(worker);
+        workerGuard = await mutationGuard(worker, 'extension_worker');
         if (ROLE === 'guest') {
           authentication = await prepareGuestObservation(panel, fingerprintKey);
           guestReadinessScreenshot = await captureGuestReadiness(panel, OUTPUT, authentication);
@@ -971,6 +1089,7 @@ async function main() {
           blocked_request_count: panelGuard.count() + workerGuard.count(),
           sidepanel: panelGuard.blocked(),
           extension_worker: workerGuard.blocked(),
+          blocked_request_diagnostics: [...panelGuard.diagnostics(), ...workerGuard.diagnostics()],
         };
       } finally {
         if (panelGuard) await panelGuard.close();
