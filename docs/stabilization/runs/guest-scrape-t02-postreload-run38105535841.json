@@ -1,0 +1,42 @@
+{
+  "id": "guest-scrape-t02-postreload-run38105535841",
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T02",
+  "at": "2026-10-11T02:41:35Z",
+  "status": "bounded-pass-pending-independent-review",
+  "scope": "Guest T02 post-full-extension-reload deep recapture on an owned lazy-content fixture; credit limited to this subtarget.",
+  "hosted_run_id": 38105535841,
+  "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+  "lane": "B",
+  "runner_label": "macos-15-intel",
+  "resource_finals": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid"
+  },
+  "product_artifact": {
+    "development_run_id": 38102137319,
+    "development_artifact_id": 11688890496,
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "version": "0.2.490",
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "runtime_equivalent_to_main": true
+  },
+  "native_subtarget": {
+    "lazy_marker_absent_before_deep_capture": true,
+    "lazy_marker_present_in_page_after_capture": true,
+    "lazy_marker_present_in_selected_article_capture": true,
+    "scroll_progress_observed": true,
+    "scroll_progress_text": "Scrolling…",
+    "viewport": "600px CDP-emulated normal width"
+  },
+  "evidence": "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/",
+  "independent_review": "pending",
+  "limitations": [
+    "Hosted route runs the broader guest Scrape procedure; this record claims only T02 post-reload deep recapture.",
+    "Deep failure retry mode remains unverified.",
+    "T14 Reload page recovery remains unverified; the prior real permission-denial state offers Try again but no Reload page control.",
+    "No full T02, Scrape, signed-in, default-Chrome, Store-installed, or overall-health claim."
+  ],
+  "product_defect_inference": false
+}

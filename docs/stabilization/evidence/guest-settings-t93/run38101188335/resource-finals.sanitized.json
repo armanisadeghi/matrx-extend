@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "source": "Copied through copy-hosted-resource-journal.mjs; process attribution and opened-event paths removed.",
+  "phases": {
+    "package": {
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      },
+      "journal": "hosted-package-38101188335-1.jsonl",
+      "sha256": "715005fb4cdcf6750b8e13e1031d05a89344a951bd9b25663243e9ac261764f7"
+    },
+    "browser": {
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      },
+      "journal": "hosted-browser-38101188335-1.jsonl",
+      "sha256": "9bfa6fbc979439bf1a2899f4919a6f2b6e429a4c6004944ac883e482ee172714"
+    },
+    "guest": {
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed"
+      },
+      "journal": "hosted-guest-38101188335-1.jsonl",
+      "sha256": "486c54e017b243682e5ba75dff1dd000b326249a0fb55e35df66fe5bac73fe1b"
+    }
+  },
+  "policy_verdict": "All three phases admitted; all resource finals valid. Guest child failed during native acceptance, with resourceInvalid false."
+}

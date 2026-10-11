@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-11T01:05:38.231Z",
+  "updated_at": "2026-10-11T02:28:37.474Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -13463,7 +13463,33 @@
             "warm",
             "panel-reopen",
             "preference-restoration"
-          ]
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "run_id": "38102203927",
+              "workflow_source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+              "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+              "build_version": "0.2.490",
+              "build_tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
+              "hosted_result_artifact_id": 11688730538,
+              "runner_arch": "ARM64",
+              "resource_valid": true,
+              "native_case_status": "fail",
+              "evidence": [
+                "docs/stabilization/evidence/guest-settings-t93/run38102203927/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-settings-t93/run38102203927/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-settings-t93/run38102203927/resource-finals.sanitized.json"
+              ],
+              "verified_substeps": [],
+              "unverified_substeps": [
+                "No T93 selector step ran: initial Current/default observation, New/package persistence after reopen, Current persistence after reopen, and original preference restoration remain unverified."
+              ],
+              "independent_review": "Completed; reviewer confirms zero T93 steps, all resource finals valid, and an earlier extension-reload failure. No T93 pass or product-defect inference.",
+              "detail": "Frozen v0.2.490 artifact only. Before T93 interaction, extension reload retired the old worker/panel and created a replacement worker; trusted open-panel click/send returned but the callback was not entered and no replacement panel target appeared. The later native_extension_live_panel_unavailable_for_cleanup is a cascading cleanup error. Lockfile @ai-matrx versions differ from the frozen source, so there is no current-main runtime acceptance claim. Keep T93 unverified.",
+              "release_scope": "Exact unpublished CI development artifact v0.2.490 only; lockfile runtime drift from current main; no current-main, Store, member/admin or full Settings claim."
+            }
+          }
         },
         {
           "id": "EXT-F-1003-T94",
@@ -22502,12 +22528,13 @@
               "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
               "status": "partial",
               "passed_subtargets": [
-                "All six result tabs showed matching populated content; empty Images/Video states and empty Article/Links states were observed; capture identity and exported payload stayed unchanged warm and after full extension reload."
+                "All six result tabs showed matching populated content; empty Images/Video states and empty Article/Links states were observed; capture identity and exported payload stayed unchanged warm and after full extension reload.",
+                "On run 38104691870, guest no-signal SEO and empty Schema panes matched the owned fixture at observed 600px CDP-emulated width; capture identity/digest remained unchanged after both pane selections."
               ],
               "unverified": [
-                "Member/admin modes; actual Store-installed behavior; physical resize; empty SEO/Schema states; full Scrape feature acceptance."
+                "Member/admin modes and their SEO/Schema behavior; actual Store-installed behavior; physical resize; reload behavior for this subtarget; full Scrape feature acceptance."
               ],
-              "detail": "Independent review of hosted candidate run 38098345217 confirms bounded guest normal-width T08 assertions warm and after full extension reload/reopen. The earlier 38086330146 replacement-panel boundary was indeterminate; this run observed opener callback/reply and replacement target. T08 remains partial because member/admin modes, physical resize, Store-installed behavior, empty SEO/Schema states and full-feature coverage remain unverified.",
+              "detail": "Independent review of run 38104691870 confirms a bounded guest pass for no-signal SEO and empty Schema panes on frozen development v0.2.490 at observed 600px CDP-emulated width. A fresh trusted capture reached the active visible Article pane; the expected SEO/Schema values and unchanged capture identity/digest were observed. The readiness state is established by the passing source predicate but is not separately serialized. T08 remains partial because member/admin, actual Store-installed behavior, physical resize, reload behavior for this subtarget, and the rest of full-feature acceptance remain unverified.",
               "bounded_subtarget_evidence": [
                 {
                   "run_id": 38044684443,
@@ -22568,6 +22595,28 @@
                   "limits": "Guest candidate-key-adapted unpacked artifact only; member/admin, actual Store-installed behavior, physical resize, empty SEO/Schema states, and full feature acceptance remain unverified. T08 and the guest feature-role cell stay partial.",
                   "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-normal-run38098345217.json",
                   "upload_hygiene_followup": "The hosted result artifact contained 27 resource-journal files, mostly from historical runs, because the workflow upload glob is broad. Only this run\u2019s three sanitized journals were retained in the evidence package; the reviewer found no impact on behavior validity. Narrow future uploads to current run IDs."
+                },
+                {
+                  "run_id": 38104691870,
+                  "status": "bounded-pass",
+                  "mode": "guest",
+                  "viewport": "600px owned SIDE_PANEL CDP emulation; observed minimum met",
+                  "workflow_source_sha": "00769a35d9d34b501932f5d94e25f14181f8b381",
+                  "product_artifact": "Development v0.2.490; CI 38102137319/artifact 11688890496; source 6ed4289da90f19cab72e2d77feb7e845f71c02b7; runtime-equivalent to main at dispatch; tree 673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633.",
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/receipt.sanitized.json",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/native-report.sanitized.json",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-finals.sanitized.json",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-package-38104691870-1.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-browser-38104691870-1.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-guest-38104691870-1.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/local-preflight.jsonl",
+                    "docs/stabilization/runs/guest-scrape-empty-seo-schema-run38104691870.json"
+                  ],
+                  "proven": "On the owned no-signal page, a trusted fresh capture passed the readiness predicate requiring the active visible Article pane inside Scrape with the matching title. SEO showed the title, empty description, and only Title & description plus Performance groups. Schema JSON was valid with matching title, absent description/canonical, and zero Open Graph, Twitter, schema types, or JSON-LD. Capture identity and digest were unchanged after each pane.",
+                  "article_ready_evidence_note": "The ready state is not separately serialized. Successful completion requires the runner isCaptureReady predicate to pass; that predicate explicitly checks a fresh transition to the selected, active, visible Article result within active Scrape. Independent review confirmed this is adequate for this bounded subtarget.",
+                  "limits": "Guest subtarget only. Member/admin, actual Store-installed behavior, physical resize, reload, and full T08 acceptance remain unverified.",
+                  "independent_review": "Bounded PASS confirmed by fresh independent review; summary is retained in docs/stabilization/runs/guest-scrape-empty-seo-schema-run38104691870.json."
                 }
               ]
             },
@@ -26339,6 +26388,11 @@
           "id": "EXT-F-1008-C14",
           "label": "Copy missing social meta tags",
           "action": "Choose Copy the meta tags this page is missing when a social issue provides a snippet."
+        },
+        {
+          "id": "EXT-F-1008-C15",
+          "label": "Retry active-page identity",
+          "action": "When the active page identity is unresolved, choose Retry and confirm the SEO audit action becomes available after identity resolves."
         }
       ],
       "source_anchors": [
@@ -26359,7 +26413,12 @@
         "src/features/seo/SeoView.tsx:42",
         "src/features/seo/SeoView.tsx:80",
         "src/features/seo/SeoView.tsx:98",
-        "src/features/seo/SeoView.tsx"
+        "src/features/seo/SeoView.tsx",
+        "src/features/seo/SeoView.tsx:353",
+        "src/features/seo/SeoView.tsx:359",
+        "src/features/seo/SeoDetails.tsx:104",
+        "src/features/seo/SeoDetails.tsx:108",
+        "src/features/seo/SeoDetails.tsx:118"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -28125,11 +28184,13 @@
             "Inspect title/description, canonical, robots, social preview, language/hreflang, schema chips, headings, links, images, readability and performance; activate URL/schema links."
           ],
           "expected": [
-            "Only available measured groups appear; URL destinations open through OpenUrl; schema types link to docs when valid; broken preview image gives explanatory fallback."
+            "Only available measured groups appear; URL destinations open through OpenUrl; schema types link to docs when valid; broken preview image gives explanatory fallback.",
+            "At a 360px panel width, detail content and links remain reachable without horizontal page overflow or clipped controls."
           ],
           "dimensions": [
             "warm",
-            "reload"
+            "reload",
+            "narrow_panel_360px"
           ],
           "results": {
             "guest": {
@@ -28146,6 +28207,7 @@
                 "guest_owned_hreflang_article_doors_match_fixture_dom"
               ],
               "unverified_dimensions": [
+                "360px narrow-panel layout and horizontal overflow",
                 "Wikipedia hreflang/schema doors remain unverified: its live DOM had no unique openable candidates",
                 "remaining detail controls",
                 "readability calculation beyond the two known-text fixtures",
@@ -29544,6 +29606,32 @@
               ],
               "scope": "Controlled subtargets only; preserves earlier full-scope observations and all unverified dimensions. No parent-case promotion."
             }
+          ]
+        },
+        {
+          "id": "EXT-F-1008-T15",
+          "title": "Retry active-page identity",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1008-C15"
+          ],
+          "preconditions": [
+            "Open the SEO tab while active-page identity is unresolved or has an identity error."
+          ],
+          "steps": [
+            "Confirm the page identity message and Retry action appear while the audit button is unavailable; choose Retry while identity is unresolved, then verify the audit action becomes available after identity resolves."
+          ],
+          "expected": [
+            "The current tab identity is refreshed; the SEO audit action becomes available only when a page key resolves, and any resulting audit belongs to that current page."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "identity_unavailable_then_recovered"
           ]
         }
       ],

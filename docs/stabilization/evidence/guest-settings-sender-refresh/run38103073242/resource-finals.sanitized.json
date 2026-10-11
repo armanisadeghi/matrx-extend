@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "source": "Copied through copy-hosted-resource-journal.mjs; process attribution and opened-event paths removed.",
+  "phases": {
+    "package": {
+      "final": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" },
+      "journal": "hosted-package-38103073242-1.jsonl",
+      "sha256": "0a75dccd0981e910977b654b63dede672d278f8d3b3989c9245294e5896341a9"
+    },
+    "browser": {
+      "final": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" },
+      "journal": "hosted-browser-38103073242-1.jsonl",
+      "sha256": "2c9be09d787461bc4cd51d87f4311466d2e92ba77bc5d585737e02c03cd3ef58"
+    },
+    "guest": {
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed"
+      },
+      "journal": "hosted-guest-38103073242-1.jsonl",
+      "sha256": "1f6f4155e18637292317a48fa9b0f17c67ceff518652adf53185a210a61d9063"
+    }
+  },
+  "policy_verdict": "All three phases were admitted and resource-valid. Guest diagnostic failed its native lifecycle boundary as expected; this is not a product acceptance verdict."
+}

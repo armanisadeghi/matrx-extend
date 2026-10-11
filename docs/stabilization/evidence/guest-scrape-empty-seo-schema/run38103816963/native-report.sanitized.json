@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "auth_mode": "guest",
+  "status": "fail",
+  "stage": "capture",
+  "native_stage": "exercise_panel",
+  "artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "run_id": 38102137319,
+    "artifact_id": 11688890496,
+    "version": "0.2.490",
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633"
+  },
+  "observations": null,
+  "capture_diagnostic": {
+    "before": {
+      "capture_match_count": 1,
+      "capture_inside_scrape": true,
+      "chat_active": false,
+      "active_scrape_count": 1,
+      "scrape_controls_present": true,
+      "scrape_pane_found": true,
+      "scrape_pane_active": true,
+      "selected_count": 1,
+      "article": false,
+      "selected_inside_scrape": false,
+      "result_controls_present": true,
+      "result_pane_found": true,
+      "result_pane_active": true,
+      "title_matches": true
+    },
+    "immediate": {
+      "capture_match_count": 1,
+      "capture_inside_scrape": true,
+      "chat_active": false,
+      "active_scrape_count": 1,
+      "scrape_controls_present": true,
+      "scrape_pane_found": true,
+      "scrape_pane_active": true,
+      "selected_count": 1,
+      "article": false,
+      "selected_inside_scrape": false,
+      "result_controls_present": true,
+      "result_pane_found": true,
+      "result_pane_active": true,
+      "title_matches": true
+    },
+    "immediate_events": {
+      "pointerdown": 1,
+      "pointerup": 1,
+      "click": 1,
+      "trusted_click": 1,
+      "capture_click": 1,
+      "trusted_capture_click": 1,
+      "last_target_is_capture": true,
+      "last_target_inside_scrape": true
+    },
+    "timeout": {
+      "capture_match_count": 1,
+      "capture_inside_scrape": true,
+      "chat_active": false,
+      "active_scrape_count": 1,
+      "scrape_controls_present": true,
+      "scrape_pane_found": true,
+      "scrape_pane_active": true,
+      "selected_count": 2,
+      "article": false,
+      "selected_inside_scrape": false,
+      "result_controls_present": false,
+      "result_pane_found": false,
+      "result_pane_active": false,
+      "title_matches": true
+    },
+    "pointer_target": {
+      "target_rect": {
+        "x": 12,
+        "y": 695,
+        "width": 164,
+        "height": 36
+      },
+      "clipped_rect": {
+        "x": 12,
+        "y": 695,
+        "width": 164,
+        "height": 36
+      },
+      "viewport": {
+        "width": 360,
+        "height": 743
+      },
+      "clipping_ancestor_count": 0,
+      "tested_point_count": 9,
+      "center_hit_category": "target",
+      "interior_hit_kinds": [
+        "target",
+        "target",
+        "target",
+        "target",
+        "target",
+        "target",
+        "target",
+        "target",
+        "target"
+      ],
+      "center_occluder": null,
+      "first_interior_occluder": null,
+      "selected_point_available": true,
+      "selected_point": {
+        "x": 94,
+        "y": 713
+      },
+      "target_disabled": false,
+      "target_pointer_events_none": false
+    },
+    "pointer_phase": "release_returned",
+    "pointer_failure": null,
+    "events": {
+      "pointerdown": 1,
+      "pointerup": 1,
+      "click": 1,
+      "trusted_click": 1,
+      "capture_click": 1,
+      "trusted_capture_click": 1,
+      "last_target_is_capture": true,
+      "last_target_inside_scrape": true
+    }
+  },
+  "failure_code": "scrape_empty_capture_ready_not_observed",
+  "limits": "One owned localhost guest page; only T08 no-signal SEO and empty Schema panes. No broader T08, role, width, Store, or current-main claim.",
+  "browser_version": "Chrome/141.0.7390.37"
+}

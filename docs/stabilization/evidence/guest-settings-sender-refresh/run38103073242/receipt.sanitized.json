@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "acceptance_case": "settings-controls",
+  "role": "guest",
+  "diagnostic_only": true,
+  "hosted_run": {
+    "repository": "armansadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38103073242,
+    "attempt": 1,
+    "dispatch_ref": "main",
+    "workflow_head_sha": "fc9c27d75f0695573e60a9c1aaa4b30e51e83706",
+    "lane": "B",
+    "runner_label": "macos-15",
+    "runner_image": "macos-15-arm64",
+    "runner_arch": "ARM64",
+    "machine": "arm64",
+    "conclusion": "failure",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38103073242"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11689026628,
+    "name": "hosted-guest-38103073242-1",
+    "digest": "sha256:5c72d77795fac6b14e4e2b255f69958e955a2d12d1b0f8b057a2d68bc5b1c84f",
+    "size_bytes": 69588,
+    "expired": false,
+    "native_report_sha256": "1ea42407c27d453f6a649bd8515fcb63d999c9e8ebcfd5f92a40e7cc09c0812b"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38099299069,
+    "development_artifact_id": 11687570702,
+    "artifact_digest": "sha256:107a6bb9ae18339579098d0cc1c10f9d334f3cde082ad5e2ad6a159c2e7022d6",
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "version": "0.2.490",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+  },
+  "sender_document_receipt": {
+    "refresh_requested": true,
+    "refresh_completed": true,
+    "new_document_observed": true,
+    "same_url_observed": true,
+    "raw_evidence_path": "guestExtensionReloadFailure.retirement_evidence.sender_document",
+    "normalized_receipt_written": false,
+    "receipt_failure": "native_reload_sender_document_refresh_unverified"
+  },
+  "comparison": {
+    "unrefreshed_control_run_id": 38102203927,
+    "same_frozen_artifact": true,
+    "different_workflow_checkout": true,
+    "causal_conclusion": "Not established because the control and diagnostic used different harness revisions."
+  },
+  "verdict": "diagnostic_only_unverified_no_T93_credit",
+  "independent_review": {
+    "status": "completed",
+    "verdict": "diagnostic_only_no_product_acceptance",
+    "summary": "Fresh peer verified actual ARM64 execution, matching frozen artifact, all four nested sender-refresh predicates, absent normalized receipt after early reload failure, callback not entered/panel not opened, all resource finals, and zero T93 steps."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/hosted-package-38103073242-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/hosted-browser-38103073242-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-sender-refresh/run38103073242/hosted-guest-38103073242-1.jsonl"
+  ],
+  "next_action": "Keep T93 unverified. Use this diagnostic only as lifecycle instrumentation evidence; do not infer causality or product defect. No further run authorized."
+}

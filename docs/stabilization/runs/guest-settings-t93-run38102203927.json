@@ -1,0 +1,64 @@
+{
+  "id": "guest-settings-t93-run38102203927",
+  "feature_id": "EXT-F-1003",
+  "at": "2026-10-11T01:41:29Z",
+  "status": "unverified",
+  "scope": "Single guarded guest EXT-F-1003-T93 retest on frozen CI development v0.2.490; extension replacement failed before T93 interaction.",
+  "hosted_run": "docs/stabilization/evidence/guest-settings-t93/run38102203927/receipt.sanitized.json",
+  "hosted_run_id": 38102203927,
+  "workflow_source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+  "runner": {
+    "label": "macos-15",
+    "image": "macos-15-arm64",
+    "arch": "ARM64",
+    "machine": "arm64"
+  },
+  "resource": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid final; child exit 1; resourceInvalid false"
+  },
+  "artifact": {
+    "development_run_id": 38099299069,
+    "development_artifact_id": 11687570702,
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "version": "0.2.490",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+  },
+  "runtime_scope": "Frozen artifact only; workflow checkout lockfile contains newer @ai-matrx/* versions than the frozen artifact source. No current-main runtime acceptance claim.",
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T93",
+      "status": "unverified",
+      "native_case_status": "fail",
+      "product_assertions_run": false,
+      "verified_substeps": [],
+      "pre_case_observations": [
+        "Old extension worker and panel were retired; replacement worker was created.",
+        "Trusted open-panel click was received and send returned, but the replacement worker callback was not entered and no replacement panel target appeared."
+      ],
+      "unverified_substeps": [
+        "All T93 selector observations: initial Current/default, New/package persistence, Current persistence after reopen, and original preference restoration."
+      ],
+      "failure_stage": "extension_reload",
+      "failure_code": "native_extension_replacement_panel_unverified",
+      "transport_failure_class": "none",
+      "cascading_cleanup_error": "native_extension_live_panel_unavailable_for_cleanup",
+      "product_defect_inference": false
+    }
+  ],
+  "independent_review": {
+    "status": "completed",
+    "verdict": "unverified_zero_step_precondition_failure",
+    "summary": "Fresh reviewer confirmed exact frozen artifact provenance, actual ARM64 execution, all three resource finals valid, zero T93 steps, and an earlier extension-reload boundary failure. No pass or product-defect inference."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/hosted-package-38102203927-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/hosted-browser-38102203927-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/hosted-guest-38102203927-1.jsonl"
+  ],
+  "next_action": "Keep T93 unverified. Diagnose the extension-reload replacement-panel boundary before considering a future run. No second heavy run dispatched."
+}

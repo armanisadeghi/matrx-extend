@@ -5,7 +5,12 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { tabStateExpression } from './scrape-seo-schema-empty-observation.mjs';
+import { scrapeNativeSelection, selectScrapePanelViewport } from './scrape-native-selection.mjs';
+import {
+  captureStateExpression,
+  isCaptureReady,
+  tabStateExpression,
+} from './scrape-seo-schema-empty-observation.mjs';
 import { assertGuestSeoSchemaEmptyObservation } from './scrape-seo-schema-empty-oracle.mjs';
 import { readCaptureExport } from './scrape-tab-coverage.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -29,6 +34,7 @@ const report = {
   artifact: null,
   observations: null,
   capture_diagnostic: null,
+  panel_viewport: null,
   failure_code: null,
   limits:
     'One owned localhost guest page; only T08 no-signal SEO and empty Schema panes. No broader T08, role, width, Store, or current-main claim.',
@@ -45,6 +51,7 @@ async function writeReport() {
 }
 
 async function run() {
+  const selection = scrapeNativeSelection(process.env);
   assert.equal(process.env.MATRX_SCRAPE_SCOPE, 'seo-schema-empty', 'scrape_empty_scope_required');
   assert.equal(
     process.env.MATRX_SCRAPE_ARTIFACT_CHANNEL,
@@ -97,6 +104,10 @@ async function run() {
         resourceActionRef = resourceAction;
         await requireResourceHealth();
         report.browser_version = (await browserSession.send('Browser.getVersion')).product;
+        report.stage = 'panel_viewport';
+        report.panel_viewport = await resourceAction(() =>
+          selectScrapePanelViewport(panel, selection, evaluate),
+        );
         const origin = new URL(page.url()).origin;
         const fixtureUrl = `${origin}${fixturePath}`;
         report.stage = 'owned_fixture';
@@ -151,31 +162,7 @@ async function run() {
           events: null,
         };
         report.capture_diagnostic = diagnostic;
-        const stateExpression = `(() => {
-          const outer = [...document.querySelectorAll('button[role="tab"]')].filter(node =>
-            (node.title || node.dataset.matrxTitle) === 'Scrape' && node.dataset.state === 'active');
-          const controls = outer.length === 1 ? outer[0].getAttribute('aria-controls') : null;
-          const pane = controls ? document.getElementById(controls) : null;
-          const selected = [...document.querySelectorAll('[role="tablist"] [role="tab"]')]
-            .filter(node => node.getAttribute('aria-selected') === 'true');
-          const result = selected.length === 1 ? selected[0] : null;
-          const resultPane = result ? document.getElementById(result.getAttribute('aria-controls') ?? '') : null;
-          const captureButtons = [...document.querySelectorAll('button[title],button[data-matrx-title]')]
-            .filter(node => (node.title || node.dataset.matrxTitle) === 'Capture the page exactly as it is right now');
-          return {
-            capture_match_count: captureButtons.length,
-            capture_inside_scrape: captureButtons.length === 1 && Boolean(pane?.contains(captureButtons[0])),
-            chat_active: [...document.querySelectorAll('button[role="tab"]')].some(node =>
-              (node.title || node.dataset.matrxTitle) === 'Chat' && node.dataset.state === 'active'),
-            active_scrape_count: outer.length, scrape_controls_present: Boolean(controls),
-            scrape_pane_found: Boolean(pane), scrape_pane_active: pane?.dataset.state === 'active',
-            selected_count: selected.length, article: result?.firstChild?.textContent?.trim() === 'Article',
-            selected_inside_scrape: Boolean(pane && result && pane.contains(result)),
-            result_controls_present: Boolean(result?.getAttribute('aria-controls')),
-            result_pane_found: Boolean(resultPane), result_pane_active: resultPane?.dataset.state === 'active',
-            title_matches: document.querySelector('.truncate.text-sm.font-medium')?.textContent?.trim() === ${JSON.stringify(title)},
-          };
-        })()`;
+        const stateExpression = captureStateExpression(title);
         const probeKey = '__matrxT08CaptureInput';
         const readProbe = `(() => {
           const probe = globalThis[${JSON.stringify(probeKey)}];
@@ -218,7 +205,7 @@ async function run() {
           ready = await waitFor(
             'scrape_empty_capture_ready',
             () => evaluate(panel, stateExpression),
-            (state) => state?.selected_count === 1 && state.article && state.title_matches,
+            (state) => isCaptureReady(state, diagnostic.before, diagnostic.immediate_events),
           );
         } catch (error) {
           diagnostic.pointer_failure = error.driverFailure ?? null;

@@ -1,0 +1,57 @@
+{
+  "id": "guest-scrape-empty-seo-schema-run38103816963",
+  "feature_id": "EXT-F-1007",
+  "at": "2026-10-11T02:09:49Z",
+  "status": "unverified",
+  "scope": "One hosted guest T08 subtarget for no-signal SEO and empty Schema panes on an owned localhost fixture.",
+  "hosted_run_id": 38103816963,
+  "workflow_source_sha": "6635fc24c3c86e3b60d43709b9c474279efc21d5",
+  "product_artifact": {
+    "development_run_id": 38102137319,
+    "development_artifact_id": 11688890496,
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "version": "0.2.490",
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "runtime_equivalent_to_main_at_dispatch": true
+  },
+  "resource": {
+    "local_preflight": "valid",
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid resource final; child exit 1; resourceInvalid false"
+  },
+  "case": {
+    "case_id": "EXT-F-1007-T08",
+    "status": "unverified",
+    "native_case_status": "fail_before_target_panes",
+    "product_assertions_run": false,
+    "failure_stage": "capture",
+    "failure_code": "scrape_empty_capture_ready_not_observed",
+    "verified_substeps": [
+      "Owned no-signal fixture loaded and its empty metadata/body preconditions passed.",
+      "A trusted unique click reached the visible Scrape capture control."
+    ],
+    "unverified_substeps": [
+      "Capture readiness and Article result observation.",
+      "Empty SEO and Schema pane observations.",
+      "Capture invariance across Article, SEO, and Schema."
+    ],
+    "diagnostic": "The observer counts selected tabs across every tablist, including tabs outside the active Scrape pane. Its initial state reports one selected tab outside Scrape; after capture two selected tabs are counted and it rejects the state without identifying the selected tab inside Scrape. A fresh independent reviewer judged this a likely harness false negative and the result indeterminate, not a product defect or pass.",
+    "requested_width_px": 600,
+    "observed_native_panel_viewport_px": "360x743; no normal-width credit",
+    "product_defect_inference": false
+  },
+  "independent_review": {
+    "status": "completed",
+    "reviewer": "/root/scrape_empty_peer_review",
+    "verdict": "indeterminate_zero_SEO_and_Schema_credit",
+    "summary": "Resource finals and artifact/setup were valid. The case failed before SEO/Schema panes. The global tablist observer likely caused a false negative; no pane behavior was observed, so neither pass nor product defect is supported."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38103816963/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38103816963/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38103816963/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38103816963/resource-journals/"
+  ],
+  "next_action": "Keep T08 partial and the SEO/Schema empty-state subtarget unverified. A peer-reviewed fix for the observer's tablist scope and a red-capable guard are being handled separately; no second heavy run was dispatched."
+}

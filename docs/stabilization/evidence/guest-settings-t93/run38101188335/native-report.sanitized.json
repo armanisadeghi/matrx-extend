@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "status": "unverified",
+  "native_suite_status": "fail",
+  "scope": "real native Chrome-for-Testing side panel; signed-out guest; T93 only",
+  "build": {
+    "version": "0.2.490",
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
+    "verified": true,
+    "publish_state": "not_published"
+  },
+  "case": {
+    "id": "EXT-F-1003-T93",
+    "role": "guest",
+    "status": "unverified",
+    "steps": [
+      {
+        "phase": "baseline",
+        "status": "pass",
+        "observation": {
+          "selected": "Current",
+          "stored": "default",
+          "visible_settings": true
+        }
+      },
+      {
+        "phase": "warm-selection",
+        "status": "pass",
+        "observation": {
+          "selected": "New",
+          "stored": "package",
+          "visible_settings": true
+        }
+      },
+      {
+        "phase": "native-panel-reopen",
+        "status": "pass",
+        "observation": {
+          "old_target_retired": true,
+          "old_context_retired": true,
+          "replacement_opened_by_trusted_input": true,
+          "replacement_target_distinct": true,
+          "replacement_context_distinct": true,
+          "replacement_visible": true
+        }
+      },
+      {
+        "phase": "replacement-settings-observation",
+        "status": "unverified",
+        "observation": {
+          "settings_tab_ready": false,
+          "failure_code": "replacement_settings_tab_ready_not_observed",
+          "transient": "owned_cdp_transport_failed"
+        }
+      },
+      {
+        "phase": "current-selection-after-reopen",
+        "status": "unverified",
+        "observation": "Not reached; the replacement Settings tab was unavailable."
+      },
+      {
+        "phase": "original-preference-restoration",
+        "status": "unverified",
+        "observation": "Restoration did not complete; final preference state was not observed."
+      }
+    ],
+    "unverified_criteria": [
+      "New remains selected after native panel reopen",
+      "Current can be selected and remains selected after native panel reopen",
+      "Original Current/default preference is restored and verified after reopen"
+    ],
+    "interpretation": "Partial native interaction evidence only. The transport failure does not establish a product defect or a T93 pass."
+  },
+  "privacy": {
+    "raw_hosted_report_persisted": false,
+    "screenshots_persisted": false,
+    "credentials_or_auth_values_persisted": false,
+    "raw_dom_or_page_text_persisted": false
+  }
+}

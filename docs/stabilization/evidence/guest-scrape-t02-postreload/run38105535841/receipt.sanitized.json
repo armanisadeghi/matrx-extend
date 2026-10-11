@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "verdict": "bounded_partial_pending_peer_review",
+  "hosted_run": {
+    "id": 38105535841,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38105535841",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "workflow_source_sha": "7f56652b3e0126700363ff30b1b9636ad8805b5f",
+    "lane": "B",
+    "runner_label": "macos-15-intel",
+    "started_at": "2026-10-11T02:33:26Z",
+    "finished_at": "2026-10-11T02:41:35Z",
+    "conclusion": "success"
+  },
+  "development_artifact": {
+    "run_id": 38102137319,
+    "artifact_id": 11688890496,
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "version": "0.2.490",
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "current_product_source_equivalent": true
+  },
+  "native_result": "native-result.sanitized.json",
+  "resource_finals": "resource-finals.sanitized.json",
+  "limits": [
+    "Hosted route scope was full guest Scrape because no T02-only route exists; only T02 post-reload deep recapture is credited after independent review.",
+    "T14 Reload page recovery remains unverified; permission denial offers Try again only."
+  ]
+}

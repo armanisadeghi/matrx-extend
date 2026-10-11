@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "run_id": 38103816963,
+  "resource_valid": true,
+  "finals": {
+    "package": {
+      "run_id": "hosted-package-38103816963-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "run_id": "hosted-browser-38103816963-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest_acceptance": {
+      "run_id": "hosted-guest-38103816963-1",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "local_preflight": {
+      "run_id": "scrape-t08-empty-20261011-preflight",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  }
+}

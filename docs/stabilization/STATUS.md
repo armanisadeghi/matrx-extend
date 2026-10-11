@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-11 01:06 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T01:05:38.231Z. 205 features · 780 cases · 1362 controls · 196 linked defect records.
+Generated 2026-10-11 02:33 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-11T02:28:37.474Z. 205 features · 781 cases · 1363 controls · 196 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1243** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1056 · N/A: 1.
-Unverified splits into **132 explicitly marked unverified** and **924 with no result record**.
+Applicable case-by-role slots: **1246** — Pass: 95 · Partial: 89 · Fail: 2 · Unverified: 1059 · N/A: 1.
+Unverified splits into **133 explicitly marked unverified** and **926 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -25,7 +25,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 9 pass · 4 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 35 unverified · 0 deferred; 0/1 full | pass 9, partial 14, fail 0, unverified 75, n/a 0 | 11 |
-| [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 36, n/a 0 | 0 |
+| [SEO](#seo) | 1 | 0 pass · 6 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 6, fail 0, unverified 39, n/a 0 | 0 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
@@ -581,6 +581,8 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T92 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass. Guest negative access only; no signed-in role credit.
   Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
+- EXT-F-1003-T93 · guest: Unverified. Frozen v0.2.490 artifact only. Before T93 interaction, extension reload retired the old worker/panel and created a replacement worker; trusted open-panel click/send returned but the callback was not entered and no replacement panel target appeared. The later native_extension_live_panel_unavailable_for_cleanup is a cascading cleanup error. Lockfile @ai-matrx versions differ from the frozen source, so there is no current-main runtime acceptance claim. Keep T93 unverified.
+  Evidence / build / date recorded: 38102203927, ['docs/stabilization/evidence/guest-settings-t93/run38102203927/receipt.sanitized.json', 'docs/stabilization/evidence/guest-settings-t93/run38102203927/native-report.sanitized.json', 'docs/stabilization/evidence/guest-settings-t93/run38102203927/resource-finals.sanitized.json']
 
 
 ## Profile
@@ -900,7 +902,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
   Evidence / build / date recorded: render-retest-001, docs/stabilization/runs/render-retest-001.json
 - EXT-F-1007-T07 · guest: Pass. Guest scroll-sync behavior passed warm and after full extension reload.
   Evidence / build / date recorded: 38021736744, ['docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json', 'docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl']
-- EXT-F-1007-T08 · guest: Partial. Independent review of hosted candidate run 38098345217 confirms bounded guest normal-width T08 assertions warm and after full extension reload/reopen. The earlier 38086330146 replacement-panel boundary was indeterminate; this run observed opener callback/reply and replacement target. T08 remains partial because member/admin modes, physical resize, Store-installed behavior, empty SEO/Schema states and full-feature coverage remain unverified.
+- EXT-F-1007-T08 · guest: Partial. Independent review of run 38104691870 confirms a bounded guest pass for no-signal SEO and empty Schema panes on frozen development v0.2.490 at observed 600px CDP-emulated width. A fresh trusted capture reached the active visible Article pane; the expected SEO/Schema values and unchanged capture identity/digest were observed. The readiness state is established by the passing source predicate but is not separately serialized. T08 remains partial because member/admin, actual Store-installed behavior, physical resize, reload behavior for this subtarget, and the rest of full-feature acceptance remain unverified.
   Evidence / build / date recorded: 38021736744, ['docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json', 'docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json', 'docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl', 'docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl']
 - EXT-F-1007-T08 · member: Partial. Headed Chrome verified via actual CDP command line; warm substeps observed. Image and video empty states and reload lifecycle need full observation. Empty-media harness failure stops later acceptance.
   Evidence / build / date recorded: 37263606882, development0.2.244/sourceb8158702/CI37233480033/artifact11315305224, 2026-10-05T04:38:29.178906+00:00, .research/headed-member-native.json
@@ -938,7 +940,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 
 ### Audit page SEO and manage audit history (EXT-F-1008)
 
-**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 14. **Controls:** 14.
+**Role status:** guest: Partial · member: Unverified · admin: Unverified. **Cases:** 15. **Controls:** 15.
 
 **Next:** Finish the missing criteria and repeat the partial case in the extension.
 
@@ -960,6 +962,7 @@ These current-build checks supplement the inventory matrix; they do not promote 
 | EXT-F-1008-T12 Stage one SEO fix in Chat | Unverified | Unverified | Unverified | EXT-F-1008-C12 |
 | EXT-F-1008-T13 Stage all SEO fixes in Chat | Unverified | Unverified | Unverified | EXT-F-1008-C13 |
 | EXT-F-1008-T14 Copy missing social meta tags | Partial | Unverified | Unverified | EXT-F-1008-C14 |
+| EXT-F-1008-T15 Retry active-page identity | Unverified | Unverified | Unverified | EXT-F-1008-C15 |
 
 **Recorded case details and evidence:**
 

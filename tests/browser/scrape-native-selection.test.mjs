@@ -32,31 +32,33 @@ test('Scrape selection refuses unknown mode or unmeasured normal width before br
   assert.equal(scrapeNativeSelection({ MATRX_SCRAPE_AUTH_MODE: 'admin' }).mode, 'admin');
 });
 
-test('normal Scrape viewport receipt requires observed SIDE_PANEL width after override', async () => {
-  const selection = scrapeNativeSelection({
-    MATRX_SCRAPE_WIDTH_MODE: 'normal',
-    MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: '480',
+for (const requestedWidth of [480, 600]) {
+  test(`normal Scrape viewport receipt requires observed SIDE_PANEL width after override ${requestedWidth}px`, async () => {
+    const selection = scrapeNativeSelection({
+      MATRX_SCRAPE_WIDTH_MODE: 'normal',
+      MATRX_SCRAPE_MIN_PANEL_WIDTH_PX: String(requestedWidth),
+    });
+    const calls = [];
+    let observed = 360;
+    const panel = {
+      async send(command, args) {
+        calls.push([command, args]);
+        observed = args.width;
+      },
+    };
+    const evaluate = async (_panel, expression) =>
+      expression === 'innerWidth' ? observed : { width: observed, height: 768 };
+    assert.deepEqual(await selectScrapePanelViewport(panel, selection, evaluate), {
+      mode: 'normal',
+      mechanism: 'owned_SIDE_PANEL_CDP_viewport_emulation',
+      observed_px: requestedWidth,
+      minimum_px: requestedWidth,
+    });
+    assert.equal(calls[0][0], 'Emulation.setDeviceMetricsOverride');
+    assert.equal(calls[0][1].mobile, false);
+    assert.throws(() => assertScrapePanelWidth(selection, 360), /scrape_normal_panel_width_unmet/);
+    assert.throws(() => assertScrapePanelWidth(selection, null), /scrape_panel_width_unobserved/);
+    const narrow = scrapeNativeSelection({});
+    assert.equal(assertScrapePanelWidth(narrow, 360).mechanism, 'native_default');
   });
-  const calls = [];
-  let observed = 360;
-  const panel = {
-    async send(command, args) {
-      calls.push([command, args]);
-      observed = args.width;
-    },
-  };
-  const evaluate = async (_panel, expression) =>
-    expression === 'innerWidth' ? observed : { width: observed, height: 768 };
-  assert.deepEqual(await selectScrapePanelViewport(panel, selection, evaluate), {
-    mode: 'normal',
-    mechanism: 'owned_SIDE_PANEL_CDP_viewport_emulation',
-    observed_px: 480,
-    minimum_px: 480,
-  });
-  assert.equal(calls[0][0], 'Emulation.setDeviceMetricsOverride');
-  assert.equal(calls[0][1].mobile, false);
-  assert.throws(() => assertScrapePanelWidth(selection, 360), /scrape_normal_panel_width_unmet/);
-  assert.throws(() => assertScrapePanelWidth(selection, null), /scrape_panel_width_unobserved/);
-  const narrow = scrapeNativeSelection({});
-  assert.equal(assertScrapePanelWidth(narrow, 360).mechanism, 'native_default');
-});
+}

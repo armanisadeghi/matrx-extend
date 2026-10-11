@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "source": "Copied through copy-hosted-resource-journal.mjs; process attribution and opened-event paths removed.",
+  "phases": {
+    "package": {
+      "final": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" },
+      "journal": "hosted-package-38102203927-1.jsonl",
+      "sha256": "125bf465ef9c3e051b1fab640944a8ff412c25c661f3791b2264fe5d4f38a0f4"
+    },
+    "browser": {
+      "final": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" },
+      "journal": "hosted-browser-38102203927-1.jsonl",
+      "sha256": "f18e2020e785f0e025def12ba9991b3d1f77a90ed68c2b30eeab553a17ae90f4"
+    },
+    "guest": {
+      "final": {
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed"
+      },
+      "journal": "hosted-guest-38102203927-1.jsonl",
+      "sha256": "babfd2b4a9796f5607851c7c7cd09a93b4ac68ead56265fe70e64d87e1b0ef18"
+    }
+  },
+  "policy_verdict": "All three resource phases were admitted and resource-valid. The guest child failed before T93 steps; resource validity does not convert this to acceptance."
+}

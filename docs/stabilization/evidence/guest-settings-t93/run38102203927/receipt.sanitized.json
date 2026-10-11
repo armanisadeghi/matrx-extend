@@ -1,0 +1,77 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1003-T93",
+  "acceptance_case": "settings-controls",
+  "role": "guest",
+  "hosted_run": {
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+    "run_id": 38102203927,
+    "attempt": 1,
+    "dispatch_ref": "main",
+    "workflow_head_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "lane": "B",
+    "runner_label": "macos-15",
+    "runner_image": "macos-15-arm64",
+    "runner_arch": "ARM64",
+    "machine": "arm64",
+    "conclusion": "failure",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38102203927"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11688730538,
+    "name": "hosted-guest-38102203927-1",
+    "digest": "sha256:0590597ff09baf1546343a409cf80adb7ff8967d8a4bb720f5af2ba4c4f19da7",
+    "size_bytes": 68907,
+    "expired": false,
+    "native_report_sha256": "b077a8f1e00cafd1b8db85b4df542a284467e71b6cdea668c99ac08b2a8c7f36"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "eligible_store": false,
+    "development_run_id": 38099299069,
+    "development_artifact_id": 11687570702,
+    "artifact_digest": "sha256:107a6bb9ae18339579098d0cc1c10f9d334f3cde082ad5e2ad6a159c2e7022d6",
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "version": "0.2.490",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+  },
+  "runtime_scope": {
+    "classification": "frozen_artifact_only",
+    "current_main_acceptance": false,
+    "drift": "The workflow checkout lockfile has newer @ai-matrx/* versions than the frozen artifact source. The run tests the imported v0.2.490 artifact only; no current-main runtime equivalence is claimed."
+  },
+  "native_report": {
+    "path": "native-report.sanitized.json",
+    "native_suite_status": "fail",
+    "t93_status": "unverified",
+    "t93_steps": 0,
+    "first_failure_stage": "extension_reload",
+    "failure_code": "native_extension_replacement_panel_unverified",
+    "cascade_error": "native_extension_live_panel_unavailable_for_cleanup",
+    "product_defect_inference": false
+  },
+  "resource": {
+    "package": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resource_invalid": false, "exit_code": 0, "decision": "valid" },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "independent_review": {
+    "status": "completed",
+    "verdict": "unverified_zero_step_precondition_failure",
+    "summary": "Fresh review confirmed actual ARM64 execution, exact frozen artifact provenance, all resource finals valid, zero T93 steps, and an earlier extension-reload failure; no T93 pass or product-defect inference."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/hosted-package-38102203927-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/hosted-browser-38102203927-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-t93/run38102203927/hosted-guest-38102203927-1.jsonl"
+  ],
+  "next_action": "Keep T93 unverified. Diagnose the extension-reload replacement-panel failure separately. No second hosted run was dispatched."
+}

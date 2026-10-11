@@ -1,0 +1,63 @@
+{
+  "id": "guest-settings-t93-run38101188335",
+  "feature_id": "EXT-F-1003",
+  "at": "2026-10-11T01:23:22Z",
+  "status": "unverified",
+  "scope": "Guest EXT-F-1003-T93 on frozen CI development v0.2.490; native selector interaction began on guarded hosted ARM64 and stopped after replacement-panel transport failure.",
+  "hosted_run": "docs/stabilization/evidence/guest-settings-t93/run38101188335/receipt.sanitized.json",
+  "hosted_run_id": 38101188335,
+  "workflow_source_sha": "6894d4a88a155108546a1abc08096904900130ec",
+  "runner": {
+    "label": "macos-15",
+    "image": "macos-15-arm64",
+    "arch": "ARM64",
+    "machine": "arm64"
+  },
+  "resource": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid final; child exit 1; resourceInvalid false"
+  },
+  "artifact": {
+    "development_run_id": 38099299069,
+    "development_artifact_id": 11687570702,
+    "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "version": "0.2.490",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1003-T93",
+      "status": "unverified",
+      "native_case_status": "fail",
+      "product_assertions_run": true,
+      "verified_substeps": [
+        "Original Current/default value observed in Settings.",
+        "New/package saved through the real selector in the warm panel.",
+        "Old native panel target/context retired and a distinct visible replacement target/context opened."
+      ],
+      "unverified_substeps": [
+        "New/package selection after reopen was not observed because replacement Settings readiness failed.",
+        "Current selection and persistence after reopen were not reached.",
+        "Original Current/default preference restoration and reopened verification did not complete; final preference state is unknown."
+      ],
+      "failure_code": "replacement_settings_tab_ready_not_observed",
+      "transient": "owned_cdp_transport_failed",
+      "product_defect_inference": false
+    }
+  ],
+  "independent_review": {
+    "status": "completed",
+    "verdict": "unverified_partial_transport_failure",
+    "summary": "Reviewer confirmed exact artifact provenance, actual ARM64 execution, all resource finals valid, partial native observations, and no T93 pass or product-defect inference."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-settings-t93/run38101188335/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-t93/run38101188335/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-t93/run38101188335/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-settings-t93/run38101188335/hosted-package-38101188335-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-t93/run38101188335/hosted-browser-38101188335-1.jsonl",
+    "docs/stabilization/evidence/guest-settings-t93/run38101188335/hosted-guest-38101188335-1.jsonl"
+  ],
+  "next_action": "Keep T93 unverified. Diagnose the replacement-tab transport failure separately; any future retest must first verify original preference restoration on the owned disposable profile. No retry was dispatched under the one-run limit."
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "run_id": 38105535841,
+  "finals": [
+    {
+      "journal": "hosted-browser-38105535841-1.jsonl",
+      "sha256": "049a44aa2f974c1970521a58fd4e9feda0119343ab350b72fea995d98a14c1bc",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "journal": "hosted-guest-38105535841-1.jsonl",
+      "sha256": "19820d90cc4661bf4080b03b259eeacd8195bec09e2335ff048078ab17ab5bf9",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "journal": "hosted-package-38105535841-1.jsonl",
+      "sha256": "c155aa566feb638b41c4a5e245352c5df41833e62dce19845d69195e15187c7e",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  ],
+  "all_valid": true
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-1007-T02",
+  "auth_mode": "guest",
+  "status": "bounded_pass_pending_independent_review",
+  "stage": "post_reload_deep_capture",
+  "artifact": {
+    "kind": "ci_development_test",
+    "channel": "development",
+    "version": "0.2.490",
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "run_id": 38102137319,
+    "artifact_id": 11688890496
+  },
+  "viewport": {
+    "mode": "normal",
+    "observed_width_px": 600,
+    "mechanism": "CDP side-panel viewport emulation"
+  },
+  "native_assertions": {
+    "lazy_marker_absent_before_deep_capture": true,
+    "lazy_marker_present_in_page_after_capture": true,
+    "lazy_marker_present_in_selected_article_capture": true,
+    "scroll_progress_text": "Scrolling\u2026",
+    "error": null,
+    "remaining_case_dimension": ["Deep failure retry mode remains unverified."]
+  },
+  "screenshot": {
+    "path": "scrape-reload-deep-article.png",
+    "sha256": "adcf0e5099922f85b73a3ff3e828bec71827c04e46bcfce3732239ea29da8e79"
+  },
+  "limits": [
+    "Only guest T02 post-extension-reload deep recapture on owned fixture.",
+    "Does not cover natural deep-capture failure or retry-mode preservation.",
+    "Does not claim full T02, Scrape, member/admin, default Chrome, Store-installed, or product-health acceptance."
+  ]
+}

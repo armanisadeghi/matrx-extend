@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "run_id": 38104691870,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38104691870",
+  "workflow_source_sha": "00769a35d9d34b501932f5d94e25f14181f8b381",
+  "lane": "B",
+  "runner": {
+    "label": "macos-15-intel",
+    "architecture": "X64",
+    "machine": "x86_64"
+  },
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "auth_mode": "guest",
+  "fixture": {
+    "kind": "owned_localhost_page",
+    "path": "/seo-schema-empty",
+    "title": "Harbor Dental appointment information",
+    "content": "Empty body and no description, canonical, social metadata, heading, link, image, or JSON-LD signals."
+  },
+  "artifact": {
+    "kind": "ci_development_test",
+    "ci_run_id": 38102137319,
+    "ci_artifact_id": 11688890496,
+    "source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+    "source_relation": "runtime-equivalent to main at dispatch; changes since artifact source were stabilization, workflow, and acceptance-test files, with no extension runtime files changed",
+    "version": "0.2.490",
+    "artifact_sha256": "b3b92f267456770e473d1a3c0afc28da4aa901b0551084f051ced999e6a63b2a",
+    "runtime_tree_sha256": "673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  },
+  "browser": {
+    "version": "Chrome/141.0.7390.37",
+    "viewport_mode": "normal",
+    "viewport_mechanism": "owned_SIDE_PANEL_CDP_viewport_emulation",
+    "observed_viewport_px": 600,
+    "minimum_viewport_px": 600
+  },
+  "execution": {
+    "login_method": "none; fresh guest profile",
+    "real_backend_reads_or_writes": false,
+    "mocks_or_response_interception": false,
+    "owned_fixture_only": true
+  },
+  "result": {
+    "native_case_status": "pass",
+    "resource_valid": true,
+    "product_verdict": "bounded_guest_subtarget_pass",
+    "limits": "Only guest no-signal SEO and empty Schema panes at 600px CDP-emulated width. No full T08, physical resize, member/admin, or Store-installed claim."
+  },
+  "evidence": {
+    "native_report": "native-report.sanitized.json",
+    "resource_finals": "resource-finals.sanitized.json",
+    "resource_journals": "resource-journals/",
+    "hosted_artifact_id": 11689610554,
+    "hosted_artifact_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38104691870/artifacts/11689610554"
+  }
+}

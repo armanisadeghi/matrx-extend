@@ -163,6 +163,23 @@ async function connectOwnedCdp({
       const entry = pending.get(message.id);
       if (!entry) return fail('unknown_response');
       const actual = Object.hasOwn(message, 'sessionId') ? message.sessionId : undefined;
+      // Chrome may auto-retire a target after detach was sent but before it
+      // handles that command. Only its exact InvalidParams response, paired
+      // with retirement of this pending command's session, proves cleanup.
+      if (
+        entry.method === 'Target.detachFromTarget' &&
+        entry.sessionRetired === true &&
+        actual === entry.sessionId &&
+        !Object.hasOwn(message, 'result') &&
+        !Object.hasOwn(message, 'method') &&
+        message.error?.code === -32602 &&
+        message.error?.message === 'No session with given id'
+      ) {
+        clearTimeout(entry.timer);
+        pending.delete(message.id);
+        entry.resolve({});
+        return;
+      }
       // Chrome may evict an HTTP error body before this optional diagnostic
       // read. That one known CDP response is not a broken socket or session.
       if (
@@ -201,6 +218,16 @@ async function connectOwnedCdp({
       (Object.hasOwn(message, 'sessionId') && typeof message.sessionId !== 'string')
     )
       return fail();
+    if (message.method === 'Target.detachedFromTarget') {
+      for (const entry of pending.values()) {
+        if (
+          entry.method === 'Target.detachFromTarget' &&
+          typeof entry.detachingSessionId === 'string' &&
+          message.params?.sessionId === entry.detachingSessionId
+        )
+          entry.sessionRetired = true;
+      }
+    }
     try {
       for (const listener of listeners.get(message.method) ?? [])
         listener(message.params ?? {}, message.sessionId);
@@ -283,7 +310,15 @@ async function connectOwnedCdp({
           fail('command_timeout');
           reject(new Error('owned_cdp_transport_failed'));
         }, timeoutMs);
-        pending.set(id, { resolve, reject, timer, sessionId, method });
+        pending.set(id, {
+          resolve,
+          reject,
+          timer,
+          sessionId,
+          method,
+          detachingSessionId: method === 'Target.detachFromTarget' ? params?.sessionId : undefined,
+          sessionRetired: false,
+        });
         try {
           socket.send(
             JSON.stringify(

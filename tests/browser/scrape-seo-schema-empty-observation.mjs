@@ -36,3 +36,56 @@ export const tabStateExpression = (expectedLabel) => `(() => {
     ldJsonCount: Array.isArray(data?.ld_json) ? data.ld_json.length : null,
   };
 })()`;
+
+export const captureStateExpression = (title) => `(() => {
+          const outer = [...document.querySelectorAll('button[role="tab"]')].filter(node =>
+            (node.title || node.dataset.matrxTitle) === 'Scrape' && node.dataset.state === 'active');
+          const controls = outer.length === 1 ? outer[0].getAttribute('aria-controls') : null;
+          const pane = controls ? document.getElementById(controls) : null;
+          const lists = [...(pane?.querySelectorAll('[role="tablist"]') ?? [])]
+            .filter(node => node.closest('[role="tabpanel"]') === pane);
+          const tabs = lists.length === 1 ? [...lists[0].querySelectorAll('[role="tab"]')]
+            .filter(node => node.closest('[role="tablist"]') === lists[0]) : [];
+          const selected = tabs.filter(node => node.getAttribute('aria-selected') === 'true');
+          const result = selected.length === 1 ? selected[0] : null;
+          const resultPane = result ? document.getElementById(result.getAttribute('aria-controls') ?? '') : null;
+          const resultStyle = resultPane ? getComputedStyle(resultPane) : null;
+          const captureButtons = [...document.querySelectorAll('button[title],button[data-matrx-title]')]
+            .filter(node => (node.title || node.dataset.matrxTitle) === 'Capture the page exactly as it is right now');
+          return {
+            capture_match_count: captureButtons.length,
+            capture_inside_scrape: captureButtons.length === 1 && Boolean(pane?.contains(captureButtons[0])),
+            chat_active: [...document.querySelectorAll('button[role="tab"]')].some(node =>
+              (node.title || node.dataset.matrxTitle) === 'Chat' && node.dataset.state === 'active'),
+            active_scrape_count: outer.length, scrape_controls_present: Boolean(controls),
+            scrape_pane_found: Boolean(pane), scrape_pane_active: pane?.dataset.state === 'active',
+            result_tablist_count: lists.length, selected_count: selected.length, article: result?.firstChild?.textContent?.trim() === 'Article',
+            selected_inside_scrape: Boolean(pane && result && pane.contains(result)),
+            result_controls_present: Boolean(result?.getAttribute('aria-controls')),
+            result_pane_found: Boolean(resultPane), result_pane_active: resultPane?.dataset.state === 'active',
+            result_pane_inside_scrape: Boolean(pane && resultPane && pane.contains(resultPane)),
+            result_pane_visible: Boolean(resultPane && resultPane.getBoundingClientRect().height > 0 &&
+              resultStyle?.display !== 'none' && resultStyle?.visibility === 'visible' && Number(resultStyle?.opacity || 1) > 0),
+            title_matches: pane?.querySelector('.truncate.text-sm.font-medium')?.textContent?.trim() === ${JSON.stringify(title)},
+          };
+        })()`;
+
+export const isCaptureReady = (state, before, events) =>
+  Boolean(
+    before?.result_tablist_count === 0 &&
+      before.selected_count === 0 &&
+      events?.capture_click === 1 &&
+      events.trusted_capture_click === 1 &&
+      events.last_target_is_capture === true &&
+      events.last_target_inside_scrape === true &&
+      state?.active_scrape_count === 1 &&
+      state.scrape_pane_active &&
+      state.result_tablist_count === 1 &&
+      state.selected_count === 1 &&
+      state.article &&
+      state.selected_inside_scrape &&
+      state.result_pane_inside_scrape &&
+      state.result_pane_active &&
+      state.result_pane_visible &&
+      state.title_matches,
+  );

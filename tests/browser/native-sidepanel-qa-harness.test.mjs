@@ -463,6 +463,8 @@ for (const [documentUrl, readyState, runtimeId, runtimeContexts, expected] of [
 ]) {
   const calls = [];
   const cdp = {
+    on() {},
+    off() {},
     async send(method, params, sessionId) {
       calls.push(method);
       if (method === 'Target.attachToTarget') {
@@ -537,6 +539,8 @@ for (const failedMethod of ['Target.attachToTarget', 'Page.getFrameTree', 'Runti
   const calls = [];
   const observation = await panelDocumentDiagnostic({
     cdp: {
+      on() {},
+      off() {},
       async send(method) {
         calls.push(method);
         if (method === failedMethod) throw new Error('private diagnostic detail');
