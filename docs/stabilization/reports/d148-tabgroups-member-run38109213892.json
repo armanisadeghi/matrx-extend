@@ -76,5 +76,16 @@
     "No defect state, inventory cell, or coordinator status was changed.",
     "Do not retry until the original exception/stage is observable and the next attempt has an objective diagnostic change."
   ],
-  "next_action": "Diagnose the panel failure with stage-preserving, sanitized evidence before any second native attempt."
+  "diagnostic_investigation": {
+    "earliest_boundary_recoverable_from_run": "Inside exercise_panel after fixture readiness and before manual form observation; the exact Tools/catalog/filter step is absent from the uploaded native report and failed-step log.",
+    "artifact_review": "The native report contains stage=cleanup and native_stage=exercise_panel. The hosted log records only the wrapper's child exit 1. The panel screenshot was captured before member sign-in and cannot classify the later failure.",
+    "repair_scope": "Preserve the first failure stage, step, and sanitized failure code through owned-tab cleanup; record a fixed-field DOM count snapshot at manual-runner failure, or availability=unavailable if panel evaluation fails. Cleanup failure remains separate.",
+    "source_checks": "Focused node tests passed (7/7); a scratch mutation restoring the cleanup stage overwrite failed 2/4 focused tests; Biome, full pnpm lint, and pnpm compile passed. Native behavior remains unverified pending a guarded rerun."
+  },
+  "independent_diagnostic_source_review": {
+    "report": "docs/stabilization/reports/d148-runner-diagnostic-peer-20261011.json",
+    "verdict": "GO_DIAGNOSTIC_REPAIR_SOURCE_ONLY",
+    "native_outcome": "NOT_VERIFIED"
+  },
+  "next_action": "After this diagnostic repair is pushed and exact-main development CI succeeds, prepare an explicit guarded hosted diagnostic plan. Do not classify a product defect without native behavior evidence."
 }
