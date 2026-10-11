@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { closeSync, fsyncSync, openSync, renameSync, unlinkSync, writeFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
+import { safeSeoClickEvidence } from '../tests/browser/guest-seo-click-diagnostic.mjs';
 import { safeStartupEndpointObservation } from './hosted-startup-interval-diagnostic.mjs';
 
 export async function seoStartupObservationOptions(report, enabled) {
@@ -54,6 +55,9 @@ export function writeSeoGuestProgress(path, report, diagnosticEnabled) {
     build: report.build,
     last_safe_stage: report.last_safe_stage,
     current_operation: report.current_operation,
+    ...safeSeoClickEvidence(report),
+    boundary_sample: safeBoundarySample(report.boundary_sample),
+    operation_start_sample: safeBoundarySample(report.operation_start_sample),
     targets: report.targets.map(({ case_id, subtarget, status }) => ({
       case_id,
       subtarget,
@@ -63,6 +67,13 @@ export function writeSeoGuestProgress(path, report, diagnosticEnabled) {
   const classified = classifySeoResourceDiagnosticReport(progress, diagnosticEnabled);
   persistSeoReceipt(path, classified);
   return classified;
+}
+
+function safeBoundarySample(sample) {
+  if (!sample || !/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z$/.test(sample.at)) return null;
+  if (![sample.user, sample.system].every((value) => Number.isSafeInteger(value) && value >= 0))
+    return null;
+  return { at: sample.at, user: sample.user, system: sample.system };
 }
 
 function persistSeoReceipt(path, report) {

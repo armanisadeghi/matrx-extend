@@ -27,7 +27,7 @@ export async function observeSeoReauditHit(panel) {
           'the database refused the request because your account is not allowed'));
     if (!target) return { active: active === true, target_count: buttons.length,
       target_enabled: null, database_refused_notice_count: notices.length,
-      hit_point_count: null, notice_hit_point_count: null };
+      hit_point_count: null, notice_hit_point_count: null, dismiss_visible: false };
     target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
     const rect = target.getBoundingClientRect();
     const bounds = { left: Math.max(0, rect.left), top: Math.max(0, rect.top),
@@ -50,9 +50,17 @@ export async function observeSeoReauditHit(panel) {
         points.push({ x: bounds.left + (bounds.right - bounds.left) * fx,
           y: bounds.top + (bounds.bottom - bounds.top) * fy });
     }
+    const dismiss = notices.flatMap((notice) => [...notice.querySelectorAll('button[aria-label="Dismiss"]')]);
+    const dismissVisible = dismiss.some((button) => {
+      const box = button.getBoundingClientRect(), style = getComputedStyle(button);
+      return !button.disabled && style.visibility !== 'hidden' && style.display !== 'none' &&
+        box.width > 0 && box.height > 0 && box.bottom > 0 && box.right > 0 &&
+        box.top < innerHeight && box.left < innerWidth;
+    });
     const hits = points.map(({ x, y }) => document.elementFromPoint(x, y));
     return { active: active === true, target_count: buttons.length,
       target_enabled: !target.disabled, database_refused_notice_count: notices.length,
+      dismiss_visible: dismissVisible,
       hit_point_count: hits.filter((hit) => hit === target || target.contains(hit)).length,
       notice_hit_point_count: hits.filter((hit) => notices.some((notice) =>
         notice === hit || notice.contains(hit))).length };
@@ -150,14 +158,67 @@ export function captureSeoClickFailure(error, phase) {
   };
 }
 
-export async function clickSeoReaudit(panel, report, click) {
+export async function clickSeoReaudit(panel, report, click, onProgress = () => {}) {
   report.click_phase = 'before_target_resolution';
+  onProgress();
   try {
     return await click(panel, 'button', 'Re-audit', (phase) => {
       report.click_phase = phase;
+      onProgress();
     });
   } catch (error) {
     report.click_failure_diagnostic = captureSeoClickFailure(error, report.click_phase);
+    onProgress();
     throw error;
   }
+}
+
+// Only fixed stages and primitive categories may survive a watchdog stop.
+export function safeSeoClickEvidence(report) {
+  const stages = [
+    'history_refused',
+    'history_recovered',
+    'before_click',
+    'after_click',
+    'after_dismiss',
+  ];
+  const snapshots = {};
+  for (const stage of stages) {
+    const sample = report.reaudit_hit_diagnostics?.[stage];
+    if (!sample) continue;
+    snapshots[stage] =
+      sample.sample_unavailable === true
+        ? { sample_unavailable: true }
+        : {
+            active: flag(sample.active),
+            target_count: count(sample.target_count),
+            target_enabled: flag(sample.target_enabled),
+            database_refused_notice_count: count(sample.database_refused_notice_count),
+            dismiss_visible: flag(sample.dismiss_visible),
+            hit_point_count: count(sample.hit_point_count),
+            notice_hit_point_count: count(sample.notice_hit_point_count),
+          };
+  }
+  return {
+    ...(Object.keys(snapshots).length && { reaudit_hit_diagnostics: snapshots }),
+    ...(PHASES.has(report.click_phase) && { click_phase: report.click_phase }),
+    ...(report.click_failure_diagnostic && {
+      click_failure_diagnostic: captureSeoClickFailure(
+        {
+          driverFailure: {
+            code: report.click_failure_diagnostic.code,
+            sampleStage: report.click_failure_diagnostic.sample_stage,
+            matchedTargetCount: report.click_failure_diagnostic.matched_target_count,
+            visibleMatchCount: report.click_failure_diagnostic.visible_match_count,
+            hitTarget: report.click_failure_diagnostic.hit_target,
+            stableSamples: report.click_failure_diagnostic.stable_samples,
+            selectedPointAvailable: report.click_failure_diagnostic.selected_point_available,
+            centerHitCategory: report.click_failure_diagnostic.center_hit_category,
+            centerOccluder: report.click_failure_diagnostic.center_occluder,
+          },
+        },
+        report.click_failure_diagnostic.phase,
+      ),
+    }),
+  };
 }

@@ -14,7 +14,7 @@ test('Re-audit hit sample distinguishes a database notice from a clear target', 
     window.document.body.innerHTML = `<button role="tab" title="SEO" aria-selected="true"
       aria-controls="seo-pane"></button><div id="seo-pane" role="tabpanel" data-state="active">
       <button>Re-audit</button></div><div role="alert"><div class="font-medium">
-      Saved audits unavailable</div><p>the database refused the request because your account is not allowed</p></div>`;
+      Saved audits unavailable</div><p>the database refused the request because your account is not allowed</p><button aria-label="Dismiss"></button></div>`;
     const button = window.document.querySelector('#seo-pane button');
     const notice = window.document.querySelector('[role="alert"]');
     const rect = { x: 0, y: 0, left: 0, top: 0, right: 90, bottom: 30, width: 90, height: 30 };
@@ -36,8 +36,10 @@ test('Re-audit hit sample distinguishes a database notice from a clear target', 
       database_refused_notice_count: 1,
       hit_point_count: 0,
       notice_hit_point_count: 9,
+      dismiss_visible: true,
     });
     occluded = false;
+    notice.querySelector('button').style.display = 'none';
     assert.deepEqual(await observeSeoReauditHit(panel), {
       active: true,
       target_count: 1,
@@ -45,6 +47,7 @@ test('Re-audit hit sample distinguishes a database notice from a clear target', 
       database_refused_notice_count: 1,
       hit_point_count: 9,
       notice_hit_point_count: 0,
+      dismiss_visible: false,
     });
   } finally {
     window.happyDOM.abort();
@@ -107,6 +110,8 @@ test('controlled manual Re-audit captures the exact failing pointer phase', asyn
   assert.equal(report.click_failure_diagnostic.code, 'pointer_press_dispatch_failed');
   const source = readFileSync(new URL('./seo-guest-acceptance.mjs', import.meta.url), 'utf8');
   assert.ok(
-    /enter\('manual_reaudit_click'\);\s*await clickSeoReaudit\(panel, report, click\)/.test(source),
+    /enter\('manual_reaudit_click'\);\s*await clickSeoReaudit\(panel, report, click, checkpoint\)/.test(
+      source,
+    ),
   );
 });
