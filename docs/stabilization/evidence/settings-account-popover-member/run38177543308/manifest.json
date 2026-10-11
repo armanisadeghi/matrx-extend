@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "run_id": 38177543308,
+  "source_artifact": {
+    "development_ci_run_id": 38176720271,
+    "development_artifact_id": 11716531563,
+    "development_artifact_digest": "sha256:969bc868b926c089c51f582970b3c5f57693c54d384337742164cb6c3469205d"
+  },
+  "hosted_result_artifact": {
+    "id": 11716801620,
+    "name": "hosted-guest-38177543308-1",
+    "digest": "sha256:62f580f17312b21f31412fee92ca9e2d93b3a5589afa16f9863f765575329335"
+  },
+  "files": [
+    {
+      "path": "resource-finals.sanitized.json",
+      "sha256": "cf03f20eb457fbffae61629ece363dae5594b8bd271fee169e1427b8f9b1f393"
+    },
+    {
+      "path": "resource-journals/hosted-browser-38177543308-1.jsonl",
+      "sha256": "ebfd02c52fb6118c6a5e28cb83e6a8f5755fe1d5d156eecd04da82161de9eb59"
+    },
+    {
+      "path": "resource-journals/hosted-guest-38177543308-1.jsonl",
+      "sha256": "141594126f00f6559151f24e05860efd699b9c71e44bc36a4b4bde5fc812aa52"
+    },
+    {
+      "path": "resource-journals/hosted-package-38177543308-1.jsonl",
+      "sha256": "d4c4b5c48ac8dbd40d53fb0d54b3bb11fe0065722cb1c46c99b5e64dddb10fbb"
+    },
+    {
+      "path": "screenshots/native-side-panel.png",
+      "sha256": "1fd435572391417d38dfbc1ba4e8a9e2ccb21c7e94bcc462318efa87bd757851"
+    },
+    {
+      "path": "screenshots/normal-target-after-open.png",
+      "sha256": "59366cd38e159297a279207d67f9dd46bb47225f289da01dca0669ce17142bc4"
+    }
+  ],
+  "credential_hygiene": "No secret or one-use link values retained. Local temporary file and GitHub secret were removed and absence verified after terminal run.",
+  "native_receipt": "not produced; resource guard stopped the process before member assertions"
+}

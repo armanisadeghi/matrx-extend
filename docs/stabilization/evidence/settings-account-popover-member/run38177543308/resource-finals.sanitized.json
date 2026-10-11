@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "run_id": 38177543308,
+  "resource_finals": {
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    "acceptance": {
+      "decision": "invalid",
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+    }
+  },
+  "acceptance_timeline": [
+    {
+      "at": "2026-10-11T21:49:26.261Z",
+      "code": "RESOURCE_ADMITTED",
+      "pressure_level": 1,
+      "available_memory_gib": 5.88,
+      "required_memory_gib": 4,
+      "normalized_one_minute_load": 1.76,
+      "logical_cpus": 3,
+      "cpu_busy_fraction": 0.02428571428571429,
+      "disk_free_gib": 42.918418884277344
+    },
+    {
+      "at": "2026-10-11T21:49:42.605Z",
+      "code": "RESOURCE_CPU_PENDING",
+      "cpu_busy_fraction": 0.84,
+      "normalized_one_minute_load": 1.4,
+      "logical_cpus": 3,
+      "reasons": ["RESOURCE_CPU_BUSY"]
+    },
+    {
+      "at": "2026-10-11T21:49:58.744Z",
+      "code": "RESOURCE_WATCH_UNSAFE",
+      "cpu_busy_fraction": 0.89,
+      "normalized_one_minute_load": 2.54,
+      "logical_cpus": 3,
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+    },
+    {
+      "at": "2026-10-11T21:49:58.766Z",
+      "code": "RESOURCE_STOP_AT_SAFE_BOUNDARY",
+      "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+    },
+    {
+      "at": "2026-10-11T21:49:58.812Z",
+      "code": "RESOURCE_GROUP_STOP_REQUESTED"
+    },
+    {
+      "at": "2026-10-11T21:49:59.867Z",
+      "code": "RESOURCE_FINAL_DECISION",
+      "decision": "invalid",
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3
+    }
+  ],
+  "journals": [
+    "resource-journals/hosted-package-38177543308-1.jsonl",
+    "resource-journals/hosted-browser-38177543308-1.jsonl",
+    "resource-journals/hosted-guest-38177543308-1.jsonl"
+  ]
+}

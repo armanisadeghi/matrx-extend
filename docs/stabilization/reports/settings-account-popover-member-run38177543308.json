@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-account-popover-member-run38177543308",
+  "recorded_at": "2026-10-11T21:54:00Z",
+  "scope": "Guarded hosted lane A ordinary-member account-popover cases T20, T23 and T26 using exact-source unpublished development artifact b3482558. The acceptance process was stopped by the resource watchdog before native member assertions; this run earns zero product acceptance credit.",
+  "run": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38177543308",
+    "id": 38177543308,
+    "conclusion": "failure",
+    "acceptance_case": "settings-account-popover-member",
+    "runner_label": "macos-15",
+    "runner_instance": "GitHub Actions 1000103962",
+    "workflow_head_sha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+    "tested_artifact_source_sha": "b3482558b084705c0f5203dc4e3b484d88f2930b",
+    "development_ci_run_id": 38176720271,
+    "development_artifact_id": 11716531563,
+    "development_artifact_digest": "sha256:969bc868b926c089c51f582970b3c5f57693c54d384337742164cb6c3469205d",
+    "development_version": "0.2.505",
+    "sanitized_artifact": {
+      "id": 11716801620,
+      "name": "hosted-guest-38177543308-1",
+      "digest": "sha256:62f580f17312b21f31412fee92ca9e2d93b3a5589afa16f9863f765575329335"
+    },
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "step_exit_code": 3
+  },
+  "resource_finals": {
+    "package": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "browser": {
+      "decision": "valid",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0
+    },
+    "acceptance": {
+      "decision": "invalid",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "reasons": [
+        "RESOURCE_CPU_BUSY",
+        "RESOURCE_CPU_HIGH_LOAD_BUSY"
+      ]
+    }
+  },
+  "native_observation": "No native report or T20/T23/T26 assertions were produced. The sanitized screenshots show the target page and guest-state panel, confirming the member session was not reached before the watchdog stopped the job.",
+  "failure_boundary": "The macos-15 runner admitted the acceptance step at 21:49:26.261Z with 5.88 GiB available memory (4 GiB required), 3 logical CPUs, normalized one-minute load 1.76 and measured CPU busy 0.024. At 21:49:42.605Z CPU busy reached 0.84 and the journal entered RESOURCE_CPU_PENDING. Its process attribution snapshot showed MTLCompilerServi processes at 92.3% and 20.4%, plus Chromium Helper at 26.6% and Chromium at 16.1%. At 21:49:58.744Z CPU busy was 0.89 with normalized load 2.54; the journal recorded CPU_BUSY and CPU_HIGH_LOAD_BUSY, requested stop at the safe boundary, then finalized invalid at 21:49:59.867Z with exit 3. The package and browser phases had valid finals. This is a resource-invalid attempt, not a product or native-driver verdict.",
+  "resource_diagnosis": {
+    "acceptance_timeline": "Admission at 21:49:26Z was healthy by the CPU-busy metric. First bad sample at 21:49:42Z measured busy 0.84/load 1.40; process attribution captured two Metal compiler workers (92.3%, 20.4%) alongside owned Chromium/Node processes. The next unsafe sample at 21:49:58Z measured busy 0.89/load 2.54 on three logical CPUs. The watchdog stopped the process group at the safe boundary and wrote an invalid final one second later.",
+    "contention_boundary": "The process snapshot contains high CPU from both Metal compiler service and the owned Chromium run. It does not establish why the compiler workers were active or assign sole causation. No lane-B hosted run or other acceptance process overlapped the preflight window per coordinator check; process attribution is the direct evidence for concurrent host load at the failure boundary.",
+    "conclusion": "The second member attempt again failed the resource gate, but with a different and earlier boundary than run 38170153264: this attempt was stopped on sustained busy/high load before native completion, whereas the earlier attempt completed native checks and expired its CPU confirmation window. Guard tuning is unsupported by these observations. A later attempt should use the workflow's existing macos-15-intel option, after a quiet-runner admission check and confirmation no competing heavy job is active; keep the resource thresholds unchanged. This is evidence-based as a way to avoid the observed Metal compiler contention on the ARM macos-15 host, but it is not a guarantee of a clean run. Do not mint another member link until admission and source/artifact gates are freshly checked.",
+    "prior_member_comparison": "Run 38170153264 on macos-15 had valid package/browser finals and native-reported T20/T23/T26 success, but acceptance resource final RESOURCE_CPU_CONFIRMATION_EXPIRED, zero credit. Its post-child recovery timeout differs from this run's watchdog stop before native assertions."
+  },
+  "product_verdict": {
+    "cases": [
+      "EXT-F-1001-T20",
+      "EXT-F-1001-T23",
+      "EXT-F-1001-T26"
+    ],
+    "status": "unverified",
+    "credit": 0,
+    "reason": "Acceptance resource final invalid; no member native assertions or independent review exist for this run."
+  },
+  "fixture_cleanup": "The private one-use link file was removed and verified absent before dispatch. The temporary MATRX_REVIEWER_MAGIC_LINK_JSON GitHub secret was deleted immediately at terminal and a secret-name lookup confirmed absence. No link, token, email or profile identifier is stored in this report or evidence.",
+  "evidence": [
+    "docs/stabilization/evidence/settings-account-popover-member/run38177543308/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/settings-account-popover-member/run38177543308/resource-journals/hosted-package-38177543308-1.jsonl",
+    "docs/stabilization/evidence/settings-account-popover-member/run38177543308/resource-journals/hosted-browser-38177543308-1.jsonl",
+    "docs/stabilization/evidence/settings-account-popover-member/run38177543308/resource-journals/hosted-guest-38177543308-1.jsonl",
+    "docs/stabilization/evidence/settings-account-popover-member/run38177543308/screenshots/native-side-panel.png",
+    "docs/stabilization/evidence/settings-account-popover-member/run38177543308/screenshots/normal-target-after-open.png"
+  ],
+  "independent_review": {
+    "status": "resource_evidence_reverified",
+    "finding": "Independent peer rechecked the sanitized resource journals and manifest. Package and browser finals remain valid; acceptance final remains invalid for CPU busy/high load. No new findings.",
+    "limit": "This review verifies resource-evidence integrity and classification only. There is no native member receipt or T20/T23/T26 assertion to review; all cases remain unverified with zero product credit."
+  },
+  "next": "No blind retry. After a fresh quiet-runner check and current green exact-source artifact/admission validation, consider one guarded A attempt using macos-15-intel; leave CPU thresholds unchanged. If resource final is valid, obtain independent native review before updating any case credit. Admin remains out of scope."
+}
