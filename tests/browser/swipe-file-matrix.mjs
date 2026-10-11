@@ -24,7 +24,10 @@ import { resolveBrowserRuntime } from './browser-runtime.mjs';
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const EXT = join(REPO, '.output', 'chrome-mv3');
 const SHOTS = join(REPO, '.output', 'swipe-file-e2e');
-const fail0 = (m) => { console.error(m); process.exit(1); };
+const fail0 = (m) => {
+  console.error(m);
+  process.exit(1);
+};
 const POSTS = (process.env.MATRX_SWIPE_POSTS || '').split(',').filter(Boolean);
 if (!POSTS.length) fail0('set MATRX_SWIPE_POSTS=url,url,...');
 const POST_URL = POSTS.join(' ');
@@ -121,46 +124,72 @@ try {
   );
   await setup.close();
 
-  
-const results = [];
-for (const url of POSTS) {
-  const page = await ctx.newPage();
-  const consoleErrs = [];
-  const netFails = [];
-  page.on('console', (m) => { if (m.type() === 'error') consoleErrs.push(m.text().slice(0, 200)); });
-  page.on('pageerror', (e) => consoleErrs.push(`pageerror ${String(e).slice(0, 200)}`));
-  page.on('response', (r) => { if (r.status() >= 400 && /matrxserver|supabase|aimatrx/.test(r.url())) netFails.push(`${r.status()} ${r.request().method()} ${r.url().slice(0, 140)}`); });
-  const row = { url, pill: null, msg: '', summary: '', notice: '', consoleErrs, netFails };
-  try {
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
-    const pill = page.locator('#matrx-swipe-pill');
-    await pill.waitFor({ state: 'attached', timeout: 20000 });
-    row.pill = true;
-    const save = pill.getByRole('button', { name: /save to swipe file/i });
-    await save.waitFor({ timeout: 15000 });
-    await page.waitForTimeout(2500);
-    const select = pill.getByLabel('Collection', { exact: true });
-    const labels = await select.locator('option').allTextContents();
-    if (labels.includes(COLLECTION)) await select.selectOption({ label: COLLECTION });
-    else { await select.selectOption({ label: 'New collection…' }); await pill.getByLabel('New collection name').fill(COLLECTION); }
-    await save.click();
-    const t0 = Date.now();
-    let text = '';
-    while (Date.now() - t0 < 200000) {
-      text = (await pill.locator('#msg').textContent().catch(() => '')) || '';
-      if (/^(Saved|Already|Not saved|Connection)/.test(text)) break;
-      await page.waitForTimeout(500);
+  const results = [];
+  for (const url of POSTS) {
+    const page = await ctx.newPage();
+    const consoleErrs = [];
+    const netFails = [];
+    page.on('console', (m) => {
+      if (m.type() === 'error') consoleErrs.push(m.text().slice(0, 200));
+    });
+    page.on('pageerror', (e) => consoleErrs.push(`pageerror ${String(e).slice(0, 200)}`));
+    page.on('response', (r) => {
+      if (r.status() >= 400 && /matrxserver|supabase|aimatrx/.test(r.url()))
+        netFails.push(`${r.status()} ${r.request().method()} ${r.url().slice(0, 140)}`);
+    });
+    const row = { url, pill: null, msg: '', summary: '', notice: '', consoleErrs, netFails };
+    try {
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 45000 });
+      const pill = page.locator('#matrx-swipe-pill');
+      await pill.waitFor({ state: 'attached', timeout: 20000 });
+      row.pill = true;
+      const save = pill.getByRole('button', { name: /save to swipe file/i });
+      await save.waitFor({ timeout: 15000 });
+      await page.waitForTimeout(2500);
+      const select = pill.getByLabel('Collection', { exact: true });
+      const labels = await select.locator('option').allTextContents();
+      if (labels.includes(COLLECTION)) await select.selectOption({ label: COLLECTION });
+      else {
+        await select.selectOption({ label: 'New collection…' });
+        await pill.getByLabel('New collection name').fill(COLLECTION);
+      }
+      await save.click();
+      const t0 = Date.now();
+      let text = '';
+      while (Date.now() - t0 < 200000) {
+        text =
+          (await pill
+            .locator('#msg')
+            .textContent()
+            .catch(() => '')) || '';
+        if (/^(Saved|Already|Not saved|Connection)/.test(text)) break;
+        await page.waitForTimeout(500);
+      }
+      row.msg = text;
+      row.summary =
+        (await pill
+          .locator('#summary')
+          .textContent()
+          .catch(() => '')) || '';
+      row.notice =
+        (await pill
+          .locator('#notice')
+          .textContent()
+          .catch(() => '')) || '';
+      row.slidesBtn = await pill
+        .locator('#capture-slides')
+        .isVisible()
+        .catch(() => false);
+      await page.screenshot({
+        path: join(SHOTS, `${results.length}-${url.replace(/[^a-z0-9]+/gi, '_').slice(0, 60)}.png`),
+      });
+    } catch (e) {
+      row.msg = `HARNESS: ${String(e).slice(0, 200)}`;
     }
-    row.msg = text;
-    row.summary = (await pill.locator('#summary').textContent().catch(() => '')) || '';
-    row.notice = (await pill.locator('#notice').textContent().catch(() => '')) || '';
-    row.slidesBtn = await pill.locator('#capture-slides').isVisible().catch(() => false);
-    await page.screenshot({ path: join(SHOTS, `${results.length}-${url.replace(/[^a-z0-9]+/gi, '_').slice(0, 60)}.png`) });
-  } catch (e) { row.msg = `HARNESS: ${String(e).slice(0, 200)}`; }
-  console.log(JSON.stringify(row));
-  results.push(row);
-  await page.close();
-}
+    console.log(JSON.stringify(row));
+    results.push(row);
+    await page.close();
+  }
 } finally {
   await ctx.close().catch(() => {});
 }
