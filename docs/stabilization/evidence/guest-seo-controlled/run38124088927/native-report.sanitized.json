@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "run_id": 38124088927,
+  "native_report_status": "unverified",
+  "mode": "guest",
+  "scope": "public-page guest SEO actions in an owned native side panel",
+  "t06_target": {
+    "case_id": "EXT-F-1008-T06",
+    "subtarget": "guest_history_error_retry_fresh_empty_read",
+    "status": "pass",
+    "evidence": {
+      "errorRendered": true,
+      "retryFreshRead": true,
+      "emptyRendered": true
+    }
+  },
+  "last_safe_stage": "manual_reaudit_preflight",
+  "current_operation": "manual_reaudit_click",
+  "failure_stage": "manual_reaudit_click",
+  "click_phase": "before_target_resolution",
+  "click_failure_diagnostic": {
+    "phase": "before_target_resolution",
+    "source": "pointer_driver",
+    "code": "pointer_stable_hit_not_observed",
+    "sample_stage": null,
+    "matched_target_count": 1,
+    "visible_match_count": 1,
+    "hit_target": false,
+    "stable_samples": 0,
+    "selected_point_available": false,
+    "center_hit_category": "other_element",
+    "center_occluder": {
+      "owning_panel": "none",
+      "known_notice": "database_refused"
+    }
+  },
+  "imported_artifact": {
+    "kind": "ci_development_test",
+    "sourceSha": "40ad70d458fd1f6acd16aa04c40c061eb6ef21bb",
+    "runId": 38118947880,
+    "runAttempt": 1,
+    "artifactId": 11693783976,
+    "githubArtifactDigest": "sha256:162c745cbcc558f3d9f45c23560be63a0c4b9473c76109bd18405f636217549c",
+    "version": "0.2.493",
+    "treeSha256": "6ac2233eb04997096e173e0f741c127130a7ee9a245882392befcd49b9fe2206",
+    "publish_state": "not_published"
+  }
+}

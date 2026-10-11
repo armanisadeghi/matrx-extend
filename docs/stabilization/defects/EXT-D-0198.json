@@ -30,14 +30,18 @@
     "src/features/seo/SeoView.tsx:73-95",
     "src/features/seo/SeoView.tsx:224-237",
     "src/features/seo/SeoView.tsx:272-281",
-    "docs/stabilization/reports/seo-history-error-fix-20261011.json"
+    "docs/stabilization/reports/seo-history-error-fix-20261011.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38124088927",
+    "docs/stabilization/reports/guest-seo-run38124088927-peer-20261011.json",
+    "docs/stabilization/evidence/guest-seo-controlled/run38124088927/native-report.sanitized.json"
   ],
   "fix_commit": "9ea9401ed75d3d21cf1bb370eec81a3b8027df0f",
   "verification": [
     "A temporary focused Vitest diagnostic invoked the real fetchSeoAuditHistoryForUrl and rendered the real SeoView with a controlled synthetic PostgREST 42501 permission error; it passed the assertions that the query resolves to [], the History toggle is absent, and no history-specific error is shown.",
     "The temporary diagnostic test file was removed after the run and is not committed.",
     "No browser, hosted, live backend, auth-mode, or native impact check was performed.",
-    "RED: 4 regression assertions failed for the reported production query/UI defects before source changes. GREEN: 28 focused SEO tests passed; compile, lint (854 existing warnings), schema routing and diff checks passed. Interface-text has 0 novel candidates. See fix report; native/role/Store retest remains open."
+    "RED: 4 regression assertions failed for the reported production query/UI defects before source changes. GREEN: 28 focused SEO tests passed; compile, lint (854 existing warnings), schema routing and diff checks passed. Interface-text has 0 novel candidates. See fix report; native/role/Store retest remains open.",
+    "Independent hosted guest native review of frozen development 0.2.493 run 38124088927 observed the controlled synthetic error alert, trusted history Retry, pending Loading, fresh successful empty read and true empty state; the original error-to-empty-without-retry behavior did not reproduce in this bounded path. Three resource journals were valid, though the overall job failed later at an unattributed pre-dispatch Re-audit click. Active-page-identity-unresolved precondition, live backend, reload, member/admin and Store behavior remain unverified."
   ],
   "closure_requirement": "Implement a distinguishable history loading/empty/error flow and a history retry path consistent with T06, then verify the query error is surfaced and retry performs a fresh read. Independently retest the controlled real SEO UI and relevant guest/member/admin modes; retain the source/unit result as supporting evidence only.",
   "transition_history": [
@@ -66,6 +70,6 @@
       "reason": "Source repair pushed to main in 9ea9401ed75d3d21cf1bb370eec81a3b8027df0f after RED\u2192GREEN regression, 28 focused SEO tests, compile/lint/schema checks. Independent native and role-specific retest remains open; not shipped or closed."
     }
   ],
-  "retest_status": "open \u2014 independent native T06 and relevant guest/member/admin checks required; no browser or live-backend acceptance claimed",
-  "release_status": "unreleased source repair; root task owns guarded hosted release after independent review and remote resource-admission correction"
+  "retest_status": "partial \u2014 bounded guest controlled synthetic T06 error/Retry/fresh-empty passed independently in run 38124088927; member/admin, live backend, unresolved-page precondition, reload and Store remain unverified; defect not closed",
+  "release_status": "source repair on synchronized main and included in later development/release builds; Google Store has not been verified to publish this fix"
 }

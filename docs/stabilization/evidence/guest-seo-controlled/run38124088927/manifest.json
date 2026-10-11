@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "run_id": 38124088927,
+  "hosted_artifact_id": 11696518188,
+  "hosted_artifact_digest": "sha256:2d80b5df7ee6aff1112e397ee63a77addc415e1ed4e2e8df233e64e73abc52d0",
+  "product_artifact_id": 11693783976,
+  "product_artifact_digest": "sha256:162c745cbcc558f3d9f45c23560be63a0c4b9473c76109bd18405f636217549c",
+  "files": [
+    {
+      "name": "hosted-browser-38124088927-1.jsonl",
+      "sha256": "a9d040e0e0e153298e1c77cc3cea0ffeafd74299700b30587d9c623b44d28396"
+    },
+    {
+      "name": "hosted-guest-38124088927-1.jsonl",
+      "sha256": "a6b83063aaf80b580e9a666f4f4f050591d0d19da47308e723f8df9819625492"
+    },
+    {
+      "name": "hosted-package-38124088927-1.jsonl",
+      "sha256": "26f9cc37b5be29d486184368a8dfd063d5dd098c5da62d43bfdba46ed70a3851"
+    },
+    {
+      "name": "native-report.sanitized.json",
+      "sha256": "9b4fba6dc5fa27ba0548f00930693db3592e8b35d053578a6bb015be924d9fee"
+    }
+  ],
+  "omitted": "screenshots, unrelated SEO subtargets, raw private runner artifact fields"
+}

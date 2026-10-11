@@ -1,7 +1,7 @@
 {
   "id": "guest-seo-click-diagnostic-run38124088927",
   "created_at_utc": "2026-10-11T08:14:09Z",
-  "status": "queued_unverified",
+  "status": "failure_child_failed_resource_valid_bounded_t06_pass",
   "run_id": 38124088927,
   "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38124088927",
   "attempt": 1,
@@ -23,5 +23,14 @@
   },
   "purpose": "Guarded diagnostic rerun for prior manual_reaudit_click failure with reviewed safe click-phase capture; also exercises bounded guest EXT-D-0198 history error and retry path on a product artifact containing the source repair.",
   "credit_rule": "No product or inventory credit until terminal run, exact artifact and resource-journal validation, and fresh independent review. Click diagnosis must be read from sanitized receipt; do not infer product defect from a child failure.",
-  "next_action": "Observe terminal state no more frequently than once per 60 seconds, inspect exact hosted artifact and all finalized resource journals, independently review rendered native behavior and diagnostic capture; reconcile source drift before any release use."
+  "next_action": "Credit bounded guest T06 only; diagnose click occluder before a T02 rerun. Member/admin T06 and live backend remain unverified; D0198 not closed.",
+  "terminal_at_utc": "2026-10-11T08:21:05Z",
+  "hosted_result_artifact": {
+    "id": 11696518188,
+    "digest": "sha256:2d80b5df7ee6aff1112e397ee63a77addc415e1ed4e2e8df233e64e73abc52d0"
+  },
+  "independent_review": "docs/stabilization/reports/guest-seo-run38124088927-peer-20261011.json",
+  "evidence_dir": "docs/stabilization/evidence/guest-seo-controlled/run38124088927",
+  "bounded_result": "Guest T06 controlled synthetic history error, Retry, fresh pending read and empty rendered pass; full run failed later at pre-dispatch manual Re-audit click. No T02/full-feature/live-backend/member/admin credit.",
+  "click_diagnostic": "pointer_stable_hit_not_observed before target resolution; one visible target, but database-refused notice occluded stable hit. Product versus harness attribution remains unknown."
 }
