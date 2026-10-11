@@ -1,0 +1,2656 @@
+{
+  "schema_version": 1,
+  "status": "DIAGNOSIS_COMPLETE_ROOT_CAUSE_UNPROVEN_ARM64_STARTUP_VALID",
+  "scope": "Hosted Chromium/CDP initialization only. Zero T93 or product acceptance credit.",
+  "root_cause_confidence": {
+    "confirmed": "First T93 failure is absence of DevToolsActivePort before the 8000ms startup deadline, with spawned live Chromium and no stderr. CPU_PENDING was recorded in an overlapping aggregate sample; the sample does not prove that CPU pressure caused endpoint latency.",
+    "hypothesis": "Cold hosted Chromium/platform initialization may produce transient CPU pressure and variable endpoint latency; the combined macOS runner image/architecture may affect latency. Boundary confidence high; underlying cause confidence low.",
+    "not_proven": [
+      "Extension background startup contribution before endpoint",
+      "CPU saturation causing endpoint latency",
+      "Intel-specific defect",
+      "Stale profile or test-mode setup defect"
+    ]
+  },
+  "evidence": {
+    "38100035139": {
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38100035139",
+      "image": "macos-15",
+      "resource_events": [
+        {
+          "at": "2026-10-11T00:57:31.038Z",
+          "runId": "hosted-package-38100035139-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 8.22,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.06857142857142857,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.65584182739258,
+            "profileFreeGiB": 109.65584182739258,
+            "safetyFreeGiB": 109.65584182739258,
+            "systemFreeGiB": 109.65584182739258
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-11T00:57:33.841Z",
+          "runId": "hosted-package-38100035139-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-11T00:59:27.353Z",
+          "runId": "hosted-browser-38100035139-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.88,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.06999999999999999,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.6471176147461,
+            "profileFreeGiB": 109.6471176147461,
+            "safetyFreeGiB": 109.6471176147461,
+            "systemFreeGiB": 109.6471176147461
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-11T00:59:39.786Z",
+          "runId": "hosted-browser-38100035139-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-11T01:01:23.907Z",
+          "runId": "hosted-guest-38100035139-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.33,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.021428571428571432,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.39014053344727,
+            "profileFreeGiB": 109.39014053344727,
+            "safetyFreeGiB": 109.39014053344727,
+            "systemFreeGiB": 109.39014053344727
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-11T01:02:12.556Z",
+          "runId": "hosted-guest-38100035139-1",
+          "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.6,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 10.82,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.93,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.22536087036133,
+            "profileFreeGiB": 109.22536087036133,
+            "safetyFreeGiB": 109.22536087036133,
+            "systemFreeGiB": 109.22536087036133
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-11T01:02:19.041Z",
+          "runId": "hosted-guest-38100035139-1",
+          "resourceInvalid": true,
+          "exitCode": 3,
+          "decision": "invalid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "startup": [
+        {
+          "marker": "BROWSER_STARTUP_FAILURE",
+          "observation": {
+            "failureCode": "owned_cdp_endpoint_timeout",
+            "elapsedMs": 8023,
+            "exitCode": null,
+            "signalCode": null,
+            "launchFailed": false,
+            "spawnObserved": true,
+            "stderrFlags": {
+              "hadStderr": false,
+              "codeSignature": false,
+              "dynamicLoader": false,
+              "permissionDenied": false,
+              "sandbox": false,
+              "crash": false,
+              "devtoolsListening": false
+            },
+            "endpointWaitDiagnostic": {
+              "polls": 217,
+              "elapsedMs": 8005,
+              "longestReadMs": 270
+            }
+          }
+        }
+      ]
+    },
+    "38084416311": {
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38084416311",
+      "image": "macos-15",
+      "resource_events": [
+        {
+          "at": "2026-10-10T20:38:45.631Z",
+          "runId": "hosted-package-38084416311-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.83,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.02857142857142857,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.5985221862793,
+            "profileFreeGiB": 109.5985221862793,
+            "safetyFreeGiB": 109.5985221862793,
+            "systemFreeGiB": 109.5985221862793
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:38:49.874Z",
+          "runId": "hosted-package-38084416311-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-10T20:40:42.261Z",
+          "runId": "hosted-browser-38084416311-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.39,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.08857142857142859,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.61549758911133,
+            "profileFreeGiB": 109.61549758911133,
+            "safetyFreeGiB": 109.61549758911133,
+            "systemFreeGiB": 109.61549758911133
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:40:57.406Z",
+          "runId": "hosted-browser-38084416311-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-10T20:42:39.005Z",
+          "runId": "hosted-startup-38084416311-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.17,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.21000000000000002,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.35440826416016,
+            "profileFreeGiB": 109.35440826416016,
+            "safetyFreeGiB": 109.35440826416016,
+            "systemFreeGiB": 109.35440826416016
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:43:11.584Z",
+          "runId": "hosted-startup-38084416311-1",
+          "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 6.13,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.98,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.17467498779297,
+            "profileFreeGiB": 109.17467498779297,
+            "safetyFreeGiB": 109.17467498779297,
+            "systemFreeGiB": 109.17467498779297
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:43:27.772Z",
+          "runId": "hosted-startup-38084416311-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 5.37,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.05,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.16179656982422,
+            "profileFreeGiB": 109.16179656982422,
+            "safetyFreeGiB": 109.16179656982422,
+            "systemFreeGiB": 109.16179656982422
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:43:44.057Z",
+          "runId": "hosted-startup-38084416311-1",
+          "reasons": ["RESOURCE_CPU_HIGH_LOAD_BUSY"],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 4.18,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.68,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.16850662231445,
+            "profileFreeGiB": 109.16850662231445,
+            "safetyFreeGiB": 109.16850662231445,
+            "systemFreeGiB": 109.16850662231445
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:44:00.305Z",
+          "runId": "hosted-startup-38084416311-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 3.55,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.04,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.1748275756836,
+            "profileFreeGiB": 109.1748275756836,
+            "safetyFreeGiB": 109.1748275756836,
+            "systemFreeGiB": 109.1748275756836
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:44:16.515Z",
+          "runId": "hosted-startup-38084416311-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.75,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.46,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.1646842956543,
+            "profileFreeGiB": 109.1646842956543,
+            "safetyFreeGiB": 109.1646842956543,
+            "systemFreeGiB": 109.1646842956543
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:44:32.684Z",
+          "runId": "hosted-startup-38084416311-1",
+          "reasons": ["RESOURCE_CPU_CONFIRMATION_EXPIRED"],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.51,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.38,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.11581802368164,
+            "profileFreeGiB": 109.11581802368164,
+            "safetyFreeGiB": 109.11581802368164,
+            "systemFreeGiB": 109.11581802368164
+          },
+          "code": "RESOURCE_WATCH_UNSAFE"
+        },
+        {
+          "at": "2026-10-10T20:44:34.294Z",
+          "runId": "hosted-startup-38084416311-1",
+          "resourceInvalid": true,
+          "exitCode": 3,
+          "decision": "invalid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "startup": [
+        {
+          "marker": "BROWSER_STARTUP_CPU_INTERVAL",
+          "observation": {
+            "beforeStartedAt": "2026-10-10T20:43:01.822Z",
+            "beforeCompletedAt": "2026-10-10T20:43:01.874Z",
+            "afterStartedAt": "2026-10-10T20:43:07.476Z",
+            "afterCompletedAt": "2026-10-10T20:43:07.556Z",
+            "outcome": "cdp_connected",
+            "categoryTotalsSeconds": {
+              "ownedChromium": 0,
+              "ownedOther": 0.21,
+              "hostProvisioner": 1.24,
+              "otherHost": 8.48
+            },
+            "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time.",
+            "appeared_process_lifetime_cpu_seconds": {
+              "owned_at_end": 4.6,
+              "unowned_at_end": 1.01,
+              "limitation": "Lifetime totals for newly appeared processes, not exact interval deltas; transient/exited and reparented processes may be missing or misclassified."
+            }
+          }
+        }
+      ]
+    },
+    "38083739013": {
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38083739013",
+      "image": "macos-15",
+      "resource_events": [
+        {
+          "at": "2026-10-10T20:28:35.788Z",
+          "runId": "hosted-package-38083739013-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.37,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.012857142857142857,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.5529899597168,
+            "profileFreeGiB": 109.5529899597168,
+            "safetyFreeGiB": 109.5529899597168,
+            "systemFreeGiB": 109.5529899597168
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:28:39.864Z",
+          "runId": "hosted-package-38083739013-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-10T20:30:32.042Z",
+          "runId": "hosted-browser-38083739013-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.16,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.10142857142857142,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.56801223754883,
+            "profileFreeGiB": 109.56801223754883,
+            "safetyFreeGiB": 109.56801223754883,
+            "systemFreeGiB": 109.56801223754883
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:30:48.336Z",
+          "runId": "hosted-browser-38083739013-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-10T20:32:44.532Z",
+          "runId": "hosted-guest-38083739013-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.32,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.0642857142857143,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.31402206420898,
+            "profileFreeGiB": 109.31402206420898,
+            "safetyFreeGiB": 109.31402206420898,
+            "systemFreeGiB": 109.31402206420898
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:33:01.286Z",
+          "runId": "hosted-guest-38083739013-1",
+          "reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 10.5,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 1,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.15825653076172,
+            "profileFreeGiB": 109.15825653076172,
+            "safetyFreeGiB": 109.15825653076172,
+            "systemFreeGiB": 109.15825653076172
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:33:10.957Z",
+          "runId": "hosted-guest-38083739013-1",
+          "resourceInvalid": true,
+          "exitCode": 3,
+          "decision": "invalid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "startup": [
+        {
+          "marker": "BROWSER_STARTUP_FAILURE",
+          "observation": {
+            "failureCode": "owned_cdp_endpoint_timeout",
+            "elapsedMs": 8052,
+            "exitCode": null,
+            "signalCode": null,
+            "launchFailed": false,
+            "spawnObserved": true,
+            "stderrFlags": {
+              "hadStderr": false,
+              "codeSignature": false,
+              "dynamicLoader": false,
+              "permissionDenied": false,
+              "sandbox": false,
+              "crash": false,
+              "devtoolsListening": false
+            },
+            "endpointWaitDiagnostic": {
+              "polls": 184,
+              "elapsedMs": 8028,
+              "longestReadMs": 240
+            }
+          }
+        }
+      ]
+    },
+    "38084666691": {
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38084666691",
+      "image": "macos-15-arm64",
+      "resource_events": [
+        {
+          "at": "2026-10-10T20:42:54.207Z",
+          "runId": "hosted-package-38084666691-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 6.09,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 17.22,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.15714285714285717,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.15089797973633,
+            "profileFreeGiB": 43.15089797973633,
+            "safetyFreeGiB": 43.15089797973633,
+            "systemFreeGiB": 43.15089797973633
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:42:56.004Z",
+          "runId": "hosted-package-38084666691-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-10T20:44:50.275Z",
+          "runId": "hosted-browser-38084666691-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 6.09,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 3.58,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.06285714285714286,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.16006088256836,
+            "profileFreeGiB": 43.16006088256836,
+            "safetyFreeGiB": 43.16006088256836,
+            "systemFreeGiB": 43.16006088256836
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:44:58.107Z",
+          "runId": "hosted-browser-38084666691-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-10T20:46:46.771Z",
+          "runId": "hosted-guest-38084666691-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 6.02,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.54,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.07714285714285715,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 42.846534729003906,
+            "profileFreeGiB": 42.846534729003906,
+            "safetyFreeGiB": 42.846534729003906,
+            "systemFreeGiB": 42.846534729003906
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:47:02.988Z",
+          "runId": "hosted-guest-38084666691-1",
+          "reasons": ["RESOURCE_CPU_HIGH_LOAD_BUSY"],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.81,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.89,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.71,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 42.68130111694336,
+            "profileFreeGiB": 42.68130111694336,
+            "safetyFreeGiB": 42.68130111694336,
+            "systemFreeGiB": 42.68130111694336
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:47:19.108Z",
+          "runId": "hosted-guest-38084666691-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.81,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.9,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.21,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 42.66398239135742,
+            "profileFreeGiB": 42.66398239135742,
+            "safetyFreeGiB": 42.66398239135742,
+            "systemFreeGiB": 42.66398239135742
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:47:35.283Z",
+          "runId": "hosted-guest-38084666691-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.81,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.78,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.22,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 42.66154098510742,
+            "profileFreeGiB": 42.66154098510742,
+            "safetyFreeGiB": 42.66154098510742,
+            "systemFreeGiB": 42.66154098510742
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:47:56.247Z",
+          "runId": "hosted-guest-38084666691-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.88,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.12,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.01,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 42.68638610839844,
+            "profileFreeGiB": 42.68638610839844,
+            "safetyFreeGiB": 42.68638610839844,
+            "systemFreeGiB": 42.68638610839844
+          },
+          "code": "RESOURCE_CPU_RECOVERED"
+        },
+        {
+          "at": "2026-10-10T20:47:56.425Z",
+          "runId": "hosted-guest-38084666691-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "startup": []
+    },
+    "38085419850": {
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38085419850",
+      "image": "macos-15-arm64",
+      "resource_events": [
+        {
+          "at": "2026-10-10T20:54:09.550Z",
+          "runId": "hosted-package-38085419850-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.88,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 3.37,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.09857142857142856,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.109622955322266,
+            "profileFreeGiB": 43.109622955322266,
+            "safetyFreeGiB": 43.109622955322266,
+            "systemFreeGiB": 43.109622955322266
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:54:11.008Z",
+          "runId": "hosted-package-38085419850-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-10T20:56:05.913Z",
+          "runId": "hosted-browser-38085419850-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.88,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.43,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.16857142857142857,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.737709045410156,
+            "profileFreeGiB": 43.737709045410156,
+            "safetyFreeGiB": 43.737709045410156,
+            "systemFreeGiB": 43.737709045410156
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:56:12.961Z",
+          "runId": "hosted-browser-38085419850-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-10T20:58:02.177Z",
+          "runId": "hosted-guest-38085419850-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.81,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.11,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.1957142857142857,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.462608337402344,
+            "profileFreeGiB": 43.462608337402344,
+            "safetyFreeGiB": 43.462608337402344,
+            "systemFreeGiB": 43.462608337402344
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-10T20:58:18.431Z",
+          "runId": "hosted-guest-38085419850-1",
+          "reasons": ["RESOURCE_CPU_HIGH_LOAD_BUSY"],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.74,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.61,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.74,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.277523040771484,
+            "profileFreeGiB": 43.277523040771484,
+            "safetyFreeGiB": 43.277523040771484,
+            "systemFreeGiB": 43.277523040771484
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:58:35.027Z",
+          "runId": "hosted-guest-38085419850-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.74,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.25,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.19,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.29208755493164,
+            "profileFreeGiB": 43.29208755493164,
+            "safetyFreeGiB": 43.29208755493164,
+            "systemFreeGiB": 43.29208755493164
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:58:51.261Z",
+          "runId": "hosted-guest-38085419850-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.74,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 2.13,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.02,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.298885345458984,
+            "profileFreeGiB": 43.298885345458984,
+            "safetyFreeGiB": 43.298885345458984,
+            "systemFreeGiB": 43.298885345458984
+          },
+          "code": "RESOURCE_CPU_PENDING"
+        },
+        {
+          "at": "2026-10-10T20:59:07.302Z",
+          "runId": "hosted-guest-38085419850-1",
+          "reasons": [],
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 5.74,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.92,
+            "logicalCpus": 3,
+            "cpuBusyFraction": 0.15,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 43.30550003051758,
+            "profileFreeGiB": 43.30550003051758,
+            "safetyFreeGiB": 43.30550003051758,
+            "systemFreeGiB": 43.30550003051758
+          },
+          "code": "RESOURCE_CPU_RECOVERED"
+        },
+        {
+          "at": "2026-10-10T20:59:07.434Z",
+          "runId": "hosted-guest-38085419850-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "startup": []
+    },
+    "38099410087": {
+      "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38099410087",
+      "image": "macos-15",
+      "resource_events": [
+        {
+          "at": "2026-10-11T00:46:04.057Z",
+          "runId": "hosted-package-38099410087-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.51,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.02428571428571429,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.5328254699707,
+            "profileFreeGiB": 109.5328254699707,
+            "safetyFreeGiB": 109.5328254699707,
+            "systemFreeGiB": 109.5328254699707
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-11T00:46:07.263Z",
+          "runId": "hosted-package-38099410087-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-11T00:48:00.035Z",
+          "runId": "hosted-browser-38099410087-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 1.01,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.014285714285714285,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.54969787597656,
+            "profileFreeGiB": 109.54969787597656,
+            "safetyFreeGiB": 109.54969787597656,
+            "systemFreeGiB": 109.54969787597656
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-11T00:48:14.307Z",
+          "runId": "hosted-browser-38099410087-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        },
+        {
+          "at": "2026-10-11T00:49:56.251Z",
+          "runId": "hosted-guest-38099410087-1",
+          "sample": {
+            "pressureLevel": 1,
+            "availableMemoryGiB": 12.46,
+            "requiredMemoryGiB": 4,
+            "oneMinuteLoad": 0.94,
+            "logicalCpus": 4,
+            "cpuBusyFraction": 0.018571428571428572,
+            "swapUsedMiB": 0,
+            "repoFreeGiB": 109.29379653930664,
+            "profileFreeGiB": 109.29379653930664,
+            "safetyFreeGiB": 109.29379653930664,
+            "systemFreeGiB": 109.29379653930664
+          },
+          "reasons": [],
+          "code": "RESOURCE_ADMITTED"
+        },
+        {
+          "at": "2026-10-11T00:51:29.267Z",
+          "runId": "hosted-guest-38099410087-1",
+          "resourceInvalid": false,
+          "exitCode": 0,
+          "decision": "valid",
+          "code": "RESOURCE_FINAL_DECISION"
+        }
+      ],
+      "startup": []
+    }
+  },
+  "code_boundary": {
+    "profile": "Every invocation mkdtemp plus new profile directory; prepareOwnedProfile refuses preexisting endpoint. No profile reuse.",
+    "endpoint": "vault-owned-cdp.cjs repeatedly reads fresh-profile DevToolsActivePort; timeout precedes lock/process inspector or WebSocket creation. T93 longest read 270ms over 217 polls excludes a single blocked filesystem call as explanation.",
+    "setup": "runNativeSidepanelQa verifies endpoint before extension worker, local fixture server, panel creation, identity/setup and exercisePanel. Panel setup cannot cause earlier endpoint absence; extension loading at browser spawn still could contribute.",
+    "resource": "Admission measures a healthy prior 60s window, not future browser startup. CPU_PENDING is not immediate stop: failed child while pending makes final invalid; separate 380844 diagnostic later expired confirmation. This is intended verdict behavior, not evidence of broken admission.",
+    "sibling": "ARM64 Chat and Data recovered CPU_PENDING and completed valid; Intel scrape 38099410087 also completed valid. Architecture alone is not a proven root cause.",
+    "gpu": "Prior Intel diagnostic used GaneshGL / Apple Software Renderer, with disabled_software GPU compositing and unavailable_off rasterization/WebGL. This ARM64 diagnostic reports GraphiteDawnMetal / Apple Paravirtual device, and enabled compositing/rasterization/WebGL. Renderer differs alongside hardware/image; GPU causality remains unproven."
+  },
+  "hypotheses": [
+    {
+      "rank": 1,
+      "cause": "Cold browser/platform initialization varies with hosted image/architecture",
+      "prediction": "Same frozen artifact on existing ARM64 startup-only route reaches endpoint within unchanged deadline and completes existing guarded setup interval; this supports runner sensitivity only.",
+      "test": "38100584612 changes runner image/architecture together. Compared with T93 it preserves frozen artifact and pre-endpoint native launch path but uses existing startup diagnostic callbacks, which add observation overhead and different post-CDP work. Compared with 380844 it also uses a newer artifact. This is a bounded compatibility/readiness discriminator, not a controlled architecture-only experiment."
+    },
+    {
+      "rank": 2,
+      "cause": "Extension startup workload contributes before endpoint",
+      "prediction": "If the architecture discriminator fails, a separately reviewed future no-extension control with same binary/display/profile and unchanged deadline would also fail for platform initialization, but pass if extension load dominates.",
+      "test": "Not implemented or authorized; do not auto-launch."
+    },
+    {
+      "rank": 3,
+      "cause": "Owned endpoint polling/ownership inspection is slow",
+      "prediction": "Reads would block for most of deadline or failure would move to record/owner inspection.",
+      "test": "Contradicted by T93 many ENOENT reads and max270ms read; endpoint absent rather than inspector failure."
+    },
+    {
+      "rank": 4,
+      "cause": "Persisted profile or test-mode panel setup",
+      "prediction": "Reused endpoint/profile or panel stage before failure.",
+      "test": "Contradicted by fresh profile code and setup ordering; dev and release both failed."
+    }
+  ],
+  "changes": "Diagnostic evidence only; no runtime, workflow, input schema, threshold or deadline change.",
+  "verification": {
+    "local_browser_runs": 0,
+    "local_build_runs": 0,
+    "tests": "No implementation changed; full focused suite not needed for report-only evidence.",
+    "source_review": [
+      "tests/browser/native-sidepanel-qa-harness.mjs",
+      "tests/browser/vault-owned-cdp.cjs",
+      "scripts/hosted-startup-interval-diagnostic.mjs",
+      "scripts/stabilization-resource.mjs",
+      "docs/stabilization/resource-policy.json",
+      ".github/workflows/hosted-guest-acceptance.yml"
+    ],
+    "report_safety": "Only sanitized diagnostic output and guard-owned JSONL events, bounded startup evidence, version/build IDs and resource hashes retained. Current-run three completed journals embedded verbatim. Raw GitHub logs/screenshots remain temporary; no secrets or unrestricted child stdout committed.",
+    "independent_review": "Final /root/startup_diag_review verified source boundaries, downloaded diagnostic SHA, dispatch/source/artifact identity, ARM64 valid resource evidence and zero product credit. Accepted with CPU causality and combined image/architecture caveats; pending-review wording and ARM CPU sample timing corrected."
+  },
+  "one_run_experiment": {
+    "run_id": 38100584612,
+    "workflow_source_sha": "5289e255250c9b9d5e1b4dac32d08a4147f62d93",
+    "inputs": {
+      "acceptance_lane": "B",
+      "runner_label": "macos-15",
+      "acceptance_case": "startup-resource-diagnostic",
+      "startup_display_mode": "headed",
+      "development_run_id": "38099299069",
+      "development_artifact_id": "11687570702"
+    },
+    "isolation": "All observed recent hosted acceptance jobs terminal at dispatch. Existing workflow uses disposable github-hosted VM, separate temporary profile and atomic host-local permit; startup case stages no member/admin fixture. Admission itself must confirm current runner health/ownership.",
+    "stop_criteria": [
+      "Exactly one run; do not retry on failure, admission refusal or pending status.",
+      "No timeout/resource threshold change.",
+      "Missing completed current-run resource final or invalid-resource means unverified infrastructure-only.",
+      "Even valid completion earns zero Settings/T93 acceptance and cannot prove architecture causality from a single sample."
+    ],
+    "result": {
+      "workflow_conclusion": "success",
+      "diagnostic": {
+        "schema": 2,
+        "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE",
+        "sourceSha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+        "runId": 38099299069,
+        "artifactId": 11687570702,
+        "startedAt": "2026-10-11T01:10:29.860Z",
+        "lastNativeStage": "exercise_panel",
+        "nativeStages": [
+          {
+            "stage": "receipt",
+            "at": "2026-10-11T01:10:29.862Z"
+          },
+          {
+            "stage": "artifact_verify",
+            "at": "2026-10-11T01:10:29.862Z"
+          },
+          {
+            "stage": "browser_runtime",
+            "at": "2026-10-11T01:10:30.050Z"
+          },
+          {
+            "stage": "profile_prepare",
+            "at": "2026-10-11T01:10:30.058Z"
+          },
+          {
+            "stage": "browser_spawn",
+            "at": "2026-10-11T01:10:30.078Z"
+          },
+          {
+            "stage": "cdp_connect",
+            "at": "2026-10-11T01:10:30.079Z"
+          },
+          {
+            "stage": "endpoint_read",
+            "at": "2026-10-11T01:10:34.566Z"
+          },
+          {
+            "stage": "command_line_query",
+            "at": "2026-10-11T01:10:34.640Z"
+          },
+          {
+            "stage": "command_line_verify",
+            "at": "2026-10-11T01:10:34.768Z"
+          },
+          {
+            "stage": "extension_worker",
+            "at": "2026-10-11T01:10:34.769Z"
+          },
+          {
+            "stage": "spawn_owner",
+            "at": "2026-10-11T01:10:35.006Z"
+          },
+          {
+            "stage": "local_server",
+            "at": "2026-10-11T01:10:35.007Z"
+          },
+          {
+            "stage": "playwright_connect",
+            "at": "2026-10-11T01:10:35.026Z"
+          },
+          {
+            "stage": "page_create",
+            "at": "2026-10-11T01:10:35.310Z"
+          },
+          {
+            "stage": "local_page_navigation",
+            "at": "2026-10-11T01:10:35.452Z"
+          },
+          {
+            "stage": "panel_open",
+            "at": "2026-10-11T01:10:35.811Z"
+          },
+          {
+            "stage": "panel_reply",
+            "at": "2026-10-11T01:10:39.421Z"
+          },
+          {
+            "stage": "panel_target",
+            "at": "2026-10-11T01:10:39.435Z"
+          },
+          {
+            "stage": "panel_context",
+            "at": "2026-10-11T01:10:39.435Z"
+          },
+          {
+            "stage": "panel_settle",
+            "at": "2026-10-11T01:10:39.988Z"
+          },
+          {
+            "stage": "screenshot",
+            "at": "2026-10-11T01:10:41.191Z"
+          },
+          {
+            "stage": "exercise_panel",
+            "at": "2026-10-11T01:10:42.231Z"
+          }
+        ],
+        "runnerArch": "ARM64",
+        "requestedDisplayMode": "headed",
+        "browserLaunch": {
+          "requested_mode": "headed",
+          "observed_mode": "headed",
+          "verified_by": "Browser.getBrowserCommandLine"
+        },
+        "startupEndpointObservations": [
+          {
+            "phase": "cdp_connected",
+            "endpointPresent": true,
+            "inspectionFailed": false,
+            "exitObserved": false,
+            "elapsedMs": 4424,
+            "polls": 0,
+            "at": "2026-10-11T01:10:34.547Z"
+          }
+        ],
+        "gpuObservation": {
+          "status": "RESOLVED",
+          "requestedAt": "2026-10-11T01:10:35.006Z",
+          "resolvedAt": "2026-10-11T01:10:35.285Z",
+          "skiaBackendType": "GraphiteDawnMetal",
+          "glRenderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple Paravirtual device, Version 15.7.9 (Build 24G830))",
+          "featureStatus": {
+            "gpu_compositing": "enabled",
+            "rasterization": "enabled",
+            "webgl": "enabled",
+            "webgl2": "enabled"
+          }
+        },
+        "panelReadyAt": "2026-10-11T01:10:42.233Z",
+        "completedAt": "2026-10-11T01:12:04.899Z",
+        "guardJournal": "docs/stabilization/resource-journals/hosted-startup-38100584612-1.jsonl"
+      },
+      "resource_journals": {
+        "hosted-package-38100584612-1.jsonl": {
+          "sha256": "c43f30f78f63b3d4403149086b7ba2135edfafdbbd89f601289dd0a921933497",
+          "final": {
+            "schema": 1,
+            "at": "2026-10-11T01:06:28.247Z",
+            "runId": "hosted-package-38100584612-1",
+            "admitted": true,
+            "resourceInvalid": false,
+            "exitCode": 0,
+            "decision": "valid",
+            "code": "RESOURCE_FINAL_DECISION"
+          },
+          "events": [
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:05:19.001Z",
+              "runId": "hosted-package-38100584612-1",
+              "code": "RESOURCE_JOURNAL_OPENED"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:06:26.591Z",
+              "runId": "hosted-package-38100584612-1",
+              "mode": "run",
+              "policySchema": 1,
+              "sample": {
+                "pressureLevel": 1,
+                "availableMemoryGiB": 6.02,
+                "requiredMemoryGiB": 4,
+                "oneMinuteLoad": 18.64,
+                "logicalCpus": 3,
+                "cpuBusyFraction": 0.1,
+                "swapUsedMiB": 0,
+                "repoFreeGiB": 43.21223449707031,
+                "profileFreeGiB": 43.21223449707031,
+                "safetyFreeGiB": 43.21223449707031,
+                "systemFreeGiB": 43.21223449707031
+              },
+              "cpuBusySamples": [0.11, 0.2, 0.14, 0, 0.23, 0.01, 0.01],
+              "reasons": [],
+              "swapWindowSeconds": 60,
+              "code": "RESOURCE_ADMITTED"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:06:28.169Z",
+              "runId": "hosted-package-38100584612-1",
+              "childExitCode": 0,
+              "childSignal": null,
+              "code": "RESOURCE_JOB_EXIT"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:06:28.247Z",
+              "runId": "hosted-package-38100584612-1",
+              "admitted": true,
+              "resourceInvalid": false,
+              "exitCode": 0,
+              "decision": "valid",
+              "code": "RESOURCE_FINAL_DECISION"
+            }
+          ]
+        },
+        "hosted-startup-38100584612-1.jsonl": {
+          "sha256": "58375dac66dcc1b14c473f51395d762355dffb1fdafedf064e4025170b199e81",
+          "final": {
+            "schema": 1,
+            "at": "2026-10-11T01:12:05.012Z",
+            "runId": "hosted-startup-38100584612-1",
+            "admitted": true,
+            "resourceInvalid": false,
+            "exitCode": 0,
+            "decision": "valid",
+            "code": "RESOURCE_FINAL_DECISION"
+          },
+          "events": [
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:09:11.594Z",
+              "runId": "hosted-startup-38100584612-1",
+              "code": "RESOURCE_JOURNAL_OPENED"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:10:19.254Z",
+              "runId": "hosted-startup-38100584612-1",
+              "mode": "run",
+              "policySchema": 1,
+              "sample": {
+                "pressureLevel": 1,
+                "availableMemoryGiB": 5.95,
+                "requiredMemoryGiB": 4,
+                "oneMinuteLoad": 2.42,
+                "logicalCpus": 3,
+                "cpuBusyFraction": 0.038571428571428576,
+                "swapUsedMiB": 0,
+                "repoFreeGiB": 42.90681838989258,
+                "profileFreeGiB": 42.90681838989258,
+                "safetyFreeGiB": 42.90681838989258,
+                "systemFreeGiB": 42.90681838989258
+              },
+              "cpuBusySamples": [0.07, 0.01, 0.01, 0.02, 0.02, 0.13, 0.01],
+              "reasons": [],
+              "swapWindowSeconds": 60,
+              "code": "RESOURCE_ADMITTED"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:10:35.719Z",
+              "runId": "hosted-startup-38100584612-1",
+              "reasons": ["RESOURCE_CPU_BUSY"],
+              "sample": {
+                "pressureLevel": 1,
+                "availableMemoryGiB": 5.81,
+                "requiredMemoryGiB": 4,
+                "oneMinuteLoad": 1.49,
+                "logicalCpus": 3,
+                "cpuBusyFraction": 0.99,
+                "swapUsedMiB": 0,
+                "repoFreeGiB": 42.71989059448242,
+                "profileFreeGiB": 42.71989059448242,
+                "safetyFreeGiB": 42.71989059448242,
+                "systemFreeGiB": 42.71989059448242
+              },
+              "code": "RESOURCE_CPU_PENDING"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:10:35.738Z",
+              "runId": "hosted-startup-38100584612-1",
+              "bracket": {
+                "iostatStartedAt": "2026-10-11T01:10:34.487Z",
+                "iostatCompletedAt": "2026-10-11T01:10:35.681Z",
+                "beforeStartedAt": "2026-10-11T01:10:34.412Z",
+                "beforeCompletedAt": "2026-10-11T01:10:34.487Z",
+                "afterStartedAt": "2026-10-11T01:10:35.681Z",
+                "afterCompletedAt": "2026-10-11T01:10:35.717Z",
+                "resolutionSeconds": 0.01,
+                "ownedAtStart": [6847, 7143, 7156, 7157, 7158, 7159, 7198, 7199],
+                "ownedAtEnd": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7352],
+                "exitedOrUnmatchedPids": [7159, 7235, 7242],
+                "appearedPids": [7257, 7272, 7352, 7370, 7392, 7393],
+                "categoryTotalsSeconds": {
+                  "ownedChromium": 0.56,
+                  "ownedOther": 0.15,
+                  "hostProvisioner": 0.16,
+                  "otherHost": 1.42
+                },
+                "observed": [
+                  {
+                    "pid": 1,
+                    "executable": "launchd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.02
+                  },
+                  {
+                    "pid": 84,
+                    "executable": "UserEventAgent",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 86,
+                    "executable": "fseventsd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 92,
+                    "executable": "configd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 109,
+                    "executable": "mds",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 128,
+                    "executable": "nesessionmanager",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 130,
+                    "executable": "dasd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 141,
+                    "executable": "notifyd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 154,
+                    "executable": "analyticsd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 158,
+                    "executable": "WindowServer",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.05
+                  },
+                  {
+                    "pid": 177,
+                    "executable": "mobileassetd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 311,
+                    "executable": "cfprefsd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 341,
+                    "executable": "WindowManager",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.02
+                  },
+                  {
+                    "pid": 348,
+                    "executable": "Finder",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 371,
+                    "executable": "tccd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 412,
+                    "executable": "fontd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.03
+                  },
+                  {
+                    "pid": 423,
+                    "executable": "ContextStoreAgen",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 425,
+                    "executable": "BiomeAgent",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 451,
+                    "executable": "TextInputSwitche",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 458,
+                    "executable": "useractivityd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 460,
+                    "executable": "corespotlightd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 915,
+                    "executable": "provjobd9532818",
+                    "category": "hostProvisioner",
+                    "cpuSecondsDelta": 0.16
+                  },
+                  {
+                    "pid": 1457,
+                    "executable": "Runner.Listener",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 1475,
+                    "executable": "Runner.Worker",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.02
+                  },
+                  {
+                    "pid": 2135,
+                    "executable": "duetexpertd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 3088,
+                    "executable": "gamepolicyd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 6847,
+                    "executable": "node",
+                    "category": "ownedOther",
+                    "cpuSecondsDelta": 0.15
+                  },
+                  {
+                    "pid": 7143,
+                    "executable": "Chromium",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.25
+                  },
+                  {
+                    "pid": 7156,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.1
+                  },
+                  {
+                    "pid": 7157,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.06
+                  },
+                  {
+                    "pid": 7158,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7160,
+                    "executable": "SetStoreUpdateSe",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7198,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.08
+                  },
+                  {
+                    "pid": 7199,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.07
+                  },
+                  {
+                    "pid": 7202,
+                    "executable": "MTLCompilerServi",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 1.05
+                  },
+                  {
+                    "pid": 7203,
+                    "executable": "MTLCompilerServi",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7206,
+                    "executable": "UserNotification",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  }
+                ],
+                "otherHostObservedProcessCount": 491,
+                "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time."
+              },
+              "code": "RESOURCE_STARTUP_INTERVAL_BRACKET"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:10:35.773Z",
+              "runId": "hosted-startup-38100584612-1",
+              "processes": [
+                {
+                  "pid": 7202,
+                  "parentPid": 1,
+                  "cpuPercent": 74.8,
+                  "executable": "MTLCompilerServi"
+                },
+                {
+                  "pid": 7143,
+                  "parentPid": 6847,
+                  "cpuPercent": 24.5,
+                  "executable": "Chromium"
+                },
+                {
+                  "pid": 915,
+                  "parentPid": 913,
+                  "cpuPercent": 17.2,
+                  "executable": "provjobd9532818"
+                },
+                {
+                  "pid": 7198,
+                  "parentPid": 7143,
+                  "cpuPercent": 14,
+                  "executable": "Chromium Helper"
+                },
+                {
+                  "pid": 7257,
+                  "parentPid": 1,
+                  "cpuPercent": 12.2,
+                  "executable": "SafariLaunchAgen"
+                },
+                {
+                  "pid": 6847,
+                  "parentPid": 5739,
+                  "cpuPercent": 11,
+                  "executable": "node"
+                },
+                {
+                  "pid": 7156,
+                  "parentPid": 7143,
+                  "cpuPercent": 10.4,
+                  "executable": "Chromium Helper"
+                },
+                {
+                  "pid": 7352,
+                  "parentPid": 7143,
+                  "cpuPercent": 7.9,
+                  "executable": "Chromium Helper"
+                },
+                {
+                  "pid": 7370,
+                  "parentPid": 1,
+                  "cpuPercent": 7.2,
+                  "executable": "contentlinkingd"
+                },
+                {
+                  "pid": 158,
+                  "parentPid": 1,
+                  "cpuPercent": 4.1,
+                  "executable": "WindowServer"
+                },
+                {
+                  "pid": 412,
+                  "parentPid": 1,
+                  "cpuPercent": 2.5,
+                  "executable": "fontd"
+                },
+                {
+                  "pid": 7272,
+                  "parentPid": 7143,
+                  "cpuPercent": 2.5,
+                  "executable": "Chromium Helper"
+                },
+                {
+                  "pid": 7199,
+                  "parentPid": 7143,
+                  "cpuPercent": 1.6,
+                  "executable": "Chromium Helper"
+                },
+                {
+                  "pid": 7157,
+                  "parentPid": 7143,
+                  "cpuPercent": 1.5,
+                  "executable": "Chromium Helper"
+                },
+                {
+                  "pid": 423,
+                  "parentPid": 1,
+                  "cpuPercent": 1.4,
+                  "executable": "ContextStoreAgen"
+                },
+                {
+                  "pid": 1475,
+                  "parentPid": 1457,
+                  "cpuPercent": 1.4,
+                  "executable": "Runner.Worker"
+                },
+                {
+                  "pid": 1,
+                  "parentPid": 0,
+                  "cpuPercent": 1.1,
+                  "executable": "launchd"
+                },
+                {
+                  "pid": 341,
+                  "parentPid": 1,
+                  "cpuPercent": 1,
+                  "executable": "WindowManager"
+                },
+                {
+                  "pid": 371,
+                  "parentPid": 1,
+                  "cpuPercent": 0.9,
+                  "executable": "tccd"
+                },
+                {
+                  "pid": 458,
+                  "parentPid": 1,
+                  "cpuPercent": 0.6,
+                  "executable": "useractivityd"
+                },
+                {
+                  "pid": 109,
+                  "parentPid": 1,
+                  "cpuPercent": 0.5,
+                  "executable": "mds"
+                },
+                {
+                  "pid": 120,
+                  "parentPid": 1,
+                  "cpuPercent": 0.4,
+                  "executable": "opendirectoryd"
+                },
+                {
+                  "pid": 141,
+                  "parentPid": 1,
+                  "cpuPercent": 0.4,
+                  "executable": "notifyd"
+                },
+                {
+                  "pid": 192,
+                  "parentPid": 1,
+                  "cpuPercent": 0.4,
+                  "executable": "biomed"
+                },
+                {
+                  "pid": 673,
+                  "parentPid": 1,
+                  "cpuPercent": 0.4,
+                  "executable": "logd_helper"
+                },
+                {
+                  "pid": 7203,
+                  "parentPid": 1,
+                  "cpuPercent": 0.4,
+                  "executable": "MTLCompilerServi"
+                },
+                {
+                  "pid": 82,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "logd"
+                },
+                {
+                  "pid": 86,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "fseventsd"
+                },
+                {
+                  "pid": 122,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "launchservicesd"
+                },
+                {
+                  "pid": 130,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "dasd"
+                },
+                {
+                  "pid": 288,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "mds_stores"
+                },
+                {
+                  "pid": 311,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "cfprefsd"
+                },
+                {
+                  "pid": 2134,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "proactived"
+                },
+                {
+                  "pid": 2135,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "duetexpertd"
+                },
+                {
+                  "pid": 7160,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "SetStoreUpdateSe"
+                },
+                {
+                  "pid": 7206,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "UserNotification"
+                },
+                {
+                  "pid": 7231,
+                  "parentPid": 1,
+                  "cpuPercent": 0.3,
+                  "executable": "SecuritySubscrib"
+                },
+                {
+                  "pid": 150,
+                  "parentPid": 1,
+                  "cpuPercent": 0.2,
+                  "executable": "runningboardd"
+                },
+                {
+                  "pid": 151,
+                  "parentPid": 1,
+                  "cpuPercent": 0.2,
+                  "executable": "contextstored"
+                },
+                {
+                  "pid": 425,
+                  "parentPid": 1,
+                  "cpuPercent": 0.2,
+                  "executable": "BiomeAgent"
+                },
+                {
+                  "pid": 451,
+                  "parentPid": 1,
+                  "cpuPercent": 0.2,
+                  "executable": "TextInputSwitche"
+                },
+                {
+                  "pid": 128,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "nesessionmanager"
+                },
+                {
+                  "pid": 134,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "dirhelper"
+                },
+                {
+                  "pid": 140,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "bluetoothd"
+                },
+                {
+                  "pid": 147,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "tccd"
+                },
+                {
+                  "pid": 148,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "cfprefsd"
+                },
+                {
+                  "pid": 149,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "loginwindow"
+                },
+                {
+                  "pid": 177,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "mobileassetd"
+                },
+                {
+                  "pid": 236,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "nehelper"
+                },
+                {
+                  "pid": 309,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "distnoted"
+                },
+                {
+                  "pid": 342,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "talagentd"
+                },
+                {
+                  "pid": 381,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "neagent"
+                },
+                {
+                  "pid": 436,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "sharingd"
+                },
+                {
+                  "pid": 460,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "corespotlightd"
+                },
+                {
+                  "pid": 478,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "itunescloudd"
+                },
+                {
+                  "pid": 484,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "amsengagementd"
+                },
+                {
+                  "pid": 511,
+                  "parentPid": 1,
+                  "cpuPercent": 0.1,
+                  "executable": "swcd"
+                }
+              ],
+              "code": "RESOURCE_PROCESS_ATTRIBUTION"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:10:51.942Z",
+              "runId": "hosted-startup-38100584612-1",
+              "reasons": [],
+              "sample": {
+                "pressureLevel": 1,
+                "availableMemoryGiB": 5.81,
+                "requiredMemoryGiB": 4,
+                "oneMinuteLoad": 1.85,
+                "logicalCpus": 3,
+                "cpuBusyFraction": 0.06,
+                "swapUsedMiB": 0,
+                "repoFreeGiB": 42.677494049072266,
+                "profileFreeGiB": 42.677494049072266,
+                "safetyFreeGiB": 42.677494049072266,
+                "systemFreeGiB": 42.677494049072266
+              },
+              "code": "RESOURCE_CPU_PENDING"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:10:51.950Z",
+              "runId": "hosted-startup-38100584612-1",
+              "bracket": {
+                "iostatStartedAt": "2026-10-11T01:10:50.794Z",
+                "iostatCompletedAt": "2026-10-11T01:10:51.910Z",
+                "beforeStartedAt": "2026-10-11T01:10:50.768Z",
+                "beforeCompletedAt": "2026-10-11T01:10:50.794Z",
+                "afterStartedAt": "2026-10-11T01:10:51.910Z",
+                "afterCompletedAt": "2026-10-11T01:10:51.940Z",
+                "resolutionSeconds": 0.01,
+                "ownedAtStart": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7470, 7473],
+                "ownedAtEnd": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7470, 7473],
+                "exitedOrUnmatchedPids": [7726],
+                "appearedPids": [7732],
+                "categoryTotalsSeconds": {
+                  "ownedChromium": 0.02,
+                  "ownedOther": 0.01,
+                  "hostProvisioner": 0.01,
+                  "otherHost": 0.12
+                },
+                "observed": [
+                  {
+                    "pid": 177,
+                    "executable": "mobileassetd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.03
+                  },
+                  {
+                    "pid": 422,
+                    "executable": "axassetsd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.07
+                  },
+                  {
+                    "pid": 443,
+                    "executable": "remindd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 915,
+                    "executable": "provjobd9532818",
+                    "category": "hostProvisioner",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 1475,
+                    "executable": "Runner.Worker",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 6847,
+                    "executable": "node",
+                    "category": "ownedOther",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7143,
+                    "executable": "Chromium",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7156,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7157,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7158,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7198,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7199,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7272,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7470,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7473,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  }
+                ],
+                "otherHostObservedProcessCount": 506,
+                "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time."
+              },
+              "code": "RESOURCE_STARTUP_INTERVAL_BRACKET"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:11:08.089Z",
+              "runId": "hosted-startup-38100584612-1",
+              "reasons": [],
+              "sample": {
+                "pressureLevel": 1,
+                "availableMemoryGiB": 5.81,
+                "requiredMemoryGiB": 4,
+                "oneMinuteLoad": 1.59,
+                "logicalCpus": 3,
+                "cpuBusyFraction": 0.46,
+                "swapUsedMiB": 0,
+                "repoFreeGiB": 42.96015167236328,
+                "profileFreeGiB": 42.96015167236328,
+                "safetyFreeGiB": 42.96015167236328,
+                "systemFreeGiB": 42.96015167236328
+              },
+              "code": "RESOURCE_CPU_PENDING"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:11:08.092Z",
+              "runId": "hosted-startup-38100584612-1",
+              "bracket": {
+                "iostatStartedAt": "2026-10-11T01:11:07.037Z",
+                "iostatCompletedAt": "2026-10-11T01:11:08.054Z",
+                "beforeStartedAt": "2026-10-11T01:11:07.000Z",
+                "beforeCompletedAt": "2026-10-11T01:11:07.037Z",
+                "afterStartedAt": "2026-10-11T01:11:08.054Z",
+                "afterCompletedAt": "2026-10-11T01:11:08.088Z",
+                "resolutionSeconds": 0.01,
+                "ownedAtStart": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7470, 7473],
+                "ownedAtEnd": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7470, 7473],
+                "exitedOrUnmatchedPids": [7994],
+                "appearedPids": [8155, 8156],
+                "categoryTotalsSeconds": {
+                  "ownedChromium": 0.08,
+                  "ownedOther": 0.01,
+                  "hostProvisioner": 0.17,
+                  "otherHost": 0.59
+                },
+                "observed": [
+                  {
+                    "pid": 1,
+                    "executable": "launchd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 82,
+                    "executable": "logd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.13
+                  },
+                  {
+                    "pid": 86,
+                    "executable": "fseventsd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.03
+                  },
+                  {
+                    "pid": 109,
+                    "executable": "mds",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.02
+                  },
+                  {
+                    "pid": 130,
+                    "executable": "dasd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 289,
+                    "executable": "rtcreportingd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 391,
+                    "executable": "deleted",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.07
+                  },
+                  {
+                    "pid": 392,
+                    "executable": "triald",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.3
+                  },
+                  {
+                    "pid": 915,
+                    "executable": "provjobd9532818",
+                    "category": "hostProvisioner",
+                    "cpuSecondsDelta": 0.17
+                  },
+                  {
+                    "pid": 1475,
+                    "executable": "Runner.Worker",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 6847,
+                    "executable": "node",
+                    "category": "ownedOther",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7143,
+                    "executable": "Chromium",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7156,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7157,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7158,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7198,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7199,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7272,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.06
+                  },
+                  {
+                    "pid": 7470,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7473,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  }
+                ],
+                "otherHostObservedProcessCount": 506,
+                "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time."
+              },
+              "code": "RESOURCE_STARTUP_INTERVAL_BRACKET"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:11:24.301Z",
+              "runId": "hosted-startup-38100584612-1",
+              "reasons": [],
+              "sample": {
+                "pressureLevel": 1,
+                "availableMemoryGiB": 5.81,
+                "requiredMemoryGiB": 4,
+                "oneMinuteLoad": 1.62,
+                "logicalCpus": 3,
+                "cpuBusyFraction": 0.02,
+                "swapUsedMiB": 0,
+                "repoFreeGiB": 43.3103141784668,
+                "profileFreeGiB": 43.3103141784668,
+                "safetyFreeGiB": 43.3103141784668,
+                "systemFreeGiB": 43.3103141784668
+              },
+              "code": "RESOURCE_CPU_RECOVERED"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:11:24.304Z",
+              "runId": "hosted-startup-38100584612-1",
+              "bracket": {
+                "iostatStartedAt": "2026-10-11T01:11:23.172Z",
+                "iostatCompletedAt": "2026-10-11T01:11:24.270Z",
+                "beforeStartedAt": "2026-10-11T01:11:23.141Z",
+                "beforeCompletedAt": "2026-10-11T01:11:23.172Z",
+                "afterStartedAt": "2026-10-11T01:11:24.270Z",
+                "afterCompletedAt": "2026-10-11T01:11:24.300Z",
+                "resolutionSeconds": 0.01,
+                "ownedAtStart": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7470, 7473],
+                "ownedAtEnd": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7470, 7473],
+                "exitedOrUnmatchedPids": [8581],
+                "appearedPids": [8585],
+                "categoryTotalsSeconds": {
+                  "ownedChromium": 0.01,
+                  "ownedOther": 0,
+                  "hostProvisioner": 0,
+                  "otherHost": 0.03
+                },
+                "observed": [
+                  {
+                    "pid": 386,
+                    "executable": "accountsd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.02
+                  },
+                  {
+                    "pid": 915,
+                    "executable": "provjobd9532818",
+                    "category": "hostProvisioner",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 5739,
+                    "executable": "node",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 6847,
+                    "executable": "node",
+                    "category": "ownedOther",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7143,
+                    "executable": "Chromium",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7156,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7157,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7158,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7198,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7199,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7272,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7470,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7473,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  }
+                ],
+                "otherHostObservedProcessCount": 505,
+                "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time."
+              },
+              "code": "RESOURCE_STARTUP_INTERVAL_BRACKET"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:11:40.519Z",
+              "runId": "hosted-startup-38100584612-1",
+              "reasons": [],
+              "sample": {
+                "pressureLevel": 1,
+                "availableMemoryGiB": 5.81,
+                "requiredMemoryGiB": 4,
+                "oneMinuteLoad": 1.49,
+                "logicalCpus": 3,
+                "cpuBusyFraction": 0.17,
+                "swapUsedMiB": 0,
+                "repoFreeGiB": 43.31130599975586,
+                "profileFreeGiB": 43.31130599975586,
+                "safetyFreeGiB": 43.31130599975586,
+                "systemFreeGiB": 43.31130599975586
+              },
+              "code": "RESOURCE_WATCH_HEALTHY"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:11:40.525Z",
+              "runId": "hosted-startup-38100584612-1",
+              "bracket": {
+                "iostatStartedAt": "2026-10-11T01:11:39.348Z",
+                "iostatCompletedAt": "2026-10-11T01:11:40.490Z",
+                "beforeStartedAt": "2026-10-11T01:11:39.325Z",
+                "beforeCompletedAt": "2026-10-11T01:11:39.348Z",
+                "afterStartedAt": "2026-10-11T01:11:40.490Z",
+                "afterCompletedAt": "2026-10-11T01:11:40.518Z",
+                "resolutionSeconds": 0.01,
+                "ownedAtStart": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7470, 7473],
+                "ownedAtEnd": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7470, 7473],
+                "exitedOrUnmatchedPids": [8852],
+                "appearedPids": [9086],
+                "categoryTotalsSeconds": {
+                  "ownedChromium": 0.01,
+                  "ownedOther": 0.01,
+                  "hostProvisioner": 0.12,
+                  "otherHost": 0.03
+                },
+                "observed": [
+                  {
+                    "pid": 367,
+                    "executable": "secd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 436,
+                    "executable": "sharingd",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 915,
+                    "executable": "provjobd9532818",
+                    "category": "hostProvisioner",
+                    "cpuSecondsDelta": 0.12
+                  },
+                  {
+                    "pid": 5739,
+                    "executable": "node",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 6847,
+                    "executable": "node",
+                    "category": "ownedOther",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7143,
+                    "executable": "Chromium",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7156,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7157,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7158,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7198,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7199,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7272,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7470,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7473,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  }
+                ],
+                "otherHostObservedProcessCount": 508,
+                "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time."
+              },
+              "code": "RESOURCE_STARTUP_INTERVAL_BRACKET"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:11:56.723Z",
+              "runId": "hosted-startup-38100584612-1",
+              "reasons": [],
+              "sample": {
+                "pressureLevel": 1,
+                "availableMemoryGiB": 5.81,
+                "requiredMemoryGiB": 4,
+                "oneMinuteLoad": 1.23,
+                "logicalCpus": 3,
+                "cpuBusyFraction": 0.02,
+                "swapUsedMiB": 0,
+                "repoFreeGiB": 43.29647445678711,
+                "profileFreeGiB": 43.29647445678711,
+                "safetyFreeGiB": 43.29647445678711,
+                "systemFreeGiB": 43.29647445678711
+              },
+              "code": "RESOURCE_WATCH_HEALTHY"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:11:56.725Z",
+              "runId": "hosted-startup-38100584612-1",
+              "bracket": {
+                "iostatStartedAt": "2026-10-11T01:11:55.589Z",
+                "iostatCompletedAt": "2026-10-11T01:11:56.696Z",
+                "beforeStartedAt": "2026-10-11T01:11:55.561Z",
+                "beforeCompletedAt": "2026-10-11T01:11:55.589Z",
+                "afterStartedAt": "2026-10-11T01:11:56.696Z",
+                "afterCompletedAt": "2026-10-11T01:11:56.723Z",
+                "resolutionSeconds": 0.01,
+                "ownedAtStart": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7470, 7473],
+                "ownedAtEnd": [6847, 7143, 7156, 7157, 7158, 7198, 7199, 7272, 7470, 7473],
+                "exitedOrUnmatchedPids": [9369],
+                "appearedPids": [9373],
+                "categoryTotalsSeconds": {
+                  "ownedChromium": 0.01,
+                  "ownedOther": 0,
+                  "hostProvisioner": 0.01,
+                  "otherHost": 0.01
+                },
+                "observed": [
+                  {
+                    "pid": 915,
+                    "executable": "provjobd9532818",
+                    "category": "hostProvisioner",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 5739,
+                    "executable": "node",
+                    "category": "otherHost",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 6847,
+                    "executable": "node",
+                    "category": "ownedOther",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7143,
+                    "executable": "Chromium",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0.01
+                  },
+                  {
+                    "pid": 7156,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7157,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7158,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7198,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7199,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7272,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7470,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  },
+                  {
+                    "pid": 7473,
+                    "executable": "Chromium Helper",
+                    "category": "ownedChromium",
+                    "cpuSecondsDelta": 0
+                  }
+                ],
+                "otherHostObservedProcessCount": 511,
+                "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time."
+              },
+              "code": "RESOURCE_STARTUP_INTERVAL_BRACKET"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:12:04.910Z",
+              "runId": "hosted-startup-38100584612-1",
+              "childExitCode": 0,
+              "childSignal": null,
+              "code": "RESOURCE_JOB_EXIT"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:12:05.012Z",
+              "runId": "hosted-startup-38100584612-1",
+              "admitted": true,
+              "resourceInvalid": false,
+              "exitCode": 0,
+              "decision": "valid",
+              "code": "RESOURCE_FINAL_DECISION"
+            }
+          ]
+        },
+        "hosted-browser-38100584612-1.jsonl": {
+          "sha256": "74cf108e224d99312dd777cb12a82057c60c2a54d2d1e280a59dabff9a183bf5",
+          "final": {
+            "schema": 1,
+            "at": "2026-10-11T01:08:32.887Z",
+            "runId": "hosted-browser-38100584612-1",
+            "admitted": true,
+            "resourceInvalid": false,
+            "exitCode": 0,
+            "decision": "valid",
+            "code": "RESOURCE_FINAL_DECISION"
+          },
+          "events": [
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:07:15.130Z",
+              "runId": "hosted-browser-38100584612-1",
+              "code": "RESOURCE_JOURNAL_OPENED"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:08:22.828Z",
+              "runId": "hosted-browser-38100584612-1",
+              "mode": "run",
+              "policySchema": 1,
+              "sample": {
+                "pressureLevel": 1,
+                "availableMemoryGiB": 5.95,
+                "requiredMemoryGiB": 4,
+                "oneMinuteLoad": 4.03,
+                "logicalCpus": 3,
+                "cpuBusyFraction": 0.21000000000000002,
+                "swapUsedMiB": 0,
+                "repoFreeGiB": 43.169803619384766,
+                "profileFreeGiB": 43.169803619384766,
+                "safetyFreeGiB": 43.169803619384766,
+                "systemFreeGiB": 43.169803619384766
+              },
+              "cpuBusySamples": [0.07, 0.02, 0.01, 0.48, 0.52, 0.34, 0.03],
+              "reasons": [],
+              "swapWindowSeconds": 60,
+              "code": "RESOURCE_ADMITTED"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:08:32.776Z",
+              "runId": "hosted-browser-38100584612-1",
+              "childExitCode": 0,
+              "childSignal": null,
+              "code": "RESOURCE_JOB_EXIT"
+            },
+            {
+              "schema": 1,
+              "at": "2026-10-11T01:08:32.887Z",
+              "runId": "hosted-browser-38100584612-1",
+              "admitted": true,
+              "resourceInvalid": false,
+              "exitCode": 0,
+              "decision": "valid",
+              "code": "RESOURCE_FINAL_DECISION"
+            }
+          ]
+        }
+      },
+      "endpoint_elapsed_ms": 4424,
+      "product_acceptance_credit": 0,
+      "interpretation": "The exact frozen v0.2.490 development artifact completed headed native startup and the existing guarded setup interval on ARM64 with the unchanged deadline. CDP connected at 01:10:34.547Z; CPU_PENDING at 0.99 busy was recorded afterward at 01:10:35.719Z and subsequently recovered. This source/timing evidence does not isolate the cause of prior Intel failures.",
+      "diagnostic_sha256": "dc1cf517bb876d4967e6af4973844a5355642bc95a622e6c560bec3c31df0dca"
+    },
+    "comparison_limit": "macos-15 selects ARM64 hardware and a distinct runner image together. Existing diagnostic route adds observations and has a different post-CDP workload than T93. No single result establishes architecture causality or startup latency distribution."
+  },
+  "open_questions": [
+    "Which pre-endpoint browser/platform work delayed the two failed Intel launches?",
+    "Does rendering/backend initialization explain repeated Intel latency, or are unmeasured transient host factors sufficient?",
+    "A real T93 acceptance remains unverified; startup diagnostic success must not be promoted to product credit."
+  ],
+  "artifact": {
+    "version": "0.2.490",
+    "development_run_id": 38099299069,
+    "artifact_id": 11687570702,
+    "product_source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+    "tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc"
+  },
+  "retained_evidence_hashes": {
+    "hosted-package-38100035139-1.jsonl": "01683c4efcaafc15c451d800d6c428eb1ff95cb77e6ff997746ebccd3616f9d5",
+    "hosted-browser-38100035139-1.jsonl": "54239843a8897b97c5e586cc4728c739c3caaa82721b4ee3025fcaacc280d965",
+    "hosted-guest-38100035139-1.jsonl": "6a8ed482d729fdbdc197c08afbb7c09fd8a99c40e0e0ed06b2e27a9451c50245",
+    "hosted-browser-38084416311-1.jsonl": "6fed06ba450c2b4cd0436fdb6ea7602abb4ec1bf778cd7d7c68de65e6448b70a",
+    "hosted-startup-38084416311-1.jsonl": "412ade8ddfee7b83b95cb0c275297c40b2f574c12851eb3cf971995fe9e8487e",
+    "hosted-package-38084416311-1.jsonl": "91b4820de253afcad7226ecbf1d7a03ab661a77157925ab97ff177cc50a56731"
+  },
+  "next_action": "Stop this diagnostic lane after peer review and durable evidence. Parent may separately decide whether a guarded actual Settings run on the now-observed ARM64 path is useful; no further experiment dispatched by this lane."
+}
