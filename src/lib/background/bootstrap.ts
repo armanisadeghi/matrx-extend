@@ -37,11 +37,6 @@ import type { Transport } from '@/lib/desktop/bridge';
 import { desktopRpc, probeDesktop, startDesktopProbeAlarm } from '@/lib/desktop/bridge';
 import { invalidateEnginePortCache, resetEngineDiscoveryBackoff } from '@/lib/desktop/discovery';
 import { startLocalBrowserController } from '@/lib/desktop/local-browser/controller';
-import { resetNativeProbeBackoff } from '@/lib/desktop/native';
-import type { DesktopHealth } from '@/lib/desktop/types';
-import { desktopHealthSnapshotKey } from '@/lib/desktop/types';
-import { connectWs, installWsRouter, shouldBackgroundReopenWs } from '@/lib/desktop/ws-client';
-import { registerWsReverseInvocationHandler } from '@/lib/desktop/ws-invoke';
 import {
   ensureMatrx2Connection,
   getMatrx2State,
@@ -49,6 +44,11 @@ import {
 } from '@/lib/desktop/matrx2/connection';
 import { resetMatrx2DiscoveryBackoff } from '@/lib/desktop/matrx2/discovery';
 import { wireMatrx2 } from '@/lib/desktop/matrx2/wire';
+import { resetNativeProbeBackoff } from '@/lib/desktop/native';
+import type { DesktopHealth } from '@/lib/desktop/types';
+import { desktopHealthSnapshotKey } from '@/lib/desktop/types';
+import { connectWs, installWsRouter, shouldBackgroundReopenWs } from '@/lib/desktop/ws-client';
+import { registerWsReverseInvocationHandler } from '@/lib/desktop/ws-invoke';
 import { connectBroadcast, disconnectBroadcast } from '@/lib/frontend-bridge/broadcast';
 import {
   FRONTEND_RPC_CHANNEL,

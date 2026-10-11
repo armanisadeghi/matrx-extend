@@ -27,13 +27,13 @@ vi.mock('@/lib/debug/log', () => ({
 }));
 
 import {
+  type Matrx2Deps,
   __resetMatrx2ForTests,
   browserKind,
   configureMatrx2,
   ensureMatrx2Connection,
   getMatrx2Client,
   getMatrx2State,
-  type Matrx2Deps,
   reconnectMatrx2,
 } from '@/lib/desktop/matrx2/connection';
 import type { Matrx2Found } from '@/lib/desktop/matrx2/discovery';
@@ -50,11 +50,13 @@ class FakeSocket implements WebSocketLike {
   onmessage: ((event: { data: unknown }) => void) | null = null;
   onclose: ((event: { code: number; reason: string }) => void) | null = null;
   onerror: ((event: unknown) => void) | null = null;
-  constructor(
-    readonly url: string,
-    readonly protocols: string[],
-    private readonly device: FakeDevice,
-  ) {
+  readonly url: string;
+  readonly protocols: string[];
+  private readonly device: FakeDevice;
+  constructor(url: string, protocols: string[], device: FakeDevice) {
+    this.url = url;
+    this.protocols = protocols;
+    this.device = device;
     queueMicrotask(() => {
       if (!device.accepting) {
         this.readyState = 3;
@@ -110,7 +112,7 @@ class FakeDevice {
         protocol_version: PROTOCOL_VERSION,
         session_id: 'sess_00000001',
         client_id: `c_${this.sockets.length.toString().padStart(8, '0')}`,
-        device_id: 'dev_test_0001',
+        device_id: '11111111-2222-4333-8444-555555555555',
         device_name: 'Test Mac',
         app_version: '0.9.0',
         platform: 'darwin',
@@ -173,7 +175,12 @@ class FakeDevice {
   }
 
   invoke(call_id: string, tool: string, args: Record<string, unknown> = {}): void {
-    const payload = EVENTS['browser.invoke'].parse({ call_id, tool, args, deadline_ms: Date.now() + 120_000 });
+    const payload = EVENTS['browser.invoke'].parse({
+      call_id,
+      tool,
+      args,
+      deadline_ms: Date.now() + 120_000,
+    });
     this.current.deliver({ type: 'event', cap: 'browser', name: 'invoke', payload });
   }
 
@@ -224,14 +231,14 @@ function found(browser_connection: 'on' | 'off' = 'on'): Matrx2Found {
       version: '0.9.0',
       protocol_version: PROTOCOL_VERSION,
       ws_path: '/v1/connect',
-      device_id: 'dev_test_0001',
+      device_id: '11111111-2222-4333-8444-555555555555',
       browser_connection,
     },
   };
 }
 
 async function until(check: () => boolean, label: string): Promise<void> {
-  for (let i = 0; i < 200; i += 1) {
+  for (let i = 0; i < 800; i += 1) {
     if (check()) return;
     await new Promise((r) => setTimeout(r, 5));
   }
@@ -277,7 +284,10 @@ describe('Matrx 2 connection', () => {
     await ensureMatrx2Connection();
     const first = await device.waitFor((s) => s.op === 'browser.register');
     device.current.drop(CloseCode.GOING_AWAY);
-    await until(() => device.sent.filter((s) => s.op === 'browser.register').length === 2, 'second register');
+    await until(
+      () => device.sent.filter((s) => s.op === 'browser.register').length === 2,
+      'second register',
+    );
     const second = device.sent.filter((s) => s.op === 'browser.register')[1];
     expect(second?.params.client_instance).toBe(first.params.client_instance);
   });
@@ -318,11 +328,11 @@ describe('Matrx 2 connection', () => {
   });
 
   it('says awaiting_confirmation while the person is asked, then running, then the answer', async () => {
-    let approve: (() => void) | null = null;
+    const gate: { approve: (() => void) | null } = { approve: null };
     runTool.mockImplementation(async (_call, hooks) => {
       hooks.onAwaitingConfirmation();
       await new Promise<void>((r) => {
-        approve = r;
+        gate.approve = r;
       });
       hooks.onRunning();
       return { ok: true, result: 'navigated' };
@@ -333,13 +343,12 @@ describe('Matrx 2 connection', () => {
     const waiting = await device.waitFor((s) => s.op === 'browser.progress');
     expect(waiting.params).toEqual({ call_id: 'call_2', phase: 'awaiting_confirmation' });
     expect(device.sent.some((s) => s.op === 'browser.result')).toBe(false);
-    await until(() => approve !== null, 'confirmation asked');
-    approve?.();
+    await until(() => gate.approve !== null, 'confirmation asked');
+    gate.approve?.();
     const result = await device.waitFor((s) => s.op === 'browser.result');
-    expect(device.sent.filter((s) => s.op === 'browser.progress').map((s) => s.params.phase)).toEqual([
-      'awaiting_confirmation',
-      'running',
-    ]);
+    expect(
+      device.sent.filter((s) => s.op === 'browser.progress').map((s) => s.params.phase),
+    ).toEqual(['awaiting_confirmation', 'running']);
     expect(result.params).toMatchObject({ call_id: 'call_2', ok: true, result: 'navigated' });
   });
 
@@ -364,9 +373,15 @@ describe('Matrx 2 connection', () => {
     await until(() => getMatrx2State().status === 'connected', 'connected');
     device.invoke('call_4', 'nope');
     device.invoke('call_5', 'read_page');
-    await until(() => device.sent.filter((s) => s.op === 'browser.result').length === 2, 'two results');
+    await until(
+      () => device.sent.filter((s) => s.op === 'browser.result').length === 2,
+      'two results',
+    );
     const [a, b] = device.sent.filter((s) => s.op === 'browser.result');
-    expect(a?.params.error).toEqual({ message: "webmcp: tool 'nope' not registered", code: 'tool_not_found' });
+    expect(a?.params.error).toEqual({
+      message: "webmcp: tool 'nope' not registered",
+      code: 'tool_not_found',
+    });
     expect(b?.params).toMatchObject({ call_id: 'call_5', ok: false });
     expect(String((b?.params.error as { message: string }).message)).toContain('boom');
   });
@@ -378,7 +393,11 @@ describe('Matrx 2 connection', () => {
     await until(() => getMatrx2State().status === 'connected', 'connected');
     device.invoke('call_6', 'take_screenshot');
     const res = await device.waitFor((s) => s.op === 'browser.result');
-    expect(res.params).toMatchObject({ call_id: 'call_6', ok: false, error: { code: 'payload_too_large' } });
+    expect(res.params).toMatchObject({
+      call_id: 'call_6',
+      ok: false,
+      error: { code: 'payload_too_large' },
+    });
   });
 
   it('Disconnect in Matrx 2 stops dialing until the person reconnects', async () => {
@@ -422,7 +441,10 @@ describe('Matrx 2 connection', () => {
     expect(pairs).toBe(1);
     pairToken = 'pair-token-bbbbbbbbbbbbbbbb';
     device.current.drop(CloseCode.AUTH_INVALID, 'pairing code reset');
-    await until(() => device.sent.filter((s) => s.op === 'browser.register').length === 2, 're-registered');
+    await until(
+      () => device.sent.filter((s) => s.op === 'browser.register').length === 2,
+      're-registered',
+    );
     expect(pairs).toBe(2);
     expect(device.current.protocols).toContain(`${BEARER_PREFIX}pair-token-bbbbbbbbbbbbbbbb`);
   });

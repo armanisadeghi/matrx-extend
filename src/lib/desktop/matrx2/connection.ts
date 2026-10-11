@@ -34,12 +34,12 @@ import {
   SUBPROTOCOL,
 } from '@ai-matrx/desktop-protocol';
 import {
-  createDesktopClient,
   type DesktopClient,
   type DesktopClientState,
   type WebSocketFactory,
+  createDesktopClient,
 } from '@ai-matrx/desktop-protocol/client';
-import { findMatrx2, type Matrx2Found, pairWithMatrx2 } from './discovery';
+import { type Matrx2Found, findMatrx2, pairWithMatrx2 } from './discovery';
 
 // ─── Collaborators (injectable for tests; production defaults wired in ./wire.ts) ─────────────
 
@@ -63,8 +63,14 @@ export interface Matrx2Deps {
   find?: () => Promise<Matrx2Found | null>;
   pair?: typeof pairWithMatrx2;
   /** Survives service-worker restarts, not browser restarts (chrome.storage.session). */
-  sessionStore?: { get: (key: string) => Promise<unknown>; set: (key: string, value: unknown) => Promise<void> };
-  localStore?: { get: (key: string) => Promise<unknown>; set: (key: string, value: unknown) => Promise<void> };
+  sessionStore?: {
+    get: (key: string) => Promise<unknown>;
+    set: (key: string, value: unknown) => Promise<void>;
+  };
+  localStore?: {
+    get: (key: string) => Promise<unknown>;
+    set: (key: string, value: unknown) => Promise<void>;
+  };
   brands?: () => string[];
 }
 
@@ -103,7 +109,14 @@ let deps: Matrx2Deps | null = null;
 let client: DesktopClient | null = null;
 let found: Matrx2Found | null = null;
 let registeredOnce = false;
-let state: Matrx2State = { status: 'not_found', port: null, appVersion: null, session: null, calls: 0, lastError: null };
+let state: Matrx2State = {
+  status: 'not_found',
+  port: null,
+  appVersion: null,
+  session: null,
+  calls: 0,
+  lastError: null,
+};
 const listeners = new Set<(s: Matrx2State) => void>();
 const running = new Set<string>();
 
@@ -191,7 +204,9 @@ export function browserKind(brands: string[]): { kind: BrowserKind; name: string
 }
 
 function defaultBrands(): string[] {
-  const uaData = (navigator as Navigator & { userAgentData?: { brands?: Array<{ brand: string }> } }).userAgentData;
+  const uaData = (
+    navigator as Navigator & { userAgentData?: { brands?: Array<{ brand: string }> } }
+  ).userAgentData;
   const brands = uaData?.brands?.map((b) => b.brand) ?? [];
   if (brands.length === 0 && /firefox/i.test(navigator.userAgent)) return ['Firefox'];
   return brands;
@@ -273,7 +288,8 @@ function startClient(d: Matrx2Deps): void {
     clientVersion: d.extensionVersion(),
     ...(d.webSocket ? { webSocket: d.webSocket } : {}),
     onDiagnostic: (diag) => {
-      if (diag.kind === 'handler_threw') log.warn('desktop', `Matrx 2 client: ${diag.where}`, diag.error);
+      if (diag.kind === 'handler_threw')
+        log.warn('desktop', `Matrx 2 client: ${diag.where}`, diag.error);
     },
   });
   client = c;
@@ -288,7 +304,11 @@ function startClient(d: Matrx2Deps): void {
   c.connect();
 }
 
-async function onClientState(c: DesktopClient, d: Matrx2Deps, s: DesktopClientState): Promise<void> {
+async function onClientState(
+  c: DesktopClient,
+  d: Matrx2Deps,
+  s: DesktopClientState,
+): Promise<void> {
   if (s.status === 'open') {
     // Once per open socket: every reconnect is a new session on Matrx 2's side.
     if (!registeredOnce) {
@@ -307,7 +327,11 @@ async function onClientState(c: DesktopClient, d: Matrx2Deps, s: DesktopClientSt
       await writeStop(d, off ? 'off' : 'disconnected');
       setState({ status: off ? 'off' : 'disconnected', session: null, lastError: null });
     } else {
-      setState({ status: 'error', session: null, lastError: s.lastError?.message ?? s.outcome ?? 'closed' });
+      setState({
+        status: 'error',
+        session: null,
+        lastError: s.lastError?.message ?? s.outcome ?? 'closed',
+      });
     }
     return;
   }
@@ -321,7 +345,8 @@ async function onClientState(c: DesktopClient, d: Matrx2Deps, s: DesktopClientSt
     setState({ status: 'connecting', session: null });
     return;
   }
-  if (c === client && (s.status === 'connecting' || s.status === 'handshaking')) setState({ status: 'connecting' });
+  if (c === client && (s.status === 'connecting' || s.status === 'handshaking'))
+    setState({ status: 'connecting' });
 }
 
 async function register(d: Matrx2Deps): Promise<void> {
@@ -330,7 +355,8 @@ async function register(d: Matrx2Deps): Promise<void> {
   const { kind, name } = browserKind((d.brands ?? defaultBrands)());
   const instance = await clientInstance(d);
   const storedLabel = await (d.localStore ?? chromeLocal).get(LABEL_KEY).catch(() => null);
-  const label = typeof storedLabel === 'string' && storedLabel.trim() ? storedLabel.trim().slice(0, 128) : name;
+  const label =
+    typeof storedLabel === 'string' && storedLabel.trim() ? storedLabel.trim().slice(0, 128) : name;
   const token = await d.accessToken().catch(() => null);
   try {
     const out = await c.request('browser.register', {
@@ -342,10 +368,16 @@ async function register(d: Matrx2Deps): Promise<void> {
     });
     if (client !== c) return;
     setState({ status: 'connected', session: out.session, lastError: null });
-    log.info('desktop', `Matrx 2: registered as ${out.session.client_label} (${out.session.state})`);
+    log.info(
+      'desktop',
+      `Matrx 2: registered as ${out.session.client_label} (${out.session.state})`,
+    );
   } catch (err) {
     if (client !== c) return;
-    setState({ status: 'error', lastError: `Could not register with Matrx 2: ${(err as Error).message}` });
+    setState({
+      status: 'error',
+      lastError: `Could not register with Matrx 2: ${(err as Error).message}`,
+    });
   }
 }
 
@@ -359,7 +391,11 @@ function errorCode(message: string): string | null {
   return null;
 }
 
-async function handleInvoke(c: DesktopClient, d: Matrx2Deps, call: BrowserInvokeEvent): Promise<void> {
+async function handleInvoke(
+  c: DesktopClient,
+  d: Matrx2Deps,
+  call: BrowserInvokeEvent,
+): Promise<void> {
   if (running.has(call.call_id)) return;
   running.add(call.call_id);
   const progress = (phase: 'awaiting_confirmation' | 'running') => {
@@ -369,10 +405,16 @@ async function handleInvoke(c: DesktopClient, d: Matrx2Deps, call: BrowserInvoke
   try {
     outcome = await d.runTool(
       { callId: call.call_id, toolName: call.tool, args: call.args },
-      { onAwaitingConfirmation: () => progress('awaiting_confirmation'), onRunning: () => progress('running') },
+      {
+        onAwaitingConfirmation: () => progress('awaiting_confirmation'),
+        onRunning: () => progress('running'),
+      },
     );
   } catch (err) {
-    outcome = { ok: false, error: `The extension could not run ${call.tool}: ${(err as Error).message}` };
+    outcome = {
+      ok: false,
+      error: `The extension could not run ${call.tool}: ${(err as Error).message}`,
+    };
   }
   setState({ calls: state.calls + 1 });
   const answer = outcome.ok
@@ -381,17 +423,26 @@ async function handleInvoke(c: DesktopClient, d: Matrx2Deps, call: BrowserInvoke
         call_id: call.call_id,
         ok: false,
         result: null,
-        error: { message: (outcome.error ?? 'The tool failed').slice(0, 1000), code: errorCode(outcome.error ?? '') },
+        error: {
+          message: (outcome.error ?? 'The tool failed').slice(0, 1000),
+          code: errorCode(outcome.error ?? ''),
+        },
       };
   try {
-    const size = outcome.ok ? new TextEncoder().encode(JSON.stringify(answer.result ?? null)).length : 0;
-    const cap = (c.getState().welcome?.limits.max_message_bytes ?? 8_388_608) - RESULT_HEADROOM_BYTES;
+    const size = outcome.ok
+      ? new TextEncoder().encode(JSON.stringify(answer.result ?? null)).length
+      : 0;
+    const cap =
+      (c.getState().welcome?.limits.max_message_bytes ?? 8_388_608) - RESULT_HEADROOM_BYTES;
     if (size > cap) {
       await c.request('browser.result', {
         call_id: call.call_id,
         ok: false,
         result: null,
-        error: { message: `${call.tool} returned ${size} bytes, more than Matrx 2 accepts in one answer`, code: 'payload_too_large' },
+        error: {
+          message: `${call.tool} returned ${size} bytes, more than Matrx 2 accepts in one answer`,
+          code: 'payload_too_large',
+        },
       });
     } else {
       await c.request('browser.result', answer);
@@ -411,5 +462,12 @@ export function __resetMatrx2ForTests(): void {
   registeredOnce = false;
   running.clear();
   listeners.clear();
-  state = { status: 'not_found', port: null, appVersion: null, session: null, calls: 0, lastError: null };
+  state = {
+    status: 'not_found',
+    port: null,
+    appVersion: null,
+    session: null,
+    calls: 0,
+    lastError: null,
+  };
 }

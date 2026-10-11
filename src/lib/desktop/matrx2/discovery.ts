@@ -49,11 +49,17 @@ export function resetMatrx2DiscoveryBackoff(): void {
 }
 
 /** Is Matrx 2 answering on this port? Resolves with its health, or null. */
-export async function probeMatrx2Port(port: number, timeoutMs = PROBE_TIMEOUT_MS): Promise<Matrx2Health | null> {
+export async function probeMatrx2Port(
+  port: number,
+  timeoutMs = PROBE_TIMEOUT_MS,
+): Promise<Matrx2Health | null> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const res = await fetch(`http://127.0.0.1:${port}/v1/health`, { method: 'GET', signal: ctrl.signal });
+    const res = await fetch(`http://127.0.0.1:${port}/v1/health`, {
+      method: 'GET',
+      signal: ctrl.signal,
+    });
     if (!res.ok) return null;
     const parsed = DesktopHealth.safeParse(await res.json().catch(() => null));
     return parsed.success ? parsed.data : null;
@@ -108,7 +114,8 @@ async function accept(port: number, health: Matrx2Health): Promise<Matrx2Found> 
 }
 
 function backOff(): void {
-  const wait = SWEEP_BACKOFF_MS[Math.min(consecutiveEmptySweeps, SWEEP_BACKOFF_MS.length - 1)] ?? 120_000;
+  const wait =
+    SWEEP_BACKOFF_MS[Math.min(consecutiveEmptySweeps, SWEEP_BACKOFF_MS.length - 1)] ?? 120_000;
   consecutiveEmptySweeps += 1;
   nextSweepAllowedAt = Date.now() + wait;
 }
@@ -124,7 +131,11 @@ async function readLastPort(): Promise<number | null> {
 }
 
 /** Why pairing failed, in words a person can act on. */
-export type Matrx2PairErrorCode = 'browser_connection_off' | 'forbidden' | 'unreachable' | 'bad_answer';
+export type Matrx2PairErrorCode =
+  | 'browser_connection_off'
+  | 'forbidden'
+  | 'unreachable'
+  | 'bad_answer';
 
 export class Matrx2PairError extends Error {
   readonly code: Matrx2PairErrorCode;
@@ -139,7 +150,10 @@ export class Matrx2PairError extends Error {
  * Ask Matrx 2 for the pairing token. Called before every (re)connect, so a token the person reset
  * in Matrx 2 (Computer › Browsers) heals on the next attempt without any step in the browser.
  */
-export async function pairWithMatrx2(baseUrl: string, clientInstance: string): Promise<BrowserPairResult> {
+export async function pairWithMatrx2(
+  baseUrl: string,
+  clientInstance: string,
+): Promise<BrowserPairResult> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), PAIR_TIMEOUT_MS);
   let res: Response;
@@ -163,6 +177,7 @@ export async function pairWithMatrx2(baseUrl: string, clientInstance: string): P
     throw new Matrx2PairError(message, code);
   }
   const parsed = BrowserPairResult.safeParse(body);
-  if (!parsed.success) throw new Matrx2PairError('Matrx 2 answered pairing with something unexpected', 'bad_answer');
+  if (!parsed.success)
+    throw new Matrx2PairError('Matrx 2 answered pairing with something unexpected', 'bad_answer');
   return parsed.data;
 }
