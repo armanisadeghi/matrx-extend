@@ -75,8 +75,11 @@ export function hostedScrapeSaveScope(acceptanceCase, value = 'single', destinat
     assert.equal(value, 'single', 'scrape_save_scope_case_refused');
     return value;
   }
-  assert.ok(value === 'single' || value === 'duplicate-rename', 'scrape_save_scope_invalid');
-  if (value === 'duplicate-rename')
+  assert.ok(
+    ['single', 'duplicate-rename', 'duplicate-rename-retry'].includes(value),
+    'scrape_save_scope_invalid',
+  );
+  if (value !== 'single')
     assert.equal(destination, 'none', 'scrape_save_duplicate_destination_refused');
   return value;
 }

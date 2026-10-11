@@ -9,6 +9,8 @@ async function observedSave({
   landedId = sourceId,
   landStatus = 201,
   renameStatus = 200,
+  expectedStatuses = [200],
+  retryStatus,
 } = {}) {
   const listeners = new Map();
   const panel = {
@@ -25,7 +27,11 @@ async function observedSave({
       throw new Error(`unexpected_cdp_command:${name}`);
     },
   };
-  const observer = observeDuplicateSourceSave(panel, 'https://server.app.matrxserver.com');
+  const observer = observeDuplicateSourceSave(
+    panel,
+    'https://server.app.matrxserver.com',
+    expectedStatuses,
+  );
   await observer.start();
   const emit = (name, event) => listeners.get(name)(event);
   emit('Network.requestWillBeSent', {
@@ -40,6 +46,17 @@ async function observedSave({
   });
   emit('Network.responseReceived', { requestId: 'rename', response: { status: renameStatus } });
   emit('Network.loadingFinished', { requestId: 'rename' });
+  if (retryStatus !== undefined) {
+    emit('Network.requestWillBeSent', {
+      requestId: 'retry',
+      request: {
+        method: 'POST',
+        url: `https://server.app.matrxserver.com/sources/${sourceId}/edit`,
+      },
+    });
+    emit('Network.responseReceived', { requestId: 'retry', response: { status: retryStatus } });
+    emit('Network.loadingFinished', { requestId: 'retry' });
+  }
   await Promise.resolve();
   await Promise.resolve();
   return observer;
@@ -110,4 +127,29 @@ test('duplicate rejection retains bounded status evidence without response text 
     JSON.stringify(diagnostic),
     /6b8c38dd|processed_document_id|responseBody|text/,
   );
+});
+
+test('rename recovery requires a refusal followed by real successful retry on the same Source', async () => {
+  const recovered = await observedSave({
+    expectedStatuses: [503, 200],
+    renameStatus: 503,
+    retryStatus: 200,
+  });
+  assert.deepEqual(recovered.verify(sourceId), {
+    reused_existing: true,
+    same_source_id: true,
+    rename_succeeded: true,
+  });
+  assert.deepEqual(recovered.snapshot(sourceId).rename_http_statuses, [503, 200]);
+  recovered.stop();
+  for (const input of [
+    { renameStatus: 200, retryStatus: 200 },
+    { renameStatus: 503, retryStatus: 503 },
+    { renameStatus: 503 },
+    { renameStatus: 503, retryStatus: 200, reused: false },
+  ]) {
+    const broken = await observedSave({ expectedStatuses: [503, 200], ...input });
+    assert.throws(() => broken.verify(sourceId), /scrape_save_duplicate_/);
+    broken.stop();
+  }
 });
