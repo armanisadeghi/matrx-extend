@@ -396,6 +396,7 @@ test('workflow admits member Data with member auth while preserving guest and D1
     DEVELOPMENT_ARTIFACT_ID: '11659157834',
     PUBLISHED_STORE_CRX: 'false',
     SCRAPE_DIAGNOSTIC_CPU_RATE: '',
+    MEMBER_DATA_SCOPE: 'lifecycle',
     SCRAPE_WIDTH_MODE: 'narrow',
     SCRAPE_NORMAL_WIDTH_PX: '',
     SCRAPE_SAVE_DESTINATION: 'project',
@@ -434,6 +435,33 @@ test('workflow admits member Data with member auth while preserving guest and D1
       );
     }
   }
+  assert.equal(
+    runWorkflowStep(artifactProvenance, {
+      ...shared,
+      ACCEPTANCE_CASE: 'member-data',
+      SCRAPE_AUTH_MODE: 'member',
+      MEMBER_DATA_SCOPE: 'auto-extract',
+    }).status,
+    0,
+  );
+  assert.equal(
+    runWorkflowStep(artifactProvenance, {
+      ...shared,
+      ACCEPTANCE_CASE: 'member-data',
+      SCRAPE_AUTH_MODE: 'member',
+      MEMBER_DATA_SCOPE: 'unknown',
+    }).status,
+    1,
+  );
+  assert.equal(
+    runWorkflowStep(artifactProvenance, {
+      ...shared,
+      ACCEPTANCE_CASE: 'guest-chat',
+      SCRAPE_AUTH_MODE: 'guest',
+      MEMBER_DATA_SCOPE: 'auto-extract',
+    }).status,
+    1,
+  );
   assert.equal(
     runWorkflowStep(laneAdmission, {
       ...shared,
