@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "review_kind": "independent_published_guest_chat_review",
+  "run_id": 38161802335,
+  "case_id": "published-v0205-guest-chat",
+  "verdict_a_product_behavior": "PASS",
+  "verdict_b_evidence_quality": "PARTIAL",
+  "artifact_provenance": {
+    "conclusion": "Public 0.2.205 CRX downloaded from Google's public update service, then loaded unpacked in hosted Chrome; this was not installed or updated through Chrome Web Store UI.",
+    "basis": [
+      "Run record identifies kind=published_store_crx_unpacked, version 0.2.205, extension ID hnfolienncfklkgmdjjmhhegglimlamg, CRX SHA-256 7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23, and runtime tree SHA-256 08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8.",
+      "scripts/hosted-guest-acceptance.mjs published CRX preparation checks the manifest version, validates the CRX3 signing key against the expected extension ID, adds manifest.key only to an unpacked copy, removes _metadata/verified_contents.json, and records the original CRX unchanged.",
+      "The sanitized result explicitly states the hosted public CRX was loaded unpacked and was not installed or updated through Chrome Web Store UI."
+    ],
+    "limitations": [
+      "Store install/update behavior, including Chrome Web Store UI, update delivery, and Store-managed verification at runtime, is not evidenced."
+    ]
+  },
+  "product_behavior_evidence": [
+    {
+      "claim": "Fresh signed-out guest sees Chat without a login or paywall.",
+      "basis": "guest-chat-result.sanitized.json identity and no_login_paywall_or_error fields; guest-chat-store-acceptance.mjs waits for guestAccount, absent access token/profile/organization, and chatVisible."
+    },
+    {
+      "claim": "Opening turn ends with a real page-grounded answer.",
+      "basis": "Native acceptance asserts terminal_answer, unpredictable fixture nonce, requested public workflow stages in order, and no refusal/error; transport observer requires the guest AI request."
+    },
+    {
+      "claim": "Same conversation follow-up ends with a page-grounded answer and unchanged conversation identity.",
+      "basis": "Native acceptance verifies same fixture tab, terminal answer with nonce and heading, increased reply count, and guest identity; sanitized result records same_conversation_identity_verified."
+    },
+    {
+      "claim": "After panel reload the guest remains signed out and a new conversation ends with a page-grounded answer.",
+      "basis": "Native acceptance waits for absent session credentials and visible Chat after reload, then asserts terminal answer, fixture nonce and heading."
+    },
+    {
+      "claim": "Three turns used guest AI transport and completed successfully.",
+      "basis": "Sanitized result records HTTP statuses [200,200,200], is_new sequence [true,false,true], and all timelines terminal and not streaming."
+    }
+  ],
+  "resource_finals": {
+    "package": "PASS: hosted-package-38161802335-1 final journal decision is valid, admitted=true, resourceInvalid=false, exitCode=0; matches resource-finals.sanitized.json.",
+    "browser": "PASS: hosted-browser-38161802335-1 final journal decision is valid, admitted=true, resourceInvalid=false, exitCode=0; matches resource-finals.sanitized.json.",
+    "guest": "PASS: hosted-guest-38161802335-1 final journal decision is valid, admitted=true, resourceInvalid=false, exitCode=0; matches resource-finals.sanitized.json."
+  },
+  "screenshot_review": [
+    "guest-chat-opening-reply.png shows the signed-out guest shell and part of the requested workflow answer; the question and part of the answer are outside the captured viewport.",
+    "guest-chat-same-conversation-followup.png and guest-chat-followup-reply.png show fragments of assistant output, but are scrolled/clipped and do not visually establish full answer text, conversation identity, or terminal state."
+  ],
+  "evidence_quality_limits": [
+    "Full response correctness, conversation identity, and terminal states rely on sanitized native assertions rather than complete visible screenshots.",
+    "The reviewed packet does not include the full raw browser artifact for independent byte-for-byte comparison; provenance is supported by run metadata, hashes, workflow inputs/helper enforcement, and sanitized receipt claims.",
+    "The run is bounded to fresh signed-out guest Chat, a same-conversation follow-up, and a new conversation after panel reload. It says nothing about authenticated member/admin behavior, tool-action correctness, broad Chat health, or other sites."
+  ],
+  "evidence": [
+    "docs/stabilization/runs/published-v0205-guest-chat-38161802335.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/guest-chat-result.sanitized.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/resource-journals/hosted-package.jsonl",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/resource-journals/hosted-browser.jsonl",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/resource-journals/hosted-guest.jsonl",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "scripts/hosted-guest-acceptance.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml"
+  ]
+}

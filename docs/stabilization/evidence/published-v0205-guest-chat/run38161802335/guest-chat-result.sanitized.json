@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "scope": "Bounded signed-out guest Chat on the public 0.2.205 CRX loaded unpacked in an isolated hosted Chrome profile; first turn and same-conversation follow-up, plus post-reload new conversation.",
+  "status": "pass",
+  "artifact": {
+    "kind": "published_store_crx_unpacked",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "artifact_unchanged": true,
+    "unpacked_adaptation": "Verified published CRX3 signing key supplied manifest.key and Store verification metadata removed for unpacked loading; original CRX unchanged."
+  },
+  "identity": {
+    "guest_profile_fresh": true,
+    "chat_visible_signed_out": true,
+    "session_absent_after_reload": true
+  },
+  "assistant_content": {
+    "opening_turn": "terminal_answer",
+    "opening_answer_contains_unpredictable_page_code": true,
+    "opening_answer_names_three_workflow_stages_in_order": true,
+    "no_login_paywall_or_error": true,
+    "same_conversation_followup": "terminal_answer",
+    "same_conversation_identity_verified": true,
+    "same_conversation_followup_contains_page_code": true,
+    "post_reload_new_conversation": "terminal_answer",
+    "post_reload_answer_contains_page_code_and_fixture_heading": true,
+    "all_turn_timelines_terminal_and_not_streaming": true,
+    "timelines": {
+      "opening": [
+        {
+          "verdict": "in_progress",
+          "runCount": 0,
+          "replyCount": 0,
+          "streaming": true
+        },
+        {
+          "verdict": "in_progress",
+          "runCount": 1,
+          "replyCount": 0,
+          "streaming": true
+        },
+        {
+          "verdict": "awaiting_tool_resume",
+          "runCount": 1,
+          "replyCount": 0,
+          "streaming": true
+        },
+        {
+          "verdict": "in_progress",
+          "runCount": 2,
+          "replyCount": 0,
+          "streaming": true
+        },
+        {
+          "verdict": "terminal_answer",
+          "runCount": 2,
+          "replyCount": 1,
+          "streaming": false
+        }
+      ],
+      "same_conversation_followup": [
+        {
+          "verdict": "in_progress",
+          "runCount": 2,
+          "replyCount": 1,
+          "streaming": true
+        },
+        {
+          "verdict": "in_progress",
+          "runCount": 3,
+          "replyCount": 1,
+          "streaming": true
+        },
+        {
+          "verdict": "awaiting_tool_resume",
+          "runCount": 3,
+          "replyCount": 2,
+          "streaming": true
+        },
+        {
+          "verdict": "in_progress",
+          "runCount": 4,
+          "replyCount": 2,
+          "streaming": true
+        },
+        {
+          "verdict": "terminal_answer",
+          "runCount": 4,
+          "replyCount": 3,
+          "streaming": false
+        }
+      ],
+      "post_reload_new_conversation": [
+        {
+          "verdict": "in_progress",
+          "runCount": 0,
+          "replyCount": 0,
+          "streaming": true
+        },
+        {
+          "verdict": "in_progress",
+          "runCount": 1,
+          "replyCount": 0,
+          "streaming": true
+        },
+        {
+          "verdict": "awaiting_tool_resume",
+          "runCount": 1,
+          "replyCount": 0,
+          "streaming": false
+        },
+        {
+          "verdict": "in_progress",
+          "runCount": 2,
+          "replyCount": 0,
+          "streaming": true
+        },
+        {
+          "verdict": "terminal_answer",
+          "runCount": 2,
+          "replyCount": 1,
+          "streaming": false
+        }
+      ]
+    }
+  },
+  "transport": {
+    "guest_ai_transport_proven": true,
+    "http_statuses": [200, 200, 200],
+    "is_new_sequence": [true, false, true]
+  },
+  "server": {
+    "version_endpoint_http_status_before_after": 200,
+    "git_sha_before": "e1f320c93f5409613ebdca43640ae090df44a300",
+    "git_sha_after": "e1f320c93f5409613ebdca43640ae090df44a300",
+    "stable_during_run": true
+  },
+  "limitations": [
+    "Hosted public CRX loaded unpacked; not an installation or update through the Chrome Web Store UI.",
+    "Screenshots are scrolled/clipped; full content, conversation identity, and terminal states rely on sanitized native assertions.",
+    "Fresh hosted guest profile only; no authenticated member/admin, broader Chat, tool-action correctness, or full product health claim."
+  ]
+}

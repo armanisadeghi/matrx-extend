@@ -1,0 +1,23 @@
+{
+  "package": {
+    "run_id": "hosted-package-38161802335-1",
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid",
+    "admitted": true
+  },
+  "browser": {
+    "run_id": "hosted-browser-38161802335-1",
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid",
+    "admitted": true
+  },
+  "guest": {
+    "run_id": "hosted-guest-38161802335-1",
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid",
+    "admitted": true
+  }
+}

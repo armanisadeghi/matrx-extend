@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "run_id": 38161802335,
+  "status": "bounded_pass",
+  "case_id": "published-v0205-guest-chat",
+  "observed_at": "2026-10-11T18:04:50Z",
+  "workflow_source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+  "runner_label": "macos-15-intel",
+  "artifact": {
+    "kind": "published_store_crx_unpacked",
+    "version": "0.2.205",
+    "extension_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+    "runtime_tree_sha256": "08967843dbbd065a2fdfea1a17f4c61aca1c8a251ab0bc720ee825ec6a6fd8b8",
+    "crx_sha256": "7f9fbe39a2807cfe4f9944713f512cf398994b377a104cc8011122982dacba23",
+    "published_tag_commit_sha": "2f68bc4fef0c024f5a91d69f3c49b51c9dcd38a3",
+    "artifact_id": 11710722292,
+    "artifact_sha256": "96a0addeb16817fd20a9e86c01986591a2ac963ab1aa71244422b58c5b816b4e",
+    "artifact_unchanged": true
+  },
+  "server": {
+    "version_endpoint_status_before": 200,
+    "version_endpoint_status_after": 200,
+    "git_sha_before": "e1f320c93f5409613ebdca43640ae090df44a300",
+    "git_sha_after": "e1f320c93f5409613ebdca43640ae090df44a300",
+    "stable_during_run": true,
+    "request_statuses": [200, 200, 200]
+  },
+  "verification": {
+    "identity": "Fresh signed-out guest profile; Chat visible with no login or paywall.",
+    "opening_turn": "Terminal assistant content grounded in the unpredictable page code and names its three workflow stages in order.",
+    "same_conversation_followup": "Terminal answer grounded in the page code, with unchanged verified conversation identity.",
+    "post_reload": "Session remained absent; new conversation produced a terminal answer grounded in page code and heading.",
+    "all_three_turns_terminal": true,
+    "transport": "Native instrumentation observed the guest AI transport; all three requests HTTP 200."
+  },
+  "resource_finals": {
+    "package": {
+      "run_id": "hosted-package-38161802335-1",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admitted": true
+    },
+    "browser": {
+      "run_id": "hosted-browser-38161802335-1",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admitted": true
+    },
+    "guest": {
+      "run_id": "hosted-guest-38161802335-1",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "admitted": true
+    }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/guest-chat-result.sanitized.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/resource-journals/hosted-package.jsonl",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/resource-journals/hosted-browser.jsonl",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/resource-journals/hosted-guest.jsonl",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/screenshots/guest-chat-opening-reply.png",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/screenshots/guest-chat-same-conversation-followup.png",
+    "docs/stabilization/evidence/published-v0205-guest-chat/run38161802335/screenshots/guest-chat-followup-reply.png",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38161802335"
+  ],
+  "limitations": [
+    "This proves hosted use of the exact public 0.2.205 CRX loaded unpacked; it does not prove Chrome Web Store installation/update behavior.",
+    "Screenshots are scrolled/clipped; detailed content, conversation identity, and terminal state are supported by native assertions.",
+    "No member/admin, broader Chat, tools correctness, or full product-health claim.",
+    "Actual Store-installed 0.2.205 verification for 2026-10-11 remains unavailable in this lane."
+  ],
+  "independent_review": {
+    "path": "docs/stabilization/reports/published-v0205-guest-chat-peer-38161802335.json",
+    "verdict_a_product_behavior": "PASS",
+    "verdict_b_evidence_quality": "PARTIAL",
+    "reviewer_independent": true
+  }
+}
