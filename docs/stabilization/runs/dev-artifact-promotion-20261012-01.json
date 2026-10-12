@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "promoted_on_disk",
+  "observed_at": "2026-10-12T22:08:37.716Z",
+  "artifact": {
+    "sourceSha": "a7beecf42e87711cb2e9e11daf88aadda4e7fac0",
+    "runId": 38313661974,
+    "runAttempt": 1,
+    "artifactId": 11776331630,
+    "githubArtifactDigest": "sha256:ab4b5b05c4b55431d1b6c3ffea855e19d92ed3d1869fbc85e5d7ad7bf4bce662",
+    "treeSha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "version": "0.2.509",
+    "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "eligibleStore": false,
+    "publish_state": "not_published"
+  },
+  "promotion": {
+    "mainSha": "0b14f63bcd784695f5ebdb9067eeb4787fca0cdc",
+    "compatibility": "runtime-equivalent",
+    "allowedDiffPaths": ["docs/stabilization/reports/store-release-gates-20261012.json"],
+    "destination": ".output/chrome-mv3-dev",
+    "fileCount": 2031,
+    "receipt": "test-results/ci-dev-promotion-receipt.json"
+  },
+  "verification": {
+    "ciRun": "completed_success",
+    "githubArchiveDigest": "verified_by_current_test_artifact_import",
+    "embeddedProvenance": "verified_by_current_test_artifact_import_and_promoter",
+    "promotedTreeMatchedImportedTree": true,
+    "chromeLoadedFromPath": "unverified",
+    "chromeDisplayedVersion": "unverified",
+    "chromeReloaded": false,
+    "pinnedState": "unverified"
+  },
+  "next_action": "Through permitted resource-guarded UI, verify Chrome profile, development extension Loaded from path and displayed version 0.2.509, reload extension, reopen panel, reload owned target, and verify pin state. Recheck CI source freshness if main runtime changes before that check.",
+  "limits": "No manual build, release, Store upload, Chrome launch or reload was performed. Source is the exact successful main-push CI commit; current main has only the promoter-approved evidence-only delta."
+}
