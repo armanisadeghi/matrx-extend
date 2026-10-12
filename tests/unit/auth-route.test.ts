@@ -24,7 +24,7 @@ const ORG_GONE = '44444444-4444-4444-8444-444444444444';
  */
 const mocks = vi.hoisted(() => {
   const store = new Map<string, unknown>();
-  const watchers = new Set<(key: string, value: unknown) => void>();
+  const watchers = new Set<(key: string, value: unknown, previous: unknown) => void>();
   return {
     store,
     watchers,
@@ -36,12 +36,13 @@ const mocks = vi.hoisted(() => {
     pushNotice: vi.fn(),
     getOne: vi.fn(async (key: string) => store.get(key) ?? null),
     setOne: vi.fn(async (key: string, value: unknown) => {
+      const previous = store.get(key) ?? null;
       store.set(key, value);
-      for (const watcher of [...watchers]) watcher(key, value);
+      for (const watcher of [...watchers]) watcher(key, value, previous);
     }),
-    onChange: vi.fn((key: string, cb: (next: unknown) => void) => {
-      const watcher = (changed: string, value: unknown) => {
-        if (changed === key) cb(value ?? null);
+    onChange: vi.fn((key: string, cb: (next: unknown, previous: unknown) => void) => {
+      const watcher = (changed: string, value: unknown, previous: unknown) => {
+        if (changed === key) cb(value ?? null, previous ?? null);
       };
       watchers.add(watcher);
       return () => watchers.delete(watcher);
@@ -60,24 +61,24 @@ vi.mock('@/lib/auth/flow', async () => {
 vi.mock('@/lib/supabase/client', async () => {
   const { accountRow, fakeOrganizationsDb } = await import('../helpers/fake-organizations-db');
   return {
-  getOrganizationBootstrapClient: () =>
-    fakeOrganizationsDb({
-      memberships: () => mocks.membershipRead(),
-      organizations: (ids) => mocks.orgSelect('id', ids, 'archived_at', null),
-      account: async () => {
-        const answer = (await mocks.prefsSelect()) as {
-          data: Parameters<typeof accountRow>[0];
-          error: { message: string } | null;
-        };
-        return { data: accountRow(answer.data), error: answer.error };
-      },
+    getOrganizationBootstrapClient: () =>
+      fakeOrganizationsDb({
+        memberships: () => mocks.membershipRead(),
+        organizations: (ids) => mocks.orgSelect('id', ids, 'archived_at', null),
+        account: async () => {
+          const answer = (await mocks.prefsSelect()) as {
+            data: Parameters<typeof accountRow>[0];
+            error: { message: string } | null;
+          };
+          return { data: accountRow(answer.data), error: answer.error };
+        },
+      }),
+    getSupabase: () => ({
+      schema: (name: string) => ({
+        rpc: (fn: string, args: unknown) => mocks.schemaRpc(name, fn, args),
+      }),
     }),
-  getSupabase: () => ({
-    schema: (name: string) => ({
-      rpc: (fn: string, args: unknown) => mocks.schemaRpc(name, fn, args),
-    }),
-  }),
-};
+  };
 });
 vi.mock('@/lib/supabase/schemas', () => ({
   iamDb: () => ({
@@ -316,6 +317,57 @@ describe('the load ladder — the organization this install acts in', () => {
     await expect(first).resolves.toBeNull();
     expect(mocks.store.get(ACTIVE)).toEqual({ id: ORG_B, name: 'Active B' });
     await expect(getActiveOrganizationId()).resolves.toBe(ORG_B);
+  });
+
+  it('keeps its validated fallback when its own stale-choice notification arrives late', async () => {
+    membershipsFor(ORG_B);
+    mocks.store.set(ACTIVE, { id: ORG_A, name: 'Removed A' });
+    let announceClear: (() => void) | undefined;
+    mocks.setOne.mockImplementationOnce(async (key: string, value: unknown) => {
+      const previous = mocks.store.get(key) ?? null;
+      mocks.store.set(key, value);
+      announceClear = () => {
+        for (const watcher of [...mocks.watchers]) watcher(key, value, previous);
+      };
+    });
+    const { getActiveOrganizationId } = await import('@/lib/org/active-org');
+
+    await expect(getActiveOrganizationId()).resolves.toBe(ORG_B);
+    expect(announceClear).toBeDefined();
+    announceClear?.();
+    await expect(getActiveOrganizationId()).resolves.toBe(ORG_B);
+    expect(mocks.membershipRead).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a newer validated choice when an older own-clear event arrives after the choice event', async () => {
+    // A removed workspace is cleared while the person switches to their other workspace.
+    membershipsFor(ORG_B, ORG_C);
+    mocks.store.set(ACTIVE, { id: ORG_A, name: 'Removed workspace' });
+    let announceClear: (() => void) | undefined;
+    mocks.setOne.mockImplementationOnce(async (key: string, value: unknown) => {
+      const previous = mocks.store.get(key) ?? null;
+      mocks.store.set(key, value);
+      announceClear = () => {
+        for (const watcher of [...mocks.watchers]) watcher(key, value, previous);
+      };
+    });
+    const { getActiveOrganizationId, selectActiveOrganization } = await import(
+      '@/lib/org/active-org'
+    );
+    await expect(getActiveOrganizationId()).resolves.toBe(ORG_B);
+    await selectActiveOrganization({ id: ORG_C, name: 'Current workspace' });
+    await expect(getActiveOrganizationId()).resolves.toBe(ORG_C);
+    expect(mocks.membershipRead).toHaveBeenCalledTimes(2);
+
+    expect(announceClear).toBeDefined();
+    announceClear?.();
+    await expect(getActiveOrganizationId()).resolves.toBe(ORG_C);
+    expect(mocks.membershipRead).toHaveBeenCalledTimes(2);
+
+    // An actual later clear must still invalidate the newer held choice.
+    await mocks.setOne(ACTIVE, null);
+    await expect(getActiveOrganizationId()).resolves.toBe(ORG_B);
+    expect(mocks.membershipRead).toHaveBeenCalledTimes(3);
   });
 
   it('never claims an organization for a signed-out install', async () => {

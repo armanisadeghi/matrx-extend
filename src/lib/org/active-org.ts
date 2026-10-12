@@ -38,6 +38,7 @@ import { log } from '@/lib/debug/log';
 import { getOne, onChange, setOne } from '@/lib/storage/chrome-local';
 import { getOrganizationBootstrapClient, getSupabase } from '@/lib/supabase/client';
 import { pushNotice } from '@/state/notices';
+import { withOAuthSession } from '@ai-matrx/auth';
 import {
   type ActiveOrganization,
   type HeldOrganizationStore,
@@ -45,7 +46,6 @@ import {
   readMemberships,
   writeLastActiveOrganization,
 } from '@ai-matrx/auth/organizations';
-import { withOAuthSession } from '@ai-matrx/auth';
 import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 
 export interface MemberOrganization {
@@ -65,10 +65,20 @@ let resolutionInFlight: { userId: string; promise: Promise<MemberOrganization | 
   null;
 let observingSelection = false;
 let selectionGeneration = 0;
+// A write's notification can arrive after later selections and validations.
+// Keep its transition until delivery; the validation generation is not its identity.
+const pendingOwnClears: Array<{ heldId: string }> = [];
 
 function observeSelectionChanges(): void {
   if (observingSelection) return;
-  onChange<StoredActiveOrganization | null>(STORAGE_KEYS.ACTIVE_ORGANIZATION, () => {
+  onChange<StoredActiveOrganization | null>(STORAGE_KEYS.ACTIVE_ORGANIZATION, (next, previous) => {
+    const ownClear = pendingOwnClears.findIndex(
+      (pending) => next === null && previous?.id === pending.heldId,
+    );
+    if (ownClear !== -1) {
+      pendingOwnClears.splice(ownClear, 1);
+      return;
+    }
     selectionGeneration += 1;
     validatedSelection = null;
   });
@@ -172,27 +182,41 @@ export async function listMemberOrganizations(
  * The data client carries no GoTrue session (its bearer comes from the OAuth client), so the
  * package's session doors read the OAuth session through `withOAuthSession`.
  */
-let activeStore: ActiveOrganization | null = null;
-let ladderClearedSelection = false;
-function getActiveStore(): ActiveOrganization | null {
-  if (activeStore) return activeStore;
+function getActiveStore(validation: {
+  generation: number;
+  heldId: string | null;
+}): ActiveOrganization | null {
   const oauth = getOAuthClient();
   if (!oauth) return null;
+  let activeStore: ActiveOrganization | null = null;
   const held: HeldOrganizationStore = {
     async read() {
       return (await readStoredSelection())?.id ?? null;
     },
     async write(_userId, organizationId) {
-      const name = activeStore?.snapshot().memberships.find((m) => m.id === organizationId)?.name ?? '';
+      const name =
+        activeStore?.snapshot().memberships.find((m) => m.id === organizationId)?.name ?? '';
       await setOne<StoredActiveOrganization>(STORAGE_KEYS.ACTIVE_ORGANIZATION, {
         id: organizationId,
         name,
       });
     },
     async clear() {
-      await setOne(STORAGE_KEYS.ACTIVE_ORGANIZATION, null);
-      // Our own clear bumps the generation through the storage observer; it is not a racing change.
-      ladderClearedSelection = true;
+      // The package may read the held choice after membership validation has
+      // started. Do not clear a choice made while that validation was in flight.
+      if (validation.generation !== selectionGeneration) return;
+      const current = await readStoredSelection();
+      if (current?.id !== validation.heldId || validation.generation !== selectionGeneration)
+        return;
+      const pending = { heldId: current.id };
+      pendingOwnClears.push(pending);
+      try {
+        await setOne(STORAGE_KEYS.ACTIVE_ORGANIZATION, null);
+      } catch (err) {
+        const index = pendingOwnClears.indexOf(pending);
+        if (index !== -1) pendingOwnClears.splice(index, 1);
+        throw err;
+      }
     },
   };
   activeStore = createActiveOrganization({
@@ -211,7 +235,10 @@ function readFailure(message: string): Error {
   return new Error(
     message
       .replace(/^Your organizations could not be read: /, 'Could not read your organizations: ')
-      .replace(/^The account's organization read failed: /, 'Could not read your saved organization: '),
+      .replace(
+        /^The account's organization read failed: /,
+        'Could not read your saved organization: ',
+      ),
   );
 }
 
@@ -230,9 +257,10 @@ async function readStoredSelection(): Promise<StoredActiveOrganization | null> {
  */
 async function validateActiveOrganization(userId: string): Promise<MemberOrganization | null> {
   validatedSelection = null;
-  ladderClearedSelection = false;
-  let generation = selectionGeneration;
-  const store = getActiveStore();
+  const generation = selectionGeneration;
+  const held = await readStoredSelection();
+  if (selectionGeneration !== generation) return null;
+  const store = getActiveStore({ generation, heldId: held?.id ?? null });
   if (!store) return null;
   // The package's ladder: held (this device) → last active → start-up → first (oldest).
   const snap = await store.load();
@@ -241,10 +269,6 @@ async function validateActiveOrganization(userId: string): Promise<MemberOrganiz
     throw readFailure(snap.error ?? 'unknown error');
   }
   const currentUser = await getCurrentUser();
-  if (ladderClearedSelection) {
-    ladderClearedSelection = false;
-    generation = selectionGeneration;
-  }
   if (selectionGeneration !== generation || currentUser?.id !== userId) return null;
   if (selectionGeneration !== generation || !snap.organization) return null;
   const chosen: MemberOrganization = {
