@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "report_id": "ext-d-0217-workflow-provenance-independent-review-20261012",
+  "defect_id": "EXT-D-0217",
+  "reviewed_commit": "517e20566",
+  "reviewed_at": "2026-10-12",
+  "independent_reviewer": true,
+  "verdict_A_source_admission": {
+    "result": "PASS; NATIVE_UNVERIFIED",
+    "evidence": "The current hosted workflow bytes hash to d44330117a3d27c801e87cf461ff595ab70873b10c2929d924a4f904d14d4b09, matching REVIEWED_WORKFLOW_SHA256. Admission accepts the exact workflow and refuses removal of stale-profile-retry or appended unreviewed bytes. Existing route admission and provenance checks pass.",
+    "native_status": "No hosted dispatch, browser run, or native product verdict was performed."
+  },
+  "verdict_B_test_and_guard_quality": {
+    "result": "PASS",
+    "focused_command": "node --test scripts/test-hosted-acceptance-lanes.mjs",
+    "focused_result": "42 passed, 0 failed",
+    "combined_command": "node --test scripts/test-hosted-acceptance-lanes.mjs scripts/hosted-remote-admission.test.mjs",
+    "combined_result": "60 passed, 0 failed",
+    "diff_check": "git diff 517e20566^ 517e20566 --check passed",
+    "red_green_evidence": "The source-check evidence records the original 14 failures across 41 tests, then 15 failures across 42 after adding the current-workflow guard test and before the digest repair, followed by 42/42 passing after repair. It also records a metadata-only mutation failing before restoration. This review independently reran green suites; it did not recreate pre-fix red because the review was read-only.",
+    "scope": "Only the reviewed digest/comment, one exact-workflow tamper test, and evidence changed. No workflow permissions, phase/resource rules, artifact rules, or route guards changed."
+  },
+  "limits": [
+    "No hosted dispatch or native browser/product verification.",
+    "Pre-fix red results are recorded evidence, not independently rerun in this review."
+  ]
+}
