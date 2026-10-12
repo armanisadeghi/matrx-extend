@@ -17,12 +17,13 @@
   "sibling_census": "Repository search found one getSettings call in src/lib/capture-ladder/api.ts and no other missing use of this identifier.",
   "severity": "S2: required CI Typecheck is blocked; product runtime was not reached",
   "priority": "P0: unblock exact-source CI",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "capture_policy_import_fix",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38273033519",
     "Installed @ai-matrx/api@0.1.9 dist/media.d.ts declares getSettings(api, args?, options?); dist/media.js exports it.",
     "src/lib/capture-ladder/api.ts:258",
+    "Exact-source CI 38274298374 at 58f28a085: fresh install and Typecheck passed; Lint later failed on unrelated generated-operation import formatting.",
     "docs/stabilization/resource-journals/capture-policy-import-20261012.jsonl (compile admission refused: RESOURCE_PRESSURE_UNSAFE; no compile verdict)"
   ],
   "build_receipt": {
@@ -34,10 +35,10 @@
     "f6bdbdcdf1 (concurrent contributor added getSettings import on origin/main)",
     "5317aa929 (independent narrow repair attempt; source reconciled with the identical contributor import)"
   ],
-  "original_retest_runs": [],
-  "surrounding_case_runs": [],
-  "reviewer": null,
-  "next_action": "Use exact-source CI after the merged main push for the compile verdict; source-only verification does not establish browser or Store acceptance.",
+  "original_retest_runs": [38274298374],
+  "surrounding_case_runs": [38274298219],
+  "reviewer": "Independent source reviewer accepted the one-import repair; exact-source CI independently passed Typecheck.",
+  "next_action": "Retest Capture Save Source and policy settings in a guarded native browser once resource admission allows it; feature behavior and Store acceptance remain unverified.",
   "transition_history": [
     {
       "at": "2026-10-12T15:53:01Z",
@@ -56,6 +57,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "One-import source repair prepared; guarded compile and peer review remain pending."
+    },
+    {
+      "at": "2026-10-12T16:04:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Merged source 58f28a085 passed the original Typecheck reproduction in CI 38274298374; native surrounding behavior remains unverified."
     }
   ]
 }
