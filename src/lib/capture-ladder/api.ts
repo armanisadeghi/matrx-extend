@@ -23,12 +23,6 @@
 
 import { type ApiResult, STATUS_INVALID_BODY } from '@/lib/api/client';
 import { runOpAs } from '@/lib/api/matrx-api';
-import {
-  claimHandoff as claimHandoffOp,
-  dismissHandoff as dismissHandoffOp,
-  needsDrive,
-  recordResult,
-} from '@ai-matrx/api/media';
 import { type LandingNotice, LandingNoticeSchema } from '@/lib/api/routes/sources';
 import { getAccessToken } from '@/lib/auth/flow';
 import {
@@ -37,6 +31,13 @@ import {
   type HandoffStatus,
   handoffSchema,
 } from '@/lib/capture-ladder/types';
+import {
+  claimHandoff as claimHandoffOp,
+  dismissHandoff as dismissHandoffOp,
+  getSettings,
+  needsDrive,
+  recordResult,
+} from '@ai-matrx/api/media';
 
 /** The result door lands the page (and any images) before it answers. */
 const RESULT_POST_TIMEOUT_MS = 180_000;

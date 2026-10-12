@@ -1,0 +1,58 @@
+{
+  "id": "EXT-D-0210",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T07"],
+  "title": "Capture policy settings call omits generated operation import",
+  "surface": "Extension CI Typecheck",
+  "auth_mode": "guest/member/admin; compile is independent of sign-in",
+  "role_org_permissions": "CI source validation; runtime identity and organization are not exercised",
+  "preconditions": ["Check exact source b9223b735 with @ai-matrx/api@0.1.9 installed."],
+  "reproduction": [
+    "Run Typecheck on source b9223b735 in CI run 38273033519.",
+    "Observe TS2304 at src/lib/capture-ladder/api.ts:258: Cannot find name 'getSettings'."
+  ],
+  "expected": "Capture policy settings uses the exported media.getSettings operation and Typecheck passes.",
+  "actual": "The call references getSettings without importing it, so CI Typecheck fails before a build can complete.",
+  "cause": "The generated-operation migration changed the call to media.getSettings but omitted its named import.",
+  "sibling_census": "Repository search found one getSettings call in src/lib/capture-ladder/api.ts and no other missing use of this identifier.",
+  "severity": "S2: required CI Typecheck is blocked; product runtime was not reached",
+  "priority": "P0: unblock exact-source CI",
+  "state": "in-fix",
+  "owner": "capture_policy_import_fix",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38273033519",
+    "Installed @ai-matrx/api@0.1.9 dist/media.d.ts declares getSettings(api, args?, options?); dist/media.js exports it.",
+    "src/lib/capture-ladder/api.ts:258",
+    "docs/stabilization/resource-journals/capture-policy-import-20261012.jsonl (compile admission refused: RESOURCE_PRESSURE_UNSAFE; no compile verdict)"
+  ],
+  "build_receipt": {
+    "source_sha": "b9223b735fbd812a14a5fb1745439d77cd068cba",
+    "ci_run_id": 38273033519
+  },
+  "reproducibility_count": "CI Typecheck failed 1/1 at exact source b9223b735; local guarded compile was refused before launch by host resource policy.",
+  "fix_commits": [],
+  "original_retest_runs": [],
+  "surrounding_case_runs": [],
+  "reviewer": null,
+  "next_action": "Complete independent source review, then commit and push the one-import repair. Use exact-source CI for the compile verdict after local resource admission refusal; source-only verification does not establish browser or Store acceptance.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T15:53:01Z",
+      "from": null,
+      "to": "open",
+      "reason": "Exact-source CI run 38273033519 reported TS2304 for getSettings."
+    },
+    {
+      "at": "2026-10-12T15:53:01Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Published media operation exists with the used call signature; the local named import is absent."
+    },
+    {
+      "at": "2026-10-12T15:53:01Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "One-import source repair prepared; guarded compile and peer review remain pending."
+    }
+  ]
+}
