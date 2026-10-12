@@ -483,7 +483,7 @@ test('Settings member route refuses alternate lanes, cases, runners and unreview
     '-f',
     'acceptance_case=settings-account-popover-member',
     '-f',
-    'scrape_auth_mode=member',
+    'scrape_auth_mode=guest',
     '-f',
     'development_run_id=38205458398',
     '-f',
@@ -519,6 +519,59 @@ function settingsInput() {
     sourceSha: '2d52a79cfa5920f82b16a4287986c2fcf51795a5',
   };
 }
+
+test('EXT-D-0202 Settings member plan passes the real workflow provenance shell while member auth stays required', async () => {
+  const { planHostedSettingsMember } = await import('./hosted-remote-admission.mjs');
+  const { requireHostedAcceptanceCredential } = await import('./hosted-profile-route.mjs');
+  const workflow = readFileSync(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  const gate = workflow
+    .split('      - name: Require exactly one artifact provenance mode\n')[1]
+    ?.split('\n      - name:')[0];
+  assert.ok(gate, 'real workflow provenance step missing');
+  const script = gate
+    .split('        run: |\n')[1]
+    .split('\n')
+    .map((line) => (line.startsWith('          ') ? line.slice(10) : line))
+    .join('\n');
+  // Resolve real workflow input defaults and environment bindings; the plan owns overrides.
+  const inputs = {};
+  for (const [, name, body] of workflow.matchAll(/^ {6}(\w+):\n((?: {8,}\S.*\n)+)/gm))
+    inputs[name] = body.match(/^ {8}default: (.*)$/m)?.[1] ?? '';
+  const args = planHostedSettingsMember(settingsInput()).args;
+  for (let i = 0; i < args.length; i++)
+    if (args[i] === '-f') {
+      const [name, value] = args[++i].split('=');
+      inputs[name] = value;
+    }
+  const env = { ...process.env, RUNNER_ARCH: 'X64' };
+  for (const [, name, input] of gate.matchAll(/^ {10}([A-Z_]+): \$\{\{ inputs\.([a-z_]+) \}\}$/gm))
+    env[name] = inputs[input] ?? '';
+  // Only the host architecture is doubled; execute the production shell unchanged.
+  const run = (overrides) =>
+    spawnSync('bash', ['-euo', 'pipefail', '-c', `uname() { printf 'x86_64\\n'; }\n${script}`], {
+      encoding: 'utf8',
+      env: { ...env, ...overrides },
+    });
+  const accepted = run({});
+  assert.equal(accepted.status, 0, `Settings plan rejected by real workflow: ${accepted.stderr}`);
+  for (const overrides of [
+    { SCRAPE_AUTH_MODE: 'member' },
+    { DEVELOPMENT_ARTIFACT_ID: '' },
+    { PUBLISHED_STORE_CRX: 'true' },
+  ])
+    assert.notEqual(run(overrides).status, 0, 'invalid provenance passed the real workflow');
+  assert.equal(env.ACCEPTANCE_CASE, 'settings-account-popover-member');
+  assert.throws(
+    () =>
+      requireHostedAcceptanceCredential(env.ACCEPTANCE_CASE, {
+        MATRX_SCRAPE_AUTH_MODE: env.SCRAPE_AUTH_MODE,
+      }),
+    /hosted_member_link_secret_required/,
+  );
+});
 // Current native report schema; no person identifiers or credentials are represented.
 function settingsReport() {
   const signedIn = { accessTokenPresent: true, profilePresent: true, isAdmin: false };

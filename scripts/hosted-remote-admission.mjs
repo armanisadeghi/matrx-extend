@@ -329,11 +329,16 @@ export function planHostedSettingsMember({ lane, acceptanceCase, runnerLabel, ..
   if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_SETTINGS_MEMBER_RUNNER_REFUSED');
   if (!SHA.test(input.sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
   const plan = planHostedMemberData({ ...input, lane });
+  // Settings authenticates from acceptance_case; this generic Scrape field stays guest.
   return {
     ...plan,
     args: plan.args
       .map((arg) =>
-        arg === 'acceptance_case=member-data' ? `acceptance_case=${acceptanceCase}` : arg,
+        arg === 'acceptance_case=member-data'
+          ? `acceptance_case=${acceptanceCase}`
+          : arg === 'scrape_auth_mode=member'
+            ? 'scrape_auth_mode=guest'
+            : arg,
       )
       .filter(
         (arg, index, args) =>
