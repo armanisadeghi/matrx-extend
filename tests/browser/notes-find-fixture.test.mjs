@@ -5,11 +5,16 @@ import { join } from 'node:path';
 import test from 'node:test';
 import {
   createNotesFindLedger,
+  planNotesFindHome,
   recordNotesFindCreated,
   recordNotesFindDeleted,
+  recordNotesFindHomeArchived,
   recordNotesFindHomeAssigned,
+  recordNotesFindHomeCreated,
   recordNotesFindInsertBeforeValidation,
+  requireNotesFindHomeWrite,
   validateNotesFindLedger,
+  writeNotesFindLedger,
 } from './notes-find-fixture.mjs';
 
 const ids = [
@@ -145,5 +150,75 @@ test('T02 home assignment only updates a live fixture owned by the ledger', () =
   assert.throws(
     () => recordNotesFindHomeAssigned(value, ids[2], homes[1]),
     /notes_find_home_scope_id_duplicate/,
+  );
+});
+
+test('T02 run-owned homes remain recoverable from names before IDs and archive only by recorded IDs', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'notes-find-homes-'));
+  const path = join(directory, 'fixture-ledger.json');
+  const value = createNotesFindLedger({
+    runId: 'notes-t02-owned-homes',
+    organizationId: '4b190b81-7ea2-40e1-8d6d-87fa4b520dfc',
+    role: 'member',
+    sourceSha: 'a'.repeat(40),
+    treeSha256: 'b'.repeat(64),
+  });
+  try {
+    planNotesFindHome(value, 'Harbor Dental Intake a1b2c3d4');
+    await writeNotesFindLedger(path, value);
+    const planned = JSON.parse(await readFile(path, 'utf8'));
+    assert.deepEqual(planned.owned_homes, [
+      {
+        name: 'Harbor Dental Intake a1b2c3d4',
+        scope_id: null,
+        status: 'planned',
+      },
+    ]);
+    recordNotesFindHomeCreated(value, planned.owned_homes[0].name, homes[0]);
+    planNotesFindHome(value, 'Harbor Dental Follow-up a1b2c3d4');
+    recordNotesFindHomeCreated(value, value.owned_homes[1].name, homes[1]);
+    assert.throws(
+      () => recordNotesFindHomeArchived(value, fourthHome),
+      /notes_find_home_archive_foreign_id/,
+    );
+    assert.throws(
+      () => recordNotesFindHomeCreated(value, value.owned_homes[0].name, fourthHome),
+      /notes_find_home_not_planned/,
+    );
+    recordNotesFindHomeArchived(value, homes[0]);
+    recordNotesFindHomeArchived(value, homes[1]);
+    assert.ok(value.owned_homes.every((home) => home.status === 'archived_confirmed'));
+    assert.equal(validateNotesFindLedger(value), value);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+test('T02 accepts real scope-write envelopes and rejects bare or foreign rows', () => {
+  const organizationId = '4b190b81-7ea2-40e1-8d6d-87fa4b520dfc';
+  const cases = [
+    { id: homes[0], name: 'Harbor Dental Intake a1b2c3d4' },
+    { id: homes[1], name: 'Harbor Dental Follow-up a1b2c3d4' },
+  ];
+  for (const row of cases) {
+    const answer = { ok: true, row: { ...row, organization_id: organizationId }, store: {} };
+    assert.equal(requireNotesFindHomeWrite(answer, organizationId, row.name), row.id);
+    assert.throws(
+      () => requireNotesFindHomeWrite(answer.row, organizationId, row.name),
+      /notes_find_created_home_response_invalid/,
+    );
+    assert.throws(
+      () => requireNotesFindHomeWrite(answer, 'e25a8c80-2f47-4a5f-b696-5bf39112110f', row.name),
+      /notes_find_created_home_response_invalid/,
+    );
+  }
+  assert.throws(
+    () =>
+      requireNotesFindHomeWrite(
+        { ok: false, row: { ...cases[0], organization_id: organizationId } },
+        organizationId,
+        cases[0].name,
+      ),
+    /notes_find_created_home_response_invalid/,
   );
 });

@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "run_id": 38204499265,
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "auth_mode": "guest",
+  "status": "zero_credit_preflight_refusal",
+  "coverage_status": "unchanged",
+  "hosted_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38204499265",
+  "workflow": {
+    "path": ".github/workflows/hosted-guest-acceptance.yml",
+    "event": "workflow_dispatch",
+    "branch": "main",
+    "head_sha": "6692ecfba473e0b3cbcbad33ee3927208bd63024",
+    "attempt": 1,
+    "conclusion": "failure"
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "source_sha": "6692ecfba473e0b3cbcbad33ee3927208bd63024",
+    "ci_run_id": 38203968859,
+    "ci_run_conclusion": "success",
+    "development_artifact_id": 11726961611,
+    "development_artifact_digest": "sha256:d1350b742721c0326786c09804a15a83afa33368845e3d08bd602a349acd79ba"
+  },
+  "hosted_artifact": {
+    "id": 11727121592,
+    "name": "hosted-guest-38204499265-1",
+    "digest": "sha256:ba4924a08aa0491283020e62ed68fa68b2fca652aa58d50ff334144c9c40d2c8",
+    "archive_entries": [
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-package-38204499265-1.jsonl",
+      "matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-browser-38204499265-1.jsonl"
+    ]
+  },
+  "observed": [
+    "The product artifact and source provenance were accepted before browser setup.",
+    "Package setup completed with a valid resource final.",
+    "The browser resource guard refused before Chromium setup and before the selected acceptance case began.",
+    "No native acceptance report, guest resource journal, final SEO or Schema screenshot, or pane DOM assertion was produced."
+  ],
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": false,
+      "resource_invalid": false,
+      "exit_code": 2,
+      "decision": "refused",
+      "code": "RESOURCE_MEASUREMENT_INVALID:cpu-busy"
+    },
+    "guest": "not_started"
+  },
+  "verification": {
+    "command": "node scripts/hosted-remote-admission.mjs verify-scrape --run-id 38204499265 --attempt 1 --source-sha 6692ecfba473e0b3cbcbad33ee3927208bd63024 --artifact-zip -",
+    "result": "HOSTED_REMOTE_REFUSED HOSTED_RUN_NOT_SUCCESSFUL",
+    "product_credit": "none"
+  },
+  "diagnosis": {
+    "stage": "guarded browser preflight sample",
+    "meaning": "The strict iostat parser rejected the sample format before applying CPU thresholds; this is not a high-CPU measurement.",
+    "possible_parser_branches": [
+      "header mismatch",
+      "sample row count other than two",
+      "sample row format mismatch"
+    ],
+    "specific_branch": "undetermined because raw iostat output is intentionally not retained"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-scrape-t08/run38204499265/resource-journals/hosted-package-38204499265-1.sanitized.jsonl",
+    "docs/stabilization/evidence/guest-scrape-t08/run38204499265/resource-journals/hosted-browser-38204499265-1.sanitized.jsonl"
+  ],
+  "limits": [
+    "No product behavior was exercised and no product defect is established.",
+    "T08 and the guest Scrape feature-role status remain unchanged; no visual or native result is available.",
+    "The hosted run and artifact provenance are recorded; verify-scrape intentionally refuses unsuccessful runs."
+  ]
+}

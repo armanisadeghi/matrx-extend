@@ -1,0 +1,37 @@
+{
+  "task_id": "seo-stacked-notice-run38196205195",
+  "lane": "B",
+  "status": "UNVERIFIED_NATIVE_FAILURE_BOUNDARY",
+  "source_sha": "4b35005c2c5d6870324522aa8058dd4060f303d5",
+  "workflow_source_sha": "473f540773556e3901d2e8009b358ad7c58cb2d2",
+  "case_id": "EXT-F-1008-T02",
+  "scope": "guest SEO notice-stacked at native 360px",
+  "summary": "The guarded hosted run was admitted and completed its resource phases, but the native case exited 1 at stacked_notice_native_360. The report records no passing target and does not retain the assertion detail. This is unverified behavior, not a product-fail verdict.",
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38196205195",
+  "artifact": {
+    "id": 11723139305,
+    "name": "hosted-guest-38196205195-1",
+    "sha256": "4b0dfa2141cf1213f329837fe8e807929b8b87ead35691dcb6da3ac453a8e079"
+  },
+  "admission": {
+    "normal_plan_helper": "PASS",
+    "normal_dispatch_helper": "PASS",
+    "normal_verify_helper": "REFUSED HOSTED_RUN_NOT_SUCCESSFUL"
+  },
+  "native": {
+    "failure_stage": "stacked_notice_native_360",
+    "last_safe_stage": "owned_guest_panel_ready",
+    "last_safe_observable": { "nativePanel": true },
+    "target_count": 0,
+    "assertion_detail_retained": false,
+    "fixture_cleanup": "unknown"
+  },
+  "resources": {
+    "hosted-package-38196205195-1": "valid",
+    "hosted-browser-38196205195-1": "valid",
+    "hosted-guest-38196205195-1": "child_failed; resourceInvalid=false; exitCode=1"
+  },
+  "evidence_dir": "docs/stabilization/evidence/guest-seo-stacked-notice/run38196205195",
+  "product_credit": "none; wait for independent review and a changed diagnostic hypothesis before any further native run",
+  "next_action": "Fresh independent peer review of this bounded failure package; inspect the exact native diagnostic gap without retrying the run."
+}

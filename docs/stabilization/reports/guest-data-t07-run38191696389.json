@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "task_id": "EXT-F-2005-T07-run38191696389",
+  "lane": "B",
+  "status": "READY_FOR_INDEPENDENT_NATIVE_REVIEW",
+  "feature_ids": [
+    "EXT-F-2005"
+  ],
+  "defect_ids": [],
+  "summary": "Guest T07 retest reached product interactions on the exact v0.2.509 CI development artifact. C18, C19, C22 and C21 assertions passed; all three resource finals are valid. No T07 credit assigned before fresh independent review.",
+  "changed_files": [
+    "docs/stabilization/evidence/guest-data-t07/run38191696389/",
+    "docs/stabilization/runs/guest-data-t07-run38191696389.json"
+  ],
+  "commit_shas": [],
+  "verification": [
+    {
+      "case_id": "EXT-F-2005-T07",
+      "run_id": 38191696389,
+      "verdict": "observed_pass_pending_independent_native_review",
+      "evidence": "docs/stabilization/evidence/guest-data-t07/run38191696389/receipt.sanitized.json"
+    }
+  ],
+  "limitations": [
+    "No member/admin or Store evidence.",
+    "No backend persistence query/cross-target write audit.",
+    "Screenshots omit picker states.",
+    "Cleanup absence not independently verified."
+  ],
+  "next_action": "Fresh peer reviews exact driver source, native assertions, three sanitized resource journals, and screenshot limitations; keep T07 partial until adjudication."
+}

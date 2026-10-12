@@ -34,11 +34,11 @@ export function filterNotes<T extends NoteListItem>(notes: T[], filter: NoteFilt
 
 /** Display label for a note's home, or null while homes are still loading. */
 export function homeLabelFor(
-  homes: ReadonlyArray<{ id: string; label: string }>,
+  homes: ReadonlyArray<{ id: string; scope_id?: string | null; label: string }>,
   homeScopeId: string | null | undefined,
 ): string | null {
   if (!homeScopeId) return null;
-  return homes.find((h) => h.id === homeScopeId)?.label ?? null;
+  return homes.find((h) => h.id === homeScopeId || h.scope_id === homeScopeId)?.label ?? null;
 }
 
 /** Homes whose label contains `query` (case-insensitive); empty query = all. */

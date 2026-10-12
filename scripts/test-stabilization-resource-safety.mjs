@@ -148,6 +148,55 @@ test('CPU sampler uses the second interval and refuses a missing reading', async
   );
 });
 
+// Hosted resource admission must identify a malformed iostat shape without
+// recording command output. These inputs exercise the real parser, not iostat.
+const cpuHeader = '      cpu    load average\n us sy id   1m   5m   15m';
+const cpuBootRow = '  9  4 87  2.61 2.60 2.84';
+const cpuIntervalRow = ' 12  7 80  2.61 2.60 2.84';
+
+test('CPU sampler identifies malformed headers with a fixed refusal code', async () => {
+  for (const header of [
+    '',
+    cpuHeader.replace('cpu', 'private-header-probe'),
+    cpuHeader.replace('us sy id', 'us id sy'),
+    cpuHeader.replace('15m', 'private-column-probe'),
+  ]) {
+    await assert.rejects(
+      cpuBusyFraction(async () => [header, cpuBootRow, cpuIntervalRow].join('\n')),
+      { message: 'RESOURCE_MEASUREMENT_INVALID:cpu-busy:header' },
+    );
+  }
+});
+
+test('CPU sampler identifies missing or extra samples with a fixed refusal code', async () => {
+  for (const rows of [[], [cpuBootRow], [cpuBootRow, cpuIntervalRow, cpuIntervalRow]]) {
+    await assert.rejects(
+      cpuBusyFraction(async () => [cpuHeader, ...rows].join('\n')),
+      { message: 'RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count' },
+    );
+  }
+});
+
+test('CPU sampler identifies malformed boot or interval rows with a fixed refusal code', async () => {
+  for (const malformed of [
+    'private-row-probe',
+    ' 12  7 80  2.61 2.60',
+    ' 12  7 80  2.61 2.60 2.84 extra',
+    ' 12  7 80  NaN 2.60 2.84',
+    ' 12  7 -1  2.61 2.60 2.84',
+  ]) {
+    for (const rows of [
+      [malformed, cpuIntervalRow],
+      [cpuBootRow, malformed],
+    ]) {
+      await assert.rejects(
+        cpuBusyFraction(async () => [cpuHeader, ...rows].join('\n')),
+        { message: 'RESOURCE_MEASUREMENT_INVALID:cpu-busy:row-format' },
+      );
+    }
+  }
+});
+
 test('unsafe CPU attribution keeps only bounded numeric process identity and executable basenames', async () => {
   const raw = [
     '  413  201  72.5 /private/credential=secret/Chromium',

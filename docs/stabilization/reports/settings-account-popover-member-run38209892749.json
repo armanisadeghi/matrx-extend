@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-account-popover-member-run38209892749",
+  "recorded_at": "2026-10-12T05:55:00Z",
+  "status": "precondition_failure",
+  "scope": "One guarded hosted lane A ordinary-member Settings account-popover T20/T23/T26 attempt. No product or resource execution occurred.",
+  "run": {
+    "id": 38209892749,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38209892749",
+    "conclusion": "failure",
+    "workflow_head_sha": "5b54decfcc4ff93bccc87590001be560e1da5bf2",
+    "acceptance_case": "settings-account-popover-member",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "failed_step": "Require exactly one artifact provenance mode",
+    "failed_step_exit_code": 1,
+    "artifact_count": 0
+  },
+  "selected_development_artifact": {
+    "source_sha": "5b54decfcc4ff93bccc87590001be560e1da5bf2",
+    "ci_run_id": 38207220381,
+    "ci_run_attempt": 1,
+    "artifact_id": 11727649928,
+    "artifact_digest": "sha256:d200a8d1adcc880b0ce628fdc37f008d04409423b33a7d6a6e7bb4ece08f972d",
+    "artifact_expired": false,
+    "mandatory_hosted_remote_admission_routes_step": "success",
+    "imported_or_exercised": false
+  },
+  "admission": {
+    "normal_plan_helper": "pass",
+    "normal_dispatch_helper": "pass",
+    "source_and_checkout": "Exact local/remote/selected source and clean tree verified by normal helper, including final recheck.",
+    "strict_verifier": "HOSTED_REMOTE_REFUSED HOSTED_RUN_NOT_SUCCESSFUL"
+  },
+  "failure_boundary": "The hosted run failed in provenance preflight before checkout, credential preflight, package/browser/acceptance resource admission, artifact import or native assertions. No native report or resource journals were produced.",
+  "root_cause": "The new Settings plan inherited scrape_auth_mode=member from the member-Data planner. The actual workflow provenance shell requires the generic Scrape auth field to be guest for Settings cases. Settings member authentication is selected independently by acceptance_case=settings-account-popover-member. The failed step log records that exact case, generic auth field member, valid development IDs, lifecycle member-data scope and narrow width; Intel platform validation passed before the generic auth branch exited 1.",
+  "defect_id": "EXT-D-0202",
+  "resource_finals": {
+    "package": "not_started",
+    "browser": "not_started",
+    "acceptance": "not_started"
+  },
+  "product_verdict": {
+    "cases": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+    "status": "unverified",
+    "credit": 0
+  },
+  "cleanup": {
+    "fresh_one_use_link": "Minted through the existing authorized helper after its nonadmin identity dry run passed; staged through stdin only.",
+    "local_private_link_removed_before_dispatch": true,
+    "temporary_github_secret_deleted_at_terminal": true,
+    "temporary_github_secret_absence_verified": true,
+    "local_private_link_absence_verified": true,
+    "temporary_identity_created": false,
+    "canonical_private_recovery_identity": "Existing canonical input was read by the helper; it was neither copied nor changed."
+  },
+  "next": "Repair the narrow planner mismatch with a forcing test executing the real workflow provenance shell; obtain fresh independent source review, green CI and exact-source artifact before any fresh credential or dispatch. No product credit before native resource-valid evidence and independent review."
+}

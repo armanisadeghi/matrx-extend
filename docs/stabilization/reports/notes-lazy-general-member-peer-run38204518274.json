@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_native_peer_review",
+  "reviewer": "independent peer reviewer",
+  "reviewed_at": "2026-10-12",
+  "feature_id": "EXT-F-2006",
+  "case_id": "EXT-D-0201-picker",
+  "hosted_run_id": 38204518274,
+  "source_provenance": {
+    "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38204518274",
+    "workflow_checkout_sha": "6692ecfba473e0b3cbcbad33ee3927208bd63024",
+    "product_artifact_source_sha": "6692ecfba473e0b3cbcbad33ee3927208bd63024",
+    "product_artifact_run_id": 38203968859,
+    "product_artifact_id": 11726961611,
+    "product_artifact_digest": "sha256:d1350b742721c0326786c09804a15a83afa33368845e3d08bd602a349acd79ba",
+    "product_version": "0.2.509",
+    "run_conclusion": "success",
+    "strict_verifier_valid": true,
+    "runtime_claim": "Frozen unpublished development artifact v0.2.509 at exact source 6692ecfba473e0b3cbcbad33ee3927208bd63024 only."
+  },
+  "verdicts": {
+    "A_behavior_and_evidence": "PASS_BOUNDED",
+    "B_harness_and_provenance": "PASS"
+  },
+  "behavior_evidence": {
+    "identity_and_scope": "Native report records a signed-in non-admin member in the selected organization. Canonical General remained nullable and its scope remained absent before and after the picker interaction.",
+    "picker": "Native assertions report the synthetic General visible, selected as the home filter, and stable. This supports only the bounded lazy-General picker behavior.",
+    "writes": "Within the owned panel scope, the native run recorded zero unexpected write attempts; the read-only transport blocks unexpected writes before dispatch. The review did not perform a global database-write audit.",
+    "screenshots": "Archived screenshots show initial guest Chat and the controlled target page, not the signed-in Notes picker. They do not visually corroborate picker behavior; the native assertions are the evidence for that behavior."
+  },
+  "resource_finals": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid"
+  },
+  "provenance_and_cleanup": {
+    "strict_verification": "Passed with exit code 0 for hosted run 38204518274 attempt 1 and exact development run/artifact/source binding.",
+    "cleanup_claim": "Execution-agent record says the temporary GitHub secret was deleted at terminal and its name was absent on readback; local identity and one-use link are recorded absent.",
+    "independent_cleanup_limit": "Secret deletion is not independently demonstrated in the archived sanitized evidence."
+  },
+  "credit_limits": {
+    "EXT_D_0201": "Remains fixed/open. This picker subtarget is bounded evidence only and does not establish the original full T02 or defect closure.",
+    "T02_member": "Partial for the lazy-General picker subtarget only; note move/persistence, reload, full search/filter/select/open/cleanup flow and other T02 steps remain unverified.",
+    "admin_and_other_modes": "Unverified. No current-main runtime, release, or Store credit."
+  },
+  "verification": {
+    "artifact_identity": "Run record and strict verifier bind hosted run 38204518274 to exact source 6692ecfba473e0b3cbcbad33ee3927208bd63024, CI 38203968859, artifact 11726961611, digest sha256:d1350b742721c0326786c09804a15a83afa33368845e3d08bd602a349acd79ba, v0.2.509.",
+    "resource_journals": "All three retained resource finals are valid.",
+    "review_scope": "Independent review of the frozen run record, sanitized native assertions, sanitized resource finals and artifact provenance. The archived screenshots omit Notes picker states. No browser run, global database-write audit, or product-code changes were performed.",
+    "tests_run": false
+  },
+  "files_reviewed": [
+    "docs/stabilization/runs/notes-lazy-general-member-run38204518274.json",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/native-report.sanitized.json",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/resource-journals/hosted-package-38204518274-1.jsonl",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/resource-journals/hosted-browser-38204518274-1.jsonl",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/resource-journals/hosted-guest-38204518274-1.jsonl"
+  ],
+  "questions": []
+}

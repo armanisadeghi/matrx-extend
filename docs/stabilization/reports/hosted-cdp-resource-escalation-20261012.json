@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "status": "DONE_WITH_CONCERNS",
+  "classification": "Environment failures; CDP root cause unconfirmed; zero product acceptance credit",
+  "runs": [
+    {
+      "run_id": 38185461370,
+      "boundary": "owned_cdp_open_timeout",
+      "elapsed_ms": 14437,
+      "devtools_listening_stderr_flag": true,
+      "cpu_busy_samples": [0.92, 0.32, 1],
+      "acceptance_resource_decision": "invalid"
+    },
+    {
+      "run_id": 38187979718,
+      "boundary": "owned_cdp_open_timeout",
+      "elapsed_ms": 15687,
+      "devtools_listening_stderr_flag": false,
+      "cpu_busy_samples": [1],
+      "acceptance_resource_decision": "invalid"
+    },
+    {
+      "run_id": 38188627893,
+      "boundary": "notes_find_three_home_fixture_unavailable",
+      "cdp_connected_ms": 1675,
+      "longest_timer_delay_ms": 10,
+      "cpu_pending_at": "2026-10-12T00:42:34.291Z",
+      "cpu_busy_fraction": 0.91,
+      "member_authenticated": true,
+      "notes_get_status": 200,
+      "notes_created": 0,
+      "acceptance_resource_decision": "invalid"
+    }
+  ],
+  "findings": [
+    "All three package and browser preparation permits finished valid; all three acceptance permits finished invalid with exit 3.",
+    "Open timeout follows successful endpoint parsing, ownership verification and WebSocket construction. Missing stderr flag does not establish absent CDP readiness.",
+    "Diagnostic CDP connection succeeded about 14 seconds before CPU pending. Fixture failure is separate; its child exit 1 while CPU confirmation remained pending made the resource verdict invalid.",
+    "The successful diagnostic disproves a universally broken connector but does not identify intermittent failure cause.",
+    "Configured startup deadline 8000ms governs endpoint polling. Socket open defaults to 5000ms and close cleanup can add another 5000ms; elapsed 14-15 seconds does not violate a single aggregate 8-second deadline.",
+    "Process CPU snapshots are not interval attribution; new or exited processes cannot be assigned exact interval CPU."
+  ],
+  "policy_review": {
+    "maximum_busy_fraction": 0.75,
+    "high_load_busy_fraction": 0.6,
+    "high_load_per_cpu": 0.75,
+    "unsafe_samples_to_stop": 2,
+    "healthy_samples_to_resume": 3,
+    "episode_limit_seconds": 75,
+    "recommendation": "Preserve all resource thresholds, ownership checks and timeouts."
+  },
+  "recommended_experiment": {
+    "action": "Retain notes-cdp diagnostics on the already-planned fixture-fixed Notes run; fixture provisioning is the sole functional change. No separate broad diagnostic-only rerun.",
+    "prerequisite": "Fresh fixture-source CI artifact and coordinated hosted lane ownership.",
+    "falsifiers": [
+      {
+        "hypothesis": "Real WebSocket client handshake stalls",
+        "prediction": "Independent HTTP 101 probe while real socket times out and timer drift stays low supports this boundary; both handshakes stalled contradicts client-only attribution."
+      },
+      {
+        "hypothesis": "Chromium or loopback handshake readiness stalls",
+        "prediction": "Both handshakes stall while timer drift stays low supports this boundary; probe HTTP 101 contradicts a universal handshake-server stall."
+      },
+      {
+        "hypothesis": "Node scheduling starvation delays connector",
+        "prediction": "Large timer drift overlapping failure supports this hypothesis; low timer drift during failed open contradicts material Node event-loop starvation."
+      }
+    ],
+    "credit_rule": "Any diagnostic or resource-invalid run remains zero product credit; full Notes assertions and valid final resource decision are required."
+  },
+  "evidence": [
+    "Live GitHub logs for runs 38185461370, 38187979718 and 38188627893",
+    "docs/stabilization/evidence/notes-find-member/run38188627893/native-receipt.json",
+    "docs/stabilization/evidence/notes-find-member/run38188627893/resource-events.json",
+    "docs/stabilization/evidence/notes-find-member/run38188627893/startup-diagnostics.json",
+    "docs/stabilization/resource-policy.json",
+    "scripts/stabilization-resource.mjs",
+    "scripts/stabilization-resource-cpu.mjs",
+    "tests/browser/vault-owned-cdp.cjs",
+    "tests/browser/native-cdp-startup-diagnostic.mjs"
+  ],
+  "source_changes": [],
+  "new_runs": [],
+  "open_questions": [
+    "Failed CDP interval with phase diagnostics remains unavailable.",
+    "Whether CPU episodes recover after fixture repair is unverified.",
+    "Fresh artifact full Notes acceptance remains unverified."
+  ],
+  "sanitization": "No credentials, endpoint addresses, network ports, account identities or raw payloads retained."
+}

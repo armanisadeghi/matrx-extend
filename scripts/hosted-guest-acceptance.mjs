@@ -332,6 +332,7 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'scrape-save-member' ||
     acceptanceCase === 'tab-groups-member' ||
     acceptanceCase === 'notes-find-member' ||
+    acceptanceCase === 'notes-lazy-general-member' ||
     acceptanceCase === 'native-ai-member-probe'
   )
     assert.equal(kind, 'ci_development_test', 'This acceptance requires CI development receipt');
@@ -372,7 +373,8 @@ async function run(prepared, artifactMode) {
     );
   }
   const scrapeSaveCiReceiptPath =
-    acceptanceCase === 'scrape-save-member'
+    acceptanceCase === 'scrape-save-member' ||
+    (acceptanceCase === 'guest-scrape-development' && scrapeRoute?.scope === 'seo-schema-empty')
       ? join(
           dirname(relocatedReceipt),
           `scrape-save-ci-receipt-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}.json`,
@@ -397,6 +399,7 @@ async function run(prepared, artifactMode) {
           runId: evidence.runId,
           artifactId: evidence.artifactId,
           githubArtifactDigest: evidence.githubArtifactDigest,
+          runAttempt: evidence.runAttempt,
           version: evidence.version,
           treeSha256: evidence.treeSha256,
         },
@@ -443,7 +446,7 @@ async function run(prepared, artifactMode) {
         })
       : null;
   const notesFindRoute =
-    acceptanceCase === 'notes-find-member'
+    acceptanceCase === 'notes-find-member' || acceptanceCase === 'notes-lazy-general-member'
       ? hostedNotesFindRoute(acceptanceCase, prepared, process.env.MATRX_HOSTED_ACCEPTANCE_LANE)
       : null;
   const nativeAiProbeRoute =
@@ -505,6 +508,7 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'visibility-census-member' ||
     acceptanceCase === 'tab-groups-member' ||
     acceptanceCase === 'notes-find-member' ||
+    acceptanceCase === 'notes-lazy-general-member' ||
     acceptanceCase === 'native-ai-member-probe';
   let adminCredentialsCreated = false;
   if (
@@ -614,6 +618,7 @@ async function run(prepared, artifactMode) {
     acceptanceCase === 'visibility-census-member' ||
     acceptanceCase === 'tab-groups-member' ||
     acceptanceCase === 'notes-find-member' ||
+    acceptanceCase === 'notes-lazy-general-member' ||
     acceptanceCase === 'native-ai-member-probe'
       ? { MATRX_REVIEWER_MAGIC_LINK_FILE: memberLinkPath }
       : {}),
@@ -748,6 +753,7 @@ async function run(prepared, artifactMode) {
       acceptanceCase === 'desktop-settings-member' ||
       acceptanceCase === 'tab-groups-member' ||
       acceptanceCase === 'notes-find-member' ||
+      acceptanceCase === 'notes-lazy-general-member' ||
       acceptanceCase === 'native-ai-member-probe'
     )
       await unlink(memberLinkPath);

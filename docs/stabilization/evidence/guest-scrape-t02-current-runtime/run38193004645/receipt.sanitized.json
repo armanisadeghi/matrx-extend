@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_run_id": 38193004645,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38193004645",
+  "workflow_head_sha": "b68ba9eb597c88cbbed143fdf7ddf529f677eb58",
+  "workflow_event": "workflow_dispatch",
+  "workflow_started_at_utc": "2026-10-12T01:43:41Z",
+  "workflow_finished_at_utc": "2026-10-12T01:50:10Z",
+  "runner": {
+    "lane": "B",
+    "label": "macos-15",
+    "identity": "GitHub Actions 1000104166",
+    "profile": "isolated disposable hosted guest profile"
+  },
+  "inputs": {
+    "acceptance_case": "scrape-error-recovery-guest",
+    "scrape_auth_mode": "guest",
+    "development_run_id": 38191947214,
+    "development_artifact_id": 11721887256
+  },
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "version": "0.2.509",
+    "source_sha": "b92d4e2fa9e7861b228e3625fe258938253882fe",
+    "source_tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "ci_run_id": 38191947214,
+    "artifact_id": 11721887256,
+    "artifact_digest": "sha256:ee70575a63c4aa553cb5ef45faf1401027cc2a1ace93c0d6aaf3812eed501626"
+  },
+  "hosted_result_artifact": {
+    "artifact_id": 11722192868,
+    "name": "hosted-guest-38193004645-1",
+    "digest": "sha256:8c3221484717fa6c95ad1ed51c692bcbb1b5c528b770a60671a2361c0a660545",
+    "expired": false
+  },
+  "case": {
+    "feature_id": "EXT-F-1007",
+    "case_id": "EXT-F-1007-T02",
+    "native_report_case_id": "EXT-F-1007-T14",
+    "verdict": "bounded_subtarget_pending_independent_review",
+    "assertions": [
+      "Guest deep capture hit an effective host-permission denial before capture; error and permission message displayed; Try again present; Reload page absent.",
+      "Lazy checklist marker was absent before retry.",
+      "After granting site access, Try again cleared the error and exposed the lazy marker; deep selection was preserved.",
+      "A second denial displayed the error; Dismiss cleared it.",
+      "Cleanup restored global host access to ON_ALL_SITES and restored the fixture origin to unrestricted and not explicitly permitted."
+    ],
+    "unverified": [
+      "Visible scrolling progress",
+      "T14 Reload page recovery",
+      "full T02/T14",
+      "default Chrome/Store",
+      "member/admin"
+    ],
+    "write_scope": "Guest-only synthetic loopback fixture; no sign-in, save, delete, or org-scoped operation was invoked. No backend request audit was retained, so this is not a general zero-network-write claim."
+  },
+  "resource_finals": {
+    "package": {
+      "run_id": "hosted-package-38193004645-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": "resource-journals/hosted-package-38193004645-1.jsonl"
+    },
+    "browser": {
+      "run_id": "hosted-browser-38193004645-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": "resource-journals/hosted-browser-38193004645-1.jsonl"
+    },
+    "guest": {
+      "run_id": "hosted-guest-38193004645-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "journal": "resource-journals/hosted-guest-38193004645-1.jsonl"
+    }
+  },
+  "cleanup": "Native report confirms host access returned to ON_ALL_SITES and owned fixture origin to unrestricted/not permitted; workflow job completed successfully and uploaded its result artifact.",
+  "screenshots": {
+    "sidepanel-post-run.png": "Shows generic guest Chat panel after execution; does not capture denial/retry assertions.",
+    "target-after-open.png": "Shows owned synthetic article and extension-open response; does not capture denial/retry assertions."
+  },
+  "limitations": [
+    "The report status is partial because driver deliberately records T14 Reload page as unverified.",
+    "The native screenshots are post-run environment captures, not direct evidence of the denial/retry/dismiss state sequence.",
+    "No signed-in account or database write path was exercised; backend network traffic was not independently audited.",
+    "CI build source b92d4e2fa and workflow checkout b68ba9eb differ; the relevant Scrape driver, route, and hosted workflow files are identical between those commits."
+  ],
+  "evidence": {
+    "native_report": "native-report.sanitized.json",
+    "resource_journals": [
+      "resource-journals/hosted-package-38193004645-1.jsonl",
+      "resource-journals/hosted-browser-38193004645-1.jsonl",
+      "resource-journals/hosted-guest-38193004645-1.jsonl"
+    ],
+    "screenshots": ["screenshots/sidepanel-post-run.png", "screenshots/target-after-open.png"]
+  }
+}

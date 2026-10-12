@@ -1,0 +1,62 @@
+{
+  "task_id": "seo-stacked-notice-run38198573143",
+  "lane": "B",
+  "status": "UNVERIFIED_RESOURCE_ADMISSION_REFUSED",
+  "source_sha": "aee5accfe3c06590d0fa29e33ff3c7eeefaa6f17",
+  "workflow_source_sha": "aee5accfe3c06590d0fa29e33ff3c7eeefaa6f17",
+  "case_id": "EXT-F-1008-T02",
+  "scope": "guest SEO notice-stacked at native 360px",
+  "summary": "The guarded hosted run passed checkout, exact-source artifact provenance, package admission, browser-driver preparation, and browser readiness. The full-Chromium browser resource phase refused admission on an invalid CPU-busy measurement. The native acceptance and fixture were not reached. This is resource admission refusal, not product failure, with zero product credit.",
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38198573143",
+  "product_artifact": {
+    "ci_run_id": "38198075154",
+    "artifact_id": "11723957801",
+    "artifact_name": "matrx-extend-development-test-aee5accfe3c06590d0fa29e33ff3c7eeefaa6f17-38198075154-1",
+    "sha256": "ee291310af1d2e9d56f4c715c0de634854e00592d403df5e3e7359078a9bddda",
+    "source_sha": "aee5accfe3c06590d0fa29e33ff3c7eeefaa6f17"
+  },
+  "hosted_artifact": {
+    "id": "11724033093",
+    "name": "hosted-guest-38198573143-1",
+    "size_bytes": 1277,
+    "contents": [
+      "package resource journal",
+      "browser resource journal"
+    ],
+    "native_report": "absent",
+    "screenshots": "absent"
+  },
+  "admission": {
+    "normal_plan_helper": "PASS",
+    "normal_dispatch_helper": "PASS",
+    "normal_verify_helper": "REFUSED HOSTED_RUN_NOT_SUCCESSFUL"
+  },
+  "native": {
+    "fixture_execution": "not reached",
+    "last_completed_stage": "Wait for measured browser readiness",
+    "failure_stage": "Prepare full Chromium under a fresh owned permit",
+    "native_assertions": "not run",
+    "exact_target": "not observed",
+    "fixture_cleanup": "not applicable; no fixture or native page was opened"
+  },
+  "resources": {
+    "hosted-package-38198573143-1": {
+      "final": "valid",
+      "evidence": "evidence/guest-seo-stacked-notice/run38198573143/resource-journals/hosted-package-38198573143-1.jsonl"
+    },
+    "hosted-browser-38198573143-1": {
+      "admission": "refused",
+      "reason": "RESOURCE_MEASUREMENT_INVALID:cpu-busy",
+      "final": {
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused"
+      },
+      "evidence": "evidence/guest-seo-stacked-notice/run38198573143/resource-journals/hosted-browser-38198573143-1.reviewed.json"
+    },
+    "hosted-guest-38198573143-1": "not started; no final journal uploaded"
+  },
+  "product_credit": "none",
+  "next_action": "Stop after this single fresh attempt. Escalate the invalid CPU-busy measurement through the resource-admission owner; do not retry the native case from this lane."
+}

@@ -118,6 +118,35 @@ test('owned metadata fixture routes the isolated 360px T09 dimension', () => {
   );
 });
 
+test('stacked notice route passes the exact B guest SEO scope to the native driver', () => {
+  assert.deepEqual(
+    hostedGuestSeoRoute('guest-seo', 'development', selected, 'notice-stacked', 'none').env,
+    {
+      SEO_GUEST_EXTENSION_DIR: selected.extensionDir,
+      SEO_GUEST_DEV_BUILD_RECEIPT: selected.relocatedReceipt,
+      SEO_GUEST_CASE_SCOPE: 'notice-stacked',
+      SEO_GUEST_METADATA_FIXTURE: undefined,
+      SEO_GUEST_INTERRUPT_AFTER_TARGET: undefined,
+    },
+  );
+  assert.throws(
+    () => hostedGuestSeoRoute('guest-seo', 'development', selected, 'notice-stacked', 'owned'),
+    /owned_metadata_fixture_requires_owned_scope/,
+  );
+  assert.throws(
+    () =>
+      hostedGuestSeoRoute(
+        'guest-seo',
+        'development',
+        selected,
+        'notice-stacked',
+        'none',
+        'manual_button_returns_to_current_page',
+      ),
+    /seo_interrupt_requires_controlled_scope/,
+  );
+});
+
 test('resource bracket requires explicit full Airbnb SEO diagnostic and cannot produce acceptance targets', () => {
   assert.equal(hostedSeoResourceDiagnostic('guest-seo', 'full', 'airbnb', '0'), false);
   assert.equal(hostedSeoResourceDiagnostic('guest-seo', 'full', 'airbnb', '1'), true);
@@ -720,4 +749,145 @@ test('notice scope routes only bounded refusal checks and rejects unrelated fixt
       hostedGuestSeoRoute('guest-seo', 'development', selected, 'notice', fixture),
     );
   assert.throws(() => hostedGuestSeoRoute('guest-chat', 'development', selected, 'notice'));
+});
+
+// Break: fixture telemetry survives in memory but is omitted from the durable checkpoint.
+test('SEO checkpoint persists bounded stacked fixture failures and separate cleanup outcomes', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'seo-fixture-progress-'));
+  try {
+    for (const cleared of [0, 1]) {
+      const path = join(directory, `${cleared}.json`);
+      const diagnostic = {
+        failure_code: 'stacked_notice_operation_failed',
+        stage: 'notice_injection',
+        cleanup: {
+          status: cleared ? 'cleared' : 'failed',
+          attempted_count: 1,
+          cleared_count: cleared,
+          failed_count: 1 - cleared,
+          failure_code: cleared ? null : 'stacked_notice_cleanup_failed',
+        },
+      };
+      const report = {
+        schema_version: 1,
+        feature_id: 'EXT-F-1008',
+        mode: 'guest',
+        targets: [],
+        stacked_notice_fixture_diagnostic: {
+          ...diagnostic,
+          message: 'private sentinel token=https://private.invalid/secret',
+          stack: 'private stack',
+          cleanup: { ...diagnostic.cleanup, url: 'https://private.invalid/secret' },
+        },
+      };
+      seoRoute.writeSeoGuestProgress(path, report, false);
+      const saved = JSON.parse(await readFile(path, 'utf8'));
+      assert.deepEqual(saved.stacked_notice_fixture_diagnostic, diagnostic);
+      assert.doesNotMatch(JSON.stringify(saved), /private|sentinel|token|secret/);
+      await writeSeoGuestReport(path, report, false);
+      const final = JSON.parse(await readFile(path, 'utf8'));
+      assert.deepEqual(final.stacked_notice_fixture_diagnostic, diagnostic);
+      assert.doesNotMatch(JSON.stringify(final), /private|sentinel|token|secret/);
+      report.stacked_notice_fixture_diagnostic.stage = 'https://private.invalid/secret';
+      await writeSeoGuestReport(path, report, false);
+      const invalid = JSON.parse(await readFile(path, 'utf8'));
+      assert.equal(invalid.stacked_notice_fixture_diagnostic, undefined);
+      assert.doesNotMatch(JSON.stringify(invalid), /private|sentinel|token|secret/);
+    }
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+// Break: the native fixture reports a failed predicate, but the progress and
+// final receipt lose the measured sample or copy arbitrary source fields.
+test('SEO receipts retain only bounded native stacked geometry measurements', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'seo-stacked-geometry-'));
+  const path = join(directory, 'receipt.json');
+  try {
+    const geometry = {
+      failed_predicate: 'hit_point_count',
+      expected: 9,
+      observed: 8,
+      native_sample: {
+        width: 360,
+        title_counts: [1, 1],
+        message_lengths: [77, 199],
+        dismiss_counts: [1, 1],
+        notice_visible: [true, true],
+        target_count: 1,
+        target_enabled: true,
+        hit_point_count: 8,
+        notice_hit_point_count: 1,
+        text: 'private notice token',
+      },
+      url: 'https://private.invalid/secret',
+    };
+    const report = {
+      schema_version: 1,
+      feature_id: 'EXT-F-1008',
+      mode: 'guest',
+      targets: [],
+      stacked_notice_fixture_diagnostic: {
+        failure_code: 'stacked_notice_assertion_failed',
+        stage: 'stacked_geometry',
+        geometry,
+        cleanup: {
+          status: 'failed',
+          attempted_count: 2,
+          cleared_count: 0,
+          failed_count: 2,
+          failure_code: 'stacked_notice_cleanup_failed',
+        },
+      },
+    };
+    seoRoute.writeSeoGuestProgress(path, report, false);
+    const progress = JSON.parse(await readFile(path, 'utf8'));
+    assert.deepEqual(progress.stacked_notice_fixture_diagnostic.geometry, {
+      failed_predicate: 'hit_point_count',
+      expected: 9,
+      observed: 8,
+      native_sample: {
+        width: 360,
+        title_counts: [1, 1],
+        message_lengths: [77, 199],
+        dismiss_counts: [1, 1],
+        notice_visible: [true, true],
+        target_count: 1,
+        target_enabled: true,
+        hit_point_count: 8,
+        notice_hit_point_count: 1,
+      },
+    });
+    await writeSeoGuestReport(path, report, false);
+    const final = JSON.parse(await readFile(path, 'utf8'));
+    assert.deepEqual(
+      final.stacked_notice_fixture_diagnostic.geometry,
+      progress.stacked_notice_fixture_diagnostic.geometry,
+    );
+    assert.doesNotMatch(JSON.stringify(final), /private|secret|token|invalid/);
+    geometry.observed = 9;
+    await writeSeoGuestReport(path, report, false);
+    const invalid = JSON.parse(await readFile(path, 'utf8'));
+    assert.equal(invalid.stacked_notice_fixture_diagnostic.geometry, undefined);
+    geometry.observed = 8;
+    geometry.expected = 8;
+    await writeSeoGuestReport(path, report, false);
+    const equalScalar = JSON.parse(await readFile(path, 'utf8'));
+    assert.equal(equalScalar.stacked_notice_fixture_diagnostic.geometry, undefined);
+    geometry.failed_predicate = 'title_counts';
+    geometry.expected = [1, 1];
+    geometry.observed = [1, 1];
+    await writeSeoGuestReport(path, report, false);
+    const equalArray = JSON.parse(await readFile(path, 'utf8'));
+    assert.equal(equalArray.stacked_notice_fixture_diagnostic.geometry, undefined);
+    geometry.failed_predicate = 'target_enabled';
+    geometry.expected = true;
+    geometry.observed = true;
+    await writeSeoGuestReport(path, report, false);
+    const equalBoolean = JSON.parse(await readFile(path, 'utf8'));
+    assert.equal(equalBoolean.stacked_notice_fixture_diagnostic.geometry, undefined);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });

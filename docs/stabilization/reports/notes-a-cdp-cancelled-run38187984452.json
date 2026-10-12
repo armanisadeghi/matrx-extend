@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-a-cdp-cancelled-run38187984452",
+  "recorded_at": "2026-10-12T00:26:43.399Z",
+  "status": "cancelled-before-job-steps",
+  "run": {
+    "id": 38187984452,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38187984452",
+    "conclusion": "cancelled",
+    "acceptance_case": "notes-find-member",
+    "acceptance_lane": "A",
+    "startup_display_mode": "notes-cdp",
+    "workflow_head_sha": "27661ae102f5dab1ea2a1476cb74d76d88a751c7",
+    "development_ci_run_id": 38187344880,
+    "development_artifact_id": 11720397412,
+    "tested_artifact_source_sha": null,
+    "requested_artifact_source_sha": "47907605d42dd8d7ac1cac71689c87b386447a19",
+    "requested_artifact_digest": "sha256:dc752d9c223db0bda2910cd632617622781dd56dde751d9fe8b2d8d6cbe50dfd"
+  },
+  "reason": "Coordinator source/runtime drift hold arrived immediately after dispatch returned. Main had advanced with src/lib/data-sources/contract.ts changes, so the otherwise successful frozen CI artifact no longer matched current runtime source. The agent had checked unchanged Notes/workflow paths but that was insufficient under the current-source requirement; immediate cancellation followed.",
+  "observations": {
+    "job_conclusion": "cancelled",
+    "executed_steps": 0,
+    "native_diagnostic_observed": false,
+    "resource_final_observed": false,
+    "product_behavior_observed": false
+  },
+  "identity_preflight": {
+    "platform_admin": false,
+    "current_organization_membership": true,
+    "organization_role": "owner",
+    "role_changes": false
+  },
+  "cleanup": {
+    "temporary_repository_secret_deleted": true,
+    "secret_name_match_count": 0,
+    "local_link_absent": true,
+    "private_identity_absent": true,
+    "credential_values_persisted": false
+  },
+  "product_verdict": {
+    "status": "unverified",
+    "credit": 0
+  },
+  "next": "Do not reuse the cancelled one-use link. Require successful exact current-main CI and development artifact provenance, fresh identity/link and lane/resource preflight before another coordinated Notes A diagnostic dispatch. This cancellation neither diagnoses the CDP timeout nor closes Notes T02."
+}

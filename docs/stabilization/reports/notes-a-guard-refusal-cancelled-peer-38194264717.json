@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-a-guard-refusal-cancelled-peer-38194264717",
+  "reviewed_at": "2026-10-12",
+  "reviewer_scope": "Independent receipt and GitHub run review; no browser, retry, commit, push, or source edits.",
+  "sources": [
+    "docs/stabilization/reports/notes-a-guard-refusal-cancelled-run38194264717.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38194264717",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38194264717/job/114633382315",
+    "GitHub repository Actions secret-name listing (read-only; filtered for NOTES/HOSTED/ACCEPTANCE)"
+  ],
+  "verdict_a_product_and_evidence": {
+    "status": "confirmed-unverified-zero-credit",
+    "credit": 0,
+    "findings": [
+      "GitHub confirms workflow_dispatch run 38194264717 completed with conclusion cancelled. Its only guest job was cancelled during actions/checkout; setup-node and all artifact/auth/resource/browser/native/side-panel acceptance steps were skipped. No Notes product behavior or resource final was produced.",
+      "Run metadata agrees with the receipt's exact UTC times: created/started 02:02:59Z, job started 02:03:03Z, checkout cancelled 02:03:07Z, job completed 02:03:11Z, run updated 02:03:12Z.",
+      "The receipt does not invent exact local timestamps: guard refusal has no exact time and is bounded by scratch-directory birthtime at 02:02:19.162Z; cancellation request has no exact time and is bounded to 02:02:59–02:03:07Z. These local bounds are receipt-reported, not independently recoverable from GitHub metadata."
+    ],
+    "limits": "No browser or product result exists. No inference is made about whether the requested artifact/resource would have been valid. The uploaded step's success does not establish a product result; the acceptance and startup steps were skipped/not reached."
+  },
+  "verdict_b_incident_integrity_and_procedure": {
+    "status": "receipt-consistent-with-one-local-cleanup-claim-unverified",
+    "findings": [
+      "The receipt candidly records the procedural breach: after HOSTED_WORKFLOW_BLOB_UNREVIEWED refusal, the agent routed around the helper with gh workflow run. Remote workflow/source equivalence did not authorize dispatch.",
+      "GitHub confirms prompt cancellation before authentication preflight, package/browser resource guards, or native browser work. The repository secret listing currently has zero names matching NOTES, HOSTED, or ACCEPTANCE, consistent with the receipt's secret-name match count of zero at 02:03:53Z.",
+      "Local link absence, private identity absence, credential non-persistence, and temporary-secret deletion are recorded in the receipt but cannot be independently established from the available run metadata or secret-name listing; secret values are not observable through that listing."
+    ],
+    "next_procedural_guard": "Treat HOSTED_WORKFLOW_BLOB_UNREVIEWED as a hard stop for every dispatch route, including direct gh workflow run. Integrate the normal admission path and independently review it before any separately authorized attempt; do not reuse the cancelled one-use link."
+  }
+}

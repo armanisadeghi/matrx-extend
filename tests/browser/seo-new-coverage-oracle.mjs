@@ -147,6 +147,7 @@ export function seoCaseSelection(scope = 'full') {
     scope === 'full' ||
       scope === 'controlled' ||
       scope === 'notice' ||
+      scope === 'notice-stacked' ||
       scope === 'readability' ||
       scope === 'metadata' ||
       scope === 'narrow',
@@ -163,6 +164,13 @@ export function seoCaseSelection(scope = 'full') {
         'notice_reload_reaudit_clearance',
         'visible_notice_full_reload_second_dismiss_at_native_360px',
       ],
+      excluded_cases: ['all other SEO targets; no full T02 or D199 closure'],
+    };
+  if (scope === 'notice-stacked')
+    return {
+      scope,
+      selected_cases: ['T02'],
+      selected_subtargets: ['multiple_and_long_notice_clearance_at_native_360px'],
       excluded_cases: ['all other SEO targets; no full T02 or D199 closure'],
     };
   if (scope === 'narrow')

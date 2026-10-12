@@ -1,21 +1,32 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
-import { runNativeSidepanelQa as realNativeRunner } from './native-sidepanel-qa-harness.mjs';
 import {
+  observeOwnedEndpointAfterTimeout,
+  runNativeSidepanelQa as realNativeRunner,
+} from './native-sidepanel-qa-harness.mjs';
+import {
+  notesEndpointObservationEnabled,
   notesNativeStartupOperation,
   notesStartupErrorCategory,
+  safeNotesEndpointObservation,
 } from './notes-startup-diagnostic.mjs';
 
 const source = await readFile(new URL('./notes-native-acceptance.mjs', import.meta.url), 'utf8');
 const AsyncFunction = Object.getPrototypeOf(async () => {}).constructor;
 // SUT: actual Notes driver startup orchestration and persisted failure report.
 // Filesystem, provenance service and browser are external. No Notes product credit.
-async function drive(failureAt, error, nativeStage = 'cdp_connect') {
+async function drive(failureAt, error, nativeStage = 'cdp_connect', diagnostic = false) {
   const report = { status: 'unverified', observations: {}, build: null };
   const process = {
     exitCode: 0,
-    env: { NOTES_EXPECTED_CI_RUN_ID: '12', NOTES_EXPECTED_ARTIFACT_ID: '34' },
+    env: {
+      NOTES_EXPECTED_CI_RUN_ID: '12',
+      NOTES_EXPECTED_ARTIFACT_ID: '34',
+      NOTES_HOSTED_FIND: '1',
+      MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+      MATRX_CDP_STARTUP_DIAGNOSTIC: diagnostic ? '1' : '0',
+    },
     stdout: { write() {} },
   };
   let persisted;
@@ -23,7 +34,8 @@ async function drive(failureAt, error, nativeStage = 'cdp_connect') {
   const run = new AsyncFunction(
     'deps',
     `
-    const { report, process, assert, notesNativeStartupOperation, notesStartupErrorCategory,
+    const { report, process, assert, notesEndpointObservationEnabled,
+      notesNativeStartupOperation, notesStartupErrorCategory, safeNotesEndpointObservation,
       verifyImportedNativeEvidence, runNativeSidepanelQa, writeFile, signInSettings } = deps;
     const HOSTED_FIND = true, ROLE = 'member', CASE = 't02', RECEIPT = '/owned/receipt',
       EXPECTED_SOURCE_SHA = 'a'.repeat(40), REPO = '/owned', OUTPUT = '/owned/report';
@@ -46,6 +58,8 @@ async function drive(failureAt, error, nativeStage = 'cdp_connect') {
     assert,
     notesNativeStartupOperation,
     notesStartupErrorCategory,
+    notesEndpointObservationEnabled,
+    safeNotesEndpointObservation,
     verifyImportedNativeEvidence: async () => {
       if (failureAt === 'artifact') throw error;
       return {
@@ -58,6 +72,43 @@ async function drive(failureAt, error, nativeStage = 'cdp_connect') {
       browserCalls++;
       if (failureAt === 'native-real') return realNativeRunner(options);
       options.onStage?.(nativeStage);
+      if (diagnostic && ['native', 'authentication'].includes(failureAt)) {
+        assert.equal(options.startupEndpointObservationMs, 15_000);
+        for (const value of failureAt === 'authentication'
+          ? [
+              {
+                phase: 'cdp_connected',
+                endpointPresent: true,
+                inspectionFailed: false,
+                exitObserved: false,
+                elapsedMs: 8500,
+                polls: 0,
+                privatePath: '/owned/profile/DevToolsActivePort',
+                pid: 123,
+              },
+            ]
+          : [
+              {
+                phase: 'cdp_timeout',
+                endpointPresent: false,
+                inspectionFailed: false,
+                exitObserved: false,
+                elapsedMs: 8006,
+                polls: 218,
+              },
+              {
+                phase: 'post_timeout',
+                endpointPresent: true,
+                inspectionFailed: false,
+                exitObserved: false,
+                elapsedMs: 1250,
+                polls: 13,
+                privatePath: '/owned/profile/DevToolsActivePort',
+                pid: 123,
+              },
+            ])
+          options.onStartupEndpointObservation(value);
+      } else assert.equal(options.onStartupEndpointObservation, undefined);
       if (failureAt === 'authentication') return options.exercisePanel({});
       throw error;
     },
@@ -133,4 +184,149 @@ test('authentication failures stay outside the startup diagnostic boundary', asy
   assert.equal(persisted.failure_code, 'stage_operation_failed');
   assert.equal(persisted.status, 'unverified');
   assert.equal(exitCode, 1);
+});
+
+test('connected CDP observation lets Notes reach sign-in without product credit', async () => {
+  const { persisted, exitCode, browserCalls } = await drive(
+    'authentication',
+    new Error('private authentication'),
+    'cdp_connect',
+    true,
+  );
+  assert.equal(browserCalls, 1);
+  assert.equal(exitCode, 1);
+  assert.equal(persisted.status, 'unverified');
+  assert.equal(persisted.failure_stage, 'real_signin');
+  assert.equal(persisted.observations.startup_failure, undefined);
+  assert.equal(persisted.observations.T02, undefined);
+  assert.deepEqual(persisted.observations.startup_endpoint, [
+    {
+      phase: 'cdp_connected',
+      outcome: 'connected',
+      endpointPresent: true,
+      inspectionFailed: false,
+      exitObserved: false,
+      elapsedMs: 8500,
+      polls: 0,
+    },
+  ]);
+  assert.doesNotMatch(JSON.stringify(persisted), /DevToolsActivePort|\/owned\/profile|"pid"/);
+});
+
+test('Notes A retains late endpoint evidence after the original timeout remains unverified', async () => {
+  const original = new Error('owned_cdp_endpoint_timeout');
+  const { persisted, exitCode } = await drive('native', original, 'cdp_connect', true);
+  assert.equal(persisted.status, 'unverified');
+  assert.equal(exitCode, 1);
+  assert.equal(persisted.failure_stage, 'native_cdp_connect');
+  assert.deepEqual(
+    persisted.observations.startup_endpoint.map(({ outcome }) => outcome),
+    ['timed_out', 'late_endpoint'],
+  );
+  assert.equal(persisted.observations.startup_endpoint[1].elapsedMs, 1250);
+  assert.doesNotMatch(JSON.stringify(persisted), /DevToolsActivePort|\/owned\/profile|"pid"/);
+  const ordinary = await drive('native', original);
+  assert.equal(ordinary.persisted.observations.startup_endpoint, undefined);
+});
+
+test('post-timeout observation classifies exit and stall without private values', () => {
+  const base = {
+    phase: 'post_timeout',
+    endpointPresent: false,
+    inspectionFailed: false,
+    exitObserved: false,
+    elapsedMs: 15_000,
+    polls: 150,
+    pid: 123,
+  };
+  assert.equal(safeNotesEndpointObservation(base).outcome, 'still_absent');
+  assert.equal(
+    safeNotesEndpointObservation({ ...base, exitObserved: true }).outcome,
+    'child_exited',
+  );
+  assert.equal(
+    safeNotesEndpointObservation({ ...base, inspectionFailed: true }).outcome,
+    'inspection_failed',
+  );
+  assert.equal(Object.hasOwn(safeNotesEndpointObservation(base), 'pid'), false);
+  assert.throws(
+    () => safeNotesEndpointObservation({ ...base, phase: 'private' }),
+    /notes_endpoint_observation_phase_refused/,
+  );
+  assert.throws(
+    () => safeNotesEndpointObservation({ ...base, elapsedMs: 'private' }),
+    /notes_endpoint_observation_shape_refused/,
+  );
+  assert.equal(
+    notesEndpointObservationEnabled({
+      NOTES_HOSTED_FIND: '1',
+      MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+      MATRX_CDP_STARTUP_DIAGNOSTIC: '1',
+    }),
+    true,
+  );
+  for (const env of [
+    {
+      NOTES_HOSTED_FIND: '0',
+      MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+      MATRX_CDP_STARTUP_DIAGNOSTIC: '1',
+    },
+    {
+      NOTES_HOSTED_FIND: '1',
+      MATRX_HOSTED_ACCEPTANCE_LANE: 'B',
+      MATRX_CDP_STARTUP_DIAGNOSTIC: '1',
+    },
+    {
+      NOTES_HOSTED_FIND: '1',
+      MATRX_HOSTED_ACCEPTANCE_LANE: 'A',
+      MATRX_CDP_STARTUP_DIAGNOSTIC: '0',
+    },
+  ])
+    assert.equal(notesEndpointObservationEnabled(env), false);
+});
+
+test('owned post-timeout poller observes late publication, child exit, and a bounded stall', async () => {
+  const missing = () => {
+    throw Object.assign(new Error('private path'), { code: 'ENOENT' });
+  };
+  async function observe({
+    publishOnPoll = Number.POSITIVE_INFINITY,
+    exitOnPoll = Number.POSITIVE_INFINITY,
+    failOnPoll = Number.POSITIVE_INFINITY,
+  }) {
+    let elapsedMs = 0;
+    let polls = 0;
+    const child = { exitCode: null, signalCode: null };
+    const value = await observeOwnedEndpointAfterTimeout({
+      profile: '/private/owned-profile',
+      child,
+      windowMs: 300,
+      clock: { now: () => elapsedMs },
+      sleep: async (ms) => {
+        elapsedMs += ms;
+      },
+      fileSystem: {
+        lstat: async () => {
+          polls++;
+          if (polls === exitOnPoll) child.exitCode = 1;
+          if (polls === failOnPoll)
+            throw Object.assign(new Error('private path'), { code: 'EACCES' });
+          if (polls < publishOnPoll) missing();
+        },
+      },
+    });
+    assert.ok(value.elapsedMs <= 300, 'observation exceeded its bounded window');
+    assert.equal(value.polls, polls);
+    assert.doesNotMatch(JSON.stringify(value), /private|owned-profile|"pid"/);
+    return safeNotesEndpointObservation(value);
+  }
+  assert.deepEqual(
+    [
+      (await observe({ publishOnPoll: 3 })).outcome,
+      (await observe({ exitOnPoll: 2 })).outcome,
+      (await observe({})).outcome,
+      (await observe({ failOnPoll: 2 })).outcome,
+    ],
+    ['late_endpoint', 'child_exited', 'still_absent', 'inspection_failed'],
+  );
 });

@@ -20,7 +20,11 @@ export async function seoStartupObservationOptions(report, enabled) {
 }
 
 export async function writeSeoGuestReport(path, report, diagnosticEnabled) {
-  const classified = classifySeoResourceDiagnosticReport(report, diagnosticEnabled);
+  const { stacked_notice_fixture_diagnostic, ...rest } = report;
+  const classified = classifySeoResourceDiagnosticReport(
+    { ...rest, ...safeStackedNoticeEvidence(stacked_notice_fixture_diagnostic) },
+    diagnosticEnabled,
+  );
   const finalReport = report.interruption_test_target
     ? {
         ...classified,
@@ -56,6 +60,7 @@ export function writeSeoGuestProgress(path, report, diagnosticEnabled) {
     last_safe_stage: report.last_safe_stage,
     current_operation: report.current_operation,
     ...safeSeoClickEvidence(report),
+    ...safeStackedNoticeEvidence(report.stacked_notice_fixture_diagnostic),
     boundary_sample: safeBoundarySample(report.boundary_sample),
     operation_start_sample: safeBoundarySample(report.operation_start_sample),
     targets: report.targets.map(({ case_id, subtarget, status }) => ({
@@ -67,6 +72,149 @@ export function writeSeoGuestProgress(path, report, diagnosticEnabled) {
   const classified = classifySeoResourceDiagnosticReport(progress, diagnosticEnabled);
   persistSeoReceipt(path, classified);
   return classified;
+}
+
+// Receipt schema: accept only fixture-owned codes/stages and at most two owned notices.
+function safeStackedGeometry(value) {
+  const predicates = [
+    'viewport_width',
+    'title_counts',
+    'target_count',
+    'target_enabled',
+    'hit_point_count',
+    'notice_hit_point_count',
+    'notice_visible_0',
+    'notice_visible_1',
+    'dismiss_count_0',
+    'dismiss_count_1',
+    'message_length_0',
+    'message_length_1',
+  ];
+  if (!value || !predicates.includes(value.failed_predicate)) return null;
+  const sample = value.native_sample;
+  const count = (n) => Number.isInteger(n) && n >= 0 && n <= 99;
+  const length = (n) => Number.isInteger(n) && n >= 0 && n <= 4096;
+  const pair = (items, valid) => Array.isArray(items) && items.length === 2 && items.every(valid);
+  if (
+    !sample ||
+    !length(sample.width) ||
+    !pair(sample.title_counts, count) ||
+    !pair(sample.message_lengths, length) ||
+    !pair(sample.dismiss_counts, count) ||
+    !pair(sample.notice_visible, (v) => typeof v === 'boolean') ||
+    !count(sample.target_count) ||
+    typeof sample.target_enabled !== 'boolean' ||
+    !count(sample.hit_point_count) ||
+    !count(sample.notice_hit_point_count)
+  )
+    return null;
+  const nativeSample = {
+    width: sample.width,
+    title_counts: [...sample.title_counts],
+    message_lengths: [...sample.message_lengths],
+    dismiss_counts: [...sample.dismiss_counts],
+    notice_visible: [...sample.notice_visible],
+    target_count: sample.target_count,
+    target_enabled: sample.target_enabled,
+    hit_point_count: sample.hit_point_count,
+    notice_hit_point_count: sample.notice_hit_point_count,
+  };
+  const name = value.failed_predicate;
+  const index = Number(name.at(-1));
+  const expected =
+    name === 'viewport_width'
+      ? 360
+      : name === 'title_counts'
+        ? value.expected
+        : name === 'target_count'
+          ? 1
+          : name === 'target_enabled' || name.startsWith('notice_visible_')
+            ? true
+            : name === 'hit_point_count'
+              ? 9
+              : name.startsWith('dismiss_count_')
+                ? 1
+                : name.startsWith('message_length_')
+                  ? value.expected
+                  : 0;
+  const observed =
+    name === 'viewport_width'
+      ? nativeSample.width
+      : name === 'title_counts'
+        ? nativeSample.title_counts
+        : name === 'target_count'
+          ? nativeSample.target_count
+          : name === 'target_enabled'
+            ? nativeSample.target_enabled
+            : name === 'hit_point_count'
+              ? nativeSample.hit_point_count
+              : name === 'notice_hit_point_count'
+                ? nativeSample.notice_hit_point_count
+                : name.startsWith('notice_visible_')
+                  ? nativeSample.notice_visible[index]
+                  : name.startsWith('dismiss_count_')
+                    ? nativeSample.dismiss_counts[index]
+                    : nativeSample.message_lengths[index];
+  if (
+    (name === 'title_counts' && !pair(expected, count)) ||
+    (name.startsWith('message_length_') && !length(expected)) ||
+    JSON.stringify(value.observed) !== JSON.stringify(observed) ||
+    JSON.stringify(expected) === JSON.stringify(observed)
+  )
+    return null;
+  return { failed_predicate: name, expected, observed, native_sample: nativeSample };
+}
+
+function safeStackedNoticeEvidence(value) {
+  const stages = [
+    'message_contract',
+    'native_width',
+    'worker_discovery',
+    'worker_attach',
+    'before_injection',
+    'notice_injection',
+    'stacked_visible',
+    'stacked_geometry',
+    'reaudit',
+    'reaudit_settled',
+    'settled_geometry',
+    'independent_dismiss',
+  ];
+  const cleanup = value?.cleanup;
+  if (
+    !value ||
+    !stages.includes(value.stage) ||
+    ![null, 'stacked_notice_assertion_failed', 'stacked_notice_operation_failed'].includes(
+      value.failure_code,
+    ) ||
+    !cleanup ||
+    !['not_needed', 'cleared', 'failed'].includes(cleanup.status) ||
+    ![null, 'stacked_notice_cleanup_failed'].includes(cleanup.failure_code) ||
+    ![cleanup.attempted_count, cleanup.cleared_count, cleanup.failed_count].every(
+      (count) => Number.isInteger(count) && count >= 0 && count <= 2,
+    ) ||
+    cleanup.cleared_count + cleanup.failed_count !== cleanup.attempted_count
+  )
+    return {};
+  const geometry =
+    ['stacked_geometry', 'settled_geometry', 'independent_dismiss'].includes(value.stage) &&
+    value.failure_code === 'stacked_notice_assertion_failed'
+      ? safeStackedGeometry(value.geometry)
+      : null;
+  return {
+    stacked_notice_fixture_diagnostic: {
+      failure_code: value.failure_code,
+      stage: value.stage,
+      ...(geometry && { geometry }),
+      cleanup: {
+        status: cleanup.status,
+        attempted_count: cleanup.attempted_count,
+        cleared_count: cleanup.cleared_count,
+        failed_count: cleanup.failed_count,
+        failure_code: cleanup.failure_code,
+      },
+    },
+  };
 }
 
 function safeBoundarySample(sample) {
@@ -177,6 +325,7 @@ export function hostedGuestSeoRoute(
     scope === 'full' ||
       scope === 'controlled' ||
       scope === 'notice' ||
+      scope === 'notice-stacked' ||
       scope === 'readability' ||
       scope === 'metadata' ||
       scope === 'narrow',

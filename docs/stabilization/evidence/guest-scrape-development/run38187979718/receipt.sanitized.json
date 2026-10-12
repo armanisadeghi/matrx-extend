@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_run_id": 38187979718,
+  "workflow_sha": "27661ae102f5dab1ea2a1476cb74d76d88a751c7",
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38187979718",
+  "case": "guest-scrape-development",
+  "scope": "full",
+  "lane": "B",
+  "auth_mode": "guest",
+  "viewport_mode": "narrow",
+  "product_artifact": {
+    "kind": "ci_development_test",
+    "version": "0.2.509",
+    "source_sha": "47907605d42dd8d7ac1cac71689c87b386447a19",
+    "source_tree_sha256": "2c1f735e612bd6437e0a006f8bb82c1e754727b84622dc15166f9ad349e0589f",
+    "ci_run_id": 38187344880,
+    "artifact_id": 11720397412,
+    "artifact_sha256": "dc752d9c223db0bda2910cd632617622781dd56dde751d9fe8b2d8d6cbe50dfd"
+  },
+  "resource_journals": {
+    "hosted-package-38187979718-1": "valid",
+    "hosted-browser-38187979718-1": "valid",
+    "hosted-guest-38187979718-1": "invalid"
+  },
+  "fixture": "Owned fixture setup was not reached.",
+  "login_method": "No login completed; case stopped before browser attachment.",
+  "cleanup": "GitHub-hosted runner job ended. No separate fixture or authenticated account was used.",
+  "limits": [
+    "Current main at execution was 27661ae102f5dab1ea2a1476cb74d76d88a751c7; the tested artifact is frozen at 47907605d42dd8d7ac1cac71689c87b386447a19.",
+    "Current main has a subsequent live-data URL matching change outside Scrape; this run is historical frozen-source evidence and gives no current-main or release credit.",
+    "The Store-only guest-scrape case remains unverified."
+  ]
+}

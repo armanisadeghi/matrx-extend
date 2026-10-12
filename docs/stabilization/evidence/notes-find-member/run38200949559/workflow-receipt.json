@@ -1,0 +1,144 @@
+{
+  "schema": "notes-hosted-validation-receipt-v1",
+  "run_id": "38200949559",
+  "source_sha": "1bd31df8c20941f3eb813d794041cbfe29dad938",
+  "status": "completed",
+  "conclusion": "failure",
+  "created_at": "2026-10-12T03:44:35Z",
+  "updated_at": "2026-10-12T03:45:13Z",
+  "steps": [
+    {
+      "name": "Set up job",
+      "conclusion": "success",
+      "started_at": "2026-10-12T03:44:42Z",
+      "completed_at": "2026-10-12T03:44:44Z"
+    },
+    {
+      "name": "Require bounded lane and isolate shared credentials",
+      "conclusion": "success",
+      "started_at": "2026-10-12T03:44:44Z",
+      "completed_at": "2026-10-12T03:44:45Z"
+    },
+    {
+      "name": "Run actions/checkout@v4",
+      "conclusion": "success",
+      "started_at": "2026-10-12T03:44:45Z",
+      "completed_at": "2026-10-12T03:45:05Z"
+    },
+    {
+      "name": "Run actions/setup-node@v4",
+      "conclusion": "success",
+      "started_at": "2026-10-12T03:45:05Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Require a matching CI development artifact for Settings acceptance",
+      "conclusion": "success",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Require a successful published release artifact",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Require exactly one artifact provenance mode",
+      "conclusion": "failure",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Require selected authentication before browser setup",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Disable indexing on the disposable hosted VM",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Wait for measured package readiness",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Prepare pinned browser driver under an owned permit",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Wait for measured browser readiness",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Prepare full Chromium under a fresh owned permit",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Wait for measured acceptance readiness",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Exercise the selected Chrome side-panel case",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Measure owned Chromium startup during the existing guard interval",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:07Z"
+    },
+    {
+      "name": "Upload browser result and native-panel screenshots",
+      "conclusion": "success",
+      "started_at": "2026-10-12T03:45:07Z",
+      "completed_at": "2026-10-12T03:45:08Z"
+    },
+    {
+      "name": "Post Run actions/setup-node@v4",
+      "conclusion": "skipped",
+      "started_at": "2026-10-12T03:45:08Z",
+      "completed_at": "2026-10-12T03:45:08Z"
+    },
+    {
+      "name": "Post Run actions/checkout@v4",
+      "conclusion": "success",
+      "started_at": "2026-10-12T03:45:08Z",
+      "completed_at": "2026-10-12T03:45:09Z"
+    },
+    {
+      "name": "Complete job",
+      "conclusion": "success",
+      "started_at": "2026-10-12T03:45:09Z",
+      "completed_at": "2026-10-12T03:45:09Z"
+    }
+  ],
+  "workflow_branch": {
+    "path": ".github/workflows/hosted-guest-acceptance.yml",
+    "line": 412,
+    "case": "notes-find-member",
+    "authentication_mode": "member",
+    "width_mode": "narrow",
+    "generic_branch_requires_guest": true,
+    "notes_excluded_from_generic_branch": false,
+    "source_only_branch_reproduction_exit": 1
+  },
+  "artifacts": [],
+  "native_report_present": false,
+  "resource_finals": { "package": "not_started", "browser": "not_started", "guest": "not_started" }
+}

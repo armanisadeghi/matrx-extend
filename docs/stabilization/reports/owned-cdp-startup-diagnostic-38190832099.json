@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "scope": "One guarded headed startup-resource diagnostic after terminal Notes A and Chat B runs; diagnostic only, no product acceptance.",
+  "diagnostic_run_id": 38190832099,
+  "diagnostic_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38190832099",
+  "workflow_source_sha": "026785d714be6f059ecb81afdcbd0573ea64be81",
+  "workflow_conclusion": "success",
+  "lane": "B",
+  "runner": "macos-15-intel / x86_64",
+  "case": "startup-resource-diagnostic",
+  "display_mode": "headed",
+  "diagnostic_verdict": "CDP_CONNECTED_WITHIN_DEADLINE; POST_TIMEOUT_BRANCH_NOT_REACHED",
+  "product_credit": "none",
+  "product_assertions_run": false,
+  "extension_ui_acceptance": false,
+  "development_artifact": {
+    "run_id": 38189416372,
+    "artifact_id": 11721207192,
+    "artifact_digest": "sha256:a1183de454bde13ecf00698688e5e403d2df455a82e9e077986fcda9e3084bec",
+    "source_sha": "5720310991c36ae39ed8a32e0f9ae20226f62b62",
+    "version": "0.2.509",
+    "workflow_runtime_delta": "Current main differed from the frozen artifact source only in documentation; runtime paths src, package.json, pnpm-lock.yaml and wxt.config.ts had no diff before dispatch."
+  },
+  "endpoint_observation": {
+    "existing_deadline_ms": 8000,
+    "phase": "cdp_connected",
+    "endpoint_present": true,
+    "inspection_failed": false,
+    "exit_observed": false,
+    "elapsed_ms": 2565,
+    "polls": 0,
+    "observed_at": "2026-10-12T01:17:06.878Z",
+    "interpretation": "The endpoint appeared and connected within the existing deadline. The additional 15-second post-timeout observation interval was not entered, so this run does not distinguish delayed publication after timeout, child exit at timeout, or a still-live child with no endpoint. It also does not falsify the prior endpoint-timeout observation under a different resource state."
+  },
+  "native_phases": {
+    "last_stage": "exercise_panel",
+    "stages": [
+      "receipt",
+      "artifact_verify",
+      "browser_runtime",
+      "profile_prepare",
+      "browser_spawn",
+      "cdp_connect",
+      "endpoint_read",
+      "command_line_query",
+      "command_line_verify",
+      "extension_worker",
+      "spawn_owner",
+      "local_server",
+      "playwright_connect",
+      "page_create",
+      "local_page_navigation",
+      "panel_open",
+      "panel_reply",
+      "panel_target",
+      "panel_context",
+      "panel_settle",
+      "screenshot",
+      "exercise_panel"
+    ],
+    "headed_mode_verified_by": "Browser.getBrowserCommandLine",
+    "gpu_status": "RESOLVED",
+    "gpu_backend": "GaneshGL",
+    "renderer": "ANGLE Apple Software Renderer",
+    "panel_ready_at": "2026-10-12T01:17:09.104Z",
+    "completed_at": "2026-10-12T01:17:50.970Z",
+    "product_interaction": "The diagnostic exercised only the pre-existing panel resource-health boundary; product actions and assertions were not run."
+  },
+  "resource_finals": {
+    "package": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" },
+    "browser": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" },
+    "startup_diagnostic": { "admitted": true, "resourceInvalid": false, "exitCode": 0, "decision": "valid" }
+  },
+  "resource_summary": "Three sanitized journals show valid final decisions. Startup admission sample: pressure level 1, 12.6 GiB available memory, zero swap, 3.3% CPU busy average, 4 logical CPUs; four subsequent watch samples were healthy. The diagnostic completed its existing post-panel resource checks.",
+  "diagnostic_artifact": {
+    "artifact_id": 11721448895,
+    "artifact_name": "hosted-guest-38190832099-1",
+    "artifact_digest": "sha256:b8ef3a66b221c9b7d9e3e7f0e9e2e08ea37d7243da12578e2edcd35480646bd1"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/startup-resource-diagnostic/run38190832099/startup-interval-diagnostic.json",
+    "docs/stabilization/evidence/startup-resource-diagnostic/run38190832099/resource-package.jsonl",
+    "docs/stabilization/evidence/startup-resource-diagnostic/run38190832099/resource-browser.jsonl",
+    "docs/stabilization/evidence/startup-resource-diagnostic/run38190832099/resource-startup.jsonl"
+  ],
+  "sanitization": "The native diagnostic report contains fixed phase labels, booleans, counts and bounded renderer metadata; no endpoint address, auth or fixture data. Resource journals were copied through the repository sanitizer. The startup journal's unsupported RESOURCE_STARTUP_INTERVAL_BRACKET process snapshots were manually reviewed and omitted because they contain PID/process attribution; all admission/watch events and its final decision are retained. Screenshots and raw workflow logs were not retained.",
+  "cleanup": {
+    "member_secret_or_link_used": false,
+    "product_fixture_created": false,
+    "temporary_member_credentials": "Not applicable; diagnostic skips auth preflight and the product exercise step."
+  },
+  "limits": [
+    "Single admitted macOS Intel run; endpoint timing under the prior high-CPU condition remains unknown.",
+    "Because CDP connected in 2.565 seconds, the route did not exercise its extra policy watch interval after timeout; delayed publication versus child exit versus live-without-endpoint remains unresolved.",
+    "This is infrastructure diagnostic evidence only and grants zero product acceptance credit."
+  ]
+}

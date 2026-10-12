@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "auth_mode": "guest",
+  "status": "pass",
+  "stage": "complete",
+  "failure_code": null,
+  "artifact": {
+    "source_sha": "60ba435863599b32f10acd9c95fff366cc09a36e",
+    "run_id": 38201493024,
+    "artifact_id": 11725033293,
+    "tree_sha256": "bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42"
+  },
+  "imported_artifact": {
+    "kind": "ci_development_test",
+    "sourceSha": "60ba435863599b32f10acd9c95fff366cc09a36e",
+    "runId": 38201493024,
+    "runAttempt": 1,
+    "artifactId": 11725033293,
+    "githubArtifactDigest": "sha256:3206b58568581e1e219d1aea6b9ae220f78da771d7f12941a2db986b82ef5ca6",
+    "treeSha256": "bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42"
+  },
+  "observations": {
+    "seo_visible": true,
+    "seo_selected": "SEO",
+    "seo_title_matches": true,
+    "seo_description_dash": true,
+    "seo_groups": ["Title & description", "Performance"],
+    "schema_visible": true,
+    "schema_selected": "Schema",
+    "schema_json_valid": true,
+    "schema_metadata_title_matches": true,
+    "schema_description_absent": true,
+    "schema_canonical_absent": true,
+    "schema_counts": {
+      "og": 0,
+      "twitter": 0,
+      "schema_types": 0,
+      "ld_json": 0
+    },
+    "export_checks": [
+      {
+        "after_pane": "SEO",
+        "identity_unchanged": true,
+        "digest_unchanged": true
+      },
+      {
+        "after_pane": "Schema",
+        "identity_unchanged": true,
+        "digest_unchanged": true
+      }
+    ],
+    "verdict": {
+      "seo_no_signal_baseline": true,
+      "schema_empty": true,
+      "capture_export_unchanged_after_each_pane": true
+    }
+  },
+  "panel_viewport": {
+    "mode": "narrow",
+    "mechanism": "native_default",
+    "observed_px": 360,
+    "minimum_px": null
+  },
+  "capture_diagnostic": {
+    "trusted_capture_click": 1
+  },
+  "native_target": {
+    "type": "page",
+    "extension_origin": "chrome-extension://cihdmkcdjjckfhjpgoedmgfpoljebaml"
+  }
+}

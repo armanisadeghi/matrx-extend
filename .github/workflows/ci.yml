@@ -73,6 +73,9 @@ jobs:
       - name: Focused acceptance guards
         run: pnpm test:focused-acceptance
 
+      - name: Hosted remote admission routes
+        run: node --test scripts/hosted-remote-admission.test.mjs
+
       - name: Typecheck
         run: pnpm compile
 

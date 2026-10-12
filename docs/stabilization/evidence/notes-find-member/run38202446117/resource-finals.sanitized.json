@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "run_id": 38202446117,
+  "sanitization": "Manual fixed-field extraction because the standard copier refused an unsupported process-attribution event; raw journals are retained only in private scratch.",
+  "phases": {
+    "hosted-package": {
+      "raw_sha256": "26348a35893c56ae6061a2c1f23f23acec7b599d8e1538ae9dc6906fb450860a",
+      "event_codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ],
+      "child_exit_code": 0,
+      "decision": "valid",
+      "resource_invalid": false
+    },
+    "hosted-browser": {
+      "raw_sha256": "f3945efba9358e110767eeb7e82dc2190ce40f381e65b46a33f1c8cea9312632",
+      "event_codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ],
+      "child_exit_code": 0,
+      "decision": "valid",
+      "resource_invalid": false
+    },
+    "hosted-guest": {
+      "raw_sha256": "a89891f9329f8ace2d0428454823df0cd26dbf85dac0518cc01eb5e60db89136",
+      "event_codes": [
+        "RESOURCE_JOURNAL_OPENED",
+        "RESOURCE_ADMITTED",
+        "RESOURCE_WATCH_HEALTHY",
+        "RESOURCE_CPU_PENDING",
+        "RESOURCE_PROCESS_ATTRIBUTION",
+        "RESOURCE_JOB_EXIT",
+        "RESOURCE_FINAL_DECISION"
+      ],
+      "child_exit_code": 1,
+      "decision": "invalid",
+      "resource_invalid": true
+    }
+  }
+}

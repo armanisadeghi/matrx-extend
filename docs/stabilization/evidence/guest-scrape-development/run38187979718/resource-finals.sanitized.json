@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "workflow_run_id": 38187979718,
+  "finals": [
+    {
+      "run_id": "hosted-package-38187979718-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "run_id": "hosted-browser-38187979718-1",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0
+    },
+    {
+      "run_id": "hosted-guest-38187979718-1",
+      "decision": "invalid",
+      "admitted": true,
+      "resource_invalid": true,
+      "exit_code": 3,
+      "refusal_reasons": ["RESOURCE_CPU_BUSY", "RESOURCE_CPU_HIGH_LOAD_BUSY"]
+    }
+  ]
+}

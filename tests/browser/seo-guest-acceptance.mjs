@@ -57,6 +57,7 @@ import {
   reauditTransitionWitness,
   startSeoReauditTrace,
 } from './seo-reaudit-transition-diagnostic.mjs';
+import { runStackedSeoNotices } from './seo-stacked-notice-fixture.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const REPO = resolve(import.meta.dirname, '..', '..');
@@ -79,6 +80,7 @@ const RUN_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'airbnb'
 const RUN_OWNED_METADATA_FIXTURE = process.env.SEO_GUEST_METADATA_FIXTURE === 'owned';
 const SEO_CASE_SCOPE = process.env.SEO_GUEST_CASE_SCOPE ?? 'full';
 const NOTICE_ONLY = SEO_CASE_SCOPE === 'notice';
+const STACKED_NOTICE_ONLY = SEO_CASE_SCOPE === 'notice-stacked';
 const CHECK_NOTICE = SEO_CASE_SCOPE === 'controlled' || NOTICE_ONLY;
 if (SEO_CASE_SCOPE === 'metadata' || SEO_CASE_SCOPE === 'narrow')
   assert.equal(RUN_OWNED_METADATA_FIXTURE, true, 'owned_metadata_scope_requires_owned_fixture');
@@ -115,15 +117,17 @@ const report = {
   feature_id: 'EXT-F-1008',
   mode: 'guest',
   status: 'unverified',
-  scope: NOTICE_ONLY
-    ? 'bounded guest SEO refusal notice widths, trusted Re-audit, Dismiss and reload'
-    : SEO_CASE_SCOPE === 'readability'
-      ? 'known-text guest SEO readability in an owned native side panel'
-      : SEO_CASE_SCOPE === 'metadata'
-        ? 'owned guest SEO hreflang and Article schema doors in a native side panel'
-        : SEO_CASE_SCOPE === 'narrow'
-          ? 'owned guest SEO detail links and controls at a 360px native side-panel viewport'
-          : 'public-page guest SEO actions in an owned native side panel',
+  scope: STACKED_NOTICE_ONLY
+    ? 'two controlled guest SEO notices and trusted Re-audit at native 360px'
+    : NOTICE_ONLY
+      ? 'bounded guest SEO refusal notice widths, trusted Re-audit, Dismiss and reload'
+      : SEO_CASE_SCOPE === 'readability'
+        ? 'known-text guest SEO readability in an owned native side panel'
+        : SEO_CASE_SCOPE === 'metadata'
+          ? 'owned guest SEO hreflang and Article schema doors in a native side panel'
+          : SEO_CASE_SCOPE === 'narrow'
+            ? 'owned guest SEO detail links and controls at a 360px native side-panel viewport'
+            : 'public-page guest SEO actions in an owned native side panel',
   targets: [],
   deferred: [
     { case: 'T01', part: 'one audit per URL and slow-old-result race' },
@@ -1339,6 +1343,84 @@ try {
     ownedPages: OWNED_SEO_METADATA_PAGES,
     exercisePanel: async ({ page, panel, browserSession, panelTarget }) => {
       advance('owned_guest_panel_ready', { nativePanel: true });
+      if (STACKED_NOTICE_ONLY) {
+        assert.equal(await evaluate(panel, 'innerWidth'), 360, 'stacked fixture uses native 360px');
+        const url = PAGES[0];
+        await page.goto(url, { waitUntil: 'domcontentloaded' });
+        const source = await pageEvidence(page);
+        assert.ok(source.title, 'controlled public page has a title');
+        await click(panel, 'title', 'SEO');
+        await waitFor(
+          'stacked_fixture_current_audit',
+          () => seoContent(panel),
+          (s) => s.scopeValid && s.title === source.title && s.reAudit && !s.error,
+          30000,
+          (s) => ({
+            scope: s?.scopeValid,
+            titleMatched: s?.title === source.title,
+            reAudit: s?.reAudit,
+            error: s?.error,
+          }),
+        );
+        enter('stacked_notice_native_360');
+        const stacked = await runStackedSeoNotices({
+          onDiagnostic: (diagnostic) => {
+            report.stacked_notice_fixture_diagnostic = diagnostic;
+            checkpoint();
+          },
+          panel,
+          browserSession,
+          panelTarget,
+          currentTitle: source.title,
+          expectedMessageLengths: [77, 199],
+          seoContent,
+          runReaudit: async () => {
+            const trace = await startSeoReauditTrace(panel, report, checkpoint);
+            try {
+              await clickSeoReaudit(panel, report, click, checkpoint);
+              advance('stacked_notice_trusted_reaudit_dispatched', { trustedInput: true });
+              await trace.sample('after_release');
+              await waitFor(
+                'stacked_notice_reaudit_running',
+                async () => {
+                  await trace.sample('running_wait');
+                  return reauditTransitionWitness(
+                    report.reaudit_transition_diagnostic,
+                    10000,
+                    30000,
+                  );
+                },
+                (s) => s.runningObserved,
+                10000,
+                (s) => ({ runningObserved: s?.runningObserved }),
+              );
+              await waitFor(
+                'stacked_notice_reaudit_settled',
+                async () => {
+                  await trace.sample('settle_wait');
+                  const state = await seoContent(panel);
+                  return {
+                    settled: reauditSettledOnCurrentPage(
+                      report.reaudit_transition_diagnostic,
+                      state,
+                      source.title,
+                      page.url() === url,
+                    ),
+                    currentTitleMatched: state.title === source.title,
+                  };
+                },
+                (s) => s.settled,
+                30000,
+                (s) => ({ settled: s?.settled, currentTitleMatched: s?.currentTitleMatched }),
+              );
+            } finally {
+              await trace.stop();
+            }
+          },
+        });
+        target('T02', 'multiple_and_long_notice_clearance_at_native_360px', stacked);
+        return;
+      }
       let noticeViewportPlan = null;
       if (CHECK_NOTICE) {
         const history = await runNativeSeoHistoryRecovery({

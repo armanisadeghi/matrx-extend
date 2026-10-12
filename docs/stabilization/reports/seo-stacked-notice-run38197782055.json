@@ -1,0 +1,45 @@
+{
+  "task_id": "seo-stacked-notice-run38197782055",
+  "lane": "B",
+  "status": "UNVERIFIED_INFRASTRUCTURE_FAILURE",
+  "source_sha": "292393cf34cd11a1c89fa97d150f06c20794ef9a",
+  "workflow_source_sha": "292393cf34cd11a1c89fa97d150f06c20794ef9a",
+  "case_id": "EXT-F-1008-T02",
+  "scope": "guest SEO notice-stacked at native 360px",
+  "summary": "The normal lane-B plan and dispatch helpers accepted the exact-source current-main CI artifact. The hosted run failed during actions/checkout before artifact provenance, resource admission, browser setup, fixture execution, or native assertions. This is infrastructure failure with zero product credit.",
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38197782055",
+  "product_artifact": {
+    "ci_run_id": "38197190416",
+    "artifact_id": "11724376193",
+    "artifact_name": "matrx-extend-development-test-292393cf34cd11a1c89fa97d150f06c20794ef9a-38197190416-1",
+    "sha256": "50d1a68afea08fc2e61a666e034969b178c06dd66e6cd9eca31f3d32e0d442ff",
+    "source_sha": "292393cf34cd11a1c89fa97d150f06c20794ef9a"
+  },
+  "admission": {
+    "normal_plan_helper": "PASS",
+    "normal_dispatch_helper": "PASS",
+    "normal_verify_helper": "REFUSED HOSTED_RUN_NOT_SUCCESSFUL"
+  },
+  "hosted": {
+    "run_attempt": 1,
+    "conclusion": "failure",
+    "failure_stage": "actions/checkout@v4",
+    "sanitized_failure": "GitHub checkout failed with DNS/transport errors (host resolution failure, early EOF, transfer timeout); exit 128.",
+    "artifact_count": 0
+  },
+  "native": {
+    "fixture_execution": "not reached",
+    "last_completed_stage": "Require bounded lane and isolate shared credentials",
+    "native_assertions": "not run",
+    "exact_target": "not observed",
+    "fixture_cleanup": "not applicable; no fixture or browser setup occurred"
+  },
+  "resources": {
+    "hosted-package-38197782055-1": "not started",
+    "hosted-browser-38197782055-1": "not started",
+    "hosted-guest-38197782055-1": "not started",
+    "uploaded_journals": 0
+  },
+  "product_credit": "none",
+  "next_action": "Stop this lane without a blind retry. Any future attempt needs a fresh exact-source artifact/admission check and a new guarded run after the hosted checkout failure is demonstrably cleared."
+}

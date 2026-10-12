@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "source_run_id": 38190156680,
+  "case": "guest-chat",
+  "auth_mode": "fresh signed-out guest",
+  "native_driver_status": "pass",
+  "completion": {
+    "initial_reply_completed": true,
+    "same_conversation_followup_completed": true,
+    "post_reload_new_conversation_completed": true,
+    "all_three_terminal_replies_observed": true,
+    "all_observed_chat_requests_http_200": true,
+    "requests": [
+      {
+        "attempt": "opening",
+        "http_status": 200,
+        "conversation_continued": false
+      },
+      {
+        "attempt": "same_conversation_followup",
+        "http_status": 200,
+        "conversation_continued": true
+      },
+      {
+        "attempt": "post_reload_new_conversation",
+        "http_status": 200,
+        "conversation_continued": false
+      }
+    ],
+    "fixture_grounding_observed": true,
+    "terminal_stage": "artifact_unchanged",
+    "raw_assistant_content_included": false
+  },
+  "environment": {
+    "development_build_version": "0.2.509",
+    "runtime_tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "receipt_kind": "local_dev_unpacked",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "artifact_unchanged": true,
+    "server_git_sha_before": "251793812c9866890320f37fe10977d8e5415755",
+    "server_git_sha_after": "251793812c9866890320f37fe10977d8e5415755",
+    "server_version_stable": true
+  },
+  "native_driver_failure_stage": null,
+  "native_driver_failure_code": null
+}

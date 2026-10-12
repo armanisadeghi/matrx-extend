@@ -1,0 +1,32 @@
+{
+  "review": "Independent review of guarded hosted SEO B admission and notice-stacked route allowlist. Read only the requested source and executed focused checks; no browser, build, source edits, commit, or push.",
+  "verdict_a": {
+    "status": "EXPECTED_PATH_PRESENT_LIVE_UNVERIFIED",
+    "finding": "The planned B route carries only guest-seo / notice-stacked, with fixture none, diagnostic false, interrupt none, and macos-15-intel. The native report verifier requires the single T02 stacked-notice target and checks the bounded evidence fields. The three package/browser/guest resource finals are still required. No hosted run or browser session was executed, so user-visible behavior remains unverified.",
+    "evidence": [
+      "scripts/hosted-remote-admission.mjs planHostedGuestSeo has exact B-only inputs and exact dispatch arguments; scripts/hosted-seo-route.mjs admits notice-stacked while retaining its guest-seo case gate.",
+      "scripts/hosted-remote-admission.mjs verifyHostedGuestSeoReport checks T02, the exact subtarget, native 360px, two notices, notice clearance hit points, independent dismissal, and frozen artifact identity/digest/tree provenance.",
+      "verifyHostedResourceJournals requires exactly hosted-package, hosted-browser, and hosted-guest successful finals with no pending or foreign journals."
+    ],
+    "limits": [
+      "No hosted CI run, native browser test, or live SEO report was produced in this review."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "finding": "The verifier correctly keeps the product artifact SHA and workflow checkout SHA separate, as required by docs/stabilization/PLAN.md. The workflow SHA is fetched from the hosted run's head_sha and must satisfy the exact reviewed workflow blob hash and hosted workflow contract. Independently, the imported native report must bind sourceSha, runId, runAttempt, artifactId, GitHub artifact digest, and tree hash; the matching CI run must be a successful push to main at that sourceSha, and the hosted report digest must equal GitHub's exact artifact digest. Requiring hosted run.head_sha === product sourceSha would incorrectly reject valid frozen artifacts after docs-only commits.",
+    "evidence": [
+      "scripts/hosted-remote-admission.mjs verifyHostedWorkflowCheckout(run) checks the workflow blob at run.head_sha against REVIEWED_WORKFLOW_SHA256.",
+      "verifyHostedGuestSeoReport checks the native report's product artifact identity, sourceSha, runId, artifactId, digest, and matching before/after tree SHA.",
+      "requireDevelopmentArtifact checks the successful CI push run's head_sha against product sourceSha and its exact artifact ID, generated name, and optional expected digest; verify-guest-seo also checks the run attempt."
+    ]
+  },
+  "checks": {
+    "head_equals_origin_main": true,
+    "only_requested_four_source_paths_dirty_before_review": true,
+    "node_test": "node --test scripts/hosted-remote-admission.test.mjs scripts/hosted-seo-route.test.mjs — 30 passed, 0 failed",
+    "biome": "pnpm exec biome check scripts/hosted-remote-admission.mjs scripts/hosted-remote-admission.test.mjs scripts/hosted-seo-route.mjs scripts/hosted-seo-route.test.mjs — passed",
+    "workflow_blob_pin": "Reviewed workflow content is unchanged by this diff and the workflow contract checker passes in the focused tests.",
+    "negative_mutation": "Not run; no scratch/mutation harness was available within this review scope."
+  }
+}

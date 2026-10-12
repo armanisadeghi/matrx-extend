@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "cases": ["EXT-F-2006-T02"],
+  "status": "unverified",
+  "role": "member",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "version": "0.2.509",
+      "treeSha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb"
+    },
+    "after": null
+  },
+  "observations": {
+    "hosted_authentication": {
+      "member_signed_in": true,
+      "non_admin_identity": true,
+      "organization_selected": true
+    },
+    "T02": {
+      "case_id": "EXT-F-2006-T02",
+      "verdict": "unverified",
+      "observations": {},
+      "cleanup": [],
+      "cleanup_complete": false,
+      "failure_code": "notes_find_three_home_fixture_unavailable"
+    },
+    "failure_ui": {
+      "active": true,
+      "empty": false,
+      "error": false,
+      "retry": false,
+      "create": true,
+      "editor": false,
+      "title": false,
+      "draftA": false,
+      "draftB": false,
+      "draftC": false,
+      "saved": false,
+      "saving": false,
+      "noteInList": false,
+      "detailFailure": false,
+      "missingDetail": false,
+      "detailRetry": false,
+      "back": false,
+      "deleteFailure": false,
+      "deleteRetry": false
+    },
+    "failure_transport": {
+      "responses": [
+        {
+          "method": "GET",
+          "status": 200,
+          "stage": "T02_native_member_find",
+          "ownedDetail": false,
+          "ownedDelete": false,
+          "injected": false
+        }
+      ],
+      "detailIds": [],
+      "createdNoteIds": [],
+      "failedGet": 0,
+      "failedPost": 0,
+      "failedDetail": 0,
+      "missingDetail": 0,
+      "failedDelete": 0,
+      "zeroDelete": 0,
+      "heldPatch": 0,
+      "autosaveDispatches": 0,
+      "passed": 1,
+      "passedGet": 1,
+      "interceptionFailed": false,
+      "patchPending": false
+    }
+  },
+  "fault_scope": "owned panel, workbench.notes transport; detail/delete faults restricted to the owned note id",
+  "data_scope": "three synthetic notes created and deleted through the Notes UI; recovery ledger is private and records only owned ids, titles, homes, role and build identity",
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "27661ae102f5dab1ea2a1476cb74d76d88a751c7",
+    "runId": 38187574620,
+    "runAttempt": 1,
+    "artifactId": 11720479127,
+    "githubArtifactDigest": "sha256:d901b99baa740c6845d0ace1d9f854c4b6bea0c2edc76c365604010f0a1ac8f2",
+    "version": "0.2.509",
+    "treeSha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "source": {
+      "originMain": "fdb371e3e0468db817a449e0e21ea1b3442f86e7",
+      "localHead": "22a674139e69d1d95accb65afce8050179c81768",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "failure_code": "notes_find_three_home_fixture_unavailable",
+  "failure_stage": "T02_native_member_find"
+}

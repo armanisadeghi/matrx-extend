@@ -1,0 +1,161 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-find-member-run38190081718",
+  "recorded_at": "2026-10-12T01:08:36.945Z",
+  "status": "startup-endpoint-failure-product-unverified",
+  "run": {
+    "id": 38190081718,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38190081718",
+    "conclusion": "failure",
+    "acceptance_lane": "A",
+    "acceptance_case": "notes-find-member",
+    "startup_display_mode": "notes-cdp",
+    "workflow_head_sha": "026785d714be6f059ecb81afdcbd0573ea64be81",
+    "tested_artifact_source_sha": "5720310991c36ae39ed8a32e0f9ae20226f62b62",
+    "development_ci_run_id": 38189416372,
+    "development_artifact_id": 11721207192,
+    "development_artifact_digest": "sha256:a1183de454bde13ecf00698688e5e403d2df455a82e9e077986fcda9e3084bec",
+    "version": "0.2.509",
+    "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "sanitized_artifact": {
+      "id": 11721303027,
+      "name": "hosted-guest-38190081718-1",
+      "digest": "sha256:894838099ff4866db06ffe7ae9490bb20fc9224af5044cac05ce45b660286f14"
+    }
+  },
+  "dispatch_preflight": {
+    "ci_success": true,
+    "artifact_provenance_verified": true,
+    "reviewed_workflow_sha256": "bf120de2e84356722122829790a52deeefb2177f3a87b93181368b2fdeb1910e",
+    "source_delta": "Only hosted CDP escalation and disk recovery report JSON differed between green CI source and dispatch main. Remote source was rechecked immediately before dispatch, after temporary secret stage.",
+    "hosted_lanes_idle": true,
+    "shared_fixture_conflict_observed": false,
+    "temporary_secret_absent_before_stage": true,
+    "identity": {
+      "platform_nonadmin": true,
+      "current_organization_membership": true,
+      "organization_role": "owner",
+      "role_changes": false
+    },
+    "resource_policy": "All original readiness gates and phase resource permits retained; no source, threshold, timeout, or retry changes."
+  },
+  "first_failure": {
+    "stage": "native_cdp_connect",
+    "native_receipt_failure_code": "stage_operation_failed",
+    "bounded_startup_failure": {
+      "failureCode": "owned_cdp_endpoint_timeout",
+      "elapsedMs": 8019,
+      "exitCode": null,
+      "signalCode": null,
+      "launchFailed": false,
+      "spawnObserved": true,
+      "stderrFlags": {
+        "hadStderr": false,
+        "codeSignature": false,
+        "dynamicLoader": false,
+        "permissionDenied": false,
+        "sandbox": false,
+        "crash": false,
+        "devtoolsListening": false
+      },
+      "endpointWaitDiagnostic": {
+        "polls": 218,
+        "elapsedMs": 8006,
+        "longestReadMs": 121
+      }
+    },
+    "cdp_phases": {
+      "schema": 1,
+      "outcome": "failed",
+      "phases": [
+        {
+          "phase": "connector_settled",
+          "elapsedMs": 8008
+        }
+      ],
+      "longestTimerDelayMs": 618,
+      "timerSamples": 44,
+      "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+    },
+    "interpretation": "The owned connector failed during endpoint discovery, before successful endpoint read, ownership validation, WebSocket construction, loopback probe, sign-in or fixture provisioning. Unlike run38185461370 socket-open timeout, this run never reached the socket boundary. Unlike run38188627893, it did not connect.",
+    "http_status": "Not observed: ownership was never verified, so independent HTTP probe never started.",
+    "timer": "Maximum timer delay618ms over44 samples is evidence of scheduling delay during endpoint discovery; it does not prove that delay caused endpoint absence.",
+    "launch": "Spawn observed, no launch failure, no child exit/signal at timeout. No stderr or DevTools-listening flag observed; that absence does not prove Chrome had not eventually reached DevTools after timeout."
+  },
+  "resource_finals": {
+    "package": {
+      "schema": 1,
+      "at": "2026-10-12T01:00:49.825Z",
+      "runId": "hosted-package-38190081718-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "browser": {
+      "schema": 1,
+      "at": "2026-10-12T01:03:35.365Z",
+      "runId": "hosted-browser-38190081718-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "guest": {
+      "schema": 1,
+      "at": "2026-10-12T01:06:06.237Z",
+      "runId": "hosted-guest-38190081718-1",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "resource_timeline": "Acceptance admitted01:05:27.530Z busy0.02/load1.33 on4 CPUs. Healthy watch01:05:43.653Z busy0.53/load1.12. Startup CPU snapshots01:05:51.709–01:05:59.967Z bracket the endpoint attempt. CPU pending01:06:00.031Z busy1.00/load11.62 with RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY; child exit1 at01:06:05.868Z, invalid final01:06:06.237Z, exit3.",
+  "cpu_interpretation": {
+    "existing_process_totals_seconds": {
+      "ownedChromium": 0,
+      "ownedOther": 0.35,
+      "hostProvisioner": 1.9,
+      "otherHost": 18.61
+    },
+    "new_owned_chromium": "Appeared main Chromium lifetime CPU3.63s and helpers0.24s/0.23s are recorded separately; ownedChromium category total0 excludes new processes and is not absence of browser CPU.",
+    "limits": "Other-host18.61s and provisioner1.90s are process-snapshot deltas across the bracket, not the iostat interval and not a causal explanation. The first resource pending sample is after connector settlement. Host contention is observed but no single cause for endpoint timeout is established."
+  },
+  "native_and_fixture_verdict": {
+    "authentication": "Not reached",
+    "notes_ui": "Not reached",
+    "run_owned_homes": "Provisioning not reached",
+    "original_t02_oracle": "Not reached",
+    "owned_note_writes": 0,
+    "owned_home_writes": 0,
+    "fixture_ledger": "Not started; no ledger is present in the hosted artifact. Source order invokes runNotesFindAcceptance only after successful connection and sign-in.",
+    "fixture_cleanup": "No fixture resources created; no owned fixture cleanup is required. The fixture repair remains live-unverified."
+  },
+  "credential_cleanup": {
+    "fresh_one_use_link": true,
+    "earlier_links_reused": false,
+    "local_link_removed_before_dispatch": true,
+    "temporary_repository_secret_deleted_at_terminal": true,
+    "secret_name_match_count": 0,
+    "local_link_absent": true,
+    "local_identity_absent": true,
+    "credential_values_persisted": false
+  },
+  "product_verdict": {
+    "case_id": "EXT-F-2006-T02",
+    "status": "unverified",
+    "credit": 0,
+    "reason": "Failure before UI and invalid acceptance resource final. No original T02 assertion completed."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/notes-find-member/run38190081718/native-receipt.json",
+    "docs/stabilization/evidence/notes-find-member/run38190081718/startup-diagnostics.json",
+    "docs/stabilization/evidence/notes-find-member/run38190081718/resource-events.json"
+  ],
+  "sanitization": "Removed extension directory from native receipt. Resource events omit local journal paths. Retained only bounded startup categories/timing, numeric metrics, process basenames and provenance; no endpoint URL/port/path, auth values, headers, raw exceptions or fixture payloads. No screenshots were generated or copied.",
+  "next": "Independent review of the bounded endpoint-stage diagnosis and resource invalidity. No second retry. Continue infrastructure diagnosis separately; this run supplies no verdict on the fixture repair or Notes product behavior."
+}

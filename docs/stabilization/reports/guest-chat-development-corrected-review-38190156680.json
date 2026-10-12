@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "review": {
+    "run_id": 38190156680,
+    "lane": "B",
+    "case": "guest-chat",
+    "review_type": "independent corrected hosted-evidence review",
+    "sources": [
+      "docs/stabilization/reports/guest-chat-development-run38190156680.json",
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/native-report.sanitized.json",
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-package-38190156680.jsonl",
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-browser-38190156680.jsonl",
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-guest-38190156680.jsonl",
+      "hosted artifact 11720608461 (downloaded ZIP SHA-256 aeea8ed592988e4691ac9c3d6448787f011f9bb6fc1833c102b678c103c945d5)",
+      "scripts/guest-chat-evidence-summary.mjs",
+      "scripts/guest-chat-evidence-summary.test.mjs"
+    ]
+  },
+  "verdicts": {
+    "A_product_acceptance": {
+      "verdict": "FAIL_ZERO_CREDIT",
+      "reason": "The hosted workflow ended failure: package and browser resource finals were valid, but the guest exercise final was invalid (RESOURCE_CPU_CONFIRMATION_EXPIRED), exit 3, stopped at the safe boundary. Startup measurement was skipped. The run report correctly assigns zero acceptance credit and makes no product-defect claim.",
+      "bounded_observations": [
+        "Raw hosted native report records terminal_answer for opening, same-conversation follow-up, and post-reload new-conversation turns; all three guest AI requests returned HTTP 200.",
+        "Same-conversation requests retained the same conversation fingerprint and the post-reload request used a different fingerprint.",
+        "The same-conversation and post-reload screenshots visibly contain assistant text; the opening-answer screenshot is blank in the chat region and does not visually corroborate that reply."
+      ]
+    },
+    "B_evidence_integrity": {
+      "verdict": "PARTIAL",
+      "verified": [
+        "Downloaded artifact SHA-256 matches the recorded hosted artifact digest exactly.",
+        "Raw native report has all three terminal_answer verdicts, matching the corrected sanitized summary\u2019s completion booleans, HTTP status mapping, fixture-grounding booleans, and build/server provenance.",
+        "Server version endpoint returned 200 before and after with the same git SHA; development artifact version, source SHA, tree digest, extension ID, and unchanged-artifact flag are present in the run report/native artifact.",
+        "Resource journals independently show valid package/browser finals and an invalid guest final with exit code 3 and RESOURCE_CPU_CONFIRMATION_EXPIRED."
+      ],
+      "finding": {
+        "severity": "Important",
+        "location": "hosted artifact 11720608461: test-results/native-sidepanel-qa-c6tXFr/guest-chat-real-answer.png",
+        "issue": "The screenshot labeled as the opening real answer shows the guest shell and composer but no assistant reply. This leaves the opening turn supported by raw driver verdict/grounding fields, not visible screenshot evidence.",
+        "impact": "The corrected compact report is internally consistent and artifact integrity is established, but the visual evidence set does not independently corroborate all three observed replies."
+      },
+      "test_verification": {
+        "command": "node --test scripts/guest-chat-evidence-summary.test.mjs",
+        "result": "2 passed, 0 failed",
+        "mutation": "In a temporary copy, changed terminal(value) to always return true; the nonterminal-turn test failed on the expected true-versus-false assertion. Temporary files were removed."
+      }
+    }
+  },
+  "limitations": [
+    "No live browser replay was performed.",
+    "This review covers the hosted development artifact and evidence mapper, not a Chrome Web Store installation or implementation diff."
+  ]
+}

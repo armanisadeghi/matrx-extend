@@ -1,0 +1,32 @@
+{
+  "task_id": "scrape-guest-development-full-b-38187979718",
+  "lane": "B",
+  "status": "BLOCKED_ENV",
+  "feature_ids": [
+    "EXT-F-1007"
+  ],
+  "defect_ids": [],
+  "summary": "One guarded lane B guest-scrape-development full-scope attempt used CI development artifact 11720397412 from source 47907605d42dd8d7ac1cac71689c87b386447a19. Authentication and artifact gates passed, but native acceptance stopped at cdp_connect with owned_cdp_open_timeout. The hosted-guest resource journal finalized invalid after CPU busy/high-load signals, so no product behavior receives credit.",
+  "verification": [
+    {
+      "case_id": "EXT-F-1007",
+      "run_id": 38187979718,
+      "verdict": "invalid_infrastructure_attempt_no_behavior_credit",
+      "evidence": [
+        "docs/stabilization/evidence/guest-scrape-development/run38187979718/receipt.sanitized.json",
+        "docs/stabilization/evidence/guest-scrape-development/run38187979718/native-report.sanitized.json",
+        "docs/stabilization/evidence/guest-scrape-development/run38187979718/resource-finals.sanitized.json",
+        "docs/stabilization/evidence/guest-scrape-development/run38187979718/resource-journals/"
+      ]
+    }
+  ],
+  "limitations": [
+    "No Scrape target or control ran; this is not a product failure.",
+    "Tested artifact is frozen at 47907605d while current main is 27661ae; it cannot establish current-main or release behavior.",
+    "Store-only guest-scrape remains unverified."
+  ],
+  "open_questions": [
+    "A separately authorized retry would require a new exact-current-main CI artifact, a fresh runner, and a new successful resource admission."
+  ],
+  "next_action": "Keep this invalid run as infrastructure evidence; do not retry against this artifact."
+}

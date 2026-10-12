@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "source_run_id": 38202446117,
+  "status": "unverified",
+  "failure_code": "notes_find_general_home_uninitialized",
+  "failure_stage": "T02_native_member_find",
+  "hosted_authentication": {
+    "member_signed_in": true,
+    "non_admin_identity": true,
+    "organization_selected": true
+  },
+  "T02": {
+    "verdict": "unverified",
+    "failure_code": "notes_find_general_home_uninitialized",
+    "home_precondition": {
+      "selected_org_scope_count": 0,
+      "selected_org_type_count": 0,
+      "literal_general_count": 0,
+      "canonical_general_count": 1,
+      "canonical_general_uninitialized": true,
+      "canonical_general_id_valid": false,
+      "canonical_general_in_tree": false,
+      "general_type_id_valid": false,
+      "general_type_in_tree": false
+    },
+    "cleanup_count": 0,
+    "pending_home_cleanup_count": 0,
+    "cleanup_complete": false
+  },
+  "raw_report_sha256": "d2d3bef772acd0f156e8c63acc9089b684e3deebaba6e93019250dbb769b1c78",
+  "limits": "Stopped before opening Notes or writing fixtures; zero product behavior credit. Raw identity, org, ledger path and transport content are excluded."
+}

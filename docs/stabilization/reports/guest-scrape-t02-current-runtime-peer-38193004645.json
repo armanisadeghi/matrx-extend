@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "reviewer": "/root/guest_scrape_t02_peer_1012",
+  "reviewed_at_utc": "2026-10-12T01:53:39Z",
+  "hosted_run_id": 38193004645,
+  "case_id": "EXT-F-1007-T02",
+  "scope": "Independent review of the bounded guest deep-capture host-permission-denial, Try again, lazy-marker, Dismiss, and cleanup subtarget on the frozen v0.2.509 development artifact.",
+  "verdict_a_behavior": {
+    "status": "PASS_BOUNDED_SUBTARGET",
+    "finding": "The workflow-bound native driver and its uploaded observation report support the bounded sequence: a denied executeScript probe on the owned fixture origin precedes the deep-capture click; the permission error and Try again are observed while the lazy marker is absent; after removing the site restriction, a resolved access probe precedes Try again, and the error clears with the deep-only lazy marker visible. A second effective denial is followed by Dismiss and an observed cleared error. The native report also records cleanup restoring host access to ON_ALL_SITES and the origin to unrestricted/not permitted. The assertions are backed by the source-bound driver/oracle and its report fields, but no raw browser action timeline or screenshots of those intermediate states were retained.",
+    "bounded_claim": "Guest deep capture recovers from an effective host-permission denial through Try again, preserves deep mode through appearance of a scroll-triggered lazy marker, and clears a separate denied state through Dismiss on the frozen v0.2.509 CI development artifact.",
+    "t14_separate_result": "The hosted native report identifies itself as partial EXT-F-1007-T14. It covers denial, Try again, deep marker, second denial, Dismiss, and cleanup; Reload page is explicitly unverified.",
+    "not_established": [
+      "Visible scrolling progress, full EXT-F-1007-T02, or full EXT-F-1007-T14 acceptance.",
+      "T14 Reload page recovery.",
+      "Default Chrome, Store-installed extension, or member/admin behavior.",
+      "A general zero-network-write claim: the guest driver invokes no sign-in, save, delete, or organization-scoped operation, but backend request traffic was not retained or independently audited."
+    ]
+  },
+  "verdict_b_evidence_integrity": {
+    "status": "PASS_WITH_LIMITATIONS",
+    "finding": "GitHub reports hosted workflow run 38193004645 completed successfully at workflow SHA b68ba9eb597c88cbbed143fdf7ddf529f677eb58, and CI development run 38191947214 completed successfully at source SHA b92d4e2fa9e7861b228e3625fe258938253882fe. GitHub artifact metadata identifies result artifact 11722192868 as hosted-guest-38193004645-1 and product artifact 11721887256 as matrx-extend-development-test-b92d4e2fa9e7861b228e3625fe258938253882fe-38191947214-1. Downloaded archive SHA-256 values match the receipt for both: result 8c3221484717fa6c95ad1ed51c692bcbb1b5c528b770a60671a2361c0a660545 and product ee70575a63c4aa553cb5ef45faf1401027cc2a1ace93c0d6aaf3812eed501626. The sanitized native report and all three resource journals match the hosted result ZIP byte-for-byte; the two screenshots also match its packaged images byte-for-byte. Each resource journal ends admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Comparing the two commits shows no changed source/workflow files in the inspected driver/oracle/workflow scope; the only path in the full commit diff is unrelated stabilization evidence.",
+    "limitations": [
+      "The hosted result receipt omits Chrome version, extension runtime ID, explicit backend identity, and detailed permission inventory; this is not a fully populated build receipt.",
+      "The retained screenshots are generic post-run guest panel and synthetic target captures; neither depicts the denial, retry, or dismiss states.",
+      "The report contains structured observations rather than a raw action timeline, so the state sequence is supported by the exact workflow source assertions plus the driver's report, not an independently retained UI trace.",
+      "Resource journal validity was checked against each journal's final record; the result archive digest anchors the bundled files, but no per-journal hashes are recorded in the receipt."
+    ],
+    "resource_finals": {
+      "package": "valid",
+      "browser": "valid",
+      "guest": "valid"
+    },
+    "verified_digests": {
+      "development_artifact_11721887256": "sha256:ee70575a63c4aa553cb5ef45faf1401027cc2a1ace93c0d6aaf3812eed501626",
+      "hosted_result_artifact_11722192868": "sha256:8c3221484717fa6c95ad1ed51c692bcbb1b5c528b770a60671a2361c0a660545"
+    }
+  },
+  "sources_checked": [
+    "AGENTS.md",
+    "docs/stabilization/runs/guest-scrape-t02-current-runtime-run38193004645.json",
+    "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/resource-journals/hosted-package-38193004645-1.jsonl",
+    "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/resource-journals/hosted-browser-38193004645-1.jsonl",
+    "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/resource-journals/hosted-guest-38193004645-1.jsonl",
+    "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/screenshots/sidepanel-post-run.png",
+    "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/screenshots/target-after-open.png",
+    "tests/browser/scrape-error-recovery-guest.mjs at product SHA b92d4e2fa9e7861b228e3625fe258938253882fe and workflow SHA b68ba9eb597c88cbbed143fdf7ddf529f677eb58",
+    "tests/browser/scrape-error-recovery-guest-oracle.mjs at product SHA b92d4e2fa9e7861b228e3625fe258938253882fe",
+    "tests/browser/scrape-effective-host-access-probe.mjs at product SHA b92d4e2fa9e7861b228e3625fe258938253882fe",
+    "tests/browser/scrape-recovery-failure-diagnostic.mjs at product SHA b92d4e2fa9e7861b228e3625fe258938253882fe",
+    "GitHub hosted workflow run 38193004645, CI run 38191947214, and artifacts 11722192868 and 11721887256"
+  ],
+  "scope_boundary": "Read-only independent review. No browser flow was rerun; no product source, inventory, commit, or push was changed."
+}

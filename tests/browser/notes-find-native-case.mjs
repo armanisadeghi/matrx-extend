@@ -1,14 +1,123 @@
 import { randomUUID } from 'node:crypto';
 import {
   createNotesFindLedger,
+  planNotesFindHome,
   recordNotesFindDeleted,
+  recordNotesFindHomeArchived,
   recordNotesFindHomeAssigned,
+  recordNotesFindHomeCreated,
   recordNotesFindInsertBeforeValidation,
+  requireNotesFindHomeWrite,
   writeNotesFindLedger,
 } from './notes-find-fixture.mjs';
+import { inspectNotesFindHomePrecondition } from './notes-find-home-precondition.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+async function scopeDoor(
+  panel,
+  origin,
+  publishableKey,
+  organizationId,
+  door,
+  args,
+  schema = 'custom',
+) {
+  const result = await evaluate(
+    panel,
+    `(async () => {
+    const token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken'];
+    if (typeof token !== 'string' || !token) return { status: 0, data: null };
+    const response = await fetch(${JSON.stringify(`${origin}/rest/v1/rpc/`)} + ${JSON.stringify(door)}, {
+      method: 'POST',
+      headers: {
+        apikey: ${JSON.stringify(publishableKey)},
+        Authorization: 'Bearer ' + token,
+        'X-Organization-Id': ${JSON.stringify(organizationId)},
+        'Content-Profile': ${JSON.stringify(schema)},
+        'Accept-Profile': ${JSON.stringify(schema)},
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(${JSON.stringify(args)}),
+    });
+    return { status: response.status, data: await response.json().catch(() => null) };
+  })()`,
+  );
+  if (!result || result.status < 200 || result.status >= 300)
+    throw new Error(`notes_find_${door}_failed_${result?.status ?? 0}`);
+  return result.data;
+}
+
+async function selectedOrgTree(panel, origin, publishableKey, organizationId) {
+  const data = await scopeDoor(panel, origin, publishableKey, organizationId, 'context_tree', {
+    p_organization_ids: [organizationId],
+  });
+  if (!Array.isArray(data?.scopes) || !Array.isArray(data?.types))
+    throw new Error('notes_find_scope_tree_shape_invalid');
+  return data;
+}
+
+async function makeOwnedHomes(
+  panel,
+  origin,
+  publishableKey,
+  organizationId,
+  ledger,
+  ledgerPath,
+  token,
+  report,
+) {
+  const tree = await selectedOrgTree(panel, origin, publishableKey, organizationId);
+  const homes = await scopeDoor(
+    panel,
+    origin,
+    publishableKey,
+    organizationId,
+    'my_homes',
+    {},
+    'platform',
+  );
+  if (!Array.isArray(homes)) throw new Error('notes_find_my_homes_shape_invalid');
+  const precondition = inspectNotesFindHomePrecondition(tree, organizationId, homes);
+  report.observations.home_precondition = precondition.diagnostic;
+  if (precondition.code) throw new Error(precondition.code);
+  const typeId = precondition.typeId;
+  const names = [`Harbor Dental Intake ${token}`, `Harbor Dental Follow-up ${token}`];
+  for (const name of names) {
+    planNotesFindHome(ledger, name);
+    await writeLedger(ledgerPath, ledger);
+    const answer = await scopeDoor(
+      panel,
+      origin,
+      publishableKey,
+      organizationId,
+      'context_scope_write',
+      {
+        p_organization_id: organizationId,
+        p_scope_id: null,
+        p_type_id: typeId,
+        p_spec: { name, slug: name.toLowerCase().replaceAll(' ', '-'), description: '' },
+      },
+    );
+    const scopeId = requireNotesFindHomeWrite(answer, organizationId, name);
+    recordNotesFindHomeCreated(ledger, name, scopeId);
+    await writeLedger(ledgerPath, ledger);
+  }
+  const readback = await selectedOrgTree(panel, origin, publishableKey, organizationId);
+  for (const home of ledger.owned_homes) {
+    if (
+      !readback.scopes.some(
+        (scope) =>
+          scope.id === home.scope_id &&
+          scope.organization_id === organizationId &&
+          scope.name === home.name,
+      )
+    )
+      throw new Error('notes_find_created_home_readback_missing');
+  }
+  return { general: precondition.general, homes: ledger.owned_homes };
+}
 
 function rootExpression() {
   return `(() => {
@@ -242,6 +351,135 @@ async function chooseHome(panel, label) {
   );
 }
 
+/** EXT-D-0201 only: a canonical General may exist before its scope is initialized. */
+export async function runNotesLazyGeneralPicker({
+  panel,
+  transport,
+  origin,
+  publishableKey,
+  selectedOrganizationId,
+}) {
+  if (!UUID.test(selectedOrganizationId ?? ''))
+    throw new Error('notes_lazy_general_selected_organization_invalid');
+  let writeRequests = 0;
+  const off = panel.on('Network.requestWillBeSent', (event) => {
+    try {
+      const url = new URL(event.request.url);
+      if (url.origin !== origin || !url.pathname.startsWith('/rest/v1/')) return;
+      const readRpc =
+        event.request.method === 'POST' &&
+        ['/rest/v1/rpc/context_tree', '/rest/v1/rpc/my_homes'].includes(url.pathname);
+      if (!readRpc && event.request.method !== 'GET') writeRequests += 1;
+    } catch {
+      writeRequests += 1;
+    }
+  });
+  const report = {
+    case_id: 'EXT-D-0201-picker',
+    verdict: 'unverified',
+    observations: {},
+  };
+  try {
+    const snapshot = async () => {
+      const tree = await selectedOrgTree(panel, origin, publishableKey, selectedOrganizationId);
+      const homes = await scopeDoor(
+        panel,
+        origin,
+        publishableKey,
+        selectedOrganizationId,
+        'my_homes',
+        {},
+        'platform',
+      );
+      if (!Array.isArray(homes)) throw new Error('notes_lazy_general_homes_invalid');
+      const canonical = homes.filter(
+        (home) => home.organization_id === selectedOrganizationId && home.is_general === true,
+      );
+      if (canonical.length !== 1 || canonical[0].scope_id !== null)
+        throw new Error('notes_lazy_general_precondition_missing');
+      const home = canonical[0];
+      const selectedScopes = tree.scopes.filter(
+        (scope) => scope.organization_id === selectedOrganizationId,
+      );
+      if (
+        typeof home.name !== 'string' ||
+        !home.name.trim() ||
+        typeof home.organization_name !== 'string' ||
+        !home.organization_name.trim() ||
+        selectedScopes.length !== 0
+      )
+        throw new Error('notes_lazy_general_precondition_invalid');
+      return {
+        name: home.name,
+        organizationName: home.organization_name,
+        selectedOrgScopeCount: selectedScopes.length,
+      };
+    };
+    const before = await snapshot();
+    report.observations.before = {
+      canonical_general_nullable: true,
+      general_scope_absent: true,
+      selected_organization_confirmed: true,
+    };
+    await click(panel, 'title', 'Notes');
+    await waitFor(
+      'notes_lazy_general_loaded',
+      () => t02State(panel),
+      (state) => state.active && state.create && state.homeLabel === 'All homes',
+      30_000,
+    );
+    const label = `${before.name} · ${before.organizationName}`;
+    await openHomePicker(panel, label);
+    const open = await t02State(panel);
+    if (open.homeOptions.filter((option) => option === label).length !== 1)
+      throw new Error('notes_lazy_general_picker_option_missing');
+    await chooseHome(panel, label);
+    const selected = await t02State(panel);
+    if (!selected.active || selected.homeLabel !== label || selected.homeExpanded)
+      throw new Error('notes_lazy_general_selection_unstable');
+    const after = await snapshot();
+    if (
+      after.name !== before.name ||
+      after.organizationName !== before.organizationName ||
+      after.selectedOrgScopeCount !== 0 ||
+      writeRequests !== 0 ||
+      (transport?.state().blockedWrites ?? 0) !== 0 ||
+      transport?.state().interceptionFailed
+    )
+      throw new Error('notes_lazy_general_unexpected_write_or_initialization');
+    report.observations.picker = {
+      synthetic_general_visible: true,
+      selected_as_filter: true,
+      selection_stable: true,
+    };
+    report.observations.after = {
+      canonical_general_nullable: true,
+      general_scope_absent: true,
+      unexpected_write_requests: writeRequests,
+    };
+    report.verdict = 'pass';
+  } catch (error) {
+    const safeCodes = new Set([
+      'notes_lazy_general_selected_organization_invalid',
+      'notes_lazy_general_homes_invalid',
+      'notes_lazy_general_precondition_missing',
+      'notes_lazy_general_precondition_invalid',
+      'notes_lazy_general_picker_option_missing',
+      'notes_lazy_general_selection_unstable',
+      'notes_lazy_general_unexpected_write_or_initialization',
+      'notes_find_scope_tree_shape_invalid',
+      'notes_find_home_trigger_ambiguous',
+      'notes_find_home_picker_did_not_open',
+    ]);
+    report.failure_code = safeCodes.has(error?.message)
+      ? error.message
+      : 'notes_lazy_general_unverified';
+  } finally {
+    off();
+  }
+  return report;
+}
+
 async function clickBySelector(panel, selector, expectedText, label) {
   const point = await evaluate(
     panel,
@@ -395,6 +633,7 @@ export async function runNotesFindAcceptance({
   panel,
   transport,
   origin,
+  publishableKey,
   selectedOrganizationId,
   selectedOrganizationName,
   role,
@@ -424,6 +663,18 @@ export async function runNotesFindAcceptance({
   let ledgerStarted = false;
   let testError;
   try {
+    ledgerStarted = true;
+    await writeLedger(ledgerPath, ledger);
+    const owned = await makeOwnedHomes(
+      panel,
+      origin,
+      publishableKey,
+      selectedOrganizationId,
+      ledger,
+      ledgerPath,
+      token,
+      report,
+    );
     await click(panel, 'title', 'Notes');
     await waitFor(
       'notes_find_list_ready',
@@ -443,13 +694,17 @@ export async function runNotesFindAcceptance({
     const activeOrgScopes = allVisibleScopes.filter(
       (scope) => scope.organization_id === selectedOrganizationId,
     );
-    const generals = activeOrgScopes.filter(
-      (scope) => scope.name.toLocaleLowerCase() === 'general',
+    const generals = activeOrgScopes.filter((scope) => scope.id === owned.general.id);
+    const customs = owned.homes.map((home) =>
+      activeOrgScopes.find((scope) => scope.id === home.scope_id && scope.name === home.name),
     );
-    const customs = activeOrgScopes.filter((scope) => scope.name.toLocaleLowerCase() !== 'general');
-    if (generals.length !== 1 || customs.length < 2)
+    if (
+      generals.length !== 1 ||
+      generals[0].id !== owned.general.id ||
+      customs.some((scope) => !scope)
+    )
       throw new Error('notes_find_three_home_fixture_unavailable');
-    const names = [generals[0].name, ...customs.slice(0, 2).map((scope) => scope.name)];
+    const names = [generals[0].name, ...customs.map((scope) => scope.name)];
     if (new Set(names.map((value) => value.toLocaleLowerCase())).size !== 3)
       throw new Error('notes_find_home_names_not_unique');
     const homeLabels = names.map((name) =>
@@ -466,8 +721,6 @@ export async function runNotesFindAcceptance({
       'notes_find_all_homes_option',
     );
 
-    ledgerStarted = true;
-    await writeLedger(ledgerPath, ledger);
     const fixtures = [];
     const fixtureTitles = [
       `Harbor Dental intake insurance eligibility ${token}`,
@@ -731,7 +984,59 @@ export async function runNotesFindAcceptance({
           .filter((item) => item.status === 'created')
           .map((item) => item.note_id);
       }
-      report.cleanup_complete = ledger.status === 'deleted_confirmed';
+      if (ledger.owned_homes.length) {
+        const recoveryTree = await selectedOrgTree(
+          panel,
+          origin,
+          publishableKey,
+          selectedOrganizationId,
+        ).catch(() => ({ scopes: [] }));
+        for (const home of [...ledger.owned_homes].reverse()) {
+          if (home.status === 'archived_confirmed') continue;
+          const found = recoveryTree.scopes.filter(
+            (scope) => scope.organization_id === selectedOrganizationId && scope.name === home.name,
+          );
+          if (home.status === 'planned' && found.length === 1) {
+            recordNotesFindHomeCreated(ledger, home.name, found[0].id);
+            await writeLedger(ledgerPath, ledger);
+          }
+          if (
+            home.status !== 'created' ||
+            !UUID.test(home.scope_id ?? '') ||
+            ledger.fixtures.some((item) => item.status === 'created')
+          )
+            continue;
+          try {
+            await scopeDoor(
+              panel,
+              origin,
+              publishableKey,
+              selectedOrganizationId,
+              'context_scope_archive',
+              {
+                p_scope_id: home.scope_id,
+              },
+            );
+            const archivedTree = await selectedOrgTree(
+              panel,
+              origin,
+              publishableKey,
+              selectedOrganizationId,
+            );
+            if (!archivedTree.scopes.some((scope) => scope.id === home.scope_id)) {
+              recordNotesFindHomeArchived(ledger, home.scope_id);
+              await writeLedger(ledgerPath, ledger);
+            }
+          } catch {
+            /* The private ledger retains the exact owned scope for recovery. */
+          }
+        }
+      }
+      report.home_cleanup_pending = ledger.owned_homes
+        .filter((item) => item.status !== 'archived_confirmed')
+        .map((item) => ({ name: item.name, scope_id: item.scope_id }));
+      report.cleanup_complete =
+        ledger.status === 'deleted_confirmed' && report.home_cleanup_pending.length === 0;
       if (ledgerStarted) await writeLedger(ledgerPath, ledger);
     } catch {
       report.cleanup_complete = false;

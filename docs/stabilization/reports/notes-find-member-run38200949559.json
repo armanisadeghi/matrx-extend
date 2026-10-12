@@ -1,0 +1,68 @@
+{
+  "schema": "notes-member-run-report-v1",
+  "run_id": "38200949559",
+  "run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38200949559",
+  "verdict": "workflow_precondition_failure_zero_credit",
+  "product_credit": 0,
+  "source": {
+    "workflow_sha": "1bd31df8c20941f3eb813d794041cbfe29dad938",
+    "artifact_sha": "1bd31df8c20941f3eb813d794041cbfe29dad938",
+    "ci_run_id": "38200192149",
+    "development_artifact_id": "11725860418",
+    "digest": "sha256:3c92216d26e6a60a01c6d9dd42e702be88060c44b48e3b8387c6033e7b69384c"
+  },
+  "admission": {
+    "plan_notes": "passed",
+    "dispatch_notes": "passed",
+    "verify_notes": "HOSTED_RUN_NOT_SUCCESSFUL",
+    "checkout_clean_and_synchronized": true,
+    "both_hosted_workflows_idle_before_dispatch": true,
+    "dispatch_mode": "headed",
+    "direct_dispatch_bypass": false
+  },
+  "outcome": {
+    "first_failure_step": "Require exactly one artifact provenance mode",
+    "failure_at": "2026-10-12T03:45:07Z",
+    "exit_code": 1,
+    "runner_platform": "macos-15-intel/X64/x86_64",
+    "branch": "Notes member authentication reaches generic non-scrape guest-only assertion",
+    "source_only_branch_reproduction_exit": 1,
+    "artifact_import_reached": false,
+    "authentication_reached": false,
+    "canonical_my_homes_read_reached": false,
+    "home_precondition_classification": "not_reached",
+    "native_browser_reached": false,
+    "original_T02_assertions_reached": false,
+    "owned_homes_created": 0,
+    "notes_created": 0,
+    "shared_general_initialized": false,
+    "post_timeout_observer": "not_reached"
+  },
+  "resources": {
+    "package_final": "absent_phase_not_started",
+    "browser_final": "absent_phase_not_started",
+    "guest_final": "absent_phase_not_started",
+    "valid_acceptance": false
+  },
+  "cleanup": {
+    "platform_role": "nonadmin",
+    "organization_role": "owner",
+    "fresh_link_staged_via_stdin": true,
+    "local_link_removed_before_dispatch": true,
+    "github_secret_deleted_at_terminal": true,
+    "temporary_secret_name_match_count": 0,
+    "local_private_directory_absent": true,
+    "verified_at": "2026-10-12T03:46:50.743Z",
+    "fixture_cleanup_required": false
+  },
+  "evidence": [
+    "docs/stabilization/evidence/notes-find-member/run38200949559/workflow-receipt.json"
+  ],
+  "limitations": [
+    "No native report, resource journals or hosted artifact was emitted because validation failed before resource setup.",
+    "No observation of lazy or initialized General, Notes behavior or product fix is available."
+  ],
+  "next": "Repair the Notes member authentication workflow admission branch with a forcing integration test and independent review; no retry in this task.",
+  "independent_review": "pending",
+  "retry_performed": false
+}

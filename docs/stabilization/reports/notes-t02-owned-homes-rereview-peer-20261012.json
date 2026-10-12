@@ -1,0 +1,35 @@
+{
+  "review_id": "notes-t02-owned-homes-rereview-peer-20261012",
+  "scope": "Re-review of corrected uncommitted Notes T02 fixture harness repair",
+  "prior_finding": {
+    "status": "ADDRESSED",
+    "detail": "requireNotesFindHomeWrite now accepts only the canonical successful envelope, validates the nested row ID, organization ID, and exact run-specific name, then records that ID. This matches the `{ ok, row, store }` scope-write door contract and closes the previous bare-row parse failure."
+  },
+  "verdict_a": {
+    "result": "PARTIAL",
+    "summary": "The corrected code now provisions and verifies two run-owned homes under the selected organization's General type, then feeds those specific rows into the existing Notes UI oracle. The prior blocker is addressed, but a live member acceptance run was not available, so behavior in the UI and actual member RPC authorization are not yet observed.",
+    "findings": [],
+    "not_verified": [
+      "No hosted/native browser run was performed; the full Notes create, search, home-filter, edit/open, and cleanup oracle remains unverified live.",
+      "No authenticated platform-member RPC was run to observe scope write/read/archive permissions end to end."
+    ]
+  },
+  "verdict_b": {
+    "result": "PASS",
+    "summary": "The harness uses the selected organization explicitly for the tree, write, and archive calls; identifies General and its type from the live tree; creates only two uniquely named run-owned homes; and validates their exact rows on readback. Recovery tracks planned names before calls, records returned IDs before continuing, recovers uniquely matching planned rows after an ambiguous/lost response, archives only those recorded IDs, and reports unresolved homes instead of claiming clean completion.",
+    "findings": [],
+    "observations": [
+      "The previous homes are no longer selected as fixtures or mutated. General is observed and retained; cleanup only archives run-owned IDs.",
+      "The original Notes UI checks remain downstream of home provisioning, using the same three-home labels and existing create/search/filter/open expectations."
+    ]
+  },
+  "checks": [
+    "node --test tests/browser/notes-find-fixture.test.mjs — PASS (7 tests), including successful canonical envelope and refusal of bare, foreign-organization, and unsuccessful answers",
+    "node --check tests/browser/notes-find-native-case.mjs — PASS",
+    "node --check tests/browser/notes-native-acceptance.mjs — PASS"
+  ],
+  "limits": [
+    "Review was source and lightweight local-test based; no live database writes or browser acceptance run were performed.",
+    "The seven-test fixture file was rerun; no broader suites were run."
+  ]
+}
