@@ -656,18 +656,19 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           )
             .split('\0')
             .filter(Boolean);
-          const runs = ['queued', 'in_progress', 'waiting', 'pending', 'requested'].flatMap(
-            (status) => {
-              const listing = ghJson(
-                `repos/${OWNER}/actions/workflows/hosted-guest-acceptance.yml/runs?status=${status}&per_page=100`,
-              );
-              if (
-                !Array.isArray(listing.workflow_runs) ||
-                listing.total_count !== listing.workflow_runs.length
-              )
-                refuse('HOSTED_NOTES_A_CAPACITY_REFUSED');
-              return listing.workflow_runs;
-            },
+          const runs = ['hosted-guest-acceptance.yml', 'hosted-resource-diagnostic.yml'].flatMap(
+            (workflow) =>
+              ['queued', 'in_progress', 'waiting', 'pending', 'requested'].flatMap((status) => {
+                const listing = ghJson(
+                  `repos/${OWNER}/actions/workflows/${workflow}/runs?status=${status}&per_page=100`,
+                );
+                if (
+                  !Array.isArray(listing.workflow_runs) ||
+                  listing.total_count !== listing.workflow_runs.length
+                )
+                  refuse('HOSTED_NOTES_A_CAPACITY_REFUSED');
+                return listing.workflow_runs;
+              }),
           );
           const secrets = ghJson(`repos/${OWNER}/actions/secrets?per_page=100`);
           requireNotesDispatchAdmission({

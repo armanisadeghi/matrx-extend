@@ -141,6 +141,7 @@ test('Notes admission refuses dirty checkout, workflow/runtime drift, A capacity
     { runs: [{ name: 'Native A · member-data', status: 'in_progress' }] },
     { runs: [{ name: 'Native A · notes-find-member', status: 'queued' }] },
     { runs: [{ name: 'unknown workflow name', status: 'waiting' }] },
+    { runs: [{ name: 'Hosted resource diagnosis', status: 'in_progress' }] },
     { secretNames: [] },
   ])
     assert.throws(() => admission.requireNotesDispatchAdmission({ ...state, ...change }));
@@ -244,7 +245,7 @@ if (process.argv[1].endsWith('/git')) {
   if (endpoint.includes('/git/ref/')) result = { object: { sha: cfg.remoteSha || cfg.sourceSha } };
   else if (endpoint.includes('/contents/')) result = { path: '.github/workflows/hosted-guest-acceptance.yml', type: 'file', encoding: 'base64', content: Buffer.from(cfg.workflow).toString('base64') };
   else if (endpoint.includes('/actions/secrets')) result = { secrets: cfg.noSecret ? [] : [{ name: 'MATRX_REVIEWER_MAGIC_LINK_JSON' }] };
-  else if (endpoint.includes('/actions/workflows/')) result = { total_count: (cfg.runs || []).length, workflow_runs: cfg.runs || [] };
+  else if (endpoint.includes('/actions/workflows/')) result = { total_count: (cfg.runs || (endpoint.includes('hosted-resource-diagnostic') ? cfg.diagnosisRuns : []) || []).length, workflow_runs: cfg.runs || (endpoint.includes('hosted-resource-diagnostic') ? cfg.diagnosisRuns : []) || [] };
   else if (endpoint.includes('/artifacts?')) result = { artifacts: [{ id: cfg.wrongArtifact || cfg.artifactId, expired: false, name: 'matrx-extend-development-test-' + cfg.sourceSha + '-' + cfg.runId + '-1', digest: cfg.digest }] };
   else if (endpoint.endsWith('/actions/runs/' + cfg.runId)) result = { name: 'CI', path: '.github/workflows/ci.yml', event: 'push', head_branch: 'main', conclusion: 'success', head_sha: cfg.sourceSha, run_attempt: 1 };
   else process.exit(98);
@@ -299,6 +300,10 @@ if (process.argv[1].endsWith('/git')) {
       [{ workflow: `${workflow}\n# unreviewed` }, 'HOSTED_WORKFLOW_BLOB_UNREVIEWED'],
       [
         { runs: [{ name: 'Native A · member-data', status: 'queued' }] },
+        'HOSTED_NOTES_A_CAPACITY_REFUSED',
+      ],
+      [
+        { diagnosisRuns: [{ name: 'Hosted resource diagnosis', status: 'in_progress' }] },
         'HOSTED_NOTES_A_CAPACITY_REFUSED',
       ],
       [{ noSecret: true }, 'HOSTED_NOTES_MEMBER_SECRET_MISSING'],
