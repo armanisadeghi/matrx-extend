@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T16:18:36Z",
+  "updated_at": "2026-10-12T17:07:21Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -3791,6 +3791,11 @@
           "label": "Store toolbar action click",
           "action": "In Chrome Web Store build, click extension action to open the sidepanel directly; there is no popup page.",
           "build_variant": "store"
+        },
+        {
+          "id": "EXT-F-1002-C07",
+          "label": "Close microphone permission window",
+          "action": "Close the mic-grant window before attempting permission; reports cancellation to the side panel. After a successful grant, closes the success page without reporting cancellation."
         }
       ],
       "source_anchors": [
@@ -3805,7 +3810,8 @@
         "src/entrypoints/sidepanel/App.tsx:180",
         "src/entrypoints/sidepanel/App.tsx",
         "src/lib/destructive/operations.ts",
-        "src/lib/panel/launch-intent.ts"
+        "src/lib/panel/launch-intent.ts",
+        "src/entrypoints/mic-grant/index.html:135-136"
       ],
       "dependency_class": "local",
       "wave": "A",
@@ -5267,20 +5273,21 @@
             "Wait for the options document to render; record its URL/title and visible heading."
           ],
           "expected": [
-            "Options document opens and renders the shared SettingsView.",
-            "Options document opens with “Matrx Extend Settings” heading and renders the shared SettingsView. Record any auth-dependent state as observed; no role-specific options behavior is asserted by source."
+            "Options document opens with “Matrx Extend Settings” heading and renders the shared SettingsView. Record any auth-dependent state as observed; no role-specific options behavior is asserted by source.",
+            "Individual SettingsView controls and flows are inventoried under EXT-F-1003-C01 through EXT-F-1003-C40 and their linked cases; this case verifies only the options entrypoint and render."
           ],
           "dimensions": [
             "warm",
             "reload"
           ],
           "source_anchors": [
+            "src/entrypoints/options/index.html:1-10",
             "src/entrypoints/options/main.tsx:12-35",
             "src/features/settings/SettingsView.tsx:111"
           ],
           "procedure_readiness": "ready",
           "procedure_gaps": [
-            "Source establishes shared SettingsView mount but inventory does not identify which Settings controls are in scope for this case."
+            "SettingsView control behavior is delegated to EXT-F-1003; this entrypoint case is limited to options URL, heading, and shared SettingsView mount."
           ],
           "procedure_execution_matrix": [
             {
@@ -5340,20 +5347,21 @@
             "Wait for the options document to render; record its URL/title and visible heading."
           ],
           "expected": [
-            "Options document opens and renders the shared SettingsView.",
-            "Options document opens with “Matrx Extend Settings” heading and renders the shared SettingsView. Record any auth-dependent state as observed; no role-specific options behavior is asserted by source."
+            "Options document opens with “Matrx Extend Settings” heading and renders the shared SettingsView. Record any auth-dependent state as observed; no role-specific options behavior is asserted by source.",
+            "Individual SettingsView controls and flows are inventoried under EXT-F-1003-C01 through EXT-F-1003-C40 and their linked cases; this case verifies only the options entrypoint and render."
           ],
           "dimensions": [
             "warm",
             "reload"
           ],
           "source_anchors": [
+            "src/entrypoints/options/index.html:1-10",
             "src/entrypoints/options/main.tsx:12-35",
             "src/features/settings/SettingsView.tsx:111"
           ],
           "procedure_readiness": "ready",
           "procedure_gaps": [
-            "Source establishes shared SettingsView mount but inventory does not identify which Settings controls are in scope for this case."
+            "SettingsView control behavior is delegated to EXT-F-1003; this entrypoint case is limited to options URL, heading, and shared SettingsView mount."
           ],
           "procedure_execution_matrix": [
             {
@@ -5413,20 +5421,21 @@
             "Wait for the options document to render; record its URL/title and visible heading."
           ],
           "expected": [
-            "Options document opens and renders the shared SettingsView.",
-            "Options document opens with “Matrx Extend Settings” heading and renders the shared SettingsView. Record any auth-dependent state as observed; no role-specific options behavior is asserted by source."
+            "Options document opens with “Matrx Extend Settings” heading and renders the shared SettingsView. Record any auth-dependent state as observed; no role-specific options behavior is asserted by source.",
+            "Individual SettingsView controls and flows are inventoried under EXT-F-1003-C01 through EXT-F-1003-C40 and their linked cases; this case verifies only the options entrypoint and render."
           ],
           "dimensions": [
             "warm",
             "reload"
           ],
           "source_anchors": [
+            "src/entrypoints/options/index.html:1-10",
             "src/entrypoints/options/main.tsx:12-35",
             "src/features/settings/SettingsView.tsx:111"
           ],
           "procedure_readiness": "ready",
           "procedure_gaps": [
-            "Source establishes shared SettingsView mount but inventory does not identify which Settings controls are in scope for this case."
+            "SettingsView control behavior is delegated to EXT-F-1003; this entrypoint case is limited to options URL, heading, and shared SettingsView mount."
           ],
           "procedure_execution_matrix": [
             {
@@ -6123,6 +6132,286 @@
             "scope": "Source-reviewed procedure only; no runtime acceptance."
           },
           "required_fixture": "A named controlled fault fixture/harness must independently force panel-open rejection, storage-write rejection, each context-enumeration outcome, claim-removal failure, and intent expiry, and record those branch outcomes. No such user-facing fault control is exposed."
+        },
+        {
+          "id": "EXT-F-1002-T21",
+          "title": "member: Close microphone permission window before permission attempt",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1002-C07"
+          ],
+          "preconditions": [
+            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Use a signed-in member profile and local/unpacked build. Reset and record extension-origin microphone permission before each row; use a working input device. Click the Chat microphone and confirm the actual mic-grant window opened before following the branch. Do not infer the popup outcome from the Chat microphone click alone."
+          ],
+          "steps": [
+            "Reset the loaded extension origin microphone permission, then click the Chat microphone and confirm the mic-grant window opens.",
+            "Before clicking Allow microphone, click Close.",
+            "Record whether the mic-grant window closes, whether Chat starts recording, and whether the extension-origin microphone permission remains unset."
+          ],
+          "expected": [
+            "The mic-grant window closes. It emits a cancelled result without requesting microphone permission; Chat remains idle and no recording begins."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "cancel",
+            "member"
+          ],
+          "build_variant": "local-unpacked",
+          "source_anchors": [
+            "src/entrypoints/mic-grant/index.ts:104-114",
+            "src/entrypoints/mic-grant/index.html:135-136"
+          ],
+          "procedure_readiness": "ready",
+          "procedure_gaps": [],
+          "procedure_execution_matrix": [
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "cancel",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "cancel"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "cancel",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "cancel"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            }
+          ],
+          "procedure_completion_rule": "Record each mode/lifecycle/branch independently with observed outcome and evidence. Leave unexecuted rows unverified; source behavior alone is not a pass."
+        },
+        {
+          "id": "EXT-F-1002-T22",
+          "title": "admin: Close microphone permission window before permission attempt",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1002-C07"
+          ],
+          "preconditions": [
+            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Use a signed-in admin profile and local/unpacked build. Reset and record extension-origin microphone permission before each row; use a working input device. Click the Chat microphone and confirm the actual mic-grant window opened before following the branch. Do not infer the popup outcome from the Chat microphone click alone."
+          ],
+          "steps": [
+            "Reset the loaded extension origin microphone permission, then click the Chat microphone and confirm the mic-grant window opens.",
+            "Before clicking Allow microphone, click Close.",
+            "Record whether the mic-grant window closes, whether Chat starts recording, and whether the extension-origin microphone permission remains unset."
+          ],
+          "expected": [
+            "The mic-grant window closes. It emits a cancelled result without requesting microphone permission; Chat remains idle and no recording begins."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "cancel",
+            "admin"
+          ],
+          "build_variant": "local-unpacked",
+          "source_anchors": [
+            "src/entrypoints/mic-grant/index.ts:104-114",
+            "src/entrypoints/mic-grant/index.html:135-136"
+          ],
+          "procedure_readiness": "ready",
+          "procedure_gaps": [],
+          "procedure_execution_matrix": [
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "cancel",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "cancel"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "cancel",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "cancel"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            }
+          ],
+          "procedure_completion_rule": "Record each mode/lifecycle/branch independently with observed outcome and evidence. Leave unexecuted rows unverified; source behavior alone is not a pass."
+        },
+        {
+          "id": "EXT-F-1002-T23",
+          "title": "member: Close microphone permission success page",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1002-C07"
+          ],
+          "preconditions": [
+            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Use a signed-in member profile and local/unpacked build. Reset and record extension-origin microphone permission before each row; use a working input device. Click the Chat microphone and confirm the actual mic-grant window opened before following the branch. Do not infer the popup outcome from the Chat microphone click alone.",
+            "After permission grant, wait for “Granted! Closing…” and click Close before the roughly 1.5 second automatic close; record whether cancellation is emitted."
+          ],
+          "steps": [
+            "With a working input and microphone permission unset, click the Chat microphone and confirm the mic-grant window opens.",
+            "Click Allow microphone and accept Chrome’s permission prompt.",
+            "As soon as the page displays “Granted! Closing…”, click Close before automatic close completes.",
+            "Record whether the success page closes and whether any cancelled result replaces the grant result."
+          ],
+          "expected": [
+            "The success page closes. Because the status is already successful, Close does not report cancellation or replace the granted result."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "close-after-grant",
+            "member"
+          ],
+          "build_variant": "local-unpacked",
+          "source_anchors": [
+            "src/entrypoints/mic-grant/index.ts:104-114",
+            "src/entrypoints/mic-grant/index.html:135-136"
+          ],
+          "procedure_readiness": "ready",
+          "procedure_gaps": [],
+          "procedure_execution_matrix": [
+            {
+              "mode": "member",
+              "lifecycle_dimension": "warm",
+              "branch": "close-after-grant",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "close-after-grant"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            },
+            {
+              "mode": "member",
+              "lifecycle_dimension": "reload",
+              "branch": "close-after-grant",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "close-after-grant"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            }
+          ],
+          "procedure_completion_rule": "Record each mode/lifecycle/branch independently with observed outcome and evidence. Leave unexecuted rows unverified; source behavior alone is not a pass."
+        },
+        {
+          "id": "EXT-F-1002-T24",
+          "title": "admin: Close microphone permission success page",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1002-C07"
+          ],
+          "preconditions": [
+            "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
+            "Before each run, inspect the exact loaded extension ID, version, and Loaded from path in chrome://extensions; reload that extension and record the completed reload. For a case with warm and reload dimensions, execute and record a warm run first without an immediately preceding extension reload, then click Reload for the same extension and execute a separate post-reload run. Reopen the tested surface after each extension reload. A page refresh or reopening a panel alone does not count as extension reload. Apply the case-specific entrypoint route below; the route is conditional by case and build variant.",
+            "Use only the existing identity mode(s) listed for the case. Record visible account email and role evidence without credentials. Never change account roles. For authenticated writes, record the active device organization and use synthetic disposable profile values; preserve original values and restore them after each run.",
+            "For every execution-matrix row, enter a separate observed outcome and evidence reference. Leave unsupported or unexecuted rows unverified; a missing device, unprovisioned fault, or absent fixture does not pass a branch.",
+            "Use a signed-in admin profile and local/unpacked build. Reset and record extension-origin microphone permission before each row; use a working input device. Click the Chat microphone and confirm the actual mic-grant window opened before following the branch. Do not infer the popup outcome from the Chat microphone click alone.",
+            "After permission grant, wait for “Granted! Closing…” and click Close before the roughly 1.5 second automatic close; record whether cancellation is emitted."
+          ],
+          "steps": [
+            "With a working input and microphone permission unset, click the Chat microphone and confirm the mic-grant window opens.",
+            "Click Allow microphone and accept Chrome’s permission prompt.",
+            "As soon as the page displays “Granted! Closing…”, click Close before automatic close completes.",
+            "Record whether the success page closes and whether any cancelled result replaces the grant result."
+          ],
+          "expected": [
+            "The success page closes. Because the status is already successful, Close does not report cancellation or replace the granted result."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "close-after-grant",
+            "admin"
+          ],
+          "build_variant": "local-unpacked",
+          "source_anchors": [
+            "src/entrypoints/mic-grant/index.ts:104-114",
+            "src/entrypoints/mic-grant/index.html:135-136"
+          ],
+          "procedure_readiness": "ready",
+          "procedure_gaps": [],
+          "procedure_execution_matrix": [
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "warm",
+              "branch": "close-after-grant",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "close-after-grant"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            },
+            {
+              "mode": "admin",
+              "lifecycle_dimension": "reload",
+              "branch": "close-after-grant",
+              "inventory_dimensions": [
+                "warm",
+                "reload",
+                "close-after-grant"
+              ],
+              "observed_outcome": null,
+              "evidence_refs": [],
+              "status": "unverified",
+              "readiness": "ready"
+            }
+          ],
+          "procedure_completion_rule": "Record each mode/lifecycle/branch independently with observed outcome and evidence. Leave unexecuted rows unverified; source behavior alone is not a pass."
         }
       ],
       "cells": {

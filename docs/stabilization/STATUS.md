@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-12 16:59 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T16:18:36Z. 207 features · 807 cases · 1397 controls · 215 linked defect records.
+Generated 2026-10-12 17:10 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T17:07:21Z. 207 features · 811 cases · 1398 controls · 215 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1294** — Pass: 103 · Partial: 93 · Fail: 2 · Unverified: 1094 · N/A: 2.
-Unverified splits into **145 explicitly marked unverified** and **949 with no result record**.
+Applicable case-by-role slots: **1298** — Pass: 103 · Partial: 93 · Fail: 2 · Unverified: 1098 · N/A: 2.
+Unverified splits into **145 explicitly marked unverified** and **953 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 12, n/a 0 | 2 |
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 20, n/a 0 | 0 |
-| [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
+| [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 19 pass · 6 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 33, partial 16, fail 0, unverified 48, n/a 1 | 3 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
@@ -377,7 +377,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Use popup shortcuts and microphone permission entrypoint (EXT-F-1002)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 20. **Controls:** 6.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 24. **Controls:** 7.
 
 **Next:** Run the remaining role cases in the extension and attach a result.
 
@@ -405,6 +405,10 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1002-T18 admin: Store toolbar action opens sidepanel | N/A | N/A | Unverified | EXT-F-1002-C06 |
 | EXT-F-1002-T19 member: Capture page reports launch failure and permits retry | N/A | Unverified | N/A | EXT-F-1002-C02 |
 | EXT-F-1002-T20 admin: Capture page reports launch failure and permits retry | N/A | N/A | Unverified | EXT-F-1002-C02 |
+| EXT-F-1002-T21 member: Close microphone permission window before permission attempt | N/A | Unverified | N/A | EXT-F-1002-C07 |
+| EXT-F-1002-T22 admin: Close microphone permission window before permission attempt | N/A | N/A | Unverified | EXT-F-1002-C07 |
+| EXT-F-1002-T23 member: Close microphone permission success page | N/A | Unverified | N/A | EXT-F-1002-C07 |
+| EXT-F-1002-T24 admin: Close microphone permission success page | N/A | N/A | Unverified | EXT-F-1002-C07 |
 
 **Recorded case details and evidence:**
 
