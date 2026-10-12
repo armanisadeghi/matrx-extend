@@ -27004,6 +27004,9 @@
             "guest-auth"
           ],
           "verification_status": "unverified",
+          "linked_defects": [
+            "EXT-D-0217"
+          ],
           "source_changes": [
             {
               "commits": [

@@ -1,0 +1,50 @@
+{
+  "id": "EXT-D-0217",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T22"],
+  "title": "Guest Scrape Save reads memberships from a stale cached profile",
+  "surface": "Scrape Save Source and Unsaved retry",
+  "auth_mode": "guest after saved sign-in restoration fails",
+  "preconditions": [
+    "Chrome has a retained user profile on this device but the extension is visibly in guest mode after sign-in restoration fails.",
+    "The unpacked development extension is on an ordinary HTTPS article page with a capture and an in-memory article edit."
+  ],
+  "reproduction": [
+    "Open the owned Matrx Extend demo page in Chrome and capture it in the Scrape tab.",
+    "Edit the article markdown, Apply, then open Save as a Source and press Save Source.",
+    "Observe the Not yet a Source card and press Retry save while still signed out."
+  ],
+  "expected": "Both Save and Retry keep the edited capture locally and show a clear sign-in remedy without calling organization membership or landing endpoints; after sign-in, Retry can land as the verified user.",
+  "actual": "The edited capture remains local, but Save and Retry display `permission denied for function mbr_for_user` instead of a sign-in remedy. No Source is shown as landed. The native observation is bound to development v0.2.509 from CI source cd6c43815, not to the published Store package.",
+  "cause": "The Save/Retry send path tests the cached profile as if it proved current authentication. The UI correctly treats the failed bearer restore as guest, so the stale profile can reach organization resolution and the membership RPC.",
+  "severity": "S2: a signed-out person cannot understand or complete Scrape Save retry after an expired or failed session; the draft is retained",
+  "priority": "P1: fix the shared Save/Retry identity boundary and retest guest and signed-in transitions",
+  "state": "in-fix",
+  "owner": "guest_scrape_save_fix",
+  "evidence": [
+    "src/lib/sources/save-capture.ts",
+    "src/lib/auth/flow.ts",
+    "docs/stabilization/runs/guest-scrape-controls-https-20261012.json"
+  ],
+  "next_action": "Complete the verified-bearer Save/Retry repair and independent source review, then repeat the original guest Save and Retry in a refreshed exact-main development artifact. Verify the edited draft survives, sign-in remedy appears, no organization read occurs while signed out, and signed-in Retry lands the edited text. Keep postreload and Store-installed states separate.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T20:18:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded native guest Scrape Save displayed the membership permission error instead of sign-in."
+    },
+    {
+      "at": "2026-10-12T20:20:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Native Retry repeated the failure, and source traced the stale profile versus failed bearer restoration boundary."
+    },
+    {
+      "at": "2026-10-12T20:21:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "A focused shared Save/Retry identity repair and regression test are underway."
+    }
+  ]
+}
