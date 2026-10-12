@@ -183,7 +183,7 @@ test('Notes A diagnostic dispatch reaches actual native callsite only when reque
     // Notes does not borrow the SEO-only resource diagnostic route.
     hostedSeoResourceDiagnostic('notes-find-member', 'full', 'none', '0');
     assert.equal(
-      mapped(acceptance.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC, { seo_resource_diagnostic: false }),
+      mapped(acceptance.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC, { seo_diagnostic: 'none' }),
       '0',
     );
   }

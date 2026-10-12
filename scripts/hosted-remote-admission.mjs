@@ -9,9 +9,11 @@ import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mj
 
 const OWNER = 'armanisadeghi/matrx-extend';
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
+const DISPATCH_REQUESTER = 'extend-stabilization';
 // Reviewed bytes of this narrow lane's active hosted workflow. Any workflow edit needs review.
-// Notes CDP opt-in uses startup_display_mode; 25 inputs; phase/fixture guards unchanged.
-const REVIEWED_WORKFLOW_SHA256 = '68beefb4d0f6fbbeb70486be539cf042e13328733d99b49f343d53803d028cba';
+// Notes CDP opt-in uses startup_display_mode; SEO diagnostics share one input, leaving 25.
+// requested_by only attributes a run in GitHub Actions; phase/fixture guards are unchanged.
+const REVIEWED_WORKFLOW_SHA256 = 'a7c7eebc738ad90f19a9738c5a70c235fb5515a01109c910ac46b71c193c854b';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );
@@ -19,6 +21,15 @@ const DECIMAL = /^[1-9][0-9]*$/;
 const SHA = /^[a-f0-9]{40}$/;
 function refuse(code) {
   throw new Error(code);
+}
+
+export function matchesHostedRunName(actual, expected) {
+  return (
+    actual === expected ||
+    (typeof actual === 'string' &&
+      actual.startsWith(`${expected} (by `) &&
+      /^Native [AB] · .+ \(by [A-Za-z0-9_-]+\)$/.test(actual))
+  );
 }
 
 export function requireHostedWorkflowContract(workflow) {
@@ -131,6 +142,8 @@ export function planHostedMemberData({
       '-f',
       'acceptance_case=member-data',
       '-f',
+      `requested_by=${DISPATCH_REQUESTER}`,
+      '-f',
       'member_data_scope=auto-extract',
       '-f',
       'scrape_auth_mode=member',
@@ -188,13 +201,13 @@ export function planHostedGuestSeo({
       '-f',
       'acceptance_case=guest-seo',
       '-f',
+      `requested_by=${DISPATCH_REQUESTER}`,
+      '-f',
       'seo_case_scope=notice-stacked',
       '-f',
       'seo_metadata_fixture=none',
       '-f',
-      'seo_resource_diagnostic=false',
-      '-f',
-      'seo_interrupt_after_target=none',
+      'seo_diagnostic=none',
       '-f',
       'runner_label=macos-15-intel',
       '-f',
@@ -232,6 +245,7 @@ export function planHostedScrape({
       ...[
         'acceptance_lane=B',
         'acceptance_case=guest-scrape-development',
+        `requested_by=${DISPATCH_REQUESTER}`,
         'scrape_scope=seo-schema-empty',
         'scrape_auth_mode=guest',
         'runner_label=macos-15-intel',
@@ -492,6 +506,7 @@ export function planHostedNotes({ lane, acceptanceCase, runnerLabel, ...input })
       ...[
         'acceptance_lane=A',
         `acceptance_case=${acceptanceCase}`,
+        `requested_by=${DISPATCH_REQUESTER}`,
         'scrape_auth_mode=member',
         'runner_label=macos-15-intel',
         'startup_display_mode=headed',
@@ -1129,18 +1144,18 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const notes = mode === 'verify-notes' || mode === 'verify-notes-lazy-general';
       const lazyGeneral = mode === 'verify-notes-lazy-general';
       const scrape = mode === 'verify-scrape';
+      const expectedRunName = settings
+        ? 'Native A · settings-account-popover-member'
+        : scrape
+          ? 'Native B · guest-scrape-development'
+          : guestSeo
+            ? 'Native B · guest-seo'
+            : notes
+              ? `Native A · ${lazyGeneral ? 'notes-lazy-general-member' : 'notes-find-member'}`
+              : 'Native A · member-data';
       if (
         run.path !== '.github/workflows/hosted-guest-acceptance.yml' ||
-        run.name !==
-          (settings
-            ? 'Native A · settings-account-popover-member'
-            : scrape
-              ? 'Native B · guest-scrape-development'
-              : guestSeo
-                ? 'Native B · guest-seo'
-                : notes
-                  ? `Native A · ${lazyGeneral ? 'notes-lazy-general-member' : 'notes-find-member'}`
-                  : 'Native A · member-data') ||
+        !matchesHostedRunName(run.name, expectedRunName) ||
         run.event !== 'workflow_dispatch' ||
         run.head_branch !== 'main' ||
         run.conclusion !== 'success' ||

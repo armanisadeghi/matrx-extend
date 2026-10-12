@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
 import {
+  matchesHostedRunName,
   planHostedGuestSeo,
   planHostedMemberData,
   requireExactArchiveJournalSet,
@@ -28,6 +29,23 @@ const seoInput = {
   sourceSha: 'a'.repeat(40),
 };
 
+test('hosted run verification accepts attributed exact route names only', () => {
+  const expected = 'Native B · guest-seo';
+  assert.equal(matchesHostedRunName(expected, expected), true);
+  assert.equal(matchesHostedRunName(`${expected} (by extend-stabilization)`, expected), true);
+  assert.equal(matchesHostedRunName(`${expected} (by other-lane)`, expected), true);
+  assert.equal(matchesHostedRunName(`${expected} (by )`, expected), false);
+  assert.equal(matchesHostedRunName(`${expected} (by other-lane) extra`, expected), false);
+  assert.equal(
+    matchesHostedRunName('Native B · guest-scrape (by extend-stabilization)', expected),
+    false,
+  );
+  assert.equal(
+    matchesHostedRunName('Native A · guest-seo (by extend-stabilization)', expected),
+    false,
+  );
+});
+
 test('guest SEO B dispatch plan admits only the reviewed notice-stacked route', () => {
   const plan = planHostedGuestSeo(seoInput);
   assert.deepEqual(plan.args, [
@@ -41,13 +59,13 @@ test('guest SEO B dispatch plan admits only the reviewed notice-stacked route', 
     '-f',
     'acceptance_case=guest-seo',
     '-f',
+    'requested_by=extend-stabilization',
+    '-f',
     'seo_case_scope=notice-stacked',
     '-f',
     'seo_metadata_fixture=none',
     '-f',
-    'seo_resource_diagnostic=false',
-    '-f',
-    'seo_interrupt_after_target=none',
+    'seo_diagnostic=none',
     '-f',
     'runner_label=macos-15-intel',
     '-f',
@@ -201,6 +219,8 @@ test('remote member Data plan carries exact frozen artifact and guarded hosted w
       'acceptance_lane=A',
       '-f',
       'acceptance_case=member-data',
+      '-f',
+      'requested_by=extend-stabilization',
       '-f',
       'member_data_scope=auto-extract',
       '-f',
@@ -482,6 +502,8 @@ test('Settings member route refuses alternate lanes, cases, runners and unreview
     'acceptance_lane=A',
     '-f',
     'acceptance_case=settings-account-popover-member',
+    '-f',
+    'requested_by=extend-stabilization',
     '-f',
     'scrape_auth_mode=guest',
     '-f',

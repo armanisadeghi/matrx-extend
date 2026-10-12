@@ -120,19 +120,15 @@ on:
           - headed
           - headless
           - notes-cdp
-      seo_resource_diagnostic:
-        description: Measure process CPU time on full guest SEO Airbnb; diagnostic only, no acceptance credit
-        required: false
-        default: false
-        type: boolean
-      seo_interrupt_after_target:
-        description: Diagnostic-only SIGTERM after the controlled guest SEO manual re-audit target checkpoint
+      seo_diagnostic:
+        description: SEO diagnostic only; resource measures full Airbnb CPU, interrupt-manual stops after the controlled manual target
         required: false
         default: none
         type: choice
         options:
           - none
-          - manual_button_returns_to_current_page
+          - resource
+          - interrupt-manual
       desktop_settings_case:
         description: Desktop Settings case; pair-forget covers only guest pairing removal, remaining covers the broader guest path
         required: false
@@ -252,9 +248,9 @@ jobs:
           RELOAD_SENDER_DOCUMENT_DIAGNOSTIC: ${{ inputs.reload_sender_document_diagnostic == true && '1' || '0' }}
           SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
-          SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
+          SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_diagnostic == 'resource' && '1' || '0' }}
           NOTES_STARTUP_DIAGNOSTIC: ${{ inputs.startup_display_mode == 'notes-cdp' && '1' || '0' }}
-          SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_interrupt_after_target || 'none' }}
+          SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_diagnostic == 'interrupt-manual' && 'manual_button_returns_to_current_page' || 'none' }}
           SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           SCRAPE_SAVE_DESTINATION: ${{ inputs.scrape_save_destination || 'project' }}
           SCRAPE_SAVE_SCOPE: ${{ inputs.scrape_save_scope || 'single' }}
@@ -459,8 +455,8 @@ jobs:
           MATRX_HOSTED_SCRAPE_SCOPE: ${{ inputs.scrape_scope || 'full' }}
           MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           MATRX_HOSTED_SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
-          MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
-          MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_interrupt_after_target || 'none' }}
+          MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_diagnostic == 'resource' && '1' || '0' }}
+          MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_diagnostic == 'interrupt-manual' && 'manual_button_returns_to_current_page' || 'none' }}
           MATRX_HOSTED_DESKTOP_SETTINGS_CASE: ${{ inputs.desktop_settings_case }}
           MATRX_HOSTED_PUBLISHED_STORE_CRX: ${{ inputs.published_store_crx == true && '0.2.205' || '' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
@@ -539,9 +535,9 @@ jobs:
           MATRX_D47_RESPONSE_ORDER: ${{ inputs.d47_response_order }}
           MATRX_HOSTED_SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           MATRX_HOSTED_SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
-          MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
-          MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_interrupt_after_target || 'none' }}
-          MATRX_STARTUP_INTERVAL_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
+          MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_diagnostic == 'resource' && '1' || '0' }}
+          MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_diagnostic == 'interrupt-manual' && 'manual_button_returns_to_current_page' || 'none' }}
+          MATRX_STARTUP_INTERVAL_DIAGNOSTIC: ${{ inputs.seo_diagnostic == 'resource' && '1' || '0' }}
           MATRX_CDP_STARTUP_DIAGNOSTIC: ${{ inputs.startup_display_mode == 'notes-cdp' && inputs.acceptance_case == 'notes-find-member' && inputs.acceptance_lane == 'A' && '1' || '0' }}
           MATRX_D47_PUBLIC_RACE_PREFLIGHT: ${{ inputs.d47_public_race_preflight == true && '1' || '0' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}

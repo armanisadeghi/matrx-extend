@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T06:34:37Z",
+  "updated_at": "2026-10-12T06:52:00Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -628,6 +628,11 @@
           "id": "EXT-F-0002-C11",
           "label": "Record trustworthy role-visibility census observations",
           "action": "Require positive role proof and exact artifact/run receipts; unknown, unsupported, or gated regions keep the census incomplete."
+        },
+        {
+          "id": "EXT-F-0002-C12",
+          "label": "Admit a valid reviewed hosted acceptance workflow",
+          "action": "Keep workflow_dispatch within GitHub's 25-input limit, retain requested_by attribution and resource guards, and bind dispatch to the reviewed exact workflow bytes."
         }
       ],
       "source_anchors": [
@@ -1401,6 +1406,40 @@
               "detail": "No admin visibility census observation is established."
             }
           }
+        },
+        {
+          "id": "EXT-F-0002-T12",
+          "title": "Hosted acceptance dispatch input and reviewed-workflow contract",
+          "modes": ["guest", "member", "admin"],
+          "control_ids": ["EXT-F-0002-C12"],
+          "preconditions": [
+            "Use synchronized main and the current hosted-guest-acceptance workflow; honor the resource and spending gates."
+          ],
+          "steps": [
+            "Count workflow_dispatch inputs and verify the requested_by field and reviewed SHA contract.",
+            "Run focused admission and route tests, then exact-main CI.",
+            "Admit one permitted guarded hosted acceptance run and inspect its exact workflow, resource and artifact receipts."
+          ],
+          "expected": [
+            "At most 25 inputs; reviewed bytes and original resource/fixture guards pass.",
+            "Exact-main CI passes and a guarded hosted run reaches its selected native case without dispatch refusal."
+          ],
+          "dimensions": ["dispatch-input-cap", "reviewed-workflow", "guest", "member", "admin"],
+          "defect_ids": ["EXT-D-0205"],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "Source tests pass after repair; exact-main CI and hosted dispatch retest are pending."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "Source tests pass after repair; exact-main CI and hosted dispatch retest are pending."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Source tests pass after repair; exact-main CI and hosted dispatch retest are pending."
+            }
+          }
         }
       ],
       "cells": {
@@ -1414,7 +1453,8 @@
             "EXT-D-0149",
             "EXT-D-0151",
             "EXT-D-0152",
-            "EXT-D-0153"
+            "EXT-D-0153",
+            "EXT-D-0205"
           ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
@@ -1427,7 +1467,8 @@
             "EXT-D-0056",
             "EXT-D-0098",
             "EXT-D-0101",
-            "EXT-D-0102"
+            "EXT-D-0102",
+            "EXT-D-0205"
           ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"
@@ -1439,7 +1480,8 @@
             "EXT-D-0051",
             "EXT-D-0056",
             "EXT-D-0073",
-            "EXT-D-0098"
+            "EXT-D-0098",
+            "EXT-D-0205"
           ],
           "run_ids": [],
           "retest_status": "partial: EXT-D-0025 and EXT-D-0051 passed; remaining infrastructure cases unverified"

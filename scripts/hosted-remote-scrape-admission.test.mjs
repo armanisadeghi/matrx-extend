@@ -28,6 +28,7 @@ test('normal Scrape route dispatches only bounded guest T08 and refuses broader 
   assert.ok(fields.includes('acceptance_case=guest-scrape-development'));
   assert.ok(fields.includes('scrape_scope=seo-schema-empty'));
   assert.ok(fields.includes('scrape_auth_mode=guest'));
+  assert.ok(fields.includes('requested_by=extend-stabilization'));
   for (const change of [
     { lane: 'A' },
     { acceptanceCase: 'guest-scrape' },

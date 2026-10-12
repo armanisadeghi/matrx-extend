@@ -80,6 +80,7 @@ test('normal Notes plan dispatches member T02 on A rather than member Data or st
   assert.deepEqual(fields, [
     'acceptance_lane=A',
     'acceptance_case=notes-find-member',
+    'requested_by=extend-stabilization',
     'scrape_auth_mode=member',
     'runner_label=macos-15-intel',
     'startup_display_mode=headed',

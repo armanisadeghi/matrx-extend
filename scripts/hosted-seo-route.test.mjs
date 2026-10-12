@@ -632,23 +632,23 @@ test('hosted workflow admits guest SEO on lane B with one exact development arti
   assert.match(workflow, /Readability SEO scope requires guest-seo/);
   assert.match(workflow, /guest-chat\|guest-seo\|guest-data\|member-data\|guest-scrape/);
   assert.match(workflow, /test-results\/seo-guest-acceptance\.json/);
-  assert.match(workflow, /seo_resource_diagnostic:\n[\s\S]*?default: false\n\s*type: boolean/);
-  assert.match(workflow, /seo_interrupt_after_target:\n[\s\S]*?default: none\n\s*type: choice/);
+  assert.match(workflow, /seo_diagnostic:\n[\s\S]*?default: none\n\s*type: choice/);
+  assert.match(workflow, /- resource\n[\s\S]*?- interrupt-manual\n/);
   assert.equal(
     (
       workflow.match(
-        /MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: \$\{\{ inputs\.seo_interrupt_after_target \|\| 'none' \}\}/g,
+        /MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: \$\{\{ inputs\.seo_diagnostic == 'interrupt-manual' && 'manual_button_returns_to_current_page' \|\| 'none' \}\}/g,
       ) ?? []
     ).length,
     2,
   );
   assert.match(
     workflow,
-    /SEO_INTERRUPT_AFTER_TARGET: \$\{\{ inputs\.seo_interrupt_after_target \|\| 'none' \}\}/,
+    /SEO_INTERRUPT_AFTER_TARGET: \$\{\{ inputs\.seo_diagnostic == 'interrupt-manual' && 'manual_button_returns_to_current_page' \|\| 'none' \}\}/,
   );
   assert.match(
     workflow,
-    /MATRX_STARTUP_INTERVAL_DIAGNOSTIC: \$\{\{ inputs\.seo_resource_diagnostic == true && '1' \|\| '0' \}\}/,
+    /MATRX_STARTUP_INTERVAL_DIAGNOSTIC: \$\{\{ inputs\.seo_diagnostic == 'resource' && '1' \|\| '0' \}\}/,
   );
   assert.match(workflow, /MATRX_HOSTED_SEO_CASE_SCOPE: \$\{\{ inputs\.seo_case_scope \}\}/);
   assert.equal(

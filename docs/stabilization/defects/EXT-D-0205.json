@@ -1,0 +1,52 @@
+{
+  "id": "EXT-D-0205",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T12"],
+  "title": "Hosted acceptance dispatch exceeded GitHub's 25-input limit and invalidated its reviewed workflow pin",
+  "surface": "Hosted acceptance infrastructure",
+  "auth_mode": "guest/member/admin; dispatch failure independent of sign-in",
+  "preconditions": [
+    "Check out main at 3f963083858a689ddffcabfa5e441f8dd5821a9f or 676c2297b7f5111980f10851e7c3898abb50d2e6.",
+    "Read .github/workflows/hosted-guest-acceptance.yml and scripts/hosted-remote-admission.mjs."
+  ],
+  "reproduction": [
+    "Run node --test scripts/hosted-notes-startup-diagnostic-route.test.mjs and observe the workflow_dispatch top-level input count assertion fail at 26 > 25.",
+    "Run node --test scripts/hosted-remote-admission.test.mjs and observe HOSTED_WORKFLOW_BLOB_UNREVIEWED because the workflow changed without refreshing its reviewed SHA pin.",
+    "Inspect the requested_by input and run-name change introduced in commit 110b991a9; the input count was already 25 before that change."
+  ],
+  "expected": "The hosted workflow keeps no more than 25 dispatch inputs, retains requested_by attribution, and the exact workflow bytes pass the reviewed admission contract.",
+  "actual": "The extra requested_by field raised the dispatch to 26 inputs; the previous SHA pin also rejected the workflow. Exact-main CI 38213966412 and focused acceptance 38213966425 failed. Existing dispatch planners omitted requested_by and exact run-name verification would reject a newly attributed run.",
+  "cause": "CI spend attribution was added as a new workflow_dispatch input without consolidating an existing diagnostic input, refreshing the workflow admission pin, or updating the dispatch/verification contract.",
+  "severity": "S2: hosted browser acceptance and main CI are unavailable; this is infrastructure failure, not a product behavior result",
+  "priority": "P0: restore the guarded acceptance route before further hosted product testing or release gating",
+  "state": "in-fix",
+  "owner": "matrx_extend_stabilization",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38213966412",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38213966425",
+    "scripts/hosted-notes-startup-diagnostic-route.test.mjs",
+    "scripts/hosted-remote-admission.test.mjs"
+  ],
+  "source_repair": "The mutually exclusive SEO resource and controlled-interruption diagnostics now share one choice input. requested_by remains and all guarded dispatch planners send the stabilization lane; the verifier accepts exact attributed route names while preserving earlier evidence. The reviewed SHA pin matches the 25-input workflow. The macOS-only resource integration job has an explicit documented cost-guard exception in this public repository, and the contributed cost manifest was formatted for the mandatory lint gate. Focused admission, Notes and SEO tests passed 54/54 before the final narrow test additions; an independent peer found no valid route loss. Exact-main CI and hosted dispatch remain unverified.",
+  "next_action": "The cross-repo CI spend guard still reports aidream at about $250 billed/week against the $100 ceiling; do not bypass or dispatch a paid job. Once the concurrent cost changes restore the gate, require exact-main green CI, then a permitted guarded hosted dispatch and original admission/input-cap plus surrounding route retest before closure. Do not count infrastructure source tests as product acceptance.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T06:46:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Concurrent requested_by workflow edit made both exact-main CI and focused acceptance red."
+    },
+    {
+      "at": "2026-10-12T06:50:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent review found the 26-input GitHub limit violation in addition to the stale workflow pin."
+    },
+    {
+      "at": "2026-10-12T06:52:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Source repair and 53 focused tests pass; exact-main CI and hosted retest remain pending."
+    }
+  ]
+}

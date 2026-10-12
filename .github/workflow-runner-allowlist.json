@@ -1,0 +1,3 @@
+{
+  "ci.yml::resource-guard-integration": "The resource guard integration tests require macOS APIs and reject non-Darwin hosts. This public repository's standard runner bills $0; the five-minute job verifies the admission/watchdog safety boundary on each change."
+}
