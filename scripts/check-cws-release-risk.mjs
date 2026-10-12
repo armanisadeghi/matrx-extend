@@ -1,5 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { containsScriptSrcLoader } from './detect-remote-script-loader.mjs';
 
 const root = process.cwd();
 const baselinePath = path.join(root, 'config/chrome-web-store-approved-baseline.json');
@@ -61,6 +62,9 @@ for (const file of emittedFiles.filter((candidate) => candidate.endsWith('.js'))
   const source = await readFile(file, 'utf8');
   for (const token of forbiddenRuntimeTokens) {
     if (source.includes(token)) failures.push(`${path.relative(root, file)} contains ${token}.`);
+  }
+  if (containsScriptSrcLoader(source)) {
+    failures.push(`${path.relative(root, file)} creates an executable script element and assigns its src.`);
   }
 }
 
