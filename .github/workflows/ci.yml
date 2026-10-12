@@ -221,3 +221,8 @@ jobs:
             .output/chrome-mv3/
             test-results/ci-build-receipt.json
             test-results/ci-build-provenance.json
+      # Cost guard (ci-spend, 2026-10-11): .github/ci-cost.json covers every workflow and OS leg, no
+      # macOS/Windows per push, every job time-limited, every dispatch names requested_by.
+      - name: Workflow cost guard (proves it can fail, then checks every workflow)
+        working-directory: ${{ github.workspace }}
+        run: python3 scripts/check_workflow_runner_cost.py --self-test && python3 scripts/check_workflow_runner_cost.py
