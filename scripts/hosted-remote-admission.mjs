@@ -205,6 +205,129 @@ export function planHostedGuestSeo({
   };
 }
 
+/** Normal member Notes T02 only; CDP startup diagnostics have no acceptance route. */
+export function planHostedNotes({ lane, acceptanceCase, runnerLabel, ...input }) {
+  if (lane !== 'A') refuse('HOSTED_NOTES_LANE_REFUSED');
+  if (acceptanceCase !== 'notes-find-member') refuse('HOSTED_NOTES_CASE_REFUSED');
+  if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_NOTES_RUNNER_REFUSED');
+  if (!SHA.test(input.sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
+  // Reuse the existing artifact-id, main-ref and reviewed workflow guards.
+  planHostedMemberData({ ...input, lane });
+  return {
+    command: 'gh',
+    args: [
+      'workflow',
+      'run',
+      'hosted-guest-acceptance.yml',
+      '--ref',
+      'main',
+      ...[
+        'acceptance_lane=A',
+        'acceptance_case=notes-find-member',
+        'scrape_auth_mode=member',
+        'runner_label=macos-15-intel',
+        'startup_display_mode=headed',
+        `development_run_id=${input.developmentRunId}`,
+        `development_artifact_id=${input.developmentArtifactId}`,
+      ].flatMap((field) => ['-f', field]),
+    ],
+  };
+}
+
+// Only records and this reviewed dispatcher may advance beyond the frozen product.
+// Harness, workflow, policy, dependency and application changes require a new CI artifact.
+const NOTES_NON_RUNTIME_PATH =
+  /^(?:scripts\/hosted-remote-(?:admission|notes-admission)(?:\.test)?\.mjs|docs\/stabilization\/(?:runs\/[^/]+\.json|resource-journals\/[^/]+\.jsonl|[^/]+\.(?:md|html|txt)|inventory\.json|(?:defects|reports|evidence)\/(?:[^/]+\/)*[^/]+\.(?:json|jsonl|md|html|txt|log|png|jpg|jpeg|webp)))$/;
+export function requireNotesDispatchAdmission({
+  localSha,
+  remoteSha,
+  dirty,
+  sourceSha,
+  ancestor,
+  changedPaths,
+  runs,
+  secretNames,
+}) {
+  requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
+  if (
+    !SHA.test(sourceSha ?? '') ||
+    ancestor !== true ||
+    !Array.isArray(changedPaths) ||
+    changedPaths.some((path) => !NOTES_NON_RUNTIME_PATH.test(path))
+  )
+    refuse('HOSTED_NOTES_RUNTIME_SOURCE_DRIFT');
+  if (
+    !Array.isArray(runs) ||
+    runs.some((run) => run.status !== 'completed' && !/^Native B · /.test(run.name ?? ''))
+  )
+    refuse('HOSTED_NOTES_A_CAPACITY_REFUSED');
+  if (!Array.isArray(secretNames) || !secretNames.includes('MATRX_REVIEWER_MAGIC_LINK_JSON'))
+    refuse('HOSTED_NOTES_MEMBER_SECRET_MISSING');
+  return true;
+}
+
+export function verifyHostedNotesReport(report, identity) {
+  const artifact = report?.imported_artifact;
+  const t02 = report?.observations?.T02;
+  const observations = t02?.observations;
+  const auth = report?.observations?.hosted_authentication;
+  if (
+    report?.schema_version !== 1 ||
+    report.status !== 'pass' ||
+    report.role !== 'member' ||
+    report.observations?.startup_endpoint !== undefined ||
+    JSON.stringify(report.cases) !== '["EXT-F-2006-T02"]' ||
+    report.failure_code !== undefined ||
+    !/^[a-p]{32}$/.test(report.extension_id ?? '') ||
+    auth?.member_signed_in !== true ||
+    auth.non_admin_identity !== true ||
+    auth.organization_selected !== true ||
+    t02?.case_id !== 'EXT-F-2006-T02' ||
+    t02.verdict !== 'pass' ||
+    t02.failure_code !== undefined ||
+    t02.cleanup_complete !== true ||
+    (t02.cleanup_pending?.length ?? 0) !== 0 ||
+    !Array.isArray(t02.home_cleanup_pending) ||
+    t02.home_cleanup_pending.length !== 0 ||
+    !Array.isArray(t02.cleanup) ||
+    t02.cleanup.length !== 3 ||
+    new Set(t02.cleanup.map((row) => row.note_id)).size !== 3 ||
+    t02.cleanup.some(
+      (row) =>
+        !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(row.note_id ?? '') ||
+        row.live_delete !== true ||
+        row.editor_title_confirmed !== true ||
+        !Number.isInteger(row.response_status) ||
+        row.response_status < 200 ||
+        row.response_status >= 300,
+    ) ||
+    observations?.search_by_unique_title?.matches !== 3 ||
+    observations.search_by_unique_title.only_run_titles !== true ||
+    observations.all_homes_filter?.selected !== true ||
+    observations.all_homes_filter.owned_fixture_count !== 3 ||
+    observations.named_home_filter_1?.one_owned_note !== true ||
+    observations.named_home_filter_2?.one_owned_note !== true ||
+    observations.note_selector_open !== true ||
+    observations.note_row_open !== true ||
+    observations.general_default_fixture !== true ||
+    artifact?.kind !== 'ci_development_test' ||
+    artifact.eligibleStore !== false ||
+    artifact.repository !== OWNER ||
+    artifact.workflow !== '.github/workflows/ci.yml' ||
+    artifact.sourceSha !== identity.sourceSha ||
+    String(artifact.runId) !== identity.developmentRunId ||
+    String(artifact.artifactId) !== identity.developmentArtifactId ||
+    artifact.runAttempt !== Number(identity.developmentRunAttempt) ||
+    !/^sha256:[a-f0-9]{64}$/.test(artifact.githubArtifactDigest ?? '') ||
+    artifact.githubArtifactDigest !== identity.githubArtifactDigest ||
+    !/^[a-f0-9]{64}$/.test(artifact.treeSha256 ?? '') ||
+    report.build?.before?.treeSha256 !== artifact.treeSha256 ||
+    report.build?.after?.treeSha256 !== artifact.treeSha256
+  )
+    refuse('HOSTED_NOTES_NATIVE_REPORT_PROVENANCE_INVALID');
+  return true;
+}
+
 export function requireSynchronizedDispatchSource(localSha, remoteSha, dirty) {
   if (!SHA.test(localSha ?? '') || localSha !== remoteSha || dirty)
     refuse('HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED');
@@ -273,27 +396,40 @@ function ghJson(endpoint) {
     execFileSync('gh', ['api', endpoint], { encoding: 'utf8', maxBuffer: 4_000_000 }),
   );
 }
-function requireDevelopmentArtifact({ runId, artifactId, sourceSha, expectedDigest }) {
-  const run = ghJson(`repos/${OWNER}/actions/runs/${runId}`);
+export function requireDevelopmentArtifact(
+  { runId, artifactId, sourceSha, expectedDigest },
+  fetchJson = ghJson,
+) {
+  if (!DECIMAL.test(runId ?? '') || !DECIMAL.test(artifactId ?? '') || !SHA.test(sourceSha ?? ''))
+    refuse('HOSTED_ARTIFACT_ID_INVALID');
+  const run = fetchJson(`repos/${OWNER}/actions/runs/${runId}`);
   if (
     run.name !== 'CI' ||
+    run.path !== '.github/workflows/ci.yml' ||
     run.event !== 'push' ||
     run.head_branch !== 'main' ||
     run.conclusion !== 'success' ||
     run.head_sha !== sourceSha
   )
     refuse('HOSTED_DEVELOPMENT_RUN_INVALID');
-  const listing = ghJson(`repos/${OWNER}/actions/runs/${runId}/artifacts?per_page=100`);
+  const listing = fetchJson(`repos/${OWNER}/actions/runs/${runId}/artifacts?per_page=100`);
   const matches = listing.artifacts?.filter(
     (artifact) =>
       String(artifact.id) === artifactId &&
       artifact.expired === false &&
       artifact.name === `matrx-extend-development-test-${sourceSha}-${runId}-${run.run_attempt}`,
   );
-  if (matches?.length !== 1) refuse('HOSTED_DEVELOPMENT_ARTIFACT_INVALID');
+  if (matches?.length !== 1 || !/^sha256:[a-f0-9]{64}$/.test(matches[0].digest ?? ''))
+    refuse('HOSTED_DEVELOPMENT_ARTIFACT_INVALID');
   if (expectedDigest !== undefined && matches[0].digest !== expectedDigest)
     refuse('HOSTED_DEVELOPMENT_ARTIFACT_DIGEST_MISMATCH');
-  return { sourceSha, artifactId, developmentRunId: runId, developmentRunAttempt: run.run_attempt };
+  return {
+    sourceSha,
+    artifactId,
+    developmentRunId: runId,
+    developmentRunAttempt: run.run_attempt,
+    githubArtifactDigest: matches[0].digest,
+  };
 }
 
 function archiveCommand(bytes, args) {
@@ -411,7 +547,9 @@ function verifyArchive(zip, bytes, runId, attempt, sourceSha, acceptanceCase) {
   const reportName =
     acceptanceCase === 'guest-seo'
       ? 'seo-guest-acceptance.json'
-      : 'data-member-auto-extract-acceptance.json';
+      : acceptanceCase === 'notes-find-member'
+        ? 'notes-native-acceptance.json'
+        : 'data-member-auto-extract-acceptance.json';
   const report = JSON.parse(archiveEntry(zip, bytes, find(reportName)));
   if (
     acceptanceCase === 'member-data' &&
@@ -433,34 +571,59 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       mode === 'plan' ||
       mode === 'dispatch' ||
       mode === 'plan-guest-seo' ||
-      mode === 'dispatch-guest-seo'
+      mode === 'dispatch-guest-seo' ||
+      mode === 'plan-notes' ||
+      mode === 'dispatch-notes'
     ) {
       const lane = args.get('--lane');
       const developmentRunId = args.get('--development-run-id');
       const developmentArtifactId = args.get('--development-artifact-id');
       const sourceSha = args.get('--source-sha');
       const guestSeo = mode.endsWith('-guest-seo');
-      const plan = guestSeo
-        ? planHostedGuestSeo({
+      const notes = mode.endsWith('-notes');
+      if (notes)
+        for (const key of args.keys())
+          if (
+            ![
+              '--lane',
+              '--case',
+              '--runner-label',
+              '--development-run-id',
+              '--development-artifact-id',
+              '--source-sha',
+            ].includes(key)
+          )
+            refuse('HOSTED_ARGUMENT_INVALID');
+      const plan = notes
+        ? planHostedNotes({
             lane,
             acceptanceCase: args.get('--case'),
-            seoCaseScope: args.get('--seo-case-scope'),
-            seoMetadataFixture: args.get('--seo-metadata-fixture'),
-            seoResourceDiagnostic: args.get('--seo-resource-diagnostic'),
-            seoInterruptAfterTarget: args.get('--seo-interrupt-after-target'),
             runnerLabel: args.get('--runner-label'),
             developmentRunId,
             developmentArtifactId,
             sourceSha,
           })
-        : planHostedMemberData({ lane, developmentRunId, developmentArtifactId, sourceSha });
+        : guestSeo
+          ? planHostedGuestSeo({
+              lane,
+              acceptanceCase: args.get('--case'),
+              seoCaseScope: args.get('--seo-case-scope'),
+              seoMetadataFixture: args.get('--seo-metadata-fixture'),
+              seoResourceDiagnostic: args.get('--seo-resource-diagnostic'),
+              seoInterruptAfterTarget: args.get('--seo-interrupt-after-target'),
+              runnerLabel: args.get('--runner-label'),
+              developmentRunId,
+              developmentArtifactId,
+              sourceSha,
+            })
+          : planHostedMemberData({ lane, developmentRunId, developmentArtifactId, sourceSha });
       if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
       const artifact = requireDevelopmentArtifact({
         runId: developmentRunId,
         artifactId: developmentArtifactId,
         sourceSha,
       });
-      if (mode === 'dispatch' || mode === 'dispatch-guest-seo') {
+      if (mode === 'dispatch' || mode === 'dispatch-guest-seo' || mode === 'dispatch-notes') {
         const localSha = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
         const remoteSha = ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha;
         const dirty = execFileSync(
@@ -469,29 +632,82 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             'status',
             '--porcelain',
             '--',
-            '.github/workflows/hosted-guest-acceptance.yml',
-            'scripts/hosted-remote-admission.mjs',
-            ...(guestSeo ? ['scripts/hosted-seo-route.mjs'] : []),
+            ...(notes
+              ? []
+              : [
+                  '.github/workflows/hosted-guest-acceptance.yml',
+                  'scripts/hosted-remote-admission.mjs',
+                  ...(guestSeo ? ['scripts/hosted-seo-route.mjs'] : []),
+                ]),
           ],
           { encoding: 'utf8' },
         ).trim();
         requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
+        if (notes) {
+          verifyHostedWorkflowCheckout({
+            path: '.github/workflows/hosted-guest-acceptance.yml',
+            head_sha: remoteSha,
+          });
+          const ancestry = spawnSync('git', ['merge-base', '--is-ancestor', sourceSha, remoteSha]);
+          const changedPaths = execFileSync(
+            'git',
+            ['log', '--no-renames', '--format=', '--name-only', '-z', `${sourceSha}..${remoteSha}`],
+            { encoding: 'utf8' },
+          )
+            .split('\0')
+            .filter(Boolean);
+          const runs = ['queued', 'in_progress', 'waiting', 'pending', 'requested'].flatMap(
+            (status) => {
+              const listing = ghJson(
+                `repos/${OWNER}/actions/workflows/hosted-guest-acceptance.yml/runs?status=${status}&per_page=100`,
+              );
+              if (
+                !Array.isArray(listing.workflow_runs) ||
+                listing.total_count !== listing.workflow_runs.length
+              )
+                refuse('HOSTED_NOTES_A_CAPACITY_REFUSED');
+              return listing.workflow_runs;
+            },
+          );
+          const secrets = ghJson(`repos/${OWNER}/actions/secrets?per_page=100`);
+          requireNotesDispatchAdmission({
+            localSha,
+            remoteSha,
+            dirty,
+            sourceSha,
+            ancestor: !ancestry.error && ancestry.status === 0,
+            changedPaths,
+            runs,
+            secretNames: secrets.secrets?.map((secret) => secret.name),
+          });
+          requireSynchronizedDispatchSource(
+            execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+            ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha,
+            execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
+          );
+        }
         const result = spawnSync(plan.command, [...plan.args, '-R', OWNER], { stdio: 'inherit' });
         if (result.status !== 0) refuse('HOSTED_DISPATCH_FAILED');
       }
       process.stdout.write(
         `${JSON.stringify({ mode, plan, artifact, host: 'github-hosted', localHeavyWork: false })}\n`,
       );
-    } else if (mode === 'verify' || mode === 'verify-guest-seo') {
+    } else if (mode === 'verify' || mode === 'verify-guest-seo' || mode === 'verify-notes') {
       const runId = args.get('--run-id');
       const attempt = args.get('--attempt');
       const zip = args.get('--artifact-zip');
       if (!zip) refuse('HOSTED_ARCHIVE_MISSING');
       const run = ghJson(`repos/${OWNER}/actions/runs/${runId}`);
       const guestSeo = mode === 'verify-guest-seo';
+      const notes = mode === 'verify-notes';
       if (
         run.path !== '.github/workflows/hosted-guest-acceptance.yml' ||
-        run.name !== (guestSeo ? 'Native B · guest-seo' : 'Native A · member-data') ||
+        run.name !==
+          (guestSeo
+            ? 'Native B · guest-seo'
+            : notes
+              ? 'Native A · notes-find-member'
+              : 'Native A · member-data') ||
         run.event !== 'workflow_dispatch' ||
         run.head_branch !== 'main' ||
         run.conclusion !== 'success' ||
@@ -509,14 +725,18 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         runId,
         attempt,
         sourceSha,
-        guestSeo ? 'guest-seo' : 'member-data',
+        guestSeo ? 'guest-seo' : notes ? 'notes-find-member' : 'member-data',
       );
-      const artifactRunId = guestSeo
-        ? String(report.imported_artifact?.runId ?? '')
-        : String(report.artifact.run_id);
-      const artifactId = guestSeo
-        ? String(report.imported_artifact?.artifactId ?? '')
-        : String(report.artifact.artifact_id);
+      const artifactRunId = notes
+        ? args.get('--development-run-id')
+        : guestSeo
+          ? String(report.imported_artifact?.runId ?? '')
+          : String(report.artifact.run_id);
+      const artifactId = notes
+        ? args.get('--development-artifact-id')
+        : guestSeo
+          ? String(report.imported_artifact?.artifactId ?? '')
+          : String(report.artifact.artifact_id);
       if (guestSeo)
         verifyHostedGuestSeoReport(report, {
           sourceSha,
@@ -527,13 +747,42 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         runId: artifactRunId,
         artifactId,
         sourceSha,
-        ...(guestSeo && { expectedDigest: report.imported_artifact.githubArtifactDigest }),
+        ...((guestSeo || notes) && {
+          expectedDigest: report.imported_artifact.githubArtifactDigest,
+        }),
       });
       if (
         guestSeo &&
         Number(artifact.developmentRunAttempt) !== report.imported_artifact.runAttempt
       )
         refuse('HOSTED_SEO_NATIVE_REPORT_PROVENANCE_INVALID');
+      if (notes) {
+        const ancestry = spawnSync('git', ['merge-base', '--is-ancestor', sourceSha, run.head_sha]);
+        const paths = execFileSync(
+          'git',
+          [
+            'log',
+            '--no-renames',
+            '--format=',
+            '--name-only',
+            '-z',
+            `${sourceSha}..${run.head_sha}`,
+          ],
+          { encoding: 'utf8' },
+        )
+          .split('\0')
+          .filter(Boolean);
+        if (
+          ancestry.error ||
+          ancestry.status !== 0 ||
+          paths.some((path) => !NOTES_NON_RUNTIME_PATH.test(path))
+        )
+          refuse('HOSTED_NOTES_RUNTIME_SOURCE_DRIFT');
+        verifyHostedNotesReport(report, {
+          ...artifact,
+          developmentArtifactId: artifact.artifactId,
+        });
+      }
       const verdict = verifyHostedResourceJournals({ runId, attempt, files });
       process.stdout.write(
         `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...verdict })}\n`,

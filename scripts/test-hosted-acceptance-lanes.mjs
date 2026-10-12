@@ -1,3 +1,4 @@
+import './hosted-remote-notes-admission.test.mjs';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
