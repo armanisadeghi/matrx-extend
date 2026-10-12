@@ -21,8 +21,10 @@ import {
   verifyNotesSnapshot,
 } from './notes-native-contract.mjs';
 import {
+  notesEndpointObservationEnabled,
   notesNativeStartupOperation,
   notesStartupErrorCategory,
+  safeNotesEndpointObservation,
 } from './notes-startup-diagnostic.mjs';
 import { MEMBER_TEST_ORGANIZATION_NAME, signInSettings } from './settings-native-auth-driver.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -866,6 +868,13 @@ try {
   const config = HOSTED_FIND ? null : await privateConfig();
   stage = 'native_start';
   const native = await runNativeSidepanelQa({
+    ...(notesEndpointObservationEnabled(process.env) && {
+      startupEndpointObservationMs: 15_000,
+      onStartupEndpointObservation: (value) => {
+        report.observations.startup_endpoint ??= [];
+        report.observations.startup_endpoint.push(safeNotesEndpointObservation(value));
+      },
+    }),
     onStage: (value) => {
       if (startupPending) stage = notesNativeStartupOperation(value);
     },

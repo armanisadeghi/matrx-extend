@@ -1,0 +1,49 @@
+{
+  "reviewed_at_utc": "2026-10-12T07:00:00Z",
+  "reviewer_lane": "notes_cdp_post_timeout_fresh_peer",
+  "scope": {
+    "files": [
+      "tests/browser/notes-native-acceptance.mjs",
+      "tests/browser/notes-startup-diagnostic.mjs",
+      "tests/browser/notes-startup-diagnostic.test.mjs"
+    ],
+    "purpose": "Independent review of hosted Notes A read-only CDP post-timeout diagnostics",
+    "product_behavior_credit": "none",
+    "runtime_execution": "not_run"
+  },
+  "verdict_a": {
+    "status": "PASS_SOURCE_ONLY",
+    "findings": [],
+    "confirmed": [
+      "The hosted workflow's existing startup_display_mode=notes-cdp opt-in is restricted to notes-find-member on lane A and is passed as MATRX_CDP_STARTUP_DIAGNOSTIC=1; the runner additionally requires NOTES_HOSTED_FIND=1 and lane A before enabling the callback.",
+      "The Notes driver configures a fixed 15000 ms observation and sends only safeNotesEndpointObservation output to the report. It does not change the existing startup timeout, error category, failure stage, exit code, or unverified status.",
+      "The existing harness timeout branch is reachable from this callback. After owned_cdp_endpoint_timeout, it emits cdp_timeout, performs lstat-only checks against the newly created owned profile while observing the direct child exit/signal state, bounds the observation loop to windowMs, emits post_timeout, and rethrows the original timeout.",
+      "The post-timeout probe does not reconnect to CDP, read endpoint contents, signal or kill the child, or promote acceptance. The result sanitizer accepts only fixed phases, booleans, and nonnegative integer counters; private extra fields such as path and PID are dropped.",
+      "No workflow_dispatch input was added. Existing workflow has 25 input declarations; the change uses its existing Notes startup mode input."
+    ],
+    "unsupported_claims": [
+      "No hosted Notes A run was performed, so actual runner timing, endpoint appearance, and child-exit observations are unverified.",
+      "No product acceptance or product defect conclusion follows from this diagnostic-only change."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_LIMITS",
+    "findings": [],
+    "tests": {
+      "command": "node --test tests/browser/notes-startup-diagnostic.test.mjs",
+      "passed": 10,
+      "failed": 0,
+      "forcing_evidence": "The new test directly calls the exported observeOwnedEndpointAfterTimeout with controlled filesystem, child state, sleep, and clock dependencies. Separate cases force late endpoint publication, child exit, continued absence through the 300 ms window, and filesystem inspection failure; expected outcomes differ, so skipping lstat or child-state observation fails. It asserts elapsed time stays within the configured bound and serialized observations exclude the private profile path. The Notes orchestration test separately proves the original failure remains unverified/nonzero and late evidence is sanitized."
+    },
+    "checks": [
+      "pnpm exec biome check tests/browser/notes-native-acceptance.mjs tests/browser/notes-startup-diagnostic.mjs tests/browser/notes-startup-diagnostic.test.mjs — passed",
+      "git diff --check — passed",
+      "Workflow source inspected: existing Notes A diagnostic opt-in is restricted to the intended hosted case and lane.",
+      "Existing owned startup harness source inspected: post-timeout observation is bounded and read-only, and original failure is rethrown.",
+      "No browser, build, or release command run, per scope."
+    ]
+  },
+  "open_items": [
+    "No hosted Notes A run was performed; operational timing remains unmeasured."
+  ]
+}
