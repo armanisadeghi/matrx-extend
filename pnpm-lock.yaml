@@ -36,7 +36,7 @@ importers:
         version: 0.25.85(@supabase/supabase-js@2.117.2)(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/data':
         specifier: latest
-        version: 0.29.23(@supabase/supabase-js@2.117.2)(react@19.3.0)
+        version: 0.29.24(@supabase/supabase-js@2.117.2)(react@19.3.0)
       '@ai-matrx/design-system':
         specifier: latest
         version: 0.86.100(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
@@ -355,17 +355,6 @@ packages:
   '@ai-matrx/content-ir@0.24.19':
     resolution: {integrity: sha512-cocLx8NNWSCCYSuZ9ZG78rKjQelOsl1yh/ugL5i83g1cDowsGnsEZb9mQwXoHmw6FVPiyJji5z2bDpumjLxacw==}
     engines: {node: '>=20'}
-
-  '@ai-matrx/data@0.29.23':
-    resolution: {integrity: sha512-+YanmXH2D8jAmThATOJywqCtFT0Z1Sa74sgeuLjCINYdy0P74wMt/B9IfA6C4h1M7b69nmtDHQkbBiLG5FyhzQ==}
-    engines: {node: '>=20'}
-    hasBin: true
-    peerDependencies:
-      '@supabase/supabase-js': '>=2.0.0'
-      react: '>=18.0.0'
-    peerDependenciesMeta:
-      react:
-        optional: true
 
   '@ai-matrx/data@0.29.24':
     resolution: {integrity: sha512-YzPzO8vQeYjiqei1wzhhP+ifEIkJdPSPAVh737e/V/k1YZDs5ZS1B6LRoCom2xH7rUVbJHbNJAf796TFnIV70w==}
@@ -6496,7 +6485,7 @@ snapshots:
 
   '@ai-matrx/associations@0.14.45(@supabase/supabase-js@2.117.2)(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))':
     dependencies:
-      '@ai-matrx/data': 0.29.23(@supabase/supabase-js@2.117.2)(react@19.3.0)
+      '@ai-matrx/data': 0.29.24(@supabase/supabase-js@2.117.2)(react@19.3.0)
       '@ai-matrx/design-system': 0.86.100(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/kit': 0.42.4(react@19.3.0)
     optionalDependencies:
@@ -6549,7 +6538,7 @@ snapshots:
       '@ai-matrx/canvas': 0.10.71(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/content-ir': 0.24.19(react@19.3.0)
       '@ai-matrx/content-ir-react': 0.25.85(@supabase/supabase-js@2.117.2)(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
-      '@ai-matrx/data': 0.29.23(@supabase/supabase-js@2.117.2)(react@19.3.0)
+      '@ai-matrx/data': 0.29.24(@supabase/supabase-js@2.117.2)(react@19.3.0)
       '@ai-matrx/design-system': 0.86.100(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/diff': 0.6.18(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
       '@ai-matrx/icons': 0.3.73(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
@@ -6627,21 +6616,6 @@ snapshots:
       jsonrepair: 3.15.0
     transitivePeerDependencies:
       - react
-
-  '@ai-matrx/data@0.29.23(@supabase/supabase-js@2.117.2)(react@19.3.0)':
-    dependencies:
-      '@ai-matrx/api': 0.1.9(@supabase/supabase-js@2.117.2)(react@19.3.0)
-      '@ai-matrx/auth': 0.3.2(@supabase/supabase-js@2.117.2)(react@19.3.0)
-      '@ai-matrx/files': 0.1.6(@supabase/supabase-js@2.117.2)(react@19.3.0)
-      '@ai-matrx/kit': 0.42.4(react@19.3.0)
-      '@ai-matrx/realtime': 0.10.8(react@19.3.0)
-      '@supabase/ssr': 0.12.7(@supabase/supabase-js@2.117.2)
-      '@supabase/supabase-js': 2.117.2
-      tus-js-client: 4.3.1
-    optionalDependencies:
-      react: 19.3.0
-    transitivePeerDependencies:
-      - react-native
 
   '@ai-matrx/data@0.29.24(@supabase/supabase-js@2.117.2)(react@19.3.0)':
     dependencies:
@@ -6760,7 +6734,7 @@ snapshots:
       '@ai-matrx/associations': 0.14.45(@supabase/supabase-js@2.117.2)(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/auth': 0.3.2(@supabase/supabase-js@2.117.2)(react@19.3.0)
       '@ai-matrx/content-ir': 0.24.19(react@19.3.0)
-      '@ai-matrx/data': 0.29.23(@supabase/supabase-js@2.117.2)(react@19.3.0)
+      '@ai-matrx/data': 0.29.24(@supabase/supabase-js@2.117.2)(react@19.3.0)
       '@ai-matrx/design-system': 0.86.100(@tailwindcss/typography@0.5.20(tailwindcss@4.3.3))(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(recharts@3.10.1(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react-is@17.0.2)(react@19.3.0)(redux@5.0.1))
       '@ai-matrx/kit': 0.42.4(react@19.3.0)
       '@ai-matrx/realtime': 0.10.8(react@19.3.0)
