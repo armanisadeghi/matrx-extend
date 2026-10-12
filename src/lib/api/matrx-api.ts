@@ -12,6 +12,7 @@ import {
   type ApiRequestOptions,
   type ApiResult,
   STATUS_EXPECTED_ACTOR_MISMATCH,
+  STATUS_INVALID_BODY,
   STATUS_NO_ORGANIZATION,
   STATUS_SESSION_NOT_READY,
 } from '@/lib/api/client';
@@ -192,6 +193,16 @@ export async function runOp<T>(
       if (err.status === 401) await announceUnauthorized();
       if (!opts.silent) log.error('api', `✗ ${err.path} ${err.status}`, err.message);
       return { ok: false, status: err.status, error: errorText(err) };
+    }
+    // The generated JSON operation lets response.json() SyntaxError escape a
+    // successful HTTP response. Keep a bad server body distinct from transport.
+    if (err instanceof SyntaxError) {
+      if (!opts.silent) log.error('api', 'invalid response body', err);
+      return {
+        ok: false,
+        status: STATUS_INVALID_BODY,
+        error: `invalid response body: ${err.message}`,
+      };
     }
     if (!opts.silent) log.error('api', 'network error', err);
     return {

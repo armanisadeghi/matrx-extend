@@ -3790,3 +3790,11 @@ Save an Instagram carousel to Swipe file. The card reads "N of M slides saved" (
 - **Steps:** Open the Data tab; set Records to 5; click **Get as table**; wait for the result row; click **Open table**.
 - **Expected:** Quote reads about 150 points; result shows the table name and 5 rows; the link opens `/data/<table id>`. On a page outside the catalog (e.g. google.com/search) the card is absent. Over-limit counts are lowered to the limit and said.
 - **Automated:** `tests/unit/live-data-sources.test.ts` (matcher, points, clamp, stream folding).
+
+### Generated API response failures (EXT-D-0213)
+
+- **What it does:** A generated JSON operation reports an unreadable successful response as an invalid server body, while a failed connection remains a network error.
+- **Where to test:** A development extension pointed at a controlled backend route used by a generated operation.
+- **Steps:** Return HTTP 200 with malformed JSON, then make the same route unreachable. Repeat with a valid JSON response.
+- **Expected:** The malformed response returns status `-1` with an invalid response body error; the unreachable route returns status `0`; the valid response succeeds.
+- **Covered by:** `src/lib/api/matrx-api-session.test.ts`. Native verification remains open until the installed build exercises these responses.

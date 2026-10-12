@@ -32,7 +32,7 @@ vi.mock('@/lib/org/active-org', () => ({
   isOrganizationNoMembershipsError: () => false,
 }));
 
-import { STATUS_SESSION_NOT_READY } from '@/lib/api/client';
+import { STATUS_INVALID_BODY, STATUS_SESSION_NOT_READY } from '@/lib/api/client';
 import { runOpAs } from '@/lib/api/matrx-api';
 import { listComputeTargets } from '@ai-matrx/api/architecture';
 
@@ -81,5 +81,37 @@ describe('runOp session rules', () => {
       ok: true,
     });
     expect(seen).toEqual(['Bearer old', 'Bearer new']);
+  });
+
+  it('classifies a malformed successful JSON body as invalid body', async () => {
+    state.token = null;
+    state.profile = null;
+    const network = vi.fn(
+      async () =>
+        new Response('{broken', { status: 200, headers: { 'content-type': 'application/json' } }),
+    );
+    vi.stubGlobal('fetch', network);
+
+    expect(await runOpAs((api, o) => listComputeTargets(api, undefined, o))).toMatchObject({
+      ok: false,
+      status: STATUS_INVALID_BODY,
+    });
+    expect(network).toHaveBeenCalledOnce();
+  });
+
+  it('keeps a failed network request at status zero', async () => {
+    state.token = null;
+    state.profile = null;
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => {
+        throw new TypeError('Failed to fetch');
+      }),
+    );
+
+    expect(await runOpAs((api, o) => listComputeTargets(api, undefined, o))).toMatchObject({
+      ok: false,
+      status: 0,
+    });
   });
 });

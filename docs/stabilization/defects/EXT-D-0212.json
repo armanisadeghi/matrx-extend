@@ -24,18 +24,19 @@
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38273724898",
     "pnpm install --frozen-lockfile --lockfile-only --ignore-scripts passed after refresh; git diff --check passed.",
-    "node scripts/check-matrx-packages.mjs --self-test passed. Local --duplicates remains red from stale node_modules copies and is not a fresh-install verdict."
+    "node scripts/check-matrx-packages.mjs --self-test passed. Local --duplicates remains red from stale node_modules copies and is not a fresh-install verdict.",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274298219: exact source 58f28a085 frozen Install dependencies and focused acceptance guards passed. This workflow did not run Typecheck."
   ],
   "build_receipt": {
     "source_sha": "f87e5d2fbe4fa5b28b5c9bf34b5daf07811c3060",
     "ci_run_id": 38273724898
   },
   "reproducibility_count": "CI frozen-install/postinstall failure 1/1; refreshed lockfile validated without local installation",
-  "fix_commits": [],
-  "original_retest_runs": [],
+  "fix_commits": ["a58781e8b"],
+  "original_retest_runs": [38274298219],
   "surrounding_case_runs": [],
-  "reviewer": null,
-  "next_action": "Fresh peer source review, then exact-source automatic CI from the pushed main commit. Do not dispatch a workflow while the spend gate is red.",
+  "reviewer": "guest_chat_peer_review: independent lockfile/package graph source review passed",
+  "next_action": "Fresh frozen install and postinstall passed in 38274298219. Typecheck and native acceptance remain open; do not dispatch a workflow while the spend gate is red.",
   "transition_history": [
     {
       "at": "2026-10-12T15:58:31Z",

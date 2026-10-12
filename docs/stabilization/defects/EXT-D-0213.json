@@ -1,0 +1,58 @@
+{
+  "id": "EXT-D-0213",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T07"],
+  "title": "Generated API adapter reports malformed success JSON as network failure",
+  "surface": "Shared generated API result adapter",
+  "auth_mode": "guest/member/admin",
+  "role_org_permissions": "The response classification is independent of identity; a generated guest operation provides the focused test path.",
+  "preconditions": ["A generated JSON operation receives HTTP 200 with malformed JSON."],
+  "reproduction": [
+    "Call a generated operation through runOp with a successful response whose JSON parser throws SyntaxError.",
+    "The generated operation propagates that exception; runOp's generic catch returns status 0."
+  ],
+  "expected": "A malformed successful response returns STATUS_INVALID_BODY (-1); a true network failure returns 0.",
+  "actual": "Source-confirmed malformed-success SyntaxError maps to generic status 0, mislabeling a server body failure as a connection failure.",
+  "cause": "Generated request parsing lets response.json() SyntaxError escape; the adapter handles every non-MatrxApiError as a network error.",
+  "sibling_census": "runOp is the shared adapter for generated operations. The old rawRequest client and withSchema already distinguish invalid body status -1 from network status 0. A single adapter branch fixes every generated JSON operation.",
+  "severity": "S2: misleading error classification for invalid successful responses",
+  "priority": "P1",
+  "state": "in-fix",
+  "owner": "package_graph_sol_retry",
+  "evidence": [
+    "@ai-matrx/api 0.1.10 published dist/index.js JSON request path awaits response.json() without converting SyntaxError (line 274).",
+    "src/lib/api/client.ts existing successful-response parser returns STATUS_INVALID_BODY for body parse errors.",
+    "src/lib/api/matrx-api-session.test.ts adds real generated-operation malformed-JSON and TypeError network cases; host pressure level 2 prevented guarded test admission, so test is unrun."
+  ],
+  "build_receipt": {
+    "source_sha": "58f28a085622a3c41784ab317ec3753918bdd9bf",
+    "installed_api_version": "0.1.9",
+    "locked_api_version": "0.1.10"
+  },
+  "reproducibility_count": "Source confirmed; runtime test not admitted due host resource pressure",
+  "fix_commits": [],
+  "original_retest_runs": [],
+  "surrounding_case_runs": [],
+  "reviewer": null,
+  "next_action": "Fresh independent peer review, then exact-source automatic CI test and Typecheck when available. Native installed extension verification remains open.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T16:00:50Z",
+      "from": null,
+      "to": "open",
+      "reason": "Independent review found malformed successful response classified as network failure."
+    },
+    {
+      "at": "2026-10-12T16:00:50Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Compared generated parser with prior client invalid-body handling."
+    },
+    {
+      "at": "2026-10-12T16:00:50Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Shared adapter branch and focused generated-operation test prepared; resource guard prevents local execution."
+    }
+  ]
+}
