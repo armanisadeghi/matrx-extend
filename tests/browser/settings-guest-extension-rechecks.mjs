@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
 import { captureFailure, safeTransportFailureClass } from './profile-reload-capture.mjs';
+import { safePreferenceBaselineRestoration } from './settings-guest-preference-batch.mjs';
 import { click, waitFor } from './settings-panel-driver.mjs';
 
 const nativeDriver = { click, waitFor };
@@ -123,6 +124,7 @@ export async function runGuestChoicesAcrossExtensionRestarts({
   const restorePostReplacementStages = [];
   let choiceFailure = false;
   let restoreFailure = false;
+  let baselineRestoration = null;
 
   const safeDetailStage = (stage) =>
     GUEST_EXTENSION_RECHECK_FAILURE_STAGES.includes(stage) ? stage : 'unavailable';
@@ -362,6 +364,7 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     record('original preference restored after extension reload', 'pass', final);
   } catch (error) {
     restoreFailure = true;
+    baselineRestoration = safePreferenceBaselineRestoration(error?.safeBaselineRestoration);
     restoreFailureStage = failureStage;
     restoreFailureDetailStage = safeDetailStage(failureDetailStage);
     restoreTransportClass = safeTransportFailureClass(transportFailureClass);
@@ -385,6 +388,7 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     error.safeFirstChoiceTransportClass = choiceFailure ? choiceTransportClass : 'not_applicable';
     error.safeRestorationTransportClass = restoreFailure ? restoreTransportClass : 'not_applicable';
     error.safeFirstChoiceFailureCode = choiceFailure ? choiceFailureCode : 'not_applicable';
+    error.safeBaselineRestoration = baselineRestoration;
     error.safeRestorationFailureCode = restoreFailure ? restoreFailureCode : 'not_applicable';
     error.safeFirstChoiceReloadBoundary = choiceReloadBoundary;
     error.safeRestorationReloadBoundary = restoreReloadBoundary;

@@ -127,7 +127,39 @@ test('unexpected full-extension exceptions retain distinct safe source diagnosti
   assert.equal(JSON.stringify({ first, second }).includes('password'), false);
 });
 
+test('inner restoration serialization rejects unknown stages and strips arbitrary observation fields', async () => {
+  const item = cases()[0];
+  const capture = async (diagnostic) => {
+    await runFullExtensionRecheck(item, async () => {
+      throw Object.assign(new Error('private password'), {
+        safeCategory: 'full_extension_preference_or_restore_failed',
+        safeBaselineRestoration: diagnostic,
+      });
+    });
+    return item.fullExtensionReload.baselineRestoration;
+  };
+  assert.equal(await capture({ stage: 'private page' }), null);
+  const diagnostic = await capture({
+    stage: 'remove_absent_key',
+    errorName: 'private password',
+    observation: {
+      settingsActive: true,
+      storedPresent: false,
+      storagePresent: 'secret',
+      token: 'secret',
+    },
+  });
+  assert.equal(diagnostic.errorName, 'OtherError');
+  assert.equal(diagnostic.observation.settingsActive, true);
+  assert.equal(diagnostic.observation.storedPresent, false);
+  assert.equal(diagnostic.observation.storagePresent, null);
+  assert.equal(JSON.stringify(diagnostic).includes('secret'), false);
+  assert.equal(JSON.stringify(diagnostic).includes('password'), false);
+});
+
 function fullRestartFixture({
+  absentTheme = false,
+  failBaselineRestore = null,
   skipChoice = null,
   failNewChat = false,
   failSettingsCalls = [],
@@ -153,6 +185,12 @@ function fullRestartFixture({
       mode: { count: 1, visible: 'Capture', stored: 'capture' },
     },
   };
+  if (absentTheme)
+    Object.assign(states.T04, {
+      stored: null,
+      storedPresent: false,
+      storagePresent: false,
+    });
   const calls = { reloads: [], options: [], chats: [], caseRunners: [] };
   let settingsCalls = 0;
   let activePanel = { targetId: 'panel-initial-replacement', detach: async () => {} };
@@ -169,6 +207,15 @@ function fullRestartFixture({
     },
   ];
   const choiceDriver = {
+    async evaluate(panel, script) {
+      assert.equal(panel, activePanel);
+      if (script.includes('const originalStoragePresent =')) {
+        if (failBaselineRestore === 'remove_absent_key')
+          throw new TypeError('private token secret');
+        Object.assign(states.T04, { stored: null, storedPresent: false, storagePresent: false });
+      }
+      return { ...states.T04 };
+    },
     async click(panel, kind, label) {
       assert.equal(panel, activePanel);
       if (kind !== 'option') return;
@@ -183,12 +230,21 @@ function fullRestartFixture({
         const state = states[preference.caseId];
         state.selected = label;
         state.stored = value;
-        if (preference.caseId === 'T04') state.darkClass = value === 'dark';
+        if (preference.caseId === 'T04') {
+          state.darkClass = value === 'dark';
+          if (absentTheme) Object.assign(state, { storedPresent: true, storagePresent: true });
+        }
       }
     },
     async waitFor(name, read, accept) {
       const value = await read();
       assert.equal(accept(value), true, name);
+      if (
+        name === 'T04_full_extension_baseline_restored' &&
+        failBaselineRestore === 'observe_restored_baseline'
+      ) {
+        throw new RangeError('private user page');
+      }
       return value;
     },
   };
@@ -312,6 +368,53 @@ function fullRestartFixture({
       enforceFullExtensionRechecks(reportCases);
     },
   };
+}
+
+for (const failBaselineRestore of [null, 'remove_absent_key', 'observe_restored_baseline']) {
+  test(`production T04 rerun preserves absent baseline and safe inner restoration outcome (${failBaselineRestore})`, async () => {
+    const f = fullRestartFixture({ absentTheme: true, failBaselineRestore });
+    await f.run();
+    const theme = f.reportCases[0];
+    if (failBaselineRestore === null) {
+      assert.equal(theme.fullExtensionReload.status, 'pass');
+      assert.deepEqual(
+        [
+          f.states.T04.selected,
+          f.states.T04.stored,
+          f.states.T04.storedPresent,
+          f.states.T04.storagePresent,
+        ],
+        ['System', null, false, false],
+      );
+      assert.equal(f.calls.reloads.length, 7);
+    } else {
+      assert.equal(theme.fullExtensionReload.status, 'fail');
+      assert.equal(theme.fullExtensionReload.restorationFailureStage, 'restore_baseline_select');
+      const diagnostic = theme.fullExtensionReload.baselineRestoration;
+      assert.ok(diagnostic, 'EXT-D-0220 must retain inner baseline restoration diagnostics');
+      assert.equal(diagnostic.stage, failBaselineRestore);
+      assert.equal(
+        diagnostic.errorName,
+        failBaselineRestore === 'remove_absent_key' ? 'TypeError' : 'RangeError',
+      );
+      assert.equal(diagnostic.observation.settingsActive, true);
+      assert.equal(
+        diagnostic.observation.baselineMatches,
+        failBaselineRestore === 'observe_restored_baseline',
+      );
+      assert.equal(
+        diagnostic.observation.storagePresent,
+        failBaselineRestore === 'remove_absent_key',
+      );
+      assert.equal(JSON.stringify(theme).includes('private'), false);
+      assert.equal(JSON.stringify(theme).includes('secret'), false);
+    }
+    assert.equal(
+      f.reportCases[1].fullExtensionReload.status,
+      'pass',
+      'mode sibling remains executable',
+    );
+  });
 }
 
 test('each nonbaseline theme, mode, and capture choice survives its own real replacement boundary and restores baseline', async () => {

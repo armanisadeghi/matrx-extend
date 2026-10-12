@@ -7,6 +7,7 @@ import {
 import {
   preferenceBaselineMatches,
   restoreGuestPreferenceBaseline,
+  safePreferenceBaselineRestoration,
 } from './settings-guest-preference-batch.mjs';
 import { AUTO_SCRAPE_MODE_FAILURE_STAGES } from './settings-guest-scrape-controls.mjs';
 import {
@@ -83,6 +84,7 @@ function safeGuestFailureDiagnostics(error) {
           }))
       : [];
   return {
+    baselineRestoration: safePreferenceBaselineRestoration(error?.safeBaselineRestoration),
     firstChoiceFailureStage: safeStage(error?.safeFirstChoiceFailureStage),
     restorationFailureStage: safeStage(error?.safeRestorationFailureStage),
     firstChoiceTransportClass: safeTransport(error?.safeFirstChoiceTransportClass),
@@ -320,6 +322,7 @@ export async function rerunGuestSettingsAfterExtensionReload({
           const error = Object.assign(new Error('full_extension_preference_or_restore_failed'), {
             safeCategory: 'full_extension_preference_or_restore_failed',
           });
+          error.safeBaselineRestoration = caughtError?.safeBaselineRestoration;
           error.safeFirstChoiceFailureStage = caughtError?.safeFirstChoiceFailureStage;
           error.safeRestorationFailureStage = caughtError?.safeRestorationFailureStage;
           error.safeFirstChoiceTransportClass = caughtError?.safeFirstChoiceTransportClass;
