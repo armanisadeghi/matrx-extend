@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "review_id": "notes-find-member-run38188627893-review",
+  "reviewed_at": "2026-10-12T00:46:37Z",
+  "reviewer": "independent-agent",
+  "verdict": {
+    "A": "NO_PRODUCT_PASS",
+    "B": "ACCEPT_DIAGNOSTIC_WITH_LIMITS"
+  },
+  "scope": "Independent review of hosted diagnostic run 38188627893 and its sanitized report/evidence. No implementation edits.",
+  "findings": [
+    {
+      "severity": "Important",
+      "location": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38188627893",
+      "finding": "Run failed before any Notes fixture note was created, so EXT-F-2006-T02 has no product acceptance result. The native receipt shows member sign-in, selected organization, active Notes UI with Create available, a successful GET 200, zero created note IDs, and failure notes_find_three_home_fixture_unavailable. At the run SHA, the cited predicate requires exactly one General and at least two non-General scopes in the selected organization; this is a missing fixture prerequisite, not an observed search/filter defect.",
+      "impact": "Do not credit the Notes search/filter case. Product status unverified is correct."
+    },
+    {
+      "severity": "Minor",
+      "location": "docs/stabilization/reports/notes-find-member-run38188627893.json",
+      "finding": "The selected-org scope tree payload and counts were not retained. The observer filters scopes by organization_id and treats missing scopes/types or non-200 responses as empty; the receipt's GET 200 supports reaching the guard but cannot establish the exact home counts or why eligibility failed. The raw cleanup_complete=false is the initial untouched ledger value; zero created IDs and no fixture writes support the report's no-orphan interpretation.",
+      "impact": "Backend fixture eligibility versus response omission remains unresolved; no exact home count or cause can be inferred."
+    },
+    {
+      "severity": "Minor",
+      "location": "docs/stabilization/reports/notes-find-member-run38188627893.json",
+      "finding": "CDP diagnostics support that this run connected: TCP probe at 1027ms, socket open at 1674ms, settled at 1675ms, with 10ms longest timer delay across 10 samples. The recorded HTTP observation is explicitly absent before connector settlement, so no HTTP status outcome is established. CPU-pending occurred later than connection; centisecond process snapshots cannot allocate exact interval CPU. This does not explain prior startup timeouts.",
+      "impact": "Diagnostic success is valid for this host/run only; it establishes neither the prior timeout's root cause nor a fix."
+    },
+    {
+      "severity": "Minor",
+      "location": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38187574620",
+      "finding": "GitHub confirms CI run 38187574620 succeeded on main at 27661ae; its artifact 11720479127 digest matches the report and downloaded provenance (version 0.2.509, tree digest matches). The hosted run is main at 22a6741 and its workflow file SHA-256 matches the recorded reviewed hash. The report's source-delta statement is plausible and the CI-built extension tree is identified, but the CI artifact itself does not prove the hosted checkout's complete runtime environment was identical.",
+      "impact": "Artifact provenance is verified; interpret runtime-equivalence as source/artifact equivalence for the extension, not full host or backend equivalence."
+    },
+    {
+      "severity": "Minor",
+      "location": "docs/stabilization/reports/notes-find-member-run38188627893.json",
+      "finding": "GitHub's current repository secret-name listing contains no temporary credential secret, and the report says local one-use link and identity are absent. This verifies current name absence and reported local cleanup, but cannot prove historical secret contents or every transient credential state from the sanitized evidence alone. No credential values were retained in the artifacts reviewed.",
+      "impact": "Secret cleanup is supported within those bounds; the evidence does not prove absence of all historical credential material."
+    },
+    {
+      "severity": "Minor",
+      "location": "resource-events.json",
+      "finding": "Package and browser resource finals are valid; acceptance final is invalid (CPU pending at 00:42:34Z, child exit 1, invalid final at 00:42:41Z). This invalidates the acceptance lane's product result independently of the fixture prerequisite. The earlier successful CDP connection precedes CPU pending and no causal attribution is justified.",
+      "impact": "Report both infrastructure diagnostic evidence and product failure/unverified status; neither substitutes for the other."
+    }
+  ],
+  "evidence_checked": [
+    "GitHub metadata and logs for runs 38188627893 and 38187574620",
+    "GitHub artifact IDs/digests and downloaded CI provenance/receipt",
+    "GitHub hosted-run artifact ID/digest",
+    "Workflow file at hosted run SHA and recorded SHA-256",
+    "Run-SHA fixture predicate and the three sanitized evidence JSON files",
+    "Current GitHub repository secret names"
+  ],
+  "limits": [
+    "Hosted screenshots were not copied or visually inspected; sign-in and UI conclusions rely on the sanitized native receipt and run logs.",
+    "Exact scope payloads/counts, raw endpoint details, and private recovery ledger are absent by design.",
+    "Uncommitted fixture edits in the current checkout postdate the hosted run and were not used to judge its behavior.",
+    "No product retry or local test was run; this review assesses the recorded run only."
+  ]
+}

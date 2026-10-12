@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-find-member-run38188627893",
+  "recorded_at": "2026-10-12T00:45:28.700Z",
+  "status": "diagnostic-completed-product-unverified",
+  "run": {
+    "id": 38188627893,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38188627893",
+    "conclusion": "failure",
+    "acceptance_lane": "A",
+    "acceptance_case": "notes-find-member",
+    "startup_display_mode": "notes-cdp",
+    "workflow_head_sha": "22a674139e69d1d95accb65afce8050179c81768",
+    "tested_artifact_source_sha": "27661ae102f5dab1ea2a1476cb74d76d88a751c7",
+    "development_ci_run_id": 38187574620,
+    "development_artifact_id": 11720479127,
+    "development_artifact_digest": "sha256:d901b99baa740c6845d0ace1d9f854c4b6bea0c2edc76c365604010f0a1ac8f2",
+    "version": "0.2.509",
+    "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "sanitized_artifact": {
+      "id": 11721165528,
+      "name": "hosted-guest-38188627893-1",
+      "digest": "sha256:1eb32e9d53cc44832b8d9c7ea601997e45ba3addb1395f7c16b42dcc2529f982"
+    }
+  },
+  "dispatch_preflight": {
+    "ci_success": true,
+    "artifact_provenance_verified": true,
+    "reviewed_workflow_sha256": "bf120de2e84356722122829790a52deeefb2177f3a87b93181368b2fdeb1910e",
+    "source_delta": "Only the sanitized cancellation receipt differed between green artifact source and dispatch main; rechecked remote source immediately before dispatch.",
+    "hosted_lanes_idle": true,
+    "temporary_secret_absent_before_stage": true,
+    "credential_identity": {
+      "platform_nonadmin": true,
+      "current_organization_membership": true,
+      "organization_role": "owner",
+      "role_changes": false
+    },
+    "resource_readiness": "Unchanged three-healthy-sample readiness gates plus package/browser/acceptance resource permits; no threshold, timeout or retry changes."
+  },
+  "startup": {
+    "schema": 1,
+    "outcome": "connected",
+    "phases": [
+      {
+        "phase": "endpoint_read",
+        "elapsedMs": 999
+      },
+      {
+        "phase": "owner_check_started",
+        "elapsedMs": 999
+      },
+      {
+        "phase": "owner_verified",
+        "elapsedMs": 1012
+      },
+      {
+        "phase": "socket_constructed",
+        "elapsedMs": 1019
+      },
+      {
+        "phase": "probe_tcp_connected",
+        "elapsedMs": 1027
+      },
+      {
+        "phase": "socket_open",
+        "elapsedMs": 1674
+      },
+      {
+        "phase": "connector_settled",
+        "elapsedMs": 1675
+      }
+    ],
+    "longestTimerDelayMs": 10,
+    "timerSamples": 10,
+    "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+  },
+  "startup_interpretation": {
+    "first_boundary": "CDP connected, followed by successful member authentication and active Notes UI. Prior owned_cdp_open_timeout did not reproduce.",
+    "http_probe": "Independent loopback TCP probe connected at1027ms; connector settled successfully before any HTTP status event was recorded. No HTTP status outcome is claimed.",
+    "event_loop": "Longest timer delay10ms over10 samples; this interval provides no evidence of material Node event-loop starvation.",
+    "cpu": "Process snapshots bracketed CDP connection at00:42:18.208–00:42:19.971Z; new Chromium processes are listed separately because centisecond ps snapshots cannot assign their exact interval CPU. CPU pending occurred later at00:42:34.291Z, after successful connection; it does not explain a connection failure in this run.",
+    "limitation": "A successful connection on this host does not resolve the cause of earlier A/B startup timeouts; do not infer a fix or causal CPU attribution."
+  },
+  "native_boundary": {
+    "authentication": {
+      "member_signed_in": true,
+      "platform_nonadmin": true,
+      "organization_selected": true
+    },
+    "failure_stage": "T02_native_member_find",
+    "failure_code": "notes_find_three_home_fixture_unavailable",
+    "notes_ui": {
+      "active": true,
+      "create": true,
+      "error": false
+    },
+    "notes_transport": {
+      "get_status": 200,
+      "created_note_count": 0
+    },
+    "fixture_classification": "Missing acceptance fixture prerequisite, not an observed Notes create/search/filter failure.",
+    "source_evidence": "tests/browser/notes-find-native-case.mjs:432–451 observes a successful scope tree and requires exactly one General plus at least two non-General homes in the selected organization. The code provisions notes only after that check; it never provisions homes. The captured failure is before the first note create or ledger write.",
+    "limits": "The observer ignores non200 responses and accepts absent scopes/types as empty arrays. Reaching this predicate proves an accepted HTTP200 tree but does not prove how many rows existed or why they were absent from the selected-org subset; no scope payload/counts retained. Backend fixture eligibility versus response omission remains unresolved.",
+    "cleanup": "No note insert was attempted, createdNoteIds is empty, and no recovery ledger was started. Raw cleanup_complete=false is the untouched initial ledger state, not evidence of an orphaned note."
+  },
+  "resource_finals": {
+    "package": {
+      "schema": 1,
+      "at": "2026-10-12T00:38:11.655Z",
+      "runId": "hosted-package-38188627893-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "browser": {
+      "schema": 1,
+      "at": "2026-10-12T00:40:16.673Z",
+      "runId": "hosted-browser-38188627893-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "guest": {
+      "schema": 1,
+      "at": "2026-10-12T00:42:41.654Z",
+      "runId": "hosted-guest-38188627893-1",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "acceptance_resource_timeline": "Admitted00:42:01.881Z at busy0.012857/load1.4 on4 CPUs; healthy00:42:17.978Z busy0.25/load1.47; CPU pending00:42:34.291Z busy0.91/load1.28; child exit1 at00:42:41.535Z while CPU confirmation pending; invalid final00:42:41.654Z, exit3. No resource cause is inferred for fixture availability.",
+  "cleanup": {
+    "fresh_one_use_link": true,
+    "cancelled_link_reused": false,
+    "local_link_removed_before_dispatch": true,
+    "temporary_repository_secret_deleted_at_terminal": true,
+    "secret_name_match_count": 0,
+    "local_link_absent": true,
+    "local_identity_absent": true,
+    "credential_values_persisted": false
+  },
+  "product_verdict": {
+    "case_id": "EXT-F-2006-T02",
+    "status": "unverified",
+    "credit": 0,
+    "reason": "Fixture prerequisite failed before note actions; acceptance resource final invalid. No positive Notes search/filter assertion completed."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/notes-find-member/run38188627893/native-receipt.json",
+    "docs/stabilization/evidence/notes-find-member/run38188627893/startup-diagnostics.json",
+    "docs/stabilization/evidence/notes-find-member/run38188627893/resource-events.json"
+  ],
+  "sanitization": "Removed account fingerprint, extension directory and private ledger path from native receipt; retained bounded native observations and provenance. Resource events omit journal paths. No endpoint, port, headers, credential, scope/note payload or raw exception text persisted. Screenshots remain in hosted artifact and were not copied into the repo.",
+  "next": "Independent review of this diagnostic receipt; fix and verify the separate run-owned three-home fixture eligibility before any separately coordinated new browser attempt. No retry performed. Prior CDP timeout cause remains unresolved."
+}
