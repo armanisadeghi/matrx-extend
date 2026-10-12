@@ -18,7 +18,7 @@
   "cause": "The native failure path retained a generic stage/code but did not carry the specific geometry sample through the hosted report sanitizer.",
   "severity": "S3: diagnostic loss delays reliable SEO acceptance; no product impact established",
   "priority": "P1: restore actionable diagnostics before another stacked-notice native run",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "seo_stacked_geometry_diagnostic_fix",
   "evidence": [
     "docs/stabilization/reports/seo-stacked-notice-run38209860624.json",
@@ -26,8 +26,8 @@
     "docs/stabilization/evidence/guest-seo-stacked-notice/run38209860624/native-report.sanitized.json"
   ],
   "source_fix": "The fixture records the exact failed geometry predicate and bounded native sample before cleanup; the hosted sanitizer retains only allowlisted measurements and refuses a claimed failure whose expected and observed values are equal.",
-  "verification_status": "Fresh independent source review passed the corrected diagnostic and privacy allowlist. Syntax, full lint, and diff checks pass; runtime tests and a new native run remain pending under the local disk guard and hosted CI.",
-  "next_action": "Run the new forcing tests in exact-source hosted CI, then retry one guarded guest SEO stacked-notice case; independently review actual failure detail or pass and surrounding notice behavior before closure.",
+  "verification_status": "Fresh independent source review passed the corrected diagnostic and privacy allowlist. Exact-main focused acceptance 38217216839 passed the forcing source tests at d62a94d3c; exact-main CI 38217216779 passed. A new guarded native stacked-notice run and independent product retest remain unverified.",
+  "next_action": "Retry one guarded guest SEO stacked-notice case when resource and CI spend admission permit; independently review actual failure detail or pass and surrounding notice behavior before closure. The current Mac's root volume is below the 20 GiB heavy-test floor; do not bypass refusal.",
   "transition_history": [
     {
       "at": "2026-10-12T06:17:08Z",
@@ -46,6 +46,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "A bounded source repair is prepared for hosted CI and native retest."
+    },
+    {
+      "at": "2026-10-12T07:34:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Reviewed diagnostic repair and forcing tests passed exact-main hosted CI; original native geometry retest remains pending."
     }
   ]
 }
