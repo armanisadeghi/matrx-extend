@@ -340,6 +340,12 @@ Every entry follows this shape:
   unavailable.
 - **Covered by:** `tests/unit/api-stream.test.ts`.
 
+### Watch AI from a chat run
+- **What it does:** opens the platform Watch AI panel for the active run.
+- **Where to test:** Side panel → **Chat**, on a run with a visible Watch AI action.
+- **Steps:** Open Watch AI for a run with a request ID, then repeat for a run with only a conversation ID.
+- **Expected:** aimatrx.com opens with the matching `ai-watch:r-…` or `ai-watch:c-…` panel selected. The URL mapping and missing-ID behavior are covered by `src/features/package-chat/ai-watch-opener.test.ts`.
+
 ### Context chip — what the next turn sends, and the person's rules
 - **What it does:** The composer's values chip (icon and included count) lists
   every value the next turn carries (page content, page brief, highlights, you, extension…) with

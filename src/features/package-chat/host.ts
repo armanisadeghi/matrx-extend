@@ -27,7 +27,8 @@ import type {
   ChatOrgPort,
   ChatOrganization,
 } from '@ai-matrx/chat/host';
-import { createMemoryNavigation, createWebPrefs } from '@ai-matrx/chat/host';
+import { createMemoryNavigation, createUnhostedWindows, createWebPrefs } from '@ai-matrx/chat/host';
+import { createAiWatchWindowOpener } from './ai-watch-opener';
 import { browserDomContextSource, isBrowserDeviceRef } from './browser-dom-source';
 import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';
@@ -156,5 +157,17 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
     registry: { contextSources: [browserDomContextSource, extensionPageContextSource] },
     // Chrome cannot prompt inside a side panel: the grant is asked in the mic-grant popup.
     microphone: { requestPermission: () => requestMicrophoneGrant() },
+    windows: {
+      ...createUnhostedWindows(() => ({
+        capture(error) {
+          console.error('Chat window is unavailable in this host.', error);
+        },
+      })),
+      openers: {
+        openAiWatchWindow: createAiWatchWindowOpener((properties) =>
+          chrome.tabs.create(properties),
+        ),
+      },
+    },
   };
 }
