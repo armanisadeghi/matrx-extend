@@ -21,6 +21,7 @@ import {
   editD217Article,
   exerciseStaleProfileRetry,
   prepareStaleProfileGuest,
+  requirePersistedD217Edit,
 } from './scrape-save-stale-profile.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import { activeTabPanelExpression, click, evaluate, waitFor } from './settings-panel-driver.mjs';
@@ -150,8 +151,7 @@ async function panelRest(panel, request) {
 
 async function querySources(panel, identity, organizationId, name = sourceName) {
   const filters = {
-    select:
-      'id,name,organization_id,canonical_identity,origin_client,created_at,deleted_at,original_file_id',
+    select: `id,name,organization_id,canonical_identity,origin_client,created_at,deleted_at,original_file_id${staleProfileRetry ? ',content' : ''}`,
     organization_id: `eq.${organizationId}`,
     canonical_identity: `eq.${identity}`,
     origin_client: 'eq.extension',
@@ -984,6 +984,13 @@ try {
         );
         const row = verifySourceRows(saved, canonicalIdentity, selectedOrganizationId, sourceName);
         sourceId = row.id;
+        if (staleProfileRetry) {
+          report.observations.d217.persisted_source_content = requirePersistedD217Edit(
+            row,
+            sourceId,
+            selectedOrganizationId,
+          );
+        }
         report.observations.source_row_read_from_service = true;
         report.observations.custom_name_persisted = true;
         report.observations.organization_scope_persisted = true;

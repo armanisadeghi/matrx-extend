@@ -246,3 +246,15 @@ export async function exerciseStaleProfileRetry({
     observer.stop();
   }
 }
+
+/** Independent HTTP Source read after Retry; report booleans only, never stored content. */
+export function requirePersistedD217Edit(row, sourceId, organizationId) {
+  assert.equal(row?.id === sourceId, true, 'd217_persisted_source_identity_mismatch');
+  assert.equal(row?.organization_id === organizationId, true, 'd217_persisted_source_org_mismatch');
+  assert.equal(
+    typeof row.content === 'string' && row.content.includes(D217_EDIT_MARKER),
+    true,
+    'd217_edited_content_not_persisted',
+  );
+  return { source_matches: true, organization_matches: true, edited_marker_persisted: true };
+}

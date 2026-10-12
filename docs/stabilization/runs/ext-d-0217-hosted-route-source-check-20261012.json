@@ -17,12 +17,13 @@
     "Guest Save and warm Retry: visible sign-in-required remedy, edited portions retained, zero membership RPC and Source landing HTTP calls.",
     "Full native extension reload: replacement worker/panel and retired old targets; retained queued edit; guest Retry repeats refusal with zero calls.",
     "Real member re-sign-in: same person and organization, canonical non-admin check; authenticated HTTP read finds zero Sources for run-owned canonical identity before Retry.",
-    "Member Retry: one real landing response HTTP 200, matching organization in header/body, edited portions sent; queued draft clears; existing independent Source/association reads, UI reopen and exact owned-row cleanup must pass."
+    "Member Retry: one real landing response HTTP 200, matching organization in header/body, edited portions sent; queued draft clears; existing independent Source/association reads, UI reopen and exact owned-row cleanup must pass.",
+    "Independent authenticated HTTP Source read selects persisted content and verifies the D217 edited marker after member Retry, separately from landing request payload and original-file UI."
   ],
   "source_verification": {
     "red": "New scope guard initially failed scrape_save_scope_invalid before scope admission was added.",
     "green_command": "node --test scripts/hosted-scrape-route.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/scrape-save-native-acceptance.test.mjs",
-    "green_count": 35,
+    "green_count": 36,
     "compile": "pnpm compile passed",
     "mutation": "plant.py removed membership refusal assertion: test failed Missing expected exception; restored identical. Whole oracle replaced with constant queued:true: test failed Missing expected exception; restored identical. An earlier return-only mutation survived because assertions still executed; corrected whole-function gut check killed it.",
     "format": "Biome check/write on exact changed paths; git diff --check passed"
@@ -50,5 +51,15 @@
     "Existing Source cleanup soft-deletes the run-owned Source and removes associations; original-file physical reclamation is outside this route.",
     "No Store or release files changed; no release claim."
   ],
-  "next_action": "Fresh independent source review, then integrate/push exact reviewed paths. When the shared spend gate is green, dispatch the existing hosted workflow once with requested_by and exact CI development artifact IDs; inspect sanitized result, cleanup and complete resource journals before assigning any native verdict."
+  "next_action": "Fresh independent source review, then integrate/push exact reviewed paths. When the shared spend gate is green, dispatch the existing hosted workflow once with requested_by and exact CI development artifact IDs; inspect sanitized result, cleanup and complete resource journals before assigning any native verdict.",
+  "peer_review_followup": {
+    "A_behavior": "Targeted route but incomplete until edited marker independently verified in persisted Source; request payload alone and original-content reopen are insufficient. Follow-up source fix now reads and verifies persisted content; fresh re-review pending.",
+    "B_quality": "Source/focused test quality pass; initial route test 4/4; no browser/full test. Artifact and cleanup checks appear sound. Fresh follow-up re-review pending.",
+    "change": "D217-only independent HTTP Source query now selects content. After the existing response/status/row/identity/org checks, requirePersistedD217Edit asserts the edited marker in that persisted content and records only boolean proof. Existing original-content UI and request-payload oracles remain intact.",
+    "red": "Metadata-only version of persisted-content oracle failed the new test with Missing expected exception because it accepted a Source whose edited text was absent.",
+    "green": "36 focused checks passed, including refusal of metadata-only and original-only content, wrong Source, wrong organization, acceptance of persisted edited content, and no content in the emitted boolean proof.",
+    "gut_check": "plant.py replaced the entire persisted-content oracle with constant success; the new test failed Missing expected exception; original file restored identically.",
+    "native_status": "Unverified. No browser launches, heavy suite, fixture access or hosted dispatch occurred during this follow-up.",
+    "observer_limit": "Guest network observer counts the named mbr_for_user RPC and POST /sources/land only; it does not claim surveillance of every possible organization read/write endpoint."
+  }
 }

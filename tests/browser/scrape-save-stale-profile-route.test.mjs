@@ -116,3 +116,52 @@ test('passive D217 observer counts real HTTP boundary and validates member paylo
   observer.stop();
   assert.equal(events.size, 0);
 });
+
+import { D217_EDIT_MARKER, requirePersistedD217Edit } from './scrape-save-stale-profile.mjs';
+
+test('D217 persisted Source proof rejects metadata-only and original-only reads after successful landing', () => {
+  // A successful request is insufficient if storage dropped the appointment coordinator's edit.
+  const metadata = { id: 'source-handle', organization_id: 'organization-handle' };
+  assert.throws(
+    () => requirePersistedD217Edit(metadata, 'source-handle', 'organization-handle'),
+    /d217_edited_content_not_persisted/,
+  );
+  assert.throws(
+    () =>
+      requirePersistedD217Edit(
+        { ...metadata, content: 'Review the appointment details before arriving.' },
+        'source-handle',
+        'organization-handle',
+      ),
+    /d217_edited_content_not_persisted/,
+  );
+  const proof = requirePersistedD217Edit(
+    { ...metadata, content: `Review the appointment details.\n\n${D217_EDIT_MARKER}` },
+    'source-handle',
+    'organization-handle',
+  );
+  assert.deepEqual(proof, {
+    source_matches: true,
+    organization_matches: true,
+    edited_marker_persisted: true,
+  });
+  assert.throws(
+    () =>
+      requirePersistedD217Edit(
+        { ...metadata, content: D217_EDIT_MARKER },
+        'different-source',
+        'organization-handle',
+      ),
+    /d217_persisted_source_identity_mismatch/,
+  );
+  assert.throws(
+    () =>
+      requirePersistedD217Edit(
+        { ...metadata, content: D217_EDIT_MARKER },
+        'source-handle',
+        'different-organization',
+      ),
+    /d217_persisted_source_org_mismatch/,
+  );
+  assert.equal(JSON.stringify(proof).includes(D217_EDIT_MARKER), false);
+});
