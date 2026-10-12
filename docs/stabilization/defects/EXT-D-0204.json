@@ -42,6 +42,19 @@
     "limit": "Digest-verified development artifact only; the Store ZIP, release gate, guest/non-admin acceptance, and Google resubmission remain unverified."
   },
   "release_blocker": "The required cross-repo CI spend gate reports $250.04 billed weekly from aidream against Arman's $100 ceiling, while this public extension workflow is estimated at $0 billed. Do not bypass the gate or dispatch release work without an owner ruling. The post-rejection authenticated primary Store item state remains unverified after Browser Use refused the extensions gallery; the versionless email does not establish which version was rejected.",
+  "ci_spend_audit": {
+    "source": "Read-only GitHub Actions workflow-run and job API for AI-Matrix-Engine/aidream; current manifests in aidream/.github/ci-cost.json",
+    "window_utc": "2026-10-12T06:43:21Z through 2026-10-12T08:43:14Z",
+    "started_linux_jobs": {
+      "publish-watch": 21,
+      "test": 0,
+      "publish-npm-package": 266,
+      "repo-only-checks": 0,
+      "deploy-cadence-watch": 24
+    },
+    "estimated_started_job_cost_usd_in_window": 1.806,
+    "limits": "The two-hour window is bursty; four publish jobs were still running. Per-job whole-minute rounding estimates billed time because the Jobs API does not report billed milliseconds. It cannot establish a weekly rate or clear the $100 gate. The cost manifest appears to count skipped jobs in some workflows, but no validated full-week correction exists."
+  },
   "next_action": "Once the spend gate is clear or Arman authorizes a narrow exception, use guarded hosted release on the latest synchronized main, scan the exact Store ZIP for the rejected remote loader, complete real guest/non-admin acceptance and independent review, establish the primary dashboard's current submission state through the permitted authenticated path, then submit the policy-compliant candidate. Do not infer that 0.2.479 was rejected solely from the versionless email.",
   "transition_history": [
     {
