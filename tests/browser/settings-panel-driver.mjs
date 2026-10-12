@@ -495,10 +495,17 @@ export async function click(panel, kind, label, onPhase = undefined) {
       const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
       const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;
       const cards=[...(pane?.querySelectorAll('div.group')??[])]
-        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===2);
-      const buttons=cards.length===1?[...cards[0].querySelectorAll('button[title="Open in Files"]')]:[];
-      candidates=buttons.length===2 && (label==='thumbnail'||label==='icon')
-        ? [buttons[label==='thumbnail'?0:1]] : [];
+        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===1 && card.querySelectorAll('button[title="View screenshot"]').length===1);
+      const title=label==='thumbnail'?'View screenshot':label==='icon'?'Open in Files':null;
+      candidates=cards.length===1 && title ? [...cards[0].querySelectorAll('button[title="'+title+'"]')] : [];
+    }
+    else if (kind === 'screenshot-dialog') {
+      const dialogs=[...document.querySelectorAll('[role="dialog"]')];
+      const dialog=dialogs.length===1?dialogs[0]:null;
+      if(label==='Copy new public link') {
+        const input=dialog?.querySelector('input[aria-label="New public link"]');
+        candidates=input?[...input.parentElement.querySelectorAll('button')].filter(button=>button.textContent.trim()==='Copy'):[];
+      } else candidates=[...(dialog?.querySelectorAll('button')??[])].filter(button=>button.textContent.trim()===label || (label==='Close' && button.getAttribute('aria-label')==='Close'));
     }
     else if (kind === 'button-text') candidates = [...document.querySelectorAll('button')]
       .filter((el) => el.textContent.trim() === label);

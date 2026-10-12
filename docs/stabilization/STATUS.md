@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-12 21:52 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T21:46:25Z. 207 features · 812 cases · 1400 controls · 218 linked defect records.
+Generated 2026-10-12 22:20 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T22:20:09.073348+00:00. 207 features · 812 cases · 1400 controls · 219 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -27,7 +27,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
 | [Scrape](#scrape) | 1 | 7 pass · 7 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 26 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 36 unverified · 0 deferred; 0/1 full | pass 7, partial 17, fail 0, unverified 75, n/a 0 | 12 |
 | [SEO](#seo) | 1 | 0 pass · 7 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 7, fail 0, unverified 38, n/a 0 | 2 |
-| [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
+| [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 5 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
 | [Guidance](#guidance) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 2 |
 | [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 30, n/a 0 | 11 |
@@ -1050,9 +1050,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 9. **Controls:** 9.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0036, EXT-D-0038, EXT-D-0059, EXT-D-0082
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0036, EXT-D-0038, EXT-D-0059, EXT-D-0082, EXT-D-0219
 
-**Linked defects:** [EXT-D-0030](defects/EXT-D-0030.json) (closed), [EXT-D-0031](defects/EXT-D-0031.json) (closed), [EXT-D-0032](defects/EXT-D-0032.json) (closed), [EXT-D-0033](defects/EXT-D-0033.json) (closed), [EXT-D-0034](defects/EXT-D-0034.json) (closed), [EXT-D-0035](defects/EXT-D-0035.json) (closed), [EXT-D-0036](defects/EXT-D-0036.json) (fixed), [EXT-D-0037](defects/EXT-D-0037.json) (closed), [EXT-D-0038](defects/EXT-D-0038.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0082](defects/EXT-D-0082.json) (fixed), [EXT-D-0145](defects/EXT-D-0145.json) (retest-pass), [EXT-D-0146](defects/EXT-D-0146.json) (retest-pass)
+**Linked defects:** [EXT-D-0030](defects/EXT-D-0030.json) (closed), [EXT-D-0031](defects/EXT-D-0031.json) (closed), [EXT-D-0032](defects/EXT-D-0032.json) (closed), [EXT-D-0033](defects/EXT-D-0033.json) (closed), [EXT-D-0034](defects/EXT-D-0034.json) (closed), [EXT-D-0035](defects/EXT-D-0035.json) (closed), [EXT-D-0036](defects/EXT-D-0036.json) (fixed), [EXT-D-0037](defects/EXT-D-0037.json) (closed), [EXT-D-0038](defects/EXT-D-0038.json) (fixed), [EXT-D-0059](defects/EXT-D-0059.json) (in-fix), [EXT-D-0082](defects/EXT-D-0082.json) (fixed), [EXT-D-0145](defects/EXT-D-0145.json) (retest-pass), [EXT-D-0146](defects/EXT-D-0146.json) (retest-pass), [EXT-D-0219](defects/EXT-D-0219.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

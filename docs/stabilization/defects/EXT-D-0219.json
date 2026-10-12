@@ -1,0 +1,66 @@
+{
+  "id": "EXT-D-0219",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
+  "title": "Screenshot native acceptance still expects removed thumbnail navigation and durable-link copy controls",
+  "surface": "Native Screenshots acceptance harness and verification instructions",
+  "auth_mode": "member/admin (native runner admin)",
+  "role_context": "signed-in Screenshots audience; guest gate unchanged",
+  "organization_context": "approved active organization required for guarded native execution",
+  "permission_context": "original clipboard write permission; read permission temporarily observed then restored",
+  "preconditions": [
+    "Current source at 178510e33; fresh owned screenshot card has View screenshot, one Open in Files, and Share.",
+    "No browser/hosted execution while CI spend gate is RED."
+  ],
+  "reproduction": [
+    "Run SCREENSHOT_OLD_DRIVER=/tmp/ext-d-0219-old-driver.mjs node --test tests/browser/screenshot-current-controls.test.mjs after extracting HEAD settings-panel-driver.mjs.",
+    "Current card DOM has one View screenshot and one Open in Files button. Both old thumbnail/icon native click selectors match zero candidates and refuse before dispatch.",
+    "Inspect screenshot-capture-acceptance.mjs: its gallery count divides Files buttons by two, thumbnail expects a new tab, and copy targets removed Copy durable Files URL title."
+  ],
+  "expected": "Harness follows the actual UI: local viewer and Close, separate Files tab, public-link create/copy/revoke, bounded verdicts and sanitized evidence.",
+  "actual": "Old harness refuses current card controls or times out on a tab/control that cannot appear. Historical receipts and procedure describe retired behavior. No new product failure or pass is claimed.",
+  "evidence": [
+    "docs/stabilization/reports/screenshots-source-inventory-census-20261012.json",
+    "docs/stabilization/runs/ext-d-0219-source-20261012.json",
+    "tests/browser/screenshot-current-controls.test.mjs"
+  ],
+  "build_receipt": {
+    "source": "178510e33",
+    "runtime": "not run; CI spend admission RED"
+  },
+  "reproducibility": "Deterministic harness DOM boundary: old driver 2 failures, repaired driver passes both control clicks.",
+  "severity": "S2: acceptance infrastructure cannot exercise current Screenshots UI",
+  "priority": "P1: repair before next Screenshots native attempt",
+  "state": "in-fix",
+  "owner": "root/screenshots_runner_repair",
+  "cause": "Screenshot UI evolved to local thumbnail viewer and public sharing; native control selectors, gallery cardinality and orchestration remained on two Files buttons and durable Files copy.",
+  "sibling_census": "Capture and admin-readonly runners shared retired two-button cardinality/identity selectors; both corrected. Capture and full-page runners shared the retired persistence-warning text; both corrected. Full-page, guest and gallery-failure have no retired durable-copy control. All Screenshots case statuses and historical receipts retained.",
+  "next_action": "Independent parent-arranged review then push exact defect unit; guarded current-artifact native run only after spend admission GREEN. Native, release and Store remain unverified.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T22:16:41.559182+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Current source and native driver disagree."
+    },
+    {
+      "at": "2026-10-12T22:16:41.559182+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Old driver fails current card DOM with zero targets; cause isolated to retired selectors/orchestration."
+    },
+    {
+      "at": "2026-10-12T22:16:41.559182+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Harness repair implemented; independent review and current-artifact native run pending."
+    }
+  ],
+  "source_verification": {
+    "run_id": "ext-d-0219-source-20261012",
+    "evidence": "docs/stabilization/runs/ext-d-0219-source-20261012.json",
+    "independent_review": "pending parent-dispatched fresh peer",
+    "native_acceptance": "UNVERIFIED: spend admission RED",
+    "release": "UNVERIFIED"
+  }
+}

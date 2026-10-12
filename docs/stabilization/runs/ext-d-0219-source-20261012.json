@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0219-source-20261012",
+  "defect_id": "EXT-D-0219",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
+  "source_before": "178510e33",
+  "scope": "Harness CDP/DOM seam only; no runtime extension/backend/browser/release acceptance",
+  "verification": {
+    "old_source_red": {
+      "command": "Extract 178510e33 settings-panel-driver and screenshot-capture-acceptance to private scratch paths; SCREENSHOT_OLD_DRIVER=<old-driver> SCREENSHOT_OLD_GALLERY_CAPTURE=<old-capture> node --test tests/browser/screenshot-current-controls.test.mjs",
+      "exit_code": 1,
+      "failures": [
+        "thumbnail click: pointer_target_not_unique with zero candidates",
+        "icon click: pointer_target_not_unique with zero candidates",
+        "gallery one-card count: actual null, expected 1"
+      ],
+      "tests": 7,
+      "failed": 3
+    },
+    "current_green": {
+      "command": "node --test tests/browser/screenshot-current-controls.test.mjs tests/browser/screenshot-owned-card-identity.test.mjs tests/browser/settings-panel-driver.guest.test.mjs",
+      "exit_code": 0,
+      "tests": 16,
+      "passed": 16
+    },
+    "mutations": [
+      {
+        "name": "viewer return expected without doing work",
+        "target": "screenshotViewer",
+        "exit_code": 1,
+        "caught": true
+      },
+      {
+        "name": "skip native Revoke dispatch",
+        "target": "public-link orchestration and failure cleanup",
+        "exit_code": 1,
+        "caught": true
+      }
+    ],
+    "compile": {
+      "command": "pnpm compile",
+      "exit_code": 0
+    },
+    "syntax": {
+      "command": "node --check on capture/admin-readonly/full-page runner",
+      "exit_code": 0
+    },
+    "diff_check": {
+      "command": "git diff --check",
+      "exit_code": 0
+    },
+    "focused_lint": {
+      "command": "pnpm exec biome check on six changed browser modules",
+      "exit_code": 0,
+      "warnings": ["Existing unused safeSurface in screenshot-capture-acceptance.mjs"]
+    },
+    "whole_repo_lint": {
+      "command": "pnpm -s lint",
+      "exit_code": 1,
+      "errors": 5,
+      "cause": "Formatting/import sorting in concurrently edited Settings acceptance files; no changed Screenshots-module errors",
+      "paths": [
+        "tests/browser/settings-full-extension-rechecks.mjs",
+        "tests/browser/settings-guest-preference-batch.mjs",
+        "tests/browser/settings-guest-extension-rechecks.mjs",
+        "tests/browser/settings-local-controls-acceptance.mjs"
+      ]
+    },
+    "inventory_preservation": "All Screenshots role/case statuses and historical verified_substeps unchanged from 178510e33; explicit current-source staleness metadata added."
+  },
+  "limitations": [
+    "No hosted/native browser job launched while CI spend gate RED.",
+    "DOM fixtures test harness orchestration only. Real API success and persisted revoke, anonymous public access, expiry/view limits and clipboard/service refusal are unverified.",
+    "Viewer loading/error branches source-censused only; no current runtime verdict.",
+    "Historical T04/T05 receipt retained with source-staleness annotations; no product pass upgraded.",
+    "Independent peer review pending parent dispatch.",
+    "Release/Store/current-artifact native acceptance remain unverified."
+  ],
+  "owned_jobs": "None: all local test/compile/lint commands terminal; no browser/profile/hosted processes created.",
+  "next_action": "Parent independent review of one-defect commit, reconcile/push; run current-artifact native acceptance only after spend gate GREEN."
+}

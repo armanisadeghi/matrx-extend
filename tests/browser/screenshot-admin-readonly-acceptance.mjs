@@ -383,7 +383,7 @@ async function gallery(panel, expectedCanonical) {
       const text=pane?.innerText??'';
       const refresh=pane?.querySelector('button[title="Refresh"]');
       const buttons=[...(pane?.querySelectorAll('button[title="Open in Files"]')??[])];
-      const cards=buttons.length%2===0?buttons.length/2:null;
+      const cards=buttons.length;
       const displayed=[...(pane?.querySelectorAll('span[title]')??[])]
         .filter(span=>span.textContent.trim()===expected);
       return {tabCount:tabs.length,selected:tab?.getAttribute('aria-selected')==='true',
@@ -445,7 +445,7 @@ async function galleryResponseAgreement(panel, rows, previousRows = []) {
       const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
       const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;
       const cards=[...(pane?.querySelectorAll('div.group')??[])]
-        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===2);
+        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===1 && card.querySelectorAll('button[title="View screenshot"]').length===1);
       const observed=cards.map(card=>{
         const full=card.querySelector('span.ml-auto[title]')?.title??null;
         const dimension=card.querySelector('div.border-t span[title]')?.title??null;

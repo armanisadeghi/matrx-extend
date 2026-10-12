@@ -469,7 +469,7 @@ async function cardState(panel) {
       height:image.naturalHeight, first:near(sample(.16),[24,67,107]),
       middle:near(sample(.50),[237,86,123]), last:near(sample(.84),[57,199,142]),
       sourceYou:cards[0]?.querySelector('span[title="Source"]')?.textContent.trim()==='You',
-      warning:!!pane?.innerText.includes('Captured, but failed to save')};
+      warning:!!pane?.innerText.includes('Captured, but could not save')};
   })()`,
   );
 }

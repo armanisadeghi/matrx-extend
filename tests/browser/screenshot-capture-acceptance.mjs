@@ -12,6 +12,7 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
+import { screenshotPublicLink, screenshotViewer } from './screenshot-current-controls.mjs';
 import { ownedScreenshotCardMatches } from './screenshot-owned-card-identity.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
 
@@ -36,7 +37,7 @@ const report = {
   schema_version: 1,
   feature: 'EXT-F-1009',
   scope:
-    'admin Visible capture on owned localhost fixture; refresh, Files links, copy, cancel and cleanup',
+    'admin Visible capture on owned localhost fixture; refresh, viewer, Files route, public sharing, cancel and cleanup',
   status: 'unverified',
   build: null,
   cases: [],
@@ -414,7 +415,7 @@ async function gallery(panel, expectedCanonical) {
       const text=pane?.innerText??'';
       const refresh=pane?.querySelector('button[title="Refresh"]');
       const buttons=[...(pane?.querySelectorAll('button[title="Open in Files"]')??[])];
-      const cards=buttons.length%2===0?buttons.length/2:null;
+      const cards=buttons.length;
       const displayed=[...(pane?.querySelectorAll('span[title]')??[])]
         .filter(span=>span.textContent.trim()===expected);
       return {tabCount:tabs.length,selected:tab?.getAttribute('aria-selected')==='true',
@@ -476,7 +477,7 @@ async function galleryResponseAgreement(panel, rows, previousRows = []) {
       const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
       const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;
       const cards=[...(pane?.querySelectorAll('div.group')??[])]
-        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===2);
+        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===1 && card.querySelectorAll('button[title="View screenshot"]').length===1);
       const observed=cards.map(card=>{
         const full=card.querySelector('span.ml-auto[title]')?.title??null;
         const dimension=card.querySelector('div.border-t span[title]')?.title??null;
@@ -693,7 +694,7 @@ async function preserveOwnedFixturePreview(page, panel, expectedCanonical) {
       const tab=document.querySelector('button[role="tab"][title="Screenshots"][data-state="active"]');
       const pane=tab?document.getElementById(tab.getAttribute('aria-controls')):null;
       const cards=[...(pane?.querySelectorAll('div.group')??[])]
-        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===2);
+        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===1 && card.querySelectorAll('button[title="View screenshot"]').length===1);
       const image=cards.length===1?cards[0].querySelector('img'):null;
       if(!image?.complete || !image.src.startsWith('blob:')) return null;
       const canvas=document.createElement('canvas');
@@ -770,7 +771,7 @@ async function verifyOwnedFilesTab(panel, journal, fixtureUrl, fixtureCanonical,
   };
   let restoreMarker;
   try {
-    await click(panel, 'screenshot-open', index === 0 ? 'thumbnail' : 'icon');
+    await click(panel, 'screenshot-open', 'icon');
     await observedWait(
       `files_tab_${index}`,
       async () => {
@@ -820,12 +821,11 @@ async function verifyOwnedFilesTab(panel, journal, fixtureUrl, fixtureCanonical,
   return { exactFilesUrlAtApexOrCanonicalWww: true, newTabCount: 1, closedOwnedTab: true };
 }
 
-async function copiedFilesUrl(page, panel, panelTarget, fileId) {
+async function copiedPublicUrl(page, panel, panelTarget, expectedUrl) {
   const browserSession = await page.context().browser().newBrowserCDPSession();
   const evidence = {};
   try {
     // The product sees its original permission during the trusted click.
-    await click(panel, 'title', 'Copy durable Files URL');
     await panel.send('Page.bringToFront');
     const copied = await withClipboardReadPermission({
       browserSession,
@@ -845,12 +845,11 @@ async function copiedFilesUrl(page, panel, panelTarget, fileId) {
               fail('clipboard_read_unavailable');
             return response.result.value;
           },
-          (value) => value === `https://aimatrx.com/files/f/${encodeURIComponent(fileId)}`,
+          (value) => value === expectedUrl,
           5000,
         ),
     });
-    if (copied !== `https://aimatrx.com/files/f/${encodeURIComponent(fileId)}`)
-      fail('copied_files_url_not_canonical');
+    if (copied !== expectedUrl) fail('copied_public_url_mismatch');
     return {
       actualClipboardMatched: true,
       observationPermissionRestored: evidence.clipboardObservationPermissionRestored === true,
@@ -947,14 +946,14 @@ async function exercise({ page, panel, panelTarget }) {
         ?.getAttribute('aria-controls');
       const root=pane?document.getElementById(pane):null;
       const cards=[...(root?.querySelectorAll('div.group')??[])]
-        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===2);
+        .filter(card=>card.querySelectorAll('button[title="Open in Files"]').length===1 && card.querySelectorAll('button[title="View screenshot"]').length===1);
       const image=cards[0]?.querySelector('img');
       return {cardCount:cards.length, sourceYou:cards[0]?.querySelector('span[title="Source"]')
         ?.textContent.trim()==='You', blobImage:!!image?.src.startsWith('blob:'),
         loaded:!!image?.complete&&image.naturalWidth>0&&image.naturalHeight>0,
         dimensions:cards[0]?.querySelector('div.border-t span[title]')?.title===
           ${JSON.stringify(`${createdRow.width}×${createdRow.height}`)},
-        error:!!root?.innerText.includes('Captured, but failed to save')};
+        error:!!root?.innerText.includes('Captured, but could not save')};
     })()`,
         ),
       (state) =>
@@ -999,15 +998,8 @@ async function exercise({ page, panel, panelTarget }) {
       },
     });
 
-    stage = 'thumbnail_open_in_files';
-    const thumbnail = await verifyOwnedFilesTab(
-      panel,
-      journal,
-      fixtureUrl,
-      fixtureCanonical,
-      createdRow,
-      0,
-    );
+    stage = 'thumbnail_viewer';
+    const thumbnail = await screenshotViewer(panel);
     stage = 'icon_open_in_files';
     const icon = await verifyOwnedFilesTab(
       panel,
@@ -1017,11 +1009,38 @@ async function exercise({ page, panel, panelTarget }) {
       createdRow,
       1,
     );
-    report.cases.push({ id: 'EXT-F-1009-T04', status: 'pass', actual: { thumbnail, icon } });
+    report.cases.push({
+      id: 'EXT-F-1009-T04',
+      status: 'partial',
+      actual: { thumbnail, icon },
+      remaining: ['reload', 'service-error', 'member'],
+    });
 
-    stage = 'copy_durable_files_url';
-    const copy = await copiedFilesUrl(page, panel, panelTarget, createdRow.file_id);
-    report.cases.push({ id: 'EXT-F-1009-T05', status: 'pass', actual: copy });
+    stage = 'public_share_link';
+    let clipboard;
+    report.observations ??= {};
+    const shareEvidence = {};
+    report.observations.publicSharing = shareEvidence;
+    const share = await screenshotPublicLink(
+      panel,
+      async (url) => {
+        clipboard = await copiedPublicUrl(page, panel, panelTarget, url);
+      },
+      shareEvidence,
+    );
+    report.cases.push({
+      id: 'EXT-F-1009-T05',
+      status: 'partial',
+      actual: { ...share, ...clipboard },
+      remaining: [
+        'anonymous access',
+        'expiry',
+        'maximum views',
+        'clipboard/service refusal',
+        'reload',
+        'member',
+      ],
+    });
 
     stage = 'owned_capture_delete_cancel';
     await click(panel, 'title', 'Delete');

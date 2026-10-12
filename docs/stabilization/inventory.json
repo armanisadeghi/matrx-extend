@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T21:46:25Z",
+  "updated_at": "2026-10-12T22:20:09.073348+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -33230,7 +33230,13 @@
         "src/features/screenshots/ScreenshotsView.tsx:467",
         "src/features/screenshots/ScreenshotsView.tsx:514",
         "src/features/screenshots/ScreenshotsView.tsx:529",
-        "src/lib/screenshot/full-page.ts:1"
+        "src/lib/screenshot/full-page.ts:1",
+        "src/entrypoints/sidepanel/App.tsx:521",
+        "src/entrypoints/sidepanel/App.tsx:713",
+        "src/config/sidepanel-visibility.ts:34",
+        "src/features/screenshots/ScreenshotShareLinks.tsx:45",
+        "src/features/screenshots/ScreenshotShareLinks.tsx:100",
+        "src/features/screenshots/ScreenshotShareLinks.tsx:164"
       ],
       "dependency_class": "database",
       "wave": "B",
@@ -33400,7 +33406,8 @@
             "EXT-D-0033",
             "EXT-D-0034",
             "EXT-D-0035",
-            "EXT-D-0146"
+            "EXT-D-0146",
+            "EXT-D-0219"
           ],
           "results": {
             "admin": {
@@ -33410,9 +33417,18 @@
                 "Thumbnail and separate Files icon each opened one new tab at exact owned canonical Files route; only owned tabs were closed."
               ],
               "remaining_criteria": [
-                "Reload, service-error and member dimensions remain unverified."
+                "Reload, service-error and member dimensions remain unverified.",
+                "Current thumbnail viewer close/reopen, separate Files route and public sharing create/copy/revoke require a fresh guarded native run; no current product credit from harness tests."
               ],
-              "evidence": "docs/stabilization/runs/screenshot-controls-dev095-003.json"
+              "evidence": "docs/stabilization/runs/screenshot-controls-dev095-003.json",
+              "current_source_status": "stale-substeps: historical receipt preserved; current viewer/public-sharing behavior requires new native evidence (EXT-D-0219)",
+              "historical_substeps_staleness": {
+                "source_snapshot": "178510e33",
+                "reason": "Historical thumbnail-to-Files-tab and durable-Files-URL clipboard observations predate the local viewer and public-link manager; they provide no current T04/T05 acceptance credit.",
+                "substeps": [
+                  "Thumbnail and separate Files icon each opened one new tab at exact owned canonical Files route; only owned tabs were closed."
+                ]
+              }
             }
           }
         },
@@ -33443,7 +33459,8 @@
           "defect_ids": [
             "EXT-D-0033",
             "EXT-D-0034",
-            "EXT-D-0146"
+            "EXT-D-0146",
+            "EXT-D-0219"
           ],
           "results": {
             "admin": {
@@ -33454,8 +33471,17 @@
                 "Actual clipboard matched product durable Files URL; observation permissions restored."
               ],
               "remaining_criteria": [
-                "Clipboard rejection, reload and member dimensions remain unverified."
-              ]
+                "Clipboard rejection, reload and member dimensions remain unverified.",
+                "Current thumbnail viewer close/reopen, separate Files route and public sharing create/copy/revoke require a fresh guarded native run; no current product credit from harness tests."
+              ],
+              "current_source_status": "stale-substeps: historical receipt preserved; current viewer/public-sharing behavior requires new native evidence (EXT-D-0219)",
+              "historical_substeps_staleness": {
+                "source_snapshot": "178510e33",
+                "reason": "Historical thumbnail-to-Files-tab and durable-Files-URL clipboard observations predate the local viewer and public-link manager; they provide no current T04/T05 acceptance credit.",
+                "substeps": [
+                  "Actual clipboard matched product durable Files URL; observation permissions restored."
+                ]
+              }
             }
           }
         },
@@ -33645,7 +33671,8 @@
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0059",
-            "EXT-D-0082"
+            "EXT-D-0082",
+            "EXT-D-0219"
           ],
           "run_ids": [],
           "retest_status": "not-run"
@@ -33662,7 +33689,8 @@
             "EXT-D-0037",
             "EXT-D-0038",
             "EXT-D-0059",
-            "EXT-D-0082"
+            "EXT-D-0082",
+            "EXT-D-0219"
           ],
           "run_ids": [
             "screenshot-capture-dev093-001",
