@@ -41,11 +41,15 @@ function PlaceResults({
   organizationId,
   staged,
   setStaged,
+  onCreateBusyChange,
+  saving,
 }: {
   placeType: EntityTypeToken | 'all';
   organizationId: string;
   staged: StagedTarget[];
   setStaged: React.Dispatch<React.SetStateAction<StagedTarget[]>>;
+  onCreateBusyChange: (busy: boolean) => void;
+  saving: boolean;
 }) {
   const [search, setSearch] = useState('');
   const [creating, setCreating] = useState(false);
@@ -78,8 +82,9 @@ function PlaceResults({
 
   const createPlace = async () => {
     const title = createName.trim();
-    if (!title || !canCreate || createBusy) return;
+    if (!title || !canCreate || createBusy || saving) return;
     setCreateBusy(true);
+    onCreateBusyChange(true);
     setCreateError(null);
     try {
       const result = await associations.entityRows.createEntityRow(placeType, {
@@ -102,6 +107,7 @@ function PlaceResults({
       setCreateError(`Could not create ${entityInfo.label.toLowerCase()}.`);
     } finally {
       setCreateBusy(false);
+      onCreateBusyChange(false);
     }
   };
 
@@ -189,12 +195,12 @@ function PlaceResults({
                   setCreating(false);
                 }
               }}
-              disabled={createBusy}
+              disabled={createBusy || saving}
               className="h-8 min-w-0 flex-1 rounded border border-border bg-background px-2 text-xs"
             />
             <button
               type="button"
-              disabled={createBusy || !createName.trim()}
+              disabled={createBusy || saving || !createName.trim()}
               onClick={() => void createPlace()}
               className="px-2 font-medium text-primary disabled:opacity-50"
             >
@@ -202,7 +208,7 @@ function PlaceResults({
             </button>
             <button
               type="button"
-              disabled={createBusy}
+              disabled={createBusy || saving}
               onClick={() => setCreating(false)}
               className="px-2 text-muted-foreground"
             >
@@ -212,6 +218,7 @@ function PlaceResults({
         ) : (
           <button
             type="button"
+            disabled={saving}
             onClick={() => {
               setCreateName(search.trim());
               setCreateError(null);
@@ -258,6 +265,7 @@ export function SaveSourceForm({
   const nameRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [showPlaces, setShowPlaces] = useState(false);
+  const [destinationBusy, setDestinationBusy] = useState(false);
   const [placeType, setPlaceType] = useState<EntityTypeToken | 'all' | null>(null);
   const [showLibrary, setShowLibrary] = useState(false);
   const [staged, setStaged] = useState<StagedTarget[]>([]);
@@ -323,7 +331,7 @@ export function SaveSourceForm({
       }}
       onCancel={(event) => {
         event.preventDefault();
-        if (!saving) onClose();
+        if (!saving && !destinationBusy) onClose();
       }}
       className="fixed inset-x-2 bottom-2 top-auto mx-auto max-h-[85vh] w-[calc(100%-1rem)] space-y-2 overflow-y-auto rounded-xl border border-border bg-card p-3 text-xs text-foreground shadow-xl backdrop:bg-black/20"
     >
@@ -333,7 +341,7 @@ export function SaveSourceForm({
           type="button"
           aria-label="Close Save Source"
           onClick={onClose}
-          disabled={saving}
+          disabled={saving || destinationBusy}
           className="rounded p-0.5 text-muted-foreground hover:text-foreground"
         >
           <X className="size-4" />
@@ -413,6 +421,7 @@ export function SaveSourceForm({
                 key={token}
                 type="button"
                 aria-pressed={placeType === token}
+                disabled={destinationBusy || saving}
                 onClick={() => setPlaceType(token)}
                 className="rounded-full border border-border px-2 py-0.5 aria-pressed:bg-primary aria-pressed:text-primary-foreground"
               >
@@ -422,6 +431,7 @@ export function SaveSourceForm({
             <button
               type="button"
               aria-pressed={placeType === 'all'}
+              disabled={destinationBusy || saving}
               onClick={() => setPlaceType('all')}
               className="rounded-full border border-border px-2 py-0.5 aria-pressed:bg-primary aria-pressed:text-primary-foreground"
             >
@@ -449,6 +459,8 @@ export function SaveSourceForm({
             organizationId={organizationId}
             staged={staged}
             setStaged={setStaged}
+            onCreateBusyChange={setDestinationBusy}
+            saving={saving}
           />
         </AssociationsProvider>
       )}
@@ -479,7 +491,7 @@ export function SaveSourceForm({
       <Button
         type="button"
         size="sm"
-        disabled={saving}
+        disabled={saving || destinationBusy}
         className="sticky bottom-0 z-10 h-8 w-full rounded-full"
         onClick={() => onSave(name.trim() || initialName, attachTo)}
       >

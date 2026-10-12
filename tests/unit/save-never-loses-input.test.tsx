@@ -449,6 +449,70 @@ describe('Save never loses input', () => {
     });
   });
 
+  it('waits for a newly created destination before allowing the Source to land', async () => {
+    const project = deferredApiResponse();
+    mocks.createEntityRow.mockReturnValueOnce(project.promise);
+    mocks.apiPost.mockResolvedValue(landedResponse);
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await screen.findByLabelText('Source name');
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create new project' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'New Project name' }), {
+      target: { value: 'Harbor Dental intake research' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+    const save = screen.getByRole('button', { name: /^Save Source$/ });
+    try {
+      expect((save as HTMLButtonElement).disabled).toBe(true);
+      expect(
+        (screen.getByRole('button', { name: 'Close Save Source' }) as HTMLButtonElement).disabled,
+      ).toBe(true);
+      expect((screen.getByRole('button', { name: 'Tasks' }) as HTMLButtonElement).disabled).toBe(
+        true,
+      );
+      fireEvent.click(save);
+      expect(mocks.apiPost).not.toHaveBeenCalled();
+    } finally {
+      await act(async () =>
+        project.resolve({
+          ok: true,
+          data: { id: 'project-intake', title: 'Harbor Dental intake research' },
+        }),
+      );
+    }
+    expect((save as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(save);
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+    expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({
+      attach_to: [{ entity_type: 'project', entity_id: 'project-intake' }],
+    });
+    expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
+  });
+
+  it('allows saving after destination creation is refused without attaching a missing destination', async () => {
+    mocks.createEntityRow.mockResolvedValueOnce({ ok: false, error: 'Project creation refused.' });
+    mocks.apiPost.mockResolvedValue(landedResponse);
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    await screen.findByLabelText('Source name');
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create new project' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'New Project name' }), {
+      target: { value: 'Harbor Dental intake research' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+    expect(await screen.findByText('Project creation refused.')).toBeTruthy();
+    const save = screen.getByRole('button', { name: /^Save Source$/ });
+    expect((save as HTMLButtonElement).disabled).toBe(false);
+    fireEvent.click(save);
+    await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+    expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({ attach_to: [] });
+    expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
+  });
+
   it('uses details-only edit for a custom name when landing reuses existing content', async () => {
     mocks.apiPost
       .mockResolvedValueOnce({
