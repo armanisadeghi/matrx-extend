@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "report_id": "ext-d-0217-hosted-route-peer-20261012",
+  "defect_id": "EXT-D-0217",
+  "reviewed_commit": "565440257b3b4283b98647fb655dcf760805e614",
+  "reviewed_at": "2026-10-12",
+  "independent_reviewer": true,
+  "verdict_A_persisted_edit_route": {
+    "result": "SOURCE_ROUTE_ADDRESSED; NATIVE_UNVERIFIED",
+    "evidence": "After member Retry, the native harness independently GETs docproc.processed_documents scoped to canonical identity, selected organization, extension origin and active rows. The D217-only select includes content; verifySourceRows checks the row identity and organization, then requirePersistedD217Edit requires the edited marker in stored content. Guest Save, warm Retry and post-reload Retry retain the edit and require zero membership/source calls. Recovery checks the same profile ID and organization and confirms non-admin before member Retry.",
+    "person_scope": "Same-person continuity is checked through profile recovery and the authenticated session. The persisted Source query does not assert a row-level creator/person field; Sources are organization-scoped.",
+    "native_status": "No product interaction or browser verdict. CUA could not claim the chrome://extensions target; the run stopped before product interaction with zero product credit."
+  },
+  "verdict_B_test_and_resource_quality": {
+    "result": "PASS_WITH_NATIVE_WIRING_LIMIT",
+    "test_command": "node --test tests/browser/scrape-save-stale-profile-route.test.mjs",
+    "test_result": "5 passed, 0 failed",
+    "forcing_behavior": "The focused test rejects metadata-only and original-only reads, accepts marker-bearing persisted content, rejects mismatched source and organization IDs, and verifies the returned proof contains no content marker. The persisted-content assertion reports booleans only.",
+    "limitation": "This focused test exercises the oracle helper, not the HTTP query wiring; that wiring is present in the native acceptance harness and remains unexecuted natively.",
+    "resource_and_cost": "Resource journal shows admission, confirmed stop and valid final decision. No browser/full/heavy suite or hosted dispatch was run. No new CI job, runner, schedule or dispatch cadence was added; the shared spend gate remains red at the previously recorded estimate."
+  },
+  "verification": {
+    "diff_check": "git diff --check passed",
+    "implementation_changes": "none"
+  },
+  "limits": [
+    "No native browser pass or persisted production row was observed in this review.",
+    "No hosted workflow dispatch occurred; the shared spend gate must be green before dispatch.",
+    "Person continuity is evidenced by same-profile recovery, not by a persisted creator-column assertion."
+  ]
+}

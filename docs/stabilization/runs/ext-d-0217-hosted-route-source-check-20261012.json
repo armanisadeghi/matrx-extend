@@ -51,10 +51,13 @@
     "Existing Source cleanup soft-deletes the run-owned Source and removes associations; original-file physical reclamation is outside this route.",
     "No Store or release files changed; no release claim."
   ],
-  "next_action": "Fresh independent source review, then integrate/push exact reviewed paths. When the shared spend gate is green, dispatch the existing hosted workflow once with requested_by and exact CI development artifact IDs; inspect sanitized result, cleanup and complete resource journals before assigning any native verdict.",
+  "next_action": "When the shared spend gate is green, dispatch the existing hosted workflow once with requested_by and exact CI development artifact IDs; inspect sanitized result, cleanup and complete resource journals before assigning any native verdict.",
   "peer_review_followup": {
-    "A_behavior": "Targeted route but incomplete until edited marker independently verified in persisted Source; request payload alone and original-content reopen are insufficient. Follow-up source fix now reads and verifies persisted content; fresh re-review pending.",
-    "B_quality": "Source/focused test quality pass; initial route test 4/4; no browser/full test. Artifact and cleanup checks appear sound. Fresh follow-up re-review pending.",
+    "independent_peer_report": "docs/stabilization/reports/ext-d-0217-hosted-route-peer-20261012.json",
+    "independent_peer_commit": "565440257b3b4283b98647fb655dcf760805e614",
+    "independent_peer_verdict": "SOURCE_ROUTE_ADDRESSED; NATIVE_UNVERIFIED; focused test 5/5 passed",
+    "A_behavior": "Independent review confirms the source harness now reads persisted Source content after member Retry and requires the edited marker; native behavior remains unverified.",
+    "B_quality": "Independent review ran the focused stale-profile route test (5/5 passed). Test checks the oracle helper; native HTTP query wiring remains unexecuted. No browser/full/heavy test was run.",
     "change": "D217-only independent HTTP Source query now selects content. After the existing response/status/row/identity/org checks, requirePersistedD217Edit asserts the edited marker in that persisted content and records only boolean proof. Existing original-content UI and request-payload oracles remain intact.",
     "red": "Metadata-only version of persisted-content oracle failed the new test with Missing expected exception because it accepted a Source whose edited text was absent.",
     "green": "36 focused checks passed, including refusal of metadata-only and original-only content, wrong Source, wrong organization, acceptance of persisted edited content, and no content in the emitted boolean proof.",
