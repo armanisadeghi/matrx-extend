@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_native_runtime_review",
+  "reviewer": "/root/notes_t02_invalid_runtime_peer_1011",
+  "reviewed_at": "2026-10-11",
+  "feature_id": "EXT-F-2006",
+  "target_case_id": "EXT-F-2006-T02",
+  "hosted_run_id": 38185461370,
+  "verdict_a": {
+    "overall": "UNVERIFIED_NO_PRODUCT_BEHAVIOR_OBSERVED",
+    "product_credit": 0,
+    "evidence": "GitHub job log shows browser became ready and the exact development artifact was prepared, then BROWSER_STARTUP_FAILURE reported owned_cdp_open_timeout after 14,437 ms. The sanitized native report has status unverified, before build only, after=null, and its sole observation is startup_failure at native_cdp_connect. No sign-in, Notes UI interaction, or Notes assertion is recorded. This run supports neither a Notes defect nor a Notes pass."
+  },
+  "verdict_b": {
+    "overall": "PROVENANCE_AND_RESOURCE_EVIDENCE_VALID_WITH_GUEST_RESOURCE_INVALID",
+    "evidence": "GitHub API confirms hosted run 38185461370 completed failure at head 456239f59efc76413f7f8b56ce482d8b5bd1b965, attempt 1, with artifact 11719910207. Downloaded ZIP SHA-256 c4dc34744688e38649104589ed511a73f54bd30b3c16bd1ccc32683235898cdb matches artifact metadata and the receipt; extracted native report SHA-256 f1942999a3435d31d25c426851a5aad549ead5f2274697a5ada04a418b5a70c5. CI run 38184510025 completed success at the same SHA; API identifies artifact 11718734199 and its digest, and downloaded CI ZIP SHA-256 matches cbe88a96027ac65fbbfd057a3a7370db70f890e1adec94183e2c0d43778f30a7. CI artifact manifest/native report binds the same source, version 0.2.509 and tree SHA e86a72574489f1bca661a23c79722a5f4fbce9a1ee709b5a51754cd5f2027620. The three locally retained journal hashes match recorded hashes and the downloaded artifact journals byte-for-byte. Package and browser finals are admitted=true, resourceInvalid=false, exitCode=0, decision=valid. Guest final is admitted=true, resourceInvalid=true, exitCode=3, decision=invalid, after CPU_BUSY and CPU_HIGH_LOAD_BUSY checkpoints and child exit 1. Workflow step 15 failed; subsequent diagnostic step was skipped; upload succeeded; run terminal state is completed/failure.",
+    "first_failing_boundary": "Workflow step 15, Exercise the selected Chrome side-panel case: native_cdp_connect / owned_cdp_open_timeout. Earlier package/browser preparation and artifact preflight steps succeeded. The diagnostic records launch_failed=false, spawn_observed=true, devtools_listening=true, sandbox_enabled=true, crash_observed=false. Guest journal CPU invalidity independently prevents acceptance credit; evidence does not establish CPU as the sole timeout cause.",
+    "sanitization": "The retained native report is explicitly sanitized and contains no credential-like field names or obvious bearer/JWT/password patterns. The report says credential values are absent. The run/report receipt states temporary GitHub secret, local one-use link, and local identity scratch were deleted/removed and checked absent; independent confirmation is available here only as that receipt claim, not from an additional host filesystem inspection. No credential values were exposed in reviewed evidence.",
+    "concerns": [],
+    "limits": [
+      "No post-run Notes snapshot or fixture ledger is present; no fixture creation, cleanup, or product state claim is supported.",
+      "The agent's summary and independent reviewer agree resource invalidity makes this attempt unusable for acceptance. Cause of the CDP timeout remains open."
+    ]
+  },
+  "provenance": {
+    "hosted_run_id": 38185461370,
+    "hosted_status": "completed",
+    "hosted_conclusion": "failure",
+    "hosted_attempt": 1,
+    "hosted_head_sha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+    "hosted_artifact_id": 11719910207,
+    "hosted_artifact_digest": "sha256:c4dc34744688e38649104589ed511a73f54bd30b3c16bd1ccc32683235898cdb",
+    "downloaded_hosted_zip_sha256": "c4dc34744688e38649104589ed511a73f54bd30b3c16bd1ccc32683235898cdb",
+    "raw_native_report_sha256": "f1942999a3435d31d25c426851a5aad549ead5f2274697a5ada04a418b5a70c5",
+    "sanitized_native_report_sha256": "3695d4ad93cadf5141a45cfced7e8aac8e38ead8f8c4f8d705775b98c37c03c4",
+    "development_ci_run_id": 38184510025,
+    "development_ci_status": "completed",
+    "development_ci_conclusion": "success",
+    "development_artifact_id": 11718734199,
+    "development_artifact_digest": "sha256:cbe88a96027ac65fbbfd057a3a7370db70f890e1adec94183e2c0d43778f30a7",
+    "downloaded_development_zip_sha256": "cbe88a96027ac65fbbfd057a3a7370db70f890e1adec94183e2c0d43778f30a7",
+    "build_version": "0.2.509",
+    "tree_sha256": "e86a72574489f1bca661a23c79722a5f4fbce9a1ee709b5a51754cd5f2027620",
+    "resource_journal_sha256": {
+      "package": "e2bc4d72a7396f989bb2b64917f0c1abc69f13360c4e9c2fc3a91f65a8e1472e",
+      "browser": "94e2770d903843e6103d7f6b3d989f1f6c27154ff7e498aee6fb259b6e5e3762",
+      "guest": "884115cdeddc3deae2db66a09313bd8cca105e7c7c3856da31698306f5866f26"
+    }
+  },
+  "sources_reviewed": [
+    "docs/stabilization/runs/notes-find-member-run38185461370.json",
+    "docs/stabilization/reports/notes-find-member-run38185461370.json",
+    "docs/stabilization/evidence/notes-find-member/run38185461370/native-report.sanitized.json",
+    "docs/stabilization/evidence/notes-find-member/run38185461370 and all three resource journals",
+    "GitHub run 38185461370 metadata, job steps/log, artifact metadata and downloaded hosted artifact",
+    "GitHub run 38184510025 metadata and artifact 11718734199 metadata/downloaded archive"
+  ],
+  "verification": {
+    "github_run_and_artifact_metadata_checked": true,
+    "hosted_artifact_downloaded_and_archive_digest_verified": true,
+    "ci_artifact_downloaded_and_archive_digest_verified": true,
+    "extracted_native_report_and_all_resource_journal_hashes_verified": true,
+    "resource_finals_and_workflow_terminal_state_checked": true,
+    "receipt_sanitization_checked": true,
+    "new_browser_run": false,
+    "source_or_inventory_edited": false,
+    "commit_or_push": false
+  }
+}
