@@ -22,6 +22,7 @@ import {
 } from '@/lib/scrape/collectors';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('@/lib/api/matrx-api', async () => (await import('../helpers/wire-bridge')).wireBridge(''));
 vi.mock('@/lib/api/client', () => ({
   apiGet: vi.fn(),
   apiPatch: vi.fn(),

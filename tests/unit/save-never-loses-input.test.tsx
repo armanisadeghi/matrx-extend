@@ -23,6 +23,7 @@ const mocks = vi.hoisted(() => ({
   organizationId: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f',
 }));
 
+vi.mock('@/lib/api/matrx-api', async () => (await import('../helpers/wire-bridge')).wireBridge(''));
 vi.mock('@/lib/api/client', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/api/client')>()),
   apiPost: mocks.apiPost,

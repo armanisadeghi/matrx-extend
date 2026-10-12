@@ -16,9 +16,21 @@ vi.mock('@/config/backend', () => ({
 }));
 vi.mock('@/lib/auth/flow', () => ({
   getAccessToken: async () => 'session-bearer',
+  getCurrentUser: async () => ({ id: state.user }),
+  getStoredAccessToken: async () => 'session-bearer',
+  describeStoredSession: async () => ({}),
+  refreshAccessToken: async () => null,
   getVerifiedCurrentUser: async () => ({ id: state.user }),
 }));
-vi.mock('@/lib/org/active-org', () => ({ getActiveOrganizationId: async () => state.org }));
+vi.mock('@/lib/auth/guest-signature', () => ({ getOrCreateGuestSignature: async () => 'guest' }));
+vi.mock('@/lib/messaging/native', () => ({ broadcast: vi.fn() }));
+vi.mock('@/lib/org/active-org', () => ({
+  getActiveOrganizationId: async () => state.org,
+  requireActiveOrganizationId: async () => state.org,
+  OrganizationNotSelectedError: class extends Error {},
+  isOrganizationNotSelectedError: () => false,
+  isOrganizationNoMembershipsError: () => false,
+}));
 vi.mock('@/lib/debug/log', () => ({
   log: { info: vi.fn(), warn: vi.fn(), error: vi.fn(), success: vi.fn() },
 }));

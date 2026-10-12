@@ -63,6 +63,7 @@ vi.mock('@/lib/debug/log', () => {
   };
 });
 
+vi.mock('@/lib/api/matrx-api', async () => (await import('../helpers/wire-bridge')).wireBridge('/api'));
 vi.mock('@/lib/api/client', () => ({
   STATUS_INVALID_BODY: -1,
   apiPost: (path: string, body: unknown) => {
