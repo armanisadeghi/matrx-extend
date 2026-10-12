@@ -5,9 +5,8 @@
  * our own broadcast and recurse forever).
  */
 
-import { getApiBaseUrl, readSessionBearer } from '@/lib/api/client';
+import { buildHeaders, getApiBaseUrl, readSessionBearer } from '@/lib/api/client';
 import { getAccessToken } from '@/lib/auth/flow';
-import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -209,26 +208,23 @@ export async function startStream(args: StartStreamArgs): Promise<void> {
   // (2026-09-19, sibling of the REST guest-downgrade defect).
   for (let attempt = 0; attempt < 2; attempt += 1) {
     const actor = await resolveStableStreamActor();
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-      Accept: 'text/event-stream',
-    };
     let body = args.body;
+    let headers: Record<string, string>;
     if (actor.token) {
-      headers.Authorization = `Bearer ${actor.token}`;
-      // A stream is a request too. It carries the organization or it does not
-      // start — a run that opens without one dies mid-flight on the server's
-      // admission gate, which reads to the user as a hang. With nothing set on
-      // this device the start HOLDS while the person is asked, then proceeds
-      // with what they chose (src/lib/org/active-org.ts).
+      // A stream carries the organization or it does not start — a run that opens without
+      // one dies mid-flight on the server's admission gate, which reads as a hang.
       const organizationId = args.organizationId ?? actor.organizationId;
       if (organizationId === null)
         throw new Error('Authenticated stream actor is missing an organization.');
-      headers['X-Organization-Id'] = organizationId;
+      // ONE header source: the same injector builder every other backend send uses.
+      headers = await buildHeaders(
+        { Accept: 'text/event-stream' },
+        { token: actor.token, organizationId },
+      );
       body = bindConversationStartActor(body, organizationId);
     } else {
       // Nobody is signed in on this install (see readSessionBearer).
-      headers['X-Fingerprint-ID'] = await getOrCreateGuestSignature();
+      headers = await buildHeaders({ Accept: 'text/event-stream' });
       body = bindConversationStartActor(body, null);
     }
 

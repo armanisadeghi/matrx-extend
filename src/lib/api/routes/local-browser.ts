@@ -1,4 +1,8 @@
-import { type PrivateApiResult, type PrivateExpectedActor, privatePost } from '@/lib/api/private-client';
+import {
+  type PrivateApiResult,
+  type PrivateExpectedActor,
+  privatePost,
+} from '@/lib/api/private-client';
 import { isLowercaseUuidShape } from '@ai-matrx/kit/uuid';
 import { z } from 'zod';
 

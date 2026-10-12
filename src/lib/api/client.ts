@@ -97,7 +97,9 @@ export async function getApiBaseUrl(): Promise<string> {
 /** Caller headers minus the ones the transport owns (any case): bearer, organization, fingerprint. */
 export function withoutOwnedHeaders(headers: Record<string, string>): Record<string, string> {
   const owned = ['authorization', ORGANIZATION_CONTEXT_HEADER.toLowerCase(), 'x-fingerprint-id'];
-  return Object.fromEntries(Object.entries(headers).filter(([k]) => !owned.includes(k.toLowerCase())));
+  return Object.fromEntries(
+    Object.entries(headers).filter(([k]) => !owned.includes(k.toLowerCase())),
+  );
 }
 
 /**
@@ -174,12 +176,24 @@ function runPath<T>(
 
 export const apiGet = <T>(path: string, signal?: AbortSignal, opts?: ApiRequestOptions) =>
   runPath<T>('GET', path, undefined, signal, opts);
-export const apiPost = <T>(path: string, body: unknown, signal?: AbortSignal, opts?: ApiRequestOptions) =>
-  runPath<T>('POST', path, body, signal, opts);
-export const apiPatch = <T>(path: string, body: unknown, signal?: AbortSignal, opts?: ApiRequestOptions) =>
-  runPath<T>('PATCH', path, body, signal, opts);
-export const apiPut = <T>(path: string, body: unknown, signal?: AbortSignal, opts?: ApiRequestOptions) =>
-  runPath<T>('PUT', path, body, signal, opts);
+export const apiPost = <T>(
+  path: string,
+  body: unknown,
+  signal?: AbortSignal,
+  opts?: ApiRequestOptions,
+) => runPath<T>('POST', path, body, signal, opts);
+export const apiPatch = <T>(
+  path: string,
+  body: unknown,
+  signal?: AbortSignal,
+  opts?: ApiRequestOptions,
+) => runPath<T>('PATCH', path, body, signal, opts);
+export const apiPut = <T>(
+  path: string,
+  body: unknown,
+  signal?: AbortSignal,
+  opts?: ApiRequestOptions,
+) => runPath<T>('PUT', path, body, signal, opts);
 export const apiDelete = <T>(path: string, signal?: AbortSignal, opts?: ApiRequestOptions) =>
   runPath<T>('DELETE', path, undefined, signal, opts);
 

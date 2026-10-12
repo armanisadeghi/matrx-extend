@@ -5,7 +5,7 @@
  * injector (`buildHeaders` in client.ts) bound to the pinned actor.
  */
 
-import { getApiBaseUrl, buildHeaders } from '@/lib/api/client';
+import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
 import { getAccessToken, getVerifiedCurrentUser } from '@/lib/auth/flow';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { sendMatrxRequest } from '@ai-matrx/api';
@@ -428,4 +428,3 @@ function hasPrivateNoStore(value: string | null): boolean {
   }
   return !quoted && !escaped && (found || value.slice(start).trim().toLowerCase() === 'no-store');
 }
-

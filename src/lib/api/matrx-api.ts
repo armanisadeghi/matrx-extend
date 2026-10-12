@@ -174,10 +174,13 @@ export async function runOp<T>(
       opts.expectedActor?.organizationId ??
       opts.organizationId ??
       (await getActiveOrganizationId());
-    if (!organizationId && opts.orgForUsers && (await currentBearerOrRefuse()))
-      organizationId = await requireActiveOrganizationId();
-    // An optional-org operation does not validate; a hand-typed path must (fail closed on a corrupt id).
-    if (organizationId && opts.orgForUsers) applyOrganizationContextHeader({}, organizationId);
+    if (opts.orgForUsers) await awaitSessionReady();
+    if (opts.orgForUsers && (await currentBearerOrRefuse())) {
+      organizationId ||= await requireActiveOrganizationId();
+      if (!organizationId) throw new OrganizationNotSelectedError();
+      // An optional-org operation does not validate; a hand-typed path must (fail closed).
+      applyOrganizationContextHeader({}, organizationId);
+    }
     return call(api, { ...options, ...(organizationId ? { organizationId } : {}) });
   };
   try {

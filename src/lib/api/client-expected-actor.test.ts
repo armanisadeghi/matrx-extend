@@ -120,7 +120,9 @@ describe('expectedActor transport binding', () => {
     // A second 401 is never retried again: it surfaces as the sign-in error.
     refresh.mockClear();
     state.token = 'token-a';
-    const always401 = vi.fn(async () => new Response('{"detail":"expired"}', { status: 401, headers: json }));
+    const always401 = vi.fn(
+      async () => new Response('{"detail":"expired"}', { status: 401, headers: json }),
+    );
     vi.stubGlobal('fetch', always401);
     await expect(pinnedCall()).resolves.toMatchObject({ ok: false, status: 401 });
     expect(refresh).toHaveBeenCalledTimes(1);
@@ -134,7 +136,9 @@ describe('expectedActor transport binding', () => {
       state.organizationId = '00000000-0000-4000-8000-000000000003';
       return 'token-other';
     };
-    const pinBroken = vi.fn(async () => new Response('{"detail":"expired"}', { status: 401, headers: json }));
+    const pinBroken = vi.fn(
+      async () => new Response('{"detail":"expired"}', { status: 401, headers: json }),
+    );
     vi.stubGlobal('fetch', pinBroken);
     await expect(pinnedCall()).resolves.toMatchObject({ ok: false, status: 401 });
     expect(pinBroken).toHaveBeenCalledTimes(1);
