@@ -33,6 +33,7 @@ vi.mock('@/lib/auth/flow', async () => {
   return {
     getOAuthClient: () => fakeOAuthClient(() => '87a6e699-3622-4869-8843-d0867456c0dd'),
     getCurrentUser: vi.fn(async () => ({ id: '87a6e699-3622-4869-8843-d0867456c0dd' })),
+    getVerifiedCurrentUser: vi.fn(async () => ({ id: '87a6e699-3622-4869-8843-d0867456c0dd' })),
   };
 });
 // Keep the real active-organization resolver in this test: Saved is claimed

@@ -25,7 +25,7 @@ import {
   landSource,
 } from '@/lib/api/routes/sources';
 import type { SourceLandingBody } from '@/lib/api/routes/sources';
-import { getCurrentUser } from '@/lib/auth/flow';
+import { getVerifiedCurrentUser } from '@/lib/auth/flow';
 import type { SoupResult } from '@/lib/scrape/pipeline';
 import { canonicalUrl } from '@/lib/sources/canonical';
 import {
@@ -164,7 +164,9 @@ type SendResult =
   | { ok: false; refusal: LandingRefusal; organizationId?: string };
 
 async function send(prepared: PreparedLanding): Promise<SendResult> {
-  const user = await getCurrentUser().catch(() => null);
+  // A cached rendering profile survives a failed sign-in restore. Only the
+  // verified bearer can authorize organization lookup and stamp provenance.
+  const user = await getVerifiedCurrentUser().catch(() => null);
   if (!user?.id) {
     return {
       ok: false,
