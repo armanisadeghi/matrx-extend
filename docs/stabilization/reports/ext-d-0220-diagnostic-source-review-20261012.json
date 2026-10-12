@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "review_id": "ext-d-0220-diagnostic-source-review-20261012",
+  "defect_id": "EXT-D-0220",
+  "reviewed_commit": "ac4f5b565e977a9c0a49a6baec0d723fd6abd5ba",
+  "review_type": "independent source and harness review",
+  "verdicts": {
+    "A": {
+      "status": "pass",
+      "scope": "The first inner absent-baseline restoration failure reaches the production full-extension recheck result without an additional restore attempt.",
+      "evidence": [
+        "restoreGuestPreferenceBaseline tags the active operation before each existing operation and, on failure, attaches only its allowlisted diagnostic to the original Error.",
+        "runGuestChoicesAcrossExtensionRestarts sanitizes and forwards that diagnostic when its existing restore catch runs; rerunGuestSettingsAfterExtensionReload forwards it through its existing case wrapper; safeGuestFailureDiagnostics serializes it into the case result.",
+        "The production rerun fixture injects distinct remove_absent_key and observe_restored_baseline failures and asserts the resulting T04 failure stage, inner stage, error name, safe observations, and absence of injected private text.",
+        "The diff adds diagnostic bookkeeping and preserves the existing restoration calls/order. The failing inner restoration is caught and reported; no retry path or extra restoration operation is introduced."
+      ],
+      "native_product_acceptance": "UNVERIFIED; this review did not run a native/browser acceptance case or establish the actual failure cause."
+    },
+    "B": {
+      "status": "pass",
+      "evidence": [
+        "Focused command: node --test tests/browser/settings-guest-preference-batch.test.mjs tests/browser/settings-guest-extension-rechecks.test.mjs tests/browser/settings-full-extension-rechecks.test.mjs tests/browser/settings-guest-scrape-controls.test.mjs tests/browser/settings-guest-privacy-batch.test.mjs; 58 passed, 0 failed.",
+        "The serializer accepts only enumerated stage/name values and fixed boolean observation fields; the test supplies private strings and an extra token field and confirms none survive serialization.",
+        "Mutation in an external scratch copy removed the full-extension wrapper assignment that forwards safeBaselineRestoration. The test run rejected the mutant: both injected T04 restoration failures lost their diagnostic and failed the assertions. The shared source file remained byte-identical to the reviewed source.",
+        "Existing full-recheck coverage still passes T10 and T67 replacement behavior; the new injected-failure test also verifies the T10 sibling remains executable."
+      ],
+      "limitations": [
+        "The mutant was isolated to diagnostic propagation; it does not prove native browser behavior.",
+        "T67 sibling preservation is established by the focused harness suite, not by a native extension run."
+      ]
+    }
+  },
+  "implementation_files_changed_by_review": [],
+  "review_artifact": "docs/stabilization/reports/ext-d-0220-diagnostic-source-review-20261012.json"
+}

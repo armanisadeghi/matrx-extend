@@ -469,6 +469,41 @@ export function preferenceBaselineMatches(observed, preference, baseline) {
   );
 }
 
+export const PREFERENCE_BASELINE_RESTORE_STAGES = Object.freeze([
+  'validate_baseline',
+  'open_section',
+  'observe_before_selection',
+  'open_control',
+  'select_option',
+  'remove_absent_key',
+  'observe_restored_baseline',
+  'record_restored_baseline',
+]);
+
+export function safePreferenceBaselineRestoration(value) {
+  if (!PREFERENCE_BASELINE_RESTORE_STAGES.includes(value?.stage)) return null;
+  const names = ['AssertionError', 'Error', 'RangeError', 'TimeoutError', 'TypeError'];
+  const boolean = (field) => (typeof field === 'boolean' ? field : null);
+  return {
+    stage: value.stage,
+    errorName: names.includes(value.errorName) ? value.errorName : 'OtherError',
+    observation: value.observation
+      ? Object.fromEntries(
+          [
+            'settingsActive',
+            'controlUnique',
+            'selectedMatches',
+            'storedMatches',
+            'storedPresent',
+            'storagePresent',
+            'appearanceMatches',
+            'baselineMatches',
+          ].map((key) => [key, boolean(value.observation[key])]),
+        )
+      : null,
+  };
+}
+
 export async function restoreGuestPreferenceBaseline(
   panel,
   preference,
@@ -476,26 +511,62 @@ export async function restoreGuestPreferenceBaseline(
   record,
   driver = nativeDriver,
 ) {
-  const choice = preference.choices.find(([value]) => value === baseline?.value);
-  assertPreferenceBaseline(choice, preference);
-  const [value, label] = choice;
-  await driver.openSection(panel, preference.section);
-  const current = await observeGuestPreference(panel, preference, driver);
-  if (!preferenceMatches(current, preference, value, label)) {
-    await driver.click(panel, 'settings-select', preference.label);
-    await driver.click(panel, 'option', label);
+  let stage = 'validate_baseline';
+  let last;
+  try {
+    const choice = preference.choices.find(([value]) => value === baseline?.value);
+    assertPreferenceBaseline(choice, preference);
+    const [value, label] = choice;
+    stage = 'open_section';
+    await driver.openSection(panel, preference.section);
+    stage = 'observe_before_selection';
+    last = await observeGuestPreference(panel, preference, driver);
+    if (!preferenceMatches(last, preference, value, label)) {
+      stage = 'open_control';
+      await driver.click(panel, 'settings-select', preference.label);
+      stage = 'select_option';
+      await driver.click(panel, 'option', label);
+    }
+    if (preference.key === 'theme' && baseline.storedPresent === false) {
+      stage = 'remove_absent_key';
+      await restoreAbsentThemePreference(panel, preference, baseline.storagePresent, driver);
+    }
+    stage = 'observe_restored_baseline';
+    const restored = await driver.waitFor(
+      `${preference.caseId}_full_extension_baseline_restored`,
+      async () => {
+        last = await observeGuestPreference(panel, preference, driver);
+        return last;
+      },
+      (state) => preferenceBaselineMatches(state, preference, baseline),
+    );
+    const passed = preferenceBaselineMatches(restored, preference, baseline);
+    stage = 'record_restored_baseline';
+    record(`original ${preference.label} preference restored`, restored, passed);
+    if (!passed) throw new Error(`${preference.caseId}_full_extension_baseline_restore_failed`);
+    return restored;
+  } catch (caught) {
+    const error =
+      caught instanceof Error ? caught : new Error('preference_baseline_restore_failed');
+    error.safeBaselineRestoration = safePreferenceBaselineRestoration({
+      stage,
+      errorName: error.name,
+      observation: last
+        ? {
+            settingsActive: last.activeSettings,
+            controlUnique: last.count === 1,
+            selectedMatches: last.selected === baseline?.label,
+            storedMatches: last.stored === baseline?.value,
+            storedPresent: last.storedPresent,
+            storagePresent: last.storagePresent,
+            appearanceMatches:
+              preference.key === 'theme' ? themeAppearanceMatches(last, baseline?.value) : null,
+            baselineMatches: preferenceBaselineMatches(last, preference, baseline),
+          }
+        : null,
+    });
+    throw error;
   }
-  if (preference.key === 'theme' && baseline.storedPresent === false)
-    await restoreAbsentThemePreference(panel, preference, baseline.storagePresent, driver);
-  const restored = await driver.waitFor(
-    `${preference.caseId}_full_extension_baseline_restored`,
-    () => observeGuestPreference(panel, preference, driver),
-    (state) => preferenceBaselineMatches(state, preference, baseline),
-  );
-  const passed = preferenceBaselineMatches(restored, preference, baseline);
-  record(`original ${preference.label} preference restored`, restored, passed);
-  if (!passed) throw new Error(`${preference.caseId}_full_extension_baseline_restore_failed`);
-  return restored;
 }
 
 function assertPreferenceBaseline(choice, preference) {

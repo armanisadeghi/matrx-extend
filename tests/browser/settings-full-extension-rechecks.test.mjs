@@ -127,7 +127,41 @@ test('unexpected full-extension exceptions retain distinct safe source diagnosti
   assert.equal(JSON.stringify({ first, second }).includes('password'), false);
 });
 
+test('inner restoration serialization rejects unknown stages and strips arbitrary observation fields', async () => {
+  const item = cases()[0];
+  const capture = async (diagnostic) => {
+    await runFullExtensionRecheck(item, async () => {
+      throw Object.assign(new Error('private password'), {
+        safeCategory: 'full_extension_preference_or_restore_failed',
+        safeBaselineRestoration: diagnostic,
+      });
+    });
+    return item.fullExtensionReload.baselineRestoration;
+  };
+  assert.equal(await capture({ stage: 'private page' }), null);
+  const diagnostic = await capture({
+    stage: 'remove_absent_key',
+    errorName: 'private password',
+    observation: {
+      settingsActive: true,
+      storedPresent: false,
+      storagePresent: 'secret',
+      token: 'secret',
+    },
+  });
+  assert.equal(diagnostic.errorName, 'OtherError');
+  assert.equal(diagnostic.observation.settingsActive, true);
+  assert.equal(diagnostic.observation.storedPresent, false);
+  assert.equal(diagnostic.observation.storagePresent, null);
+  assert.equal(JSON.stringify(diagnostic).includes('secret'), false);
+  assert.equal(JSON.stringify(diagnostic).includes('password'), false);
+});
+
 function fullRestartFixture({
+  absentTheme = false,
+  omitChoiceDriver = false,
+  baselineStoragePresent = false,
+  failBaselineRestore = null,
   skipChoice = null,
   failNewChat = false,
   failSettingsCalls = [],
@@ -153,9 +187,44 @@ function fullRestartFixture({
       mode: { count: 1, visible: 'Capture', stored: 'capture' },
     },
   };
+  if (absentTheme)
+    Object.assign(states.T04, {
+      stored: null,
+      storedPresent: false,
+      storagePresent: baselineStoragePresent,
+    });
   const calls = { reloads: [], options: [], chats: [], caseRunners: [] };
   let settingsCalls = 0;
-  let activePanel = { targetId: 'panel-initial-replacement', detach: async () => {} };
+  // CDP is the external dependency in the native-default-driver lane. The real
+  // click/wait/restore helpers and production rerun callback remain in use.
+  let pointerTarget;
+  const makePanel = (targetId) => ({
+    targetId,
+    detach: async () => {},
+    async send(method, params) {
+      if (method === 'Input.dispatchMouseEvent') {
+        if (params.type === 'mouseReleased')
+          await choiceDriver.click(activePanel, ...pointerTarget);
+        return {};
+      }
+      assert.equal(method, 'Runtime.evaluate');
+      const script = params.expression;
+      const pointer = script.match(/const kind = ("[^"\n]+"), label = ("[^"\n]+");/);
+      let value;
+      if (pointer) {
+        pointerTarget = [JSON.parse(pointer[1]), JSON.parse(pointer[2])];
+        value = { count: 1, matchedCount: 1, x: 40, y: 40, hitTarget: true, animating: false };
+      } else if (script.includes('return { count: buttons.length, expanded:')) {
+        value = { count: 1, expanded: 'true' };
+      } else if (script.includes("?.getAttribute('aria-expanded'))()")) {
+        value = 'true';
+      } else {
+        value = await choiceDriver.evaluate(activePanel, script);
+      }
+      return { result: { value } };
+    },
+  });
+  let activePanel = makePanel('panel-initial-replacement');
   let currentPreference;
   const allChoices = [
     ...GUEST_PREFERENCES,
@@ -169,6 +238,19 @@ function fullRestartFixture({
     },
   ];
   const choiceDriver = {
+    async evaluate(panel, script) {
+      assert.equal(panel, activePanel);
+      if (script.includes('const originalStoragePresent =')) {
+        if (failBaselineRestore === 'remove_absent_key')
+          throw new TypeError('private token secret');
+        Object.assign(states.T04, {
+          stored: null,
+          storedPresent: false,
+          storagePresent: baselineStoragePresent,
+        });
+      }
+      return { ...states.T04 };
+    },
     async click(panel, kind, label) {
       assert.equal(panel, activePanel);
       if (kind !== 'option') return;
@@ -183,12 +265,21 @@ function fullRestartFixture({
         const state = states[preference.caseId];
         state.selected = label;
         state.stored = value;
-        if (preference.caseId === 'T04') state.darkClass = value === 'dark';
+        if (preference.caseId === 'T04') {
+          state.darkClass = value === 'dark';
+          if (absentTheme) Object.assign(state, { storedPresent: true, storagePresent: true });
+        }
       }
     },
     async waitFor(name, read, accept) {
       const value = await read();
       assert.equal(accept(value), true, name);
+      if (
+        name === 'T04_full_extension_baseline_restored' &&
+        failBaselineRestore === 'observe_restored_baseline'
+      ) {
+        throw new RangeError('private user page');
+      }
       return value;
     },
   };
@@ -218,7 +309,7 @@ function fullRestartFixture({
   const reloadExtension = async () => {
     const previous = activePanel;
     calls.reloads.push(previous.targetId);
-    activePanel = { targetId: `panel-replacement-${calls.reloads.length}`, detach: async () => {} };
+    activePanel = makePanel(`panel-replacement-${calls.reloads.length}`);
     for (const id of ['T04', 'T10']) {
       const preference = GUEST_PREFERENCES.find((item) => item.caseId === id);
       const choice = preference.choices.find(([value]) => value === states[id].stored);
@@ -305,13 +396,100 @@ function fullRestartFixture({
             throw new Error('private recovery URL https://private.example/recover?token=secret');
           return activePanel;
         },
-        choiceDriver,
+        ...(!omitChoiceDriver && { choiceDriver }),
         observeAutoScrapeMode,
         transportFailureClass: () => transportClasses.shift() ?? 'none',
       });
       enforceFullExtensionRechecks(reportCases);
     },
   };
+}
+
+for (const baselineStoragePresent of [false, true]) {
+  test(`native omitted choice driver restores absent theme through production callback (container=${baselineStoragePresent})`, async () => {
+    const f = fullRestartFixture({
+      absentTheme: true,
+      omitChoiceDriver: true,
+      baselineStoragePresent,
+    });
+    await f.run();
+    const theme = f.reportCases[0].fullExtensionReload;
+    assert.equal(
+      theme.status,
+      'pass',
+      `EXT-D-0220 native restoration must invoke helper: ${JSON.stringify({
+        stage: theme.restorationFailureStage,
+        inner: theme.baselineRestoration,
+      })}`,
+    );
+    assert.deepEqual(
+      [
+        f.states.T04.selected,
+        f.states.T04.stored,
+        f.states.T04.storedPresent,
+        f.states.T04.storagePresent,
+      ],
+      ['System', null, false, baselineStoragePresent],
+    );
+    assert.equal(f.calls.reloads.length, 7);
+    assert.deepEqual(
+      f.calls.options.filter(([id]) => id === 'T04'),
+      [
+        ['T04', 'Dark'],
+        ['T04', 'Light'],
+        ['T04', 'System'],
+      ],
+    );
+    assert.equal(f.reportCases[1].fullExtensionReload.status, 'pass');
+    assert.equal(f.reportCases[4].fullExtensionReload.status, 'pass');
+  });
+}
+
+for (const failBaselineRestore of [null, 'remove_absent_key', 'observe_restored_baseline']) {
+  test(`production T04 rerun preserves absent baseline and safe inner restoration outcome (${failBaselineRestore})`, async () => {
+    const f = fullRestartFixture({ absentTheme: true, failBaselineRestore });
+    await f.run();
+    const theme = f.reportCases[0];
+    if (failBaselineRestore === null) {
+      assert.equal(theme.fullExtensionReload.status, 'pass');
+      assert.deepEqual(
+        [
+          f.states.T04.selected,
+          f.states.T04.stored,
+          f.states.T04.storedPresent,
+          f.states.T04.storagePresent,
+        ],
+        ['System', null, false, false],
+      );
+      assert.equal(f.calls.reloads.length, 7);
+    } else {
+      assert.equal(theme.fullExtensionReload.status, 'fail');
+      assert.equal(theme.fullExtensionReload.restorationFailureStage, 'restore_baseline_select');
+      const diagnostic = theme.fullExtensionReload.baselineRestoration;
+      assert.ok(diagnostic, 'EXT-D-0220 must retain inner baseline restoration diagnostics');
+      assert.equal(diagnostic.stage, failBaselineRestore);
+      assert.equal(
+        diagnostic.errorName,
+        failBaselineRestore === 'remove_absent_key' ? 'TypeError' : 'RangeError',
+      );
+      assert.equal(diagnostic.observation.settingsActive, true);
+      assert.equal(
+        diagnostic.observation.baselineMatches,
+        failBaselineRestore === 'observe_restored_baseline',
+      );
+      assert.equal(
+        diagnostic.observation.storagePresent,
+        failBaselineRestore === 'remove_absent_key',
+      );
+      assert.equal(JSON.stringify(theme).includes('private'), false);
+      assert.equal(JSON.stringify(theme).includes('secret'), false);
+    }
+    assert.equal(
+      f.reportCases[1].fullExtensionReload.status,
+      'pass',
+      'mode sibling remains executable',
+    );
+  });
 }
 
 test('each nonbaseline theme, mode, and capture choice survives its own real replacement boundary and restores baseline', async () => {

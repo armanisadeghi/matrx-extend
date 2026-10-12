@@ -41,16 +41,31 @@
   "build_receipt": {
     "source_base": "6285466d1762f6f1647d13d4d97ba050fc31fe77",
     "native_evidence_commit": "8d2d93da0",
-    "fresh_native_artifact": "pending"
+    "fresh_native_artifact": "pending",
+    "native_artifact": {
+      "source_sha": "fe631ec14c443d025dec04c1fa00795b1feaddb0",
+      "task_source_sha": "c2205e2daab3936b703b68d5a95404e7ce2e6d61",
+      "runtime_equivalent_diff": "docs/stabilization/reports/store-release-checkpoint-20261012-2227.json",
+      "ci_run_id": 38316843884,
+      "artifact_id": 11777408625,
+      "artifact_digest": "sha256:23f19b512ac8896c8d5bc2f19ee7a6fa07af98980e6f2a6baf6877a28dd4b275",
+      "version": "0.2.509",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+      "browser": "Chrome for Testing 151.0.7922.34"
+    }
   },
   "source_verification": {
-    "run_id": "ext-d-0220-source-20261012",
-    "evidence": "docs/stabilization/runs/ext-d-0220-source-20261012.json",
-    "native_acceptance": "UNVERIFIED: no browser or hosted job launched",
+    "run_id": "settings-t04-absent-key-native-20261012-2252",
+    "evidence": "docs/stabilization/runs/ext-d-0220-native-retest-20261012.json",
+    "native_acceptance": "FAIL / INCOMPLETE: T04 observed the absent theme key and absent settings container after the first full extension reload, and Dark/Light/System plus panel reload assertions passed. The complete T04 case failed later when restoring the absent baseline after choice cycles; restorationFailureStage=restore_baseline_select. No product-pass claim.",
     "independent_review": "pending parent review",
-    "release": "pending"
+    "release": "pending",
+    "fix_commits": ["011558f5c8ca113021c1cd20c9c8466867731755", "3b21fa6db"],
+    "independent_source_review": "PASS: docs/stabilization/reports/ext-d-0220-independent-review-20261012.json",
+    "independent_native_review": "pending; do not close"
   },
-  "next_action": "Independent review, parent integration/push, then guarded native T04 retest on exact CI artifact. Link defect from inventory and feature-tests after D219 shared-file work completes.",
+  "next_action": "Sol diagnosis and repair of restore_baseline_select using docs/stabilization/evidence/settings-controls-local/run-ext-d-0220-native-20261012-2252/native-report.sanitized.json; then a fresh guarded exact-source native retest and independent UI review.",
   "transition_history": [
     {
       "at": "2026-10-12T22:20:31.150692+00:00",
@@ -69,6 +84,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Source repair and deterministic RED/GREEN and mutant evidence exist; review and native gates remain pending."
+    },
+    {
+      "at": "2026-10-12T22:45:00.000Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Source repair commits 011558f5c8ca113021c1cd20c9c8466867731755 and 3b21fa6db passed independent source/harness review and focused suite (54/54), including the expected-red mutant; native retest required."
+    },
+    {
+      "at": "2026-10-12T22:51:34.181Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Guard-admitted exact-source native T04 run observed absent-key shape after the first full extension reload, but the later full-reload baseline restoration failed at restore_baseline_select; see run settings-t04-absent-key-native-20261012-2252."
+    },
+    {
+      "at": "2026-10-12T22:51:34.182Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "The complete T04 acceptance did not finish; investigate the later absent-baseline restoration failure before another native retry. The successful post-reload absent-key observation is retained without promoting the case."
     }
   ]
 }

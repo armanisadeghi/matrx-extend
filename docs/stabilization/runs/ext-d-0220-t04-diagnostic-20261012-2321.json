@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "id": "ext-d-0220-t04-diagnostic-20261012-2321",
+  "created_at_utc": "2026-10-12T23:21:46.097Z",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T04"],
+  "defect_id": "EXT-D-0220",
+  "mode": "guest",
+  "status": "zero_credit_setup_failure",
+  "scope": "One guarded attempt to capture the inner full-extension baseline-restoration diagnostic; the runner did not reach Chrome or product interaction.",
+  "build": {
+    "source_sha": "62ba4838655b48502388b8f1813686f3545fb71b",
+    "ci_run_id": 38320662877,
+    "ci_attempt": 1,
+    "ci_conclusion": "success",
+    "artifact_id": 11778284430,
+    "artifact_digest": "sha256:7a121694e4bcf8ab61b7256367c476bdf3442e903c913bac86238dce73dcfc6b",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "promotion": "imported and promoted with documented CI artifact scripts"
+  },
+  "diagnostic_sources": {
+    "implementation_commit": "ac4f5b565e977a9c0a49a6baec0d723fd6abd5ba",
+    "review_commit": "e59d7ec9e1b61d482b5f3e713e2571dfc6e9bcda"
+  },
+  "resource": {
+    "initial_refused_check": "ext-d-0220-t04-diagnostic-20261012-01",
+    "corrected_check": "ext-d-0220-t04-diagnostic-20261012-2320-check",
+    "native_run": "ext-d-0220-t04-diagnostic-20261012-2321",
+    "corrected_check_decision": "valid",
+    "native_run_decision": "child_failed",
+    "resource_invalid": false,
+    "child_exit_code": 1,
+    "cleanup": "Owned child exited; no browser/runner process or heavy lease remained."
+  },
+  "browser": {
+    "playwright_version": "1.62.1",
+    "chrome_for_testing_version_resolved": "151.0.7922.34",
+    "launched": false
+  },
+  "failure": {
+    "stage": "local_dev_build_receipt_refused",
+    "detail": "The acceptance runner received ci-dev-promotion-receipt.json but requires the imported artifact's local-dev-receipt.json. It refused before Chrome launch.",
+    "product_state_observed": false,
+    "inner_baseline_restoration_stage": "not reached"
+  },
+  "verdicts": {
+    "EXT-F-1003-T04": "unverified by this run; no product credit",
+    "defect_status_changed": false,
+    "inventory_changed": false
+  },
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-local/run-ext-d-0220-t04-diagnostic-20261012-2321/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-local/run-ext-d-0220-t04-diagnostic-20261012-2321/ext-d-0220-t04-diagnostic-20261012-01.sanitized.jsonl",
+    "docs/stabilization/evidence/settings-controls-local/run-ext-d-0220-t04-diagnostic-20261012-2321/ext-d-0220-t04-diagnostic-20261012-2320-check.sanitized.jsonl",
+    "docs/stabilization/evidence/settings-controls-local/run-ext-d-0220-t04-diagnostic-20261012-2321/ext-d-0220-t04-diagnostic-20261012-2321.sanitized.jsonl"
+  ],
+  "raw_report_path": "test-results/settings-local-controls-acceptance.json (ignored; not committed)",
+  "next_action": "A later exact-source guarded run must pass the imported artifact local-dev receipt path to the acceptance runner before attempting T04 diagnosis."
+}

@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0221-admin-native-20261013-01",
+  "defect_id": "EXT-D-0221",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
+  "status": "unverified",
+  "scope": "Fresh guarded native admin Screenshots attempt on exact CI development artifact; run stopped after Files navigation and before public sharing.",
+  "source_fix": "a10bd7fd3dc5c21ca9470a115824a3374350268f",
+  "independent_source_review": {
+    "commit": "62ba4838655b48502388b8f1813686f3545fb71b",
+    "report": "docs/stabilization/reports/ext-d-0221-independent-review-20261012.json",
+    "verdict": "pass_for_provenance_gate_only"
+  },
+  "artifact": {
+    "ci_run_id": 38320662877,
+    "ci_attempt": 1,
+    "artifact_id": 11778284430,
+    "artifact_digest": "sha256:7a121694e4bcf8ab61b7256367c476bdf3442e903c913bac86238dce73dcfc6b",
+    "source_sha": "62ba4838655b48502388b8f1813686f3545fb71b",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "provenance_kind": "ci_development_test",
+    "promotion_receipt_kind": "ci_development_test_promotion",
+    "promotion_receipt_path": "test-results/ci-dev-promotion-receipt.json",
+    "promotion_compatibility": "exact-source",
+    "source_and_main_match": true,
+    "expected_source_sha_was_set": true
+  },
+  "preflight": {
+    "promotion_verifier": "passed_against_imported_and_promoted_artifact",
+    "playwright_module": "host_runtime_playwright_index_mjs",
+    "launch_persistent_context_export": true,
+    "chrome_for_testing_executable": "accepted_by_runtime_resolver_and_executable_access_check",
+    "admin_private_config_mode": "0600",
+    "admin_env_mode": "0600",
+    "browser_launched_during_preflight": false
+  },
+  "resource": {
+    "guard_run_id": "ext-d-0221-admin-native-20261013-01",
+    "journal": "docs/stabilization/resource-journals/ext-d-0221-admin-native-20261013-01.jsonl",
+    "admitted": true,
+    "resource_invalid": false,
+    "child_exit_code": 1,
+    "decision": "child_failed",
+    "admission_at": "2026-10-12T23:32:46.653Z",
+    "terminal_at": "2026-10-12T23:33:50.934Z",
+    "sample": {
+      "pressure_level": 1,
+      "available_memory_gib": 11.04,
+      "required_memory_gib": 4,
+      "one_minute_load": 3.59,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.2057,
+      "swap_used_mib": 3134.06,
+      "repo_free_gib": 1646.65,
+      "profile_free_gib": 1646.65,
+      "safety_free_gib": 41.04
+    },
+    "healthy_watch_samples": 4,
+    "cleanup": {
+      "resource_journal_finalized": true,
+      "resource_invalid": false,
+      "heavy_lease_absent": true,
+      "runner_guard_browser_children_remaining": false,
+      "native_temporary_profile_removed": true
+    }
+  },
+  "runner_result": {
+    "runner_status": "unverified",
+    "stage": "icon_open_in_files",
+    "code": "restored_owned_files_card_identity_unverified",
+    "sanitized_result_path": "test-results/screenshot-capture-ba4d1343-b5db-48f0-83d1-f33e346df583.json",
+    "verified_build_identity": {
+      "kind": "ci_development_test_promotion",
+      "publish_state": "not_published",
+      "source_sha": "62ba4838655b48502388b8f1813686f3545fb71b",
+      "main_sha": "62ba4838655b48502388b8f1813686f3545fb71b",
+      "version": "0.2.509",
+      "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "ci_run_id": 38320662877,
+      "artifact_id": 11778284430,
+      "github_artifact_digest": "sha256:7a121694e4bcf8ab61b7256367c476bdf3442e903c913bac86238dce73dcfc6b"
+    },
+    "browser_started": true,
+    "authenticated_principal": "admin@admin.com; identity and admin role observed",
+    "approved_organization_selected": true,
+    "product_credit": false,
+    "observations": {
+      "owned_fixture": "One run-owned localhost Harbor Dental appointment guide was captured; its random URL and row identifiers were not serialized.",
+      "real_gallery_read": "HTTP 200 completed; one row was rendered before Files navigation.",
+      "viewer_sequence": "The runner advanced to icon_open_in_files only after both screenshotViewer calls returned, each of which requires a loaded matching image, unchanged browser tabs, and closed viewer.",
+      "files_route": "One new owned tab reached the exact owned Files route; its origin was canonical www.",
+      "return_from_files": "A completed real GET still contained the owned row, but the rendered gallery had zero cards; required restored-card identity assertion failed.",
+      "public_share": "Not reached; link create, clipboard copy, and revocation were not exercised."
+    },
+    "cases": {
+      "admin_T04_viewer_close_reopen_and_files": "unverified_after_partial_interaction; returned gallery card assertion failed",
+      "admin_T05_public_link_create_copy_revoke": "unverified; not reached",
+      "member_T04_T05": "unverified; runner is admin-only"
+    },
+    "owned_fixture_cleanup": {
+      "delete_confirmation_observed": true,
+      "cleanup_attempted_by_runner": true,
+      "owned_row_absence_verified": false,
+      "createdRowMayNeedUiCleanup": true,
+      "ownedUiCleanupVerified": false,
+      "row_disposition": "unknown; the single owned row may remain",
+      "additional_browser_run_or_cleanup": false
+    }
+  },
+  "interpretation": "The D221 provenance gate and browser setup passed, and the admin runner reached the owned fixture UI. T04 did not complete because the actual returned gallery did not render the row after Files navigation. T05 was not reached. The guard finalized valid, but fixture-row cleanup is not verified. No T04/T05 pass or D221 closure is claimed.",
+  "next_action": "Owner-coordinated diagnosis and cleanup of the run-owned screenshot row; separately admitted, independently reviewed retest for complete admin T04/T05. Member T04/T05 remain unverified."
+}

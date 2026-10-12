@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0221 native Screenshots admin T04/T05 retest",
+  "status": "unverified",
+  "d221": {
+    "status": "fixed",
+    "scope": "The source provenance gate remains fixed and was accepted by the actual runner using the true CI promotion receipt.",
+    "native_setup": "preflight passed; guard admitted; exact artifact and browser runtime accepted",
+    "native_product_acceptance": "not completed; T04 stopped after Files route when the restored gallery rendered zero cards despite a completed real GET containing the owned row; T05 was not reached",
+    "closed_or_retest_pass": false
+  },
+  "artifact": {
+    "ci_run_id": 38320662877,
+    "artifact_id": 11778284430,
+    "source_sha": "62ba4838655b48502388b8f1813686f3545fb71b",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "promotion_receipt_kind": "ci_development_test_promotion",
+    "promotion_verification": "passed_again_immediately_before_launch"
+  },
+  "native_attempt": {
+    "run_id": "ext-d-0221-admin-native-20261013-01",
+    "guard_admitted": true,
+    "resource_invalid": false,
+    "runner_failure": "restored_owned_files_card_identity_unverified",
+    "failure_stage": "icon_open_in_files",
+    "browser_started": true,
+    "admin_identity_and_role_observed": true,
+    "product_credit": false,
+    "member_coverage": "unverified"
+  },
+  "owned_fixture": {
+    "identity": "run-owned localhost Harbor Dental appointment guide; random URL and row identifiers excluded",
+    "persisted_row_observed": true,
+    "files_route_opened": true,
+    "cleanup_attempted": true,
+    "cleanup_verified": false,
+    "row_disposition": "unknown; the run-owned row may remain"
+  },
+  "cleanup": {
+    "resource_journal_finalized": true,
+    "heavy_lease_absent": true,
+    "browser_and_runner_processes_remaining": false,
+    "native_temporary_profile_removed": true,
+    "owned_database_row_verified_absent": false
+  },
+  "case_status": {
+    "admin_T04_viewer_close_reopen_and_files": "unverified; partial path reached, restored-card predicate failed",
+    "admin_T05_public_link_create_copy_revoke": "unverified; not reached",
+    "member_T04_T05": "unverified"
+  },
+  "evidence": {
+    "run_record": "docs/stabilization/runs/ext-d-0221-admin-native-20261013-01.json",
+    "resource_journal": "docs/stabilization/resource-journals/ext-d-0221-admin-native-20261013-01.jsonl",
+    "sanitized_runner_result": "test-results/screenshot-capture-ba4d1343-b5db-48f0-83d1-f33e346df583.json"
+  },
+  "followup": "Do not infer T04/T05 acceptance or D221 closure. Resolve owned-row cleanup and the restored-gallery mismatch through owner-coordinated work, then use a separately admitted and independently reviewed native attempt."
+}

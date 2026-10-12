@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "ext-d-0220-t04-diagnostic-20261013-01",
+  "created_at_utc": "2026-10-12T23:28:13.995Z",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T04"],
+  "defect_id": "EXT-D-0220",
+  "mode": "guest",
+  "status": "native_diagnostic_fail_inner_stage_unavailable",
+  "scope": "One guarded native diagnostic focused on T04 fullExtensionReload baseline restoration.",
+  "build": {
+    "artifact_source_sha": "62ba4838655b48502388b8f1813686f3545fb71b",
+    "source_relationship": "No source-equivalence claim; the native artifact provenance and emitted tree were independently verified.",
+    "ci_run_id": 38320662877,
+    "ci_attempt": 1,
+    "artifact_id": 11778284430,
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "provenance_kind": "ci_development_test",
+    "checkout_head_observed_before_launch": "19e5e5d51750459bd190cc13cbc570fcc47e7758",
+    "checkout_head_after_terminal": "31187a1236d94ec7fcff578683b146ec7d62b804"
+  },
+  "resource": {
+    "preflight_journal": "docs/stabilization/resource-journals/ext-d-0220-t04-diagnostic-20261013-01-preflight.jsonl",
+    "run_journal": "docs/stabilization/resource-journals/ext-d-0220-t04-diagnostic-20261013-01.jsonl",
+    "preflight": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "profile_volume": "/Volumes/Samsung2TB",
+      "profile_free_gib": 1646.635829925537
+    },
+    "final": {
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "decision": "child_failed"
+    },
+    "cleanup": "Wrapper and native child exited; no Chrome or runner process remained; isolated temporary profile was removed; lease released."
+  },
+  "verdicts": {
+    "EXT-F-1003-T04": "FAIL diagnostic-only: case-entry absent theme key/container shape and Dark/Light full reload cycles passed; final baseline restoration failed at outer stage restore_baseline_select.",
+    "product_pass_claim": "none"
+  },
+  "diagnostic": {
+    "target": "fullExtensionReload.baselineRestoration inner failure stage",
+    "outer_failure_stage": "restore_baseline_select",
+    "baseline_restoration": null,
+    "inner_failure_stage": "not captured (baselineRestoration is null)",
+    "implication": "This run confirms the outer restoration stage but does not identify the inner failure cause; pass to the fixer without inferring a product defect."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/ext-d-0220-t04-diagnostic-20261013-01/native-report.sanitized.json",
+    "docs/stabilization/resource-journals/ext-d-0220-t04-diagnostic-20261013-01-preflight.jsonl",
+    "docs/stabilization/resource-journals/ext-d-0220-t04-diagnostic-20261013-01.jsonl"
+  ],
+  "limits": [
+    "The complete T04 acceptance failed and earns no pass credit.",
+    "The safe report does not contain an inner baselineRestoration stage or observation.",
+    "This run establishes guest native behavior for the exact imported development artifact only; member/admin and Store behavior remain unverified."
+  ]
+}

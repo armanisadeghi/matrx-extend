@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0219-native-20261012",
+  "defect_id": "EXT-D-0219",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
+  "status": "zero_credit_precondition_failure",
+  "scope": "Attempted guarded admin-native Screenshots acceptance on the exact reviewed CI artifact. No browser or product behavior was exercised.",
+  "source_fixes": ["6285466d1", "0b026ea97"],
+  "artifact": {
+    "ci_run_id": 38316843884,
+    "ci_attempt": 1,
+    "artifact_id": 11777408625,
+    "source_sha": "fe631ec14c443d025dec04c1fa00795b1feaddb0",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "promotion_receipt": "test-results/ci-dev-promotion-receipt.json",
+    "promotion_kind": "ci_development_test_promotion",
+    "ci_success": true,
+    "compatibility": "exact-source"
+  },
+  "resource": {
+    "first_attempt": {
+      "guard_run_id": "ext-d-0219-native-20261012",
+      "journal": "docs/stabilization/resource-journals/ext-d-0219-native-20261012.jsonl",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "decision": "child_failed",
+      "admission_at": "2026-10-12T22:53:37.651Z",
+      "resource_sample": {
+        "pressure_level": 1,
+        "available_memory_gib": 10.88,
+        "one_minute_load": 3.64,
+        "logical_cpus": 10,
+        "cpu_busy_fraction": 0.2343,
+        "swap_used_mib": 3246.12,
+        "safety_free_gib": 41.89
+      }
+    },
+    "second_permit": {
+      "guard_run_id": "ext-d-0219-native-20261012-2",
+      "journal": "docs/stabilization/resource-journals/ext-d-0219-native-20261012-2.jsonl",
+      "admitted": false,
+      "resource_invalid": false,
+      "decision": "stopped_before_admission",
+      "reason": "Parent halted retry to preserve CI promotion provenance; no browser process started."
+    },
+    "cleanup": "Both guard processes reached terminal journals. First child exited before browser startup; the second permit was stopped during preflight. No owned browser/profile child remains."
+  },
+  "native_result": {
+    "runner_status": "unverified",
+    "failure": {
+      "stage": "build_start",
+      "code": "owned_harness_or_ui_stage_failed"
+    },
+    "sanitized_result": "test-results/screenshot-capture-73ed628b-7101-464a-8593-5c3771e06c57.json",
+    "failure_diagnostic": {
+      "runtime_code": null,
+      "timeout": false,
+      "assertion": false,
+      "driver_code": null,
+      "hit_target": false,
+      "matched_target_count": null,
+      "visible_match_count": null
+    },
+    "product_credit": false,
+    "cases": {
+      "admin_T04_viewer_close_reopen": "unverified",
+      "admin_T04_separate_files_route": "unverified",
+      "admin_T05_public_link_create_copy_revoke": "unverified",
+      "member_T04": "unverified; runner is admin-only and no approved member path was established",
+      "member_T05": "unverified; runner is admin-only and no approved member path was established"
+    },
+    "sanitized_native_evidence": "None. The runner failed before Chrome startup; no screenshot, DOM observation, click, backend operation, or runtime extension identity was produced."
+  },
+  "blocker": {
+    "class": "acceptance_runner_provenance_gate",
+    "detail": "tests/browser/screenshot-capture-acceptance.mjs buildIdentity() requires a local_dev_unpacked receipt and checks the hardcoded .output/chrome-mv3-dev directory. The verified CI promotion receipt has kind ci_development_test_promotion, so the runner rejects it at build_start despite matching version and exact tree hash.",
+    "required_followup": "Parent/coordinator to repair and independently review the runner's receipt validation so it accepts the verified CI promotion receipt with strict source, extension path, version, and tree-hash checks, then obtain a fresh successful focused CI artifact before another native attempt.",
+    "provenance_preserved": "The CI promotion receipt was not rewritten or converted. A temporary compatibility receipt was created during diagnosis, then removed before use after parent direction."
+  },
+  "untested_dimensions": [
+    "All T04 and T05 admin product behavior",
+    "All T04 and T05 member behavior",
+    "Authenticated backend reads/writes, public access, and persisted revocation",
+    "Clipboard failure, service rejection, expiry, and view limits",
+    "Reload, service-error, cold lifecycle, and Store behavior",
+    "Current Chrome-loaded extension ID, source path, and runtime version"
+  ],
+  "interpretation": "This is a harness provenance failure with zero product verdict. It does not establish a Screenshots pass or product defect. EXT-D-0219 native retest remains pending."
+}

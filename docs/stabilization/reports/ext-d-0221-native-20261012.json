@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0221 native retest and EXT-F-1009 bounded acceptance",
+  "status": "zero_credit_runtime_setup_failure",
+  "d221": {
+    "status": "fixed",
+    "independent_source_review": "pass",
+    "exact_ci_source": "62ba4838655b48502388b8f1813686f3545fb71b",
+    "native_provenance_gate": "pass: actual runner recorded exact CI promotion identity",
+    "native_browser_retest": "not completed; browser_runtime_playwright_missing before browser launch",
+    "closed_or_retest_pass": false
+  },
+  "artifact": {
+    "ci_run_id": 38320662877,
+    "artifact_id": 11778284430,
+    "digest": "sha256:7a121694e4bcf8ab61b7256367c476bdf3442e903c913bac86238dce73dcfc6b",
+    "version": "0.2.509",
+    "source_sha": "62ba4838655b48502388b8f1813686f3545fb71b",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "promotion_receipt_kind": "ci_development_test_promotion"
+  },
+  "run_record": "docs/stabilization/runs/ext-d-0221-native-20261012.json",
+  "resource_journal": "docs/stabilization/resource-journals/ext-d-0221-native-20261012.jsonl",
+  "product_acceptance": "No product behavior was exercised. EXT-F-1009 admin and member T04/T05 remain unverified; the runner is admin-only.",
+  "cleanup": "Resource journal finalized valid; heavy lease absent; no runner, guard, native QA, or Chrome-for-Testing child remains.",
+  "followup": "Provide the supported MATRX_PLAYWRIGHT_MODULE path in a future independently admitted run. No retry was made in this lane."
+}

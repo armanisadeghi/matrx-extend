@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "review_id": "ext-d-0221-independent-review-20261012",
+  "defect_id": "EXT-D-0221",
+  "feature_id": "EXT-F-1009",
+  "reviewed_commit": "a10bd7fd3dc5c21ca9470a115824a3374350268f",
+  "review_type": "independent source, contract, and focused test review",
+  "verdicts": {
+    "A": {
+      "status": "pass",
+      "scope": "Promotion provenance is validated before native runtime/browser startup, and CI identity remains attached to the result.",
+      "evidence": [
+        "scripts/promote-ci-dev-artifact.mjs defines the schema_version 1 ci_development_test_promotion receipt, exact-source compatibility, source/destination paths, CI run/attempt/artifact identity, version, tree hash, and publication state; scripts/verify-ci-dev-promotion.mjs checks those fields against verifyImportedNativeEvidence output and hashes both imported and promoted trees.",
+        "The verifier requires the pinned source SHA, exact .output/chrome-mv3-dev destination, development extension ID derived from the manifest key, version, run/attempt/artifact identity, and exact-source compatibility. Fixed ci_dev_promotion_identity_refused is returned on failure.",
+        "tests/browser/native-sidepanel-qa-harness.mjs verifies the promotion before resolving browser runtime or creating an owned profile, compares expected identity fields, and preserves the promotion kind. tests/browser/native-ci-promotion-gate.test.mjs checks mismatch refusal and that failure stops at the receipt stage.",
+        "The capture, gallery-failure, and guest Screenshots runners route CI promotion receipts through the verifier. Existing local receipt branches and published-release resolution remain present; guest CI provenance is serialized in its before/after build identity."
+      ],
+      "native_product_acceptance": "UNVERIFIED; this review did not launch Chrome or exercise product behavior."
+    },
+    "B": {
+      "status": "pass_with_limitations",
+      "evidence": [
+        "Focused command: node --test scripts/verify-ci-dev-promotion.test.mjs tests/browser/native-ci-promotion-gate.test.mjs tests/browser/native-startup-interval-callsite.test.mjs; 32 passed, 0 failed.",
+        "Promotion verifier tests reject absent/wrong source SHA, mismatched receipt/import source, wrong extension ID, destination/source path, run/artifact, version, either changed tree, and runtime-equivalent compatibility. These tests call the receipt-validation function directly and confirm fixed refusal.",
+        "The startup interval VM fixture now invokes the actual extracted driver and validates the identity-routing inputs at its injected verifier boundary; it no longer supplies resolveExpectedRelease as unconditional success."
+      ],
+      "limitations": [
+        "The positive/negative promotion fixtures synthesize receipt and imported-evidence objects and exercise requireCiDevPromotionReceipt directly; they do not exercise verifyCiDevPromotionReceipt against a complete on-disk imported artifact fixture. Receipt path, schema/kind, publication flags, symlink, and timestamp rejection lack dedicated negative cases in the new verifier test file.",
+        "The startup VM test deliberately replaces the actual verifier and runtime boundary. Real verifier filesystem behavior is covered only by the pure validation fixture, so this is meaningful gate-order coverage but not end-to-end native startup proof.",
+        "No fresh green CI run for this commit was established by this review. The requested 540-suite claim was not found in the reviewed commit or available EXT-D-0221 run/review records; the only executed suite here is the focused 32-test command above."
+      ],
+      "required_followup": "Obtain the fresh exact-source green CI run required by EXT-D-0221 before another resource-admitted native attempt."
+    }
+  },
+  "boundaries": {
+    "guest": "Runner provenance route reviewed; guest Screenshots product behavior not exercised.",
+    "member": "No member native runner or acceptance established by this commit review.",
+    "admin": "Runner provenance route reviewed; admin T04/T05 product behavior remains unverified.",
+    "store": "No Store run or release acceptance is claimed.",
+    "implementation_files_changed": false
+  }
+}

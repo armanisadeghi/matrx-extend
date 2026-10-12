@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "id": "ext-d-0220-t04-diagnostic-20261013-01",
+  "defect_id": "EXT-D-0220",
+  "feature_id": "EXT-F-1003",
+  "case_id": "EXT-F-1003-T04",
+  "scope": "Diagnostic only: guest T04 full-extension reload baseline restoration; no product-pass claim.",
+  "verdict": "fail_diagnostic_only",
+  "build": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "artifact_source_sha": "62ba4838655b48502388b8f1813686f3545fb71b",
+    "ci_run_id": 38320662877,
+    "ci_attempt": 1,
+    "artifact_id": 11778284430,
+    "provenance_verifier": "verifyImportedNativeEvidence"
+  },
+  "observations": {
+    "case_entry_baseline_after_panel_reload": {
+      "status": "pass",
+      "activeSettings": true,
+      "controlCount": 1,
+      "selected": "System",
+      "storedPresent": false,
+      "storagePresent": false,
+      "renderedBackgroundMatches": true
+    },
+    "pre_run_baseline_before_full_extension_reload": {
+      "status": "pass",
+      "activeSettings": true,
+      "controlCount": 1,
+      "selected": "System",
+      "storedPresent": false,
+      "storagePresent": false,
+      "renderedBackgroundMatches": true,
+      "expected_value": "system",
+      "expected_selected": "System",
+      "expected_stored_present": false,
+      "expected_storage_present": false
+    },
+    "first_full_extension_reload_cycle_results": [
+      {
+        "name": "initial: original preference matches",
+        "status": "pass"
+      },
+      {
+        "name": "Dark changes visible and stored preference",
+        "status": "pass"
+      },
+      {
+        "name": "Dark survives full extension reload",
+        "status": "pass"
+      },
+      {
+        "name": "Light changes visible and stored preference",
+        "status": "pass"
+      },
+      {
+        "name": "Light survives full extension reload",
+        "status": "pass"
+      }
+    ],
+    "extension_reload_lifecycle": {
+      "managementReloadClicked": true,
+      "oldTargetsRetired": true,
+      "workerReplaced": true,
+      "panelReplaced": true
+    },
+    "full_extension_reload_restoration": {
+      "status": "fail",
+      "baseline_restoration_inner_stage": null,
+      "baseline_restoration_observation": null,
+      "outer_failure_stage": "restore_baseline_select",
+      "restoration_transport_class": "none",
+      "inner_failure_stage_observed": "not_captured",
+      "failure_category": "full_extension_preference_or_restore_failed"
+    }
+  },
+  "raw_report_sha256": "e912c26f3662a0ac883453ed74a63385b904e9304d58f13906a32a610c5f413e",
+  "raw_evidence_path": "test-results/settings-local-controls-acceptance.json (ignored; not committed)",
+  "resource_journal": "docs/stabilization/resource-journals/ext-d-0220-t04-diagnostic-20261013-01.jsonl"
+}

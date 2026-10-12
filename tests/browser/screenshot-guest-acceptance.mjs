@@ -8,6 +8,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { verifyCiDevPromotionReceipt } from '../../scripts/verify-ci-dev-promotion.mjs';
 import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -45,6 +46,14 @@ async function readBuildIdentity() {
   ]);
   if (DEV_BUILD_RECEIPT !== undefined) {
     const pkg = JSON.parse(await readFile(join(REPO, 'package.json'), 'utf8'));
+    if (receipt.kind === 'ci_development_test_promotion') {
+      return verifyCiDevPromotionReceipt({
+        receiptPath: RECEIPT,
+        receipt,
+        extensionDir: EXTENSION_DIR,
+        expectedSourceSha: process.env.SCREENSHOT_GUEST_EXPECTED_SOURCE_SHA,
+      });
+    }
     requireLocalDevReceipt(receipt, EXTENSION_DIR);
     if (
       !manifest.key ||
@@ -458,6 +467,7 @@ try {
       extensionDir: EXTENSION_DIR,
       expectedRelease: buildAtStart,
       localDevReceiptPath: DEV_BUILD_RECEIPT,
+      ...(buildAtStart.extensionId && { expectedExtensionId: buildAtStart.extensionId }),
     }),
     exercisePanel: exercise,
   });
