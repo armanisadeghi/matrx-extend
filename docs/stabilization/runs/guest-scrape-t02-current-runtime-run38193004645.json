@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "id": "guest-scrape-t02-current-runtime-run38193004645",
+  "created_at_utc": "2026-10-12T01:43:41Z",
+  "feature_id": "EXT-F-1007",
+  "case_id": "EXT-F-1007-T02",
+  "status": "reviewed_bounded_pass",
+  "scope": "Repeat only the guest deep-capture denied → Try again → lazy marker subtarget on the latest available development artifact; the workflow's report is T14 partial and does not cover full T02/T14.",
+  "hosted_run_id": 38193004645,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38193004645",
+  "workflow_source_sha": "b68ba9eb597c88cbbed143fdf7ddf529f677eb58",
+  "inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15",
+    "acceptance_case": "scrape-error-recovery-guest",
+    "scrape_auth_mode": "guest",
+    "development_run_id": 38191947214,
+    "development_artifact_id": 11721887256
+  },
+  "frozen_product": {
+    "development_run_id": 38191947214,
+    "development_artifact_id": 11721887256,
+    "source_sha": "b92d4e2fa9e7861b228e3625fe258938253882fe",
+    "version": "0.2.509",
+    "github_digest": "sha256:ee70575a63c4aa553cb5ef45faf1401027cc2a1ace93c0d6aaf3812eed501626",
+    "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "source_limit": "Relevant Scrape driver, route and hosted workflow files are identical between artifact source b92d4e2fa9e7861b228e3625fe258938253882fe and workflow checkout b68ba9eb597c88cbbed143fdf7ddf529f677eb58."
+  },
+  "hosted_result_artifact_id": 11722192868,
+  "hosted_result_digest": "sha256:8c3221484717fa6c95ad1ed51c692bcbb1b5c528b770a60671a2361c0a660545",
+  "resource_finals": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid"
+  },
+  "assertions": [
+    "Effective host permission denial before deep capture; guest error and permission message displayed; Try again present and Reload page absent.",
+    "Lazy marker absent before retry.",
+    "After access restore, Try again cleared the error and exposed the lazy marker, preserving deep mode.",
+    "A second denial displayed the error and Dismiss cleared it.",
+    "Owned fixture origin and host access restored during cleanup."
+  ],
+  "write_observation": "No sign-in, save, delete, or organization-scoped operation is invoked by this guest driver; it uses an owned synthetic loopback page and temporarily changes only the disposable profile's extension site restriction. Backend request traffic was not retained or independently audited, so no general zero-network-write claim is made.",
+  "limitations": [
+    "Visible scrolling progress, full T02, full T14 including Reload page, default Chrome/Store, and member/admin remain unverified.",
+    "Screenshots are post-run generic panel and synthetic target captures; they do not depict the tested denial/retry states.",
+    "The downloaded report does not include Chrome version, extension runtime ID, explicit backend identity, or detailed permission inventory required for a fully populated build receipt."
+  ],
+  "evidence": {
+    "receipt": "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/receipt.sanitized.json",
+    "native_report": "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/native-report.sanitized.json",
+    "resource_journals": [
+      "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/resource-journals/hosted-package-38193004645-1.jsonl",
+      "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/resource-journals/hosted-browser-38193004645-1.jsonl",
+      "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/resource-journals/hosted-guest-38193004645-1.jsonl"
+    ],
+    "screenshots": [
+      "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/screenshots/sidepanel-post-run.png",
+      "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/screenshots/target-after-open.png"
+    ]
+  },
+  "cleanup": "Driver's native report indicates temporary site restriction reset and global host access restored; workflow completed at 2026-10-12T01:50:10Z and uploaded result artifact.",
+  "next_action": "Keep T02/T14 partial. Verify visible scrolling progress, warm/reload acceptance on a current artifact, other failure classes and T14 Reload page separately; default Chrome, Store-installed, member and admin remain unverified.",
+  "review_verdict": "PASS_BOUNDED_SUBTARGET",
+  "independent_review": "docs/stabilization/reports/guest-scrape-t02-current-runtime-peer-38193004645.json",
+  "inventory_credit": "Guest T02 receives bounded subtarget credit for effective host-permission denial, deep-mode Try again recovery with lazy marker, a separate denied state cleared by Dismiss, and cleanup. T02 and T14 remain partial/unverified beyond those exact targets."
+}

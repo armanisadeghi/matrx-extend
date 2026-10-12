@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T01:37:44Z",
+  "updated_at": "2026-10-12T02:10:00Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -22292,12 +22292,13 @@
               "resource_valid": true,
               "passed_subtargets": [
                 "Post-full-extension-reload deep recapture: lazy marker began absent, then appeared in both the owned page DOM and selected Article result; Scrolling progress was observed.",
-                "Frozen current-equivalent v0.2.500 guest deep permission denial followed by Try again preserved deep mode and recovered scroll-triggered lazy content; independently reviewed run 38163178453."
+                "Frozen current-equivalent v0.2.500 guest deep permission denial followed by Try again preserved deep mode and recovered scroll-triggered lazy content; independently reviewed run 38163178453.",
+                "Frozen current-equivalent v0.2.509 guest deep host-permission denial → Try again → lazy marker recovery, followed by a second denial → Dismiss and cleanup; independently reviewed run 38193004645."
               ],
               "unverified": [
-                "Warm deep capture is not proven by the latest current-equivalent run.",
-                "Visible scrolling progress during the failure/retry branch remains unverified; the current-equivalent retry result covers only the controlled host-permission denial class.",
-                "Other retry failure classes, member/admin, default Chrome, Store-installed, and full T02/Scrape acceptance remain unverified."
+                "Warm and reload deep capture are not proven by this run; earlier bounded reload evidence remains on v0.2.490.",
+                "Visible scrolling progress during the failure/retry branch and other retry failure classes remain unverified.",
+                "T14 Reload page recovery, default Chrome, Store-installed, member/admin, and full T02/Scrape acceptance remain unverified."
               ],
               "evidence": [
                 "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/receipt.sanitized.json",
@@ -22306,26 +22307,38 @@
                 "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/resource-journals/hosted-package-38105535841-1.jsonl",
                 "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/resource-journals/hosted-browser-38105535841-1.jsonl",
                 "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/resource-journals/hosted-guest-38105535841-1.jsonl",
-                "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/scrape-reload-deep-article.png"
+                "docs/stabilization/evidence/guest-scrape-t02-postreload/run38105535841/scrape-reload-deep-article.png",
+                "docs/stabilization/runs/guest-scrape-t02-current-runtime-run38193004645.json",
+                "docs/stabilization/reports/guest-scrape-t02-current-runtime-peer-38193004645.json",
+                "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/receipt.sanitized.json",
+                "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/native-report.sanitized.json",
+                "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/resource-journals/hosted-package-38193004645-1.jsonl",
+                "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/resource-journals/hosted-browser-38193004645-1.jsonl",
+                "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/resource-journals/hosted-guest-38193004645-1.jsonl",
+                "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/screenshots/sidepanel-post-run.png",
+                "docs/stabilization/evidence/guest-scrape-t02-current-runtime/run38193004645/screenshots/target-after-open.png"
               ],
               "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-run38105535841.json",
-              "detail": "Reviewed run 38105535841 passes guest post-extension-reload deep recapture on current-equivalent v0.2.490. Independently reviewed run 38163178453 adds the controlled guest deep permission-denial/Try again mode-preservation subtarget on frozen current-equivalent v0.2.500, replacing historical-only retry evidence from run 38044062561. Warm deep capture on the latest artifact, visible retry progress, other failure classes, and full T02 remain unverified.",
-              "release_scope": "Guest bounded development evidence: post-reload deep recapture on v0.2.490 and controlled deep permission-failure retry on frozen current-equivalent v0.2.500. Neither proves the complete T02 case, member/admin, default Chrome or Store-installed behavior.",
+              "detail": "Reviewed guest bounded deep-permission denial/retry recovery with lazy content, second-denial Dismiss, and cleanup on frozen v0.2.509 (run 38193004645). Earlier bounded post-extension-reload deep recapture remains on v0.2.490 (run 38105535841); retry mode-preservation is independently reviewed on v0.2.500 (run 38163178453). Warm/reload on the latest artifact, visible retry progress, other failure classes, and full T02 remain unverified.",
+              "release_scope": "Guest bounded development evidence only: post-reload deep recapture on v0.2.490; permission-denial/retry on v0.2.500; and denial/retry/lazy-marker/Dismiss/cleanup on frozen v0.2.509. No complete T02/T14, member/admin, default Chrome or Store-installed claim.",
               "current_retry_subtarget": {
-                "run_id": 38163178453,
+                "run_id": 38193004645,
                 "status": "bounded-pass",
-                "subtarget": "guest_deep_permission_failure_retry_preserves_deep_mode",
-                "source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
-                "workflow_source_sha": "c1b3baeda570e86f79e93b10892e5b3fcc9ccabe",
-                "development_ci_run_id": 38161635790,
-                "development_artifact_id": 11710458741,
-                "build_version": "0.2.500",
+                "subtarget": "guest_deep_permission_denial_try_again_lazy_marker_dismiss_cleanup",
+                "source_sha": "b92d4e2fa9e7861b228e3625fe258938253882fe",
+                "workflow_source_sha": "b68ba9eb597c88cbbed143fdf7ddf529f677eb58",
+                "development_ci_run_id": 38191947214,
+                "development_artifact_id": 11721887256,
+                "hosted_result_artifact_id": 11722192868,
+                "build_version": "0.2.509",
+                "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
                 "resource_valid": true,
-                "evidence": "docs/stabilization/runs/guest-scrape-t02-current-retry-run38163178453.json",
-                "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-current-run38163178453.json",
+                "evidence": "docs/stabilization/runs/guest-scrape-t02-current-runtime-run38193004645.json",
+                "independent_review": "docs/stabilization/reports/guest-scrape-t02-current-runtime-peer-38193004645.json",
                 "limitations": [
-                  "Visible scrolling progress on the failure/retry branch was not retained.",
-                  "T14 Reload page recovery, other failure classes, default Chrome, member/admin and Store-installed behavior remain unverified."
+                  "Visible scrolling progress, warm/reload acceptance, T14 Reload page recovery, other failure classes, default Chrome, Store-installed, member/admin, and full T02 remain unverified.",
+                  "Screenshots do not show denial/retry/Dismiss states; sequence is supported by source-bound assertions and structured native observations.",
+                  "Receipt omits Chrome version, extension runtime ID, explicit backend identity, and detailed permission inventory; no backend traffic audit was retained."
                 ]
               },
               "previous_bounded_result": {
@@ -22391,6 +22404,16 @@
                 ],
                 "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-crosscase-run38044062561.json",
                 "detail": "The reviewed T14 harness induced a real effective host-permission failure during a requested deep capture, then Try again recovered with the lazy marker in Article. This supports only deep-mode retry for guest on historical v0.2.459; visible progress and current-main behavior remain unverified."
+              },
+              "previous_current_retry_subtarget": {
+                "run_id": 38163178453,
+                "subtarget": "guest_deep_permission_failure_retry_preserves_deep_mode",
+                "status": "bounded-pass",
+                "source_sha": "01a6160208adadf321cba2f7a1a9283e733dddbe",
+                "development_ci_run_id": 38161635790,
+                "development_artifact_id": 11710458741,
+                "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-t02-current-run38163178453.json",
+                "evidence": "docs/stabilization/runs/guest-scrape-t02-current-retry-run38163178453.json"
               }
             },
             "member": {
