@@ -8,13 +8,16 @@
 
 import { getBackendUrl } from '@/config/backend';
 import {
-  describeStoredSession,
   getAccessToken,
-  getCurrentUser,
   getStoredAccessToken,
   getVerifiedCurrentUser,
   refreshAccessToken,
 } from '@/lib/auth/flow';
+import {
+  SessionNotReadyError,
+  awaitSessionReady,
+  currentBearerOrRefuse,
+} from '@/lib/api/session-credentials';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
@@ -108,51 +111,16 @@ const PRIVATE_REQUEST_CAP_BYTES = 32 * 1024;
  */
 export const STATUS_SESSION_NOT_READY = -3;
 
-export class SessionNotReadyError extends Error {
-  readonly remedy = 'Wait a moment and try again. If this keeps happening, sign out and back in.';
-  constructor() {
-    super('You are signed in, but your session is not ready yet, so this request was not sent.');
-    this.name = 'SessionNotReadyError';
-  }
-}
-
-/**
- * How a signed-in request waits for a readable bearer before refusing.
- * `getAccessToken()` is null for a signed-in install ONLY when the stored
- * token is outside its freshness margin AND the refresh call returned nothing
- * (no refresh material, or a non-terminal refresh failure such as a 5xx or a
- * rate limit — a terminal 400/401 signs the install out and removes the
- * profile). Each re-ask below is therefore a real refresh attempt against
- * Supabase, so they are FEW and SPACED, never a tight poll. Internal timing,
- * not a knob.
- */
-const SESSION_REASK_ATTEMPTS = 2;
-const SESSION_REASK_SPACING_MS = 1_000;
+export { SessionNotReadyError } from '@/lib/api/session-credentials';
 
 /**
  * The bearer for this request, or `null` ONLY when nobody is signed in on this
- * install. When a profile is stored (signed in) but no bearer is readable,
- * re-ask a bounded number of times; if it never comes, log WHY (facts, never
- * the token) and throw `SessionNotReadyError`.
+ * install; a signed-in install with no readable bearer waits (bounded) and is
+ * then refused with `SessionNotReadyError` — see session-credentials.ts.
  */
 export async function readSessionBearer(): Promise<string | null> {
-  const first = await getAccessToken();
-  if (first) return first;
-  const profile = await getCurrentUser();
-  if (!profile) return null;
-  for (let attempt = 0; attempt < SESSION_REASK_ATTEMPTS; attempt += 1) {
-    await new Promise((resolve) => setTimeout(resolve, SESSION_REASK_SPACING_MS));
-    const token = await getAccessToken();
-    if (token) return token;
-    if (!(await getCurrentUser())) return null; // signed out while waiting (terminal refresh failure)
-  }
-  const failure = new SessionNotReadyError();
-  log.error('api', 'signed in, but no bearer became readable — refusing to send as a guest', {
-    userId: profile.id,
-    session: await describeStoredSession(),
-    remedy: failure.remedy,
-  });
-  throw failure;
+  await awaitSessionReady();
+  return currentBearerOrRefuse();
 }
 
 /**
@@ -648,7 +616,9 @@ export async function privatePost<T>(opts: PrivatePostOptions<T>): Promise<Priva
   let response: Response;
   try {
     response = await bounded(
-      sendMatrxRequest(`${baseUrl}${opts.path}`, {
+      // Raw fetch ON PURPOSE: the package sender (0.1.10) forwards neither `redirect`
+      // nor `cache`, and this lane is sealed (`redirect: 'error'`, `cache: 'no-store'`).
+      fetch(`${baseUrl}${opts.path}`, {
         method: 'POST',
         headers,
         body,

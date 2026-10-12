@@ -125,7 +125,7 @@ describe('files through the shared request sender', () => {
     await expect(downloadFileBytes('file-verified', controller.signal)).rejects.toMatchObject({
       name: 'AbortError',
     });
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock).not.toHaveBeenCalled(); // an already-cancelled call never reaches the wire
   });
 
   it.each([403, 502])(

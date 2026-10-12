@@ -95,6 +95,6 @@ describe('a signed-in session never speaks as a guest', () => {
     expect(result.error).toMatch(/not ready yet/);
     expect(result.error).toMatch(/try again/i);
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(state.tokenReads).toBe(3); // one ask + two spaced re-asks
+    expect(state.tokenReads).toBe(4); // ready(): one ask + two spaced re-asks, then the refusing read
   }, 10_000);
 });
