@@ -10,7 +10,6 @@
  */
 
 import { getBackendUrl } from '@/config/backend';
-import { runOp } from '@/lib/api/matrx-api';
 import {
   awaitSessionReady,
   currentBearerOrRefuse,
@@ -150,7 +149,7 @@ export interface ApiRequestOptions {
 const ORG_EXEMPT_PATH_PREFIXES = ['/health', '/auth/'] as const;
 
 /** A hand-typed path (not in the generated contract) run through the same package wire. */
-function runPath<T>(
+async function runPath<T>(
   method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE',
   path: string,
   body: unknown,
@@ -166,6 +165,8 @@ function runPath<T>(
     o: exempt ? 'exempt' : 'optional',
     n: `ext.${method} ${path.split('?')[0]}`,
   } as const;
+  // Lazy: matrx-api imports this module's constants, so a static import would be a load cycle.
+  const { runOp } = await import('@/lib/api/matrx-api');
   return runOp((api, o) => api.call<T>(op, body === undefined ? {} : { body }, o), {
     ...opts,
     signal,

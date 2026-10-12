@@ -29,6 +29,18 @@ vi.mock('@/lib/api/client', () => ({
     return state.bearer;
   },
   SessionNotReadyError,
+  // The injector's header builder: bound actor -> bearer + org, nobody -> guest fingerprint.
+  buildHeaders: async (
+    extra: Record<string, string>,
+    bound?: { token: string; organizationId: string },
+  ) =>
+    bound
+      ? {
+          ...extra,
+          Authorization: `Bearer ${bound.token}`,
+          'X-Organization-Id': bound.organizationId,
+        }
+      : { ...extra, 'X-Fingerprint-ID': 'guest' },
 }));
 vi.mock('@/lib/auth/flow', () => ({
   getAccessToken: async () => state.bearer,
