@@ -18,7 +18,7 @@
   "sibling_census": "The published chat tarball contains two old logApiTarget imports, and current chat source has two corrected local imports. No extension host import of that symbol was found; repair belongs to the chat package release.",
   "severity": "S1: required extension build blocked",
   "priority": "P0",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "package_graph_sol_retry",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274879341: WXT MISSING_EXPORT on both published chat thunk paths against API 0.1.10.",
@@ -28,7 +28,9 @@
     "Automatic publish run 38269271283 uploaded https://github.com/AI-Matrix-Engine/aidream/actions/runs/38269271283/artifacts/11759245545 (npm-tarball-chat-0.8.65). The contained TGZ SHA-512 is ZcFEE0L0kOYEA+D23xDxoIdBerwANrOsWSRU291lWbXTKgWJPxp38YuQWRnprFSgS5ECmUAiKV0NpwTUQDP1Tg==, exactly matching npm dist.integrity. A later real npm pack fetched the same SHA-512 from the registry; both thunk files import ../../../../host/log-api-target.js.",
     "Latest-only extension lockfile refresh resolves chat 0.8.65, agents 0.59.77 and associations 0.14.47 with no duplicate @ai-matrx package versions; frozen lockfile-only install passes. The published chat 0.8.65 tarball changelog and local agents/associations changelogs say no consumer action required. Fresh CI build remains pending.",
     "aidream .github/actions/npm-publish-one/action.yml Hold the lane until npm serves step checks npm metadata gitHead and dist-tag, but does not fetch dist.tarball; its green verdict can precede a usable tarball.",
-    "Published chat 0.8.64 dist files in the extension's installed node_modules match the CI failing import; API root has no logApiTarget export."
+    "Published chat 0.8.64 dist files in the extension's installed node_modules match the CI failing import; API root has no logApiTarget export.",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38277687185: exact-main 0b912a3fc215b840e803cb97ce82f9006c14e4e1 passed fresh install, Typecheck, Lint, unit suite, guest observer, WXT keyed development build, artifact provenance and resource guard. The prior MISSING_EXPORT did not reproduce. This is source/build evidence, not native guest or Store acceptance.",
+    "Independent Luna package graph review approved the latest-only 0.8.65 adoption and verified the fetched tarball exports and corrected local import targets. Development artifact 11759653605 was digest-verified and promoted from that run; receipt test-results/ci-dev-promotion-receipt.json identifies 0.2.509 and source/tree hashes. Chrome reload remains unverified."
   ],
   "build_receipt": {
     "source_sha": "fbd8713e7dba9732f5d880ca6e1f752f0b69ae55",
@@ -37,11 +39,14 @@
     "api_version": "0.1.10"
   },
   "reproducibility_count": "Exact-source CI WXT build failure 1/1; local published artifact inspected",
-  "fix_commits": ["aidream source 9a02a81c6a (included in published chat 0.8.65)"],
-  "original_retest_runs": [],
-  "surrounding_case_runs": [],
-  "reviewer": null,
-  "next_action": "Independent review of the chat 0.8.65 package adoption and source evidence, then exact-path commit/push and automatic exact-source CI WXT build. Native acceptance remains open. Do not dispatch/publish while spend gate is red.",
+  "fix_commits": [
+    "aidream source 9a02a81c6a (included in published chat 0.8.65)",
+    "matrx-extend b8b89aa66"
+  ],
+  "original_retest_runs": [38277687185],
+  "surrounding_case_runs": [38277340923, 38277687185],
+  "reviewer": "Independent Luna package graph review A/A of the published tarball, latest-only lockfile and exact-source build plan; exact CI later passed.",
+  "next_action": "Build defect closed only. Native guest/member behavior, Store ZIP scan, dashboard state and release gates remain separate open work. Do not dispatch/publish while spend gate is red.",
   "transition_history": [
     {
       "at": "2026-10-12T16:13:34Z",
@@ -60,6 +65,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Automatic chat 0.8.65 publish became fetchable; inspected registry tarball, then prepared latest-only lockfile adoption. CI build and native gates remain open."
+    },
+    {
+      "at": "2026-10-12T16:38:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Reviewed chat 0.8.65 lockfile adoption and automatic exact-source WXT CI succeeded."
+    },
+    {
+      "at": "2026-10-12T16:38:00Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "The original MISSING_EXPORT did not reproduce in 38277687185; fresh install, Typecheck, Lint, unit suite, guest observer, WXT build, provenance and resource guard passed."
+    },
+    {
+      "at": "2026-10-12T16:38:00Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Build-only defect independently reviewed and exact-source WXT retest passed; runtime and Store acceptance remain open separately."
     }
   ]
 }
