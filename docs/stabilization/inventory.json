@@ -1992,6 +1992,9 @@
           "control_mapping_evidence": [
             ".research/remaining-control-links-20261008.json",
             ".research/remaining-control-links-peer-20261008-1518.json"
+          ],
+          "defect_ids": [
+            "EXT-D-0209"
           ]
         },
         {
