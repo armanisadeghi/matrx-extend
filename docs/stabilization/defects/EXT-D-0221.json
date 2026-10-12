@@ -56,12 +56,22 @@
   "source_verification": {
     "run_id": "ext-d-0221-native-20261012",
     "evidence": "docs/stabilization/runs/ext-d-0221-native-20261012.json",
-    "native_acceptance": "The guarded exact-source runner accepted and recorded the true CI promotion receipt, verifying the original provenance-gate defect. It then stopped before browser startup because MATRX_PLAYWRIGHT_MODULE was absent. No T04/T05 product behavior was exercised; no retest-pass or closure is claimed.",
+    "native_acceptance": "The 2026-10-12 guarded exact-source runner accepted and recorded the true CI promotion receipt, verifying the original provenance-gate defect, then stopped before browser startup because MATRX_PLAYWRIGHT_MODULE was absent. The 2026-10-13 fresh guarded runner again accepted the same exact CI promotion receipt and reached the admin Screenshots UI. T04 stopped after Files navigation when the completed real GET contained the owned row but the restored gallery rendered zero cards; T05 was not reached. No T04/T05 retest-pass or D221 closure is claimed. See docs/stabilization/runs/ext-d-0221-admin-native-20261013-01.json.",
+    "latest_native_attempt": {
+      "run_id": "ext-d-0221-admin-native-20261013-01",
+      "guard_admitted": true,
+      "resource_invalid": false,
+      "source_and_promotion_identity": "accepted",
+      "admin_product_result": "unverified; restored gallery card assertion failed after Files navigation",
+      "public_share": "not reached",
+      "owned_fixture_row_cleanup": "unverified; row may remain",
+      "evidence": "docs/stabilization/reports/ext-d-0221-admin-native-20261013-01.json"
+    },
     "independent_review": "PASS: docs/stabilization/reports/ext-d-0221-independent-review-20261012.json",
     "fix_commits": ["a10bd7fd3"],
     "release": "not assessed"
   },
-  "next_action": "A later owner-coordinated native attempt must provide the supported Playwright runtime path, then exercise the actual Screenshots cases. Keep EXT-F-1009 T04/T05 unverified until real UI behavior is observed and independently reviewed.",
+  "next_action": "Resolve run-owned fixture-row cleanup and the restored-gallery mismatch through owner-coordinated work, then use a separately admitted, independently reviewed native retest for complete admin T04/T05. Keep member T04/T05 unverified. The D221 provenance gate remains fixed; this native result does not close D221 or establish a Screenshots retest pass.",
   "transition_history": [
     {
       "at": "2026-10-12T22:53:37.651Z",
