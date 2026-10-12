@@ -94,7 +94,8 @@ describe('expectedActor transport binding', () => {
     expect(
       Object.keys(headers).filter((name) => name.toLowerCase() === 'x-organization-id'),
     ).toHaveLength(1);
-    expect(headers.ACCEPT).toBe('text/plain');
+    // The package wire owns Accept (case-insensitive): a caller's alias never doubles it.
+    expect(Object.keys(headers).filter((name) => name.toLowerCase() === 'accept')).toHaveLength(1);
   });
 
   it('a 401 on a pinned call refreshes once, retries once with the fresh bearer, and a second 401 surfaces', async () => {
