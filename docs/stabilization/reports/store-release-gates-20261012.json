@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-10-12T14:56:34Z",
+  "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "public_listing": {
+    "method": "Direct read-only HTTPS, no-cache request",
+    "http_status": 200,
+    "response_date": "Mon, 12 Oct 2026 14:56:34 GMT",
+    "cache_control": "no-cache, no-store, max-age=0, must-revalidate",
+    "rendered_details_version": "0.2.205",
+    "embedded_manifest_version": "0.2.205",
+    "private_review_state_proven": false
+  },
+  "private_dashboard": {
+    "fresh_check_performed": false,
+    "state": "unverified",
+    "reason": "Existing Browser Use extensions-gallery refusal remains binding; no alternate UI bypass, credential retrieval, or speculative Store API request attempted.",
+    "live_two_step_verification_challenge_reached": false
+  },
+  "hosted_release": {
+    "last_run_id": 38080281242,
+    "last_run_created_at": "2026-10-10T19:33:33Z",
+    "last_run_conclusion": "success",
+    "last_confirmed_version": "0.2.479",
+    "new_dispatch": false,
+    "replacement_store_zip": "not built or scanned",
+    "resubmission": false
+  },
+  "gates": {
+    "command": "python3 scripts/check_workflow_runner_cost.py",
+    "exit_code": 1,
+    "modeled_billed_usd_per_week": 284.4,
+    "ceiling_usd_per_week": 100,
+    "aidream_usd_per_week": 250.04,
+    "matrx_local_usd_per_week": 34.36,
+    "matrx_extend_usd_per_week": 0,
+    "additional_failure": "matrx-local/scripts/check_workflow_runner_cost.py differs from matrx-extend guard",
+    "billing_endpoint": {
+      "path": "/organizations/AI-Matrix-Engine/settings/billing/usage?month=10&year=2026",
+      "actions_net_amount_sum": 0,
+      "meaning": "Separate October endpoint result, not proof that the mandatory modeled weekly cost gate passes."
+    }
+  },
+  "source_snapshot": {
+    "origin_main": "6522427bb0c7e3620a187cdb2c7a123992036782",
+    "ci_run": 38266455996,
+    "ci_status": "queued",
+    "focused_run": 38266455773,
+    "focused_status": "in_progress",
+    "snapshot_is_candidate_acceptance": false
+  },
+  "next_action": "Clear the shared modeled-spend and guard-drift failures; obtain exact primary-item private status through permitted authenticated access; then guarded hosted release, exact ZIP gates and guest/non-admin acceptance before resubmission.",
+  "no_local_build_release": true,
+  "new_schedule": false
+}
