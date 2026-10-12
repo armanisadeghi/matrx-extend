@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-12T20:27:37Z",
+  "kind": "ci_development_test_artifact_scan",
+  "eligible_store": false,
+  "publish_state": "not_published",
+  "repository": "armanisadeghi/matrx-extend",
+  "workflow": ".github/workflows/ci.yml",
+  "run_id": 38301959261,
+  "run_attempt": 1,
+  "artifact_id": 11771632770,
+  "source_sha": "0c4ecdce25ff06dbc25db72f277cce75bb9c6a2b",
+  "source_claim": "current_pushed_source",
+  "version": "0.2.509",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "github_artifact_digest": "sha256:b28f21373d429475b359b6d6bf8543e13414d24a8a2c749905692a707269753d",
+  "tree_sha256": "0f1e05b5f8ba31bcec591d657ac7524fce7fe111fbb4628bf6ee606173980a2c",
+  "artifact_directory": "test-results/ci-artifacts/0c4ecdce25ff06dbc25db72f277cce75bb9c6a2b/38301959261-1",
+  "emitted_javascript_files": 1059,
+  "scans": [
+    {
+      "target": "known rejected jsPDF cdnjs/PDFObject executable loader",
+      "detector": "scripts/detect-remote-script-loader.mjs: containsScriptSrcLoader; matches an assigned variable receiving createElement('script'), then requires that same variable's .src assignment and appendChild within the next 2000 source characters. Handles minified identifier characters including $. This is the exact emitted-code detector used by the release risk gate.",
+      "matches": 0,
+      "finding_files": []
+    },
+    {
+      "target": "tldraw Gist srcDoc remote-script path",
+      "detector": "For each emitted JS/MJS file, flagged only when all three heuristics were present: a gist.github.com URL, a srcDoc/srcdoc assignment, and either a literal script tag with src or createElement('script') followed within 500 characters by .src assignment.",
+      "matches": 0,
+      "finding_files": []
+    }
+  ],
+  "verification": {
+    "import_command": "node scripts/current-test-artifact.mjs import 38301959261 11771632770",
+    "import_result": "DEVELOPMENT_TEST_IMPORTED ... current_pushed_source",
+    "provenance_and_github_digest_verified_by_importer": true,
+    "complete_tree_hash_verified_by_importer": true,
+    "promotion_or_local_build_performed": false,
+    "chrome_ui_or_runtime_check_performed": false
+  },
+  "limitations": [
+    "This is a GitHub CI development artifact, not a Store ZIP; it does not approve a Store release.",
+    "No Chrome UI or runtime behavior was checked.",
+    "The Gist scan is a transparent heuristic over emitted strings and can miss obfuscated, computed, or structurally different loaders."
+  ],
+  "next_action": "Scan the exact candidate Store ZIP with the Store release gate before any Store approval or submission."
+}
