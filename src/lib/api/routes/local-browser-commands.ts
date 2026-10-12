@@ -3,7 +3,7 @@ import {
   type PrivateExpectedActor,
   parseStrictPrivateJson,
   privatePost,
-} from '@/lib/api/client';
+} from '@/lib/api/private-client';
 import {
   evaluatedObservation,
   parseVerificationFields,

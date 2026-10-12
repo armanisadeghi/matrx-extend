@@ -2,8 +2,8 @@ import {
   type PrivateApiResult,
   type PrivateExpectedActor,
   getPrivateExpectedActor,
-} from '@/lib/api/client';
-import { parseStrictPrivateJson } from '@/lib/api/client';
+} from '@/lib/api/private-client';
+import { parseStrictPrivateJson } from '@/lib/api/private-client';
 import {
   type LocalBrowserAckResponse,
   type LocalVerifyResponse,

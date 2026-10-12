@@ -1,4 +1,4 @@
-import { parseStrictPrivateJson } from '@/lib/api/client';
+import { parseStrictPrivateJson } from '@/lib/api/private-client';
 import { localBrowserDocumentId } from '@/lib/api/routes/local-browser-document-id';
 import { isLowercaseUuidShape } from '@ai-matrx/kit/uuid';
 import { z } from 'zod';

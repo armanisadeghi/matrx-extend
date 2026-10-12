@@ -1,7 +1,7 @@
 import type { DetachedWindowAPI } from 'happy-dom';
 import { describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/lib/api/client', () => ({
+vi.mock('@/lib/api/private-client', () => ({
   getPrivateExpectedActor: vi.fn(),
   parseStrictPrivateJson: (source: string) => {
     try {

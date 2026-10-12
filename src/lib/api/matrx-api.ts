@@ -15,6 +15,7 @@ import {
   STATUS_INVALID_BODY,
   STATUS_NO_ORGANIZATION,
   STATUS_SESSION_NOT_READY,
+  withoutOwnedHeaders,
 } from '@/lib/api/client';
 import {
   SESSION_READY_TIMEOUT_MS,
@@ -45,6 +46,7 @@ import {
   type CreateApiOptions,
   MatrxApiError,
   OrganizationContextError,
+  applyOrganizationContextHeader,
   createApi,
   isNetError,
 } from '@ai-matrx/api';
@@ -154,12 +156,12 @@ async function announceUnauthorized(): Promise<void> {
  */
 export async function runOp<T>(
   call: (api: Api, options: CallOptions) => Promise<T>,
-  opts: ApiRequestOptions & { signal?: AbortSignal | undefined } = {},
+  opts: ApiRequestOptions & { signal?: AbortSignal | undefined; orgForUsers?: boolean } = {},
 ): Promise<ApiResult<T>> {
   currentBase = await getBackendUrl();
   const options: CallOptions = {
     ...(opts.signal ? { signal: opts.signal } : {}),
-    ...(opts.headers ? { headers: opts.headers } : {}),
+    ...(opts.headers ? { headers: withoutOwnedHeaders(opts.headers) } : {}),
     ...(opts.timeoutMs !== undefined ? { totalTimeoutMs: opts.timeoutMs } : {}),
   };
   const pinned = opts.expectedActor ? await pinnedApi(opts.expectedActor) : null;
@@ -168,10 +170,14 @@ export async function runOp<T>(
   }
   const api = pinned ?? getMatrxApi();
   const attempt = async (): Promise<T> => {
-    const organizationId =
+    let organizationId =
       opts.expectedActor?.organizationId ??
       opts.organizationId ??
       (await getActiveOrganizationId());
+    if (!organizationId && opts.orgForUsers && (await currentBearerOrRefuse()))
+      organizationId = await requireActiveOrganizationId();
+    // An optional-org operation does not validate; a hand-typed path must (fail closed on a corrupt id).
+    if (organizationId && opts.orgForUsers) applyOrganizationContextHeader({}, organizationId);
     return call(api, { ...options, ...(organizationId ? { organizationId } : {}) });
   };
   try {

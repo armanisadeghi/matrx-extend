@@ -37,7 +37,7 @@ vi.mock('@/lib/debug/log', () => ({
 vi.mock('@/lib/messaging/native', () => ({ broadcast: vi.fn() }));
 
 import { z } from 'zod';
-import { getPrivateExpectedActor, parseStrictPrivateJson, privatePost } from './client';
+import { getPrivateExpectedActor, parseStrictPrivateJson, privatePost } from './private-client';
 import { acknowledgeLocalBrowser, verifyLocalBrowser } from './routes/local-browser';
 
 const expectedActor = { userId: state.user, organizationId: state.org, sessionId: 'session-a' };
