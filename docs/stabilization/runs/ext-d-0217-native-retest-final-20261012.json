@@ -32,7 +32,7 @@
     "tree_sha256_from_promotion_receipt": "feeeace4f3f6ec91eb3319fe412c77ce63e018f0582eae58e4d7714bd499c173",
     "runtime_binding": "not observed; Chrome was not opened"
   },
-  "browser": {"opened": false, "profile": null, "fixture": null, "inspectable_ui_artifact": null},
+  "browser": { "opened": false, "profile": null, "fixture": null, "inspectable_ui_artifact": null },
   "behavior_observed": false,
   "api_only": false,
   "blocked_cases": ["EXT-F-1007-T05", "EXT-F-1007-T06", "EXT-F-1007-T07", "EXT-F-1007-T08"],

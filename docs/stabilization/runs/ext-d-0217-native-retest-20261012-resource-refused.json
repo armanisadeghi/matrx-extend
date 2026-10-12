@@ -42,10 +42,14 @@
     "reason": "The guarded browser resource preflight refused; no browser/profile action was taken."
   },
   "cases": [
-    {"case_id":"EXT-F-1007-T05","verdict":"blocked","detail":"Neither clean-guest behavior nor stale-profile reproduction was tested. Save, Retry, warm/reload retention, sign-in remedy, membership access, no-Source-landed behavior, and signed-in Retry landing are all unobserved in this run."},
-    {"case_id":"EXT-F-1007-T06","verdict":"blocked","detail":"Not tested."},
-    {"case_id":"EXT-F-1007-T07","verdict":"blocked","detail":"Not tested."},
-    {"case_id":"EXT-F-1007-T08","verdict":"blocked","detail":"Not tested."}
+    {
+      "case_id": "EXT-F-1007-T05",
+      "verdict": "blocked",
+      "detail": "Neither clean-guest behavior nor stale-profile reproduction was tested. Save, Retry, warm/reload retention, sign-in remedy, membership access, no-Source-landed behavior, and signed-in Retry landing are all unobserved in this run."
+    },
+    { "case_id": "EXT-F-1007-T06", "verdict": "blocked", "detail": "Not tested." },
+    { "case_id": "EXT-F-1007-T07", "verdict": "blocked", "detail": "Not tested." },
+    { "case_id": "EXT-F-1007-T08", "verdict": "blocked", "detail": "Not tested." }
   ],
   "api_only": false,
   "credentials_or_auth_values_recorded": false,
