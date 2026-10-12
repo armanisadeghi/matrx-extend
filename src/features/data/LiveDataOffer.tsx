@@ -14,6 +14,7 @@ import {
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { Loader2, Table2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { formatCount } from '@ai-matrx/kit/format';
 
 /**
  * "Get as table" — offered when the current page belongs to a live-data source in the server's
@@ -105,7 +106,7 @@ export function LiveDataOffer({ url, signedIn }: { url: string; signedIn: boolea
         </label>
         {limit && <span className="text-muted-foreground">limit {limit.value}</span>}
         <span className="ml-auto text-muted-foreground" data-testid="live-data-points">
-          {points == null ? 'cost shown after run' : `about ${points.toLocaleString()} points`}
+          {points == null ? 'cost shown after run' : `about ${formatCount(points)} points`}
         </span>
       </div>
       <Button size="sm" className="h-7 w-full rounded-full text-xs" disabled={busy} onClick={run}>
