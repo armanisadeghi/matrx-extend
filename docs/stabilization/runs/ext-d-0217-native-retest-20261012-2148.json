@@ -52,6 +52,7 @@
   },
   "credentials_or_auth_values_recorded": false,
   "raw_network_or_transcript_recorded": false,
-  "product_verdict": null,
+  "product_credit": "zero; the environment blocker occurred before any product interaction",
+  "product_verdict": "none",
   "next_action": "Repeat only in a fresh guarded browser run when the authorized Chrome controller can inspect the loaded extension details page; first bind the exact runtime artifact and profile, then perform the bounded guest Save/Retry steps with inspectable sanitized evidence."
 }
