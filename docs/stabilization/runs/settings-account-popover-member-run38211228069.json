@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "id": "settings-account-popover-member-run38211228069",
+  "created_at_utc": "2026-10-12T06:21:50Z",
+  "feature_id": "EXT-F-1001",
+  "status": "independently_reviewed_limited_pass",
+  "scope": "Guarded ordinary-member T20/T23/T26 acceptance only. Independent reviewer accepted the three native cases. No broader Settings or role coverage.",
+  "hosted_run_id": 38211228069,
+  "hosted_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38211228069",
+  "workflow_source_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+  "inputs": {
+    "acceptance_lane": "A",
+    "acceptance_case": "settings-account-popover-member",
+    "runner_label": "macos-15-intel",
+    "development_run_id": 38210411822,
+    "development_artifact_id": 11728859637
+  },
+  "frozen_product": {
+    "source_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+    "ci_run_id": 38210411822,
+    "artifact_id": 11728859637,
+    "artifact_digest": "sha256:63571e95aa65aefaee4482c258db56e98457f7b9651f7973afcc82da8e65c7e4"
+  },
+  "result_artifact": {
+    "artifact_id": 11730125397,
+    "name": "hosted-guest-38211228069-1",
+    "digest": "sha256:01e929711ab08891027ce6df507555fee33787a20d9aa0c4110eb3e59e71091b"
+  },
+  "terminal": {
+    "workflow_status": "completed",
+    "workflow_conclusion": "success",
+    "last_safe_stage": "strict_verification_pass"
+  },
+  "cases": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+  "evidence": [
+    "docs/stabilization/reports/settings-account-popover-member-run38211228069.json",
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/settings-account-popover-member-run38211228069.json",
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/settings-account-popover-member.json",
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/native-side-panel.png",
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/normal-target-after-open.png"
+  ],
+  "independent_review": "Independent reviewer reported limited PASS for T20/T23/T26 at approximately 06:23 UTC; no separate review artifact. Strict-verifier replay was not performed; screenshots show startup only; cleanup claims remain receipt-level."
+}

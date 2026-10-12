@@ -1,0 +1,69 @@
+{
+  "report_id": "notes-t02-fixture-path-20261012",
+  "scope": "Read-only fixture-path investigation for EXT-D-0201 and the remaining Notes T02 member move retest",
+  "status": "fixture_path_identified_current_live_state_unmeasured",
+  "canonical_reads": {
+    "scope_tree": {
+      "rpc": "custom.context_tree",
+      "args": "p_organization_ids: [selectedOrganizationId]",
+      "source": [
+        "aidream/db-contract/custom.json:5640-5668",
+        "aidream/apps/shared/records/src/scopes/doors.ts:198-210",
+        "tests/browser/notes-find-native-case.mjs:21-58"
+      ],
+      "use": "Authenticated, stable tree of types and scopes for the explicitly selected organization."
+    },
+    "scope_types": {
+      "rpc": "custom.context_tree_types",
+      "args": "p_organization_ids: [selectedOrganizationId], p_with_counts: false",
+      "source": [
+        "aidream/db-contract/custom.json:5755-5789",
+        "aidream/apps/shared/records/src/scopes/doors.ts:213-220"
+      ]
+    },
+    "homes": {
+      "rpc": "platform.my_homes",
+      "args": "{}",
+      "source": ["aidream/db-contract/platform.json:14221-14275"],
+      "use": "Read synthetic General homes as well as materialized homes; match rows to selected organization in memory."
+    },
+    "read_transport": "Authenticated RPC POST with Content-Profile and Accept-Profile set to the owning schema and X-Organization-Id set to the selected organization. Do not treat a 404 from a noncanonical table/view REST path as evidence that the type or scope is absent."
+  },
+  "evidence": {
+    "prior_observation": "Run 38202446117 authenticated as a non-admin member. platform.my_homes returned one canonical General with null scope_id, while custom.context_tree returned zero selected-org scopes and zero selected-org types. The harness stopped before Notes UI or fixture writes.",
+    "prior_source": [
+      "docs/stabilization/runs/notes-find-member-run38202446117.json:13-20",
+      "docs/stabilization/reports/notes-find-member-run38197849070.json:127-128"
+    ],
+    "current_state": "No current same-org live RPC read was made in this investigation. Whether the selected organization now has a type or materialized home is unmeasured; the prior zero-type result does not establish current state."
+  },
+  "fixture_path": {
+    "when_general_type_exists": "Read the selected-org tree and homes, confirm exactly one canonical General with a valid scope_type_id and a matching type in that organization, then create uniquely named, run-owned child scopes under that type through custom.context_scope_write. Pass p_organization_id explicitly. Its arguments and same-org authorization contract are in aidream/db-contract/custom.json:5369-5460; the native helper pattern is tests/browser/notes-find-native-case.mjs:61-108.",
+    "when_no_type_exists": "Do not run the current home fixture helper: its precondition requires a materialized General and matching type. A separately authorized fixture setup would first create an owned organization type via custom.context_type_write, then owned scopes; its explicit-org contract is in aidream/db-contract/custom.json:5854-5915. This investigation performed no such writes.",
+    "note_move_retest": "Create the owned test note through the Notes UI, preserve its returned exact note UUID in the private recovery ledger, move it through the Notes home picker to a run-owned explicit home, then verify the displayed home, persistence after reload, and list/search behavior. The source move uses platform.set_home through src/lib/notes/queries.ts:56-80; the canonical door contract is aidream/db-contract/platform.json:19022-19120."
+  },
+  "cleanup": {
+    "required_order": "Delete every run-owned note by its exact recorded UUID through the Notes UI and verify it is absent; only after all owned notes are confirmed deleted, archive only the exact run-owned scope UUIDs and verify they are absent from the selected-org tree. Retain the private recovery ledger if any cleanup is pending; never delete or archive by title alone or touch General/pre-existing scopes.",
+    "source": [
+      "tests/browser/notes-find-native-case.mjs:987-1045",
+      "tests/browser/notes-find-fixture.mjs:115-121"
+    ],
+    "ledger": "Existing writer uses mode 0600 and stores owned IDs and synthetic fixture titles, not note bodies or auth material."
+  },
+  "lazy_general_limit": "A note created through the Notes UI initializes General. Moving that note to an owned custom home tests move/persistence and cleanup, but cannot reproduce moving to the still-lazy synthetic General. The lazy-General picker-only subtarget is separately covered by run 38204518274; the original move-to-lazy-General behavior remains unmeasured.",
+  "cross_organization_retest_candidate": {
+    "status": "source_and_live_contract_supported_not_runtime_verified",
+    "strategy": "With a member account that belongs to two disposable test organizations, create an owned note through the Notes UI while the source organization is active; that materializes only the source General. Confirm the target organization's General remains synthetic with null scope_id through platform.my_homes and has no scope in custom.context_tree. Switch the active organization to the target, open the owned source note from the cross-organization Notes list, then choose the target synthetic General in the editor. Verify that ensure_general_scope materializes the target General only on selection, set_home changes the note's organization and home together, and the result survives reload and appears in the target list/filter/search. Delete the exact run-owned note and verify absence. Use only a disposable target organization because materializing its General is an intentional lasting write, not a run-owned scope that can be archived.",
+    "preconditions": "The test member must own the source note and be a current member of both source and target organizations; target General must still be lazy at the time of the move. The selected-org membership and target lazy state have not been checked live in this investigation.",
+    "evidence": "At 2026-10-12T06:31Z, a read-only live pg_get_functiondef(platform.set_home) query through the canonical admin-query operator showed cross-organization moves require owner or full access plus membership in both organizations, and update home_scope_id and organization_id in one write. Extension listMyNotes reads the owner-visible list without active-org filtering (src/lib/notes/queries.ts); listHomeChoices includes synthetic General (src/lib/homes/queries.ts); createNote writes the active org without a home (src/lib/notes/queries.ts). No move or fixture write was performed.",
+    "unverified": "The account's two-org fixture availability, target lazy state, actual UI move, persistence, surrounding Notes cases, and cleanup are unverified. This is a candidate procedure, not a product pass."
+  },
+  "changes": {
+    "database_writes": 0,
+    "fixtures_created": 0,
+    "tests_launched": 0,
+    "secrets_logged": false,
+    "files_changed": ["docs/stabilization/reports/notes-t02-fixture-path-20261012.json"],
+    "inventory_or_coordinator_edited": false
+  }
+}

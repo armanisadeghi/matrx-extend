@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T04:50:10Z",
+  "updated_at": "2026-10-12T06:34:37Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -1505,11 +1505,17 @@
           "id": "EXT-F-0003-C12",
           "label": "Reject stale @ai-matrx package graph before expensive validation",
           "action": "Check package graph freshness first on each candidate; stop before unit/build/publication when stale."
+        },
+        {
+          "id": "EXT-F-0003-C13",
+          "label": "Reject remotely sourced executable code in the Store bundle",
+          "action": "Scan the exact emitted Store JavaScript, including transitive package chunks, and refuse upload when it can inject an executable script from a remote URL."
         }
       ],
       "source_anchors": [
         "release.sh",
-        "scripts/test-release-ship-path.sh"
+        "scripts/test-release-ship-path.sh",
+        "scripts/check-cws-release-risk.mjs"
       ],
       "dependency_class": "local",
       "wave": "A",
@@ -2105,6 +2111,44 @@
               "detail": "Shared auth-independent CI infrastructure: active main37102258819 and subsequent37102380063 finished successfully despite intervening pushes. Does not certify product or release gate health."
             }
           }
+        },
+        {
+          "id": "EXT-F-0003-T12",
+          "title": "Store package refuses the rejected remote script loader and preserves PDF output",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C13"
+          ],
+          "preconditions": [
+            "The repaired @ai-matrx/print package has passed its guarded hosted publish/build and the extension has adopted its latest published tarball on synchronized main."
+          ],
+          "steps": [
+            "Build the exact Store ZIP through the authorized guarded hosted release workflow.",
+            "Scan every emitted JavaScript chunk and the package tarball for the jsPDF PDFObject remote script loader and any unsanitized jsPDF import; require the Store risk gate to reject the old known-bad chunk.",
+            "Exercise the candidate's PDF Blob/save behavior and real guest and non-admin browser acceptance before upload.",
+            "Inspect the primary authenticated Store dashboard and submit only after the candidate and current submission state are verified."
+          ],
+          "expected": [
+            "The known-bad bundle fails the gate, the corrected package and Store ZIP contain no remote executable loader, PDF output still works, guest/member behavior passes, and the primary dashboard confirms a new pending submission."
+          ],
+          "results": {
+            "guest": {
+              "status": "unverified",
+              "detail": "Source gate detects the rejected chunk, but package publish was blocked before build; no corrected Store ZIP, guest browser acceptance or submission exists."
+            },
+            "member": {
+              "status": "unverified",
+              "detail": "Source gate detects the rejected chunk, but package publish was blocked before build; no corrected Store ZIP, non-admin browser acceptance or submission exists."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "Auth-independent package gate remains unverified on a corrected artifact; no admin browser acceptance or submission is claimed."
+            }
+          }
         }
       ],
       "cells": {
@@ -2123,7 +2167,8 @@
             "EXT-D-0092",
             "EXT-D-0116",
             "EXT-D-0140",
-            "EXT-D-0188"
+            "EXT-D-0188",
+            "EXT-D-0204"
           ],
           "run_ids": [
             "release-red-001",
@@ -2147,7 +2192,7 @@
             "release-stabilization-027",
             "37269797985"
           ],
-          "retest_status": "D140 closed after source02f2b67b, independentpeer a0e98cd1 and fullCI37269797985. Other release/runtime acceptance remains bounded by existing cases; no new productcasepass."
+          "retest_status": "D140 closed after source02f2b67b, independentpeer a0e98cd1 and fullCI37269797985. D0204 source repair and Store gate are peer-reviewed, but package publish, corrected Store ZIP, resubmission and retest are blocked/unverified; no new product case pass."
         },
         "member": {
           "test_status": "partial",
@@ -2164,7 +2209,8 @@
             "EXT-D-0092",
             "EXT-D-0116",
             "EXT-D-0140",
-            "EXT-D-0188"
+            "EXT-D-0188",
+            "EXT-D-0204"
           ],
           "run_ids": [
             "release-red-001",
@@ -2188,7 +2234,7 @@
             "release-stabilization-027",
             "37269797985"
           ],
-          "retest_status": "D140 closed after source02f2b67b, independentpeer a0e98cd1 and fullCI37269797985. Other release/runtime acceptance remains bounded by existing cases; no new productcasepass."
+          "retest_status": "D140 closed after source02f2b67b, independentpeer a0e98cd1 and fullCI37269797985. D0204 source repair and Store gate are peer-reviewed, but package publish, corrected Store ZIP, resubmission and retest are blocked/unverified; no new product case pass."
         },
         "admin": {
           "test_status": "partial",
@@ -2204,7 +2250,8 @@
             "EXT-D-0085",
             "EXT-D-0092",
             "EXT-D-0140",
-            "EXT-D-0188"
+            "EXT-D-0188",
+            "EXT-D-0204"
           ],
           "run_ids": [
             "release-red-001",
@@ -2228,7 +2275,7 @@
             "release-stabilization-027",
             "37269797985"
           ],
-          "retest_status": "D140 closed after source02f2b67b, independentpeer a0e98cd1 and fullCI37269797985. Other release/runtime acceptance remains bounded by existing cases; no new productcasepass."
+          "retest_status": "D140 closed after source02f2b67b, independentpeer a0e98cd1 and fullCI37269797985. D0204 source repair and Store gate are peer-reviewed, but package publish, corrected Store ZIP, resubmission and retest are blocked/unverified; no new product case pass."
         }
       },
       "readiness_gaps": [
@@ -3056,7 +3103,17 @@
           "dimensions": [
             "warm",
             "navigation"
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "pass",
+              "run_id": "38211228069",
+              "detail": "Independent peer accepted the bounded native member observation: Profile/Preferences/Sign out were present; Profile opened the active Profile pane with Back and Save while member identity remained signed in. Frozen exact-source development artifact only. Screenshots show startup, and strict-verifier replay was not independently performed.",
+              "evidence": "docs/stabilization/reports/settings-account-popover-member-run38211228069.json",
+              "source_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+              "workflow_source_sha": "5743859143df2c281f579dc0318a2787be4fb11b"
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T21",
@@ -3141,7 +3198,17 @@
           "dimensions": [
             "warm",
             "navigation"
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "pass",
+              "run_id": "38211228069",
+              "detail": "Independent peer accepted the bounded native member observation: Preferences selected exactly one active Settings pane while member identity remained signed in. Frozen exact-source development artifact only. Screenshots show startup, and strict-verifier replay was not independently performed.",
+              "evidence": "docs/stabilization/reports/settings-account-popover-member-run38211228069.json",
+              "source_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+              "workflow_source_sha": "5743859143df2c281f579dc0318a2787be4fb11b"
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T24",
@@ -3226,7 +3293,17 @@
           "dimensions": [
             "warm",
             "navigation"
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "pass",
+              "run_id": "38211228069",
+              "detail": "Independent peer accepted the bounded native member observation: Sign out cleared token/profile; reopened menu showed guest identity and omitted Profile; guest menu persisted after reopen. Frozen exact-source development artifact only. Cleanup is receipt-level only; screenshots show startup, and strict-verifier replay was not independently performed.",
+              "evidence": "docs/stabilization/reports/settings-account-popover-member-run38211228069.json",
+              "source_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+              "workflow_source_sha": "5743859143df2c281f579dc0318a2787be4fb11b"
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T27",
