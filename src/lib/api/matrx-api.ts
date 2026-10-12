@@ -201,3 +201,15 @@ export async function runOp<T>(
     };
   }
 }
+
+/**
+ * `runOp` for callers that own the response shape (a local interface or a zod
+ * schema validates it) — the generated result type is deliberately not trusted
+ * over the shape the caller already checks.
+ */
+export function runOpAs<T>(
+  call: (api: Api, options: CallOptions) => Promise<unknown>,
+  opts: ApiRequestOptions & { signal?: AbortSignal | undefined } = {},
+): Promise<ApiResult<T>> {
+  return runOp(call, opts) as Promise<ApiResult<T>>;
+}

@@ -13,7 +13,18 @@
  * under Level N. The backend tracks `capture_level` history per source.
  */
 
-import { apiGet, apiPatch, apiPost } from '@/lib/api/client';
+import { runOpAs } from '@/lib/api/matrx-api';
+import {
+  addSource as addSourceOp,
+  applySourceVerdict,
+  applySourceVerdictBulk,
+  extensionScrapeQueue,
+  findSourcesByUrl as findSourcesByUrlOp,
+  listUserTopics,
+  pasteContent,
+  submitExtensionContent as submitExtensionContentOp,
+  updateSource as updateSourceOp,
+} from '@ai-matrx/api/knowledge';
 import { ENRICH_GOALS, type EnrichGoal } from '@/lib/research/enrich-types';
 import { z } from 'zod';
 
@@ -146,7 +157,7 @@ export const ExtensionScrapeQueueSchema = z.object({
 export type ExtensionScrapeQueue = z.infer<typeof ExtensionScrapeQueueSchema>;
 
 export async function getExtensionScrapeQueue() {
-  const r = await apiGet<unknown>('/research/extension/scrape-queue');
+  const r = await runOpAs<unknown>((api, o) => extensionScrapeQueue(api, undefined, o));
   if (!r.ok) return r;
   const parsed = ExtensionScrapeQueueSchema.safeParse(r.data);
   if (!parsed.success) {
@@ -254,9 +265,15 @@ export async function submitExtensionContent(
   }
   if (extras.enrichGoal) body.enrich_goal = extras.enrichGoal;
 
-  return apiPost<ExtensionContentResponse>(
-    `/research/topics/${encodeURIComponent(topicId)}/sources/${encodeURIComponent(sourceId)}/extension-content`,
-    body,
+  return runOpAs<ExtensionContentResponse>((api, o) =>
+    submitExtensionContentOp(
+      api,
+      {
+        path: { topic_id: topicId, source_id: sourceId },
+        body: body as unknown as Parameters<typeof submitExtensionContentOp>[1]['body'],
+      },
+      o,
+    ),
   );
 }
 
@@ -271,9 +288,15 @@ export async function submitPasteContent(
   content: string,
   contentType = 'plain_text',
 ) {
-  return apiPost<unknown>(
-    `/research/topics/${encodeURIComponent(topicId)}/sources/${encodeURIComponent(sourceId)}/content`,
-    { content, content_type: contentType },
+  return runOpAs<unknown>((api, o) =>
+    pasteContent(
+      api,
+      {
+        path: { topic_id: topicId, source_id: sourceId },
+        body: { content, content_type: contentType },
+      },
+      o,
+    ),
   );
 }
 
@@ -301,9 +324,15 @@ export async function applyVerdict(
   verdict: UserVerdict,
   notes?: string,
 ) {
-  return apiPost<VerdictResponse>(
-    `/research/topics/${encodeURIComponent(topicId)}/sources/${encodeURIComponent(sourceId)}/verdict`,
-    notes ? { verdict, notes } : { verdict },
+  return runOpAs<VerdictResponse>((api, o) =>
+    applySourceVerdict(
+      api,
+      {
+        path: { topic_id: topicId, source_id: sourceId },
+        body: notes ? { verdict, notes } : { verdict },
+      },
+      o,
+    ),
   );
 }
 
@@ -345,13 +374,18 @@ export async function applyVerdictBulk(
   if (items.length === 0) return { succeeded: [], failed: [] };
 
   // 1) Atomic server path.
-  const bulk = await apiPost<BulkVerdictServerResponse>(
-    '/research/extension/sources/verdict_bulk',
-    {
-      source_ids: items.map((i) => i.sourceId),
-      verdict,
-      ...(notes ? { notes } : {}),
-    },
+  const bulk = await runOpAs<BulkVerdictServerResponse>((api, o) =>
+    applySourceVerdictBulk(
+      api,
+      {
+        body: {
+          source_ids: items.map((i) => i.sourceId),
+          verdict,
+          ...(notes ? { notes } : {}),
+        },
+      },
+      o,
+    ),
   );
   if (bulk.ok) {
     onProgress?.(items.length, items.length);
@@ -407,9 +441,15 @@ export async function updateSource(
   sourceId: string,
   updates: Partial<ResearchSource>,
 ) {
-  return apiPatch<ResearchSource>(
-    `/research/topics/${encodeURIComponent(topicId)}/sources/${encodeURIComponent(sourceId)}`,
-    updates,
+  return runOpAs<ResearchSource>((api, o) =>
+    updateSourceOp(
+      api,
+      {
+        path: { topic_id: topicId, source_id: sourceId },
+        body: updates as unknown as Parameters<typeof updateSourceOp>[1]['body'],
+      },
+      o,
+    ),
   );
 }
 
@@ -436,7 +476,7 @@ export const ResearchTopicSummarySchema = z.object({
 export type ResearchTopicSummary = z.infer<typeof ResearchTopicSummarySchema>;
 
 export async function listTopics() {
-  const r = await apiGet<unknown>('/research/topics');
+  const r = await runOpAs<unknown>((api, o) => listUserTopics(api, undefined, o));
   if (!r.ok) return r;
   const parsed = z.array(ResearchTopicSummarySchema).safeParse(r.data);
   if (!parsed.success) {
@@ -466,10 +506,16 @@ export async function addSourceToTopic(
    */
   topicOrganizationId?: string | null,
 ) {
-  return apiPost<ResearchSource>(
-    `/research/topics/${encodeURIComponent(topicId)}/sources`,
-    body,
-    undefined,
+  return runOpAs<ResearchSource>(
+    (api, o) =>
+      addSourceOp(
+        api,
+        {
+          path: { topic_id: topicId },
+          body: body as unknown as Parameters<typeof addSourceOp>[1]['body'],
+        },
+        o,
+      ),
     topicOrganizationId ? { organizationId: topicOrganizationId } : undefined,
   );
 }
@@ -487,7 +533,7 @@ export type SourceUrlMatch = z.infer<typeof SourceUrlMatchSchema>;
  * the "already in: X" inline hint.
  */
 export async function findSourcesByUrl(url: string) {
-  const r = await apiGet<unknown>(`/research/sources/by-url?url=${encodeURIComponent(url)}`);
+  const r = await runOpAs<unknown>((api, o) => findSourcesByUrlOp(api, { query: { url } }, o));
   if (!r.ok) return r;
   const parsed = z.object({ matches: z.array(SourceUrlMatchSchema) }).safeParse(r.data);
   if (!parsed.success) {
