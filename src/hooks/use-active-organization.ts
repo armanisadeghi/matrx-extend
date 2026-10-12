@@ -16,7 +16,7 @@ import {
 import { onChange } from '@/lib/storage/chrome-local';
 import { useAuthStore } from '@/state/auth';
 import { type ArchiveFilterValue, DEFAULT_ARCHIVE_FILTER } from '@ai-matrx/design-system';
-import { useCallback, useEffect, useState } from 'react';
+import { useActiveOrganizationView as useAuthActiveOrganizationView } from '@ai-matrx/auth/react';
 
 export interface UseActiveOrganizationResult {
   /** The organization every request carries (the load ladder's answer); null only for zero memberships or signed out. */
@@ -32,68 +32,24 @@ export interface UseActiveOrganizationResult {
   reload: () => void;
 }
 
+const subscribeToSelection = (reload: () => void): (() => void) =>
+  onChange(STORAGE_KEYS.ACTIVE_ORGANIZATION, () => reload());
+
 export function useActiveOrganization(
   archiveFilter: ArchiveFilterValue = DEFAULT_ARCHIVE_FILTER,
 ): UseActiveOrganizationResult {
   const user = useAuthStore((s) => s.user);
-  const [active, setActive] = useState<MemberOrganization | null>(null);
-  const [organizations, setOrganizations] = useState<MemberOrganization[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [nonce, setNonce] = useState(0);
-
-  const reload = useCallback(() => setNonce((n) => n + 1), []);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!user) {
-      setActive(null);
-      setOrganizations([]);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-    setLoading(true);
-    void (async () => {
-      try {
-        const [resolved, all] = await Promise.all([
-          resolveActiveOrganization(),
-          listMemberOrganizations(archiveFilter),
-        ]);
-        if (cancelled) return;
-        setActive(resolved);
-        setOrganizations(all);
-        setError(null);
-      } catch (err) {
-        if (cancelled) return;
-        // A read failure is NOT "no organization" — saying so would send the
-        // user hunting for a setting when the real problem is the network.
-        setError(err instanceof Error ? err.message : String(err));
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [user, nonce, archiveFilter]);
-
-  // Another context (the service worker clearing a stale selection, a second
-  // sidepanel) can change the active organization under us.
-  useEffect(() => onChange(STORAGE_KEYS.ACTIVE_ORGANIZATION, () => reload()), [reload]);
-
-  const choose = useCallback(async (organizationId: string) => {
-    const chosen = await setActiveOrganization(organizationId);
-    setActive(chosen);
-  }, []);
-
-  return {
-    active,
-    organizations,
-    loading,
-    error,
-    mustChoose: !!user && !loading && !error && !active,
-    choose,
-    reload,
-  };
+  // The state machine (load, error vs none, must-choose, choose, reload) is the package's; this
+  // injects the extension's own reads so the UI and the request kernel resolve through ONE function.
+  const view = useAuthActiveOrganizationView<MemberOrganization>({
+    signedIn: !!user,
+    resolve: resolveActiveOrganization,
+    list: () => listMemberOrganizations(archiveFilter),
+    choose: setActiveOrganization,
+    deps: [user, archiveFilter],
+    // Another context (the service worker clearing a stale selection, a second sidepanel) can
+    // change the active organization under us.
+    subscribe: subscribeToSelection,
+  });
+  return { ...view, organizations: [...view.organizations] };
 }

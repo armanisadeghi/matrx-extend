@@ -26,7 +26,13 @@
 import { ENV } from '@/config/env';
 import type { UserProfile } from '@/lib/auth/types';
 import { log } from '@/lib/debug/log';
-import { getClaimsUser, isAuthTransportFailure, pinnedSigningKeysFor } from '@ai-matrx/auth';
+import {
+  getClaimsUser,
+  isAuthTransportFailure,
+  looksLikeJwt,
+  pinnedSigningKeysFor,
+  profileFromClaims,
+} from '@ai-matrx/auth';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 /** Upper bound on the ONE JWKS fetch. Local verification must never hang. */
@@ -125,53 +131,6 @@ export type BearerVerificationResult =
    * signed out: the person may be perfectly signed in.
    */
   | { status: 'unverifiable'; reason: string };
-
-function claimString(claims: Record<string, unknown>, key: string): string | null {
-  const value = claims[key];
-  return typeof value === 'string' && value.length > 0 ? value : null;
-}
-
-function metadata(claims: Record<string, unknown>): Record<string, unknown> {
-  const meta = claims.user_metadata;
-  return meta && typeof meta === 'object' && !Array.isArray(meta)
-    ? (meta as Record<string, unknown>)
-    : {};
-}
-
-function profileFromClaims(claims: Record<string, unknown>): UserProfile | null {
-  const id = claimString(claims, 'sub');
-  if (!id) return null;
-  const meta = metadata(claims);
-  const emailVerified = meta.email_verified;
-  return {
-    id,
-    email: claimString(claims, 'email') ?? null,
-    full_name:
-      (typeof meta.full_name === 'string' ? meta.full_name : null) ??
-      (typeof meta.name === 'string' ? meta.name : null),
-    avatar_url: typeof meta.avatar_url === 'string' ? meta.avatar_url : null,
-    // The JWT only sometimes carries this; callers that need it fall back to
-    // the profile recorded at sign-in.
-    ...(typeof emailVerified === 'boolean' && { email_verified: emailVerified }),
-  };
-}
-
-/** Three segments, and a header and payload that actually decode as JSON. */
-function looksLikeJwt(token: string): boolean {
-  const parts = token.split('.');
-  if (parts.length !== 3) return false;
-  try {
-    for (const part of parts.slice(0, 2)) {
-      const normalized = part.replace(/-/g, '+').replace(/_/g, '/');
-      const binary = atob(normalized.padEnd(Math.ceil(normalized.length / 4) * 4, '='));
-      const bytes = Uint8Array.from(binary, (char) => char.charCodeAt(0));
-      JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
-    }
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 /**
  * Verify a bearer token LOCALLY and report who it belongs to.

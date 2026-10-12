@@ -173,6 +173,7 @@ export async function listMemberOrganizations(
  * package's session doors read the OAuth session through `withOAuthSession`.
  */
 let activeStore: ActiveOrganization | null = null;
+let ladderClearedSelection = false;
 function getActiveStore(): ActiveOrganization | null {
   if (activeStore) return activeStore;
   const oauth = getOAuthClient();
@@ -190,12 +191,16 @@ function getActiveStore(): ActiveOrganization | null {
     },
     async clear() {
       await setOne(STORAGE_KEYS.ACTIVE_ORGANIZATION, null);
+      // Our own clear bumps the generation through the storage observer; it is not a racing change.
+      ladderClearedSelection = true;
     },
   };
   activeStore = createActiveOrganization({
     client: withOAuthSession(getOrganizationBootstrapClient(), oauth),
     held,
     holdResolved: false,
+    // A selection that outlived its membership is dropped rather than sent for the server to refuse.
+    clearStaleHeld: true,
     autoLoad: false,
   });
   return activeStore;
@@ -225,6 +230,7 @@ async function readStoredSelection(): Promise<StoredActiveOrganization | null> {
  */
 async function validateActiveOrganization(userId: string): Promise<MemberOrganization | null> {
   validatedSelection = null;
+  ladderClearedSelection = false;
   let generation = selectionGeneration;
   const store = getActiveStore();
   if (!store) return null;
@@ -234,19 +240,12 @@ async function validateActiveOrganization(userId: string): Promise<MemberOrganiz
     log.error('auth', 'organization ladder: read failed', snap.error);
     throw readFailure(snap.error ?? 'unknown error');
   }
-  const stored = await readStoredSelection();
   const currentUser = await getCurrentUser();
-  if (selectionGeneration !== generation || currentUser?.id !== userId) return null;
-  if (stored && !snap.memberships.some((m) => m.id === stored.id)) {
-    // Selection survived losing the membership — drop it rather than send an
-    // organization the server will refuse.
-    log.warn('auth', 'active organization is no longer a membership — clearing selection', {
-      organization_id: stored.id,
-    });
-    await setOne(STORAGE_KEYS.ACTIVE_ORGANIZATION, null);
-    // Our own clear bumped the generation through the storage observer.
+  if (ladderClearedSelection) {
+    ladderClearedSelection = false;
     generation = selectionGeneration;
   }
+  if (selectionGeneration !== generation || currentUser?.id !== userId) return null;
   if (selectionGeneration !== generation || !snap.organization) return null;
   const chosen: MemberOrganization = {
     id: snap.organization.id,
