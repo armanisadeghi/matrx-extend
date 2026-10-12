@@ -293,7 +293,7 @@ export async function rerunGuestSettingsAfterExtensionReload({
                     baseline,
                     (name, observation, passed) =>
                       record(name, passed ? 'pass' : 'fail', observation),
-                    ...(choiceDriver && [{ ...choiceDriver, openSection }]),
+                    ...(choiceDriver ? [{ ...choiceDriver, openSection }] : []),
                   ),
               }),
             }),

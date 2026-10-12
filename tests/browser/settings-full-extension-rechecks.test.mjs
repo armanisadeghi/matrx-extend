@@ -159,6 +159,8 @@ test('inner restoration serialization rejects unknown stages and strips arbitrar
 
 function fullRestartFixture({
   absentTheme = false,
+  omitChoiceDriver = false,
+  baselineStoragePresent = false,
   failBaselineRestore = null,
   skipChoice = null,
   failNewChat = false,
@@ -189,11 +191,40 @@ function fullRestartFixture({
     Object.assign(states.T04, {
       stored: null,
       storedPresent: false,
-      storagePresent: false,
+      storagePresent: baselineStoragePresent,
     });
   const calls = { reloads: [], options: [], chats: [], caseRunners: [] };
   let settingsCalls = 0;
-  let activePanel = { targetId: 'panel-initial-replacement', detach: async () => {} };
+  // CDP is the external dependency in the native-default-driver lane. The real
+  // click/wait/restore helpers and production rerun callback remain in use.
+  let pointerTarget;
+  const makePanel = (targetId) => ({
+    targetId,
+    detach: async () => {},
+    async send(method, params) {
+      if (method === 'Input.dispatchMouseEvent') {
+        if (params.type === 'mouseReleased')
+          await choiceDriver.click(activePanel, ...pointerTarget);
+        return {};
+      }
+      assert.equal(method, 'Runtime.evaluate');
+      const script = params.expression;
+      const pointer = script.match(/const kind = ("[^"\n]+"), label = ("[^"\n]+");/);
+      let value;
+      if (pointer) {
+        pointerTarget = [JSON.parse(pointer[1]), JSON.parse(pointer[2])];
+        value = { count: 1, matchedCount: 1, x: 40, y: 40, hitTarget: true, animating: false };
+      } else if (script.includes('return { count: buttons.length, expanded:')) {
+        value = { count: 1, expanded: 'true' };
+      } else if (script.includes("?.getAttribute('aria-expanded'))()")) {
+        value = 'true';
+      } else {
+        value = await choiceDriver.evaluate(activePanel, script);
+      }
+      return { result: { value } };
+    },
+  });
+  let activePanel = makePanel('panel-initial-replacement');
   let currentPreference;
   const allChoices = [
     ...GUEST_PREFERENCES,
@@ -212,7 +243,11 @@ function fullRestartFixture({
       if (script.includes('const originalStoragePresent =')) {
         if (failBaselineRestore === 'remove_absent_key')
           throw new TypeError('private token secret');
-        Object.assign(states.T04, { stored: null, storedPresent: false, storagePresent: false });
+        Object.assign(states.T04, {
+          stored: null,
+          storedPresent: false,
+          storagePresent: baselineStoragePresent,
+        });
       }
       return { ...states.T04 };
     },
@@ -274,7 +309,7 @@ function fullRestartFixture({
   const reloadExtension = async () => {
     const previous = activePanel;
     calls.reloads.push(previous.targetId);
-    activePanel = { targetId: `panel-replacement-${calls.reloads.length}`, detach: async () => {} };
+    activePanel = makePanel(`panel-replacement-${calls.reloads.length}`);
     for (const id of ['T04', 'T10']) {
       const preference = GUEST_PREFERENCES.find((item) => item.caseId === id);
       const choice = preference.choices.find(([value]) => value === states[id].stored);
@@ -361,13 +396,53 @@ function fullRestartFixture({
             throw new Error('private recovery URL https://private.example/recover?token=secret');
           return activePanel;
         },
-        choiceDriver,
+        ...(!omitChoiceDriver && { choiceDriver }),
         observeAutoScrapeMode,
         transportFailureClass: () => transportClasses.shift() ?? 'none',
       });
       enforceFullExtensionRechecks(reportCases);
     },
   };
+}
+
+for (const baselineStoragePresent of [false, true]) {
+  test(`native omitted choice driver restores absent theme through production callback (container=${baselineStoragePresent})`, async () => {
+    const f = fullRestartFixture({
+      absentTheme: true,
+      omitChoiceDriver: true,
+      baselineStoragePresent,
+    });
+    await f.run();
+    const theme = f.reportCases[0].fullExtensionReload;
+    assert.equal(
+      theme.status,
+      'pass',
+      `EXT-D-0220 native restoration must invoke helper: ${JSON.stringify({
+        stage: theme.restorationFailureStage,
+        inner: theme.baselineRestoration,
+      })}`,
+    );
+    assert.deepEqual(
+      [
+        f.states.T04.selected,
+        f.states.T04.stored,
+        f.states.T04.storedPresent,
+        f.states.T04.storagePresent,
+      ],
+      ['System', null, false, baselineStoragePresent],
+    );
+    assert.equal(f.calls.reloads.length, 7);
+    assert.deepEqual(
+      f.calls.options.filter(([id]) => id === 'T04'),
+      [
+        ['T04', 'Dark'],
+        ['T04', 'Light'],
+        ['T04', 'System'],
+      ],
+    );
+    assert.equal(f.reportCases[1].fullExtensionReload.status, 'pass');
+    assert.equal(f.reportCases[4].fullExtensionReload.status, 'pass');
+  });
 }
 
 for (const failBaselineRestore of [null, 'remove_absent_key', 'observe_restored_baseline']) {
