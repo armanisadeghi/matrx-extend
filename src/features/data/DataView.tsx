@@ -1,11 +1,11 @@
 import { CopyMenu } from '@/components/CopyMenu';
 import { PageIdentityNotice } from '@/components/PageIdentityNotice';
+import { LiveDataOffer } from '@/features/data/LiveDataOffer';
 import {
   getActiveTabIdentitySnapshot,
   isCurrentPageIdentity,
   useActiveTab,
 } from '@/hooks/use-active-tab';
-import { LiveDataOffer } from '@/features/data/LiveDataOffer';
 import { useAuth } from '@/hooks/use-auth';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
