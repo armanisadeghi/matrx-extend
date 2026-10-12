@@ -3725,3 +3725,10 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 ### Carousel capture coverage
 
 Save an Instagram carousel to Swipe file. The card reads "N of M slides saved" (carousels only) and a note names exactly what is missing; the Capture remaining slides button appears only for carousels. Notes never name vendors or internal steps. Verify the saved summary counts all carousel media, excluding a duplicate cover thumbnail. A partial download shows the stored/expected count and missing-item warning; an unknown total says coverage could not be verified. Re-save a previously incomplete cached carousel and verify it attempts repair rather than silently reusing its first image. Open the saved post in the extension to review its files; in the web post detail, verify archived images/videos appear in source order, the provider thumbnail is not repeated as a slide, and a failed preview exposes the authenticated download/retry path.
+
+### Live data — "Get as table" on the Data tab
+- **What it does:** When the current page belongs to a live-data source in the server's catalog (`GET /data-sources`, so new sources appear without a release), the Data tab shows the source label, a record count (default 25, capped by the organization's limit, shown), a points quote, and **Get as table**. Nothing is fetched until the click. Progress streams in; on completion **Open table** opens the web app's table. A refusal shows the server's sentence and the named limit.
+- **Where to test:** Data tab, signed in, on `https://www.trustpilot.com/review/allbirds.com`.
+- **Steps:** Open the Data tab; set Records to 5; click **Get as table**; wait for the result row; click **Open table**.
+- **Expected:** Quote reads about 150 points; result shows the table name and 5 rows; the link opens `/data/<table id>`. On a page outside the catalog (e.g. google.com/search) the card is absent. Over-limit counts are lowered to the limit and said.
+- **Automated:** `tests/unit/live-data-sources.test.ts` (matcher, points, clamp, stream folding).

@@ -2174,6 +2174,18 @@
  "/data-gov-uk/public/dataset": {
   "get": []
  },
+ "/data-sources": {
+  "get": []
+ },
+ "/data-sources/fetch": {
+  "post": []
+ },
+ "/data-sources/jobs/{job_id}": {
+  "get": []
+ },
+ "/data-sources/tables/{table_id}/refresh": {
+  "post": []
+ },
  "/databox/public/status": {
   "get": []
  },

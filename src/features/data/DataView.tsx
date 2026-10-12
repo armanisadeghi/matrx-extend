@@ -5,6 +5,7 @@ import {
   isCurrentPageIdentity,
   useActiveTab,
 } from '@/hooks/use-active-tab';
+import { LiveDataOffer } from '@/features/data/LiveDataOffer';
 import { useAuth } from '@/hooks/use-auth';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
 import { rowsToTsv, stringifyJson, wrapForAgent, wrapJsonForAgent } from '@/lib/clipboard/copy';
@@ -490,6 +491,8 @@ export function DataView() {
               {runNote}
             </div>
           )}
+
+          {tab.url && <LiveDataOffer url={tab.url} signedIn={Boolean(user)} />}
 
           {matched && (
             <div className="flex items-center justify-between gap-2 rounded-xl bg-emerald-500/10 px-3 py-2.5">
