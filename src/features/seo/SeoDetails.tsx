@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { formatCount, formatFileSize } from '@ai-matrx/kit/format';
 import { ImageOff } from 'lucide-react';
 import { useState } from 'react';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 /**
  * The one renderer for an SEO audit's collected values.
@@ -344,15 +345,13 @@ function SchemaTypeChip({ type }: { type: string }) {
     );
   }
   return (
-    <a
+    <OutboundLink
       href={href}
-      target="_blank"
-      rel="noreferrer noopener"
       title={`Open ${type} on schema.org`}
       className="rounded-full bg-secondary/40 px-2 py-0.5 font-mono text-[10px] text-sky-600 hover:bg-secondary dark:text-sky-400"
     >
       {shown}
-    </a>
+    </OutboundLink>
   );
 }
 

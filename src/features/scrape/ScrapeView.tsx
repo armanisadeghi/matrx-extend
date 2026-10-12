@@ -62,6 +62,8 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 export function ScrapeView() {
   const {
@@ -463,7 +465,7 @@ export function ScrapeView() {
                 title="Opens this Source in the AI Matrx web app"
                 onClick={() =>
                   void chrome.tabs.create({
-                    url: sourceWebAppUrl(recognition.capturedId as string),
+                    url: withReferral(sourceWebAppUrl(recognition.capturedId as string)),
                   })
                 }
               >
@@ -710,14 +712,12 @@ export function ScrapeView() {
                       className="group flex items-center gap-2 rounded-xl bg-secondary/40 px-3 py-2 text-sm transition-colors hover:bg-secondary/70"
                     >
                       <VideoIcon className="size-4 shrink-0 text-muted-foreground" />
-                      <a
+                      <OutboundLink
                         href={v.src}
-                        target="_blank"
-                        rel="noreferrer"
                         className="min-w-0 flex-1 truncate"
                       >
                         {v.src}
-                      </a>
+                      </OutboundLink>
                       <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                         <CopyButton text={v.src} title="Copy video URL" size="xs" />
                         <DeleteRowButton title="Remove video" onClick={() => removeVideo(v.src)} />
@@ -752,10 +752,10 @@ export function ScrapeView() {
                       className="group flex items-start gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors hover:bg-accent"
                     >
                       <LinkIcon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                      <a href={l.href} target="_blank" rel="noreferrer" className="min-w-0 flex-1">
+                      <OutboundLink href={l.href} className="min-w-0 flex-1">
                         <div className="truncate">{l.text || l.href}</div>
                         <div className="truncate text-xs text-muted-foreground">{l.href}</div>
-                      </a>
+                      </OutboundLink>
                       <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                         <CopyButton text={l.href} title="Copy URL" size="xs" />
                         <DeleteRowButton
@@ -913,7 +913,7 @@ export function ScrapeView() {
           <button
             type="button"
             className="inline-flex items-center gap-1 text-primary underline-offset-2 hover:underline"
-            onClick={() => void chrome.tabs.create({ url: sourceWebAppUrl(savedSource.id) })}
+            onClick={() => void chrome.tabs.create({ url: withReferral(sourceWebAppUrl(savedSource.id)) })}
           >
             <ExternalLink className="size-3" /> Open this Source (opens in the web app)
           </button>
@@ -1019,9 +1019,9 @@ function ImageTile({
         : 'size-full object-contain p-0.5';
   return (
     <div className={cn('group relative', tileClass)} title={img.alt ?? img.src}>
-      <a href={img.src} target="_blank" rel="noreferrer" className="block size-full">
+      <OutboundLink href={img.src} className="block size-full">
         <img src={img.src} alt={img.alt ?? ''} className={imgClass} loading="lazy" />
-      </a>
+      </OutboundLink>
       <div
         className={cn(
           'absolute flex gap-1 opacity-0 transition-opacity group-hover:opacity-100',

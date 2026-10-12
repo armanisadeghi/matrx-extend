@@ -16,6 +16,7 @@
 
 import { ExternalLink } from 'lucide-react';
 import type { KindComponentProps } from './types';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 interface SearchItem {
   title: string;
@@ -103,15 +104,13 @@ export function SearchResultsKind({ value, complete }: KindComponentProps) {
         {items.map((item, i) => (
           <li key={`${item.url ?? item.title}-${i}`} className="px-3 py-2">
             {item.url ? (
-              <a
+              <OutboundLink
                 href={item.url}
-                target="_blank"
-                rel="noreferrer noopener"
                 className="group flex items-start gap-1.5 text-[12px] font-medium text-primary hover:underline"
               >
                 <span className="min-w-0 flex-1">{item.title}</span>
                 <ExternalLink className="mt-0.5 h-3 w-3 shrink-0 opacity-0 transition-opacity group-hover:opacity-70" />
-              </a>
+              </OutboundLink>
             ) : (
               <span className="text-[12px] font-medium">{item.title}</span>
             )}

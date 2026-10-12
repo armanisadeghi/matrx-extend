@@ -29,6 +29,7 @@ import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import { ExternalLink, Mail, Send } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 function parseAddressList(raw: string): string[] {
   return raw
@@ -189,15 +190,13 @@ export function GmailReviewCard({ req }: { req: PendingAskUserRequest }) {
         </div>
       </div>
 
-      <a
+      <OutboundLink
         href={GOOGLE_WORKSPACE_SETTINGS_URL}
-        target="_blank"
-        rel="noopener noreferrer"
         className="mt-2 inline-flex w-fit items-center gap-1 text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
       >
         Manage or disconnect this Google account
         <ExternalLink className="h-3 w-3" />
-      </a>
+      </OutboundLink>
     </div>
   );
 }

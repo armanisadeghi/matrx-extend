@@ -1,6 +1,7 @@
 import { isOpenableUrl } from '@/lib/url/openable';
 import { cn } from '@/lib/utils';
 import { ExternalLink } from 'lucide-react';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 /**
  * The door primitive for a URL.
@@ -48,10 +49,8 @@ export function OpenUrl({
   }
 
   return (
-    <a
+    <OutboundLink
       href={url}
-      target="_blank"
-      rel="noreferrer noopener"
       title={url}
       className={cn(
         base,
@@ -61,6 +60,6 @@ export function OpenUrl({
     >
       <span className="min-w-0 break-all">{text}</span>
       {showIcon && <ExternalLink className="size-3 shrink-0 self-center opacity-60" />}
-    </a>
+    </OutboundLink>
   );
 }

@@ -12,6 +12,7 @@ import { ExternalLink, MessageSquare, ScanLine } from 'lucide-react';
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@/styles/globals.css';
+import { installOutboundReferralDecorator } from '@ai-matrx/kit/outbound-react';
 
 export function Popup() {
   const { error, signIn, status, user } = useAuth();
@@ -151,6 +152,9 @@ export function Popup() {
     </div>
   );
 }
+
+// Any third-party link in the extension's pages carries our referral data (@ai-matrx/kit/outbound).
+installOutboundReferralDecorator();
 
 const root = createRoot(document.getElementById('app')!);
 root.render(

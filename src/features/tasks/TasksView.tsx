@@ -69,6 +69,8 @@ import {
   Wand2,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 type TaskStatus =
   | 'idle'
@@ -296,7 +298,7 @@ export function TasksView() {
     } else {
       let tab: chrome.tabs.Tab;
       try {
-        tab = await chrome.tabs.create({ url: item.url, active: wantsActiveTab });
+        tab = await chrome.tabs.create({ url: withReferral(item.url), active: wantsActiveTab });
       } catch (err) {
         setItemState(id, { status: 'error', error: (err as Error).message });
         return { ok: false, isGood: false };
@@ -520,7 +522,7 @@ export function TasksView() {
     } else {
       let tab: chrome.tabs.Tab;
       try {
-        tab = await chrome.tabs.create({ url: item.url, active: false });
+        tab = await chrome.tabs.create({ url: withReferral(item.url), active: false });
       } catch (err) {
         setItemState(id, { status: 'error', error: (err as Error).message });
         return;
@@ -1210,14 +1212,12 @@ function Row({
             <PolicyBadge category={item.policy_category} />
             <EnrichBadge item={item} />
           </div>
-          <a
+          <OutboundLink
             href={item.url}
-            target="_blank"
-            rel="noreferrer"
             className="block truncate text-xs text-muted-foreground hover:underline"
           >
             {item.url}
-          </a>
+          </OutboundLink>
           <ItemContext item={item} />
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -1384,14 +1384,12 @@ function PasteRow({
             <PolicyBadge category={item.policy_category} />
             <EnrichBadge item={item} />
           </div>
-          <a
+          <OutboundLink
             href={item.url}
-            target="_blank"
-            rel="noreferrer"
             className="inline-flex items-center gap-1 truncate text-xs text-muted-foreground hover:underline"
           >
             {item.url} <ExternalLink className="size-3" />
-          </a>
+          </OutboundLink>
           <ItemContext item={item} />
         </div>
         <div className="flex shrink-0 items-center gap-2">

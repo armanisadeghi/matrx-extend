@@ -34,6 +34,7 @@ import { buildSeoRecommendationsRequest } from '@/lib/seo/recommendations';
 import { useSettingsStore } from '@/state/settings';
 import { Button } from '@ai-matrx/design-system';
 import { ExternalLink, Loader2, RotateCw, Sparkles, Square } from 'lucide-react';
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 export function AiRecommendations({ audit }: { audit: SeoAudit }) {
   // An explicit saved Agent is a run-scope choice. With none, the server
@@ -132,9 +133,9 @@ export function AiRecommendations({ audit }: { audit: SeoAudit }) {
             }
             onClick={() =>
               void chrome.tabs.create({
-                url: mandateKey
+                url: withReferral(mandateKey
                   ? `${ENV.FRONTEND_URL}/administration/intelligence/mandates/${encodeURIComponent(mandateKey)}`
-                  : `${ENV.FRONTEND_URL}/agents/${encodeURIComponent(agentId)}`,
+                  : `${ENV.FRONTEND_URL}/agents/${encodeURIComponent(agentId)}`),
               })
             }
           >

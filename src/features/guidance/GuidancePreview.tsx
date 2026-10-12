@@ -19,6 +19,7 @@ import { Badge, Button } from '@ai-matrx/design-system';
 import { formatDurationMs } from '@ai-matrx/kit/format';
 import { Camera, Loader2, Pencil, Play } from 'lucide-react';
 import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 const AnnotationEditor = lazy(() =>
   import('./AnnotationEditor').then((m) => ({ default: m.AnnotationEditor })),
@@ -150,13 +151,13 @@ function ScreenshotPreview({
   return (
     <div className="flex flex-col gap-1.5">
       {displayUrl ? (
-        <a href={displayUrl} target="_blank" rel="noreferrer" className="block">
+        <OutboundLink href={displayUrl} className="block">
           <img
             src={displayUrl}
             alt={item.caption ?? 'guidance screenshot'}
             className="max-h-64 w-full rounded border object-contain"
           />
-        </a>
+        </OutboundLink>
       ) : (
         <div className="rounded border border-dashed p-3 text-center text-xs text-muted-foreground">
           No URL available — file_id: <span className="font-mono">{item.file_id}</span>
@@ -206,13 +207,13 @@ function GifPreview({ item }: { item: Extract<GuidanceItem, { kind: 'gif' }> }) 
   return (
     <div className="flex flex-col gap-1.5">
       {item.url ? (
-        <a href={item.url} target="_blank" rel="noreferrer" className="block">
+        <OutboundLink href={item.url} className="block">
           <img
             src={item.url}
             alt={item.caption ?? 'guidance GIF'}
             className="max-h-64 w-full rounded border object-contain"
           />
-        </a>
+        </OutboundLink>
       ) : (
         <div className="rounded border border-dashed p-3 text-center text-xs text-muted-foreground">
           No URL available — file_id: <span className="font-mono">{item.file_id}</span>

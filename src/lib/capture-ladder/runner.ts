@@ -42,6 +42,7 @@ import { getOuterHtml } from '@/lib/scrape/capture-html';
 import { captureWithFallback } from '@/lib/scrape/capture-with-fallback';
 import { settlePage } from '@/lib/scrape/page-ready';
 import { formatCount } from '@ai-matrx/kit/format';
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 /** Human-like pacing band. Never a constant interval. */
 const SCROLL_MIN_MS = 400;
@@ -230,7 +231,7 @@ export async function runOne(
     }
 
     report('opening');
-    const tab = await chrome.tabs.create({ url: handoff.url, active: false });
+    const tab = await chrome.tabs.create({ url: withReferral(handoff.url), active: false });
     const tabId = tab.id;
     if (typeof tabId !== 'number') {
       return await handToPerson(

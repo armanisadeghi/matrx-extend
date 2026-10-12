@@ -86,6 +86,7 @@ import { PasswordGenerator } from './PasswordGenerator';
 import { PendingCaptureCard } from './PendingCaptureCard';
 import { type PanelActionAdmission, usePanelAdmission } from './usePanelAdmission';
 import { useCredentialLogin, useVault } from './useVault';
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 const WEB_VAULT_URL = `${ENV.FRONTEND_URL}/vault`;
 const RESTRICTED_PAGE_REMEDY =
@@ -199,7 +200,7 @@ function VaultSession({
           </IconButton>
           <IconButton
             title="Open the full vault on the web"
-            onClick={() => void chrome.tabs.create({ url: WEB_VAULT_URL })}
+            onClick={() => void chrome.tabs.create({ url: withReferral(WEB_VAULT_URL) })}
           >
             <ExternalLink className="size-3.5" />
           </IconButton>

@@ -21,6 +21,7 @@ import {
  */
 import { ExternalLink, Fingerprint, KeyRound, Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 type Methods = { password: boolean; passkey: boolean };
 
@@ -182,10 +183,8 @@ export function FillDeviceSetupCard() {
       )}
       {link && (
         <div className="mt-2 flex flex-col gap-1.5">
-          <a
+          <OutboundLink
             href={link.url}
-            target="_blank"
-            rel="noreferrer"
             onClick={() => {
               setWaiting(true);
               setError(null);
@@ -196,7 +195,7 @@ export function FillDeviceSetupCard() {
             <Fingerprint className="size-3.5" />
             {neither ? 'Add a passkey on the web' : 'Approve with a passkey'}
             <ExternalLink className="size-3 text-muted-foreground" />
-          </a>
+          </OutboundLink>
           {waiting && (
             <div className="flex items-center gap-1.5" data-testid="fill-device-waiting">
               <p className="min-w-0 flex-1 text-xs text-muted-foreground">

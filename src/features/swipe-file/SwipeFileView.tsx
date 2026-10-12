@@ -33,6 +33,7 @@ import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { ArrowLeft, Bookmark, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StoredMedia } from './StoredMedia';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 const message = (cause: unknown) =>
   cause instanceof Error ? cause.message : 'Could not complete this action.';
@@ -248,25 +249,21 @@ export function SwipeFileView() {
                     {post.title || 'Saved post'}
                   </h2>
                   <div className="flex flex-wrap gap-2">
-                    <a
+                    <OutboundLink
                       className="inline-flex items-center gap-1 text-xs text-primary underline"
                       href={post.url}
-                      target="_blank"
-                      rel="noreferrer"
                     >
                       Original post
                       <ExternalLink className="size-3" />
-                    </a>
+                    </OutboundLink>
                     {organizationId && (
-                      <a
+                      <OutboundLink
                         className="inline-flex items-center gap-1 text-xs text-primary underline"
                         href={swipePostWebUrl(post.id, organizationId)}
-                        target="_blank"
-                        rel="noreferrer"
                       >
                         Open in Matrx
                         <ExternalLink className="size-3" />
-                      </a>
+                      </OutboundLink>
                     )}
                   </div>
                 </div>
