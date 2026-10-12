@@ -23955,18 +23955,50 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "render-retest-001",
-              "evidence": "docs/stabilization/runs/render-retest-001.json",
+              "status": "partial",
+              "run_id": "guest-scrape-controls-https-20261012",
+              "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
+              "development_ci_run_id": 38298993769,
+              "development_artifact_id": 11769703557,
+              "build_version": "0.2.509",
+              "resource_valid": true,
+              "evidence": "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
               "verified_substeps": [
-                "Temporary edit appeared in preview and reopened editor; Save capture was not performed."
+                "Warm edit/Apply visibly updated the in-memory Article.",
+                "Warm Save Source retained the draft locally.",
+                "Warm Retry and post-reload Retry both reproduced the membership permission-denied error in guest mode."
               ],
-              "remaining_criteria": [
-                "Complete the specified Save capture step and verify the server write follows Save, with no write before Save."
-              ]
+              "failed_substeps": [
+                "Guest Save/Retry displayed permission denied for function mbr_for_user instead of the expected sign-in remedy."
+              ],
+              "unverified": [
+                "Post-reload Article editor and Apply; the unsaved card persisted but the result pane required a fresh capture.",
+                "Whether any membership read was sent while guest; no raw network inspection was performed."
+              ],
+              "defect_ids": [
+                "EXT-D-0217"
+              ],
+              "detail": "Bounded current-artifact guest Save failure reproduced warm and after extension reload; no Source landed. Overall case remains partial because the editor and required auth lifecycle were not re-exercised after reload."
             }
           },
-          "verification_status": "unverified-after-source-change"
+          "verification_status": "unverified-after-source-change",
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "unverified",
+                "run_id": "render-retest-001",
+                "evidence": "docs/stabilization/runs/render-retest-001.json",
+                "verified_substeps": [
+                  "Temporary edit appeared in preview and reopened editor; Save capture was not performed."
+                ],
+                "remaining_criteria": [
+                  "Complete the specified Save capture step and verify the server write follows Save, with no write before Save."
+                ]
+              },
+              "superseded_at": "2026-10-12T20:22:00Z"
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T06",
@@ -23994,12 +24026,35 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "render-retest-001",
-              "detail": "pass_cancel_discarded_draft_and_recapture_cleanup",
-              "evidence": "docs/stabilization/runs/render-retest-001.json"
+              "status": "partial",
+              "run_id": "guest-scrape-controls-https-20261012",
+              "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
+              "development_ci_run_id": 38298993769,
+              "development_artifact_id": 11769703557,
+              "build_version": "0.2.509",
+              "resource_valid": true,
+              "evidence": "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
+              "verified_substeps": [
+                "Warm Cancel discarded the draft and left the original Article sentence visible."
+              ],
+              "unverified": [
+                "Cancel after full extension reload."
+              ],
+              "detail": "Warm behavior confirmed on the exact frozen development artifact; no post-reload editor state was available."
             }
-          }
+          },
+          "result_history": [
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "render-retest-001",
+                "detail": "pass_cancel_discarded_draft_and_recapture_cleanup",
+                "evidence": "docs/stabilization/runs/render-retest-001.json"
+              },
+              "superseded_at": "2026-10-12T20:22:00Z"
+            }
+          ]
         },
         {
           "id": "EXT-F-1007-T07",
@@ -24030,31 +24085,21 @@
           ],
           "results": {
             "guest": {
-              "run_id": 38021736744,
-              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
-              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
-              "development_ci_run_id": 38019685913,
-              "development_artifact_id": 11657971729,
-              "hosted_result_artifact_id": 11658643132,
-              "build_version": "0.2.458",
-              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+              "run_id": "guest-scrape-controls-https-20261012",
+              "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
+              "development_ci_run_id": 38298993769,
+              "development_artifact_id": 11769703557,
+              "build_version": "0.2.509",
               "resource_valid": true,
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
-                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
-              ],
-              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
-              "status": "pass",
+              "evidence": "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
+              "status": "partial",
               "passed_subtargets": [
-                "With Sync ON, Article followed the owned page scroll; after Stop, reversing page scroll left Article at its independently established position, warm and after full extension reload."
+                "On an in-memory long Article, Sync ON followed live-page movement from top to bottom; after Stop, page movement left Article at its established position."
               ],
               "unverified": [
-                "Member/admin modes were not exercised."
+                "Post-reload scroll controls; Article result view did not restore automatically."
               ],
-              "detail": "Guest scroll-sync behavior passed warm and after full extension reload."
+              "detail": "Warm guest scroll behavior confirmed on frozen development 0.2.509. The long Article was an unsaved in-memory test edit; no Source was written."
             }
           },
           "result_history": [
@@ -24182,6 +24227,37 @@
                 "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
               },
               "superseded_at": "2026-10-10T03:58:06Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "run_id": 38021736744,
+                "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+                "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+                "development_ci_run_id": 38019685913,
+                "development_artifact_id": 11657971729,
+                "hosted_result_artifact_id": 11658643132,
+                "build_version": "0.2.458",
+                "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+                "resource_valid": true,
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                  "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+                ],
+                "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+                "status": "pass",
+                "passed_subtargets": [
+                  "With Sync ON, Article followed the owned page scroll; after Stop, reversing page scroll left Article at its independently established position, warm and after full extension reload."
+                ],
+                "unverified": [
+                  "Member/admin modes were not exercised."
+                ],
+                "detail": "Guest scroll-sync behavior passed warm and after full extension reload."
+              },
+              "superseded_at": "2026-10-12T20:22:00Z"
             }
           ],
           "defect_ids": [
@@ -24276,177 +24352,23 @@
           ],
           "results": {
             "guest": {
-              "run_id": 38021736744,
-              "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
-              "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
-              "development_ci_run_id": 38019685913,
-              "development_artifact_id": 11657971729,
-              "hosted_result_artifact_id": 11658643132,
-              "build_version": "0.2.458",
-              "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+              "run_id": "guest-scrape-controls-https-20261012",
+              "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
+              "development_ci_run_id": 38298993769,
+              "development_artifact_id": 11769703557,
+              "build_version": "0.2.509",
               "resource_valid": true,
-              "evidence": [
-                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
-                "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
-                "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
-              ],
-              "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+              "evidence": "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
               "status": "partial",
               "passed_subtargets": [
-                "All six result tabs showed matching populated content; empty Images/Video states and empty Article/Links states were observed; capture identity and exported payload stayed unchanged warm and after full extension reload.",
-                "On run 38104691870, guest no-signal SEO and empty Schema panes matched the owned fixture at observed 600px CDP-emulated width; capture identity/digest remained unchanged after both pane selections.",
-                "Run 38111898943 independently reviewed a guest T08/C08 no-signal SEO and empty Schema subtarget at 360px native-default width; full-capture export identity/digest remained unchanged after each pane.",
-                "On run 38113131426, a fresh peer confirmed the owned title-only guest SEO no-signal and empty Schema behavior at observed 600px CDP-emulated width; capture export identity/digest stayed unchanged after both panes, with all three resource finals valid."
+                "Warm selection of Article, Images, Video, Links, SEO, and Schema showed each tab selected and its pane rendered.",
+                "Article, one image, 17 links, SEO audit, and Schema metadata were visible."
               ],
               "unverified": [
-                "Member/admin modes and their SEO/Schema behavior; actual Store-installed behavior; physical resize; reload behavior for this subtarget; full Scrape feature acceptance."
+                "Post-reload result tabs; the capture pane required a fresh capture.",
+                "Video content and image tiers beyond the fixture's single image."
               ],
-              "detail": "Guest T08/C08 has bounded subtarget evidence for populated result tabs and empty Article/Images/Video/Links states on earlier runs, plus no-signal SEO and empty Schema on 600px CDP-emulated runs 38104691870 and 38113131426 and 360px native-default run 38111898943. Fresh independent review of run 38113131426 confirms behavior PASS for its bounded guest subtarget on frozen development source 83cd72b6c9a0b6cce5887c1f561668539e6d8259, workflow checkout 46c31547517484946d16472ecaeab534354f60e1; all three resource finals are valid. The uploaded screenshots omit the target panes (Verdict B PARTIAL), and emulated 600px does not demonstrate physical resize. T08 and the guest feature-role cell remain partial; member/admin, reload for this subtarget, physical resize, current-main, Store-installed, release, and the rest of full Scrape acceptance remain unverified. Current-main v0.2.509 run 38202228159 repeats the bounded guest title-only no-signal SEO/empty Schema observations at native-default 360px with valid resource finals; peer Verdict A PASS bounded/B PARTIAL because screenshots omit final panes. It adds no unique behavior count and does not change guest T08 partial status.",
-              "bounded_subtarget_evidence": [
-                {
-                  "run_id": 38044684443,
-                  "status": "bounded-pass",
-                  "mode": "guest",
-                  "viewport": "600px owned SIDE_PANEL CDP emulation; warm and full extension reload",
-                  "workflow_source_sha": "c6ff0838d9014692df7e21de604cc27e07cc7d28",
-                  "product_artifact": "development 0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
-                  "evidence": [
-                    "docs/stabilization/evidence/guest-scrape-normal/run38044684443/receipt.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38044684443/native-report.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-package-38044684443-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-browser-38044684443-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-guest-38044684443-1.jsonl"
-                  ],
-                  "proven": "Six populated panes; empty Article/Images/Video/Links states; capture and exported payload invariance warm and after full extension reload.",
-                  "limits": "SEO/Schema empty-state, physical resize, other roles, Store/current-main, and full feature behavior remain unverified. Other driver cases receive no credit.",
-                  "independent_review": "docs/stabilization/reports/peer-review-run38044684443.json"
-                },
-                {
-                  "run_id": 38070816110,
-                  "status": "bounded-observation",
-                  "mode": "guest",
-                  "viewport": "Narrow 360px native side panel; normal-width verification remains unverified.",
-                  "workflow_source_sha": "03d342c345ba332f59771e8b87183d1e49231190",
-                  "product_artifact": "Store 0.2.469; source 3ec9eda26c3d8af777f56992985d754880b7e148; tree 10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0.",
-                  "evidence": [
-                    "docs/stabilization/reports/independent-guest-scrape-retest-38070816110.json",
-                    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/receipt.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/scrape-fast-article.png",
-                    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-package-38070816110-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-browser-38070816110-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-guest-38070816110-1.jsonl"
-                  ],
-                  "proven": "Six matching populated panes, four empty-pane states, and capture/export invariance warm and after full extension reload.",
-                  "limits": "Normal-width verification, member/admin modes, SEO/Schema empty-state behavior, physical resize, and full feature acceptance remain unverified. T08 guest status remains partial.",
-                  "independent_review": "docs/stabilization/reports/independent-guest-scrape-retest-38070816110.json"
-                },
-                {
-                  "run_id": 38098345217,
-                  "status": "bounded-pass",
-                  "mode": "guest",
-                  "viewport": "600px owned SIDE_PANEL CDP emulation; warm and full extension reload/reopen",
-                  "workflow_source_sha": "232aee3bdd26a2de25d2999e996f162be740fc56",
-                  "product_artifact": "Store candidate v0.2.479; hosted release 38080281242/artifact 11680078743; source 47a9b1c9c8e966bcbf4bb27a07542a795420c80e; package tree c1f031c444892d84422ffa4e4c6c4edbbaf49ca9b93ef64304c69c0fd3c292e8; adapted runtime tree 267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0; loaded unpacked with candidate-key adaptation, not Store-installed.",
-                  "context_previous_indeterminate_run": 38086330146,
-                  "evidence": [
-                    "docs/stabilization/evidence/guest-scrape-normal/run38098345217/receipt.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38098345217/native-report.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38098345217/resource-finals.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38098345217/screenshots/scrape-fast-article.png",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38098345217/screenshots/scrape-reload-deep-article.png",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38098345217/resource-journals/hosted-package-38098345217-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38098345217/resource-journals/hosted-browser-38098345217-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-normal/run38098345217/resource-journals/hosted-guest-38098345217-1.jsonl"
-                  ],
-                  "proven": "All six populated panes matched warm and after full extension reload; empty Article/Images/Video/Links states were observed; capture/export invariance passed warm and after reload. After reload, replacement worker was present, opener callback entered and replied, replacement panel target appeared, and the reopened Scrape capture was observed.",
-                  "limits": "Guest candidate-key-adapted unpacked artifact only; member/admin, actual Store-installed behavior, physical resize, empty SEO/Schema states, and full feature acceptance remain unverified. T08 and the guest feature-role cell stay partial.",
-                  "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-normal-run38098345217.json",
-                  "upload_hygiene_followup": "The hosted result artifact contained 27 resource-journal files, mostly from historical runs, because the workflow upload glob is broad. Only this run’s three sanitized journals were retained in the evidence package; the reviewer found no impact on behavior validity. Narrow future uploads to current run IDs."
-                },
-                {
-                  "run_id": 38104691870,
-                  "status": "bounded-pass",
-                  "mode": "guest",
-                  "viewport": "600px owned SIDE_PANEL CDP emulation; observed minimum met",
-                  "workflow_source_sha": "00769a35d9d34b501932f5d94e25f14181f8b381",
-                  "product_artifact": "Development v0.2.490; CI 38102137319/artifact 11688890496; source 6ed4289da90f19cab72e2d77feb7e845f71c02b7; runtime-equivalent to main at dispatch; tree 673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633.",
-                  "evidence": [
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/receipt.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/native-report.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-finals.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-package-38104691870-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-browser-38104691870-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-guest-38104691870-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/local-preflight.jsonl",
-                    "docs/stabilization/runs/guest-scrape-empty-seo-schema-run38104691870.json"
-                  ],
-                  "proven": "On the owned no-signal page, a trusted fresh capture passed the readiness predicate requiring the active visible Article pane inside Scrape with the matching title. SEO showed the title, empty description, and only Title & description plus Performance groups. Schema JSON was valid with matching title, absent description/canonical, and zero Open Graph, Twitter, schema types, or JSON-LD. Capture identity and digest were unchanged after each pane.",
-                  "article_ready_evidence_note": "The ready state is not separately serialized. Successful completion requires the runner isCaptureReady predicate to pass; that predicate explicitly checks a fresh transition to the selected, active, visible Article result within active Scrape. Independent review confirmed this is adequate for this bounded subtarget.",
-                  "limits": "Guest subtarget only. Member/admin, actual Store-installed behavior, physical resize, reload, and full T08 acceptance remain unverified.",
-                  "independent_review": "Bounded PASS confirmed by fresh independent review; summary is retained in docs/stabilization/runs/guest-scrape-empty-seo-schema-run38104691870.json."
-                },
-                {
-                  "run_id": 38111898943,
-                  "status": "bounded-pass",
-                  "mode": "guest",
-                  "viewport": "360px narrow native-default panel; no viewport emulation",
-                  "workflow_source_sha": "8ca2dc0601f6529b0224e7656f5e364916384063",
-                  "product_artifact": "development 0.2.492; CI 38111064635/artifact 11691866852; source cda49523be8fc568616e0205143982426e766c1a; tree 0ead3f09fc7a2c9501d563e3405266695a845a109a6eb0c3df94a422054ab152",
-                  "resource_valid": true,
-                  "evidence": [
-                    "docs/stabilization/runs/38111898943.json",
-                    "docs/stabilization/resource-journals/hosted-guest-38111898943-1.jsonl",
-                    "docs/stabilization/reports/scrape-t08-guest-native-peer-20261011.json"
-                  ],
-                  "proven": "Owned guest title-only localhost page: SEO pane showed matching title, empty description and only Title & description/Performance groups; Schema pane showed valid JSON, matching title metadata and absent description/canonical plus zero OG, Twitter, schema types and JSON-LD. Full-capture export identity and SHA-256 digest were unchanged after each pane.",
-                  "independent_review": "docs/stabilization/reports/scrape-t08-guest-native-peer-20261011.json",
-                  "verdict_b": "PARTIAL: uploaded screenshots do not show the exercised Scrape/SEO/Schema panes; native DOM and export assertions provide the behavioral evidence.",
-                  "limits": "This is one guest T08/C08 subtarget on frozen development artifact cda49523be8fc568616e0205143982426e766c1a; workflow checkout was 8ca2dc0601f6529b0224e7656f5e364916384063. No full T08, other roles, reload, other widths, current-main, Store-installed, or release acceptance is claimed."
-                },
-                {
-                  "run_id": 38113131426,
-                  "status": "bounded-pass-peer-reviewed",
-                  "mode": "guest",
-                  "viewport": "600px owned SIDE_PANEL CDP emulation; observed minimum met; physical resize not demonstrated",
-                  "workflow_source_sha": "46c31547517484946d16472ecaeab534354f60e1",
-                  "product_artifact": "development 0.2.492; CI 38112620925/artifact 11691669564; source 83cd72b6c9a0b6cce5887c1f561668539e6d8259; tree f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c",
-                  "resource_valid": true,
-                  "evidence": [
-                    "docs/stabilization/runs/38113131426.json",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/receipt.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/native-report.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-finals.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-package-38113131426-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-browser-38113131426-1.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-guest-38113131426-1.jsonl",
-                    "docs/stabilization/reports/scrape-t08-guest-normal-width-20261011.json",
-                    "docs/stabilization/reports/scrape-t08-guest-normal-peer-20261011.json"
-                  ],
-                  "proven": "On the owned title-only guest page, SEO showed matching title, empty description, and only Title & description/Performance groups; Schema JSON was valid with matching title, absent description/canonical and zero OG, Twitter, schema types, and JSON-LD. Full-capture export identity and SHA-256 digest were unchanged after each pane. The fresh peer confirmed bounded behavior PASS.",
-                  "independent_review": "docs/stabilization/reports/scrape-t08-guest-normal-peer-20261011.json",
-                  "verdict_b": "PARTIAL: uploaded screenshots omit the exercised Scrape/SEO/Schema panes, so visual rendering is not independently reviewable.",
-                  "limits": "Only this guest no-signal SEO/empty Schema subtarget on the frozen development artifact is covered. 600px is CDP-emulated; physical resize, member/admin, reload for this subtarget, Store-installed, current-main, release, and full T08/C08 acceptance remain unverified. T08 and the guest feature-role cell remain partial."
-                },
-                {
-                  "run_id": 38202228159,
-                  "status": "bounded-pass",
-                  "mode": "guest",
-                  "viewport": "360px native-default side panel",
-                  "workflow_source_sha": "60ba435863599b32f10acd9c95fff366cc09a36e",
-                  "product_artifact": "Development v0.2.509; CI 38201493024/artifact 11725033293; exact source 60ba435863599b32f10acd9c95fff366cc09a36e; tree bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42.",
-                  "evidence": [
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/native-report.sanitized.json",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-package-38202228159-1.sanitized.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-browser-38202228159-1.sanitized.jsonl",
-                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-guest-38202228159-1.sanitized.jsonl"
-                  ],
-                  "proven": "Bounded guest title-only no-signal SEO and empty Schema panes were visible/selected with matching values; capture export identity/digest unchanged after each pane; all three resource finals valid.",
-                  "limits": "The screenshots show setup rather than final panes (peer Verdict B PARTIAL). This repeats an existing bounded behavior on current-main source; no full T08, other roles, reload, physical resize, Store-installed or full Scrape credit.",
-                  "independent_review": "docs/stabilization/reports/guest-scrape-t08-peer-run38202228159.json"
-                }
-              ]
+              "detail": "Warm guest result-tab behavior confirmed on frozen development 0.2.509; media absence and post-reload panes remain unverified."
             },
             "member": {
               "status": "partial",
@@ -24601,6 +24523,183 @@
                 "release_scope": "Hosted lane B, signed-out guest, normal 600px, on the exact frozen development artifact. Does not establish member/admin, Store, current-main, or full-feature status."
               },
               "superseded_at": "2026-10-10T03:58:06Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "run_id": 38021736744,
+                "source_sha": "dcbda7e028a57aceb56b0792cd73bfb0ab38d40d",
+                "workflow_source_sha": "073f47001317e931cc641193f2ed62da6d9adc86",
+                "development_ci_run_id": 38019685913,
+                "development_artifact_id": 11657971729,
+                "hosted_result_artifact_id": 11658643132,
+                "build_version": "0.2.458",
+                "tree_sha256": "f862ad018235461c82b8c8d2c09b2b81696b004af449271dd936c82c2f20c8a5",
+                "resource_valid": true,
+                "evidence": [
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/receipt.json",
+                  "docs/stabilization/evidence/guest-scrape-hosted/run38021736744/native-report.sanitized.json",
+                  "docs/stabilization/resource-journals/hosted-package-38021736744-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38021736744-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38021736744-1.jsonl"
+                ],
+                "release_scope": "Hosted lane B, signed-out guest, narrow 360px, on exact frozen development artifact v0.2.458 from CI run 38019685913/artifact 11657971729 (source dcbda7e0); workflow checkout 073f4700. No current-main, Store, member/admin, or full-feature claim.",
+                "status": "partial",
+                "passed_subtargets": [
+                  "All six result tabs showed matching populated content; empty Images/Video states and empty Article/Links states were observed; capture identity and exported payload stayed unchanged warm and after full extension reload.",
+                  "On run 38104691870, guest no-signal SEO and empty Schema panes matched the owned fixture at observed 600px CDP-emulated width; capture identity/digest remained unchanged after both pane selections.",
+                  "Run 38111898943 independently reviewed a guest T08/C08 no-signal SEO and empty Schema subtarget at 360px native-default width; full-capture export identity/digest remained unchanged after each pane.",
+                  "On run 38113131426, a fresh peer confirmed the owned title-only guest SEO no-signal and empty Schema behavior at observed 600px CDP-emulated width; capture export identity/digest stayed unchanged after both panes, with all three resource finals valid."
+                ],
+                "unverified": [
+                  "Member/admin modes and their SEO/Schema behavior; actual Store-installed behavior; physical resize; reload behavior for this subtarget; full Scrape feature acceptance."
+                ],
+                "detail": "Guest T08/C08 has bounded subtarget evidence for populated result tabs and empty Article/Images/Video/Links states on earlier runs, plus no-signal SEO and empty Schema on 600px CDP-emulated runs 38104691870 and 38113131426 and 360px native-default run 38111898943. Fresh independent review of run 38113131426 confirms behavior PASS for its bounded guest subtarget on frozen development source 83cd72b6c9a0b6cce5887c1f561668539e6d8259, workflow checkout 46c31547517484946d16472ecaeab534354f60e1; all three resource finals are valid. The uploaded screenshots omit the target panes (Verdict B PARTIAL), and emulated 600px does not demonstrate physical resize. T08 and the guest feature-role cell remain partial; member/admin, reload for this subtarget, physical resize, current-main, Store-installed, release, and the rest of full Scrape acceptance remain unverified. Current-main v0.2.509 run 38202228159 repeats the bounded guest title-only no-signal SEO/empty Schema observations at native-default 360px with valid resource finals; peer Verdict A PASS bounded/B PARTIAL because screenshots omit final panes. It adds no unique behavior count and does not change guest T08 partial status.",
+                "bounded_subtarget_evidence": [
+                  {
+                    "run_id": 38044684443,
+                    "status": "bounded-pass",
+                    "mode": "guest",
+                    "viewport": "600px owned SIDE_PANEL CDP emulation; warm and full extension reload",
+                    "workflow_source_sha": "c6ff0838d9014692df7e21de604cc27e07cc7d28",
+                    "product_artifact": "development 0.2.459; CI 38036029832/artifact 11664077690; source 129299df0a53a8a795ba1af054752817454357e3; tree 9037bc28462d3c7d250362ed41f02c60b683e46e7b8560a3227d0acb7081b8aa",
+                    "evidence": [
+                      "docs/stabilization/evidence/guest-scrape-normal/run38044684443/receipt.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38044684443/native-report.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-package-38044684443-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-browser-38044684443-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38044684443/resource-journals/hosted-guest-38044684443-1.jsonl"
+                    ],
+                    "proven": "Six populated panes; empty Article/Images/Video/Links states; capture and exported payload invariance warm and after full extension reload.",
+                    "limits": "SEO/Schema empty-state, physical resize, other roles, Store/current-main, and full feature behavior remain unverified. Other driver cases receive no credit.",
+                    "independent_review": "docs/stabilization/reports/peer-review-run38044684443.json"
+                  },
+                  {
+                    "run_id": 38070816110,
+                    "status": "bounded-observation",
+                    "mode": "guest",
+                    "viewport": "Narrow 360px native side panel; normal-width verification remains unverified.",
+                    "workflow_source_sha": "03d342c345ba332f59771e8b87183d1e49231190",
+                    "product_artifact": "Store 0.2.469; source 3ec9eda26c3d8af777f56992985d754880b7e148; tree 10c27b32cf150113daa32c73d73f55f3519c0fe0d9a0a7b5dd956597501fa5b0.",
+                    "evidence": [
+                      "docs/stabilization/reports/independent-guest-scrape-retest-38070816110.json",
+                      "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/receipt.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/scrape-fast-article.png",
+                      "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-package-38070816110-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-browser-38070816110-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-hosted/run38070816110/resource-journals/hosted-guest-38070816110-1.jsonl"
+                    ],
+                    "proven": "Six matching populated panes, four empty-pane states, and capture/export invariance warm and after full extension reload.",
+                    "limits": "Normal-width verification, member/admin modes, SEO/Schema empty-state behavior, physical resize, and full feature acceptance remain unverified. T08 guest status remains partial.",
+                    "independent_review": "docs/stabilization/reports/independent-guest-scrape-retest-38070816110.json"
+                  },
+                  {
+                    "run_id": 38098345217,
+                    "status": "bounded-pass",
+                    "mode": "guest",
+                    "viewport": "600px owned SIDE_PANEL CDP emulation; warm and full extension reload/reopen",
+                    "workflow_source_sha": "232aee3bdd26a2de25d2999e996f162be740fc56",
+                    "product_artifact": "Store candidate v0.2.479; hosted release 38080281242/artifact 11680078743; source 47a9b1c9c8e966bcbf4bb27a07542a795420c80e; package tree c1f031c444892d84422ffa4e4c6c4edbbaf49ca9b93ef64304c69c0fd3c292e8; adapted runtime tree 267fe5ac18a439c76626170054206f6ebcafffb71ab43b48abbc20adb44287b0; loaded unpacked with candidate-key adaptation, not Store-installed.",
+                    "context_previous_indeterminate_run": 38086330146,
+                    "evidence": [
+                      "docs/stabilization/evidence/guest-scrape-normal/run38098345217/receipt.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38098345217/native-report.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38098345217/resource-finals.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38098345217/screenshots/scrape-fast-article.png",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38098345217/screenshots/scrape-reload-deep-article.png",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38098345217/resource-journals/hosted-package-38098345217-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38098345217/resource-journals/hosted-browser-38098345217-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-normal/run38098345217/resource-journals/hosted-guest-38098345217-1.jsonl"
+                    ],
+                    "proven": "All six populated panes matched warm and after full extension reload; empty Article/Images/Video/Links states were observed; capture/export invariance passed warm and after reload. After reload, replacement worker was present, opener callback entered and replied, replacement panel target appeared, and the reopened Scrape capture was observed.",
+                    "limits": "Guest candidate-key-adapted unpacked artifact only; member/admin, actual Store-installed behavior, physical resize, empty SEO/Schema states, and full feature acceptance remain unverified. T08 and the guest feature-role cell stay partial.",
+                    "independent_review": "docs/stabilization/reports/peer-review-guest-scrape-normal-run38098345217.json",
+                    "upload_hygiene_followup": "The hosted result artifact contained 27 resource-journal files, mostly from historical runs, because the workflow upload glob is broad. Only this run’s three sanitized journals were retained in the evidence package; the reviewer found no impact on behavior validity. Narrow future uploads to current run IDs."
+                  },
+                  {
+                    "run_id": 38104691870,
+                    "status": "bounded-pass",
+                    "mode": "guest",
+                    "viewport": "600px owned SIDE_PANEL CDP emulation; observed minimum met",
+                    "workflow_source_sha": "00769a35d9d34b501932f5d94e25f14181f8b381",
+                    "product_artifact": "Development v0.2.490; CI 38102137319/artifact 11688890496; source 6ed4289da90f19cab72e2d77feb7e845f71c02b7; runtime-equivalent to main at dispatch; tree 673135f7c37e5145e6e7565a1dbdf01aee98e907f3756de10411e20dc57bd633.",
+                    "evidence": [
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/receipt.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/native-report.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-finals.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-package-38104691870-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-browser-38104691870-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/hosted-guest-38104691870-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38104691870/resource-journals/local-preflight.jsonl",
+                      "docs/stabilization/runs/guest-scrape-empty-seo-schema-run38104691870.json"
+                    ],
+                    "proven": "On the owned no-signal page, a trusted fresh capture passed the readiness predicate requiring the active visible Article pane inside Scrape with the matching title. SEO showed the title, empty description, and only Title & description plus Performance groups. Schema JSON was valid with matching title, absent description/canonical, and zero Open Graph, Twitter, schema types, or JSON-LD. Capture identity and digest were unchanged after each pane.",
+                    "article_ready_evidence_note": "The ready state is not separately serialized. Successful completion requires the runner isCaptureReady predicate to pass; that predicate explicitly checks a fresh transition to the selected, active, visible Article result within active Scrape. Independent review confirmed this is adequate for this bounded subtarget.",
+                    "limits": "Guest subtarget only. Member/admin, actual Store-installed behavior, physical resize, reload, and full T08 acceptance remain unverified.",
+                    "independent_review": "Bounded PASS confirmed by fresh independent review; summary is retained in docs/stabilization/runs/guest-scrape-empty-seo-schema-run38104691870.json."
+                  },
+                  {
+                    "run_id": 38111898943,
+                    "status": "bounded-pass",
+                    "mode": "guest",
+                    "viewport": "360px narrow native-default panel; no viewport emulation",
+                    "workflow_source_sha": "8ca2dc0601f6529b0224e7656f5e364916384063",
+                    "product_artifact": "development 0.2.492; CI 38111064635/artifact 11691866852; source cda49523be8fc568616e0205143982426e766c1a; tree 0ead3f09fc7a2c9501d563e3405266695a845a109a6eb0c3df94a422054ab152",
+                    "resource_valid": true,
+                    "evidence": [
+                      "docs/stabilization/runs/38111898943.json",
+                      "docs/stabilization/resource-journals/hosted-guest-38111898943-1.jsonl",
+                      "docs/stabilization/reports/scrape-t08-guest-native-peer-20261011.json"
+                    ],
+                    "proven": "Owned guest title-only localhost page: SEO pane showed matching title, empty description and only Title & description/Performance groups; Schema pane showed valid JSON, matching title metadata and absent description/canonical plus zero OG, Twitter, schema types and JSON-LD. Full-capture export identity and SHA-256 digest were unchanged after each pane.",
+                    "independent_review": "docs/stabilization/reports/scrape-t08-guest-native-peer-20261011.json",
+                    "verdict_b": "PARTIAL: uploaded screenshots do not show the exercised Scrape/SEO/Schema panes; native DOM and export assertions provide the behavioral evidence.",
+                    "limits": "This is one guest T08/C08 subtarget on frozen development artifact cda49523be8fc568616e0205143982426e766c1a; workflow checkout was 8ca2dc0601f6529b0224e7656f5e364916384063. No full T08, other roles, reload, other widths, current-main, Store-installed, or release acceptance is claimed."
+                  },
+                  {
+                    "run_id": 38113131426,
+                    "status": "bounded-pass-peer-reviewed",
+                    "mode": "guest",
+                    "viewport": "600px owned SIDE_PANEL CDP emulation; observed minimum met; physical resize not demonstrated",
+                    "workflow_source_sha": "46c31547517484946d16472ecaeab534354f60e1",
+                    "product_artifact": "development 0.2.492; CI 38112620925/artifact 11691669564; source 83cd72b6c9a0b6cce5887c1f561668539e6d8259; tree f30e874cd5e8bdf9547a6488c7a693202b1b3fdbff867e761266a9ce0fd0259c",
+                    "resource_valid": true,
+                    "evidence": [
+                      "docs/stabilization/runs/38113131426.json",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/receipt.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/native-report.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-finals.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-package-38113131426-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-browser-38113131426-1.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38113131426/resource-journals/hosted-guest-38113131426-1.jsonl",
+                      "docs/stabilization/reports/scrape-t08-guest-normal-width-20261011.json",
+                      "docs/stabilization/reports/scrape-t08-guest-normal-peer-20261011.json"
+                    ],
+                    "proven": "On the owned title-only guest page, SEO showed matching title, empty description, and only Title & description/Performance groups; Schema JSON was valid with matching title, absent description/canonical and zero OG, Twitter, schema types, and JSON-LD. Full-capture export identity and SHA-256 digest were unchanged after each pane. The fresh peer confirmed bounded behavior PASS.",
+                    "independent_review": "docs/stabilization/reports/scrape-t08-guest-normal-peer-20261011.json",
+                    "verdict_b": "PARTIAL: uploaded screenshots omit the exercised Scrape/SEO/Schema panes, so visual rendering is not independently reviewable.",
+                    "limits": "Only this guest no-signal SEO/empty Schema subtarget on the frozen development artifact is covered. 600px is CDP-emulated; physical resize, member/admin, reload for this subtarget, Store-installed, current-main, release, and full T08/C08 acceptance remain unverified. T08 and the guest feature-role cell remain partial."
+                  },
+                  {
+                    "run_id": 38202228159,
+                    "status": "bounded-pass",
+                    "mode": "guest",
+                    "viewport": "360px native-default side panel",
+                    "workflow_source_sha": "60ba435863599b32f10acd9c95fff366cc09a36e",
+                    "product_artifact": "Development v0.2.509; CI 38201493024/artifact 11725033293; exact source 60ba435863599b32f10acd9c95fff366cc09a36e; tree bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42.",
+                    "evidence": [
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/native-report.sanitized.json",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-package-38202228159-1.sanitized.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-browser-38202228159-1.sanitized.jsonl",
+                      "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-guest-38202228159-1.sanitized.jsonl"
+                    ],
+                    "proven": "Bounded guest title-only no-signal SEO and empty Schema panes were visible/selected with matching values; capture export identity/digest unchanged after each pane; all three resource finals valid.",
+                    "limits": "The screenshots show setup rather than final panes (peer Verdict B PARTIAL). This repeats an existing bounded behavior on current-main source; no full T08, other roles, reload, physical resize, Store-installed or full Scrape credit.",
+                    "independent_review": "docs/stabilization/reports/guest-scrape-t08-peer-run38202228159.json"
+                  }
+                ]
+              },
+              "superseded_at": "2026-10-12T20:22:00Z"
             }
           ],
           "attempt_history": [

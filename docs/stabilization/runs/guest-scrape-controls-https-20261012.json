@@ -1,0 +1,107 @@
+{
+  "schema_version": 1,
+  "run_id": "guest-scrape-controls-https-20261012",
+  "feature_id": "EXT-F-1007",
+  "mode": "guest",
+  "status": "partial",
+  "artifact": {
+    "channel": "development",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
+    "ci_run_id": "38298993769",
+    "artifact_id": "11769703557",
+    "tree_sha256": "d9431a4d666e174f4115fec02198e14c22f452c8fa65ee00d80dc574ba9cc93b"
+  },
+  "browser": {
+    "profile": "Chrome Profile 8",
+    "auth_mode": "guest",
+    "guest_ui_after_reload": true,
+    "store_copy_enabled": false,
+    "development_copy_enabled": true,
+    "development_copy_pinned": true,
+    "post_reload_identity": "chrome://extensions showed the same version, ID, enabled state, pinned state, and unpacked source path"
+  },
+  "resource": {
+    "journal": "docs/stabilization/resource-journals/guest-scrape-controls-https-20261012.jsonl",
+    "decision": "valid",
+    "resource_invalid": false,
+    "exit_code": 0
+  },
+  "fixture": {
+    "kind": "owned-https-page",
+    "page": "https://www.aimatrx.com/matrx-extend-demo",
+    "title": "Matrx Extend Demo Page — AI Matrx",
+    "capture_smoke": "reached selected Article result with Images 1, Video, Links 17, SEO, and Schema tabs"
+  },
+  "cases": [
+    {
+      "case_id": "EXT-F-1007-T05",
+      "status": "partial",
+      "warm": {
+        "edit_apply": "pass; edited marker and replacement text appeared in the Article result",
+        "guest_save": "fail; after Save Source, no Source landed and the edited capture remained on device",
+        "guest_save_visible_result": "Not yet a Source card displayed permission denied for function mbr_for_user rather than a sign-in remedy",
+        "warm_retry": "same card and permission error after Retry save"
+      },
+      "post_reload": {
+        "extension_reload": "reloaded successfully; exact version, ID, and unpacked source path remained bound",
+        "unsaved_card": "persisted across reload",
+        "retry": "same permission error and no Source; Article result view required a fresh capture and was not re-created"
+      },
+      "expected_guest_behavior": "Retain the device-local edited capture and show a sign-in remedy without a Source landing.",
+      "limitations": [
+        "Sign-in remedy and absence of organization-membership access while guest were not observed.",
+        "No authentication values or raw network logs were collected.",
+        "No post-reload article Apply was attempted because the retained capture was shown only in the Unsaved card."
+      ],
+      "defect_ids": ["EXT-D-0217"]
+    },
+    {
+      "case_id": "EXT-F-1007-T06",
+      "status": "partial",
+      "warm": "pass; Cancel closed the editor and left the original sentence visible, with no edit marker from the cancelled draft",
+      "post_reload": "unverified; editor was not re-opened after extension reload"
+    },
+    {
+      "case_id": "EXT-F-1007-T07",
+      "status": "partial",
+      "warm": {
+        "fixture_pane": "In-memory Article edit appended 24 deterministic paragraphs to make the result pane scrollable; not saved to a Source.",
+        "sync_on": "pass; scrolling the live page from top to bottom moved Article from its start to its end",
+        "sync_off": "pass; after toggling off, scrolling the live page left Article at its established position"
+      },
+      "post_reload": "unverified; Article result view did not restore automatically"
+    },
+    {
+      "case_id": "EXT-F-1007-T08",
+      "status": "partial",
+      "warm": {
+        "selected_tabs": ["Article", "Images", "Video", "Links", "SEO", "Schema"],
+        "visible_content": "Article, one image, 17 links, SEO audit, and Schema metadata rendered in their selected panes",
+        "media_limits": "One image only; no video content or other image-size tiers were available on the fixture."
+      },
+      "post_reload": "unverified; capture result panes were not restored automatically"
+    }
+  ],
+  "evidence": {
+    "save_reproduction_steps": [
+      "In guest mode on the owned HTTPS demo page, Capture, edit article markdown, Apply, then Save.",
+      "In the Name / Save Source form, choose Save Source.",
+      "Observe the retained Not yet a Source card and membership permission error.",
+      "Choose Retry save before reload and again after extension reload; the same visible error persists."
+    ],
+    "save_expected_vs_actual": "Expected guest sign-in remedy with retained draft; actual permission-denied function error with retained draft, no landed Source.",
+    "visible_guest_identity": "After reload the Chat surface explicitly said You're using Matrx as a guest; the header also showed saved sign-in restoration failure.",
+    "source_mutation": false,
+    "credentials_or_auth_values_recorded": false,
+    "raw_transcript_recorded": false
+  },
+  "limits": [
+    "All observations are bound only to the frozen development artifact above; this is not current-main, Store, or release acceptance.",
+    "Only warm T06/T07/T08 substeps were exercised; required case lifecycle dimensions remain partial.",
+    "The page had one image and no video; unavailable media tiers and video content remain unverified.",
+    "The additional Article text used for scroll testing remained in memory and was not saved."
+  ]
+}
