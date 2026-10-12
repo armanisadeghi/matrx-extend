@@ -409,6 +409,8 @@ jobs:
             [[ "$MEMBER_DATA_SCOPE" == lifecycle || "$MEMBER_DATA_SCOPE" == auto-extract ]] || exit 1
           elif [[ "$MEMBER_DATA_SCOPE" != lifecycle ]]; then
             exit 1
+          elif [[ "$ACCEPTANCE_CASE" == notes-find-member ]]; then
+            [[ "$SCRAPE_AUTH_MODE" == member && "$SCRAPE_WIDTH_MODE" == narrow && -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1
           elif [[ "$ACCEPTANCE_CASE" != guest-scrape && "$ACCEPTANCE_CASE" != guest-scrape-development && "$ACCEPTANCE_CASE" != scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == guest && "$SCRAPE_WIDTH_MODE" == narrow && -z "$SCRAPE_NORMAL_WIDTH_PX" ]] || exit 1
           fi
