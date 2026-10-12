@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "run_id": "guest-scrape-controls-20261012-profile8",
+  "feature_id": "EXT-F-1007",
+  "mode": "guest",
+  "status": "blocked-before-target-cases",
+  "artifact": {
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "source_sha": "cd6c4381520dcdaf037eb64c47e41059330ea6bf",
+    "ci_run_id": "38298993769",
+    "artifact_id": "11769703557",
+    "tree_sha256": "d9431a4d666e174f4115fec02198e14c22f452c8fa65ee00d80dc574ba9cc93b"
+  },
+  "browser": {
+    "profile_path": "/Users/armanisadeghi/Library/Application Support/Google/Chrome/Profile 8",
+    "profile_label": "Arman (armansadeghi.com)",
+    "store_copy_enabled": false,
+    "development_copy_enabled": true,
+    "development_copy_pinned": true
+  },
+  "resource": {
+    "journal": "docs/stabilization/resource-journals/guest-scrape-controls-20261012-profile8.jsonl",
+    "decision": "valid",
+    "resource_invalid": false
+  },
+  "fixture": {
+    "kind": "owned-local-file",
+    "url_scheme": "file",
+    "title": "Owned Scrape Controls Fixture",
+    "capture_result": "refused",
+    "visible_message": "Chrome blocks extensions on this URL scheme. Open a regular http(s) page and try again.",
+    "cleanup": "closed the test tab; no shared fixture or account state changed"
+  },
+  "cases": [
+    {"case_id": "EXT-F-1007-T05", "status": "unverified", "reason": "Fixture capture was refused before article editor opened."},
+    {"case_id": "EXT-F-1007-T06", "status": "unverified", "reason": "Fixture capture was refused before article editor opened."},
+    {"case_id": "EXT-F-1007-T07", "status": "unverified", "reason": "Fixture capture was refused before article pane opened."},
+    {"case_id": "EXT-F-1007-T08", "status": "unverified", "reason": "Fixture capture was refused before result tabs rendered."}
+  ],
+  "limitations": [
+    "No requested product case was exercised; no inventory result changed.",
+    "This did not reproduce a defect. The file-scheme refusal is outside T05-T08.",
+    "Warm panel only. Extension reload was intentionally omitted under the frozen-artifact instruction.",
+    "Chrome UI reported the profile label but did not itself expose the profile-directory path; path comes from the existing native load receipt."
+  ]
+}
