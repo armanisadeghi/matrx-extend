@@ -1,0 +1,64 @@
+{
+  "id": "EXT-D-0206",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T01"],
+  "title": "Sign-out scope gate rejects the shared auth package's local OAuth signOut",
+  "surface": "Release infrastructure signout-scope guard",
+  "auth_mode": "guest/member/admin; guard failure is independent of sign-in",
+  "preconditions": [
+    "Run the exact-main CI candidate at source associated with GitHub Actions run 38251459600 after the @ai-matrx/auth package migration.",
+    "Run the required pnpm check:signout-scope gate."
+  ],
+  "reproduction": [
+    "Observe exact-main CI run 38251459600 fail in pnpm check:signout-scope at src/lib/auth/flow.ts oauth.signOut().",
+    "The migrated shared-package signOut is scoped to the local OAuth client; the guard currently treats that call as unscoped.",
+    "Independent safety reviews of the guard repair in progress found bypasses; no repaired gate or release candidate has been accepted."
+  ],
+  "expected": "The guard accepts the shared auth package's local-scope signOut while continuing to reject genuine unscoped sign-out paths; required CI remains green.",
+  "actual": "Required exact-main CI fails on a local-scope OAuth signOut call after the auth package migration, blocking infrastructure validation. No product sign-out defect has been established.",
+  "cause": "The sign-out guard does not recognize the migrated shared auth package's local OAuth client scope, and the repair's safety boundary is not yet proven against bypasses.",
+  "severity": "S2: a required release/CI guard blocks validation; no product behavior impact established",
+  "priority": "P0: restore a sound required gate before relying on release-candidate validation",
+  "state": "in-fix",
+  "owner": "matrx_extend_stabilization",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38251459600",
+    "src/lib/auth/flow.ts: oauth.signOut()",
+    "scripts/check-signout-scope.mjs"
+  ],
+  "next_action": "Complete the guard repair with independent review of the discovered bypasses, then rerun the exact-main failing gate and the surrounding sign-out scope controls. Keep the original CI failure as infrastructure evidence; do not claim product sign-out failure or retest closure from source repair alone.",
+  "transition_history": [
+    {
+      "at": "2026-10-12",
+      "from": null,
+      "to": "open",
+      "reason": "Exact-main CI run 38251459600 failed pnpm check:signout-scope at the migrated local OAuth signOut call."
+    },
+    {
+      "at": "2026-10-12",
+      "from": "open",
+      "to": "triaged",
+      "reason": "The failure is classified as a release-infrastructure false positive; no product sign-out failure is established."
+    },
+    {
+      "at": "2026-10-12",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Guard repair is in progress; independent safety reviews found bypasses that still need resolution."
+    }
+  ],
+  "control_ids": ["EXT-F-0003-C03"],
+  "role_org_permissions": "Guest, member, and admin behavior is identical because this is a static CI guard. Organization and runtime permissions are not applicable.",
+  "build_receipt": null,
+  "reproducibility_count": "1/1 observed in exact-main CI run 38251459600; a local post-repair rerun is pending.",
+  "sibling_census": "The guard checks sign-out paths in the extension, including the migrated src/lib/auth/flow.ts OAuth call. Other genuine sign-out callers and local/global scope assertions remain to be independently censused after repair; reviewers found bypasses in the current repair.",
+  "fix_commits": "No repair commit SHA recorded; guard repair remains under review.",
+  "original_repro_retest": "Pending: rerun pnpm check:signout-scope against the exact repaired source and verify the original oauth.signOut() call passes for the intended local scope.",
+  "surrounding_case_runs": "Pending: exercise the guard’s existing scoped-local and genuine-unscoped refusal controls; no surrounding run IDs supplied.",
+  "reviewer_identity": "Independent safety reviews found bypasses; reviewer identities and review artifact paths were not supplied.",
+  "role": "Guest, member, and admin share the same static guard path.",
+  "organization": "Not applicable to the static CI check.",
+  "permissions": "Not applicable to the static CI check.",
+  "build_receipt_status": "Not applicable: no browser/native artifact is involved; exact-main CI run 38251459600 is the source evidence.",
+  "retest_status": "Pending: exact repaired gate and surrounding scoped-signout controls have not been rerun."
+}
