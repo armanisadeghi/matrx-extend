@@ -1125,6 +1125,12 @@ Every entry follows this shape:
 
 ---
 
+### Guidance annotation Gist links
+- **What it does:** Pasted and previously saved GitHub Gist embeds appear as links to GitHub. Annotation drawing, editing, and saving remain available; Gist previews do not execute remote scripts.
+- **Where to test:** Signed in → Guidance → a saved screenshot → Annotate.
+- **Steps:** Draw an arrow and label, paste a GitHub Gist URL, then double-click its embed and select **Open Gist on GitHub**. Save and reopen the annotation. Repeat with an annotation saved before this change that contains a Gist embed.
+- **Expected:** The link opens the matching Gist in a new tab. The canvas preserves the arrow, label, and Gist shape after reopening. No Gist iframe, `srcDoc`, or `gist.github.com/*.js` request is created by the extension. Other annotation tools remain available.
+
 ### Guidance cloud sync (TASK-004)
 - **What it does:** Guidance metadata (notes / screenshots / GIFs / demo refs) now persists to the cloud (`public.wbx_guidance`), not just the artifact bytes — so guidance created on one machine shows up on another after sign-in. DB is the source of truth; `chrome.storage.local` is an offline cache. Every save/delete (UI **or** agent tool) best-effort mirrors to the cloud; sign-in hydrates cloud→local last-write-wins.
 - **Where to test:** Side panel - **Guidance** tab; cross-machine (or simulate by clearing local storage).

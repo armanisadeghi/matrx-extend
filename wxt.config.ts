@@ -3,6 +3,7 @@ import tailwindcss from '@tailwindcss/vite';
 import ts from 'typescript';
 import { defineConfig } from 'wxt';
 
+import { tldrawGistLink } from './scripts/vite/tldraw-gist-link';
 import { FIREFOX_GECKO_ID } from './src/config/identity';
 
 const devExtensionKey =
@@ -251,6 +252,7 @@ export default defineConfig({
   vite: () => ({
     plugins: [
       tailwindcss(),
+      tldrawGistLink(),
       {
         name: 'object-inspect-browser-util',
         enforce: 'pre',
