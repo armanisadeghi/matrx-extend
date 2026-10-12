@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "run_id": 38202228159,
+  "case_id": "EXT-F-1007-T08",
+  "reviewed_at_utc": "2026-10-12T04:17:33Z",
+  "verdict_a": {
+    "status": "PASS_BOUNDED",
+    "finding": "The exact-source native driver requires an initial empty result, a trusted capture click, then waits for a selected visible Article pane before selecting and reading SEO and Schema. The report records both target panes visible/selected, expected no-signal values, and unchanged capture export identity/digest after each selection. This establishes only the named guest subtarget."
+  },
+  "verdict_b": {
+    "status": "PARTIAL",
+    "finding": "Official CI and hosted artifact provenance, verify-scrape, and three valid resource finals support the report. The retained screenshots show setup rather than final SEO/Schema panes, so visual corroboration of final rendering is absent; behavior rests on direct DOM oracle assertions."
+  },
+  "adjudication": {
+    "initial_review": "An initial independent reviewer gave FAIL after interpreting zero result tabs in capture_diagnostic.before/immediate as a post-capture contradiction.",
+    "ruling": "REFUTED: before is sampled before the capture click; immediate is sampled immediately after click; the driver then waits for visible Article results and only later selects and observes SEO/Schema. The second fresh reviewer independently confirmed this event order.",
+    "source": "tests/browser/scrape-seo-schema-empty-guest.mjs and scrape-seo-schema-empty-observation.mjs at 60ba435863599b32f10acd9c95fff366cc09a36e"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-package-38202228159-1.sanitized.jsonl",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-browser-38202228159-1.sanitized.jsonl",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-guest-38202228159-1.sanitized.jsonl"
+  ],
+  "limits": "No full T08 or full Scrape pass, member/admin, Store-installed, reload, physical resize or release claim. No final-pane screenshot."
+}

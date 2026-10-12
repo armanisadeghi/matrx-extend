@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T02:10:00Z",
+  "updated_at": "2026-10-12T04:17:33Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -23279,7 +23279,7 @@
               "unverified": [
                 "Member/admin modes and their SEO/Schema behavior; actual Store-installed behavior; physical resize; reload behavior for this subtarget; full Scrape feature acceptance."
               ],
-              "detail": "Guest T08/C08 has bounded subtarget evidence for populated result tabs and empty Article/Images/Video/Links states on earlier runs, plus no-signal SEO and empty Schema on 600px CDP-emulated runs 38104691870 and 38113131426 and 360px native-default run 38111898943. Fresh independent review of run 38113131426 confirms behavior PASS for its bounded guest subtarget on frozen development source 83cd72b6c9a0b6cce5887c1f561668539e6d8259, workflow checkout 46c31547517484946d16472ecaeab534354f60e1; all three resource finals are valid. The uploaded screenshots omit the target panes (Verdict B PARTIAL), and emulated 600px does not demonstrate physical resize. T08 and the guest feature-role cell remain partial; member/admin, reload for this subtarget, physical resize, current-main, Store-installed, release, and the rest of full Scrape acceptance remain unverified.",
+              "detail": "Guest T08/C08 has bounded subtarget evidence for populated result tabs and empty Article/Images/Video/Links states on earlier runs, plus no-signal SEO and empty Schema on 600px CDP-emulated runs 38104691870 and 38113131426 and 360px native-default run 38111898943. Fresh independent review of run 38113131426 confirms behavior PASS for its bounded guest subtarget on frozen development source 83cd72b6c9a0b6cce5887c1f561668539e6d8259, workflow checkout 46c31547517484946d16472ecaeab534354f60e1; all three resource finals are valid. The uploaded screenshots omit the target panes (Verdict B PARTIAL), and emulated 600px does not demonstrate physical resize. T08 and the guest feature-role cell remain partial; member/admin, reload for this subtarget, physical resize, current-main, Store-installed, release, and the rest of full Scrape acceptance remain unverified. Current-main v0.2.509 run 38202228159 repeats the bounded guest title-only no-signal SEO/empty Schema observations at native-default 360px with valid resource finals; peer Verdict A PASS bounded/B PARTIAL because screenshots omit final panes. It adds no unique behavior count and does not change guest T08 partial status.",
               "bounded_subtarget_evidence": [
                 {
                   "run_id": 38044684443,
@@ -23404,6 +23404,23 @@
                   "independent_review": "docs/stabilization/reports/scrape-t08-guest-normal-peer-20261011.json",
                   "verdict_b": "PARTIAL: uploaded screenshots omit the exercised Scrape/SEO/Schema panes, so visual rendering is not independently reviewable.",
                   "limits": "Only this guest no-signal SEO/empty Schema subtarget on the frozen development artifact is covered. 600px is CDP-emulated; physical resize, member/admin, reload for this subtarget, Store-installed, current-main, release, and full T08/C08 acceptance remain unverified. T08 and the guest feature-role cell remain partial."
+                },
+                {
+                  "run_id": 38202228159,
+                  "status": "bounded-pass",
+                  "mode": "guest",
+                  "viewport": "360px native-default side panel",
+                  "workflow_source_sha": "60ba435863599b32f10acd9c95fff366cc09a36e",
+                  "product_artifact": "Development v0.2.509; CI 38201493024/artifact 11725033293; exact source 60ba435863599b32f10acd9c95fff366cc09a36e; tree bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42.",
+                  "evidence": [
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/native-report.sanitized.json",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-package-38202228159-1.sanitized.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-browser-38202228159-1.sanitized.jsonl",
+                    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-guest-38202228159-1.sanitized.jsonl"
+                  ],
+                  "proven": "Bounded guest title-only no-signal SEO and empty Schema panes were visible/selected with matching values; capture export identity/digest unchanged after each pane; all three resource finals valid.",
+                  "limits": "The screenshots show setup rather than final panes (peer Verdict B PARTIAL). This repeats an existing bounded behavior on current-main source; no full T08, other roles, reload, physical resize, Store-installed or full Scrape credit.",
+                  "independent_review": "docs/stabilization/reports/guest-scrape-t08-peer-run38202228159.json"
                 }
               ]
             },

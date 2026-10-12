@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "run_id": 38202446117,
+  "case_id": "EXT-F-2006-T02",
+  "auth_mode": "member",
+  "status": "blocked_precondition",
+  "product_credit": 0,
+  "source_sha": "60ba435863599b32f10acd9c95fff366cc09a36e",
+  "ci_run_id": 38201493024,
+  "development_artifact_id": 11725033293,
+  "extension_version": "0.2.509",
+  "hosted_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38202446117",
+  "finding": "Authenticated non-admin member and selected organization passed. platform.my_homes returned one canonical General with scope_id null while context_tree had no selected-org scopes/types. The existing T02 harness refused notes_find_general_home_uninitialized before opening Notes or creating fixtures. This is a legitimate lazy state, not an observed product defect.",
+  "verification": "verify-notes refused HOSTED_RUN_NOT_SUCCESSFUL. Package and browser resource finals valid; guest final invalid because child exited 1. The native T02 case remained unverified.",
+  "cleanup": "No note/home fixtures were created. The one-use reviewer link and private identity file were removed by the lane owner; root independently verified the GitHub secret-name lookup was zero after terminal. Credential values are absent from repo evidence.",
+  "evidence": [
+    "docs/stabilization/evidence/notes-find-member/run38202446117/native-report.sanitized.json",
+    "docs/stabilization/evidence/notes-find-member/run38202446117/resource-finals.sanitized.json"
+  ],
+  "limits": "No Notes UI, General picker, home move, search, full T02 or EXT-D-0201 live retest was observed. Manual resource-final extraction preserves only fixed fields because the standard journal copier refused an unsupported process-attribution event.",
+  "next_action": "Use a guarded read-only member case that opens Notes in this lazy state and checks the synthetic General home choice without initializing or writing it; independently review before product credit."
+}

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "run_id": 38202228159,
+  "case_id": "EXT-F-1007-T08",
+  "subtarget": "guest_no_signal_seo_and_empty_schema_panes",
+  "auth_mode": "guest",
+  "status": "bounded-pass",
+  "coverage_status": "partial",
+  "hosted_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38202228159",
+  "source_sha": "60ba435863599b32f10acd9c95fff366cc09a36e",
+  "ci_run_id": 38201493024,
+  "development_artifact_id": 11725033293,
+  "hosted_artifact_id": 11726037418,
+  "hosted_artifact_digest": "sha256:ffe79796b2824d1879124594cb4afa2ca2c8d7473556e356cab713bdbe9ce912",
+  "extension_version": "0.2.509",
+  "tree_sha256": "bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42",
+  "observed": [
+    "Trusted Capture click inside the active Scrape panel on an owned title-only guest fixture.",
+    "After the driver waited for a visible selected Article result, SEO and Schema were each visible and selected with the expected no-signal/empty values.",
+    "Capture export identity and digest were unchanged after each pane selection.",
+    "Native default side-panel width was 360px."
+  ],
+  "resource_finals": {
+    "package": "valid",
+    "browser": "valid",
+    "guest": "valid"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-package-38202228159-1.sanitized.jsonl",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-browser-38202228159-1.sanitized.jsonl",
+    "docs/stabilization/evidence/guest-scrape-empty-seo-schema/run38202228159/resource-journals/hosted-guest-38202228159-1.sanitized.jsonl"
+  ],
+  "independent_review": "docs/stabilization/reports/guest-scrape-t08-peer-run38202228159.json",
+  "limits": [
+    "Bounded guest no-signal SEO and empty Schema subtarget only; full T08, member/admin, reload, physical resize, actual Store-installed behavior and full Scrape remain unverified.",
+    "Available screenshots show setup only, not the final result panes; direct native DOM assertions carry behavior evidence.",
+    "This repeats earlier bounded guest evidence on current-main source and adds no new unique behavior count."
+  ]
+}
