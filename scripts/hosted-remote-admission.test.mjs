@@ -38,6 +38,24 @@ const seoInput = {
   sourceSha: 'a'.repeat(40),
 };
 
+test('reviewed D217 workflow admits existing routes but refuses scope removal or unreviewed bytes', () => {
+  const workflow = readFileSync(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  assert.equal(requireHostedWorkflowContract(workflow), true);
+  const missingScope = workflow.replace('          - stale-profile-retry\n', '');
+  assert.notEqual(missingScope, workflow, 'D217 scope mutation must change workflow bytes');
+  assert.throws(
+    () => requireHostedWorkflowContract(missingScope),
+    /HOSTED_WORKFLOW_BLOB_UNREVIEWED/,
+  );
+  assert.throws(
+    () => requireHostedWorkflowContract(`${workflow}\n# unreviewed`),
+    /HOSTED_WORKFLOW_BLOB_UNREVIEWED/,
+  );
+});
+
 test('standalone hosted CLI reaches admission refusals without installed packages', () => {
   const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'hosted-admission-bootstrap-')));
   try {

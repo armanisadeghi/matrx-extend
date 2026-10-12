@@ -12,8 +12,8 @@ const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
 const DISPATCH_REQUESTER = 'extend-stabilization';
 // Reviewed bytes of this narrow lane's active hosted workflow. Any workflow edit needs review.
 // Notes CDP opt-in uses startup_display_mode; SEO diagnostics share one input, leaving 25.
-// requested_by only attributes a run in GitHub Actions; phase/fixture guards are unchanged.
-const REVIEWED_WORKFLOW_SHA256 = 'a7c7eebc738ad90f19a9738c5a70c235fb5515a01109c910ac46b71c193c854b';
+// D217 adds only the reviewed member/none stale-profile retry scope; all phase/fixture guards remain.
+const REVIEWED_WORKFLOW_SHA256 = 'd44330117a3d27c801e87cf461ff595ab70873b10c2929d924a4f904d14d4b09';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );

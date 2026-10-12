@@ -64,5 +64,14 @@
     "gut_check": "plant.py replaced the entire persisted-content oracle with constant success; the new test failed Missing expected exception; original file restored identically.",
     "native_status": "Unverified. No browser launches, heavy suite, fixture access or hosted dispatch occurred during this follow-up.",
     "observer_limit": "Guest network observer counts the named mbr_for_user RPC and POST /sources/land only; it does not claim surveillance of every possible organization read/write endpoint."
+  },
+  "workflow_provenance_repair": {
+    "cause": "D217 workflow change c8e5c3b94 left the central reviewed workflow SHA256 on the previous byte content, causing HOSTED_WORKFLOW_BLOB_UNREVIEWED for all existing dispatch routes.",
+    "red": "node --test scripts/test-hosted-acceptance-lanes.mjs reproduced 14 failures / 41 tests; new explicit current-D217-workflow test increased this to 15 failures / 42 before the digest repair.",
+    "change": "Updated only REVIEWED_WORKFLOW_SHA256 in scripts/hosted-remote-admission.mjs to reviewed workflow digest d44330117a3d27c801e87cf461ff595ab70873b10c2929d924a4f904d14d4b09. No workflow, permission, phase/resource, artifact, fixture or refusal rule was changed.",
+    "green": "All 42 hosted acceptance guard tests passed, including existing Scrape, Notes, SEO, member Data and Settings dispatch/provenance checks. New test accepts the exact reviewed D217 workflow but rejects removing the D217 scope or appending unreviewed bytes.",
+    "compile": "pnpm compile passed.",
+    "lint": "Final pnpm -s lint passed over 2867 files with 896 existing warnings and no errors; exact-path formatting and git diff --check passed.",
+    "limits": "No browser/hosted run, dispatch or native acceptance performed. D218 active browser edits untouched. Fresh peer review and parent integration/push remain pending."
   }
 }
