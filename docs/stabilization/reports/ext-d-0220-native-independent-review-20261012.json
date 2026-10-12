@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_native_acceptance_evidence_review",
+  "reviewed_commit": "8bbc8da5c73ba63900a3bbd7d07a1467a182f16a",
+  "defect_id": "EXT-D-0220",
+  "run_id": "ext-d-0220-native-20261012-2252",
+  "case_ids": [
+    "EXT-F-1003-T04",
+    "EXT-F-1003-T10"
+  ],
+  "scope": "Isolated signed-out guest Settings native side panel on unpublished development artifact 0.2.509; T04 absent theme-key/settings-container baseline, Dark/Light/System selections and reload checks; bounded T10 Default mode observations. No Store, member/admin, or whole-Settings claim.",
+  "verdicts": {
+    "A_behavior_and_provenance": {
+      "status": "PASS_WITH_T04_FAIL_AND_T10_BOUNDED_PASS",
+      "behavior": {
+        "T04": "Keep failed/incomplete. Dark, Light, and System changes, appearance, and panel reload checkpoints passed. The absent theme key and absent settings container were observed after the first full extension reload, including storedPresent=false and storagePresent=false. Later cleanup failed specifically at restore_baseline_select; no complete T04 pass is supported.",
+        "T10": "The run reports 17 passing criteria and zero failures. Credit only the bounded guest Default mode case; do not extend it to other Settings cases or roles."
+      },
+      "provenance": "Sanitized run, import-status receipt, and promotion receipt agree on CI run 38316843884, artifact 11777408625, digest sha256:23f19b512ac8896c8d5bc2f19ee7a6fa07af98980e6f2a6baf6877a28dd4b275, tree 2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a, version 0.2.509, and extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml. Import receipt identifies current pushed source fe631ec14c443d025dec04c1fa00795b1feaddb0 with no untracked runner inputs. That artifact source is an ancestor of reviewed commit 8bbc8da; the stated task-source/artifact-source difference is limited to the store-release-checkpoint report. Promotion is explicitly unpublished and Store-ineligible.",
+      "resource": "The 2252 run was admitted and ended child_failed with exit 1 but resourceInvalid=false; this is a workload failure, not an invalid resource result. Owned cleanup reached a terminal decision. The earlier 2250 setup attempt also ended child_failed and is correctly assigned zero product credit because Playwright was unavailable before Chrome launched. Both preceding check-only journals end valid/resourceInvalid=false."
+    },
+    "B_evidence_quality": {
+      "status": "PASS_WITH_LIMITS",
+      "basis": [
+        "The sanitized native report preserves the decisive T04 expected-versus-observed absent-key state, each named selection/panel-reload checkpoint, the full-reload failure stage, bounded T10 count, and run identity.",
+        "The source inventory criteria bound T04 to applied/persisted system/light/dark appearance and T10 to retained Ask/Act choice becoming the new-chat default.",
+        "The current run's sanitized T10 section gives an aggregate 17-pass/zero-fail result without enumerating all 17 assertions; therefore this review confirms only the reported bounded T10 result and does not independently reconstruct each assertion.",
+        "Resource journals record admission, healthy monitoring, terminal cleanup, and final decisions. The failed setup attempt is distinct and receives no behavior credit.",
+        "A credential-pattern scan of the sanitized native report, run journal, import receipt, and promotion receipt found no credential values. The sanitized report retains no raw screenshots or raw DOM/errors; this review made no claim about ignored raw artifacts."
+      ],
+      "evidence_paths": [
+        "docs/stabilization/evidence/settings-controls-local/run-ext-d-0220-native-20261012-2252/native-report.sanitized.json",
+        "docs/stabilization/runs/ext-d-0220-native-retest-20261012.json",
+        "docs/stabilization/resource-journals/ext-d-0220-native-20261012-2252.jsonl",
+        "docs/stabilization/resource-journals/ext-d-0220-native-20261012-2250.jsonl",
+        "docs/stabilization/resource-journals/ext-d-0220-native-20261012-2250-check.jsonl",
+        "docs/stabilization/resource-journals/ext-d-0220-native-20261012-2250-check2.jsonl",
+        "docs/stabilization/inventory.json",
+        "test-results/ci-artifacts/fe631ec14c443d025dec04c1fa00795b1feaddb0/38316843884-1/import-status.json",
+        "test-results/ci-dev-promotion-receipt.json"
+      ]
+    }
+  },
+  "overall": "The run report is sound when retained as T04 failed/incomplete with the absent-key observation preserved, and T10 as a bounded 17-criterion pass. Diagnose restore_baseline_select and require a fresh guarded retest before promoting T04.",
+  "review_limits": [
+    "No new browser run was performed.",
+    "T10 assertions are summarized by count in the retained sanitized report, not individually listed.",
+    "No Store, member/admin, or overall Settings behavior is inferred."
+  ]
+}
