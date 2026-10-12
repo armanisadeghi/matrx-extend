@@ -1,10 +1,12 @@
 import { spawn } from 'node:child_process';
 import { readFile, realpath, stat } from 'node:fs/promises';
-import { createRequire } from 'node:module';
+import { userInfo } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireNativeResourceHealth } from '../tests/browser/native-resource-boundary.mjs';
 
+export const CODEX_PLAYWRIGHT_MODULE =
+  '/Users/armanisadeghi/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
 export const TEST_BROWSER_CACHE = '/Volumes/Samsung2TB/.codex-playwright-browsers';
 const repo = fileURLToPath(new URL('..', import.meta.url));
 const refuse = (reason) => {
@@ -20,17 +22,22 @@ export async function installTestChromium({
   leaseRoot,
   spawnChild = spawn,
   canonicalPath = realpath,
+  runtimeFiles = { readFile, realpath, stat },
 } = {}) {
   if (args.length) refuse('arguments_forbidden');
   await requireNativeResourceHealth({ repo: repository, env, leaseRoot });
   const modulePath = env.MATRX_PLAYWRIGHT_MODULE;
   if (!modulePath || !isAbsolute(modulePath)) refuse('absolute_playwright_module_required');
+  if (modulePath !== CODEX_PLAYWRIGHT_MODULE) refuse('untrusted_playwright_module');
   let cli;
   let version;
   try {
-    const installed = await realpath(modulePath);
+    const installed = await runtimeFiles.realpath(modulePath);
+    if (installed !== CODEX_PLAYWRIGHT_MODULE) refuse('redirected_playwright_module');
     const packageRoot = dirname(installed);
-    const metadata = JSON.parse(await readFile(join(packageRoot, 'package.json'), 'utf8'));
+    const metadata = JSON.parse(
+      await runtimeFiles.readFile(join(packageRoot, 'package.json'), 'utf8'),
+    );
     if (
       installed !== join(packageRoot, 'index.mjs') ||
       metadata.name !== 'playwright' ||
@@ -38,16 +45,18 @@ export async function installTestChromium({
       !/^\d+\.\d+\.\d+$/.test(metadata.version)
     )
       refuse('wrong_playwright_package');
-    const require = createRequire(installed);
-    const core = require('playwright-core/package.json');
+    const corePath = join(dirname(packageRoot), 'playwright-core/package.json');
+    if ((await runtimeFiles.realpath(corePath)) !== corePath) refuse('redirected_playwright_core');
+    const core = JSON.parse(await runtimeFiles.readFile(corePath, 'utf8'));
     if (
       core.name !== 'playwright-core' ||
       core.version !== metadata.version ||
       metadata.dependencies?.['playwright-core'] !== core.version
     )
       refuse('playwright_core_version_mismatch');
-    cli = await realpath(join(packageRoot, 'cli.js'));
-    if (dirname(cli) !== packageRoot || !(await stat(cli)).isFile()) refuse('wrong_playwright_cli');
+    cli = await runtimeFiles.realpath(join(packageRoot, 'cli.js'));
+    if (cli !== join(packageRoot, 'cli.js') || !(await runtimeFiles.stat(cli)).isFile())
+      refuse('wrong_playwright_cli');
     version = metadata.version;
   } catch (error) {
     if (error.message.startsWith('TEST_CHROMIUM_INSTALL_REFUSED:')) throw error;
@@ -67,7 +76,12 @@ export async function installTestChromium({
   const child = spawnChild(process.execPath, [cli, 'install', 'chromium', '--no-shell'], {
     cwd: repository,
     env: {
-      ...env,
+      HOME: userInfo().homedir,
+      PATH: '/usr/bin:/bin:/usr/sbin:/sbin',
+      LANG: 'en_US.UTF-8',
+      MATRX_RESOURCE_OWNER: env.MATRX_RESOURCE_OWNER,
+      MATRX_RESOURCE_RUN_ID: env.MATRX_RESOURCE_RUN_ID,
+      MATRX_RESOURCE_STOP_FILE: env.MATRX_RESOURCE_STOP_FILE,
       PLAYWRIGHT_BROWSERS_PATH: TEST_BROWSER_CACHE,
       PLAYWRIGHT_SKIP_BROWSER_GC: '1',
     },
