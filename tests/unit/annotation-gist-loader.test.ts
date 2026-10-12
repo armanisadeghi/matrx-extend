@@ -89,18 +89,18 @@ describe('annotation Gist embeds', () => {
     expect(html).toContain('srcDoc=');
     expect(html).toContain('https://gist.github.com/aa11bb22cc33.js');
   });
-  it('fails closed when an upstream upgrade changes the renderer boundary', async () => {
+  it('refuses an upstream upgrade that removes the recognized Gist renderer', async () => {
     await expect(
       transformAnnotationEmbed(upstream.replace('function Gist(', 'function GistPreview(')),
     ).rejects.toThrow('tldraw Gist renderer changed');
   });
 
-  it('fails closed if another executable HTML embed remains in the module', async () => {
+  it('rejects literal inline HTML outside the replaced Gist renderer', async () => {
     await expect(
       transformAnnotationEmbed(
         `${upstream}\nconst anotherEmbed = { srcDoc: '<script src="https://gist.github.com/aa11bb22cc33.js"></script>' };`,
       ),
-    ).rejects.toThrow('another executable HTML embed');
+    ).rejects.toThrow('additional literal inline HTML');
   });
 
   it('rejects an upstream renderer bypass and a constant-link renderer in memory', async () => {

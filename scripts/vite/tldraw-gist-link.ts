@@ -4,7 +4,9 @@ import ts from 'typescript';
  * tldraw 4.5's Gist renderer loads remote JavaScript through iframe srcDoc.
  * Replace that renderer at the dependency boundary for every extension build.
  * Keep the embed shape, URL, dimensions, and interaction behavior for paste and
- * saved snapshots. No dependency files are modified; upstream changes fail closed.
+ * saved snapshots. No dependency files are modified. A missing or unrecognized
+ * Gist function stops packaging; this is not a general remote-code scanner.
+ * Release verification must separately scan every emitted JavaScript artifact.
  */
 export function tldrawGistLink() {
   return {
@@ -59,9 +61,12 @@ export function tldrawGistLink() {
       }`;
       const transformed =
         code.slice(0, renderer.body.getStart(source)) + replacement + code.slice(renderer.body.end);
+      // Additional check for literal inline HTML in this module only. Computed
+      // properties, DOM script construction, and loaders in other modules are
+      // outside this transform's contract and require the emitted-artifact scan.
       if (/srcDoc\s*:|<script\b/i.test(transformed)) {
         throw new Error(
-          'tldraw contains another executable HTML embed; review it before packaging.',
+          'tldraw embed module contains additional literal inline HTML; review it before packaging.',
         );
       }
       return { code: transformed, map: null };
