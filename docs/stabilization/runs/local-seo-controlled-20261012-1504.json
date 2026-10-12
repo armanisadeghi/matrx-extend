@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "id": "local-seo-controlled-20261012-1504",
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "resource_invalid_zero_product_credit",
+  "product_source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+  "development_ci_run_id": 38261957044,
+  "development_artifact_id": 11752953286,
+  "version": "0.2.509",
+  "resource": {
+    "admitted": true,
+    "preflight_pressure_level": 1,
+    "watch_pressure_level": 2,
+    "final_decision": "invalid",
+    "resource_invalid": true,
+    "exit_code": 3,
+    "journal": "docs/stabilization/resource-journals/local-seo-controlled-20261012-1504.jsonl"
+  },
+  "native_diagnostic": {
+    "sidepanel_context_ready": true,
+    "reported_subtargets": 25,
+    "reported_pass_subtargets": 24,
+    "reported_unverified_subtargets": 1,
+    "last_safe_stage": "broken_social_preview_fixture_restored",
+    "operation_at_stop": "build_recheck",
+    "raw_local_report": "test-results/seo-guest-acceptance.json",
+    "acceptance_credit": 0,
+    "reason": "The resource watchdog stopped the run at a safe boundary and finalized resourceInvalid=true. Native observations are diagnostics, not acceptance."
+  },
+  "limits": [
+    "No SEO case or subtarget is promoted in the inventory from this run.",
+    "The watchdog stop does not establish a product defect.",
+    "The raw local report is not committed and has not received independent product review."
+  ],
+  "next_action": "Retry one guarded isolated guest SEO run when a new 60-second preflight admits and the host can remain below pressure threshold; independently review the complete valid native result before credit."
+}
