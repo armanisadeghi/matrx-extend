@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T21:19:59Z",
+  "updated_at": "2026-10-12T21:33:56Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -1149,9 +1149,10 @@
               "detail": "Native A readiness observed zero then one visible/enabled Capture target; successful create completed. New safe exception metadata branches were source reviewed but not forced through native failure."
             },
             "member": {
-              "status": "fail",
+              "status": "unverified",
               "run_id": "notes-member-native-20261002-01",
               "evidence": "docs/stabilization/reports/notes-member-native-20261002.json",
+              "infrastructure_outcome": "failed_before_product_behavior",
               "defect_ids": [
                 "EXT-D-0079"
               ],
