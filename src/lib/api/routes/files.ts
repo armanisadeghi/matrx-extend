@@ -11,11 +11,10 @@
  * but reuse buildHeaders (auth + 401 retry are handled inline).
  */
 
-import { getBackendUrl } from '@/config/backend';
-import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
+import { runOp } from '@/lib/api/matrx-api';
 import { log } from '@/lib/debug/log';
 import { requireActiveOrganizationId } from '@/lib/org/active-org';
-import { readMatrxJsonResponse, sendMatrxRequest } from '@ai-matrx/api';
+import { downloadFile, uploadFile as uploadFileOp } from '@ai-matrx/api/files';
 
 export interface FileUploadResponse {
   file_id: string;
@@ -57,14 +56,6 @@ function fileTransferError(operation: 'upload' | 'download', status: number): Er
         ? 'Wait a moment and try again.'
         : 'Try again; if it keeps failing, report this HTTP status to support.';
   return new Error(`File ${operation} failed (${status}). ${remedy}`);
-}
-
-async function discardUnreadErrorBody(response: Response): Promise<void> {
-  try {
-    await response.body?.cancel();
-  } catch {
-    // A failed cleanup must not replace the HTTP status that explains the transfer failure.
-  }
 }
 
 export function parseFileUploadResponse(value: unknown): FileUploadResponse {
@@ -112,17 +103,11 @@ export async function uploadFile(
   filename: string,
   opts: UploadFileOptions = {},
 ): Promise<FileUploadResponse> {
-  const baseUrl = await getBackendUrl();
-  const token = await getAccessToken();
   // Multipart is a request like any other: it carries the organization or it
   // does not go out. `requireActiveOrganizationId` returns the load ladder's
   // organization and throws a remediable error only for a person with no
   // memberships — never uploads into nowhere.
   const organizationId = await requireActiveOrganizationId();
-  const headers: Record<string, string> = {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    'X-Organization-Id': organizationId,
-  };
 
   const rawPath = opts.path ?? `browser-agent/uploads/${filename}`;
   const filePath = opts.userSelected
@@ -136,33 +121,20 @@ export async function uploadFile(
   fd.append('file_path', filePath);
   if (opts.metadata) fd.append('metadata_json', JSON.stringify(opts.metadata));
 
-  const url = `${baseUrl}/files/upload`;
   const start = performance.now();
   log.info('api', '→ POST /files/upload (multipart)', { filename, size: blob.size });
-  let res = await sendMatrxRequest(url, { method: 'POST', headers, body: fd });
-  let currentBodyDiscarded = false;
-  if (res.status === 401) {
-    await discardUnreadErrorBody(res);
-    currentBodyDiscarded = true;
-    const refreshed = await refreshAccessToken();
-    if (refreshed) {
-      const t2 = await getAccessToken();
-      const h2: Record<string, string> = {
-        ...(t2 ? { Authorization: `Bearer ${t2}` } : {}),
-        'X-Organization-Id': organizationId,
-      };
-      res = await sendMatrxRequest(url, { method: 'POST', headers: h2, body: fd });
-      currentBodyDiscarded = false;
-    }
-  }
+  // `silent`: a rejected upload's body may echo what was sent; only the status is logged.
+  const res = await runOp((api, o) => uploadFileOp(api, { body: fd }, o), {
+    organizationId,
+    silent: true,
+  });
   const ms = Math.round(performance.now() - start);
   if (!res.ok) {
-    if (!currentBodyDiscarded) await discardUnreadErrorBody(res);
     log.error('api', `✗ POST /files/upload ${res.status} (${ms}ms)`);
     throw fileTransferError('upload', res.status);
   }
-  const data = parseFileUploadResponse(await readMatrxJsonResponse<unknown>(res));
-  log.success('api', `← /files/upload ${res.status} (${ms}ms)`, { file_id: data.file_id });
+  const data = parseFileUploadResponse(res.data);
+  log.success('api', `← /files/upload ${ms}ms`, { file_id: data.file_id });
   return data;
 }
 
@@ -176,37 +148,18 @@ export async function downloadFileBytes(
   fileId: string,
   signal?: AbortSignal,
 ): Promise<{ blob: Blob; filename: string; mimeType: string }> {
-  const baseUrl = await getBackendUrl();
-  const token = await getAccessToken();
   const organizationId = await requireActiveOrganizationId();
-  const headers: Record<string, string> = {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    'X-Organization-Id': organizationId,
-  };
-  const url = `${baseUrl}/files/${encodeURIComponent(fileId)}/download`;
-  let res = await sendMatrxRequest(url, signal ? { headers, signal } : { headers });
-  let currentBodyDiscarded = false;
-  if (res.status === 401) {
-    await discardUnreadErrorBody(res);
-    currentBodyDiscarded = true;
-    const refreshed = await refreshAccessToken();
-    if (refreshed) {
-      const t2 = await getAccessToken();
-      const refreshedHeaders: Record<string, string> = {
-        ...(t2 ? { Authorization: `Bearer ${t2}` } : {}),
-        'X-Organization-Id': organizationId,
-      };
-      res = await sendMatrxRequest(
-        url,
-        signal ? { headers: refreshedHeaders, signal } : { headers: refreshedHeaders },
-      );
-      currentBodyDiscarded = false;
-    }
+  const result = await runOp((api, o) => downloadFile(api, { path: { file_id: fileId } }, o), {
+    organizationId,
+    silent: true,
+    signal,
+  });
+  if (!result.ok) {
+    // Caller cancellation is the caller's own AbortError, not a transfer failure.
+    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
+    throw fileTransferError('download', result.status);
   }
-  if (!res.ok) {
-    if (!currentBodyDiscarded) await discardUnreadErrorBody(res);
-    throw fileTransferError('download', res.status);
-  }
+  const res = result.data;
   const blob = await res.blob();
   const cd = res.headers.get('content-disposition') ?? '';
   const m = cd.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
