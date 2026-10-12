@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T17:07:21Z",
+  "updated_at": "2026-10-12T17:17:10Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -22719,8 +22719,8 @@
         {
           "id": "EXT-F-1007-C04",
           "label": "Save capture as a Source",
-          "action": "Open a compact Save dialog with a prefilled editable name and optional destinations; land these choices through the Sources endpoint and retain refused captures for retry.",
-          "source_anchor": "src/lib/sources/save-capture.ts:232",
+          "action": "Open Save for the current capture; signed-in save lands a Source, while a guest save shows a sign-in remedy and retains the device-local capture for retry.",
+          "source_anchor": "src/lib/sources/save-capture.ts:360",
           "source_delta": "Changed from direct saved-capture persistence; historical run evidence is retained but does not verify this behavior."
         },
         {
@@ -22751,8 +22751,8 @@
         },
         {
           "id": "EXT-F-1007-C10",
-          "label": "Remove image",
-          "action": "Remove large, medium and icon image entries."
+          "label": "Open and remove image",
+          "action": "Open a captured image from each size tier; remove large, medium and icon image entries."
         },
         {
           "id": "EXT-F-1007-C11",
@@ -22917,6 +22917,26 @@
           "label": "Retry or dismiss a failed Diagnose picker launch",
           "action": "When page-element picker injection fails, use Retry picker after restoring the page permission or dismiss the actionable error.",
           "source_anchor": "src/features/scrape/DiagnoseCard.tsx:218"
+        },
+        {
+          "id": "EXT-F-1007-C38",
+          "label": "File a landed Source elsewhere",
+          "action": "From a successful Save, open File elsewhere; select one or more destinations and optionally choose a Library, then verify the existing Source is attached without creating a duplicate.",
+          "source_anchor": "src/features/scrape/ScrapeView.tsx:927",
+          "modes": [
+            "member",
+            "admin"
+          ]
+        },
+        {
+          "id": "EXT-F-1007-C39",
+          "label": "Open an already recognized Source",
+          "action": "When page recognition finds an existing Source the person can read under RLS in any organization, use Open (web app) and verify it opens that Source; the active organization scopes Save writes, not recognition reads.",
+          "source_anchor": "src/features/scrape/ScrapeView.tsx:459",
+          "modes": [
+            "member",
+            "admin"
+          ]
         }
       ],
       "source_anchors": [
@@ -23719,7 +23739,6 @@
           "id": "EXT-F-1007-T04",
           "title": "Save capture as a Source",
           "modes": [
-            "guest",
             "member",
             "admin"
           ],
@@ -23733,7 +23752,7 @@
           "steps": [
             "Open Save, edit the prefilled name, then save the populated capture without a destination.",
             "Observe when Saved appears; confirm the chosen name on the server, including a same-content duplicate.",
-            "Open the Source in the web app; repeat with a guest and a controlled refusal."
+            "Open the Source in the web app; exercise the signed-in refusal/retry path separately from the guest sign-in remedy in T22."
           ],
           "expected": [
             "The chosen name is persisted; Save works without a destination and promptly confirms landing without waiting for the separate SEO audit or opening a filing browser. Refusal retains an honest retry path.",
@@ -23741,6 +23760,7 @@
           ],
           "dimensions": [
             "warm",
+            "reload",
             "valid-input",
             "backend-available"
           ],
@@ -26934,6 +26954,7 @@
           ],
           "dimensions": [
             "warm",
+            "reload",
             "valid-input",
             "backend-available"
           ],
@@ -26975,6 +26996,8 @@
             "Successful landing through any save path removes all queued entries for that canonical URL."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "offline",
             "refusal",
             "retry",
@@ -27016,6 +27039,7 @@
           ],
           "dimensions": [
             "warm",
+            "reload",
             "confirmation",
             "local-persistence"
           ],
@@ -27047,6 +27071,8 @@
             "Retry for a different queued page submits that queued page content rather than the active panel content."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "edit",
             "backend-available",
             "organization",
@@ -27091,6 +27117,8 @@
             "After panel reopen the canonical URL has one retained retry item and no duplicate ordinary Save control."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "offline",
             "panel-reopen",
             "local-persistence",
@@ -27122,27 +27150,31 @@
           ],
           "preconditions": [
             "Open Scrape on a controlled page and make the prior-capture lookup fail without altering capture data.",
-            "Record the approved development artifact/source receipt and reload extension/panel before the case; repeat after full reload. For signed-in roles use an authorized multi-organization fixture with a known RLS-visible Source."
+            "Record the approved development artifact/source receipt and reload extension/panel before the case; repeat after full reload. For signed-in roles use an authorized multi-organization fixture with a known RLS-visible Source in one organization and verify the resolved startup organization in the product."
           ],
           "steps": [
-            "Open the Scrape view while the lookup is unavailable.",
+            "Open Scrape while lookup is unavailable and verify the state says the status could not be checked, not that the page is unsaved.",
             "Restore lookup service and allow recognition to refresh.",
-            "Signed-in: recognize the known Source in B while A is selected, then with no device organization selected; confirm read visibility is unchanged.",
-            "Guest: confirm no saved-Source lookup is sent; do not manufacture a lookup service failure where the guest short-circuit performs no query."
+            "Signed-in: while organization A is active, verify that a known Source in accessible organization B is still recognized; deliberately switch to B and back to A and verify lookup refreshes without a stale response replacing the current result.",
+            "Guest: confirm no saved-Source lookup is sent; do not manufacture a lookup failure where the guest short-circuit performs no query.",
+            "Only for a dedicated signed-in principal with zero memberships, verify the create/join remedy; do not model this as a multi-organization user with no selected organization."
           ],
           "expected": [
             "Signed-in lookup failure is shown as unknown, never unsaved; recovery displays the known accessible Source.",
-            "Recognition covers all RLS-visible organizations regardless of selected organization. Inaccessible rows stay hidden; this requires real RLS verification.",
-            "Guest returns no saved Source without a database lookup. Selected organization remains the explicit destination for a separate Save write; recognition does not redirect it."
+            "Recognition covers Sources across all organizations the person can access, regardless of the resolved active organization; deliberate organization switches refresh the read without narrowing its access-based result. Inaccessible rows stay hidden; this requires real RLS verification.",
+            "Guest returns no saved Source without a database lookup. The active organization used by a later Save follows the resolver; it is never inferred from Source recognition.",
+            "A principal with zero memberships receives the create/join remedy and does not fall back to another organization."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "lookup-failure",
             "recovery",
             "honest-state",
             "cross-organization-read",
-            "no-selected-organization",
             "guest-no-read",
-            "full-reload"
+            "full-reload",
+            "organization-switch"
           ],
           "verification_status": "unverified-after-source-change",
           "source_evidence": "c3a2477 changed lookup results to found/none/unknown and added the could-not-check state; runtime behavior remains unverified.",
@@ -27166,6 +27198,7 @@
           ],
           "dimensions": [
             "warm",
+            "reload",
             "backend-available",
             "lookup-failure",
             "source-status"
@@ -27226,6 +27259,8 @@
             "Graphic and both meaningful text siblings survive capture without duplication or raw placeholder tokens."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "fast",
             "deep",
             "rendered-result",
@@ -27262,7 +27297,8 @@
           "control_ids": [
             "EXT-F-1007-C29",
             "EXT-F-1007-C30",
-            "EXT-F-1007-C31"
+            "EXT-F-1007-C31",
+            "EXT-F-1007-C38"
           ],
           "preconditions": [
             "Build the current development extension under the campaign resource permit; record an immutable source/lock/output receipt, reload that exact unpacked build, reopen the sidepanel, reload affected content tabs, and verify extension ID, organization and role before judging results.",
@@ -27277,6 +27313,8 @@
             "The compact Save dialog opens without loading destination browsing or Libraries until requested. Every project is reachable by scrolling and search in both Save and File elsewhere. One landing persists the name and only chosen associations, or saves unfiled. A target refusal claims no completed Save and keeps a recoverable capture."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "cancel",
             "no-destination",
             "project-scroll",
@@ -27285,8 +27323,7 @@
             "remove",
             "library",
             "no-library",
-            "refusal",
-            "reload"
+            "refusal"
           ],
           "results": {
             "member": {
@@ -27474,6 +27511,8 @@
             "A late response is attributed only to capture A and organization A. It never marks B or the current organization saved; a refused or unresolved save remains recoverable."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "organization-switch",
             "capture-switch",
             "late-success",
@@ -27516,6 +27555,8 @@
             "Exactly one actionable retry owns the held URL; a successful retry lands one Source and clears the held item, while a refusal keeps a truthful remedy."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "single-action",
             "retry",
             "guest-remedy",
@@ -27563,6 +27604,8 @@
             "Retry performs another real identity lookup. Unresolved or stale identity cannot enable Fast or Deep capture; a successfully resolved current document can. The action applies without an auth-role gate."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "identity-unavailable",
             "retry",
             "late-response",
@@ -27613,6 +27656,8 @@
             "Cleanup restores the owned fixture name without modifying unrelated records."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "duplicate-landing",
             "rename-network-failure",
             "retry",
@@ -27645,6 +27690,8 @@
             "Cleanup restores the owned fixture name without modifying unrelated records."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "duplicate-landing",
             "rename-network-failure",
             "retry",
@@ -27677,6 +27724,8 @@
             "Cleanup acts only on the exact test-owned records and restores the original absence."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "create-destination",
             "organization-scope",
             "source-landing",
@@ -27709,6 +27758,8 @@
             "Cleanup acts only on the exact test-owned records and restores the original absence."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "create-destination",
             "organization-scope",
             "source-landing",
@@ -27741,6 +27792,8 @@
             "Dismiss clears the launch error without leaving a picker active."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "role",
             "site-access-denial",
             "retry",
@@ -27773,6 +27826,8 @@
             "Dismiss clears the launch error without leaving a picker active."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "role",
             "site-access-denial",
             "retry",
@@ -27805,11 +27860,52 @@
             "Dismiss clears the launch error without leaving a picker active."
           ],
           "dimensions": [
+            "warm",
+            "reload",
             "role",
             "site-access-denial",
             "retry",
             "dismiss"
           ]
+        },
+        {
+          "id": "EXT-F-1007-T40",
+          "title": "Open a Source recognized across accessible organizations",
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1007-C39"
+          ],
+          "preconditions": [
+            "Use a real signed-in member or admin identity with memberships in organizations A and B. Land a controlled Source for the current page URL in B, verify its ID and RLS readability, then resolve startup to A and verify A is the active organization before opening Scrape."
+          ],
+          "steps": [
+            "With A active, open Scrape and confirm recognition finds the existing Source in accessible organization B; activate Open (web app) and record the opened route and exact Source ID.",
+            "Deliberately switch to B and back to A; confirm recognition refreshes and continues to return the accessible Source. Repeat after extension and controlled page reload.",
+            "If a separate Save write is performed, record its organization and verify it uses whichever organization is active when the write runs."
+          ],
+          "expected": [
+            "Recognition and Open (web app) use the exact RLS-visible Source across organizations, regardless of active organization, in warm and reloaded runs.",
+            "Any Save write carries the resolved active organization at dispatch; recognition never changes or selects that write destination."
+          ],
+          "dimensions": [
+            "warm",
+            "reload",
+            "organization",
+            "source-recognition"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "New source-census case; no product run."
+            },
+            "admin": {
+              "status": "unverified",
+              "detail": "New source-census case; no product run."
+            }
+          }
         }
       ],
       "cells": {
@@ -27937,8 +28033,8 @@
       "missing_items": [],
       "source_complete": true,
       "readiness_gaps": [
-        "Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker.",
-        "D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json."
+        "D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json.",
+        "Source landing and organization-scoped persistence require live member/admin evidence. Guest Save is a sign-in refusal with device-local retry. The independent File elsewhere and recognized-Source open controls have source cases but remain unverified in native warm/reload runs."
       ],
       "runtime_evidence": [
         {
