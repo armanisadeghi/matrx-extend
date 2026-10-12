@@ -25,6 +25,7 @@ import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs
 import { observeStartupGpu } from '../../scripts/startup-gpu-observation.mjs';
 import { beginStartupProcessInterval } from '../../scripts/startup-process-interval.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { verifyCiDevPromotionReceipt } from '../../scripts/verify-ci-dev-promotion.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
 import { observeNativeCdpStartup } from './native-cdp-startup-diagnostic.mjs';
@@ -240,6 +241,44 @@ function resolveExpectedRelease({ receipt, extensionDir, expectedRelease, localD
   });
 }
 
+export async function verifyNativeExpectedRelease({
+  receipt,
+  extensionDir,
+  expectedRelease,
+  localDevReceiptPath,
+  expectedExtensionId = EXPECTED_EXTENSION_ID,
+}) {
+  if (receipt?.kind === 'ci_development_test_promotion') {
+    const expected = await verifyCiDevPromotionReceipt({
+      receiptPath: localDevReceiptPath,
+      receipt,
+      extensionDir,
+      expectedSourceSha: expectedRelease?.sourceSha,
+      expectedExtensionId,
+    });
+    if (
+      expectedRelease?.kind !== expected.kind ||
+      [
+        'sourceSha',
+        'version',
+        'treeSha256',
+        'extensionId',
+        'runId',
+        'runAttempt',
+        'artifactId',
+      ].some((key) => expectedRelease[key] !== expected[key])
+    )
+      throw new Error('ci_dev_promotion_identity_refused');
+    return expected;
+  }
+  return resolveExpectedRelease({
+    receipt,
+    extensionDir,
+    expectedRelease,
+    localDev: localDevReceiptPath !== undefined,
+  });
+}
+
 async function verifyReleasedArtifact(expected) {
   let manifest;
   try {
@@ -253,7 +292,8 @@ async function verifyReleasedArtifact(expected) {
     throw new Error('native_sidepanel_local_build_key_refused');
   if (hashReleaseTree(expected.extensionDir) !== expected.treeSha256)
     throw new Error('native_sidepanel_release_tree_refused');
-  if (expected.kind === 'local_dev_unpacked') return;
+  if (expected.kind === 'local_dev_unpacked' || expected.kind === 'ci_development_test_promotion')
+    return;
   if (expected.kind === 'published_store_crx_unpacked') {
     if (
       !/^[a-f0-9]{64}$/.test(expected.crxSha256 ?? '') ||
@@ -1554,11 +1594,12 @@ export async function runNativeSidepanelQa({
         : 'native_sidepanel_release_receipt_missing',
     );
   }
-  const expected = resolveExpectedRelease({
+  const expected = await verifyNativeExpectedRelease({
     receipt,
     extensionDir,
     expectedRelease,
-    localDev: localDevReceiptPath !== undefined,
+    localDevReceiptPath,
+    expectedExtensionId,
   });
   onStage('artifact_verify');
   await verifyReleasedArtifact(expected);

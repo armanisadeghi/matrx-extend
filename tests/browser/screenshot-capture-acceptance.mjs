@@ -9,6 +9,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireLocalDevReceipt } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { verifyCiDevPromotionReceipt } from '../../scripts/verify-ci-dev-promotion.mjs';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
 import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
@@ -178,6 +179,14 @@ async function buildIdentity() {
     readFile(MANIFEST, 'utf8').then(JSON.parse),
     readFile(join(REPO, 'package.json'), 'utf8').then(JSON.parse),
   ]);
+  if (receipt.kind === 'ci_development_test_promotion') {
+    return verifyCiDevPromotionReceipt({
+      receiptPath: RECEIPT,
+      receipt,
+      extensionDir: EXTENSION_DIR,
+      expectedSourceSha: process.env.SCREENSHOT_CAPTURE_EXPECTED_SOURCE_SHA,
+    });
+  }
   requireLocalDevReceipt(receipt, EXTENSION_DIR);
   if (
     !manifest.key ||
@@ -1247,6 +1256,7 @@ try {
     extensionDir: EXTENSION_DIR,
     expectedRelease: before,
     localDevReceiptPath: RECEIPT,
+    ...(before.extensionId && { expectedExtensionId: before.extensionId }),
     exercisePanel: exercise,
   });
   assert.equal(run.verified, true);
@@ -1267,7 +1277,10 @@ try {
   report.failureDiagnostic = safeFailure(error);
   report.failure ??= {
     stage,
-    code: nativeRuntimeFailureCode(error) ?? 'owned_harness_or_ui_stage_failed',
+    code:
+      error?.message === 'ci_dev_promotion_identity_refused'
+        ? 'ci_dev_promotion_identity_refused'
+        : (nativeRuntimeFailureCode(error) ?? 'owned_harness_or_ui_stage_failed'),
   };
 }
 await mkdir(dirname(OUTPUT), { recursive: true });

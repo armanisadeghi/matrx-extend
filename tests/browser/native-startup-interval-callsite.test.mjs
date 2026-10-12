@@ -43,7 +43,16 @@ async function run({
     join: (...parts) => parts.join('/'),
     tmpdir: () => '/tmp',
     readFile: async () => '{}',
-    resolveExpectedRelease: () => ({ extensionDir: '/extension' }),
+    verifyNativeExpectedRelease: async (input) => {
+      // This startup-only test replaces the artifact boundary. Reject any
+      // unexpected identity route rather than manufacturing provenance success.
+      assert.equal(JSON.stringify(input.receipt), '{}');
+      assert.equal(input.extensionDir, undefined);
+      assert.equal(input.expectedRelease, undefined);
+      assert.equal(input.localDevReceiptPath, undefined);
+      assert.equal(input.expectedExtensionId, 'owned');
+      return { extensionDir: '/extension' };
+    },
     verifyReleasedArtifact: async () => {},
     resolveBrowserRuntime: async () => ({ executablePath: '/chrome' }),
     mkdtemp: async () => '/owned',
