@@ -31,7 +31,10 @@
  *    `ReviewedGmailResponse` (aidream/api/routers/google_workspace.py).
  */
 
-import { type ApiResult, apiPost } from '@/lib/api/client';
+import { type ApiResult } from '@/lib/api/client';
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
+import { runOp } from '@/lib/api/matrx-api';
+import { sendGmail } from '@ai-matrx/api/integrations';
 import { getAccessToken } from '@/lib/auth/flow';
 
 /** Exactly what the user approved on screen — never the agent's arguments. */
@@ -61,13 +64,23 @@ export async function sendReviewedGmail(
   draft: ReviewedGmailDraft,
 ): Promise<ApiResult<ReviewedGmailResponse>> {
   if ((await getAccessToken()) === null) return SIGN_IN_REQUIRED;
-  return apiPost<ReviewedGmailResponse>('/api/google-workspace/gmail/send-reviewed', {
-    connection_id: draft.connectionId,
-    to: draft.to,
-    cc: draft.cc,
-    subject: draft.subject,
-    body: draft.body,
-    // The human pressed Send. See the module header before touching this line.
-    user_confirmed: true,
-  });
+  return runOp(
+    async (api, o) =>
+      sendGmail(
+        api,
+        {
+          body: {
+            organization_id: o.organizationId ?? (await requireActiveOrganizationId()),
+            connection_id: draft.connectionId,
+            to: draft.to,
+            cc: draft.cc,
+            subject: draft.subject,
+            body: draft.body,
+            // The human pressed Send. See the module header before touching this line.
+            user_confirmed: true,
+          },
+        },
+        o,
+      ) as Promise<ReviewedGmailResponse>,
+  );
 }

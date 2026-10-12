@@ -31,10 +31,10 @@
  *    (aidream/services/seo/prospect_capture.py).
  */
 
-import { type ApiResult, apiPost } from '@/lib/api/client';
+import { type ApiResult } from '@/lib/api/client';
+import { runOp } from '@/lib/api/matrx-api';
+import { previewProspectCapture as previewOp, runProspectCapture } from '@ai-matrx/api/marketing';
 import { getAccessToken } from '@/lib/auth/flow';
-
-const BASE = '/api/seo/prospect-capture';
 
 /** One website the user could file this prospect under. */
 export interface CaptureSite {
@@ -98,7 +98,9 @@ export async function previewProspectCapture(
   signal?: AbortSignal,
 ): Promise<ApiResult<ProspectCapturePreview>> {
   if (!(await getAccessToken())) return signedOut();
-  return apiPost<ProspectCapturePreview>(`${BASE}/preview`, body, signal);
+  return runOp((api, o) => previewOp(api, { body }, o) as Promise<ProspectCapturePreview>, {
+    signal,
+  });
 }
 
 export async function captureProspect(
@@ -106,5 +108,7 @@ export async function captureProspect(
   signal?: AbortSignal,
 ): Promise<ApiResult<ProspectCaptureResult>> {
   if (!(await getAccessToken())) return signedOut();
-  return apiPost<ProspectCaptureResult>(BASE, body, signal);
+  return runOp((api, o) => runProspectCapture(api, { body }, o) as Promise<ProspectCaptureResult>, {
+    signal,
+  });
 }

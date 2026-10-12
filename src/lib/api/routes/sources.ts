@@ -18,8 +18,10 @@ import {
   type ApiRequestOptions,
   type ApiResult,
   STATUS_EXPECTED_ACTOR_MISMATCH,
-  apiPost,
 } from '@/lib/api/client';
+import { runOp } from '@/lib/api/matrx-api';
+import { edit, keep, land } from '@ai-matrx/api/knowledge';
+import type { Api, CallOptions } from '@ai-matrx/api';
 import type { SectionPortion } from '@/lib/sources/portions';
 import { z } from 'zod';
 
@@ -188,13 +190,12 @@ export function refusalFromResult(result: { status: number; error: string }): La
 }
 
 async function post(
-  path: string,
-  body: unknown,
+  call: (api: Api, o: CallOptions) => Promise<unknown>,
   options?: ApiRequestOptions,
 ): Promise<LandingOutcome> {
   let result: ApiResult<unknown>;
   try {
-    result = await apiPost<unknown>(path, body, undefined, options);
+    result = await runOp(call, options);
   } catch (err) {
     return {
       ok: false,
@@ -221,9 +222,12 @@ async function post(
 
 /** Land one capture as a Source. */
 export function landSource(body: SourceLandingBody): Promise<LandingOutcome> {
-  return post('/sources/land', body, {
-    expectedActor: { userId: body.provenance.user_id, organizationId: body.organization_id },
-  });
+  return post(
+    (api, o) => land(api, { body: body as unknown as Parameters<typeof land>[1]['body'] }, o),
+    {
+      expectedActor: { userId: body.provenance.user_id, organizationId: body.organization_id },
+    },
+  );
 }
 
 /** Save an edit beside the original (the original capture is never overwritten). */
@@ -231,7 +235,16 @@ export function editSource(
   processedDocumentId: string,
   portions: SectionPortion[],
 ): Promise<LandingOutcome> {
-  return post(`/sources/${encodeURIComponent(processedDocumentId)}/edit`, { portions });
+  return post((api, o) =>
+    edit(
+      api,
+      {
+        path: { processed_document_id: processedDocumentId },
+        body: { portions } as unknown as Parameters<typeof edit>[1]['body'],
+      },
+      o,
+    ),
+  );
 }
 
 /** Update only Source details after a reused landing; no new content version. */
@@ -241,11 +254,9 @@ export function renameSource(
   expectedActor: { userId: string; organizationId: string },
 ): Promise<LandingOutcome> {
   return post(
-    `/sources/${encodeURIComponent(processedDocumentId)}/edit`,
-    { name },
-    {
-      expectedActor,
-    },
+    (api, o) =>
+      edit(api, { path: { processed_document_id: processedDocumentId }, body: { name } }, o),
+    { expectedActor },
   );
 }
 
@@ -257,8 +268,15 @@ export function keepSource(
   expectedActor?: { userId: string; organizationId: string },
 ): Promise<LandingOutcome> {
   return post(
-    `/sources/${encodeURIComponent(processedDocumentId)}/keep`,
-    { keep: body.keep ?? true, attach_to: body.attach_to ?? [] },
+    (api, o) =>
+      keep(
+        api,
+        {
+          path: { processed_document_id: processedDocumentId },
+          body: { keep: body.keep ?? true, attach_to: body.attach_to ?? [] },
+        },
+        o,
+      ),
     expectedActor ? { expectedActor } : undefined,
   );
 }

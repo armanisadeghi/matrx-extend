@@ -12,10 +12,10 @@
 import {
   type ApiResult,
   ORGANIZATION_CONTEXT_HEADER,
-  apiPost,
   buildHeaders,
   getApiBaseUrl,
 } from '@/lib/api/client';
+import { runOp } from '@/lib/api/matrx-api';
 import { streamFetch } from '@/lib/api/stream';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import {
@@ -23,6 +23,13 @@ import {
   type SocialPostMedia,
   SocialPostMediaSchema,
 } from '@/lib/swipe-file/receipt';
+import {
+  addItemDoor,
+  createCollectionDoor,
+  listMediaDoor,
+  mediaCoverageDoor,
+  mediaDoor,
+} from '@ai-matrx/api/marketing';
 import { z } from 'zod';
 
 export type { SocialPostMedia } from '@/lib/swipe-file/receipt';
@@ -147,11 +154,9 @@ export async function createCollection(
   name: string,
   organizationId?: string,
 ): Promise<ApiResult<SwipeCollectionCreated>> {
-  const r = await apiPost<unknown>(
-    '/social/collections',
-    { name },
-    undefined,
-    organizationId ? { organizationId } : undefined,
+  const r = await runOp<unknown>(
+    (api, o) => createCollectionDoor(api, { body: { name } }, o),
+    organizationId ? { organizationId } : {},
   );
   if (!r.ok) return r;
   const p = SwipeCollectionSchema.safeParse(r.data);
@@ -165,23 +170,24 @@ export async function addPostToCollection(
   postId: string,
   organizationId?: string,
 ): Promise<ApiResult<{ saved: boolean }>> {
-  return apiPost<{ saved: boolean }>(
-    `/social/collections/${collectionId}/items`,
-    {
-      item_type: 'social_post',
-      item_id: postId,
-    },
-    undefined,
-    organizationId ? { organizationId } : undefined,
+  return runOp<{ saved: boolean }>(
+    (api, o) =>
+      addItemDoor(
+        api,
+        {
+          path: { collection_id: collectionId },
+          body: { item_type: 'social_post', item_id: postId },
+        },
+        o,
+      ) as Promise<{ saved: boolean }>,
+    organizationId ? { organizationId } : {},
   );
 }
 
 /** Current canonical coverage, independent of this device's cached save receipt. */
 export async function getPostMediaCoverage(postId: string, organizationId: string) {
-  const { apiGet } = await import('@/lib/api/client');
-  const result = await apiGet<unknown>(
-    `/social/posts/${encodeURIComponent(postId)}/media-coverage`,
-    undefined,
+  const result = await runOp<unknown>(
+    (api, o) => mediaCoverageDoor(api, { path: { post_id: postId } }, o),
     { organizationId },
   );
   if (!result.ok) throw new Error(result.error);
@@ -192,10 +198,8 @@ export async function getPostMedia(
   postId: string,
   organizationId: string,
 ): Promise<SocialPostMedia[]> {
-  const { apiGet } = await import('@/lib/api/client');
-  const result = await apiGet<unknown>(
-    `/social/posts/${encodeURIComponent(postId)}/media`,
-    undefined,
+  const result = await runOp<unknown>(
+    (api, o) => listMediaDoor(api, { path: { post_id: postId } }, o),
     { organizationId },
   );
   if (!result.ok) throw new Error(result.error);
@@ -207,14 +211,11 @@ export async function readPostMediaBlob(
   fileId: string,
   organizationId: string,
 ): Promise<Blob> {
-  const base = await getApiBaseUrl();
-  const headers = await buildHeaders({}, { token: null, organizationId });
-  if (!headers.Authorization || !headers[ORGANIZATION_CONTEXT_HEADER])
-    throw new Error('Sign in to Matrx to view media.');
-  const response = await fetch(
-    `${base}/social/posts/${encodeURIComponent(postId)}/media/${encodeURIComponent(fileId)}`,
-    { headers },
+  const result = await runOp(
+    async (api, o) =>
+      (await mediaDoor(api, { path: { post_id: postId, file_id: fileId } }, o)).blob(),
+    { organizationId },
   );
-  if (!response.ok) throw new Error(`Media unavailable (${response.status}).`);
-  return response.blob();
+  if (!result.ok) throw new Error(`Media unavailable (${result.status}).`);
+  return result.data;
 }
