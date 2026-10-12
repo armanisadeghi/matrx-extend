@@ -5,7 +5,7 @@ const extensionId = 'cihdmkcdjjckfhjpgoedmgfpoljebaml';
 // This guards the missing-worker boundary: absent and disabled must never be conflated.
 test('distinguishes absent, disabled, enabled without worker and unavailable registration', () => {
   const statuses = [{}, { [extensionId]: { state: 0 } }, { [extensionId]: { state: 1 } }].map(
-    (registry) => extensionStartupDiagnostic({ extensionId, registries: [registry] }).status,
+    (registry) => extensionStartupDiagnostic({ extensionId, registries: [registry, {}] }).status,
   );
   assert.deepEqual(statuses, ['absent', 'disabled', 'present_without_worker']);
   assert.equal(extensionStartupDiagnostic({ extensionId }).status, 'unknown');
@@ -189,5 +189,58 @@ test('actual startup failure boundary emits safe classification and preserves th
       assert.equal(lines[0].includes('private'), false);
       assert.equal(lines[0].includes('/owned'), false);
     }
+  }
+});
+
+test('one readable empty registry cannot prove absence while positive evidence remains usable', async () => {
+  const { mkdir, mkdtemp, writeFile, rm } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const { readExtensionStartupRegistries } = await import(
+    './native-extension-startup-diagnostic.mjs'
+  );
+  const profile = await mkdtemp(join(tmpdir(), 'extension-partial-registry-'));
+  try {
+    await mkdir(join(profile, 'Default'));
+    for (const filename of ['Preferences', 'Secure Preferences']) {
+      const file = join(profile, 'Default', filename);
+      await writeFile(file, JSON.stringify({ extensions: { settings: {} } }));
+      const observation = extensionStartupDiagnostic({
+        extensionId,
+        registries: await readExtensionStartupRegistries(profile),
+      });
+      assert.equal(observation.status, 'unknown', `${filename} alone cannot prove absence`);
+      assert.equal(observation.registered, null, 'partial registry cannot prove unregistered');
+      for (const [state, expected] of [
+        [0, 'disabled'],
+        [1, 'present_without_worker'],
+      ]) {
+        await writeFile(
+          file,
+          JSON.stringify({ extensions: { settings: { [extensionId]: { state } } } }),
+        );
+        const positive = extensionStartupDiagnostic({
+          extensionId,
+          registries: await readExtensionStartupRegistries(profile),
+        });
+        assert.equal(positive.status, expected);
+        assert.equal(positive.registered, true);
+      }
+      await rm(file);
+    }
+    for (const filename of ['Preferences', 'Secure Preferences']) {
+      await writeFile(
+        join(profile, 'Default', filename),
+        JSON.stringify({ extensions: { settings: {} } }),
+      );
+    }
+    const complete = extensionStartupDiagnostic({
+      extensionId,
+      registries: await readExtensionStartupRegistries(profile),
+    });
+    assert.equal(complete.status, 'absent');
+    assert.equal(complete.registered, false);
+  } finally {
+    await rm(profile, { recursive: true, force: true });
   }
 });

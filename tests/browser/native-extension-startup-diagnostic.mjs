@@ -41,17 +41,20 @@ export function extensionStartupDiagnostic({
     matching.filter((target) => target.type === 'service_worker').length;
   const targetCount = targetObservation?.expectedTargetCount ?? matching.length;
   const registryAvailable = registries.length > 0;
+  // Both owned-profile stores must be readable before a negative claim is justified.
+  const registryComplete = registries.length === 2;
   let status = 'unknown';
   if (workerCount > 0) status = 'worker_observed';
   else if (disabled) status = 'disabled';
   // Browser-wide stderr is a signature, not proof that this specific ID failed.
   else if (targetCount > 0 || entries.some((entry) => entry.state === 1))
     status = 'present_without_worker';
-  else if (registryAvailable && entries.length === 0) status = 'absent';
+  else if (registryComplete && entries.length === 0) status = 'absent';
   return {
     status,
     registryAvailable,
-    registered: registryAvailable ? entries.length > 0 : null,
+    registryComplete,
+    registered: entries.length > 0 ? true : registryComplete ? false : null,
     disabled,
     expectedTargetCount: targetCount,
     expectedWorkerCount: workerCount,
