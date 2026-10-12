@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "observed_at": "2026-10-12T14:56:34Z",
+  "checkpoint_at": "2026-10-12T16:47:12Z",
   "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
   "public_listing": {
     "method": "Direct read-only HTTPS, no-cache request",
@@ -29,12 +30,12 @@
   "gates": {
     "command": "python3 scripts/check_workflow_runner_cost.py",
     "exit_code": 1,
-    "modeled_billed_usd_per_week": 284.4,
+    "modeled_billed_usd_per_week": 250.04,
     "ceiling_usd_per_week": 100,
     "aidream_usd_per_week": 250.04,
-    "matrx_local_usd_per_week": 34.36,
+    "matrx_local_usd_per_week": 0,
     "matrx_extend_usd_per_week": 0,
-    "additional_failure": "matrx-local/scripts/check_workflow_runner_cost.py differs from matrx-extend guard",
+    "additional_failure": null,
     "billing_endpoint": {
       "path": "/organizations/AI-Matrix-Engine/settings/billing/usage?month=10&year=2026",
       "actions_net_amount_sum": 0,
@@ -42,14 +43,19 @@
     }
   },
   "source_snapshot": {
-    "origin_main": "6522427bb0c7e3620a187cdb2c7a123992036782",
-    "ci_run": 38266455996,
-    "ci_status": "queued",
-    "focused_run": 38266455773,
-    "focused_status": "in_progress",
+    "origin_main": "60f0ce6781f5166993d39fc08ca3d4a96ae31e5d",
+    "runtime_source": "0b912a3fc215b840e803cb97ce82f9006c14e4e1",
+    "package_version": "0.2.509",
+    "installed_print_version": "0.12.34",
+    "ci_run": 38277687185,
+    "ci_status": "success",
+    "development_artifact_id": 11759653605,
+    "focused_run": 38277340923,
+    "focused_status": "success",
+    "later_commits": "Only stabilization docs and generated defect-status files changed after the runtime source.",
     "snapshot_is_candidate_acceptance": false
   },
-  "next_action": "Clear the shared modeled-spend and guard-drift failures; obtain exact primary-item private status through permitted authenticated access; then guarded hosted release, exact ZIP gates and guest/non-admin acceptance before resubmission.",
+  "next_action": "Aidream spending owner clears the shared modeled $100/week gate; release owner obtains exact primary-item private status through permitted authenticated access; native lane completes current guest/non-admin acceptance; then release owner runs guarded hosted release and exact ZIP gates before any resubmission.",
   "no_local_build_release": true,
   "new_schedule": false
 }
