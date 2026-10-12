@@ -1,9 +1,8 @@
 /** Safari OAuth tab transport. Apple does not implement the identity API. */
 
 import { ALARMS, ENV, STORAGE_KEYS } from '@/config/env';
-import { completeBackgroundAuthorizationCode } from '@/lib/auth/flow';
-import { getSafariRedirectUri } from '@/lib/auth/identity-transport';
-import { generateCodeChallenge, generateCodeVerifier, generateNonce } from '@/lib/auth/pkce';
+import { signInWithOpener } from '@/lib/auth/flow';
+import type { UserProfile } from '@/lib/auth/types';
 import { BROWSER } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
 import { broadcast, on } from '@/lib/messaging/native';
@@ -11,7 +10,6 @@ import { CHANNELS } from '@/lib/messaging/schemas';
 import { checkIsAdmin } from '@/lib/supabase/queries';
 
 const AUTH_TIMEOUT_MS = 10 * 60 * 1000;
-const ACTIVE_AUTH_ATTEMPT_KEY = `${STORAGE_KEYS.PKCE_VERIFIER}.active-attempt`;
 
 interface SafariAttempt {
   attemptId: string;
@@ -22,7 +20,14 @@ interface SafariAttempt {
   claimed?: boolean;
 }
 
-const verifierKey = (state: string) => `${STORAGE_KEYS.PKCE_VERIFIER}.${state}`;
+/**
+ * Callback waiters for the sign-in running in THIS background context, keyed by state. The OAuth
+ * client (`@ai-matrx/auth/matrx-oauth`) owns the verifier, state check and token exchange; this
+ * file owns only the tab: it hands the client the callback URL once the tab lands on it. If the
+ * background context is torn down mid-sign-in the waiter is gone and the callback fails the
+ * attempt with a retryable message (see handleCallback).
+ */
+const waiters = new Map<string, { resolve: (url: string) => void; reject: (e: Error) => void }>();
 
 function authorizeUrl(): string {
   return `${ENV.SUPABASE_URL}/auth/v1/oauth/authorize`;
@@ -38,11 +43,9 @@ async function clearAttempt(attempt: SafariAttempt, failure?: string): Promise<v
   const current = await readAttempt();
   if (!current || current.attemptId !== attempt.attemptId) return;
   await chrome.alarms.clear(ALARMS.SAFARI_AUTH_TIMEOUT).catch(() => undefined);
-  await chrome.storage.session.remove([
-    STORAGE_KEYS.SAFARI_AUTH_ATTEMPT,
-    ACTIVE_AUTH_ATTEMPT_KEY,
-    verifierKey(attempt.state),
-  ]);
+  await chrome.storage.session.remove([STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]);
+  waiters.get(attempt.state)?.reject(new Error(failure ?? 'Sign-in was cancelled.'));
+  waiters.delete(attempt.state);
   if (failure) {
     await chrome.storage.session.set({ [STORAGE_KEYS.SAFARI_AUTH_FAILURE]: failure });
     broadcast(CHANNELS.AUTH_SAFARI_FAILED, { message: failure });
@@ -89,36 +92,29 @@ export async function startSafariAuthorization(): Promise<{ pending: true }> {
   const tab = await chrome.tabs.create({ url: 'about:blank', active: true });
   if (tab.id === undefined) throw new Error('Could not create the Safari sign-in tab');
   try {
-    const verifier = generateCodeVerifier();
-    const state = generateNonce();
-    const attemptId = `oauth:${state}`;
-    const redirectUri = getSafariRedirectUri();
-    const attempt: SafariAttempt = {
-      attemptId,
-      state,
-      tabId: tab.id,
-      redirectUri,
-      createdAt: Date.now(),
-    };
-    const challenge = await generateCodeChallenge(verifier);
-    await chrome.storage.session.set({
-      [verifierKey(state)]: verifier,
-      [ACTIVE_AUTH_ATTEMPT_KEY]: attemptId,
-      [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: attempt,
-    });
-    await chrome.storage.session.remove([STORAGE_KEYS.SAFARI_AUTH_FAILURE]);
-    chrome.alarms.create(ALARMS.SAFARI_AUTH_TIMEOUT, { when: attempt.createdAt + AUTH_TIMEOUT_MS });
-    const params = new URLSearchParams({
-      response_type: 'code',
-      client_id: ENV.SAFARI_OAUTH_CLIENT_ID,
-      redirect_uri: redirectUri,
-      state,
-      code_challenge: challenge,
-      code_challenge_method: 'S256',
-      scope: 'email profile',
-    });
-    await chrome.tabs.update(attempt.tabId, { url: `${authorizeUrl()}?${params.toString()}` });
-    log.info('auth', 'Safari OAuth sign-in tab opened', { callbackOrigin: redirectUri });
+    void signInWithOpener(async (url, { state, redirectUri }) => {
+      const attempt: SafariAttempt = {
+        attemptId: `oauth:${state}`,
+        state,
+        tabId: tab.id as number,
+        redirectUri,
+        createdAt: Date.now(),
+      };
+      const callback = new Promise<string>((resolve, reject) => {
+        waiters.set(state, { resolve, reject });
+      });
+      await chrome.storage.session.set({ [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: attempt });
+      await chrome.storage.session.remove([STORAGE_KEYS.SAFARI_AUTH_FAILURE]);
+      chrome.alarms.create(ALARMS.SAFARI_AUTH_TIMEOUT, {
+        when: attempt.createdAt + AUTH_TIMEOUT_MS,
+      });
+      await chrome.tabs.update(attempt.tabId, { url });
+      log.info('auth', 'Safari OAuth sign-in tab opened', { callbackOrigin: redirectUri });
+      return callback;
+    }).then(
+      (result) => completeSafariSignIn(tab.id as number, result.user),
+      (error) => failCurrentAttempt(tab.id as number, error),
+    );
   } catch (error) {
     await chrome.tabs.remove(tab.id).catch(() => undefined);
     throw error;
@@ -153,28 +149,37 @@ async function handleCallback(tabId: number, callbackUrl: string): Promise<void>
     await failAttempt(attempt, 'Sign-in could not verify its callback. Please try again.', true);
     return;
   }
-  try {
-    await chrome.storage.session.set({
-      [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: { ...attempt, claimed: true },
-    });
-    const user = await completeBackgroundAuthorizationCode(
-      attempt.attemptId,
-      state,
-      code,
-      attempt.redirectUri,
-      ENV.SAFARI_OAUTH_CLIENT_ID,
-    );
-    await clearAttempt(attempt);
-    // A failed role read is unknown, never a confirmed non-admin result. The
-    // receiving UI rechecks from canonical storage and shows a retryable role
-    // warning if the read is still unavailable.
-    const isAdmin = (await checkIsAdmin(user.id)) === true;
-    broadcast(CHANNELS.AUTH_STATE_CHANGED, { user, isAdmin, reason: 'safari_sign_in' });
-    await chrome.tabs.remove(attempt.tabId).catch(() => undefined);
-  } catch (error) {
-    log.warn('auth', 'Safari OAuth completion failed', { reason: (error as Error).name });
+  const waiter = waiters.get(attempt.state);
+  if (!waiter) {
+    // The background context that started this sign-in is gone; its client state went with it.
     await failAttempt(attempt, 'Sign-in could not be completed. Please try again.', true);
+    return;
   }
+  await chrome.storage.session.set({
+    [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: { ...attempt, claimed: true },
+  });
+  waiter.resolve(callbackUrl);
+}
+
+async function completeSafariSignIn(tabId: number, user: UserProfile): Promise<void> {
+  const attempt = await readAttempt();
+  if (!attempt || attempt.tabId !== tabId) return;
+  waiters.delete(attempt.state);
+  await clearAttempt(attempt);
+  // A failed role read is unknown, never a confirmed non-admin result. The
+  // receiving UI rechecks from canonical storage and shows a retryable role
+  // warning if the read is still unavailable.
+  const isAdmin = (await checkIsAdmin(user.id)) === true;
+  broadcast(CHANNELS.AUTH_STATE_CHANGED, { user, isAdmin, reason: 'safari_sign_in' });
+  await chrome.tabs.remove(tabId).catch(() => undefined);
+}
+
+async function failCurrentAttempt(tabId: number, error: unknown): Promise<void> {
+  log.warn('auth', 'Safari OAuth completion failed', { reason: (error as Error).name });
+  const attempt = await readAttempt();
+  if (!attempt || attempt.tabId !== tabId) return;
+  waiters.delete(attempt.state);
+  await failAttempt(attempt, 'Sign-in could not be completed. Please try again.', true);
 }
 
 export function registerSafariAuthorizationBackground(): void {

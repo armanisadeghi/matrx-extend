@@ -12,7 +12,20 @@ const callbacks = vi.hoisted(() => ({
 }));
 
 vi.mock('@/lib/browser/detect', () => ({ BROWSER: 'safari' }));
-vi.mock('@/lib/auth/flow', () => ({ completeBackgroundAuthorizationCode: callbacks.complete }));
+// The OAuth client (state, verifier, exchange) is the package's and has its own tests; here the
+// fake sign-in only shows the tab to the opener and reports what callback URL it was handed.
+vi.mock('@/lib/auth/flow', () => ({
+  signInWithOpener: async (
+    open: (url: string, ctx: { state: string; redirectUri: string }) => Promise<string>,
+  ) => {
+    const callbackUrl = await open('https://db.example.test/auth/v1/oauth/authorize?x=1', {
+      state: 'state',
+      redirectUri: 'https://www.aimatrx.com/auth/extension-callback',
+    });
+    callbacks.complete(callbackUrl);
+    return { user: { id: 'u', email: 'a@example.com' } };
+  },
+}));
 vi.mock('@/config/env', () => ({
   ENV: {
     FRONTEND_URL: 'https://aimatrx.com',
@@ -26,14 +39,6 @@ vi.mock('@/config/env', () => ({
     SAFARI_AUTH_FAILURE: 'safari-failure',
   },
   ALARMS: { SAFARI_AUTH_TIMEOUT: 'safari-timeout' },
-}));
-vi.mock('@/lib/auth/pkce', () => ({
-  generateCodeVerifier: () => 'verifier',
-  generateCodeChallenge: async () => 'challenge',
-  generateNonce: () => 'state',
-}));
-vi.mock('@/lib/auth/identity-transport', () => ({
-  getSafariRedirectUri: () => 'https://www.aimatrx.com/auth/extension-callback',
 }));
 vi.mock('@/lib/supabase/queries', () => ({ checkIsAdmin: async () => true }));
 vi.mock('@/lib/messaging/native', () => ({
@@ -113,7 +118,7 @@ describe('Safari background OAuth tab transport', () => {
 
   it('accepts only its owned exact callback after the popup is gone', async () => {
     await callbacks.handlers.get('auth:safari-start')?.();
-    callbacks.complete.mockResolvedValue({ id: 'u', email: 'a@example.com' });
+    await vi.waitFor(() => expect(session.has('safari-attempt')).toBe(true));
     callbacks.committed?.({
       tabId: 44,
       frameId: 0,
@@ -121,11 +126,7 @@ describe('Safari background OAuth tab transport', () => {
     });
     await vi.waitFor(() =>
       expect(callbacks.complete).toHaveBeenCalledWith(
-        expect.any(String),
-        'state',
-        'code',
-        'https://www.aimatrx.com/auth/extension-callback',
-        'safari-client',
+        'https://www.aimatrx.com/auth/extension-callback?code=code&state=state',
       ),
     );
     expect(callbacks.broadcasts).toContainEqual(
@@ -140,8 +141,10 @@ describe('Safari background OAuth tab transport', () => {
     ['wrong state', 44, 'https://www.aimatrx.com/auth/extension-callback?code=x&state=wrong'],
   ])('refuses %s without exchanging a code', async (_case, tabId, url) => {
     await callbacks.handlers.get('auth:safari-start')?.();
+    await vi.waitFor(() => expect(session.has('safari-attempt')).toBe(true));
     callbacks.committed?.({ tabId, frameId: 0, url });
-    await vi.waitFor(() => expect(callbacks.complete).not.toHaveBeenCalled());
+    await new Promise((r) => setTimeout(r, 20));
+    expect(callbacks.complete).not.toHaveBeenCalled();
   });
 
   it('closes an owned authorization tab when cancelled', async () => {
@@ -167,12 +170,13 @@ describe('Safari background OAuth tab transport', () => {
 
   it('keeps a matching attempt after a forged error and accepts its real callback', async () => {
     await callbacks.handlers.get('auth:safari-start')?.();
+    await vi.waitFor(() => expect(session.has('safari-attempt')).toBe(true));
     callbacks.committed?.({
       tabId: 44,
       frameId: 0,
       url: 'https://www.aimatrx.com/auth/extension-callback?error=denied&state=wrong',
     });
-    callbacks.complete.mockResolvedValue({ id: 'u', email: 'a@example.com' });
+    await vi.waitFor(() => expect(session.has('safari-attempt')).toBe(true));
     callbacks.committed?.({
       tabId: 44,
       frameId: 0,

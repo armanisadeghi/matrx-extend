@@ -1,18 +1,5 @@
 import { z } from 'zod';
 
-/**
- * Tokens as returned by Supabase /auth/v1/oauth/token.
- */
-export const OAuthTokensSchema = z.object({
-  access_token: z.string().min(1),
-  refresh_token: z.string().min(1),
-  token_type: z.string().default('bearer'),
-  expires_in: z.number().int().positive(),
-  expires_at: z.number().int().positive().optional(),
-});
-
-export type OAuthTokens = z.infer<typeof OAuthTokensSchema>;
-
 export const UserProfileSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email().nullable(),

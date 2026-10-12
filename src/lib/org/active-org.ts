@@ -43,6 +43,7 @@ import {
   readOrganizationBootstrapMemberships,
 } from '@/lib/supabase/client';
 import { pushNotice } from '@/state/notices';
+import { resolveActiveOrganization as climbOrganizationLadder } from '@ai-matrx/auth/organizations';
 import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 
 export interface MemberOrganization {
@@ -254,10 +255,17 @@ async function validateActiveOrganization(userId: string): Promise<MemberOrganiz
   if (organizations.length === 0) return null;
   const account = await readAccountOrganizationChoice();
   if (selectionGeneration !== generation) return null;
-  const chosen =
-    (account.lastActive ? byId.get(account.lastActive) : undefined) ??
-    (account.startup ? byId.get(account.startup) : undefined) ??
-    organizations[0];
+  // The ladder itself (last active → start-up → oldest membership) is the package's.
+  const rung = climbOrganizationLadder({
+    memberships: organizations.map((o) =>
+      o.joinedAt ? { id: o.id, joinedAt: o.joinedAt } : { id: o.id },
+    ),
+    account: {
+      lastActiveOrganizationId: account.lastActive,
+      startupOrganizationId: account.startup,
+    },
+  });
+  const chosen = rung ? byId.get(rung.organization.id) : undefined;
   if (!chosen) return null;
   validatedSelection = { userId, organizationId: chosen.id, viaLadder: true };
   return chosen;

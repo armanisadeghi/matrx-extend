@@ -23,7 +23,7 @@ import {
   stopAgendaScanner,
 } from '@/lib/agenda/scanner';
 import { startAudibleLog } from '@/lib/audio/audible-log';
-import { refreshAccessToken } from '@/lib/auth/flow';
+import { getStoredAccessToken, refreshAccessToken, restoreSupabaseSession } from '@/lib/auth/flow';
 import { logExtensionIdentityOnce } from '@/lib/auth/identity';
 import { registerSafariAuthorizationBackground } from '@/lib/auth/safari-background';
 import { stampDocumentSender } from '@/lib/background/document-event-relay';
@@ -88,7 +88,6 @@ import {
   ensureOffscreen,
   startStream,
 } from '@/lib/stream/offscreen-proxy';
-import { setSupabaseSession } from '@/lib/supabase/client';
 import { lookupCapturedByUrl } from '@/lib/supabase/queries';
 import { registerSwipeFileHost } from '@/lib/swipe-file/host';
 import { deliverToolResult } from '@/lib/tools/deliver-tool-result';
@@ -313,8 +312,7 @@ function setupAlarms(): void {
           // rest of the session (audit P2: TOKEN_REFRESH not re-armed).
           // Only retry while a refresh token actually exists; a signed-out
           // / signed-out-by-failure state must not loop a dead alarm.
-          const stored = await chrome.storage.local.get([STORAGE_KEYS.REFRESH_TOKEN_ENC]);
-          if (stored[STORAGE_KEYS.REFRESH_TOKEN_ENC]) {
+          if (await getStoredAccessToken()) {
             chrome.alarms.create(ALARMS.TOKEN_REFRESH, { delayInMinutes: 5 });
           }
         }
@@ -1108,20 +1106,8 @@ function registerSchedulerHostUserWatcher(): void {
 }
 
 async function rehydrateSupabaseSession(): Promise<void> {
-  const stored = await chrome.storage.local.get([
-    STORAGE_KEYS.ACCESS_TOKEN,
-    STORAGE_KEYS.REFRESH_TOKEN_ENC,
-    STORAGE_KEYS.REFRESH_TOKEN_IV,
-  ]);
-  const access = stored[STORAGE_KEYS.ACCESS_TOKEN] as string | undefined;
-  if (!access) return;
-  const { decryptString } = await import('@/lib/auth/crypto');
-  const ct = stored[STORAGE_KEYS.REFRESH_TOKEN_ENC] as string | undefined;
-  const iv = stored[STORAGE_KEYS.REFRESH_TOKEN_IV] as string | undefined;
-  if (!ct || !iv) return;
   try {
-    const refresh = await decryptString({ ct, iv });
-    await setSupabaseSession(access, refresh);
+    await restoreSupabaseSession();
   } catch (err) {
     console.warn('[matrx-extend] rehydrate failed', err);
   }

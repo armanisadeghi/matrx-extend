@@ -248,7 +248,7 @@ it('invalidates same-account token replacement before a late Fill can publish', 
   deps.fill.mockReturnValueOnce(pending.promise);
   await act(async () => button('Fill').click());
   await act(async () => {
-    for (const fn of storageListeners) fn({ [STORAGE_KEYS.ACCESS_TOKEN]: {} }, 'local');
+    for (const fn of storageListeners) fn({ [STORAGE_KEYS.AUTH_SESSION]: {} }, 'local');
     pending.resolve({ status: 'filled' });
   });
   expect(node.textContent).not.toContain('Filled. Review');

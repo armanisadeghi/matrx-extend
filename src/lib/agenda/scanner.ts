@@ -18,7 +18,7 @@
  * immediately and validates UX before we wire auto-execution.
  */
 
-import { ALARMS, STORAGE_KEYS } from '@/config/env';
+import { ALARMS } from '@/config/env';
 import { log } from '@/lib/debug/log';
 import { send as msgSend } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -45,8 +45,8 @@ const SCAN_PERIOD_MIN = 1;
  */
 async function hasSession(): Promise<boolean> {
   try {
-    const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
-    return !!stored[STORAGE_KEYS.ACCESS_TOKEN];
+    const { getStoredAccessToken } = await import('@/lib/auth/flow');
+    return (await getStoredAccessToken()) !== null;
   } catch {
     return false;
   }

@@ -42,7 +42,7 @@ export function usePanelAdmission(
       if (
         area === 'local' &&
         [
-          STORAGE_KEYS.ACCESS_TOKEN,
+          STORAGE_KEYS.AUTH_SESSION,
           STORAGE_KEYS.USER_PROFILE,
           STORAGE_KEYS.ACTIVE_ORGANIZATION,
         ].some((key) => key in changes)

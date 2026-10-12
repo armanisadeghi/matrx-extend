@@ -85,6 +85,18 @@ async function mintSignedBearer(): Promise<{ token: string; jwks: unknown }> {
   };
 }
 
+/** A stored session in the shape @ai-matrx/auth/matrx-oauth keeps (one JSON string). */
+const signedInSession = (accessToken: string) =>
+  JSON.stringify({
+    v: 1,
+    clientId: 'test-client',
+    personId: USER_ID,
+    email: 'admin@admin.com',
+    accessToken,
+    refreshToken: 'sealed',
+    expiresAtMs: Date.now() + 3_600_000,
+  });
+
 describe('per-request identity never touches the Supabase Auth server', () => {
   beforeEach(() => {
     resetBearerVerifierForTests();
@@ -93,14 +105,14 @@ describe('per-request identity never touches the Supabase Auth server', () => {
     // without one. The verifier never opens a socket.
     vi.stubGlobal('WebSocket', class {});
     vi.stubEnv('WXT_SUPABASE_URL', SUPABASE_URL);
+    vi.stubEnv('WXT_EXTENSION_OAUTH_CLIENT_ID', 'test-client');
     vi.stubEnv('WXT_SUPABASE_PUBLISHABLE_KEY', 'sb_publishable_test');
   });
 
   it('never calls /auth/v1/user on the per-request path', async () => {
     const { token, jwks } = await mintSignedBearer();
     await chrome.storage.local.set({
-      [STORAGE_KEYS.ACCESS_TOKEN]: token,
-      [STORAGE_KEYS.TOKEN_EXPIRES_AT]: Date.now() + 3_600_000,
+      [STORAGE_KEYS.AUTH_SESSION]: signedInSession(token),
       [STORAGE_KEYS.ACTIVE_ORGANIZATION]: ORG_ID,
       [STORAGE_KEYS.USER_PROFILE]: { id: USER_ID, email: 'admin@admin.com' },
     });
@@ -136,8 +148,7 @@ describe('per-request identity never touches the Supabase Auth server', () => {
   it('caches the key set: a second request makes no auth-host call at all', async () => {
     const { token, jwks } = await mintSignedBearer();
     await chrome.storage.local.set({
-      [STORAGE_KEYS.ACCESS_TOKEN]: token,
-      [STORAGE_KEYS.TOKEN_EXPIRES_AT]: Date.now() + 3_600_000,
+      [STORAGE_KEYS.AUTH_SESSION]: signedInSession(token),
       [STORAGE_KEYS.ACTIVE_ORGANIZATION]: ORG_ID,
       [STORAGE_KEYS.USER_PROFILE]: { id: USER_ID, email: 'admin@admin.com' },
     });

@@ -26,6 +26,7 @@
 import { ENV } from '@/config/env';
 import type { UserProfile } from '@/lib/auth/types';
 import { log } from '@/lib/debug/log';
+import { getClaimsUser, isAuthTransportFailure, pinnedSigningKeysFor } from '@ai-matrx/auth';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 
 /** Upper bound on the ONE JWKS fetch. Local verification must never hang. */
@@ -187,18 +188,23 @@ export async function verifyBearerClaims(
   // caught below and misreported as unverifiable.
   if (!looksLikeJwt(token)) return { status: 'invalid', reason: 'not a JWT' };
   try {
-    const { data, error } = await getVerificationClient().auth.getClaims(token);
+    // Pinned project keys first: a known key verifies with no JWKS fetch at all.
+    const pinned = pinnedSigningKeysFor(ENV.SUPABASE_URL);
+    const { data, error } = await getClaimsUser(
+      getVerificationClient(),
+      token,
+      pinned.length > 0 ? { jwks: { keys: pinned } } : undefined,
+    );
     if (error) {
+      // No verdict is not "signed out": transport failures and our own refusal of the
+      // Auth-server fallback are unverifiable; a token we reached a verdict on is invalid.
       const unreachable =
-        error.name === 'AuthRetryableFetchError' ||
-        error.name === 'PerRequestAuthUserCallError' ||
-        error.name === 'TimeoutError' ||
-        error.name === 'AbortError';
+        isAuthTransportFailure(error) || error.name === 'PerRequestAuthUserCallError';
       return unreachable
         ? { status: 'unverifiable', reason: error.message }
         : { status: 'invalid', reason: error.message };
     }
-    const claims = (data?.claims ?? null) as Record<string, unknown> | null;
+    const claims = (data.user ?? null) as Record<string, unknown> | null;
     if (!claims) return { status: 'unverifiable', reason: 'no claims returned' };
     const user = profileFromClaims(claims);
     if (!user) return { status: 'invalid', reason: 'verified token carries no subject' };

@@ -9,7 +9,8 @@
  * realm, while chrome.storage.local remains the canonical session state.
  */
 
-import { ENV, STORAGE_KEYS } from '@/config/env';
+import { ENV } from '@/config/env';
+import { getStoredAccessToken } from '@/lib/auth/flow';
 import { readAccountOrganizationChoices } from '@ai-matrx/data/organizations';
 import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
@@ -77,9 +78,7 @@ function createExtensionClient(
 ): SupabaseClient {
   return createClient(ENV.SUPABASE_URL, ENV.SUPABASE_PUBLISHABLE_KEY, {
     accessToken: async () => {
-      const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
-      const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
-      return typeof token === 'string' && token.length > 0 ? token : null;
+      return getStoredAccessToken();
     },
     global: {
       fetch: requestFetch,
@@ -251,9 +250,7 @@ export function supabaseForActor(actor: WriteActor): SupabaseClient {
  * `accessToken` hook above reads — so it cannot disagree with what the next request will send.
  */
 export async function hasSupabaseAccessToken(): Promise<boolean> {
-  const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
-  const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
-  return typeof token === 'string' && token.length > 0;
+  return (await getStoredAccessToken()) !== null;
 }
 
 export async function setSupabaseSession(

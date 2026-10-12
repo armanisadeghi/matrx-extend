@@ -6,9 +6,9 @@
  * `deviceTools` port (run by the service worker's dispatcher).
  */
 
-import { STORAGE_KEYS } from '@/config/env';
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
 import { requestMicrophoneGrant } from '@/lib/audio/mic-grant';
+import { getStoredAccessToken } from '@/lib/auth/flow';
 import { DEFAULT_CHAT_MANDATE_KEY } from '@/lib/mandates';
 import { send } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -48,9 +48,7 @@ async function readStoredAddress(): Promise<string | null> {
 }
 
 async function readBearer(): Promise<string | null> {
-  const stored = await chrome.storage.local.get([STORAGE_KEYS.ACCESS_TOKEN]);
-  const token = stored[STORAGE_KEYS.ACCESS_TOKEN];
-  return typeof token === 'string' && token.length > 0 ? token : null;
+  return getStoredAccessToken();
 }
 
 /** The side panel's active organization, mirrored for the package's synchronous reads. */

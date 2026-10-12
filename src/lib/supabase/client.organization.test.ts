@@ -11,10 +11,14 @@ vi.mock('@/config/env', () => ({
     SUPABASE_PUBLISHABLE_KEY: 'publishable',
     FRONTEND_URL: 'https://aimatrx.com',
   },
-  STORAGE_KEYS: { ACCESS_TOKEN: 'token', ACTIVE_ORGANIZATION: 'organization' },
+  STORAGE_KEYS: { ACTIVE_ORGANIZATION: 'organization' },
 }));
 vi.mock('@/lib/auth/flow', () => ({
   getCurrentUser: async () => (state.userId ? { id: state.userId } : null),
+  getStoredAccessToken: async () => {
+    const stored = await chrome.storage.local.get(['token']);
+    return typeof stored.token === 'string' ? stored.token : null;
+  },
 }));
 vi.mock('@/lib/debug/log', () => ({ log: { error: vi.fn(), warn: vi.fn() } }));
 vi.mock('@/state/notices', () => ({ pushNotice: vi.fn() }));

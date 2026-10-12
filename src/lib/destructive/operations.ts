@@ -198,11 +198,6 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
     why: 'Reads-and-consumes a one-shot draft handed over by the right-click menu.',
   },
   {
-    fn: 'signIn',
-    module: 'src/lib/auth/flow.ts',
-    why: 'Clears the one-time PKCE verifier the sign-in exchange has just consumed.',
-  },
-  {
     fn: 'clearAttempt',
     module: 'src/lib/auth/safari-background.ts',
     why: 'Consumes only the current Safari OAuth attempt, its one-time verifier, and a timeout alarm after that attempt ends.',
@@ -213,9 +208,9 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
     why: 'Replaces a prior in-progress Safari OAuth attempt and clears only its transient failure notice before starting a new sign-in.',
   },
   {
-    fn: 'clearLocalSession',
+    fn: 'clearLocalSideEffects',
     module: 'src/lib/auth/flow.ts',
-    why: 'The locked sign-out/invalid-session helper drops only credentials, auth-attempt state, and cached identity/organization. Signing back in restores the session; no user content is deleted.',
+    why: 'The locked sign-out/invalid-session helper drops only the cached identity/organization and the refresh alarm (the OAuth package clears the credentials). Signing back in restores the session; no user content is deleted.',
   },
   {
     fn: 'signOut',
