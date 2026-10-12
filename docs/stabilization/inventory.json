@@ -7326,6 +7326,9 @@
               "scope": "Visible applied theme appearance and new-chat inherited default after panel reload; source tests only, independent source review passed/native pending; no extension-wide reload or server-action claim.",
               "independent_review": "91b3bc98"
             }
+          ],
+          "defect_ids": [
+            "EXT-D-0220"
           ]
         },
         {
@@ -15164,7 +15167,8 @@
             "EXT-D-0087",
             "EXT-D-0155",
             "EXT-D-0157",
-            "EXT-D-0186"
+            "EXT-D-0186",
+            "EXT-D-0220"
           ],
           "run_ids": [
             "guest-local-001",
