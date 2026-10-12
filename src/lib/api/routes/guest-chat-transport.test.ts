@@ -158,14 +158,14 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe.each(operations)('$name reaches the real transport', (operation) => {
-  beforeEach(() =>
+  beforeEach(() => {
     fetchMock.mockImplementation(
       async () =>
         new Response(JSON.stringify(operation.reply), {
           headers: { 'Content-Type': 'application/json' },
         }),
-    ),
-  );
+    );
+  });
   it('sends a guest fingerprint with no fabricated organization', async () => {
     const result = await operation.run();
     expect(fetchMock).toHaveBeenCalledOnce();
