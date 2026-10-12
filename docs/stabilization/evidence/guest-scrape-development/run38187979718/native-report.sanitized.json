@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "status": "unverified",
+  "feature": "EXT-F-1007",
+  "case": "guest-scrape-development",
+  "scope": "full",
+  "artifact_source_sha": "47907605d42dd8d7ac1cac71689c87b386447a19",
+  "artifact_id": 11720397412,
+  "artifact_tree_sha256": "2c1f735e612bd6437e0a006f8bb82c1e754727b84622dc15166f9ad349e0589f",
+  "auth_mode": "guest",
+  "driver_stage": "inputs",
+  "native_stage": "cdp_connect",
+  "failure_code": "owned_cdp_open_timeout",
+  "product_observations": [],
+  "behavior_verdict": "none",
+  "limitations": [
+    "The native panel acceptance did not attach to the owned CDP endpoint; no Scrape controls ran.",
+    "The hosted-guest resource journal ended invalid after RESOURCE_CPU_BUSY and RESOURCE_CPU_HIGH_LOAD_BUSY; run acceptance credit is invalid.",
+    "This failure is infrastructure/resource evidence, not a product defect or product failure."
+  ]
+}
