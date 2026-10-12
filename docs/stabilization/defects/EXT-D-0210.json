@@ -1,7 +1,7 @@
 {
   "id": "EXT-D-0210",
   "feature_id": "EXT-F-0003",
-  "case_ids": ["EXT-F-0003-T07"],
+  "case_ids": ["EXT-F-0003-T13"],
   "title": "Capture policy settings call omits generated operation import",
   "surface": "Extension CI Typecheck",
   "auth_mode": "guest/member/admin; compile is independent of sign-in",

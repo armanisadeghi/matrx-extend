@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T15:46:06Z",
+  "updated_at": "2026-10-12T16:18:36Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -1566,6 +1566,18 @@
           "id": "EXT-F-0003-C13",
           "label": "Reject remotely sourced executable code in the Store bundle",
           "action": "Scan the exact emitted Store JavaScript, including transitive package chunks, and refuse upload when it can inject an executable script from a remote URL."
+        },
+        {
+          "id": "EXT-F-0003-C14",
+          "label": "Run Typecheck and Lint against the exact candidate",
+          "action": "The main CI checks job runs pnpm compile and Biome lint on the same checked-out commit; the applicable WXT build lane must also consume that candidate package graph successfully.",
+          "source_anchor": ".github/workflows/ci.yml:57"
+        },
+        {
+          "id": "EXT-F-0003-C15",
+          "label": "Build the exact candidate against its locked package graph",
+          "action": "The applicable CI WXT build consumes the frozen lockfile graph and the exact checked-out candidate; missing package exports fail the build and leave the artifact gate red.",
+          "source_anchor": ".github/workflows/ci.yml:197"
         }
       ],
       "source_anchors": [
@@ -2214,6 +2226,45 @@
               "detail": "Auth-independent package gate remains unverified on a corrected artifact; no admin browser acceptance or submission is claimed."
             }
           }
+        },
+        {
+          "id": "EXT-F-0003-T13",
+          "title": "Exact-source CI Typecheck, Lint and WXT build gates",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0003-C14",
+            "EXT-F-0003-C15"
+          ],
+          "preconditions": [
+            "Observe the automatic CI run for one exact pushed or pull-request candidate SHA; do not substitute a different commit or infer a terminal result from an earlier job.",
+            "The candidate contains the generated-operation import/typecheck and Biome import repairs linked to EXT-D-0210 and EXT-D-0214, plus the corrected latest package graph required by EXT-D-0215."
+          ],
+          "steps": [
+            "Open the automatic CI run attached to the candidate SHA and inspect the checks job checkout SHA.",
+            "Confirm Install, Typecheck (pnpm compile), and Lint (pnpm lint --diagnostic-level=error) use that same candidate.",
+            "For a pull request or release tag, inspect the WXT build step; for a main push, inspect the keyed development artifact build step. Record the exact candidate and package versions consumed.",
+            "Record the individual gate results and final job result against the source SHA."
+          ],
+          "expected": [
+            "The exact candidate SHA is the source for Typecheck, Lint and the event-appropriate WXT build.",
+            "The candidate package graph resolves every imported export and all required gates finish successfully; a failure remains a failed CI gate and cannot be replaced by success on another SHA."
+          ],
+          "dimensions": [
+            "exact-source",
+            "typecheck",
+            "lint",
+            "wxt-build",
+            "automatic-ci"
+          ],
+          "defect_ids": [
+            "EXT-D-0210",
+            "EXT-D-0214",
+            "EXT-D-0215"
+          ]
         }
       ],
       "cells": {
@@ -2397,6 +2448,232 @@
           "detail": "Reopened regression repaired with explicit cleanup+dynamic import settlement, actualmergedCI36260569407 success. Historicalfailedrunretained; no deterministicredclaim."
         }
       ]
+    },
+    {
+      "id": "EXT-F-0004",
+      "name": "Use the shared generated API transport",
+      "surface": "Generated API request, credential and result transport",
+      "entry_points": [
+        "src/lib/api/matrx-api.ts: runOp and runOpAs; generated @ai-matrx/api JSON operations"
+      ],
+      "controls": [
+        {
+          "id": "EXT-F-0004-C01",
+          "label": "Parse valid generated JSON responses",
+          "action": "A successful generated JSON operation returns its parsed response in the extension ApiResult shape."
+        },
+        {
+          "id": "EXT-F-0004-C02",
+          "label": "Separate malformed success bodies from network failures",
+          "action": "A response.json SyntaxError from a successful response maps to STATUS_INVALID_BODY (-1); a fetch TypeError remains status 0."
+        },
+        {
+          "id": "EXT-F-0004-C03",
+          "label": "Preserve the signed-out guest and signed-in session boundary",
+          "action": "Only a genuinely signed-out session may resolve guest credentials; a signed-in session without a readable bearer is refused as STATUS_SESSION_NOT_READY (-3) before transport."
+        },
+        {
+          "id": "EXT-F-0004-C04",
+          "label": "Carry or require organization context according to the operation",
+          "action": "Org-required generated operations carry the selected organization; missing organization is resolved through the active-org path or refused as STATUS_NO_ORGANIZATION (-2) before transport. Org-optional guest operations do not invent an organization."
+        }
+      ],
+      "source_anchors": [
+        "src/lib/api/matrx-api.ts:146",
+        "src/lib/api/matrx-api.ts:194",
+        "src/lib/api/session-credentials.ts:1",
+        "src/lib/api/session-credentials.ts:46",
+        "src/lib/api/client.ts:45",
+        "src/lib/org/active-org.ts",
+        "src/lib/api/matrx-api-session.test.ts:86",
+        "src/lib/api/routes/ai.ts",
+        "src/lib/api/routes/tool-results.ts"
+      ],
+      "dependency_class": "cross-system",
+      "wave": "A",
+      "inventory_status": "source-listed-pending-reconciliation",
+      "applicability": {
+        "guest": {
+          "applicable": true,
+          "reason": "Generated operations may use guest credentials when their operation contract allows it; transport and body classification still apply."
+        },
+        "member": {
+          "applicable": true,
+          "reason": "Bearer-authenticated generated operations use the shared adapter, session readiness and organization context."
+        },
+        "admin": {
+          "applicable": true,
+          "reason": "Bearer-authenticated generated operations use the same shared adapter, session readiness and organization context."
+        }
+      },
+      "cases": [
+        {
+          "id": "EXT-F-0004-T01",
+          "title": "Valid generated JSON response returns parsed data",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0004-C01",
+            "EXT-F-0004-C03"
+          ],
+          "preconditions": [
+            "Use a real generated JSON operation with a controlled transport response containing valid JSON and a shape accepted by that operation.",
+            "For guest, use a genuinely signed-out session and an operation whose generated descriptor permits guest access; for member/admin, use the corresponding signed-in identity and a selected organization when required."
+          ],
+          "steps": [
+            "Call the generated operation through runOp or runOpAs.",
+            "Have the transport return HTTP 200 with the valid JSON fixture.",
+            "Inspect the ApiResult and the actual request identity headers."
+          ],
+          "expected": [
+            "The result is ok and contains the parsed response data.",
+            "The operation reaches the transport exactly once with credentials and organization context appropriate to its descriptor and mode."
+          ],
+          "dimensions": [
+            "generated-operation",
+            "valid-json",
+            "guest",
+            "member",
+            "admin"
+          ]
+        },
+        {
+          "id": "EXT-F-0004-T02",
+          "title": "Malformed successful JSON and network errors retain distinct statuses",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0004-C02"
+          ],
+          "preconditions": [
+            "Use a generated JSON operation whose descriptor and organization requirements are satisfied in the selected mode.",
+            "Control only fetch: one response is HTTP 200 with malformed JSON; the second attempt throws a TypeError representing a failed fetch."
+          ],
+          "steps": [
+            "Run the generated operation through runOpAs with the malformed HTTP 200 response.",
+            "Run the same generated operation with fetch throwing TypeError.",
+            "Inspect each ApiResult status and confirm each request reaches the generated transport path."
+          ],
+          "expected": [
+            "Malformed successful JSON returns ok:false with status STATUS_INVALID_BODY (-1).",
+            "A fetch TypeError returns ok:false with status 0."
+          ],
+          "dimensions": [
+            "generated-operation",
+            "malformed-success-body",
+            "network-error",
+            "status-classification"
+          ],
+          "defect_ids": [
+            "EXT-D-0213"
+          ]
+        },
+        {
+          "id": "EXT-F-0004-T03",
+          "title": "Guest credentials do not hide an unready signed-in session",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0004-C03"
+          ],
+          "preconditions": [
+            "Use a generated guest-allowed operation with an optional organization descriptor for the signed-out guest leg.",
+            "For member and admin legs, establish a signed-in profile while withholding a readable bearer; do not fabricate an access token."
+          ],
+          "steps": [
+            "With no signed-in profile or bearer, call the generated operation and inspect the outgoing headers.",
+            "With a signed-in profile but no readable bearer, call the same operation and inspect the result and fetch count."
+          ],
+          "expected": [
+            "The truly signed-out request uses the guest fingerprint and no Authorization header.",
+            "The signed-in request returns STATUS_SESSION_NOT_READY (-3) and is refused before fetch; it does not fall back to the guest fingerprint."
+          ],
+          "dimensions": [
+            "guest-credential",
+            "signed-in-session-not-ready",
+            "no-downgrade"
+          ]
+        },
+        {
+          "id": "EXT-F-0004-T04",
+          "title": "Organization-required generated calls carry or refuse organization context",
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0004-C04"
+          ],
+          "preconditions": [
+            "Use a generated operation marked organization-required and a second generated guest-allowed operation marked organization-optional.",
+            "Use a controlled active organization for the positive leg and no membership/selected organization for the refusal leg."
+          ],
+          "steps": [
+            "Call the organization-required operation with an active organization and inspect X-Organization-Id.",
+            "Repeat without an active organization and inspect the ApiResult and transport call count.",
+            "Call the org-optional guest operation while genuinely signed out and with no selected organization."
+          ],
+          "expected": [
+            "The organization-required call carries the explicit selected organization.",
+            "When no organization can be resolved, the required call returns STATUS_NO_ORGANIZATION (-2) before transport.",
+            "The org-optional guest call reaches transport with a fingerprint and no fabricated organization header."
+          ],
+          "dimensions": [
+            "organization-required",
+            "organization-optional",
+            "missing-organization",
+            "guest",
+            "member",
+            "admin"
+          ]
+        }
+      ],
+      "cells": {
+        "guest": {
+          "test_status": "unverified",
+          "defect_ids": [
+            "EXT-D-0213"
+          ],
+          "run_ids": [],
+          "retest_status": "not-run"
+        },
+        "member": {
+          "test_status": "unverified",
+          "defect_ids": [
+            "EXT-D-0213"
+          ],
+          "run_ids": [],
+          "retest_status": "not-run"
+        },
+        "admin": {
+          "test_status": "unverified",
+          "defect_ids": [
+            "EXT-D-0213"
+          ],
+          "run_ids": [],
+          "retest_status": "not-run"
+        }
+      },
+      "readiness_gaps": [
+        "All four cases are unverified; source reading and the unrun focused unit tests are not mode verdicts",
+        "Operation-specific credential and organization descriptors require a wider census before claiming generated API feature completeness."
+      ],
+      "current_source_behavior": "runOp delegates request construction and JSON decoding to generated @ai-matrx/api operations, then adapts thrown errors to ApiResult. The extension session credential port returns a guest fingerprint only for a truly signed-out session; organization-required errors resolve through active-org or become STATUS_NO_ORGANIZATION.",
+      "unverified_leads": [
+        "The intended guest/member/admin applicability and organization descriptor still need independent source census and executable test evidence.",
+        "Native extension behavior and backend authorization are outside current source evidence."
+      ],
+      "integration_status": "The source-only feature entry is partial; no case or mode has an execution result."
     },
     {
       "id": "EXT-F-1001",

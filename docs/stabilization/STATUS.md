@@ -1,14 +1,14 @@
 # Extension stabilization status
 
-Generated 2026-10-12 15:49 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T15:46:06Z. 206 features · 802 cases · 1391 controls · 209 linked defect records.
+Generated 2026-10-12 16:25 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T16:18:36Z. 207 features · 807 cases · 1397 controls · 215 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1279** — Pass: 103 · Partial: 93 · Fail: 2 · Unverified: 1079 · N/A: 2.
-Unverified splits into **145 explicitly marked unverified** and **934 with no result record**.
-Full feature-role pairs: **0/399**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
+Applicable case-by-role slots: **1294** — Pass: 103 · Partial: 93 · Fail: 2 · Unverified: 1094 · N/A: 2.
+Unverified splits into **145 explicitly marked unverified** and **949 with no result record**.
+Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -17,7 +17,8 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 4 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 1, unverified 22, n/a 0 | 9 |
-| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 9, n/a 0 | 1 |
+| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 12, n/a 0 | 5 |
+| [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 20, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 19 pass · 6 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 33, partial 16, fail 0, unverified 48, n/a 1 | 3 |
@@ -46,7 +47,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Capture side-panel](#capture-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Vault side-panel](#vault-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Tools/manual runner](#toolsmanual-runner) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 0 |
-| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 1, unverified 24, n/a 0 | 4 |
+| [Chat (deferred wave D)](#chat-deferred-wave-d) | 1 | 1 pass · 0 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 1, partial 1, fail 1, unverified 24, n/a 0 | 5 |
 | [Pilot (deferred wave D)](#pilot-deferred-wave-d) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 5, n/a 0 | 1 |
 | [Tools Smart tests](#tools-smart-tests) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
@@ -201,11 +202,11 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Validate and publish exact release candidate (EXT-F-0003)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 12. **Controls:** 9.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 13. **Controls:** 11.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0204
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0204, EXT-D-0210, EXT-D-0212, EXT-D-0214, EXT-D-0215
 
-**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed), [EXT-D-0188](defects/EXT-D-0188.json) (closed), [EXT-D-0200](defects/EXT-D-0200.json) (closed), [EXT-D-0204](defects/EXT-D-0204.json) (in-fix), [EXT-D-0206](defects/EXT-D-0206.json) (closed), [EXT-D-0208](defects/EXT-D-0208.json) (closed), [EXT-D-0209](defects/EXT-D-0209.json) (closed)
+**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed), [EXT-D-0188](defects/EXT-D-0188.json) (closed), [EXT-D-0200](defects/EXT-D-0200.json) (closed), [EXT-D-0204](defects/EXT-D-0204.json) (in-fix), [EXT-D-0206](defects/EXT-D-0206.json) (closed), [EXT-D-0208](defects/EXT-D-0208.json) (closed), [EXT-D-0209](defects/EXT-D-0209.json) (closed), [EXT-D-0210](defects/EXT-D-0210.json) (fixed), [EXT-D-0212](defects/EXT-D-0212.json) (in-fix), [EXT-D-0214](defects/EXT-D-0214.json) (fixed), [EXT-D-0215](defects/EXT-D-0215.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -221,6 +222,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-0003-T10 Settle sidepanel lazy imports before test teardown | Unverified | Unverified | Unverified | No control mapped |
 | EXT-F-0003-T11 Main verification survives subsequent evidence pushes | Pass | Pass | Pass | EXT-F-0003-C11 |
 | EXT-F-0003-T12 Store package refuses the rejected remote script loader and preserves PDF output | Unverified | Unverified | Unverified | EXT-F-0003-C13 |
+| EXT-F-0003-T13 Exact-source CI Typecheck, Lint and WXT build gates | Unverified | Unverified | Unverified | EXT-F-0003-C14, EXT-F-0003-C15 |
 
 **Recorded case details and evidence:**
 
@@ -277,6 +279,26 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: main-ci-continuity-20261003, ['docs/stabilization/defects/EXT-D-0092.json', '.research/guarded-phases-peer.json']
 
 **Other remaining work:** Real successful release proven; exhaustive operational feature acceptance still needs per-case evidence reconciliation.; T08 CI lint parity requires the root-owned guarded red/green release fixture before full feature cells can pass.
+
+
+## Generated API request, credential and result transport
+
+### Use the shared generated API transport (EXT-F-0004)
+
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 4. **Controls:** 4.
+
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0213
+
+**Linked defects:** [EXT-D-0213](defects/EXT-D-0213.json) (fixed)
+
+| Case | Guest | Member | Admin | Controls exercised by case |
+| --- | --- | --- | --- | --- |
+| EXT-F-0004-T01 Valid generated JSON response returns parsed data | Unverified | Unverified | Unverified | EXT-F-0004-C01, EXT-F-0004-C03 |
+| EXT-F-0004-T02 Malformed successful JSON and network errors retain distinct statuses | Unverified | Unverified | Unverified | EXT-F-0004-C02 |
+| EXT-F-0004-T03 Guest credentials do not hide an unready signed-in session | Unverified | Unverified | Unverified | EXT-F-0004-C03 |
+| EXT-F-0004-T04 Organization-required generated calls carry or refuse organization context | Unverified | Unverified | Unverified | EXT-F-0004-C04 |
+
+**Other remaining work:** All four cases are unverified; source reading and the unrun focused unit tests are not mode verdicts; Operation-specific credential and organization descriptors require a wider census before claiming generated API feature completeness.
 
 
 ## Navigation / shell
@@ -1708,9 +1730,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Fail · member: Partial · admin: Unverified. **Cases:** 12. **Controls:** 138.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156, EXT-D-0211
 
-**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed)
+**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
