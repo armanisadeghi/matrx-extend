@@ -2940,6 +2940,11 @@ Every entry follows this shape:
   navigation, or removal of the focused field. Only a ready saved-login choice produces an on-page
   chooser.
 
+### Offer saved logins on sign-in forms — member Privacy setting
+- **Where to test:** the actual extension, signed in as an ordinary member, with a controlled synthetic disposable HTTPS sign-in form and a case-owned matching browser-fill-enabled Vault login. Record build, browser, fixture IDs, and cleanup plan without credential values. If the fixture or Vault login cannot be provisioned, record `NOT_EXECUTABLE` with the missing prerequisite; do not score product behavior.
+- **Steps:** Record the original values of **Offer saved logins on sign-in forms** and **Show password suggestions on websites**. Turn the first switch off, focus the login field, and verify no chooser or actionable Vault Fill appears; Vault explains matching is off. Turn the first switch on and the presentation switch off, refocus the matched field, and verify no page chooser appears while Vault Fill remains actionable. Turn presentation on, refocus, and verify the ready match shows a chooser that fills only after a click and never submits. Reopen Settings after side-panel reload and full extension Reload, repeat the off/on checks, and verify persistence. Restore and verify both original switch values; remove the case-owned Vault login and disposable fixture.
+- **Expected:** the saved-login switch gates focused-form matching and Fill in both presentation modes. The presentation switch governs only page chooser visibility. The separate **Offer to save logins to the Vault** switch controls the post-submit Save/Update prompt.
+
 ### Quiet Vault assistance
 - **What it does:** the default presentation adds no Matrx UI to websites. Matching and submitted-login capture continue in the background; the toolbar shows a metadata-only indicator and an open side panel offers **Open Vault**. Pin Matrx in Chrome's toolbar if the indicator is hidden. Nothing is saved automatically.
 - **Where to test:** a disposable https sign-in page with a matching Vault login, then a submitted disposable login.

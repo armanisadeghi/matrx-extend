@@ -5908,7 +5908,7 @@
         {
           "id": "EXT-F-1003-C11",
           "label": "Offer saved logins on sign-in forms",
-          "action": "Toggle saved-login prompt on supported forms."
+          "action": "Toggle focused-form saved-login matching and the Vault fill offer."
         },
         {
           "id": "EXT-F-1003-C12",
@@ -9086,11 +9086,16 @@
             "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Toggle saved-login prompt on supported forms."
+            "Prepare a controlled, synthetic disposable HTTPS sign-in form and a case-owned matching browser-fill-enabled Vault login; record the fixture IDs and cleanup plan without credential values. If either cannot be provisioned, record NOT_EXECUTABLE with the missing prerequisite and stop without a product verdict.",
+            "Open Settings → Privacy; record the original values of Offer saved logins on sign-in forms and Show password suggestions on websites before changing either.",
+            "Turn Offer saved logins on sign-in forms off, focus the form field, and check that no on-page chooser or actionable Vault Fill offer appears; confirm the disabled remedy in Vault.",
+            "Turn Offer saved logins on sign-in forms on and Show password suggestions on websites off; focus the matched field and verify no page chooser appears while the matching Vault Fill remains actionable.",
+            "Keep Offer saved logins on sign-in forms on and turn Show password suggestions on websites on; refocus the matched field and verify a ready match shows the page chooser, which fills only after a click and never submits the form.",
+            "Reopen Settings after side-panel reload and full extension Reload; repeat the off/on focused-form checks against the same controlled fixture and verify each switch persists.",
+            "Restore both switches to their recorded original values, verify both displayed values after reopening Settings, and remove the case-owned Vault login and disposable fixture."
           ],
           "expected": [
-            "Toggle state persists and controls saved-login form offers."
+            "The switch persists across warm and full reload. Off suppresses focused-form matching, chooser, and Fill; on restores the matching Vault Fill even with page presentation off. Page presentation on shows a chooser only for a ready match, and choosing it never submits the form. Both original switch values are restored and verified; the owned fixture is removed."
           ],
           "dimensions": [
             "warm",
