@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "review_id": "notes-find-member-run38190081718-review",
+  "reviewed_at": "2026-10-12T01:11:49Z",
+  "reviewer": "/root/notes_endpoint_run_peer_1012",
+  "verdict": {
+    "A": "NO_PRODUCT_PASS",
+    "B": "ACCEPT_DIAGNOSTIC_WITH_LIMITS"
+  },
+  "scope": "Fresh independent review of hosted Notes member run 38190081718, its source-CI/artifact provenance, and sanitized report/evidence. No product or inventory edits.",
+  "findings": [
+    {
+      "severity": "Important",
+      "location": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38190081718",
+      "finding": "This run does not exercise or pass EXT-F-2006-T02. GitHub records a failed workflow_dispatch run at 026785d, with the selected-panel step failing at native CDP startup. The downloaded native acceptance result is unverified with startup_failure only, and has authentication, fixture, and after-build fields null. At source SHA 5720310, exercisePanel (which begins sign-in) is called only after connectNativeStartupOwnedCdp succeeds; the Notes fixture helper is called later inside that callback. No member sign-in, Notes UI action, Notes fixture ledger, or note/home write occurred in this attempt.",
+      "impact": "The report's product status unverified and credit 0 are correct. This run establishes no Notes search/filter behavior."
+    },
+    {
+      "severity": "Minor",
+      "location": "docs/stabilization/reports/notes-find-member-run38190081718.json#credential_cleanup",
+      "finding": "GitHub's current secret-name list omits MATRX_REVIEWER_MAGIC_LINK_JSON, consistent with removal of the temporary link secret, and the reviewed sanitized artifacts contain no credential values. The saved report also records the local one-use link and identity scratch as absent. Those local absence checks and the historical secret deletion are report attestations: this review did not inspect the host's private scratch paths or prove the secret's historical contents/lifetime.",
+      "impact": "Cleanup is supported as a current-state claim within the recorded checks; do not present it as proof that no credential material ever existed or that every historical transient state was independently observed."
+    }
+  ],
+  "provenance": {
+    "hosted_run": {
+      "id": 38190081718,
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "head_sha": "026785d714be6f059ecb81afdcbd0573ea64be81",
+      "conclusion": "failure",
+      "artifact_id": 11721303027,
+      "artifact_name": "hosted-guest-38190081718-1",
+      "artifact_digest": "sha256:894838099ff4866db06ffe7ae9490bb20fc9224af5044cac05ce45b660286f14",
+      "artifact_size_bytes": 4285
+    },
+    "development_ci": {
+      "id": 38189416372,
+      "attempt": 1,
+      "event": "push",
+      "head_sha": "5720310991c36ae39ed8a32e0f9ae20226f62b62",
+      "conclusion": "success",
+      "artifact_id": 11721207192,
+      "artifact_digest": "sha256:a1183de454bde13ecf00698688e5e403d2df455a82e9e077986fcda9e3084bec",
+      "artifact_size_bytes": 40049056,
+      "version": "0.2.509",
+      "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb"
+    },
+    "checks": [
+      "GitHub API confirms the hosted run is completed/failure on main at 026785d, and the CI run is completed/success on main at 5720310; both are attempt 1.",
+      "GitHub artifact metadata IDs, names, SHA-256 digests, sizes and workflow-run bindings match the saved report. The downloaded hosted artifact contains the sanitized native acceptance result and all three resource journals; its embedded native receipt identifies CI run 38189416372, artifact 11721207192, source SHA 5720310, version 0.2.509 and the matching tree digest.",
+      "The diff from CI source SHA 5720310 to hosted workflow SHA 026785d contains exactly two added report JSON files: hosted-cdp-resource-escalation-20261012.json and system-disk-recovery-20261012.json. No tested source file changed in that delta.",
+      "The hosted workflow file at 026785d hashes to bf120de2e84356722122829790a52deeefb2177f3a87b93181368b2fdeb1910e, matching the report's reviewed hash."
+    ]
+  },
+  "endpoint_diagnosis": {
+    "evidence": "The actual hosted job log records BROWSER_CDP_STARTUP_INTERVAL outcome failed with only connector_settled at 8008 ms, longestTimerDelayMs 618 over 44 samples. BROWSER_STARTUP_FAILURE records owned_cdp_endpoint_timeout at 8019 ms, endpoint wait 8006 ms, 218 polls, longest read 121 ms, spawn observed, launchFailed false, no child exit/signal, and no stderr or DevTools-listening flag.",
+    "boundary": "At the exact CI source SHA, connectOwnedCdp polls the run-owned DevToolsActivePort file and throws owned_cdp_endpoint_timeout when no successful read occurs before its deadline. Record parsing, process-owner validation, WebSocket construction/open and the loopback probe all follow that successful read. This run therefore did not reach the socket boundary. The timeout does not prove the endpoint could not appear after the timed interval.",
+    "timer_limit": "The 618 ms maximum timer delay supports scheduling delay during the startup interval; it does not show that scheduling delay caused the endpoint timeout.",
+    "prior_run_comparison": "Run 38188627893 is a boundary contrast only: its diagnostics show endpoint read and owner validation, socket construction, TCP probe, socket open, then connector settlement. That successful sequence neither explains this run's endpoint absence nor establishes a fix or common cause."
+  },
+  "resource_and_cpu": {
+    "finals": [
+      {
+        "lane": "package",
+        "run_id": "hosted-package-38190081718-1",
+        "at": "2026-10-12T01:00:49.825Z",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "lane": "browser",
+        "run_id": "hosted-browser-38190081718-1",
+        "at": "2026-10-12T01:03:35.365Z",
+        "admitted": true,
+        "resource_invalid": false,
+        "exit_code": 0,
+        "decision": "valid"
+      },
+      {
+        "lane": "guest",
+        "run_id": "hosted-guest-38190081718-1",
+        "at": "2026-10-12T01:06:06.237Z",
+        "admitted": true,
+        "resource_invalid": true,
+        "exit_code": 3,
+        "decision": "invalid"
+      }
+    ],
+    "interpretation": "The guest journal records RESOURCE_CPU_PENDING at 01:06:00.031Z (busy 1.0, load 11.62 on four CPUs), child exit 1 at 01:06:05.868Z, and invalid final at 01:06:06.237Z. This follows the connector timeout/settlement; it independently invalidates acceptance but does not identify the timeout's cause. Startup process CPU totals are snapshot deltas bracketing the startup attempt, not the iostat interval. New Chromium lifetime CPU (3.63 s plus helper processes) is listed separately; ownedChromium=0 is not evidence of no browser CPU."
+  },
+  "product_verdict": {
+    "case_id": "EXT-F-2006-T02",
+    "status": "unverified",
+    "credit": 0,
+    "assessment": "Correct. The attempt ended before CDP connected, sign-in or Notes actions; the guest resource final is invalid and no original T02 assertion completed."
+  },
+  "evidence_checked": [
+    "GitHub API metadata and job steps for hosted run 38190081718 and CI run 38189416372.",
+    "GitHub artifact metadata and downloaded sanitized hosted artifact 11721303027; all three embedded resource journals and native acceptance receipt.",
+    "Saved native-receipt.json, startup-diagnostics.json, resource-events.json, and notes-find-member-run38190081718.json.",
+    "Hosted job log endpoint timeout and CDP interval records; source at CI artifact SHA 5720310 for endpoint-before-socket and sign-in/fixture call order.",
+    "GitHub repository secret names (names only); prior run 38188627893 diagnostic report for boundary comparison."
+  ],
+  "limits": [
+    "No product behavior was exercised or visually inspected; no local UI test was run.",
+    "No endpoint URL, port, raw exception, credential value, fixture payload or private ledger was retained or inspected.",
+    "Local one-use link/identity scratch deletion is not independently rechecked by this review; historical credential contents and transient existence remain unverified.",
+    "Host contention, timer delay and CPU snapshots are correlated observations only; no single cause for endpoint timeout is established."
+  ]
+}

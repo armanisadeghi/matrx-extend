@@ -1,0 +1,1174 @@
+{
+  "cdp": {
+    "schema": 1,
+    "outcome": "failed",
+    "phases": [
+      {
+        "phase": "connector_settled",
+        "elapsedMs": 8008
+      }
+    ],
+    "longestTimerDelayMs": 618,
+    "timerSamples": 44,
+    "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+  },
+  "cpu": {
+    "beforeStartedAt": "2026-10-12T01:05:51.709Z",
+    "beforeCompletedAt": "2026-10-12T01:05:51.752Z",
+    "afterStartedAt": "2026-10-12T01:05:59.773Z",
+    "afterCompletedAt": "2026-10-12T01:05:59.967Z",
+    "outcome": "cdp_failed",
+    "resolutionSeconds": 0.01,
+    "ownedAtStart": [28661, 28730],
+    "ownedAtEnd": [28661, 28731, 28937, 28942, 28960],
+    "exitedOrUnmatchedPids": [28730],
+    "appearedPids": [
+      28731, 28739, 28741, 28747, 28752, 28760, 28793, 28930, 28937, 28942, 28959, 28960
+    ],
+    "categoryTotalsSeconds": {
+      "ownedChromium": 0,
+      "ownedOther": 0.35,
+      "hostProvisioner": 1.9,
+      "otherHost": 18.61
+    },
+    "observed": [
+      {
+        "pid": 1,
+        "executable": "launchd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.16
+      },
+      {
+        "pid": 83,
+        "executable": "logd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.14
+      },
+      {
+        "pid": 84,
+        "executable": "smd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 85,
+        "executable": "UserEventAgent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.06
+      },
+      {
+        "pid": 88,
+        "executable": "fseventsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.1
+      },
+      {
+        "pid": 91,
+        "executable": "systemstats",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 94,
+        "executable": "configd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.06
+      },
+      {
+        "pid": 111,
+        "executable": "mds",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.26
+      },
+      {
+        "pid": 112,
+        "executable": "iconservicesd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.03
+      },
+      {
+        "pid": 122,
+        "executable": "opendirectoryd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 124,
+        "executable": "launchservicesd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.09
+      },
+      {
+        "pid": 126,
+        "executable": "usbmuxd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 127,
+        "executable": "securityd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.03
+      },
+      {
+        "pid": 129,
+        "executable": "locationd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.14
+      },
+      {
+        "pid": 130,
+        "executable": "nesessionmanager",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.24
+      },
+      {
+        "pid": 135,
+        "executable": "distnoted",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 137,
+        "executable": "dirhelper",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 143,
+        "executable": "bluetoothd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.03
+      },
+      {
+        "pid": 144,
+        "executable": "notifyd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.08
+      },
+      {
+        "pid": 150,
+        "executable": "tccd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.85
+      },
+      {
+        "pid": 151,
+        "executable": "cfprefsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 153,
+        "executable": "loginwindow",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.26
+      },
+      {
+        "pid": 154,
+        "executable": "runningboardd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.39
+      },
+      {
+        "pid": 155,
+        "executable": "WindowServer",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.85
+      },
+      {
+        "pid": 157,
+        "executable": "coreservicesd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 158,
+        "executable": "lsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.92
+      },
+      {
+        "pid": 168,
+        "executable": "contextstored",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 173,
+        "executable": "airportd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 174,
+        "executable": "mDNSResponder",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 176,
+        "executable": "nehelper",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.2
+      },
+      {
+        "pid": 177,
+        "executable": "symptomsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 179,
+        "executable": "secinitd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 188,
+        "executable": "analyticsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 203,
+        "executable": "authd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 215,
+        "executable": "aneuserd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.06
+      },
+      {
+        "pid": 216,
+        "executable": "aned",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 239,
+        "executable": "nsurlsessiond",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 261,
+        "executable": "softwareupdated",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 262,
+        "executable": "socketfilterfw",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 283,
+        "executable": "backgroundtaskma",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.06
+      },
+      {
+        "pid": 298,
+        "executable": "audioclocksyncd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 332,
+        "executable": "distnoted",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 333,
+        "executable": "cfprefsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 334,
+        "executable": "UserEventAgent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.03
+      },
+      {
+        "pid": 338,
+        "executable": "WindowManager",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 339,
+        "executable": "CoreServicesUIAg",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 343,
+        "executable": "Dock",
+        "category": "otherHost",
+        "cpuSecondsDelta": 1.05
+      },
+      {
+        "pid": 344,
+        "executable": "ControlCenter",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 345,
+        "executable": "pboard",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 346,
+        "executable": "neagent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 347,
+        "executable": "SystemUIServer",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 348,
+        "executable": "Finder",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 351,
+        "executable": "lsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 1.21
+      },
+      {
+        "pid": 352,
+        "executable": "rapportd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 354,
+        "executable": "tccd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 1.64
+      },
+      {
+        "pid": 357,
+        "executable": "filecoordination",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 359,
+        "executable": "secd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 361,
+        "executable": "usernotification",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 363,
+        "executable": "dmd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.11
+      },
+      {
+        "pid": 364,
+        "executable": "com.apple.quickl",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.5
+      },
+      {
+        "pid": 365,
+        "executable": "secinitd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 368,
+        "executable": "CoreLocationAgen",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.11
+      },
+      {
+        "pid": 370,
+        "executable": "WallpaperAgent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 371,
+        "executable": "sociallayerd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 372,
+        "executable": "suggestd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.03
+      },
+      {
+        "pid": 373,
+        "executable": "callservicesd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.11
+      },
+      {
+        "pid": 374,
+        "executable": "calaccessd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.09
+      },
+      {
+        "pid": 375,
+        "executable": "iconservicesagen",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.27
+      },
+      {
+        "pid": 378,
+        "executable": "sharedfilelistd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 381,
+        "executable": "cloudd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 382,
+        "executable": "fileproviderd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.09
+      },
+      {
+        "pid": 383,
+        "executable": "pkd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 387,
+        "executable": "donotdisturbd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 393,
+        "executable": "fontd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.29
+      },
+      {
+        "pid": 398,
+        "executable": "fontworker",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.14
+      },
+      {
+        "pid": 402,
+        "executable": "AudioComponentRe",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 403,
+        "executable": "cloudd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.06
+      },
+      {
+        "pid": 409,
+        "executable": "routined",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 410,
+        "executable": "axassetsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.11
+      },
+      {
+        "pid": 411,
+        "executable": "ContextStoreAgen",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 413,
+        "executable": "BiomeAgent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.03
+      },
+      {
+        "pid": 420,
+        "executable": "usernoted",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.15
+      },
+      {
+        "pid": 423,
+        "executable": "askpermissiond",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 425,
+        "executable": "sharingd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 426,
+        "executable": "AirPlayUIAgent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.1
+      },
+      {
+        "pid": 427,
+        "executable": "knowledge-agent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 430,
+        "executable": "diagnostics_agen",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.03
+      },
+      {
+        "pid": 432,
+        "executable": "TextInputMenuAge",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.06
+      },
+      {
+        "pid": 434,
+        "executable": "amsaccountsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 440,
+        "executable": "nsurlsessiond",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 441,
+        "executable": "ctkd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 443,
+        "executable": "deleted",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.1
+      },
+      {
+        "pid": 444,
+        "executable": "syncdefaultsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 446,
+        "executable": "com.apple.dock.e",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.03
+      },
+      {
+        "pid": 447,
+        "executable": "TextInputSwitche",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.11
+      },
+      {
+        "pid": 459,
+        "executable": "UIKitSystem",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.08
+      },
+      {
+        "pid": 462,
+        "executable": "nearbyd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 465,
+        "executable": "localizationswit",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.09
+      },
+      {
+        "pid": 468,
+        "executable": "Spotlight",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.03
+      },
+      {
+        "pid": 471,
+        "executable": "extensionkitserv",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 474,
+        "executable": "corespotlightd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.08
+      },
+      {
+        "pid": 483,
+        "executable": "AppSSOAgent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.08
+      },
+      {
+        "pid": 485,
+        "executable": "homed",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 489,
+        "executable": "com.apple.geod",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 490,
+        "executable": "parsecd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 491,
+        "executable": "SoftwareUpdateNo",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.08
+      },
+      {
+        "pid": 494,
+        "executable": "itunescloudd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 495,
+        "executable": "networkservicepr",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 497,
+        "executable": "amsengagementd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 501,
+        "executable": "avconferenced",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.1
+      },
+      {
+        "pid": 505,
+        "executable": "swcd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.22
+      },
+      {
+        "pid": 506,
+        "executable": "newsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 509,
+        "executable": "assistantd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.13
+      },
+      {
+        "pid": 516,
+        "executable": "bird",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 517,
+        "executable": "mdbulkimport",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.12
+      },
+      {
+        "pid": 518,
+        "executable": "APFSUserAgent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 519,
+        "executable": "IOUIAgent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 528,
+        "executable": "linkd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.23
+      },
+      {
+        "pid": 545,
+        "executable": "CloudTelemetrySe",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 587,
+        "executable": "spindump",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 640,
+        "executable": "WiFiAgent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 643,
+        "executable": "StocksKitService",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.08
+      },
+      {
+        "pid": 645,
+        "executable": "logd_helper",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 649,
+        "executable": "gamecontrollerag",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 653,
+        "executable": "CloudTelemetrySe",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 703,
+        "executable": "appstoreagent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 804,
+        "executable": "extensionkitserv",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.08
+      },
+      {
+        "pid": 837,
+        "executable": "promotedcontentd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 841,
+        "executable": "siriknowledged",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.18
+      },
+      {
+        "pid": 880,
+        "executable": "taskgated",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 1024,
+        "executable": "BackgroundTaskMa",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 1028,
+        "executable": "hosted-compute-a",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 1033,
+        "executable": "provjobd93978259",
+        "category": "hostProvisioner",
+        "cpuSecondsDelta": 1.9
+      },
+      {
+        "pid": 1065,
+        "executable": "devicecheckd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.14
+      },
+      {
+        "pid": 1067,
+        "executable": "amsondevicestora",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 1069,
+        "executable": "diagnosticextens",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.1
+      },
+      {
+        "pid": 1070,
+        "executable": "siriinferenced",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.43
+      },
+      {
+        "pid": 1072,
+        "executable": "UsageTrackingAge",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 1073,
+        "executable": "adprivacyd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.08
+      },
+      {
+        "pid": 1082,
+        "executable": "nsattributedstri",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 1083,
+        "executable": "weatherd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 1096,
+        "executable": "nsattributedstri",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 1188,
+        "executable": "SiriSuggestionsB",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.14
+      },
+      {
+        "pid": 1320,
+        "executable": "homeenergyd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 1459,
+        "executable": "SafariBookmarksS",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 1461,
+        "executable": "modelmanagerd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.14
+      },
+      {
+        "pid": 1573,
+        "executable": "proactived",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.12
+      },
+      {
+        "pid": 1574,
+        "executable": "duetexpertd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.61
+      },
+      {
+        "pid": 1582,
+        "executable": "CategoriesServic",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 1591,
+        "executable": "AppPredictionInt",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.1
+      },
+      {
+        "pid": 1801,
+        "executable": "audioanalyticsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 3609,
+        "executable": "mlhostd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 3611,
+        "executable": "extensionkitserv",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.09
+      },
+      {
+        "pid": 4234,
+        "executable": "betaenrollmentag",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 4566,
+        "executable": "AuthenticationSe",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 4710,
+        "executable": "tipsd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.02
+      },
+      {
+        "pid": 4723,
+        "executable": "Keychain Circle",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 4724,
+        "executable": "backgroundassets",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 4731,
+        "executable": "nbagent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 4742,
+        "executable": "SafariConfigurat",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 5005,
+        "executable": "tznotify",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.08
+      },
+      {
+        "pid": 5011,
+        "executable": "ASConfigurationS",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.06
+      },
+      {
+        "pid": 5023,
+        "executable": "parsec-fbf",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.07
+      },
+      {
+        "pid": 5384,
+        "executable": "MTLAssetUpgrader",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.11
+      },
+      {
+        "pid": 5661,
+        "executable": "SetStoreUpdateSe",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.06
+      },
+      {
+        "pid": 5683,
+        "executable": "media-indexer",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 5698,
+        "executable": "AMPLibraryAgent",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.03
+      },
+      {
+        "pid": 9593,
+        "executable": "trustd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 10233,
+        "executable": "trustd",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.01
+      },
+      {
+        "pid": 18349,
+        "executable": "Runner.Worker",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.04
+      },
+      {
+        "pid": 26471,
+        "executable": "node",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.05
+      },
+      {
+        "pid": 28034,
+        "executable": "node",
+        "category": "otherHost",
+        "cpuSecondsDelta": 0.29
+      },
+      {
+        "pid": 28661,
+        "executable": "node",
+        "category": "ownedOther",
+        "cpuSecondsDelta": 0.35
+      }
+    ],
+    "otherHostObservedProcessCount": 492,
+    "limitation": "ps CPU time displays centiseconds; snapshots bracket but do not equal the iostat interval. Exited, newly spawned, reparented, or PID-reused processes cannot be assigned exact interval CPU time.",
+    "appearedProcesses": [
+      {
+        "pid": 28731,
+        "executable": "Chromium",
+        "ownedAtEnd": true,
+        "lifetimeCpuSeconds": 3.63
+      },
+      {
+        "pid": 28739,
+        "executable": "chrome_crashpad_",
+        "ownedAtEnd": false,
+        "lifetimeCpuSeconds": 0.02
+      },
+      {
+        "pid": 28741,
+        "executable": "chrome_crashpad_",
+        "ownedAtEnd": false,
+        "lifetimeCpuSeconds": 0.01
+      },
+      {
+        "pid": 28747,
+        "executable": "MENotificationAg",
+        "ownedAtEnd": false,
+        "lifetimeCpuSeconds": 0.11
+      },
+      {
+        "pid": 28752,
+        "executable": "MTLCompilerServi",
+        "ownedAtEnd": false,
+        "lifetimeCpuSeconds": 1.15
+      },
+      {
+        "pid": 28760,
+        "executable": "ManagedClient",
+        "ownedAtEnd": false,
+        "lifetimeCpuSeconds": 0.08
+      },
+      {
+        "pid": 28793,
+        "executable": "mdmclient",
+        "ownedAtEnd": false,
+        "lifetimeCpuSeconds": 0.11
+      },
+      {
+        "pid": 28930,
+        "executable": "iostat",
+        "ownedAtEnd": false,
+        "lifetimeCpuSeconds": 0.01
+      },
+      {
+        "pid": 28937,
+        "executable": "Chromium Helper",
+        "ownedAtEnd": true,
+        "lifetimeCpuSeconds": 0.24
+      },
+      {
+        "pid": 28942,
+        "executable": "Chromium Helper",
+        "ownedAtEnd": true,
+        "lifetimeCpuSeconds": 0.23
+      },
+      {
+        "pid": 28959,
+        "executable": "ps",
+        "ownedAtEnd": false,
+        "lifetimeCpuSeconds": 0
+      },
+      {
+        "pid": 28960,
+        "executable": "ps",
+        "ownedAtEnd": true,
+        "lifetimeCpuSeconds": 0.01
+      }
+    ],
+    "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+  },
+  "failure": {
+    "failureCode": "owned_cdp_endpoint_timeout",
+    "elapsedMs": 8019,
+    "exitCode": null,
+    "signalCode": null,
+    "launchFailed": false,
+    "spawnObserved": true,
+    "stderrFlags": {
+      "hadStderr": false,
+      "codeSignature": false,
+      "dynamicLoader": false,
+      "permissionDenied": false,
+      "sandbox": false,
+      "crash": false,
+      "devtoolsListening": false
+    },
+    "endpointWaitDiagnostic": {
+      "polls": 218,
+      "elapsedMs": 8006,
+      "longestReadMs": 121
+    }
+  }
+}
