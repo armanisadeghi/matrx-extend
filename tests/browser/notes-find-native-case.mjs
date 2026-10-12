@@ -15,7 +15,15 @@ import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-async function scopeDoor(panel, origin, publishableKey, organizationId, door, args) {
+async function scopeDoor(
+  panel,
+  origin,
+  publishableKey,
+  organizationId,
+  door,
+  args,
+  schema = 'custom',
+) {
   const result = await evaluate(
     panel,
     `(async () => {
@@ -27,8 +35,8 @@ async function scopeDoor(panel, origin, publishableKey, organizationId, door, ar
         apikey: ${JSON.stringify(publishableKey)},
         Authorization: 'Bearer ' + token,
         'X-Organization-Id': ${JSON.stringify(organizationId)},
-        'Content-Profile': 'custom',
-        'Accept-Profile': 'custom',
+        'Content-Profile': ${JSON.stringify(schema)},
+        'Accept-Profile': ${JSON.stringify(schema)},
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(${JSON.stringify(args)}),
@@ -61,7 +69,17 @@ async function makeOwnedHomes(
   report,
 ) {
   const tree = await selectedOrgTree(panel, origin, publishableKey, organizationId);
-  const precondition = inspectNotesFindHomePrecondition(tree, organizationId);
+  const homes = await scopeDoor(
+    panel,
+    origin,
+    publishableKey,
+    organizationId,
+    'my_homes',
+    {},
+    'platform',
+  );
+  if (!Array.isArray(homes)) throw new Error('notes_find_my_homes_shape_invalid');
+  const precondition = inspectNotesFindHomePrecondition(tree, organizationId, homes);
   report.observations.home_precondition = precondition.diagnostic;
   if (precondition.code) throw new Error(precondition.code);
   const typeId = precondition.typeId;
@@ -547,9 +565,7 @@ export async function runNotesFindAcceptance({
     const activeOrgScopes = allVisibleScopes.filter(
       (scope) => scope.organization_id === selectedOrganizationId,
     );
-    const generals = activeOrgScopes.filter(
-      (scope) => scope.name.toLocaleLowerCase() === 'general',
-    );
+    const generals = activeOrgScopes.filter((scope) => scope.id === owned.general.id);
     const customs = owned.homes.map((home) =>
       activeOrgScopes.find((scope) => scope.id === home.scope_id && scope.name === home.name),
     );
