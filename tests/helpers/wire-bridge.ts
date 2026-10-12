@@ -26,8 +26,10 @@ type Verbs = Record<
 >;
 
 class Settled extends Error {
-  constructor(readonly result: ApiResult<unknown>) {
+  readonly result: ApiResult<unknown>;
+  constructor(result: ApiResult<unknown>) {
     super('settled');
+    this.result = result;
   }
 }
 
