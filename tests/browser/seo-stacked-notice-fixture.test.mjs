@@ -82,7 +82,7 @@ function harness({ hitPoints = 9, truncateLong = false, hiddenLongDismiss = fals
   };
 }
 
-async function run(h, expectedMessageLengths = [77, 199]) {
+async function run(h, expectedMessageLengths = [77, 199], onDiagnostic = () => {}) {
   return runStackedSeoNotices({
     panel: {},
     browserSession: h.browserSession,
@@ -98,6 +98,7 @@ async function run(h, expectedMessageLengths = [77, 199]) {
     }),
     runReaudit: h.runReaudit,
     io: h.io,
+    onDiagnostic,
   });
 }
 
@@ -124,7 +125,7 @@ test('independent length contract rejects a shortened fixture before injection',
 
 test('hidden owned Dismiss makes cleanup fail and leaves zero product credit', async () => {
   const h = harness({ hitPoints: 8, hiddenLongDismiss: true });
-  await assert.rejects(run(h), /owned notice fixture cleanup completed/);
+  await assert.rejects(run(h), /Re-audit owns all nine points/);
   assert.equal(h.remaining, 1, 'the hidden owned notice is reported, not silently skipped');
   assert.equal(h.calls.at(-1), 'Target.detachFromTarget');
 });
@@ -139,3 +140,100 @@ for (const [name, options] of [
     assert.equal(h.reauditCount, 0);
     assert.equal(h.remaining, 0, 'owned notices are cleaned after failed preflight');
   });
+
+// Break guarded: an injection failure must persist a redacted receipt after cleanup,
+// and a cleanup failure must never replace the original injection error.
+for (const cleanupFails of [false, true])
+  test(`first injected notice failure persists diagnostics with cleanup ${cleanupFails ? 'failed' : 'cleared'}`, async () => {
+    const h = harness();
+    const sentinel = new Error('private sentinel token=https://private.invalid/secret');
+    const originalSend = h.browserSession.send.bind(h.browserSession);
+    h.browserSession.send = async (method, params) => {
+      const response = await originalSend(method, params);
+      if (method === 'Runtime.evaluate') throw sentinel;
+      return response;
+    };
+    if (cleanupFails)
+      h.io.click = async () => {
+        throw new Error('private cleanup secret');
+      };
+    const saved = [];
+    await assert.rejects(
+      run(h, [77, 199], async (diagnostic) => {
+        assert.equal(h.calls.at(-1), 'Target.detachFromTarget');
+        saved.push(structuredClone(diagnostic));
+      }),
+      (error) => error === sentinel,
+    );
+    assert.deepEqual(saved, [
+      {
+        failure_code: 'stacked_notice_operation_failed',
+        stage: 'notice_injection',
+        cleanup: {
+          status: cleanupFails ? 'failed' : 'cleared',
+          attempted_count: 1,
+          cleared_count: cleanupFails ? 0 : 1,
+          failed_count: cleanupFails ? 1 : 0,
+          failure_code: cleanupFails ? 'stacked_notice_cleanup_failed' : null,
+        },
+      },
+    ]);
+    assert.equal(h.remaining, cleanupFails ? 1 : 0);
+    assert.equal(JSON.stringify(saved).includes('private'), false);
+    assert.equal(JSON.stringify(saved).includes('secret'), false);
+  });
+
+test('cleanup-only verification failure is reported separately from a successful body', async () => {
+  const h = harness();
+  const sample = h.io.sample;
+  let sampleCount = 0;
+  h.io.sample = async () => {
+    sampleCount++;
+    if (sampleCount === 8) throw new Error('private cleanup verification token');
+    return sample();
+  };
+  const saved = [];
+  await assert.rejects(
+    run(h, [77, 199], (receipt) => saved.push(receipt)),
+    /owned notice fixture cleanup completed/,
+  );
+  assert.deepEqual(saved, [
+    {
+      failure_code: null,
+      stage: 'independent_dismiss',
+      cleanup: {
+        status: 'failed',
+        attempted_count: 2,
+        cleared_count: 0,
+        failed_count: 2,
+        failure_code: 'stacked_notice_cleanup_failed',
+      },
+    },
+  ]);
+  assert.equal(h.remaining, 0);
+  assert.equal(h.reauditCount, 1);
+  assert.equal(JSON.stringify(saved).includes('private'), false);
+});
+
+test('pre-injection assertion persists an allowlisted stage with no cleanup needed', async () => {
+  const h = harness();
+  const saved = [];
+  await assert.rejects(
+    run(h, [77, 198], (receipt) => saved.push(receipt)),
+    /independent length contract/,
+  );
+  assert.deepEqual(saved, [
+    {
+      failure_code: 'stacked_notice_assertion_failed',
+      stage: 'message_contract',
+      cleanup: {
+        status: 'not_needed',
+        attempted_count: 0,
+        cleared_count: 0,
+        failed_count: 0,
+        failure_code: null,
+      },
+    },
+  ]);
+  assert.equal(h.calls.length, 0);
+});

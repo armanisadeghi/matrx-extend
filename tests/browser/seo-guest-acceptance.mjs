@@ -1364,6 +1364,10 @@ try {
         );
         enter('stacked_notice_native_360');
         const stacked = await runStackedSeoNotices({
+          onDiagnostic: (diagnostic) => {
+            report.stacked_notice_fixture_diagnostic = diagnostic;
+            checkpoint();
+          },
           panel,
           browserSession,
           panelTarget,

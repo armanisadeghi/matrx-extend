@@ -78,31 +78,44 @@ export async function runStackedSeoNotices({
   expectedMessageLengths,
   seoContent,
   runReaudit,
+  onDiagnostic = () => {},
   io = { click, evaluate, waitFor, sample },
 }) {
-  assert.deepEqual(
-    MESSAGES.map((message) => message.length),
-    expectedMessageLengths,
-    'fixture messages match the independent length contract',
-  );
-  const extensionId = new URL(panelTarget.url).hostname;
-  assert.equal(
-    await io.evaluate(panel, 'innerWidth'),
-    360,
-    'native panel starts at 360px without emulation',
-  );
-  const targets = (await browserSession.send('Target.getTargets')).targetInfos.filter(
-    (target) =>
-      target.type === 'service_worker' &&
-      target.url.startsWith(`chrome-extension://${extensionId}/`),
-  );
-  assert.equal(targets.length, 1, 'fixture requires one owned extension worker');
-  const worker = await attachTargetSession(browserSession, targets[0].targetId);
+  let stage = 'message_contract';
+  let worker;
+  let primaryFailed = false;
+  let primaryError;
+  let result;
+  let diagnostic;
+  let failureCode = null;
   const ids = TITLES.map(() => randomUUID());
   const injectedTitles = new Set();
   try {
+    assert.deepEqual(
+      MESSAGES.map((message) => message.length),
+      expectedMessageLengths,
+      'fixture messages match the independent length contract',
+    );
+    stage = 'native_width';
+    const extensionId = new URL(panelTarget.url).hostname;
+    assert.equal(
+      await io.evaluate(panel, 'innerWidth'),
+      360,
+      'native panel starts at 360px without emulation',
+    );
+    stage = 'worker_discovery';
+    const targets = (await browserSession.send('Target.getTargets')).targetInfos.filter(
+      (target) =>
+        target.type === 'service_worker' &&
+        target.url.startsWith(`chrome-extension://${extensionId}/`),
+    );
+    assert.equal(targets.length, 1, 'fixture requires one owned extension worker');
+    stage = 'worker_attach';
+    worker = await attachTargetSession(browserSession, targets[0].targetId);
+    stage = 'before_injection';
     const before = await io.sample(panel);
     assert.deepEqual(before.title_counts, [0, 0], 'fixture titles are absent before injection');
+    stage = 'notice_injection';
     for (let i = 0; i < 2; i++) {
       const payload = {
         id: ids[i],
@@ -124,6 +137,7 @@ export async function runStackedSeoNotices({
       );
       assert.equal(response.result?.value?.ok, true, 'NoticeHost acknowledged injected notice');
     }
+    stage = 'stacked_visible';
     const stacked = await io.waitFor(
       'stacked_notice_visible',
       () => io.sample(panel),
@@ -131,8 +145,11 @@ export async function runStackedSeoNotices({
       10000,
       (s) => ({ counts: s?.title_counts, dismiss: s?.dismiss_counts }),
     );
+    stage = 'stacked_geometry';
     requireSample(stacked, [1, 1], expectedMessageLengths);
+    stage = 'reaudit';
     await runReaudit();
+    stage = 'reaudit_settled';
     const settled = await io.waitFor(
       'stacked_notice_current_page_settled',
       async () => ({
@@ -153,7 +170,9 @@ export async function runStackedSeoNotices({
         reAudit: s?.audit?.reAudit,
       }),
     );
+    stage = 'settled_geometry';
     requireSample(settled.sample, [1, 1], expectedMessageLengths);
+    stage = 'independent_dismiss';
     const dismissed = [];
     for (let i = 0; i < 2; i++) {
       await io.click(panel, 'seo-owned-notice-dismiss', TITLES[i]);
@@ -167,7 +186,7 @@ export async function runStackedSeoNotices({
       requireSample(state, i === 0 ? [0, 1] : [0, 0], expectedMessageLengths);
       dismissed.push(state);
     }
-    return {
+    result = {
       viewport_width: 360,
       viewport_source: 'native',
       notice_count: 2,
@@ -180,14 +199,26 @@ export async function runStackedSeoNotices({
       independently_dismissed: dismissed.map((s) => s.title_counts),
       cleared_count: 0,
     };
+  } catch (error) {
+    primaryFailed = true;
+    // Error text, stacks, URLs and arbitrary error properties never enter the receipt.
+    failureCode =
+      error?.code === 'ERR_ASSERTION'
+        ? 'stacked_notice_assertion_failed'
+        : 'stacked_notice_operation_failed';
+    primaryError = error;
   } finally {
     let cleanupFailed = false;
+    const clearedTitles = new Set();
     for (const title of injectedTitles) {
       try {
         const state = await io.sample(panel);
         const index = TITLES.indexOf(title);
         const remaining = state.title_counts?.[index];
-        if (remaining === 0) continue;
+        if (remaining === 0) {
+          clearedTitles.add(title);
+          continue;
+        }
         if (remaining !== 1 || state.dismiss_counts?.[index] !== 1) {
           cleanupFailed = true;
           continue;
@@ -201,22 +232,53 @@ export async function runStackedSeoNotices({
           (s) => ({ remaining: s?.title_counts?.[index] }),
         );
         if (cleared.title_counts?.[index] !== 0) cleanupFailed = true;
+        else clearedTitles.add(title);
       } catch {
         cleanupFailed = true;
       }
     }
-    try {
-      const final = await io.sample(panel);
-      if (
-        TITLES.some(
-          (title) => injectedTitles.has(title) && final.title_counts?.[TITLES.indexOf(title)] !== 0,
-        )
-      )
+    if (worker) {
+      try {
+        const final = await io.sample(panel);
+        for (const title of injectedTitles) {
+          if (final.title_counts?.[TITLES.indexOf(title)] === 0) clearedTitles.add(title);
+          else {
+            clearedTitles.delete(title);
+            cleanupFailed = true;
+          }
+        }
+      } catch {
+        clearedTitles.clear();
         cleanupFailed = true;
-    } catch {
-      cleanupFailed = true;
+      }
+      try {
+        await worker.detach();
+      } catch {
+        cleanupFailed = true;
+      }
     }
-    await worker.detach();
-    assert.equal(cleanupFailed, false, 'owned notice fixture cleanup completed');
+    diagnostic = {
+      failure_code: failureCode,
+      stage,
+      cleanup: {
+        status: cleanupFailed ? 'failed' : injectedTitles.size ? 'cleared' : 'not_needed',
+        attempted_count: injectedTitles.size,
+        cleared_count: clearedTitles.size,
+        failed_count: injectedTitles.size - clearedTitles.size,
+        failure_code: cleanupFailed ? 'stacked_notice_cleanup_failed' : null,
+      },
+    };
   }
+  try {
+    await onDiagnostic(diagnostic);
+  } catch (error) {
+    if (!primaryFailed) throw error;
+  }
+  if (primaryFailed) throw primaryError;
+  assert.equal(
+    diagnostic.cleanup.status === 'failed',
+    false,
+    'owned notice fixture cleanup completed',
+  );
+  return result;
 }

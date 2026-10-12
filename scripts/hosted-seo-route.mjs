@@ -20,7 +20,11 @@ export async function seoStartupObservationOptions(report, enabled) {
 }
 
 export async function writeSeoGuestReport(path, report, diagnosticEnabled) {
-  const classified = classifySeoResourceDiagnosticReport(report, diagnosticEnabled);
+  const { stacked_notice_fixture_diagnostic, ...rest } = report;
+  const classified = classifySeoResourceDiagnosticReport(
+    { ...rest, ...safeStackedNoticeEvidence(stacked_notice_fixture_diagnostic) },
+    diagnosticEnabled,
+  );
   const finalReport = report.interruption_test_target
     ? {
         ...classified,
@@ -56,6 +60,7 @@ export function writeSeoGuestProgress(path, report, diagnosticEnabled) {
     last_safe_stage: report.last_safe_stage,
     current_operation: report.current_operation,
     ...safeSeoClickEvidence(report),
+    ...safeStackedNoticeEvidence(report.stacked_notice_fixture_diagnostic),
     boundary_sample: safeBoundarySample(report.boundary_sample),
     operation_start_sample: safeBoundarySample(report.operation_start_sample),
     targets: report.targets.map(({ case_id, subtarget, status }) => ({
@@ -67,6 +72,53 @@ export function writeSeoGuestProgress(path, report, diagnosticEnabled) {
   const classified = classifySeoResourceDiagnosticReport(progress, diagnosticEnabled);
   persistSeoReceipt(path, classified);
   return classified;
+}
+
+// Receipt schema: accept only fixture-owned codes/stages and at most two owned notices.
+function safeStackedNoticeEvidence(value) {
+  const stages = [
+    'message_contract',
+    'native_width',
+    'worker_discovery',
+    'worker_attach',
+    'before_injection',
+    'notice_injection',
+    'stacked_visible',
+    'stacked_geometry',
+    'reaudit',
+    'reaudit_settled',
+    'settled_geometry',
+    'independent_dismiss',
+  ];
+  const cleanup = value?.cleanup;
+  if (
+    !value ||
+    !stages.includes(value.stage) ||
+    ![null, 'stacked_notice_assertion_failed', 'stacked_notice_operation_failed'].includes(
+      value.failure_code,
+    ) ||
+    !cleanup ||
+    !['not_needed', 'cleared', 'failed'].includes(cleanup.status) ||
+    ![null, 'stacked_notice_cleanup_failed'].includes(cleanup.failure_code) ||
+    ![cleanup.attempted_count, cleanup.cleared_count, cleanup.failed_count].every(
+      (count) => Number.isInteger(count) && count >= 0 && count <= 2,
+    ) ||
+    cleanup.cleared_count + cleanup.failed_count !== cleanup.attempted_count
+  )
+    return {};
+  return {
+    stacked_notice_fixture_diagnostic: {
+      failure_code: value.failure_code,
+      stage: value.stage,
+      cleanup: {
+        status: cleanup.status,
+        attempted_count: cleanup.attempted_count,
+        cleared_count: cleanup.cleared_count,
+        failed_count: cleanup.failed_count,
+        failure_code: cleanup.failure_code,
+      },
+    },
+  };
 }
 
 function safeBoundarySample(sample) {

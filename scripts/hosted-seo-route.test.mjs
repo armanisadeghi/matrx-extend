@@ -750,3 +750,51 @@ test('notice scope routes only bounded refusal checks and rejects unrelated fixt
     );
   assert.throws(() => hostedGuestSeoRoute('guest-chat', 'development', selected, 'notice'));
 });
+
+// Break: fixture telemetry survives in memory but is omitted from the durable checkpoint.
+test('SEO checkpoint persists bounded stacked fixture failures and separate cleanup outcomes', async () => {
+  const directory = await mkdtemp(join(tmpdir(), 'seo-fixture-progress-'));
+  try {
+    for (const cleared of [0, 1]) {
+      const path = join(directory, `${cleared}.json`);
+      const diagnostic = {
+        failure_code: 'stacked_notice_operation_failed',
+        stage: 'notice_injection',
+        cleanup: {
+          status: cleared ? 'cleared' : 'failed',
+          attempted_count: 1,
+          cleared_count: cleared,
+          failed_count: 1 - cleared,
+          failure_code: cleared ? null : 'stacked_notice_cleanup_failed',
+        },
+      };
+      const report = {
+        schema_version: 1,
+        feature_id: 'EXT-F-1008',
+        mode: 'guest',
+        targets: [],
+        stacked_notice_fixture_diagnostic: {
+          ...diagnostic,
+          message: 'private sentinel token=https://private.invalid/secret',
+          stack: 'private stack',
+          cleanup: { ...diagnostic.cleanup, url: 'https://private.invalid/secret' },
+        },
+      };
+      seoRoute.writeSeoGuestProgress(path, report, false);
+      const saved = JSON.parse(await readFile(path, 'utf8'));
+      assert.deepEqual(saved.stacked_notice_fixture_diagnostic, diagnostic);
+      assert.doesNotMatch(JSON.stringify(saved), /private|sentinel|token|secret/);
+      await writeSeoGuestReport(path, report, false);
+      const final = JSON.parse(await readFile(path, 'utf8'));
+      assert.deepEqual(final.stacked_notice_fixture_diagnostic, diagnostic);
+      assert.doesNotMatch(JSON.stringify(final), /private|sentinel|token|secret/);
+      report.stacked_notice_fixture_diagnostic.stage = 'https://private.invalid/secret';
+      await writeSeoGuestReport(path, report, false);
+      const invalid = JSON.parse(await readFile(path, 'utf8'));
+      assert.equal(invalid.stacked_notice_fixture_diagnostic, undefined);
+      assert.doesNotMatch(JSON.stringify(invalid), /private|sentinel|token|secret/);
+    }
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
