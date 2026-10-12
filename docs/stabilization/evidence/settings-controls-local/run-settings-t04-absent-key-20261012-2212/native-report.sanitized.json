@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "run_id": "settings-t04-absent-key-20261012-2212",
+  "case_id": "EXT-F-1003-T04",
+  "verdict": "unverified_for_absent_key_after_full_extension_reload",
+  "evidence_class": "isolated native Chrome for Testing side panel, signed-out guest",
+  "source_sha": "a7beecf42e87711cb2e9e11daf88aadda4e7fac0",
+  "main_sha": "0b14f63bcd784695f5ebdb9067eeb4787fca0cdc",
+  "compatibility": "runtime-equivalent; only docs/stabilization/reports/store-release-gates-20261012.json differs",
+  "ci_run_id": 38313661974,
+  "ci_attempt": 1,
+  "artifact_id": 11776331630,
+  "extension_version": "0.2.509",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "artifact_tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+  "browser": "Chromium 141.0.7390.37",
+  "playwright": "1.56.1",
+  "raw_local_report_sha256": "caedfd817ca0c827c78e51f0bc395559b7e2bd837cdce20421f67bf1285b1ad3",
+  "resource_journal": "docs/stabilization/resource-journals/settings-t04-absent-key-20261012-2212.jsonl",
+  "resource_final": {
+    "admitted": true,
+    "final_decision": "valid",
+    "resource_invalid": false,
+    "exit_code": 0
+  },
+  "resource_preflight": {
+    "available_memory_gib": 11.52,
+    "required_memory_gib": 4,
+    "cpu_busy_fraction": 0.3114285714285714,
+    "one_minute_load": 4.57,
+    "logical_cpus": 10
+  },
+  "harness": {
+    "verified_artifact": true,
+    "guest_profile": "owned disposable profile",
+    "extension_reload": {
+      "managementReloadClicked": true,
+      "oldTargetsRetired": true,
+      "workerReplaced": true,
+      "panelReplaced": true
+    },
+    "cleanup": "harness process exited; owned temporary profile directory absent; no matching Chrome process remained",
+    "setup_retries_before_browser": [
+      "Playwright module path missing",
+      "Chrome for Testing executable path missing; corrected using existing runtime paths"
+    ]
+  },
+  "observations": {
+    "theme_absent_restored_after_panel_reload": {
+      "criteria_status": "pass",
+      "selected_label": "System",
+      "stored_present": false,
+      "stored_value": null
+    },
+    "full_extension_reload_baseline": {
+      "criterion": "pre-run Theme matches saved baseline",
+      "expected_value": "system",
+      "stored_present": true,
+      "stored_value": "system"
+    },
+    "after_full_extension_reload": {
+      "criterion": "original preference restored after extension reload",
+      "stored_present": true,
+      "stored_value": "system"
+    }
+  },
+  "limitation": "The harness restored absence after panel reload, then its full-extension-reload subcase captured and used an explicit System value as the saved baseline. It therefore did not exercise absent-key restoration across the extension reload. Preserve T04 as unverified for the requested exact behavior; this is harness sequencing evidence, not a reproduced product failure."
+}

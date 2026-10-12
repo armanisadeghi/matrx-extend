@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "id": "settings-t04-absent-key-20261012-2212",
+  "created_at_utc": "2026-10-12T22:14:40.607Z",
+  "feature_id": "EXT-F-1003",
+  "case_id": "EXT-F-1003-T04",
+  "mode": "guest",
+  "status": "unverified",
+  "scope": "One exact absent-theme-key restoration retest using the existing native Settings acceptance runner on the promoted unpublished development artifact.",
+  "source_sha": "a7beecf42e87711cb2e9e11daf88aadda4e7fac0",
+  "artifact": {
+    "ci_run_id": 38313661974,
+    "attempt": 1,
+    "artifact_id": 11776331630,
+    "version": "0.2.509",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a"
+  },
+  "browser": "Chromium 141.0.7390.37",
+  "resource": {
+    "admitted": true,
+    "final_decision": "valid",
+    "resource_invalid": false,
+    "journal": "docs/stabilization/resource-journals/settings-t04-absent-key-20261012-2212.jsonl"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-local/run-settings-t04-absent-key-20261012-2212/native-report.sanitized.json"
+  ],
+  "raw_local_report_sha256": "caedfd817ca0c827c78e51f0bc395559b7e2bd837cdce20421f67bf1285b1ad3",
+  "limits": [
+    "The harness restored absence after panel reload, then its full-extension-reload subcase captured and used an explicit System value as the saved baseline. It therefore did not exercise absent-key restoration across the extension reload. Preserve T04 as unverified for the requested exact behavior; this is harness sequencing evidence, not a reproduced product failure."
+  ],
+  "next_action": "A source reviewer should correct the existing test sequence so the originally absent theme-key baseline is carried through the full-extension-reload phase, then run one new native guest attempt and obtain independent review."
+}
