@@ -10,11 +10,10 @@
  * 1-based and inclusive — the server reads only that slice (aidream ac1ac282e3).
  */
 
-import { type ApiResult, STATUS_INVALID_BODY, apiPost } from '@/lib/api/client';
-import { streamErrorText } from '@ai-matrx/api';
-import { createMatrxNdjsonFramer } from '@ai-matrx/api/stream';
-
-export const PDF_EXTRACT_TEXT_PATH = '/utilities/pdf/extract-text-remote';
+import { type ApiResult, STATUS_INVALID_BODY } from '@/lib/api/client';
+import { runOpAs } from '@/lib/api/matrx-api';
+import { type NdjsonEvent, streamErrorText } from '@ai-matrx/api';
+import { extractTextRemote } from '@ai-matrx/api/files';
 
 export interface ExtractTextResult {
   text: string;
@@ -37,17 +36,8 @@ export interface ExtractTextOptions {
 
 const num = (v: unknown): number | null => (typeof v === 'number' ? v : null);
 
-/** Read the extraction stream body (buffered by the shared request sender). */
-export function readExtractTextStream(body: unknown): ApiResult<ExtractTextResult> {
-  if (typeof body !== 'string') {
-    return {
-      ok: false,
-      status: STATUS_INVALID_BODY,
-      error: 'PDF extraction answered without an event stream.',
-    };
-  }
-  const framer = createMatrxNdjsonFramer();
-  const events = [...framer.pushText(body), ...framer.finish()];
+/** Fold the extraction event stream into its terminal result or the server's own error. */
+export function foldExtractEvents(events: NdjsonEvent[]): ApiResult<ExtractTextResult> {
   for (const ev of events) {
     if (ev.event === 'error') {
       return {
@@ -88,6 +78,10 @@ export async function extractPdfText(
   };
   if (opts.pageStart != null) body.page_start = opts.pageStart;
   if (opts.pageEnd != null) body.page_end = opts.pageEnd;
-  const r = await apiPost<unknown>(PDF_EXTRACT_TEXT_PATH, body);
-  return r.ok ? readExtractTextStream(r.data) : r;
+  const r = await runOpAs<NdjsonEvent[]>(async (api, o) => {
+    const events: NdjsonEvent[] = [];
+    for await (const ev of await extractTextRemote(api, { body }, o)) events.push(ev);
+    return events;
+  });
+  return r.ok ? foldExtractEvents(r.data) : r;
 }

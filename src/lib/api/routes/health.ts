@@ -1,4 +1,6 @@
-import { apiGet, getApiBaseUrl, withSchema } from '@/lib/api/client';
+import { getApiBaseUrl, withSchema } from '@/lib/api/client';
+import { runOpAs } from '@/lib/api/matrx-api';
+import { detailedHealthCheck, healthCheck as healthCheckOp } from '@ai-matrx/api/architecture';
 import { log } from '@/lib/debug/log';
 import { z } from 'zod';
 
@@ -11,12 +13,12 @@ export type Health = z.infer<typeof HealthSchema>;
 
 export async function healthCheck() {
   // No trailing slash — `/health/` 307s to `/health` and burns a round trip.
-  const r = await apiGet<unknown>('/health', undefined, { silent: true });
+  const r = await runOpAs<unknown>((api, o) => healthCheckOp(api, undefined, o), { silent: true });
   return withSchema(r, HealthSchema);
 }
 
 export async function healthCheckDetailed() {
-  return apiGet<Record<string, unknown>>('/health/detailed');
+  return runOpAs<Record<string, unknown>>((api, o) => detailedHealthCheck(api, undefined, o));
 }
 
 /**
