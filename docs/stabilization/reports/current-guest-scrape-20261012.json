@@ -2,7 +2,7 @@
   "schema_version": 1,
   "feature_id": "EXT-F-1007",
   "status": "unverified",
-  "scope": "Four guarded native guest Scrape attempts on the exact imported CI development artifact, testing controlled Capture, tab results, navigation clearing, extension reload, and post-reload controls.",
+  "scope": "Five guarded native guest Scrape attempts on the exact imported CI development artifact, testing controlled Capture, tab results, navigation clearing, extension reload, and post-reload controls.",
   "artifact": {
     "source_sha": "5ae9d47eaaf7df5cb33699bf0956c8ab9e6f328e",
     "ci_run_id": 38279845563,
@@ -57,13 +57,24 @@
       "pointer_evidence": "After post-reload Capture and scroll sync passed, Copy capture's four options and Copy article Markdown returned correct clipboard bytes. Copy article Plain text also returned correct bytes, but a connected closed role=dialog popover remained after the menu teardown wait. No dialog currently matched the active Scrape trigger's aria-controls; ownership and pointer effect remain to be determined.",
       "raw_report_sha256": "a85694e99912e90d03838d99050e4a63d9ca91b0751a3994da31294c0cc3a334",
       "resource_journal": "docs/stabilization/resource-journals/scrape-guest-cft-teardown-20261012-1830.jsonl"
+    },
+    {
+      "resource_run_id": "scrape-guest-popover-diagnostic-20261012",
+      "resource_decision": "child_failed",
+      "resource_invalid": false,
+      "driver_status": "unverified",
+      "failure_stage": "post_reload_copy_menus",
+      "failure_code": "pointer_stable_hit_not_observed",
+      "pointer_evidence": "Before selecting Copy article Plain text, the unique enabled 218.5x49.1 target was stable and all nine interior hit points struck it. The driver refused a running ancestor animation categorized as transform or visibility/hit affecting. Five earlier copy options completed. The newly added closed-dialog diagnostic did not fire because this attempt stopped at the pointer gate before teardown.",
+      "raw_report_sha256": "a9ad46b2c241e02c0e786d87ef699b399acdc87ce3728395bfeb0f98cca60cea",
+      "resource_journal": "docs/stabilization/resource-journals/scrape-guest-popover-diagnostic-20261012.jsonl"
     }
   ],
   "bounded_observations": {
-    "all_runs": "T20 navigation clearing and full extension reload/replacement-panel lifecycle passed in all four runs. T07 scroll sync passed warm and after reload in all four reports. T09 copy menus passed warm, after navigation and after reload in the second and third reports; first report reached a partial after-navigation copy matrix, while fourth reached five completed post-reload copy options and then a teardown failure. T01 and T08/T10-T14 remain partial.",
+    "all_runs": "T20 navigation clearing and full extension reload/replacement-panel lifecycle passed in all five runs. T07 scroll sync passed warm and after reload in all five reports. T09 copy menus passed warm, after navigation and after reload in the second and third reports; the first report reached a partial after-navigation copy matrix, while the fourth and fifth reached five completed post-reload copy options before distinct driver stops. T01 and T08/T10-T14 remain partial.",
     "not_established": "The remaining post-reload export and pane checks, member/admin modes, exact Store ZIP or Store-installed behavior, and full Scrape health."
   },
-  "independent_triage": "Fresh case-level review confirmed the first failure occurred while opening a later copy-menu option; post-reload scroll and copy cases passed before the second and third failures. The third run has a real dialog hit-test occlusion. The fourth narrows the stop to a connected closed popover following Copy article Plain text; its owner remains unverified. None proves a product Scrape behavior defect or full feature health.",
-  "next_discriminating_step": "Identify the persistent closed dialog's owner and whether it intercepts pointer input. Repair a product teardown bug if reproduced, or bound the helper to the correct dialog if unrelated. Never click through an occluder or relax the pointer safety gate.",
+  "independent_triage": "Fresh case-level review confirmed the first failure occurred while opening a later copy-menu option; post-reload scroll and copy cases passed before the second and third failures. The third run has a real dialog hit-test occlusion. The fourth narrows the stop to a connected closed popover following Copy article Plain text; its owner remains unverified. The fifth stopped earlier on a transient or persistent ancestor animation and did not exercise the new portal diagnostic. None proves a product Scrape behavior defect or full feature health.",
+  "next_discriminating_step": "Diagnose why a hit-affecting ancestor animation remains running while the option target is otherwise stable; isolate it from the closed-dialog failure before another heavy rerun. Do not click through an occluder or relax the pointer safety gate. If a closed dialog recurs, use the new bounded rendering diagnostic to determine its owner and pointer impact.",
   "raw_page_content_or_auth_values_included": false
 }
