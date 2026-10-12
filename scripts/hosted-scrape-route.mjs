@@ -76,7 +76,7 @@ export function hostedScrapeSaveScope(acceptanceCase, value = 'single', destinat
     return value;
   }
   assert.ok(
-    ['single', 'duplicate-rename', 'duplicate-rename-retry'].includes(value),
+    ['single', 'duplicate-rename', 'duplicate-rename-retry', 'stale-profile-retry'].includes(value),
     'scrape_save_scope_invalid',
   );
   if (value !== 'single')

@@ -186,7 +186,7 @@ on:
           - project
           - none
       scrape_save_scope:
-        description: Single Save, duplicate rename, or controlled rename refusal and retry
+        description: Single Save, duplicate rename, rename refusal retry, or D217 stale-profile guest retry
         required: false
         default: single
         type: choice
@@ -194,6 +194,7 @@ on:
           - single
           - duplicate-rename
           - duplicate-rename-retry
+          - stale-profile-retry
       scrape_width_mode:
         description: Scrape side-panel viewport mode (normal uses CDP viewport emulation)
         required: false
@@ -272,7 +273,7 @@ jobs:
           if [[ "$ACCEPTANCE_CASE" == scrape-save-member ]]; then
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'D187 Save Source requires member auth.' >&2; exit 1; }
             [[ "$SCRAPE_SAVE_DESTINATION" == project || "$SCRAPE_SAVE_DESTINATION" == none ]] || { echo 'Unknown Save Source destination.' >&2; exit 1; }
-            [[ "$SCRAPE_SAVE_SCOPE" == single || "$SCRAPE_SAVE_SCOPE" == duplicate-rename || "$SCRAPE_SAVE_SCOPE" == duplicate-rename-retry ]] || { echo 'Unknown Save Source scope.' >&2; exit 1; }
+            [[ "$SCRAPE_SAVE_SCOPE" == single || "$SCRAPE_SAVE_SCOPE" == duplicate-rename || "$SCRAPE_SAVE_SCOPE" == duplicate-rename-retry || "$SCRAPE_SAVE_SCOPE" == stale-profile-retry ]] || { echo 'Unknown Save Source scope.' >&2; exit 1; }
             [[ "$SCRAPE_SAVE_SCOPE" == single || "$SCRAPE_SAVE_DESTINATION" == none ]] || { echo 'Duplicate rename requires no destination.' >&2; exit 1; }
           else
             [[ "$SCRAPE_SAVE_DESTINATION" == project ]] || { echo 'Save Source destination applies only to scrape-save-member.' >&2; exit 1; }

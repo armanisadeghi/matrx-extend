@@ -12,10 +12,16 @@ import {
   refreshMemberLogicalOrganizationGet,
   requireProductionBackendOrigin,
 } from './member-logical-org-proof.mjs';
+import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { observeDuplicateSourceSave } from './scrape-save-duplicate-observer.mjs';
 import { cleanupProjectFixture, projectFixtureRequest } from './scrape-save-project-fixture.mjs';
 import { refuseFirstSourceRename } from './scrape-save-rename-refusal.mjs';
+import {
+  editD217Article,
+  exerciseStaleProfileRetry,
+  prepareStaleProfileGuest,
+} from './scrape-save-stale-profile.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import { activeTabPanelExpression, click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -28,6 +34,8 @@ const runId = process.env.GITHUB_RUN_ID;
 const runAttempt = process.env.GITHUB_RUN_ATTEMPT;
 const destinationMode = process.env.MATRX_SCRAPE_SAVE_DESTINATION ?? 'project';
 const saveScope = process.env.MATRX_SCRAPE_SAVE_SCOPE ?? 'single';
+const staleProfileRetry = saveScope === 'stale-profile-retry';
+const duplicateSave = saveScope === 'duplicate-rename' || saveScope === 'duplicate-rename-retry';
 const renameRetry = saveScope === 'duplicate-rename-retry';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const captureTitle = `Northline source intake ${runId}-${runAttempt}`;
@@ -55,7 +63,9 @@ const report = {
   observations: {},
   cleanup: null,
   failure_stage: null,
-  limits: `Exact imported CI development artifact, real member sign-in, ${saveScope !== 'single' ? 'same-article duplicate landing and custom rename' : 'one custom-named Source saved'} with ${destinationMode === 'project' ? 'one disposable owned Project association' : 'no destination'}, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, ${renameRetry ? 'other refusal paths' : 'controlled rename refusal/retry'}, responsive timing, or full T04/T29 closure.`,
+  limits: staleProfileRetry
+    ? 'Controlled credential removal in the owned profile followed by real extension restore; guest Save/warm Retry/post-full-reload Retry, real member recovery, edited landing HTTP and Source read/cleanup. Server-caused refresh rejection and Store installation remain unverified.'
+    : `Exact imported CI development artifact, real member sign-in, ${duplicateSave ? 'same-article duplicate landing and custom rename' : 'one custom-named Source saved'} with ${destinationMode === 'project' ? 'one disposable owned Project association' : 'no destination'}, independent reads, UI reopen of name/URL/captured text, and cleanup; Project display in UI is not covered; this does not cover admin, guest, Library, multiple destinations, ${renameRetry ? 'other refusal paths' : 'controlled rename refusal/retry'}, responsive timing, or full T04/T29 closure.`,
 };
 
 function safeFailureCode(error) {
@@ -111,7 +121,7 @@ async function panelRest(panel, request) {
   return evaluate(
     panel,
     `(async () => {
-      const token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken'];
+      const token = ${nativeOAuthBearerExpression};
       if (typeof token !== 'string' || !token) return { status: 0, rows: null };
       const response = await fetch(${JSON.stringify(request.url)}, {
         method: ${JSON.stringify(request.method ?? 'GET')},
@@ -169,7 +179,7 @@ async function associationRpc(panel, name, organizationId, body) {
   return evaluate(
     panel,
     `(async () => {
-      const token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken'];
+      const token = ${nativeOAuthBearerExpression};
       if (typeof token !== 'string' || !token) return { status: 0, value: null };
       const response = await fetch(${JSON.stringify(url)}, {
         method: 'POST',
@@ -474,7 +484,9 @@ try {
   );
   assert.ok(['project', 'none'].includes(destinationMode), 'scrape_save_destination_invalid');
   assert.ok(
-    ['single', 'duplicate-rename', 'duplicate-rename-retry'].includes(saveScope),
+    ['single', 'duplicate-rename', 'duplicate-rename-retry', 'stale-profile-retry'].includes(
+      saveScope,
+    ),
     'scrape_save_scope_invalid',
   );
   if (saveScope !== 'single')
@@ -533,6 +545,8 @@ try {
     artifact_id: Number(ciArtifactId),
     tree_sha256: receipt.treeSha256,
     version: receipt.version,
+    github_artifact_digest: ciReceipt.githubArtifactDigest,
+    ci_run_attempt: ciReceipt.runAttempt,
   };
 
   await runNativeSidepanelQa({
@@ -547,7 +561,7 @@ try {
     },
     exercisePanel: async (native) => {
       const { page, requireResourceHealth, resourceAction } = native;
-      const { panel } = native;
+      let { panel } = native;
       let primaryError;
       let cleanupError;
       let sourceId = null;
@@ -668,6 +682,13 @@ try {
           organization_resolution: identity.organization_resolution,
         };
 
+        if (staleProfileRetry) {
+          report.defect_id = 'EXT-D-0217';
+          report.case_ids = ['EXT-F-1007-T05', 'EXT-F-1007-T22'];
+          report.observations.d217 = {};
+          panel = await prepareStaleProfileGuest(native, identity, report.observations.d217);
+        }
+
         report.stage = 'member_logical_organization_proof';
         const expectedOrganizationId = selectedOrganizationId;
         const serverOrigin = await requireProductionBackendOrigin(panel);
@@ -677,10 +698,12 @@ try {
           serverOrigin,
         );
         try {
-          await observer.start();
-          await resourceAction(() => refreshMemberLogicalOrganizationGet(panel, observer));
-          report.observations.member_logical_organization_request = await observer.verify();
-          await resourceAction(() => click(panel, 'title', 'Settings'));
+          if (!staleProfileRetry) {
+            await observer.start();
+            await resourceAction(() => refreshMemberLogicalOrganizationGet(panel, observer));
+            report.observations.member_logical_organization_request = await observer.verify();
+            await resourceAction(() => click(panel, 'title', 'Settings'));
+          }
         } finally {
           observer.stop();
         }
@@ -788,6 +811,7 @@ try {
         );
         report.observations.capture = captureLayer;
 
+        if (staleProfileRetry) await editD217Article(panel);
         report.stage = 'save_dialog';
         await resourceAction(() => click(panel, 'button-text', 'Save'));
         const dialog = await waitFor(
@@ -910,16 +934,42 @@ try {
         report.stage = 'save_submit';
         const openBeforeSave = await dialogState(panel);
         assert.equal(openBeforeSave.open, true, 'scrape_save_dialog_closed_before_submit');
-        await resourceAction(() => click(panel, 'button-text', 'Save Source'));
-        const afterSave = await waitFor(
-          'scrape_save_confirmation_visible',
-          () => dialogState(panel),
-          (state) => state?.open === false && state.savedButton === true,
-          30000,
-        );
-        assert.equal(afterSave.savedButton, true, 'scrape_save_confirmation_missing');
-        report.observations.dialog_closed_after_save = true;
-        report.observations.saved_confirmation_visible = true;
+        if (staleProfileRetry) {
+          panel = await exerciseStaleProfileRetry({
+            native,
+            panel,
+            identity,
+            repo: REPO,
+            sourceUrl,
+            evidence: report.observations.d217,
+            onPanel: (livePanel) => {
+              panel = livePanel;
+            },
+            readSources: (livePanel) =>
+              querySources(livePanel, canonicalIdentity, selectedOrganizationId, null),
+          });
+        } else await resourceAction(() => click(panel, 'button-text', 'Save Source'));
+        const afterSave = staleProfileRetry
+          ? null
+          : await waitFor(
+              'scrape_save_confirmation_visible',
+              () => dialogState(panel),
+              (state) => state?.open === false && state.savedButton === true,
+              30000,
+            );
+        if (!staleProfileRetry) {
+          assert.equal(afterSave.savedButton, true, 'scrape_save_confirmation_missing');
+          report.observations.dialog_closed_after_save = true;
+        }
+        report.observations.saved_confirmation_visible = !staleProfileRetry;
+        if (staleProfileRetry) {
+          const queued = await evaluate(
+            panel,
+            `(async () => { const stored = await chrome.storage.local.get('matrx.sources.unsaved'); return (stored['matrx.sources.unsaved'] ?? []).some((row) => row.url === ${JSON.stringify(sourceUrl)}); })()`,
+          );
+          assert.equal(queued, false, 'd217_member_retry_queue_not_cleared');
+          report.observations.d217.member_retry_queue_cleared = true;
+        }
 
         report.stage = 'source_independent_read';
         const saved = await waitFor(
@@ -960,7 +1010,7 @@ try {
           report.observations.no_destination_associations_persisted = true;
         }
 
-        if (saveScope !== 'single') {
+        if (duplicateSave) {
           report.stage = 'duplicate_recapture';
           await resourceAction(() =>
             click(panel, 'title', 'Capture the page exactly as it is right now'),
@@ -1142,7 +1192,7 @@ try {
           reopenSavedSourceUi(
             panel,
             {
-              name: saveScope !== 'single' ? renamedSourceName : sourceName,
+              name: duplicateSave ? renamedSourceName : sourceName,
               url: sourceUrl,
               title: captureTitle,
               heading: captureHeading,
