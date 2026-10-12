@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "report_id": "ext-d-0218-independent-review-20261012",
+  "defect_id": "EXT-D-0218",
+  "reviewed_commit": "512725c0da10cb4c9f597499fe75fd48e8d87d39",
+  "reviewed_at": "2026-10-12",
+  "independent_reviewer": true,
+  "verdict_A_source_repair": {
+    "result": "PARTIAL_SOURCE_REPAIR; NATIVE_UNVERIFIED",
+    "evidence": "Active route graph review found 9 route scripts and 24 driver entry paths. The active Data member lookup and DELETE readers and auto-extract owned-row GET/PATCH reader use the shared versioned OAuth session reader. The request harness verifies bearer authorization, organization header, scoped row lookup and PATCH body.",
+    "native_status": "No hosted browser, current installed artifact, product behavior, Store build or release was verified."
+  },
+  "verdict_B_doctrine_and_harness_quality": {
+    "result": "PASS_WITH_OLD_CODE_RED_EVIDENCE_LIMIT",
+    "test_command": "node --test tests/browser/active-native-oauth-session.test.mjs tests/browser/records-positive-fixture.test.mjs tests/browser/reviewer-chat-storage-shape.test.mjs tests/browser/notes-find-native-contract.test.mjs tests/browser/data-member-auto-extract-driver.test.mjs tests/browser/takeover-visible-census.test.mjs",
+    "test_result": "76 passed, 0 failed",
+    "forcing_behavior": "The active-route census detects a planted retired-key consumer. Request checks reject a retired-reader mutation and a skipped-fetch mutation. Auth summaries recognize current, absent, malformed and unsupported-version OAuth values while excluding bearer strings from serialized summaries. Request assertions verify authenticated GET/PATCH emissions, organization scope and expected results.",
+    "old_code_red_evidence": "The committed source run report records the three focused pre-fix tests failing 12 cases with only the current OAuth session seeded. I independently ran the pristine parent commit's corresponding tests; all 33 passed because those old tests still seed the retired key. Therefore the recorded current-session-only RED is not reproducible from the pristine parent fixture set alone. The committed retired-reader mutation guard does reject that behavior, but I did not reconstruct and rerun the pre-fix current-session-only fixture in a scratch tree.",
+    "route_census_limits": "The census excludes hosted profile dispatch because the runner explicitly refuses it, and preserves the D217 helper's deliberate retired-key absence check."
+  },
+  "verification": {
+    "source_run_record": "docs/stabilization/runs/ext-d-0218-source-20261012.json",
+    "implementation_changes": "none",
+    "hosted_or_native_dispatch": "not run"
+  },
+  "limits": [
+    "Native/browser impact remains unverified.",
+    "The recorded pre-fix RED was not independently reconstructed with current-session-only fixtures against pristine old code."
+  ]
+}
