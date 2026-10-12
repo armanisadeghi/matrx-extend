@@ -1,0 +1,74 @@
+{
+  "id": "EXT-D-0207",
+  "feature_id": "EXT-F-1015",
+  "case_ids": ["EXT-F-1015-T42", "EXT-F-1015-T43"],
+  "title": "Organization validation can certify and clear an obsolete selection after the active choice changes",
+  "surface": "Authentication and active organization selection",
+  "auth_mode": "signed-in member and admin",
+  "preconditions": [
+    "The defect reproduction and delayed/reordered storage-callback coverage are deterministic unit tests in tests/unit/auth-route.test.ts; no repo-owned native network-delay fixture or callback-order interception was found.",
+    "For supporting native A/B selection evidence, use a signed-in member and admin separately, each with at least two current memberships; do not change membership data."
+  ],
+  "reproduction": [
+    "Run tests/unit/auth-route.test.ts test \u201cdoes not certify or clear a choice changed while validation was in flight\u201d: it holds A validation, changes active storage to B, then releases the held read.",
+    "Run the same file\u2019s \u201ckeeps its validated fallback when its own stale-choice notification arrives late\u201d and \u201ckeeps a newer validated choice when an older own-clear event arrives after the choice event\u201d tests for deterministic late/reordered own-clear callbacks.",
+    "The repo contains no owned native fixture that can hold the membership read and schedule Chrome storage callbacks. EXT-F-1015-T42/T43 therefore verify only native cross-context A/B selection persistence and request routing; they do not reproduce the pending-validation race."
+  ],
+  "expected": "A validation result applies only to the organization choice it validated; a changed active choice remains current and is not cleared or certified by the stale result. Deterministic delayed/reordered callback checks are unit-only; native retest of that race remains unverified.",
+  "actual": "The reproduced race allowed validation for an old organization choice to certify that choice and clear the newer active selection.",
+  "cause": "The in-flight validation completion can act on mutable active-organization state without preserving the identity of the choice it began validating. The repository has deterministic unit coverage for late/reordered own-clear notifications but no native callback-order control.",
+  "severity": "S2: a stale validation result can invalidate the current organization selection for signed-in members/admins",
+  "priority": "P0: retain deterministic unit coverage for the original race and late/reordered callbacks, and record supporting native A/B selection checks without claiming a native race retest.",
+  "state": "fixed",
+  "owner": "matrx_extend_stabilization",
+  "evidence": [
+    "tests/unit/auth-route.test.ts: does not certify or clear a choice changed while validation was in flight",
+    "tests/unit/auth-route.test.ts: keeps its validated fallback when its own stale-choice notification arrives late",
+    "tests/unit/auth-route.test.ts: keeps a newer validated choice when an older own-clear event arrives after the choice event",
+    "src/lib/org/active-org.ts",
+    "fresh race-repair review: A/B passed 20/20",
+    "EXT-F-1015-T42",
+    "EXT-F-1015-T43"
+  ],
+  "next_action": "Run native supporting checks EXT-F-1015-T42 and T43 on fresh receipt-matched unpacked builds: update matrx.org.active to B from the extension service-worker DevTools context without a picker click, verify the open panel and real org-scoped read use B, then restore the original organization. Keep delayed/reordered callback claims limited to the named deterministic unit tests; do not mark native reproduction complete.",
+  "transition_history": [
+    {
+      "at": "2026-10-12",
+      "from": null,
+      "to": "open",
+      "reason": "The focused auth-route regression reproduced stale validation after the active organization choice changed."
+    },
+    {
+      "at": "2026-10-12",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Initial triage mapped the defect to the member/admin picker-click cases T06/T07. Fresh review found those cases unrelated; T42/T43 now track supporting native external-storage A/B checks, while the pending-validation race remains unit-only."
+    },
+    {
+      "at": "2026-10-12",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "The active-org race repair entered escalated review for the original race and delayed/reordered callback behavior."
+    },
+    {
+      "at": "2026-10-12",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fresh source review A/B passed 20/20. Native reproduction and surrounding callback retests remain pending."
+    }
+  ],
+  "control_ids": ["EXT-F-1015-C22"],
+  "role_org_permissions": "Signed-in member and signed-in admin, each tested separately with two current memberships A and B. Native supporting checks update the device selection externally from A to B; they do not force validation or storage callback timing. The deterministic unit test holds the organization row lookup while A validation is pending.",
+  "build_receipt": null,
+  "reproducibility_count": "1/1 focused unit reproduction reported before repair in tests/unit/auth-route.test.ts, test \u201cdoes not certify or clear a choice changed while validation was in flight\u201d.",
+  "sibling_census": "The focused unit test delays the active-organization row read while changing the mocked active-org storage value. The unit tests also manually schedule late and reordered own-clear notifications. No repo-owned native interception path for holding that read or controlling Chrome callback order was found. Native cases T42/T43 cover only cross-context selection persistence, request routing and cleanup.",
+  "fix_commits": "No repair commit SHA supplied; source repair was reviewed in the current stabilization work.",
+  "original_repro_retest": "Fresh source review A/B passed 20/20. Deterministic unit coverage exists for the original race and two late/reordered notification variants. Independent native original-reproduction retest remains unverified.",
+  "surrounding_case_runs": "EXT-F-1015-T06/T07 remain ordinary member/admin picker-click cases and are unrelated. T42/T43 are native cross-context A/B supporting checks only; both are unverified and do not exercise pending validation or callback ordering.",
+  "reviewer_identity": "Fresh race-repair reviewers A/B; identities and review artifact paths were not supplied.",
+  "role": "Signed-in ordinary member and signed-in admin.",
+  "organization": "At least two current memberships. Unit reproduction changes active device choice A\u2192B while validation of A is pending; native supporting checks update the stored choice to B from a separate extension context without pending validation.",
+  "permissions": "No special browser permissions required.",
+  "build_receipt_status": "No browser/native build receipt recorded; the reproduction is a focused unit regression.",
+  "retest_status": "Source review A/B passed 20/20; deterministic unit tests cover original and late/reordered callback races. Native supporting A/B checks T42/T43 remain pending; no native race retest is claimed."
+}

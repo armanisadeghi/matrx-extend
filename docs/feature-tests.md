@@ -3197,6 +3197,32 @@ Every entry follows this shape:
   - Leave an organization in the web app, then act in the extension: the stale
     selection is dropped with a warning in the Debug log rather than sent.
 
+- **External active-organization update (EXT-F-1015-T42/T43):** Run member and
+  admin separately on a fresh, guarded unpacked build. Record source SHA and
+  dirty-source hash, lockfile and output hashes, WXT mode, runtime extension ID,
+  Chrome/profile, principal and role, original and A/B organization IDs,
+  permissions, backend, and timestamp. Reload the extension and side panel,
+  verify the running build and role, and record the original active organization.
+  If A is not active, select A through Settings → Organization and verify the
+  stored key is A. Open `chrome://extensions`, inspect this extension's service
+  worker, and run `chrome.storage.local.set({"matrx.org.active": {id: "<B_ID>", name: "<B_NAME>"}})`
+  in its DevTools console, replacing the placeholders with the captured values.
+  Do not use the picker or Settings selector to change A to B. Verify
+  the open panel updates to B, reload the panel and verify B remains selected,
+  then perform a harmless real organization-scoped read and verify its request
+  carries B. Restore the original organization through Settings → Organization,
+  verify the display and stored selection, and close the service-worker DevTools
+  target. This native procedure checks cross-context A/B selection and routing;
+  it does not hold a pending validation or control Chrome storage callback order.
+- **Deterministic stale-validation race coverage:** `tests/unit/auth-route.test.ts`
+  covers “does not certify or clear a choice changed while validation was in
+  flight,” “keeps its validated fallback when its own stale-choice notification
+  arrives late,” and “keeps a newer validated choice when an older own-clear
+  event arrives after the choice event.” These tests deliberately hold the organization-row lookup during membership
+  validation and schedule storage notifications. The repository
+  has no owned native fixture for holding that read or controlling Chrome's
+  callback order, so those race variants remain unit-only and unverified natively.
+
 ### AI v2 → v1 protocol fallback (agent runs)
 - **What it does:** agent-run and mandate-run streams are sent to the `/v2/ai/*`
   spine. If that v2 ENDPOINT itself fails — a network throw, a 404/405 (surface

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T06:52:00Z",
+  "updated_at": "2026-10-12T13:11:57Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -1410,8 +1410,14 @@
         {
           "id": "EXT-F-0002-T12",
           "title": "Hosted acceptance dispatch input and reviewed-workflow contract",
-          "modes": ["guest", "member", "admin"],
-          "control_ids": ["EXT-F-0002-C12"],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-0002-C12"
+          ],
           "preconditions": [
             "Use synchronized main and the current hosted-guest-acceptance workflow; honor the resource and spending gates."
           ],
@@ -1424,8 +1430,16 @@
             "At most 25 inputs; reviewed bytes and original resource/fixture guards pass.",
             "Exact-main CI passes and a guarded hosted run reaches its selected native case without dispatch refusal."
           ],
-          "dimensions": ["dispatch-input-cap", "reviewed-workflow", "guest", "member", "admin"],
-          "defect_ids": ["EXT-D-0205"],
+          "dimensions": [
+            "dispatch-input-cap",
+            "reviewed-workflow",
+            "guest",
+            "member",
+            "admin"
+          ],
+          "defect_ids": [
+            "EXT-D-0205"
+          ],
           "results": {
             "guest": {
               "status": "unverified",
@@ -1630,7 +1644,10 @@
               ],
               "detail": "Auth-independent release pipeline acceptance; exact source/case evidence and limitations in owner adjudication."
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0206"
+          ]
         },
         {
           "id": "EXT-F-0003-T02",
@@ -2036,7 +2053,10 @@
               ],
               "detail": "Auth-independent engineering behavior shared by every mode; actual lint-red refusal and exact-candidate green publication, independently verified by ci-gate-runtime-peer and release018-peer."
             }
-          }
+          },
+          "defect_ids": [
+            "EXT-D-0208"
+          ]
         },
         {
           "id": "EXT-F-0003-T09",
@@ -2210,7 +2230,9 @@
             "EXT-D-0116",
             "EXT-D-0140",
             "EXT-D-0188",
-            "EXT-D-0204"
+            "EXT-D-0204",
+            "EXT-D-0206",
+            "EXT-D-0208"
           ],
           "run_ids": [
             "release-red-001",
@@ -2252,7 +2274,9 @@
             "EXT-D-0116",
             "EXT-D-0140",
             "EXT-D-0188",
-            "EXT-D-0204"
+            "EXT-D-0204",
+            "EXT-D-0206",
+            "EXT-D-0208"
           ],
           "run_ids": [
             "release-red-001",
@@ -2293,7 +2317,9 @@
             "EXT-D-0092",
             "EXT-D-0140",
             "EXT-D-0188",
-            "EXT-D-0204"
+            "EXT-D-0204",
+            "EXT-D-0206",
+            "EXT-D-0208"
           ],
           "run_ids": [
             "release-red-001",
@@ -8136,16 +8162,16 @@
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
             "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance.",
-    "Use a case-owned disposable Vault login matching the fixture URL and synthetic username; record the exact returned Vault item_id as <capture-update-item-id> before the run. Keep the submitted username the same and use a different synthetic password so Update has an observable change. Never use a real credential.",
+            "Use a case-owned disposable Vault login matching the fixture URL and synthetic username; record the exact returned Vault item_id as <capture-update-item-id> before the run. Keep the submitted username the same and use a different synthetic password so Update has an observable change. Never use a real credential.",
             "Use a controlled disposable HTTPS sign-in fixture with synthetic username/password only, a submit counter, and recorded pre-test field values. Record the fixture URL and cleanup plan without recording credential values."
           ],
           "steps": [
             "Record the original Offer to save logins to the Vault value. Turn it off and submit the synthetic fixture credentials; verify the page completes normally, no Save/Update offer appears in the page or Vault tab, and no Vault mutation occurs.",
-    "Turn the setting on and submit the same synthetic username with a changed synthetic password. Verify the Save this login? offer appears in the Vault tab (and on the page only if on-page presentation is enabled), then choose Update on <capture-update-item-id>. Verify the stored synthetic credential reflects the changed value and the item_id is unchanged.",
-    "Reopen Settings after panel-document reload and full extension Reload; verify the original on/off choice persists across each reload. Restore and verify the original preference and fixture field values; if this case created the matching Vault item, delete its recorded item_id and verify it is absent."
+            "Turn the setting on and submit the same synthetic username with a changed synthetic password. Verify the Save this login? offer appears in the Vault tab (and on the page only if on-page presentation is enabled), then choose Update on <capture-update-item-id>. Verify the stored synthetic credential reflects the changed value and the item_id is unchanged.",
+            "Reopen Settings after panel-document reload and full extension Reload; verify the original on/off choice persists across each reload. Restore and verify the original preference and fixture field values; if this case created the matching Vault item, delete its recorded item_id and verify it is absent."
           ],
           "expected": [
-    "The setting gates the actual post-submit Save/Update consumer: off produces no offer or Vault mutation; on produces an explicit offer, and this matching-login run exercises Update on the recorded item_id. No Vault write occurs without a click; any case-created item is removed and verified absent."
+            "The setting gates the actual post-submit Save/Update consumer: off produces no offer or Vault mutation; on produces an explicit offer, and this matching-login run exercises Update on the recorded item_id. No Vault write occurs without a click; any case-created item is removed and verified absent."
           ],
           "dimensions": [
             "warm",
@@ -8169,16 +8195,16 @@
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
             "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance.",
-    "Use a case-owned disposable Vault login matching the fixture URL and synthetic username; record the exact returned Vault item_id as <capture-update-item-id> before the run. Keep the submitted username the same and use a different synthetic password so Update has an observable change. Never use a real credential.",
+            "Use a case-owned disposable Vault login matching the fixture URL and synthetic username; record the exact returned Vault item_id as <capture-update-item-id> before the run. Keep the submitted username the same and use a different synthetic password so Update has an observable change. Never use a real credential.",
             "Use a controlled disposable HTTPS sign-in fixture with synthetic username/password only, a submit counter, and recorded pre-test field values. Record the fixture URL and cleanup plan without recording credential values."
           ],
           "steps": [
             "Record the original Offer to save logins to the Vault value. Turn it off and submit the synthetic fixture credentials; verify the page completes normally, no Save/Update offer appears in the page or Vault tab, and no Vault mutation occurs.",
-    "Turn the setting on and submit the same synthetic username with a changed synthetic password. Verify the Save this login? offer appears in the Vault tab (and on the page only if on-page presentation is enabled), then choose Update on <capture-update-item-id>. Verify the stored synthetic credential reflects the changed value and the item_id is unchanged.",
-    "Reopen Settings after panel-document reload and full extension Reload; verify the original on/off choice persists across each reload. Restore and verify the original preference and fixture field values; if this case created the matching Vault item, delete its recorded item_id and verify it is absent."
+            "Turn the setting on and submit the same synthetic username with a changed synthetic password. Verify the Save this login? offer appears in the Vault tab (and on the page only if on-page presentation is enabled), then choose Update on <capture-update-item-id>. Verify the stored synthetic credential reflects the changed value and the item_id is unchanged.",
+            "Reopen Settings after panel-document reload and full extension Reload; verify the original on/off choice persists across each reload. Restore and verify the original preference and fixture field values; if this case created the matching Vault item, delete its recorded item_id and verify it is absent."
           ],
           "expected": [
-    "The setting gates the actual post-submit Save/Update consumer: off produces no offer or Vault mutation; on produces an explicit offer, and this matching-login run exercises Update on the recorded item_id. No Vault write occurs without a click; any case-created item is removed and verified absent."
+            "The setting gates the actual post-submit Save/Update consumer: off produces no offer or Vault mutation; on produces an explicit offer, and this matching-login run exercises Update on the recorded item_id. No Vault write occurs without a click; any case-created item is removed and verified absent."
           ],
           "dimensions": [
             "warm",
@@ -9357,13 +9383,13 @@
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
             "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance.",
-    "Seed or create an owned disposable Vault login whose allowed URL matches the recorded fixture URL and whose username/password are synthetic; record the returned Vault item_id as <suggestion-fixture-item-id> for cleanup.",
+            "Seed or create an owned disposable Vault login whose allowed URL matches the recorded fixture URL and whose username/password are synthetic; record the returned Vault item_id as <suggestion-fixture-item-id> for cleanup.",
             "Use a controlled disposable HTTPS sign-in fixture with synthetic username/password only, a submit counter, and recorded pre-test field values. Record the fixture URL and cleanup plan without recording credential values."
           ],
           "steps": [
             "Record the original Show password suggestions on websites value and original fixture field values. Turn the setting off, focus the matching login field, and verify no chooser appears and typing, focus and submit remain page behavior.",
             "Turn the setting on and refocus the matching field. Verify the Matrx saved-login chooser appears; choose the synthetic login and verify only its synthetic username/password fill. Confirm the fixture submit counter does not change until you separately submit the page.",
-    "Record the original Offer to save logins to the Vault value before enabling it. Restore the fixture field values, enable that setting, and submit synthetic credentials; verify on-page Save/Update presentation while presentation is on_page. Set presentation to quiet, submit a second synthetic login and verify the page stays quiet while the offer remains available in the Vault tab; choose Not now in both runs so no Vault write occurs. Reopen Settings after panel-document reload and full extension Reload; verify presentation, matching-gate and capture-offer preferences persist. Restore and verify all three original preference values and fixture field values, delete the case-owned Vault login by its recorded item_id, and verify it is absent."
+            "Record the original Offer to save logins to the Vault value before enabling it. Restore the fixture field values, enable that setting, and submit synthetic credentials; verify on-page Save/Update presentation while presentation is on_page. Set presentation to quiet, submit a second synthetic login and verify the page stays quiet while the offer remains available in the Vault tab; choose Not now in both runs so no Vault write occurs. Reopen Settings after panel-document reload and full extension Reload; verify presentation, matching-gate and capture-offer preferences persist. Restore and verify all three original preference values and fixture field values, delete the case-owned Vault login by its recorded item_id, and verify it is absent."
           ],
           "expected": [
             "Quiet mode leaves the page unchanged; on-page mode shows a chooser only for a ready matching saved login. A user click fills the chosen synthetic values but never submits the form; settings, form values and Vault fixture are restored."
@@ -9390,13 +9416,13 @@
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
             "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance.",
-    "Seed or create an owned disposable Vault login whose allowed URL matches the recorded fixture URL and whose username/password are synthetic; record the returned Vault item_id as <suggestion-fixture-item-id> for cleanup.",
+            "Seed or create an owned disposable Vault login whose allowed URL matches the recorded fixture URL and whose username/password are synthetic; record the returned Vault item_id as <suggestion-fixture-item-id> for cleanup.",
             "Use a controlled disposable HTTPS sign-in fixture with synthetic username/password only, a submit counter, and recorded pre-test field values. Record the fixture URL and cleanup plan without recording credential values."
           ],
           "steps": [
             "Record the original Show password suggestions on websites value and original fixture field values. Turn the setting off, focus the matching login field, and verify no chooser appears and typing, focus and submit remain page behavior.",
             "Turn the setting on and refocus the matching field. Verify the Matrx saved-login chooser appears; choose the synthetic login and verify only its synthetic username/password fill. Confirm the fixture submit counter does not change until you separately submit the page.",
-    "Record the original Offer to save logins to the Vault value before enabling it. Restore the fixture field values, enable that setting, and submit synthetic credentials; verify on-page Save/Update presentation while presentation is on_page. Set presentation to quiet, submit a second synthetic login and verify the page stays quiet while the offer remains available in the Vault tab; choose Not now in both runs so no Vault write occurs. Reopen Settings after panel-document reload and full extension Reload; verify presentation, matching-gate and capture-offer preferences persist. Restore and verify all three original preference values and fixture field values, delete the case-owned Vault login by its recorded item_id, and verify it is absent."
+            "Record the original Offer to save logins to the Vault value before enabling it. Restore the fixture field values, enable that setting, and submit synthetic credentials; verify on-page Save/Update presentation while presentation is on_page. Set presentation to quiet, submit a second synthetic login and verify the page stays quiet while the offer remains available in the Vault tab; choose Not now in both runs so no Vault write occurs. Reopen Settings after panel-document reload and full extension Reload; verify presentation, matching-gate and capture-offer preferences persist. Restore and verify all three original preference values and fixture field values, delete the case-owned Vault login by its recorded item_id, and verify it is absent."
           ],
           "expected": [
             "Quiet mode leaves the page unchanged; on-page mode shows a chooser only for a ready matching saved login. A user click fills the chosen synthetic values but never submits the form; settings, form values and Vault fixture are restored."
@@ -38380,6 +38406,11 @@
           "id": "EXT-F-1015-C21",
           "label": "Revalidate the admin gate across contexts and storage failures",
           "action": "Serialize role-gate writes by auth generation, revalidate current identity and role, and surface storage/read failures without leaving an authorized stale gate."
+        },
+        {
+          "id": "EXT-F-1015-C22",
+          "label": "External active-organization update across extension contexts",
+          "action": "Update the device organization from a separate extension context; verify the live selection and a real organization-scoped request use the new organization, then restore the original choice."
         }
       ],
       "source_anchors": [
@@ -39574,6 +39605,88 @@
               "detail": "Archive-discovery source repair in focused verification; exact final native target pending."
             }
           }
+        },
+        {
+          "id": "EXT-F-1015-T42",
+          "title": "member: External active-organization update remains selected",
+          "modes": [
+            "member"
+          ],
+          "control_ids": [
+            "EXT-F-1015-C22"
+          ],
+          "preconditions": [
+            "Use the actual unpacked development extension signed in as a member with two current memberships A and B. Capture the original active organization and retain both membership IDs for the receipt; do not alter membership records.",
+            "Produce a fresh guarded build and record source SHA and dirty-source hash, lockfile hash, output hash, WXT mode, runtime extension ID, Chrome version/profile, principal and role, original/A/B organization IDs, permissions, backend identity, and timestamp.",
+            "Load the fresh build, fully reload the extension, reopen the side panel, verify its runtime identity and role, and confirm the original organization before starting."
+          ],
+          "steps": [
+            "If A is not currently active, select A through Settings → Organization and verify matrx.org.active is A. Then open chrome://extensions, inspect this unpacked extension’s service worker, and use its DevTools console to set chrome.storage.local key matrx.org.active to membership B, preserving the {id, name} shape; do not use the picker to change A to B.",
+            "In the already-open side panel, verify the organization display updates to B from the real cross-context storage event; reload the side panel and verify B remains selected.",
+            "Perform a harmless real organization-scoped read and verify its request carries B. Record only sanitized fixed outcomes and the build receipt.",
+            "Restore the captured original active organization through Settings → Organization, verify both the display and stored selection match it, then close the inspected service-worker DevTools target. No membership fixture was created or changed."
+          ],
+          "expected": [
+            "A real storage update from the service-worker context is reflected in the open side panel and survives panel reload.",
+            "The organization-scoped request uses B, and cleanup restores the original active organization.",
+            "This native case does not hold membership validation or control storage callback timing; it is supporting A/B selection evidence and does not retest the stale-validation race."
+          ],
+          "dimensions": [
+            "native-cross-context-storage",
+            "panel-reload",
+            "organization-scoped-read",
+            "cleanup"
+          ],
+          "defect_ids": [
+            "EXT-D-0207"
+          ],
+          "results": {
+            "member": {
+              "status": "unverified",
+              "detail": "Native A/B cross-context selection check pending. It does not force pending validation or delayed/reordered callbacks; deterministic race coverage remains in unit tests only."
+            }
+          }
+        },
+        {
+          "id": "EXT-F-1015-T43",
+          "title": "admin: External active-organization update remains selected",
+          "modes": [
+            "admin"
+          ],
+          "control_ids": [
+            "EXT-F-1015-C22"
+          ],
+          "preconditions": [
+            "Use the actual unpacked development extension signed in as an admin with two current memberships A and B. Capture the original active organization and retain both membership IDs for the receipt; do not alter membership records.",
+            "Produce a fresh guarded build and record source SHA and dirty-source hash, lockfile hash, output hash, WXT mode, runtime extension ID, Chrome version/profile, principal and role, original/A/B organization IDs, permissions, backend identity, and timestamp.",
+            "Load the fresh build, fully reload the extension, reopen the side panel, verify its runtime identity and role, and confirm the original organization before starting."
+          ],
+          "steps": [
+            "If A is not currently active, select A through Settings → Organization and verify matrx.org.active is A. Then open chrome://extensions, inspect this unpacked extension’s service worker, and use its DevTools console to set chrome.storage.local key matrx.org.active to membership B, preserving the {id, name} shape; do not use the picker to change A to B.",
+            "In the already-open side panel, verify the organization display updates to B from the real cross-context storage event; reload the side panel and verify B remains selected.",
+            "Perform a harmless real organization-scoped read and verify its request carries B. Record only sanitized fixed outcomes and the build receipt.",
+            "Restore the captured original active organization through Settings → Organization, verify both the display and stored selection match it, then close the inspected service-worker DevTools target. No membership fixture was created or changed."
+          ],
+          "expected": [
+            "A real storage update from the service-worker context is reflected in the open side panel and survives panel reload.",
+            "The organization-scoped request uses B, and cleanup restores the original active organization.",
+            "This native case does not hold membership validation or control storage callback timing; it is supporting A/B selection evidence and does not retest the stale-validation race."
+          ],
+          "dimensions": [
+            "native-cross-context-storage",
+            "panel-reload",
+            "organization-scoped-read",
+            "cleanup"
+          ],
+          "defect_ids": [
+            "EXT-D-0207"
+          ],
+          "results": {
+            "admin": {
+              "status": "unverified",
+              "detail": "Native A/B cross-context selection check pending. It does not force pending validation or delayed/reordered callbacks; deterministic race coverage remains in unit tests only."
+            }
+          }
         }
       ],
       "cells": {
@@ -39586,7 +39699,8 @@
         "member": {
           "test_status": "unverified",
           "defect_ids": [
-            "EXT-D-0069"
+            "EXT-D-0069",
+            "EXT-D-0207"
           ],
           "run_ids": [],
           "retest_status": "not-run"
@@ -39595,7 +39709,8 @@
           "test_status": "unverified",
           "defect_ids": [
             "EXT-D-0029",
-            "EXT-D-0069"
+            "EXT-D-0069",
+            "EXT-D-0207"
           ],
           "run_ids": [
             "auth-role-failure-dev093-001",

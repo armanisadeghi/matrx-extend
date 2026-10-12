@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-12 08:59 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T06:52:00Z. 205 features · 794 cases · 1369 controls · 205 linked defect records.
+Generated 2026-10-12 13:24 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T13:11:57Z. 205 features · 796 cases · 1370 controls · 208 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1267** — Pass: 102 · Partial: 93 · Fail: 2 · Unverified: 1068 · N/A: 2.
-Unverified splits into **144 explicitly marked unverified** and **924 with no result record**.
+Applicable case-by-role slots: **1269** — Pass: 102 · Partial: 93 · Fail: 2 · Unverified: 1070 · N/A: 2.
+Unverified splits into **146 explicitly marked unverified** and **924 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -17,7 +17,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 4 |
 | [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 7 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 1, unverified 22, n/a 0 | 9 |
-| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 9, n/a 0 | 1 |
+| [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 9, n/a 0 | 3 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 20, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 18 pass · 6 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 32, partial 16, fail 0, unverified 49, n/a 1 | 3 |
@@ -32,7 +32,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Showcase](#showcase) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 1 pass · 28 partial · 0 fail · 30 unverified · 0 deferred; 0/1 full | pass 1, partial 28, fail 0, unverified 30, n/a 0 | 11 |
 | [Token broker](#token-broker) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 9, n/a 0 | 0 |
 | [Content-page overlays / context menus / commands](#content-page-overlays--context-menus--commands) | 1 | 0 pass · 1 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 56, n/a 0 | 0 |
-| [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 18 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 46, n/a 0 | 1 |
+| [Profile/auth/org picker](#profileauthorg-picker) | 1 | 0 pass · 0 partial · 0 fail · 10 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 19 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 48, n/a 0 | 2 |
 | [Keyboard commands](#keyboard-commands) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | pass 0, partial 0, fail 0, unverified 0, n/a 0 | 0 |
 | [Tasks side-panel](#tasks-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
 | [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
@@ -202,9 +202,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 12. **Controls:** 9.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0204
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0204, EXT-D-0206, EXT-D-0208
 
-**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed), [EXT-D-0188](defects/EXT-D-0188.json) (closed), [EXT-D-0200](defects/EXT-D-0200.json) (closed), [EXT-D-0204](defects/EXT-D-0204.json) (in-fix)
+**Linked defects:** [EXT-D-0002](defects/EXT-D-0002.json) (closed), [EXT-D-0003](defects/EXT-D-0003.json) (closed), [EXT-D-0004](defects/EXT-D-0004.json) (closed), [EXT-D-0005](defects/EXT-D-0005.json) (closed), [EXT-D-0013](defects/EXT-D-0013.json) (closed), [EXT-D-0016](defects/EXT-D-0016.json) (closed), [EXT-D-0017](defects/EXT-D-0017.json) (closed), [EXT-D-0019](defects/EXT-D-0019.json) (closed), [EXT-D-0020](defects/EXT-D-0020.json) (closed), [EXT-D-0085](defects/EXT-D-0085.json) (closed), [EXT-D-0092](defects/EXT-D-0092.json) (closed), [EXT-D-0116](defects/EXT-D-0116.json) (closed), [EXT-D-0140](defects/EXT-D-0140.json) (closed), [EXT-D-0188](defects/EXT-D-0188.json) (closed), [EXT-D-0200](defects/EXT-D-0200.json) (closed), [EXT-D-0204](defects/EXT-D-0204.json) (in-fix), [EXT-D-0206](defects/EXT-D-0206.json) (in-fix), [EXT-D-0208](defects/EXT-D-0208.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1333,11 +1333,11 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Authentication and active organization selection (EXT-F-1015)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 41. **Controls:** 21.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 43. **Controls:** 22.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0069
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0069, EXT-D-0207
 
-**Linked defects:** [EXT-D-0029](defects/EXT-D-0029.json) (closed), [EXT-D-0069](defects/EXT-D-0069.json) (fixed)
+**Linked defects:** [EXT-D-0029](defects/EXT-D-0029.json) (closed), [EXT-D-0069](defects/EXT-D-0069.json) (fixed), [EXT-D-0207](defects/EXT-D-0207.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -1382,6 +1382,8 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1015-T39 Persisted admin gate across contexts and storage outages | Unverified | Unverified | Unverified | EXT-F-1015-C21 |
 | EXT-F-1015-T40 Archived organization cannot be a work target and stale choice requires explicit recovery | N/A | Unverified | Unverified | EXT-F-1015-C03, EXT-F-1015-C09, EXT-F-1015-C19 |
 | EXT-F-1015-T41 Archive discovery stays separate from active organization selection | N/A | Unverified | Unverified | EXT-F-1015-C01, EXT-F-1015-C09, EXT-F-1015-C20 |
+| EXT-F-1015-T42 member: External active-organization update remains selected | N/A | Unverified | N/A | EXT-F-1015-C22 |
+| EXT-F-1015-T43 admin: External active-organization update remains selected | N/A | N/A | Unverified | EXT-F-1015-C22 |
 
 **Recorded case details and evidence:**
 
