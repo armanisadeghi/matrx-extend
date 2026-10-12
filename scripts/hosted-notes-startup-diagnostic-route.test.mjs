@@ -21,6 +21,12 @@ const admission = workflow.jobs.guest.steps[0];
 const acceptance = workflow.jobs.guest.steps.find(
   (step) => step.name === 'Exercise the selected Chrome side-panel case',
 );
+test('hosted workflow dispatch stays within GitHub maximum of 25 top-level inputs', () => {
+  assert.ok(
+    Object.keys(dispatchInputs).length <= 25,
+    'workflow_dispatch exceeds GitHub maximum of 25 inputs',
+  );
+});
 const harnessSource = readFileSync(
   new URL('../tests/browser/native-sidepanel-qa-harness.mjs', import.meta.url),
   'utf8',
@@ -153,16 +159,17 @@ async function reachActualCallsite(inputs, cpuEnabled = false) {
 
 test('Notes A diagnostic dispatch reaches actual native callsite only when requested', async () => {
   assert.equal(
-    dispatchInputs.notes_startup_diagnostic?.type,
-    'boolean',
-    'Notes diagnostic needs a reachable boolean workflow input',
+    dispatchInputs.startup_display_mode?.type,
+    'choice',
+    'Notes diagnostic needs a reachable workflow choice',
   );
-  assert.equal(dispatchInputs.notes_startup_diagnostic.default, false);
+  assert.equal(dispatchInputs.startup_display_mode.default, 'headed');
+  assert.ok(dispatchInputs.startup_display_mode.options.includes('notes-cdp'));
   for (const enabled of [true, false]) {
     const inputs = {
       acceptance_case: 'notes-find-member',
       acceptance_lane: 'A',
-      notes_startup_diagnostic: enabled,
+      startup_display_mode: enabled ? 'notes-cdp' : 'headed',
     };
     const admitted = admit(inputs);
     assert.equal(admitted.status, 0, admitted.stderr);
@@ -188,8 +195,9 @@ test('Notes startup diagnostic admission refuses other cases and lane B', () => 
     ['guest-data', 'B'],
     ['guest-seo', 'A'],
     ['native-ai-member-probe', 'A'],
+    ['startup-resource-diagnostic', 'A'],
   ]) {
-    const result = admit({ acceptance_case, acceptance_lane, notes_startup_diagnostic: true });
+    const result = admit({ acceptance_case, acceptance_lane, startup_display_mode: 'notes-cdp' });
     assert.notEqual(
       result.status,
       0,
@@ -197,15 +205,32 @@ test('Notes startup diagnostic admission refuses other cases and lane B', () => 
     );
   }
   assert.equal(
-    admit({ acceptance_case: 'guest-data', acceptance_lane: 'B', notes_startup_diagnostic: false })
+    admit({ acceptance_case: 'guest-data', acceptance_lane: 'B', startup_display_mode: 'headed' })
       .status,
     0,
   );
 });
 
+test('headed and headless startup diagnostics retain their original display mapping', () => {
+  const startup = workflow.jobs.guest.steps.find(
+    (step) => step.name === 'Measure owned Chromium startup during the existing guard interval',
+  );
+  for (const startup_display_mode of ['headed', 'headless']) {
+    const inputs = {
+      acceptance_case: 'startup-resource-diagnostic',
+      acceptance_lane: 'A',
+      startup_display_mode,
+    };
+    assert.ok(dispatchInputs.startup_display_mode.options.includes(startup_display_mode));
+    assert.equal(admit(inputs).status, 0);
+    assert.equal(mapped(startup.env.MATRX_STARTUP_DISPLAY_MODE, inputs), startup_display_mode);
+    assert.equal(mapped(acceptance.env.MATRX_CDP_STARTUP_DIAGNOSTIC, inputs), '0');
+  }
+});
+
 test('existing SEO CPU diagnostic flag cannot activate the new CDP handshake probe', async () => {
   const receipts = await reachActualCallsite(
-    { acceptance_case: 'notes-find-member', acceptance_lane: 'A', notes_startup_diagnostic: false },
+    { acceptance_case: 'notes-find-member', acceptance_lane: 'A', startup_display_mode: 'headed' },
     true,
   );
   assert.equal(receipts.length, 0);

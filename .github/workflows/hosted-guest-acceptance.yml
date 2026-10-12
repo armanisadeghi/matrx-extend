@@ -110,20 +110,16 @@ on:
           - airbnb
           - owned
       startup_display_mode:
-        description: Display mode for startup-resource-diagnostic only
+        description: Startup display mode, or notes-cdp for Notes member lane A connection diagnostics
         required: false
         default: headed
         type: choice
         options:
           - headed
           - headless
+          - notes-cdp
       seo_resource_diagnostic:
         description: Measure process CPU time on full guest SEO Airbnb; diagnostic only, no acceptance credit
-        required: false
-        default: false
-        type: boolean
-      notes_startup_diagnostic:
-        description: Measure owned CDP startup for Notes member on lane A; diagnostic only
         required: false
         default: false
         type: boolean
@@ -250,7 +246,7 @@ jobs:
           SEO_CASE_SCOPE: ${{ inputs.seo_case_scope }}
           SEO_METADATA_FIXTURE: ${{ inputs.seo_metadata_fixture || 'none' }}
           SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
-          NOTES_STARTUP_DIAGNOSTIC: ${{ inputs.notes_startup_diagnostic == true && '1' || '0' }}
+          NOTES_STARTUP_DIAGNOSTIC: ${{ inputs.startup_display_mode == 'notes-cdp' && '1' || '0' }}
           SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_interrupt_after_target || 'none' }}
           SCRAPE_AUTH_MODE: ${{ inputs.scrape_auth_mode }}
           SCRAPE_SAVE_DESTINATION: ${{ inputs.scrape_save_destination || 'project' }}
@@ -537,7 +533,7 @@ jobs:
           MATRX_HOSTED_SEO_RESOURCE_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
           MATRX_HOSTED_SEO_INTERRUPT_AFTER_TARGET: ${{ inputs.seo_interrupt_after_target || 'none' }}
           MATRX_STARTUP_INTERVAL_DIAGNOSTIC: ${{ inputs.seo_resource_diagnostic == true && '1' || '0' }}
-          MATRX_CDP_STARTUP_DIAGNOSTIC: ${{ inputs.notes_startup_diagnostic == true && inputs.acceptance_case == 'notes-find-member' && inputs.acceptance_lane == 'A' && '1' || '0' }}
+          MATRX_CDP_STARTUP_DIAGNOSTIC: ${{ inputs.startup_display_mode == 'notes-cdp' && inputs.acceptance_case == 'notes-find-member' && inputs.acceptance_lane == 'A' && '1' || '0' }}
           MATRX_D47_PUBLIC_RACE_PREFLIGHT: ${{ inputs.d47_public_race_preflight == true && '1' || '0' }}
           MATRX_SCRAPE_DIAGNOSTIC_CPU_RATE: ${{ inputs.scrape_diagnostic_cpu_rate }}
           MATRX_SCRAPE_RELOAD_OPEN_DIAGNOSTIC: ${{ inputs.scrape_reload_open_diagnostic == true && '1' || '0' }}

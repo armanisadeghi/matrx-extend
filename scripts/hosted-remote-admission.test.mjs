@@ -40,6 +40,21 @@ test('remote member Data plan carries exact frozen artifact and guarded hosted w
   });
 });
 
+test('remote workflow contract refuses a diagnostic edit even when resource guards remain intact', () => {
+  const workflow = readFileSync(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  assert.equal(requireHostedWorkflowContract(workflow), true);
+  const unreviewed = workflow.replace('          - notes-cdp\n', '');
+  assert.notEqual(unreviewed, workflow, 'diagnostic mutation must change the workflow bytes');
+  assert.throws(
+    () => requireHostedWorkflowContract(unreviewed),
+    /HOSTED_WORKFLOW_BLOB_UNREVIEWED/,
+    'unreviewed diagnostic workflow accepted',
+  );
+});
+
 test('remote evidence refuses a missing or pending hosted acceptance final', () => {
   const runId = '38122233344';
   const attempt = '1';
