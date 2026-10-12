@@ -1,3 +1,4 @@
+import './hosted-remote-scrape-admission.test.mjs';
 import './hosted-artifact-provenance.test.mjs';
 import './hosted-remote-notes-admission.test.mjs';
 import assert from 'node:assert/strict';

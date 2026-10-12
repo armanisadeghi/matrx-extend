@@ -80,6 +80,10 @@ async function run() {
     tree_sha256: receipt.treeSha256,
   };
 
+  report.imported_artifact = JSON.parse(
+    await readFile(process.env.MATRX_SCRAPE_CI_RECEIPT, 'utf8'),
+  );
+  report.build = { before: { treeSha256: hashReleaseTree(extensionDir) }, after: null };
   try {
     await runNativeSidepanelQa({
       headed: true,
@@ -103,6 +107,11 @@ async function run() {
         requireResourceHealthRef = requireResourceHealth;
         resourceActionRef = resourceAction;
         await requireResourceHealth();
+        report.native_target = {
+          target_id: panelTarget?.targetId,
+          type: panelTarget?.type,
+          url: panelTarget?.url,
+        };
         report.browser_version = (await browserSession.send('Browser.getVersion')).product;
         report.stage = 'panel_viewport';
         report.panel_viewport = await resourceAction(() =>
@@ -287,6 +296,7 @@ async function run() {
     report.status = 'fail';
     report.failure_code = safeFailureCode(error);
   } finally {
+    report.build.after = { treeSha256: hashReleaseTree(extensionDir) };
     await writeReport();
   }
   if (report.status !== 'pass') process.exitCode = 1;

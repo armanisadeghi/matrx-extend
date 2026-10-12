@@ -372,7 +372,8 @@ async function run(prepared, artifactMode) {
     );
   }
   const scrapeSaveCiReceiptPath =
-    acceptanceCase === 'scrape-save-member'
+    acceptanceCase === 'scrape-save-member' ||
+    (acceptanceCase === 'guest-scrape-development' && scrapeRoute?.scope === 'seo-schema-empty')
       ? join(
           dirname(relocatedReceipt),
           `scrape-save-ci-receipt-${process.env.GITHUB_RUN_ID}-${process.env.GITHUB_RUN_ATTEMPT}.json`,
@@ -397,6 +398,7 @@ async function run(prepared, artifactMode) {
           runId: evidence.runId,
           artifactId: evidence.artifactId,
           githubArtifactDigest: evidence.githubArtifactDigest,
+          runAttempt: evidence.runAttempt,
           version: evidence.version,
           treeSha256: evidence.treeSha256,
         },

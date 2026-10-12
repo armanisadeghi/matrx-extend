@@ -205,6 +205,123 @@ export function planHostedGuestSeo({
   };
 }
 
+/** One guest-owned page; broader Scrape, credential staging and diagnostics are refused. */
+export function planHostedScrape({
+  lane,
+  acceptanceCase,
+  scrapeScope,
+  authMode,
+  runnerLabel,
+  ...input
+}) {
+  if (lane !== 'B') refuse('HOSTED_SCRAPE_LANE_REFUSED');
+  if (acceptanceCase !== 'guest-scrape-development') refuse('HOSTED_SCRAPE_CASE_REFUSED');
+  if (scrapeScope !== 'seo-schema-empty') refuse('HOSTED_SCRAPE_SCOPE_REFUSED');
+  if (authMode !== 'guest') refuse('HOSTED_SCRAPE_AUTH_REFUSED');
+  if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_SCRAPE_RUNNER_REFUSED');
+  if (!SHA.test(input.sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
+  planHostedMemberData({ ...input, lane: 'A' });
+  return {
+    command: 'gh',
+    args: [
+      'workflow',
+      'run',
+      'hosted-guest-acceptance.yml',
+      '--ref',
+      'main',
+      ...[
+        'acceptance_lane=B',
+        'acceptance_case=guest-scrape-development',
+        'scrape_scope=seo-schema-empty',
+        'scrape_auth_mode=guest',
+        'runner_label=macos-15-intel',
+        `development_run_id=${input.developmentRunId}`,
+        `development_artifact_id=${input.developmentArtifactId}`,
+      ].flatMap((field) => ['-f', field]),
+    ],
+  };
+}
+
+export function requireScrapeDispatchAdmission({ localSha, remoteSha, sourceSha, dirty, runs }) {
+  requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
+  if (sourceSha !== remoteSha) refuse('HOSTED_SCRAPE_SOURCE_DRIFT');
+  if (
+    !Array.isArray(runs) ||
+    runs.some((run) => run.status !== 'completed' && !/^Native A · /.test(run.name ?? ''))
+  )
+    refuse('HOSTED_SCRAPE_B_CAPACITY_REFUSED');
+  return true;
+}
+
+export function verifyHostedScrapeReport(report, identity) {
+  const a = report?.artifact;
+  const o = report?.observations;
+  const imported = report?.imported_artifact;
+  if (
+    report?.schema_version !== 1 ||
+    report.feature_id !== 'EXT-F-1007' ||
+    report.case_id !== 'EXT-F-1007-T08' ||
+    report.subtarget !== 'guest_no_signal_seo_and_empty_schema_panes' ||
+    report.auth_mode !== 'guest' ||
+    report.status !== 'pass' ||
+    report.stage !== 'complete' ||
+    report.failure_code !== null ||
+    a?.kind !== 'ci_development_test' ||
+    a.source_sha !== identity.sourceSha ||
+    String(a.run_id) !== identity.developmentRunId ||
+    String(a.artifact_id) !== identity.developmentArtifactId ||
+    !/^[a-f0-9]{64}$/.test(a.tree_sha256 ?? '') ||
+    imported?.kind !== 'ci_development_test' ||
+    imported.eligibleStore !== false ||
+    imported.sourceSha !== identity.sourceSha ||
+    String(imported.runId) !== identity.developmentRunId ||
+    String(imported.artifactId) !== identity.developmentArtifactId ||
+    imported.runAttempt !== identity.developmentRunAttempt ||
+    imported.githubArtifactDigest !== identity.githubArtifactDigest ||
+    imported.treeSha256 !== a.tree_sha256 ||
+    report.build?.before?.treeSha256 !== a.tree_sha256 ||
+    report.build?.after?.treeSha256 !== a.tree_sha256 ||
+    o?.case_id !== report.case_id ||
+    o.subtarget !== report.subtarget ||
+    o.seo?.visible !== true ||
+    o.seo.selected !== 'SEO' ||
+    o.seo.title_matches !== true ||
+    o.seo.description_dash !== true ||
+    !Array.isArray(o.seo.groups) ||
+    !o.seo.groups.includes('Title & description') ||
+    o.seo.groups.some((group) => !['Title & description', 'Performance'].includes(group)) ||
+    o.schema?.visible !== true ||
+    o.schema.selected !== 'Schema' ||
+    o.schema.json_valid !== true ||
+    o.schema.metadata_title_matches !== true ||
+    o.schema.description_absent !== true ||
+    o.schema.canonical_absent !== true ||
+    ['og_count', 'twitter_count', 'schema_types_count', 'ld_json_count'].some(
+      (key) => o.schema[key] !== 0,
+    ) ||
+    !Array.isArray(o.export_checks) ||
+    o.export_checks.length !== 2 ||
+    o.export_checks.some(
+      (check, i) =>
+        check.after_pane !== ['SEO', 'Schema'][i] ||
+        check.identity_unchanged !== true ||
+        check.digest_unchanged !== true,
+    ) ||
+    ['seo_no_signal_baseline', 'schema_empty', 'capture_export_unchanged_after_each_pane'].some(
+      (key) => o.verdict?.[key] !== true,
+    ) ||
+    typeof report.native_target?.target_id !== 'string' ||
+    !report.native_target.target_id ||
+    report.native_target.type !== 'page' ||
+    !/^chrome-extension:\/\/[a-p]{32}\/sidepanel\.html$/.test(report.native_target.url ?? '') ||
+    report.capture_diagnostic?.events?.trusted_capture_click !== 1 ||
+    report.panel_viewport?.mechanism !== 'native_default' ||
+    !(report.panel_viewport.observed_px > 0)
+  )
+    refuse('HOSTED_SCRAPE_NATIVE_REPORT_PROVENANCE_INVALID');
+  return true;
+}
+
 /** Normal member Notes T02 only; CDP startup diagnostics have no acceptance route. */
 export function planHostedNotes({ lane, acceptanceCase, runnerLabel, ...input }) {
   if (lane !== 'A') refuse('HOSTED_NOTES_LANE_REFUSED');
@@ -545,11 +662,13 @@ function verifyArchive(zip, bytes, runId, attempt, sourceSha, acceptanceCase) {
     files[basename] = archiveEntry(zip, bytes, find(basename));
   }
   const reportName =
-    acceptanceCase === 'guest-seo'
-      ? 'seo-guest-acceptance.json'
-      : acceptanceCase === 'notes-find-member'
-        ? 'notes-native-acceptance.json'
-        : 'data-member-auto-extract-acceptance.json';
+    acceptanceCase === 'guest-scrape-development'
+      ? 'scrape-seo-schema-empty-guest-native.json'
+      : acceptanceCase === 'guest-seo'
+        ? 'seo-guest-acceptance.json'
+        : acceptanceCase === 'notes-find-member'
+          ? 'notes-native-acceptance.json'
+          : 'data-member-auto-extract-acceptance.json';
   const report = JSON.parse(archiveEntry(zip, bytes, find(reportName)));
   if (
     acceptanceCase === 'member-data' &&
@@ -572,6 +691,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       mode === 'dispatch' ||
       mode === 'plan-guest-seo' ||
       mode === 'dispatch-guest-seo' ||
+      mode === 'plan-scrape' ||
+      mode === 'dispatch-scrape' ||
       mode === 'plan-notes' ||
       mode === 'dispatch-notes'
     ) {
@@ -581,49 +702,67 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const sourceSha = args.get('--source-sha');
       const guestSeo = mode.endsWith('-guest-seo');
       const notes = mode.endsWith('-notes');
-      if (notes)
+      const scrape = mode.endsWith('-scrape');
+      if (notes || scrape)
         for (const key of args.keys())
           if (
             ![
               '--lane',
               '--case',
               '--runner-label',
+              ...(scrape ? ['--scrape-scope', '--auth-mode'] : []),
               '--development-run-id',
               '--development-artifact-id',
               '--source-sha',
             ].includes(key)
           )
             refuse('HOSTED_ARGUMENT_INVALID');
-      const plan = notes
-        ? planHostedNotes({
+      const plan = scrape
+        ? planHostedScrape({
             lane,
             acceptanceCase: args.get('--case'),
+            scrapeScope: args.get('--scrape-scope'),
+            authMode: args.get('--auth-mode'),
             runnerLabel: args.get('--runner-label'),
             developmentRunId,
             developmentArtifactId,
             sourceSha,
           })
-        : guestSeo
-          ? planHostedGuestSeo({
+        : notes
+          ? planHostedNotes({
               lane,
               acceptanceCase: args.get('--case'),
-              seoCaseScope: args.get('--seo-case-scope'),
-              seoMetadataFixture: args.get('--seo-metadata-fixture'),
-              seoResourceDiagnostic: args.get('--seo-resource-diagnostic'),
-              seoInterruptAfterTarget: args.get('--seo-interrupt-after-target'),
               runnerLabel: args.get('--runner-label'),
               developmentRunId,
               developmentArtifactId,
               sourceSha,
             })
-          : planHostedMemberData({ lane, developmentRunId, developmentArtifactId, sourceSha });
+          : guestSeo
+            ? planHostedGuestSeo({
+                lane,
+                acceptanceCase: args.get('--case'),
+                seoCaseScope: args.get('--seo-case-scope'),
+                seoMetadataFixture: args.get('--seo-metadata-fixture'),
+                seoResourceDiagnostic: args.get('--seo-resource-diagnostic'),
+                seoInterruptAfterTarget: args.get('--seo-interrupt-after-target'),
+                runnerLabel: args.get('--runner-label'),
+                developmentRunId,
+                developmentArtifactId,
+                sourceSha,
+              })
+            : planHostedMemberData({ lane, developmentRunId, developmentArtifactId, sourceSha });
       if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
       const artifact = requireDevelopmentArtifact({
         runId: developmentRunId,
         artifactId: developmentArtifactId,
         sourceSha,
       });
-      if (mode === 'dispatch' || mode === 'dispatch-guest-seo' || mode === 'dispatch-notes') {
+      if (
+        mode === 'dispatch' ||
+        mode === 'dispatch-guest-seo' ||
+        mode === 'dispatch-notes' ||
+        mode === 'dispatch-scrape'
+      ) {
         const localSha = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
         const remoteSha = ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha;
         const dirty = execFileSync(
@@ -632,7 +771,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             'status',
             '--porcelain',
             '--',
-            ...(notes
+            ...(notes || scrape
               ? []
               : [
                   '.github/workflows/hosted-guest-acceptance.yml',
@@ -687,13 +826,44 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
           );
         }
+        if (scrape) {
+          verifyHostedWorkflowCheckout({
+            path: '.github/workflows/hosted-guest-acceptance.yml',
+            head_sha: remoteSha,
+          });
+          const runs = ['hosted-guest-acceptance.yml', 'hosted-resource-diagnostic.yml'].flatMap(
+            (workflow) =>
+              ['queued', 'in_progress', 'waiting', 'pending', 'requested'].flatMap((status) => {
+                const listing = ghJson(
+                  `repos/${OWNER}/actions/workflows/${workflow}/runs?status=${status}&per_page=100`,
+                );
+                if (
+                  !Array.isArray(listing.workflow_runs) ||
+                  listing.total_count !== listing.workflow_runs.length
+                )
+                  refuse('HOSTED_SCRAPE_B_CAPACITY_REFUSED');
+                return listing.workflow_runs;
+              }),
+          );
+          requireScrapeDispatchAdmission({ localSha, remoteSha, dirty, sourceSha, runs });
+          requireSynchronizedDispatchSource(
+            execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
+            ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha,
+            execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
+          );
+        }
         const result = spawnSync(plan.command, [...plan.args, '-R', OWNER], { stdio: 'inherit' });
         if (result.status !== 0) refuse('HOSTED_DISPATCH_FAILED');
       }
       process.stdout.write(
         `${JSON.stringify({ mode, plan, artifact, host: 'github-hosted', localHeavyWork: false })}\n`,
       );
-    } else if (mode === 'verify' || mode === 'verify-guest-seo' || mode === 'verify-notes') {
+    } else if (
+      mode === 'verify' ||
+      mode === 'verify-guest-seo' ||
+      mode === 'verify-notes' ||
+      mode === 'verify-scrape'
+    ) {
       const runId = args.get('--run-id');
       const attempt = args.get('--attempt');
       const zip = args.get('--artifact-zip');
@@ -701,14 +871,17 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const run = ghJson(`repos/${OWNER}/actions/runs/${runId}`);
       const guestSeo = mode === 'verify-guest-seo';
       const notes = mode === 'verify-notes';
+      const scrape = mode === 'verify-scrape';
       if (
         run.path !== '.github/workflows/hosted-guest-acceptance.yml' ||
         run.name !==
-          (guestSeo
-            ? 'Native B · guest-seo'
-            : notes
-              ? 'Native A · notes-find-member'
-              : 'Native A · member-data') ||
+          (scrape
+            ? 'Native B · guest-scrape-development'
+            : guestSeo
+              ? 'Native B · guest-seo'
+              : notes
+                ? 'Native A · notes-find-member'
+                : 'Native A · member-data') ||
         run.event !== 'workflow_dispatch' ||
         run.head_branch !== 'main' ||
         run.conclusion !== 'success' ||
@@ -726,18 +899,26 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         runId,
         attempt,
         sourceSha,
-        guestSeo ? 'guest-seo' : notes ? 'notes-find-member' : 'member-data',
+        scrape
+          ? 'guest-scrape-development'
+          : guestSeo
+            ? 'guest-seo'
+            : notes
+              ? 'notes-find-member'
+              : 'member-data',
       );
-      const artifactRunId = notes
-        ? args.get('--development-run-id')
-        : guestSeo
-          ? String(report.imported_artifact?.runId ?? '')
-          : String(report.artifact.run_id);
-      const artifactId = notes
-        ? args.get('--development-artifact-id')
-        : guestSeo
-          ? String(report.imported_artifact?.artifactId ?? '')
-          : String(report.artifact.artifact_id);
+      const artifactRunId =
+        notes || scrape
+          ? args.get('--development-run-id')
+          : guestSeo
+            ? String(report.imported_artifact?.runId ?? '')
+            : String(report.artifact.run_id);
+      const artifactId =
+        notes || scrape
+          ? args.get('--development-artifact-id')
+          : guestSeo
+            ? String(report.imported_artifact?.artifactId ?? '')
+            : String(report.artifact.artifact_id);
       if (guestSeo)
         verifyHostedGuestSeoReport(report, {
           sourceSha,
@@ -748,7 +929,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         runId: artifactRunId,
         artifactId,
         sourceSha,
-        ...((guestSeo || notes) && {
+        ...((guestSeo || notes || scrape) && {
           expectedDigest: report.imported_artifact.githubArtifactDigest,
         }),
       });
@@ -780,6 +961,13 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         )
           refuse('HOSTED_NOTES_RUNTIME_SOURCE_DRIFT');
         verifyHostedNotesReport(report, {
+          ...artifact,
+          developmentArtifactId: artifact.artifactId,
+        });
+      }
+      if (scrape) {
+        if (run.head_sha !== sourceSha) refuse('HOSTED_SCRAPE_SOURCE_DRIFT');
+        verifyHostedScrapeReport(report, {
           ...artifact,
           developmentArtifactId: artifact.artifactId,
         });
