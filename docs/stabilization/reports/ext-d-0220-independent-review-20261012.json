@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "review_id": "ext-d-0220-independent-review-20261012",
+  "defect_id": "EXT-D-0220",
+  "reviewed_commits": [
+    "011558f5c8ca113021c1cd20c9c8466867731755",
+    "3b21fa6db"
+  ],
+  "scope": "Independent source and harness review only; no product/native pass claimed.",
+  "verdicts": {
+    "A": {
+      "status": "PASS",
+      "finding": "T04 carries case-entry theme-key and settings-container presence through later writes, restores that baseline immediately before the full extension reload, and asserts the exact shape and rendered appearance afterward. T10 behavior remains intact and T67 is unchanged."
+    },
+    "B": {
+      "status": "PASS",
+      "focused_suite": {
+        "command": "node --test tests/browser/settings-guest-preference-batch.test.mjs tests/browser/settings-guest-extension-rechecks.test.mjs tests/browser/settings-full-extension-rechecks.test.mjs tests/browser/settings-guest-scrape-controls.test.mjs tests/browser/settings-guest-privacy-batch.test.mjs",
+        "passed": 54,
+        "failed": 0
+      },
+      "mutation": "Independently inspected the constant-success mutation of the actual preferenceBaselineMatches checker in an external scratch copy: both corrupt-reload cases failed as expected; the restored scratch copy passed all four T04 cases and was reported byte-identical. Shared source was not mutated."
+    }
+  },
+  "native_acceptance": "UNVERIFIED: no browser or hosted run was launched; current-artifact behavior across the full extension reload remains unverified.",
+  "secret_safety": "No secrets observed in the reviewed source or fixture evidence."
+}
