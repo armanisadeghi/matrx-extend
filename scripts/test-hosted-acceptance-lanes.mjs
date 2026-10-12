@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { runInNewContext } from 'node:vm';
 import './hosted-remote-admission.test.mjs';
+import './test-hosted-resource-measurement-copy.mjs';
 
 const workflowPaths = [
   new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url).pathname,

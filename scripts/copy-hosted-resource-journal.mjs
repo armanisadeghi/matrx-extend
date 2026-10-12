@@ -23,6 +23,22 @@ const SAMPLE_FIELDS = new Set([
 ]);
 const EVENT_FIELDS = new Map([
   ['RESOURCE_JOURNAL_OPENED', ['path']],
+  // Keep measurement codes finite: unknown suffixes may contain arbitrary text.
+  // An optional exact duplicate detail is checked and removed below.
+  ['RESOURCE_MEASUREMENT_FAILED', []],
+  ['RESOURCE_MEASUREMENT_INVALID:cpu-busy', []],
+  ['RESOURCE_MEASUREMENT_INVALID:cpu-idle', []],
+  ['RESOURCE_MEASUREMENT_INVALID:cpu-or-memory', []],
+  ['RESOURCE_MEASUREMENT_INVALID:available-memory', []],
+  ['RESOURCE_MEASUREMENT_INVALID:load', []],
+  ['RESOURCE_MEASUREMENT_INVALID:swap', []],
+  ['RESOURCE_MEASUREMENT_INVALID:logical-cpus', []],
+  ['RESOURCE_MEASUREMENT_INVALID:pressure', []],
+  ['RESOURCE_MEASUREMENT_INVALID:physical-memory', []],
+  ['RESOURCE_MEASUREMENT_INVALID:repo-disk', []],
+  ['RESOURCE_MEASUREMENT_INVALID:profile-disk', []],
+  ['RESOURCE_MEASUREMENT_INVALID:safety-disk', []],
+  ['RESOURCE_MEASUREMENT_INVALID:system-disk', []],
   ['RESOURCE_PREFLIGHT_REFUSED', ['sample', 'cpuBusySamples', 'reasons', 'swapWindowSeconds']],
   ['RESOURCE_STOP_REQUESTED', ['signal']],
   [
@@ -49,6 +65,10 @@ const EVENT_FIELDS = new Map([
   ['RESOURCE_BROWSER_LEASE_RETIRED', []],
   ['RESOURCE_FINAL_DECISION', ['admitted', 'resourceInvalid', 'exitCode', 'decision']],
 ]);
+// Membership comes only from the finite event map above, never an input prefix.
+const MEASUREMENT_CODES = new Set(
+  [...EVENT_FIELDS.keys()].filter((code) => code.startsWith('RESOURCE_MEASUREMENT_')),
+);
 
 function refuse(code) {
   const error = new Error(code);
@@ -143,8 +163,13 @@ export function sanitizeHostedResourceJournal(source, runId) {
     const allowedFields = EVENT_FIELDS.get(event.code);
     if (!allowedFields) refuse('JOURNAL_EVENT_UNSUPPORTED');
     const allowedKeys = new Set([...COMMON_FIELDS, ...allowedFields]);
+    const hasMeasurementDetail =
+      MEASUREMENT_CODES.has(event.code) && Object.hasOwn(event, 'detail');
+    if (hasMeasurementDetail) allowedKeys.add('detail');
     if (Object.keys(event).some((key) => !allowedKeys.has(key)))
       refuse('JOURNAL_EVENT_FIELD_UNSUPPORTED');
+    if (hasMeasurementDetail && event.detail !== event.code)
+      refuse('JOURNAL_EVENT_VALUE_UNSUPPORTED');
     if (!validKnownValues(event)) refuse('JOURNAL_EVENT_VALUE_UNSUPPORTED');
 
     records.push(event);
@@ -156,6 +181,9 @@ export function sanitizeHostedResourceJournal(source, runId) {
     if (event.code === 'RESOURCE_PROCESS_ATTRIBUTION') continue;
     if (event.code === 'RESOURCE_JOURNAL_OPENED' && Object.hasOwn(event, 'path')) {
       const { path: _path, ...sanitized } = event;
+      kept.push(`${JSON.stringify(sanitized)}${chunk.slice(line.length)}`);
+    } else if (hasMeasurementDetail) {
+      const { detail: _detail, ...sanitized } = event;
       kept.push(`${JSON.stringify(sanitized)}${chunk.slice(line.length)}`);
     } else kept.push(chunk);
   }
