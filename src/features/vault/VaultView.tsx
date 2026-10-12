@@ -59,6 +59,7 @@ import { Badge, Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { Switch } from '@ai-matrx/design-system';
 import { Tabs, TabsList, TabsTrigger } from '@ai-matrx/design-system';
 import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
+import { withReferral } from '@ai-matrx/kit/outbound';
 import {
   AlertTriangle,
   Check,
@@ -86,7 +87,6 @@ import { PasswordGenerator } from './PasswordGenerator';
 import { PendingCaptureCard } from './PendingCaptureCard';
 import { type PanelActionAdmission, usePanelAdmission } from './usePanelAdmission';
 import { useCredentialLogin, useVault } from './useVault';
-import { withReferral } from "@ai-matrx/kit/outbound";
 
 const WEB_VAULT_URL = `${ENV.FRONTEND_URL}/vault`;
 const RESTRICTED_PAGE_REMEDY =

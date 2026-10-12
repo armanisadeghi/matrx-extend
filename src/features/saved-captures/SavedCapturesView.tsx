@@ -25,6 +25,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@ai-matrx/design-system';
+import { withReferral } from '@ai-matrx/kit/outbound';
 import {
   ArrowLeft,
   ExternalLink,
@@ -38,7 +39,6 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { withReferral } from "@ai-matrx/kit/outbound";
 
 const PAGE_SIZE = 40;
 
@@ -462,7 +462,9 @@ function SavedCaptureDetail({
             variant="secondary"
             className="h-7 rounded-full px-2.5 text-xs"
             title="Opens this Source in the AI Matrx web app"
-            onClick={() => void chrome.tabs.create({ url: withReferral(sourceWebAppUrl(capture.id)) })}
+            onClick={() =>
+              void chrome.tabs.create({ url: withReferral(sourceWebAppUrl(capture.id)) })
+            }
           >
             <Library /> Open in web app
           </Button>

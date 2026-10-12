@@ -25,9 +25,9 @@ import { Switch } from '@ai-matrx/design-system';
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
 import { formatDurationMs, formatDurationSeconds, formatFileSize } from '@ai-matrx/kit/format';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import { Circle, Copy, ExternalLink, Square, Trash2, Video, VideoOff } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 const MIN_DURATION_S = 1;
 const MAX_DURATION_S = 60;

@@ -14,9 +14,9 @@
  * result missing a URL renders as plain text rather than a dead link.
  */
 
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import { ExternalLink } from 'lucide-react';
 import type { KindComponentProps } from './types';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 interface SearchItem {
   title: string;

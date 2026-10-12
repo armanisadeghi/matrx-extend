@@ -57,6 +57,7 @@ import {
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
 import { formatRelativeTime } from '@ai-matrx/kit/format';
+import { withReferral } from '@ai-matrx/kit/outbound';
 import type { MediaClient } from '@ai-matrx/media';
 import { MediaProvider } from '@ai-matrx/media/core';
 import { MediaSharePopover } from '@ai-matrx/media/share';
@@ -75,7 +76,6 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScreenshotShareLinks } from './ScreenshotShareLinks';
-import { withReferral } from "@ai-matrx/kit/outbound";
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 type CaptureMode = 'visible' | 'full_page';

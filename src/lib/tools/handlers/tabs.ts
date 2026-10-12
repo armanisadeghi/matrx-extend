@@ -16,8 +16,8 @@
 
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
+import { withReferral } from '@ai-matrx/kit/outbound';
 import { z } from 'zod';
-import { withReferral } from "@ai-matrx/kit/outbound";
 
 const NoArgs = z.object({}).default({});
 type NoArgs = z.infer<typeof NoArgs>;

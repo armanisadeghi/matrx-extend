@@ -40,6 +40,8 @@ import { scrapeLinkKey, useScrapeStore } from '@/state/scrape';
 import { ConfirmDialog } from '@ai-matrx/design-system';
 import { Button } from '@ai-matrx/design-system';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@ai-matrx/design-system';
+import { withReferral } from '@ai-matrx/kit/outbound';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import {
   AlertTriangle,
   Ban,
@@ -62,8 +64,6 @@ import {
   X,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
-import { withReferral } from "@ai-matrx/kit/outbound";
 
 export function ScrapeView() {
   const {
@@ -712,10 +712,7 @@ export function ScrapeView() {
                       className="group flex items-center gap-2 rounded-xl bg-secondary/40 px-3 py-2 text-sm transition-colors hover:bg-secondary/70"
                     >
                       <VideoIcon className="size-4 shrink-0 text-muted-foreground" />
-                      <OutboundLink
-                        href={v.src}
-                        className="min-w-0 flex-1 truncate"
-                      >
+                      <OutboundLink href={v.src} className="min-w-0 flex-1 truncate">
                         {v.src}
                       </OutboundLink>
                       <div className="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
@@ -913,7 +910,9 @@ export function ScrapeView() {
           <button
             type="button"
             className="inline-flex items-center gap-1 text-primary underline-offset-2 hover:underline"
-            onClick={() => void chrome.tabs.create({ url: withReferral(sourceWebAppUrl(savedSource.id)) })}
+            onClick={() =>
+              void chrome.tabs.create({ url: withReferral(sourceWebAppUrl(savedSource.id)) })
+            }
           >
             <ExternalLink className="size-3" /> Open this Source (opens in the web app)
           </button>

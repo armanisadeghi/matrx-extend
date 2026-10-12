@@ -4,6 +4,7 @@ import {
   passkeyApprovalLink,
   turnOnFillingHere,
 } from '@/lib/vault/fill-device';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 /**
  * "Turn on filling in this browser" (access ladder T-30, T-30c).
  *
@@ -21,7 +22,6 @@ import {
  */
 import { ExternalLink, Fingerprint, KeyRound, Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 type Methods = { password: boolean; passkey: boolean };
 

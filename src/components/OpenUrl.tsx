@@ -1,7 +1,7 @@
 import { isOpenableUrl } from '@/lib/url/openable';
 import { cn } from '@/lib/utils';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import { ExternalLink } from 'lucide-react';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 /**
  * The door primitive for a URL.

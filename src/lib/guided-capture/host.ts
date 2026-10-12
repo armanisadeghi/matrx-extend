@@ -32,7 +32,7 @@ import {
 } from '@/lib/guided-capture/protocol';
 import { recipeForPlatform, recipeForUrl } from '@/lib/guided-capture/recipes';
 import { getOne, setOne } from '@/lib/storage/chrome-local';
-import { withReferral } from "@ai-matrx/kit/outbound";
+import { withReferral } from '@ai-matrx/kit/outbound';
 
 type TabMap = Record<string, GuidedTabJob>;
 

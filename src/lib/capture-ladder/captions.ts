@@ -45,7 +45,7 @@ import {
 } from '@/lib/capture-ladder/types';
 import { log } from '@/lib/debug/log';
 import { formatCount } from '@ai-matrx/kit/format';
-import { withReferral } from "@ai-matrx/kit/outbound";
+import { withReferral } from '@ai-matrx/kit/outbound';
 
 const LOAD_TIMEOUT_MS = 45_000;
 

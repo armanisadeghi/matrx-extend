@@ -16,13 +16,13 @@
  */
 
 import { cn } from '@/lib/utils';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { CodeBlock } from './CodeBlock';
 import { XmlBlock } from './XmlBlock';
 import { type Block, parseBlocks } from './block-parser';
 import type { MarkdownRegistry } from './registry';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 export type { MarkdownRegistry } from './registry';
 export type {
