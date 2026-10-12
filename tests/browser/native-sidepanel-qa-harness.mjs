@@ -28,6 +28,10 @@ import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
 import { observeNativeCdpStartup } from './native-cdp-startup-diagnostic.mjs';
+import {
+  extensionStartupDiagnostic,
+  readExtensionStartupRegistries,
+} from './native-extension-startup-diagnostic.mjs';
 import { runOwnedPanelReopen } from './native-panel-reopen-boundary.mjs';
 import { reloadOperationBoundary } from './native-reload-operation-boundary.mjs';
 import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
@@ -590,8 +594,10 @@ async function waitForInitialPanelReady({
 }
 
 async function waitForExpectedExtension(cdp, extensionId) {
+  let lastTargetInfos = [];
   for (let attempt = 0; attempt < ATTEMPTS; attempt += 1) {
     const { targetInfos } = await cdp.send('Target.getTargets');
+    lastTargetInfos = targetInfos;
     try {
       return requireExpectedExtension(targetInfos, extensionId);
     } catch (error) {
@@ -599,7 +605,12 @@ async function waitForExpectedExtension(cdp, extensionId) {
     }
     await wait(WAIT_MS);
   }
-  throw new Error('native_sidepanel_expected_extension_missing');
+  const error = new Error('native_sidepanel_expected_extension_missing');
+  error.extensionStartupObservation = extensionStartupDiagnostic({
+    extensionId,
+    targetInfos: lastTargetInfos,
+  });
+  throw error;
 }
 
 async function reloadManagementState(details, extensionId) {
@@ -1703,9 +1714,19 @@ export async function runNativeSidepanelQa({
       onStage('extension_worker');
       extensionWorker = await waitForExpectedExtension(cdp, expectedExtensionId);
     } catch (error) {
-      process.stderr.write(
-        `BROWSER_EXTENSION_FAILURE ${JSON.stringify(browserDiagnosticFlags(chromeStderr))}\n`,
-      );
+      try {
+        const diagnostic = extensionStartupDiagnostic({
+          extensionId: expectedExtensionId,
+          targetObservation: error.extensionStartupObservation,
+          registries: await readExtensionStartupRegistries(profile),
+          stderr: chromeStderr,
+        });
+        process.stderr.write(
+          `BROWSER_EXTENSION_FAILURE ${JSON.stringify({ ...browserDiagnosticFlags(chromeStderr), extensionStartup: diagnostic })}\n`,
+        );
+      } catch {
+        // Diagnostic collection/output cannot replace the original failure.
+      }
       throw error;
     }
     onStage('spawn_owner');
