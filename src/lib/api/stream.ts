@@ -21,8 +21,8 @@ import {
   readLiveRunRejoin,
   readLiveStreamUnavailable,
   streamErrorText,
-} from '@ai-matrx/agents/matrx';
-import { type MatrxStreamEnvelope, readMatrxNdjsonStream } from '@ai-matrx/agents/stream/ndjson';
+} from '@ai-matrx/api';
+import { type MatrxStreamEnvelope, readMatrxNdjsonStream } from '@ai-matrx/api/stream';
 
 /**
  * Protocol classifications of a non-2xx stream open (the decisions are

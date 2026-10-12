@@ -26,7 +26,7 @@ import {
   isOrganizationNotSelectedError,
   requireActiveOrganizationId,
 } from '@/lib/org/active-org';
-import { applyOrganizationContextHeader, sendMatrxRequest } from '@ai-matrx/agents/matrx';
+import { applyOrganizationContextHeader, sendMatrxRequest } from '@ai-matrx/api';
 import type { z } from 'zod';
 
 type ApiSuccess<T> = { ok: true; data: T };

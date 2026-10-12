@@ -49,7 +49,7 @@ import {
 import { type DbCallSite, failDbCall, isDbFailureError } from '@/lib/supabase/db-failure';
 import { adminDb, aiDb, docprocDb, extendDb, usersDb } from '@/lib/supabase/schemas';
 import type { ChatMessage, MessagePart } from '@/state/chat';
-import { requireOrganizationContext } from '@ai-matrx/agents/matrx';
+import { requireOrganizationContext } from '@ai-matrx/api';
 import { z } from 'zod';
 
 /**

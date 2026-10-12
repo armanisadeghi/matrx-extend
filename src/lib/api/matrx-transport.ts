@@ -8,7 +8,7 @@
  */
 
 import { buildHeaders, getApiBaseUrl } from '@/lib/api/client';
-import { type MatrxTransport, sendMatrxRequest } from '@ai-matrx/agents/matrx';
+import { type MatrxTransport, sendMatrxRequest } from '@ai-matrx/api';
 
 export const matrxTransport: MatrxTransport = {
   async fetch(path, init) {

@@ -10,7 +10,7 @@ import { AUDIO_API_ROUTES } from '@/lib/audio/constants';
 import { getAccessToken } from '@/lib/auth/flow';
 import { resolvePlatformKnobString } from '@/lib/settings/platform-knobs';
 import { useVoicePrefsStore } from '@/state/voice-prefs';
-import { reportProviderSessionFailure } from '@ai-matrx/agents/matrx';
+import { reportProviderSessionFailure } from '@ai-matrx/api';
 import { configureSpeech } from '@ai-matrx/media/speech';
 
 async function fetchCartesiaToken(): Promise<string> {

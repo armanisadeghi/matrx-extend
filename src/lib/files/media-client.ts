@@ -1,7 +1,7 @@
 import { getBackendUrl } from '@/config/backend';
 import { buildHeaders } from '@/lib/api/client';
 import { requireActiveOrganizationId } from '@/lib/org/active-org';
-import { applyOrganizationContextHeader } from '@ai-matrx/agents/matrx';
+import { applyOrganizationContextHeader } from '@ai-matrx/api';
 import { createMatrxFilesClient } from '@ai-matrx/data/files';
 import type { DurableSrc, MediaClient } from '@ai-matrx/media';
 

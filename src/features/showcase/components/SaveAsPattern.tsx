@@ -15,7 +15,7 @@ import {
   tableOrganization,
   unionRowKeys,
 } from '@/lib/supabase/user-tables';
-import { OrganizationContextError, requireOrganizationContext } from '@ai-matrx/agents/matrx';
+import { OrganizationContextError, requireOrganizationContext } from '@ai-matrx/api';
 import {
   Button,
   BasicInput as Input,

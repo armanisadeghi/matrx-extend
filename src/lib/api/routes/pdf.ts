@@ -11,8 +11,8 @@
  */
 
 import { type ApiResult, STATUS_INVALID_BODY, apiPost } from '@/lib/api/client';
-import { streamErrorText } from '@ai-matrx/agents/matrx';
-import { createMatrxNdjsonFramer } from '@ai-matrx/agents/stream/ndjson';
+import { streamErrorText } from '@ai-matrx/api';
+import { createMatrxNdjsonFramer } from '@ai-matrx/api/stream';
 
 export const PDF_EXTRACT_TEXT_PATH = '/utilities/pdf/extract-text-remote';
 

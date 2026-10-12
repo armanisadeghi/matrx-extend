@@ -34,7 +34,7 @@ import {
   followUnavailableRejoin,
   readConversationOrganizationId as readRunConversationOrganizationId,
   settleRunPickup,
-} from '@ai-matrx/agents/matrx';
+} from '@ai-matrx/api';
 
 /** The conversation's own organization (the package's reader, fed the extension's db), or null. */
 export function readConversationOrganizationId(conversationId: string): Promise<string | null> {

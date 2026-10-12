@@ -15,7 +15,7 @@ import { getBackendUrl } from '@/config/backend';
 import { getAccessToken, refreshAccessToken } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { requireActiveOrganizationId } from '@/lib/org/active-org';
-import { readMatrxJsonResponse, sendMatrxRequest } from '@ai-matrx/agents/matrx';
+import { readMatrxJsonResponse, sendMatrxRequest } from '@ai-matrx/api';
 
 export interface FileUploadResponse {
   file_id: string;

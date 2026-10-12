@@ -34,7 +34,7 @@
 import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api/client';
 import type { RequestContextWire } from '@/lib/chat/context/request-context';
 import { type AnyMandateKey, mandateKeyFromAgentRef } from '@/lib/mandates';
-import { MATRX_AI_API_VERSION_DEFAULT, applyAiApiVersion } from '@ai-matrx/agents/matrx';
+import { MATRX_AI_API_VERSION_DEFAULT, applyAiApiVersion } from '@ai-matrx/api';
 
 /**
  * THE ONE DOOR every AI path in this client goes through. Give it the v1

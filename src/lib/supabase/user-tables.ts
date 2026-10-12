@@ -9,7 +9,7 @@ import { listMemberOrganizations } from '@/lib/org/active-org';
 import { recordsClientFor } from '@/lib/records/store';
 import { appendStoreRows, declareStoreTable, storeTables } from '@/lib/records/tables';
 import { type DbCallSite, recordDbFailure } from '@/lib/supabase/db-failure';
-import { requireOrganizationContext } from '@ai-matrx/agents/matrx';
+import { requireOrganizationContext } from '@ai-matrx/api';
 
 /**
  * The value kinds the Showcase infers from extracted rows; `declareStoreTable` maps each to

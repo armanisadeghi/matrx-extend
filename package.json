@@ -70,6 +70,7 @@
   },
   "dependencies": {
     "@ai-matrx/agents": "latest",
+    "@ai-matrx/api": "latest",
     "@ai-matrx/associations": "latest",
     "@ai-matrx/auth": "latest",
     "@ai-matrx/chat": "latest",

@@ -12,7 +12,7 @@ vi.mock('@/lib/records/tables', () => ({
 }));
 vi.mock('@/lib/records/store', () => ({ recordsClientFor: home.clientFor }));
 
-import { OrganizationContextError } from '@ai-matrx/agents/matrx';
+import { OrganizationContextError } from '@ai-matrx/api';
 
 import { appendRowsToUserTable, createUserTableFromSchema } from './user-tables';
 

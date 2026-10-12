@@ -20,7 +20,7 @@ import { describe, expect, it, vi } from 'vitest';
 vi.mock('@/config/backend', () => ({ getBackendUrl: async () => 'https://example.invalid' }));
 
 import { storedMandateKey } from '@/lib/mandates';
-import { applyOrganizationContextHeader } from '@ai-matrx/agents/matrx';
+import { applyOrganizationContextHeader } from '@ai-matrx/api';
 import { ORGANIZATION_CONTEXT_HEADER } from './client';
 import {
   CHAT_PATH,

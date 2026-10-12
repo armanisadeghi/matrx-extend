@@ -14,7 +14,7 @@ import {
   parseCatalog,
   refusalOf,
 } from '@/lib/data-sources/contract';
-import { sendMatrxRequest } from '@ai-matrx/agents/matrx';
+import { sendMatrxRequest } from '@ai-matrx/api';
 
 export async function getDataSources(signal?: AbortSignal): Promise<DataSourceCatalog> {
   const res = await apiGet<unknown>('/data-sources', signal);
