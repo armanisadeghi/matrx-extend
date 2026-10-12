@@ -142,6 +142,75 @@ export function planHostedMemberData({
   };
 }
 
+/** One reviewed, guest-only SEO target. Every alternate input is an explicit refusal. */
+export function planHostedGuestSeo({
+  lane,
+  acceptanceCase,
+  seoCaseScope,
+  seoMetadataFixture,
+  seoResourceDiagnostic,
+  seoInterruptAfterTarget,
+  runnerLabel,
+  developmentRunId,
+  developmentArtifactId,
+  workflowRef = 'main',
+  workflow,
+  sourceSha,
+}) {
+  if (lane !== 'B') refuse('HOSTED_SEO_LANE_REFUSED');
+  if (acceptanceCase !== 'guest-seo') refuse('HOSTED_SEO_CASE_REFUSED');
+  if (seoCaseScope !== 'notice-stacked') refuse('HOSTED_SEO_SCOPE_REFUSED');
+  if (seoMetadataFixture !== 'none') refuse('HOSTED_SEO_FIXTURE_REFUSED');
+  if (seoResourceDiagnostic !== 'false') refuse('HOSTED_SEO_DIAGNOSTIC_REFUSED');
+  if (seoInterruptAfterTarget !== 'none') refuse('HOSTED_SEO_INTERRUPT_REFUSED');
+  if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_SEO_RUNNER_REFUSED');
+  if (!DECIMAL.test(developmentRunId ?? '') || !DECIMAL.test(developmentArtifactId ?? ''))
+    refuse('HOSTED_ARTIFACT_ID_INVALID');
+  if (workflowRef !== 'main') refuse('HOSTED_WORKFLOW_REF_REFUSED');
+  if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
+  requireHostedWorkflowContract(
+    workflow ??
+      readFileSync(
+        new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+        'utf8',
+      ),
+  );
+  return {
+    command: 'gh',
+    args: [
+      'workflow',
+      'run',
+      'hosted-guest-acceptance.yml',
+      '--ref',
+      'main',
+      '-f',
+      'acceptance_lane=B',
+      '-f',
+      'acceptance_case=guest-seo',
+      '-f',
+      'seo_case_scope=notice-stacked',
+      '-f',
+      'seo_metadata_fixture=none',
+      '-f',
+      'seo_resource_diagnostic=false',
+      '-f',
+      'seo_interrupt_after_target=none',
+      '-f',
+      'runner_label=macos-15-intel',
+      '-f',
+      `development_run_id=${developmentRunId}`,
+      '-f',
+      `development_artifact_id=${developmentArtifactId}`,
+    ],
+  };
+}
+
+export function requireSynchronizedDispatchSource(localSha, remoteSha, dirty) {
+  if (!SHA.test(localSha ?? '') || localSha !== remoteSha || dirty)
+    refuse('HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED');
+  return true;
+}
+
 /** A successful child is not a resource verdict; each hosted final must prove admission and watch. */
 export function verifyHostedResourceJournals({ runId, attempt, files }) {
   if (!DECIMAL.test(runId ?? '') || !DECIMAL.test(attempt ?? '')) refuse('HOSTED_RUN_ID_INVALID');
@@ -204,7 +273,7 @@ function ghJson(endpoint) {
     execFileSync('gh', ['api', endpoint], { encoding: 'utf8', maxBuffer: 4_000_000 }),
   );
 }
-function requireDevelopmentArtifact({ runId, artifactId, sourceSha }) {
+function requireDevelopmentArtifact({ runId, artifactId, sourceSha, expectedDigest }) {
   const run = ghJson(`repos/${OWNER}/actions/runs/${runId}`);
   if (
     run.name !== 'CI' ||
@@ -222,6 +291,8 @@ function requireDevelopmentArtifact({ runId, artifactId, sourceSha }) {
       artifact.name === `matrx-extend-development-test-${sourceSha}-${runId}-${run.run_attempt}`,
   );
   if (matches?.length !== 1) refuse('HOSTED_DEVELOPMENT_ARTIFACT_INVALID');
+  if (expectedDigest !== undefined && matches[0].digest !== expectedDigest)
+    refuse('HOSTED_DEVELOPMENT_ARTIFACT_DIGEST_MISMATCH');
   return { sourceSha, artifactId, developmentRunId: runId, developmentRunAttempt: run.run_attempt };
 }
 
@@ -252,7 +323,62 @@ export function requireExactArchiveJournalSet(entries, runId, attempt) {
     refuse('HOSTED_ARCHIVE_JOURNAL_SET_INVALID');
   return true;
 }
-function verifyArchive(zip, bytes, runId, attempt, sourceSha) {
+export function verifyHostedGuestSeoReport(
+  report,
+  { sourceSha, developmentRunId, developmentArtifactId },
+) {
+  const selected = report?.case_selection;
+  const artifact = report?.imported_artifact;
+  const target = report?.targets;
+  const evidence = target?.[0]?.evidence;
+  if (
+    report?.schema_version !== 1 ||
+    report?.feature_id !== 'EXT-F-1008' ||
+    report?.mode !== 'guest' ||
+    report?.status !== 'partial' ||
+    report?.receipt_state === 'in_progress' ||
+    report?.resource_diagnostic_enabled !== false ||
+    report?.interruption_test_target !== undefined ||
+    report?.evidence_classification !== undefined ||
+    selected?.scope !== 'notice-stacked' ||
+    !Array.isArray(selected.selected_cases) ||
+    selected.selected_cases.length !== 1 ||
+    selected.selected_cases[0] !== 'T02' ||
+    !Array.isArray(selected.selected_subtargets) ||
+    selected.selected_subtargets.length !== 1 ||
+    selected.selected_subtargets[0] !== 'multiple_and_long_notice_clearance_at_native_360px' ||
+    !Array.isArray(target) ||
+    target.length !== 1 ||
+    target[0]?.case_id !== 'EXT-F-1008-T02' ||
+    target[0]?.subtarget !== 'multiple_and_long_notice_clearance_at_native_360px' ||
+    target[0]?.status !== 'pass' ||
+    evidence?.viewport_width !== 360 ||
+    evidence?.viewport_source !== 'native' ||
+    evidence?.notice_count !== 2 ||
+    evidence?.long_message_length !== 199 ||
+    evidence?.distinct_notice_titles !== 2 ||
+    JSON.stringify(evidence?.visible_dismiss_counts) !== '[1,1]' ||
+    evidence?.target_hit_points !== 9 ||
+    evidence?.notice_hit_points !== 0 ||
+    evidence?.current_title_matched !== true ||
+    JSON.stringify(evidence?.independently_dismissed) !== '[[0,1],[0,0]]' ||
+    evidence?.cleared_count !== 0 ||
+    artifact?.kind !== 'ci_development_test' ||
+    artifact?.eligibleStore !== false ||
+    artifact?.repository !== OWNER ||
+    artifact?.workflow !== '.github/workflows/ci.yml' ||
+    artifact?.sourceSha !== sourceSha ||
+    String(artifact?.runId ?? '') !== developmentRunId ||
+    String(artifact?.artifactId ?? '') !== developmentArtifactId ||
+    !DECIMAL.test(String(artifact?.runAttempt ?? '')) ||
+    !/^sha256:[a-f0-9]{64}$/.test(artifact?.githubArtifactDigest ?? '') ||
+    report?.build?.before?.treeSha256 !== artifact.treeSha256 ||
+    report?.build?.after?.treeSha256 !== artifact.treeSha256
+  )
+    refuse('HOSTED_SEO_NATIVE_REPORT_PROVENANCE_INVALID');
+  return true;
+}
+function verifyArchive(zip, bytes, runId, attempt, sourceSha, acceptanceCase) {
   const listing = ghJson(`repos/${OWNER}/actions/runs/${runId}/artifacts?per_page=100`);
   const name = `hosted-guest-${runId}-${attempt}`;
   const matches = listing.artifacts?.filter(
@@ -282,15 +408,18 @@ function verifyArchive(zip, bytes, runId, attempt, sourceSha) {
       refuse('HOSTED_JOURNAL_PENDING');
     files[basename] = archiveEntry(zip, bytes, find(basename));
   }
-  const report = JSON.parse(
-    archiveEntry(zip, bytes, find('data-member-auto-extract-acceptance.json')),
-  );
+  const reportName =
+    acceptanceCase === 'guest-seo'
+      ? 'seo-guest-acceptance.json'
+      : 'data-member-auto-extract-acceptance.json';
+  const report = JSON.parse(archiveEntry(zip, bytes, find(reportName)));
   if (
-    report.case_id !== 'EXT-F-2005-T08' ||
-    report.auth_mode !== 'member' ||
-    report.artifact?.source_sha !== sourceSha ||
-    !DECIMAL.test(String(report.artifact?.run_id ?? '')) ||
-    !DECIMAL.test(String(report.artifact?.artifact_id ?? ''))
+    acceptanceCase === 'member-data' &&
+    (report.case_id !== 'EXT-F-2005-T08' ||
+      report.auth_mode !== 'member' ||
+      report.artifact?.source_sha !== sourceSha ||
+      !DECIMAL.test(String(report.artifact?.run_id ?? '')) ||
+      !DECIMAL.test(String(report.artifact?.artifact_id ?? '')))
   )
     refuse('HOSTED_NATIVE_REPORT_PROVENANCE_INVALID');
   return { files, report, archiveDigest: digest };
@@ -300,24 +429,38 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
   try {
     const mode = process.argv[2];
     const args = argsMap(process.argv.slice(3));
-    if (mode === 'plan' || mode === 'dispatch') {
+    if (
+      mode === 'plan' ||
+      mode === 'dispatch' ||
+      mode === 'plan-guest-seo' ||
+      mode === 'dispatch-guest-seo'
+    ) {
       const lane = args.get('--lane');
       const developmentRunId = args.get('--development-run-id');
       const developmentArtifactId = args.get('--development-artifact-id');
       const sourceSha = args.get('--source-sha');
-      const plan = planHostedMemberData({
-        lane,
-        developmentRunId,
-        developmentArtifactId,
-        sourceSha,
-      });
+      const guestSeo = mode.endsWith('-guest-seo');
+      const plan = guestSeo
+        ? planHostedGuestSeo({
+            lane,
+            acceptanceCase: args.get('--case'),
+            seoCaseScope: args.get('--seo-case-scope'),
+            seoMetadataFixture: args.get('--seo-metadata-fixture'),
+            seoResourceDiagnostic: args.get('--seo-resource-diagnostic'),
+            seoInterruptAfterTarget: args.get('--seo-interrupt-after-target'),
+            runnerLabel: args.get('--runner-label'),
+            developmentRunId,
+            developmentArtifactId,
+            sourceSha,
+          })
+        : planHostedMemberData({ lane, developmentRunId, developmentArtifactId, sourceSha });
       if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
       const artifact = requireDevelopmentArtifact({
         runId: developmentRunId,
         artifactId: developmentArtifactId,
         sourceSha,
       });
-      if (mode === 'dispatch') {
+      if (mode === 'dispatch' || mode === 'dispatch-guest-seo') {
         const localSha = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
         const remoteSha = ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha;
         const dirty = execFileSync(
@@ -328,26 +471,29 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             '--',
             '.github/workflows/hosted-guest-acceptance.yml',
             'scripts/hosted-remote-admission.mjs',
+            ...(guestSeo ? ['scripts/hosted-seo-route.mjs'] : []),
           ],
           { encoding: 'utf8' },
         ).trim();
-        if (localSha !== remoteSha || dirty) refuse('HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED');
+        requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
         const result = spawnSync(plan.command, [...plan.args, '-R', OWNER], { stdio: 'inherit' });
         if (result.status !== 0) refuse('HOSTED_DISPATCH_FAILED');
       }
       process.stdout.write(
         `${JSON.stringify({ mode, plan, artifact, host: 'github-hosted', localHeavyWork: false })}\n`,
       );
-    } else if (mode === 'verify') {
+    } else if (mode === 'verify' || mode === 'verify-guest-seo') {
       const runId = args.get('--run-id');
       const attempt = args.get('--attempt');
       const zip = args.get('--artifact-zip');
       if (!zip) refuse('HOSTED_ARCHIVE_MISSING');
       const run = ghJson(`repos/${OWNER}/actions/runs/${runId}`);
+      const guestSeo = mode === 'verify-guest-seo';
       if (
         run.path !== '.github/workflows/hosted-guest-acceptance.yml' ||
-        run.name !== 'Native A · member-data' ||
+        run.name !== (guestSeo ? 'Native B · guest-seo' : 'Native A · member-data') ||
         run.event !== 'workflow_dispatch' ||
+        run.head_branch !== 'main' ||
         run.conclusion !== 'success' ||
         String(run.run_attempt) !== attempt
       )
@@ -363,12 +509,31 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         runId,
         attempt,
         sourceSha,
+        guestSeo ? 'guest-seo' : 'member-data',
       );
+      const artifactRunId = guestSeo
+        ? String(report.imported_artifact?.runId ?? '')
+        : String(report.artifact.run_id);
+      const artifactId = guestSeo
+        ? String(report.imported_artifact?.artifactId ?? '')
+        : String(report.artifact.artifact_id);
+      if (guestSeo)
+        verifyHostedGuestSeoReport(report, {
+          sourceSha,
+          developmentRunId: artifactRunId,
+          developmentArtifactId: artifactId,
+        });
       const artifact = requireDevelopmentArtifact({
-        runId: String(report.artifact.run_id),
-        artifactId: String(report.artifact.artifact_id),
+        runId: artifactRunId,
+        artifactId,
         sourceSha,
+        ...(guestSeo && { expectedDigest: report.imported_artifact.githubArtifactDigest }),
       });
+      if (
+        guestSeo &&
+        Number(artifact.developmentRunAttempt) !== report.imported_artifact.runAttempt
+      )
+        refuse('HOSTED_SEO_NATIVE_REPORT_PROVENANCE_INVALID');
       const verdict = verifyHostedResourceJournals({ runId, attempt, files });
       process.stdout.write(
         `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...verdict })}\n`,

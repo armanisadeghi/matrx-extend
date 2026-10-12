@@ -2,12 +2,182 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import {
+  planHostedGuestSeo,
   planHostedMemberData,
   requireExactArchiveJournalSet,
   requireHostedWorkflowContract,
+  requireSynchronizedDispatchSource,
+  verifyHostedGuestSeoReport,
   verifyHostedResourceJournals,
   verifyHostedWorkflowCheckout,
 } from './hosted-remote-admission.mjs';
+
+const seoInput = {
+  lane: 'B',
+  acceptanceCase: 'guest-seo',
+  seoCaseScope: 'notice-stacked',
+  seoMetadataFixture: 'none',
+  seoResourceDiagnostic: 'false',
+  seoInterruptAfterTarget: 'none',
+  runnerLabel: 'macos-15-intel',
+  developmentRunId: '38116138170',
+  developmentArtifactId: '11700000000',
+  sourceSha: 'a'.repeat(40),
+};
+
+test('guest SEO B dispatch plan admits only the reviewed notice-stacked route', () => {
+  const plan = planHostedGuestSeo(seoInput);
+  assert.deepEqual(plan.args, [
+    'workflow',
+    'run',
+    'hosted-guest-acceptance.yml',
+    '--ref',
+    'main',
+    '-f',
+    'acceptance_lane=B',
+    '-f',
+    'acceptance_case=guest-seo',
+    '-f',
+    'seo_case_scope=notice-stacked',
+    '-f',
+    'seo_metadata_fixture=none',
+    '-f',
+    'seo_resource_diagnostic=false',
+    '-f',
+    'seo_interrupt_after_target=none',
+    '-f',
+    'runner_label=macos-15-intel',
+    '-f',
+    'development_run_id=38116138170',
+    '-f',
+    'development_artifact_id=11700000000',
+  ]);
+  for (const [key, value, refusal] of [
+    ['lane', 'A', 'HOSTED_SEO_LANE_REFUSED'],
+    ['acceptanceCase', 'member-data', 'HOSTED_SEO_CASE_REFUSED'],
+    ['seoCaseScope', 'notice', 'HOSTED_SEO_SCOPE_REFUSED'],
+    ['seoMetadataFixture', 'owned', 'HOSTED_SEO_FIXTURE_REFUSED'],
+    ['seoResourceDiagnostic', 'true', 'HOSTED_SEO_DIAGNOSTIC_REFUSED'],
+    [
+      'seoInterruptAfterTarget',
+      'manual_button_returns_to_current_page',
+      'HOSTED_SEO_INTERRUPT_REFUSED',
+    ],
+    ['runnerLabel', 'macos-15', 'HOSTED_SEO_RUNNER_REFUSED'],
+    ['workflowRef', 'feature', 'HOSTED_WORKFLOW_REF_REFUSED'],
+    ['developmentRunId', '0', 'HOSTED_ARTIFACT_ID_INVALID'],
+    ['developmentArtifactId', '0', 'HOSTED_ARTIFACT_ID_INVALID'],
+    ['sourceSha', undefined, 'HOSTED_SOURCE_SHA_INVALID'],
+  ])
+    assert.throws(() => planHostedGuestSeo({ ...seoInput, [key]: value }), new RegExp(refusal));
+  const workflow = readFileSync(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  assert.throws(
+    () => planHostedGuestSeo({ ...seoInput, workflow: `${workflow}\n# changed` }),
+    /HOSTED_WORKFLOW_BLOB_UNREVIEWED/,
+  );
+});
+
+test('guest SEO dispatch refuses dirty helper/workflow or a different main commit', () => {
+  const sha = 'a'.repeat(40);
+  assert.equal(requireSynchronizedDispatchSource(sha, sha, ''), true);
+  assert.throws(
+    () => requireSynchronizedDispatchSource(sha, 'b'.repeat(40), ''),
+    /HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED/,
+  );
+  assert.throws(
+    () => requireSynchronizedDispatchSource(sha, sha, ' M scripts/hosted-remote-admission.mjs'),
+    /HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED/,
+  );
+  assert.throws(
+    () =>
+      requireSynchronizedDispatchSource(
+        sha,
+        sha,
+        ' M .github/workflows/hosted-guest-acceptance.yml',
+      ),
+    /HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED/,
+  );
+});
+
+test('guest SEO native report must prove the bounded target and exact frozen CI artifact', () => {
+  const report = {
+    schema_version: 1,
+    feature_id: 'EXT-F-1008',
+    mode: 'guest',
+    status: 'partial',
+    resource_diagnostic_enabled: false,
+    case_selection: {
+      scope: 'notice-stacked',
+      selected_cases: ['T02'],
+      selected_subtargets: ['multiple_and_long_notice_clearance_at_native_360px'],
+    },
+    targets: [
+      {
+        case_id: 'EXT-F-1008-T02',
+        subtarget: 'multiple_and_long_notice_clearance_at_native_360px',
+        status: 'pass',
+        evidence: {
+          viewport_width: 360,
+          viewport_source: 'native',
+          notice_count: 2,
+          long_message_length: 199,
+          distinct_notice_titles: 2,
+          visible_dismiss_counts: [1, 1],
+          target_hit_points: 9,
+          notice_hit_points: 0,
+          current_title_matched: true,
+          independently_dismissed: [
+            [0, 1],
+            [0, 0],
+          ],
+          cleared_count: 0,
+        },
+      },
+    ],
+    imported_artifact: {
+      kind: 'ci_development_test',
+      eligibleStore: false,
+      repository: 'armanisadeghi/matrx-extend',
+      workflow: '.github/workflows/ci.yml',
+      sourceSha: 'a'.repeat(40),
+      runId: 38116138170,
+      runAttempt: 1,
+      artifactId: 11700000000,
+      githubArtifactDigest: `sha256:${'b'.repeat(64)}`,
+      treeSha256: 'c'.repeat(64),
+    },
+    build: { before: { treeSha256: 'c'.repeat(64) }, after: { treeSha256: 'c'.repeat(64) } },
+  };
+  const identity = {
+    sourceSha: 'a'.repeat(40),
+    developmentRunId: '38116138170',
+    developmentArtifactId: '11700000000',
+  };
+  assert.equal(verifyHostedGuestSeoReport(report, identity), true);
+  for (const changed of [
+    { status: 'unverified' },
+    { resource_diagnostic_enabled: true },
+    { interruption_test_target: 'manual_button_returns_to_current_page' },
+    { receipt_state: 'in_progress' },
+    { case_selection: { ...report.case_selection, scope: 'notice' } },
+    { targets: [{ ...report.targets[0], status: 'unverified' }] },
+    {
+      targets: [
+        { ...report.targets[0], evidence: { ...report.targets[0].evidence, notice_hit_points: 1 } },
+      ],
+    },
+    { imported_artifact: { ...report.imported_artifact, sourceSha: 'b'.repeat(40) } },
+    { imported_artifact: { ...report.imported_artifact, artifactId: 11700000001 } },
+    { build: { before: report.build.before, after: { treeSha256: 'd'.repeat(64) } } },
+  ])
+    assert.throws(
+      () => verifyHostedGuestSeoReport({ ...report, ...changed }, identity),
+      /HOSTED_SEO_NATIVE_REPORT_PROVENANCE_INVALID/,
+    );
+});
 
 test('remote member Data plan carries exact frozen artifact and guarded hosted workflow', () => {
   const plan = planHostedMemberData({

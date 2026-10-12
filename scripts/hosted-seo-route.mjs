@@ -177,6 +177,7 @@ export function hostedGuestSeoRoute(
     scope === 'full' ||
       scope === 'controlled' ||
       scope === 'notice' ||
+      scope === 'notice-stacked' ||
       scope === 'readability' ||
       scope === 'metadata' ||
       scope === 'narrow',

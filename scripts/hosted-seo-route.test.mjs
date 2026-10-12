@@ -118,6 +118,35 @@ test('owned metadata fixture routes the isolated 360px T09 dimension', () => {
   );
 });
 
+test('stacked notice route passes the exact B guest SEO scope to the native driver', () => {
+  assert.deepEqual(
+    hostedGuestSeoRoute('guest-seo', 'development', selected, 'notice-stacked', 'none').env,
+    {
+      SEO_GUEST_EXTENSION_DIR: selected.extensionDir,
+      SEO_GUEST_DEV_BUILD_RECEIPT: selected.relocatedReceipt,
+      SEO_GUEST_CASE_SCOPE: 'notice-stacked',
+      SEO_GUEST_METADATA_FIXTURE: undefined,
+      SEO_GUEST_INTERRUPT_AFTER_TARGET: undefined,
+    },
+  );
+  assert.throws(
+    () => hostedGuestSeoRoute('guest-seo', 'development', selected, 'notice-stacked', 'owned'),
+    /owned_metadata_fixture_requires_owned_scope/,
+  );
+  assert.throws(
+    () =>
+      hostedGuestSeoRoute(
+        'guest-seo',
+        'development',
+        selected,
+        'notice-stacked',
+        'none',
+        'manual_button_returns_to_current_page',
+      ),
+    /seo_interrupt_requires_controlled_scope/,
+  );
+});
+
 test('resource bracket requires explicit full Airbnb SEO diagnostic and cannot produce acceptance targets', () => {
   assert.equal(hostedSeoResourceDiagnostic('guest-seo', 'full', 'airbnb', '0'), false);
   assert.equal(hostedSeoResourceDiagnostic('guest-seo', 'full', 'airbnb', '1'), true);
