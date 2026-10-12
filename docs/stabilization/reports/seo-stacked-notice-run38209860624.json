@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "task_id": "seo-stacked-notice-run38209860624",
+  "lane": "B",
+  "status": "UNVERIFIED_NATIVE_ASSERTION_FAILURE",
+  "independent_review": "docs/stabilization/reports/seo-stacked-notice-peer-run38209860624.json",
+  "source_sha": "5b54decfcc4ff93bccc87590001be560e1da5bf2",
+  "workflow_source_sha": "5b54decfcc4ff93bccc87590001be560e1da5bf2",
+  "case_id": "EXT-F-1008-T02",
+  "subtarget": "multiple_and_long_notice_clearance_at_native_360px",
+  "scope": "guest SEO notice-stacked at native 360px",
+  "run": {
+    "id": 38209860624,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38209860624",
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "event": "workflow_dispatch",
+    "inputs": {
+      "acceptance_lane": "B",
+      "acceptance_case": "guest-seo",
+      "runner_label": "macos-15-intel",
+      "seo_case_scope": "notice-stacked",
+      "seo_metadata_fixture": "none",
+      "seo_resource_diagnostic": false,
+      "seo_interrupt_after_target": "none"
+    }
+  },
+  "product_artifact": {
+    "ci_run_id": 38207220381,
+    "artifact_id": 11727649928,
+    "source_sha": "5b54decfcc4ff93bccc87590001be560e1da5bf2",
+    "version": "0.2.509",
+    "tree_sha256": "bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42",
+    "github_digest": "sha256:d200a8d1adcc880b0ce628fdc37f008d04409423b33a7d6a6e7bb4ece08f972d"
+  },
+  "hosted_artifact": {
+    "id": 11729072990,
+    "name": "hosted-guest-38209860624-1",
+    "size_bytes": 60878,
+    "github_digest": "sha256:e02f2f7207438661687008a983e5f1e5635db83fea1a8f615a5d478526fd7438",
+    "downloaded_archive_digest_matches": true,
+    "evidence": "evidence/guest-seo-stacked-notice/run38209860624/native-report.sanitized.json"
+  },
+  "native": {
+    "stage": "stacked_geometry",
+    "failure_code": "stacked_notice_assertion_failed",
+    "target_reached": false,
+    "product_credit": "none",
+    "strict_acceptance_verification": "HOSTED_REMOTE_REFUSED HOSTED_RUN_NOT_SUCCESSFUL",
+    "diagnosis": "The retained safe report does not include the individual geometry sample, and the uploaded side-panel screenshot is the initial generic guest panel. The failure could be one of the hit-point, notice visibility/dismiss, title-count, viewport, or message-length assertions; evidence cannot distinguish product UI behavior from a brittle selector/oracle."
+  },
+  "fixture_cleanup": {
+    "attempted_count": 2,
+    "cleared_count": 0,
+    "failed_count": 2,
+    "status": "failed",
+    "persistence": "The fixture injects `db:failure-notice` messages into NoticeHost. Source inspection shows NoticeHost adds them to the Zustand in-memory notice store; the store contract says notices are not persisted. The fixture makes no server or database write. Its exact dynamic UUIDs are not in the sanitized report, and the completed GitHub-hosted job has terminated. No external record or later-run cleanup action is indicated; the final in-memory profile state cannot be inspected after runner disposal."
+  },
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sanitizer_passed": true
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid",
+      "sanitizer_passed": true
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed",
+      "sanitizer_passed": true
+    }
+  },
+  "limits": [
+    "No product verdict, defect filing, inventory change, retry, or coverage credit.",
+    "Independent review confirmed zero credit and an indeterminate geometry failure; no product verdict follows.",
+    "No member/admin, full T02, current-main runtime, Store, or release claim."
+  ]
+}

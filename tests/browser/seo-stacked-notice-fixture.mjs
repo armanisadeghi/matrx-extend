@@ -48,26 +48,57 @@ async function sample(panel) {
 }
 
 function requireSample(s, expectedCounts, expectedMessageLengths) {
-  assert.equal(s.width, 360, 'stacked fixture requires actual native 360px');
-  assert.deepEqual(
-    s.title_counts,
-    expectedCounts,
-    'two distinct NoticeHost cards have expected presence',
-  );
-  assert.equal(s.target_count, 1, 'one SEO Re-audit target');
-  assert.equal(s.target_enabled, true, 'Re-audit remains enabled');
-  assert.equal(s.hit_point_count, 9, 'Re-audit owns all nine points');
-  assert.equal(s.notice_hit_point_count, 0, 'no fixture notice owns a Re-audit point');
-  for (let i = 0; i < 2; i++)
-    if (expectedCounts[i]) {
-      assert.equal(s.notice_visible[i], true, `fixture notice ${i} is visible`);
-      assert.equal(s.dismiss_counts[i], 1, `fixture notice ${i} has a visible Dismiss`);
-      assert.equal(
-        s.message_lengths[i],
-        expectedMessageLengths[i],
-        `fixture notice ${i} keeps its full message`,
-      );
+  let predicate = 'viewport_width';
+  try {
+    assert.equal(s.width, 360, 'stacked fixture requires actual native 360px');
+    predicate = 'title_counts';
+    assert.deepEqual(
+      s.title_counts,
+      expectedCounts,
+      'two distinct NoticeHost cards have expected presence',
+    );
+    predicate = 'target_count';
+    assert.equal(s.target_count, 1, 'one SEO Re-audit target');
+    predicate = 'target_enabled';
+    assert.equal(s.target_enabled, true, 'Re-audit remains enabled');
+    predicate = 'hit_point_count';
+    assert.equal(s.hit_point_count, 9, 'Re-audit owns all nine points');
+    predicate = 'notice_hit_point_count';
+    assert.equal(s.notice_hit_point_count, 0, 'no fixture notice owns a Re-audit point');
+    for (let i = 0; i < 2; i++)
+      if (expectedCounts[i]) {
+        predicate = `notice_visible_${i}`;
+        assert.equal(s.notice_visible[i], true, `fixture notice ${i} is visible`);
+        predicate = `dismiss_count_${i}`;
+        assert.equal(s.dismiss_counts[i], 1, `fixture notice ${i} has a visible Dismiss`);
+        predicate = `message_length_${i}`;
+        assert.equal(
+          s.message_lengths[i],
+          expectedMessageLengths[i],
+          `fixture notice ${i} keeps its full message`,
+        );
+      }
+  } catch (error) {
+    if (error?.code === 'ERR_ASSERTION') {
+      // Only fixed predicate names and measured primitives reach the report sanitizer.
+      const metrics = {
+        viewport_width: [360, s.width],
+        title_counts: [expectedCounts, s.title_counts],
+        target_count: [1, s.target_count],
+        target_enabled: [true, s.target_enabled],
+        hit_point_count: [9, s.hit_point_count],
+        notice_hit_point_count: [0, s.notice_hit_point_count],
+      };
+      for (let i = 0; i < 2; i++) {
+        metrics[`notice_visible_${i}`] = [true, s.notice_visible?.[i]];
+        metrics[`dismiss_count_${i}`] = [1, s.dismiss_counts?.[i]];
+        metrics[`message_length_${i}`] = [expectedMessageLengths[i], s.message_lengths?.[i]];
+      }
+      const [expected, observed] = metrics[predicate];
+      error.stackedGeometry = { failed_predicate: predicate, expected, observed, native_sample: s };
     }
+    throw error;
+  }
 }
 
 export async function runStackedSeoNotices({
@@ -88,6 +119,7 @@ export async function runStackedSeoNotices({
   let result;
   let diagnostic;
   let failureCode = null;
+  let geometryFailure = null;
   const ids = TITLES.map(() => randomUUID());
   const injectedTitles = new Set();
   try {
@@ -206,6 +238,8 @@ export async function runStackedSeoNotices({
       error?.code === 'ERR_ASSERTION'
         ? 'stacked_notice_assertion_failed'
         : 'stacked_notice_operation_failed';
+    if (['stacked_geometry', 'settled_geometry', 'independent_dismiss'].includes(stage))
+      geometryFailure = error?.stackedGeometry ?? null;
     primaryError = error;
   } finally {
     let cleanupFailed = false;
@@ -260,6 +294,7 @@ export async function runStackedSeoNotices({
     diagnostic = {
       failure_code: failureCode,
       stage,
+      ...(geometryFailure && { geometry: geometryFailure }),
       cleanup: {
         status: cleanupFailed ? 'failed' : injectedTitles.size ? 'cleared' : 'not_needed',
         attempted_count: injectedTitles.size,

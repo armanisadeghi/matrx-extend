@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1008",
+  "mode": "guest",
+  "status": "unverified",
+  "scope": "two controlled guest SEO notices and trusted Re-audit at native 360px",
+  "last_safe_stage": "owned_guest_panel_ready",
+  "current_operation": "stacked_notice_native_360",
+  "failure_stage": "stacked_notice_native_360",
+  "case_selection": {
+    "scope": "notice-stacked",
+    "selected_cases": ["T02"],
+    "selected_subtargets": ["multiple_and_long_notice_clearance_at_native_360px"],
+    "excluded_cases": ["all other SEO targets; no full T02 or D199 closure"]
+  },
+  "imported_artifact": {
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "5b54decfcc4ff93bccc87590001be560e1da5bf2",
+    "runId": 38207220381,
+    "runAttempt": 1,
+    "artifactId": 11727649928,
+    "githubArtifactDigest": "sha256:d200a8d1adcc880b0ce628fdc37f008d04409423b33a7d6a6e7bb4ece08f972d",
+    "version": "0.2.509",
+    "treeSha256": "bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42",
+    "source": {
+      "claim": "current_pushed_source",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": []
+    }
+  },
+  "build_tree_sha256_before": "bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42",
+  "build_tree_sha256_after": null,
+  "resource_diagnostic_enabled": false,
+  "targets": [],
+  "fixture": {
+    "failure_code": "stacked_notice_assertion_failed",
+    "stage": "stacked_geometry",
+    "cleanup": {
+      "status": "failed",
+      "attempted_count": 2,
+      "cleared_count": 0,
+      "failed_count": 2,
+      "failure_code": "stacked_notice_cleanup_failed"
+    }
+  }
+}

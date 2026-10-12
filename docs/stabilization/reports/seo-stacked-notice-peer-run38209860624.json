@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "run_id": 38209860624,
+  "review_status": "failed_attempt_zero_credit",
+  "source_test_contract": "provenance_and_resource_outcomes_consistent",
+  "product_evidence": "indeterminate_at_stacked_geometry",
+  "independent_reviewer": "fresh_agent",
+  "evidence": [
+    "The frozen report identifies the exact hosted run and imported development artifact source 5b54decfcc4ff93bccc87590001be560e1da5bf2.",
+    "The native case failed at stacked_geometry before reaching a target; the strict verifier correctly refused HOSTED_RUN_NOT_SUCCESSFUL.",
+    "Package and browser resource finals are valid; the guest final records child_failed and exit code one.",
+    "The retained screenshot is the initial guest panel and the safe report omits the individual geometry sample, so product behavior cannot be separated from an oracle or fixture issue.",
+    "The two failed dismissal attempts concern in-memory notices only; source shows no durable database or server record, and the hosted runner has terminated. Final in-memory absence is not independently observable."
+  ],
+  "limits": [
+    "The hosted archive was not retained in this evidence directory, so its reported digest match was not independently recomputed.",
+    "No product defect or acceptance credit follows from this run."
+  ],
+  "files_touched_by_reviewer": [],
+  "open_questions": [
+    "Which exact geometry predicate failed, and whether it was UI behavior or a test-oracle issue."
+  ]
+}

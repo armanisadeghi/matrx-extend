@@ -141,6 +141,38 @@ for (const [name, options] of [
     assert.equal(h.remaining, 0, 'owned notices are cleaned after failed preflight');
   });
 
+// Break: a real native geometry assertion fails, but the durable fixture callback
+// retains only the stage and discards which measured predicate failed.
+for (const [options, predicate, expected, observed] of [
+  [{ hitPoints: 8 }, 'hit_point_count', 9, 8],
+  [{ truncateLong: true }, 'message_length_1', 199, 198],
+])
+  test(`failed ${predicate} retains its measured native predicate before cleanup`, async () => {
+    const h = harness(options);
+    const receipts = [];
+    await assert.rejects(run(h, [77, 199], (receipt) => receipts.push(receipt)));
+    assert.equal(receipts.length, 1);
+    assert.equal(receipts[0].stage, 'stacked_geometry');
+    assert.deepEqual(receipts[0].geometry, {
+      failed_predicate: predicate,
+      expected,
+      observed,
+      native_sample: {
+        width: 360,
+        title_counts: [1, 1],
+        message_lengths: [77, options.truncateLong ? 198 : 199],
+        dismiss_counts: [1, 1],
+        notice_visible: [true, true],
+        target_count: 1,
+        target_enabled: true,
+        hit_point_count: options.hitPoints ?? 9,
+        notice_hit_point_count: 0,
+      },
+    });
+    assert.equal(h.reauditCount, 0);
+    assert.equal(h.remaining, 0);
+  });
+
 // Break guarded: an injection failure must persist a redacted receipt after cleanup,
 // and a cleanup failure must never replace the original injection error.
 for (const cleanupFails of [false, true])

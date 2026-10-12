@@ -1,0 +1,51 @@
+{
+  "id": "EXT-D-0203",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-1008-T02"],
+  "title": "Stacked SEO notice test loses the native geometry failure detail",
+  "surface": "Hosted guest SEO acceptance harness",
+  "auth_mode": "guest",
+  "preconditions": [
+    "Run the guarded notice-stacked guest SEO case on a frozen development artifact and native 360px panel."
+  ],
+  "reproduction": [
+    "Dispatch guest-seo with seo_case_scope=notice-stacked on lane B.",
+    "When the native geometry assertion fails, inspect the retained safe report and screenshot.",
+    "Observe only stacked_geometry and a generic initial sidepanel screenshot, without the failing predicate or bounded measurements."
+  ],
+  "expected": "A failed native geometry assertion retains its exact predicate, bounded expected and observed measurements, and a pre-cleanup native panel sample while still failing acceptance and excluding private content.",
+  "actual": "Hosted run 38209860624 failed at stacked_geometry. The retained evidence cannot distinguish product UI behavior from a test-oracle or fixture issue; strict verification refused the run and no product credit was granted.",
+  "cause": "The native failure path retained a generic stage/code but did not carry the specific geometry sample through the hosted report sanitizer.",
+  "severity": "S3: diagnostic loss delays reliable SEO acceptance; no product impact established",
+  "priority": "P1: restore actionable diagnostics before another stacked-notice native run",
+  "state": "in-fix",
+  "owner": "seo_stacked_geometry_diagnostic_fix",
+  "evidence": [
+    "docs/stabilization/reports/seo-stacked-notice-run38209860624.json",
+    "docs/stabilization/reports/seo-stacked-notice-peer-run38209860624.json",
+    "docs/stabilization/evidence/guest-seo-stacked-notice/run38209860624/native-report.sanitized.json"
+  ],
+  "source_fix": "The fixture records the exact failed geometry predicate and bounded native sample before cleanup; the hosted sanitizer retains only allowlisted measurements and refuses a claimed failure whose expected and observed values are equal.",
+  "verification_status": "Fresh independent source review passed the corrected diagnostic and privacy allowlist. Syntax, full lint, and diff checks pass; runtime tests and a new native run remain pending under the local disk guard and hosted CI.",
+  "next_action": "Run the new forcing tests in exact-source hosted CI, then retry one guarded guest SEO stacked-notice case; independently review actual failure detail or pass and surrounding notice behavior before closure.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T06:17:08Z",
+      "from": null,
+      "to": "open",
+      "reason": "Failed hosted run 38209860624 retained only a generic geometry stage."
+    },
+    {
+      "at": "2026-10-12T06:17:08Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Independent review confirmed zero product credit and diagnostic loss."
+    },
+    {
+      "at": "2026-10-12T06:17:08Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "A bounded source repair is prepared for hosted CI and native retest."
+    }
+  ]
+}
