@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0219 native acceptance checkpoint",
+  "status": "blocked_by_runner_provenance_gate",
+  "reviewed_harness_commits": ["6285466d1", "0b026ea97"],
+  "ci_artifact": {
+    "run_id": 38316843884,
+    "artifact_id": 11777408625,
+    "source_sha": "fe631ec14c443d025dec04c1fa00795b1feaddb0",
+    "version": "0.2.509",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "promotion_kind": "ci_development_test_promotion",
+    "source_match": "exact"
+  },
+  "native_attempt": {
+    "resource_admitted": true,
+    "runner_exit_code": 1,
+    "failure_stage": "build_start",
+    "browser_started": false,
+    "product_credit": false,
+    "resource_journal": "docs/stabilization/resource-journals/ext-d-0219-native-20261012.jsonl"
+  },
+  "root_cause": "The runner's buildIdentity accepts only local_dev_unpacked provenance and hardcodes .output/chrome-mv3-dev. It rejects the correct CI promotion receipt before Chrome startup.",
+  "followup": "Repair receipt validation under separate source ownership, independently review it, publish a fresh green exact-source CI artifact, then rerun guarded native admin acceptance. Member remains unverified because the existing runner is admin-only.",
+  "not_claimed": [
+    "No admin or member Screenshots behavior pass/fail",
+    "No public sharing or clipboard result",
+    "No Chrome runtime identity",
+    "No release or Store acceptance"
+  ],
+  "run_record": "docs/stabilization/runs/ext-d-0219-native-20261012.json"
+}
