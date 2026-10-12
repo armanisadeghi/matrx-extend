@@ -4,7 +4,7 @@
   "case_ids": ["EXT-F-2006-T02"],
   "title": "Lazy organization General is missing from Notes home choices",
   "surface": "Notes side-panel",
-  "auth_mode": "signed-in member/admin; focused unit reproduction uses an organization-visible lazy General fixture, live auth retest pending",
+  "auth_mode": "signed-in member/admin; bounded live member picker retest recorded; full member/admin retest pending",
   "role_org_permissions": {
     "role": "member or admin",
     "organization": "signed-in user can see an organization whose General has not yet been initialized",
@@ -34,11 +34,15 @@
     "src/features/notes/HomePicker.lazy-general.test.tsx:45",
     "src/features/notes/HomePicker.lazy-general.test.tsx:55",
     "src/features/notes/NotesList.tsx:42",
-    "src/features/notes/NoteEditor.current-general.test.tsx"
+    "src/features/notes/NoteEditor.current-general.test.tsx",
+    "docs/stabilization/runs/notes-lazy-general-member-run38204518274.json",
+    "docs/stabilization/reports/notes-lazy-general-member-peer-run38204518274.json",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/native-report.sanitized.json",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/resource-finals.sanitized.json"
   ],
-  "source_reproduction": "Reproduced in focused HomePicker/NotesList tests against the real listMyHomes query with an organization whose General exists only as a synthetic platform.my_homes row. The source-level behavior and focused unit reproduction support the defect; no live browser run or independent runtime retest has been performed.",
-  "verification_status": "Source-reproduced; focused unit tests exercise the missing picker choice, stable filter and label after materialization, and the lazy-General move path. Independent source review passed. Live member/admin browser retest remains pending; defect is not closed.",
-  "next_action": "Independently retest the original lazy-General home choice and move on a live Notes surface for a member and admin; record exact build and run evidence before promoting beyond fixed.",
+  "source_reproduction": "Focused HomePicker/NotesList tests against the real listMyHomes query reproduced omission of a synthetic platform.my_homes General when no context-tree scope row existed. The source-level reproduction remains distinct from runtime evidence: hosted run 38204518274 adds independently reviewed bounded member picker evidence only; the original full T02 and move path remain pending.",
+  "verification_status": "Source reproduction and focused tests passed independent source review. Hosted member run 38204518274 on frozen unpublished v0.2.509/source 6692ecf independently passed the bounded lazy-General home-filter picker subtarget: synthetic General was visible, selected as filter, and stable while canonical General remained nullable and no scope was created. Strict verification and all three resource finals passed. Screenshots do not show Notes picker states; assertions carry behavior evidence. One-use secret deletion was execution-agent checked but is not independently demonstrated in archived sanitized evidence. Full T02, move/persistence, reload, admin, current-main, release, and Store remain unverified; defect stays fixed/open.",
+  "next_action": "Retest the original full T02 flow on a live Notes surface for member and admin, including note creation, lazy-General move/persistence, search/filter/open/cleanup and reload; obtain independent review before any retest-pass or closure.",
   "transition_history": [
     {
       "at": "2026-10-12T03:31:45Z",
@@ -64,5 +68,21 @@
       "to": "fixed",
       "reason": "Fix and forcing tests passed independent source review; live independent member/admin retest remains pending, so no retest-pass or closed transition is claimed."
     }
-  ]
+  ],
+  "build_receipt": {
+    "run_id": 38204518274,
+    "version": "0.2.509",
+    "source_sha": "6692ecfba473e0b3cbcbad33ee3927208bd63024",
+    "ci_run_id": 38203968859,
+    "development_artifact_id": 11726961611,
+    "development_artifact_digest": "sha256:d1350b742721c0326786c09804a15a83afa33368845e3d08bd602a349acd79ba",
+    "strict_verifier_valid": true,
+    "resource_finals": {
+      "package": "valid",
+      "browser": "valid",
+      "guest": "valid"
+    },
+    "report": "docs/stabilization/reports/notes-lazy-general-member-peer-run38204518274.json"
+  },
+  "acceptance_note": "Bounded member picker evidence only. EXT-D-0201 remains fixed/open pending original full T02 member/admin retest; no closure credit."
 }

@@ -1,0 +1,47 @@
+{
+  "hosted-package": {
+    "run_id": "hosted-package-38204518274-1",
+    "raw_sha256": "d4c3c28da3349b69e05df83ba53fedc51831a64f1123939fb270842d34940f8b",
+    "final": {
+      "schema": 1,
+      "at": "2026-10-12T04:39:38.820Z",
+      "runId": "hosted-package-38204518274-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "sanitized_journal_retained": true
+  },
+  "hosted-browser": {
+    "run_id": "hosted-browser-38204518274-1",
+    "raw_sha256": "979aba2c8151e7cd75279683401099fdca6e5cef92a0d2ce78475977f6b0a97f",
+    "final": {
+      "schema": 1,
+      "at": "2026-10-12T04:41:39.582Z",
+      "runId": "hosted-browser-38204518274-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "sanitized_journal_retained": true
+  },
+  "hosted-guest": {
+    "run_id": "hosted-guest-38204518274-1",
+    "raw_sha256": "0f04ded70cf4ea8ec3511025fc1c82ac48cbb0be4499c81e84edbced64803d1f",
+    "final": {
+      "schema": 1,
+      "at": "2026-10-12T04:44:13.940Z",
+      "runId": "hosted-guest-38204518274-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "sanitized_journal_retained": true
+  }
+}

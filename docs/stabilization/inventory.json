@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T04:17:33Z",
+  "updated_at": "2026-10-12T04:50:10Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -43125,7 +43125,17 @@
             "admin",
             "reload"
           ],
-          "source_contract": "Folders and the “no folder” filter are retired: each note has one required home, General represents the organization’s “nothing,” and a create with no chosen home defaults to that organization’s General. Canonical: common-docs/systems/data/scopes-context/projects/item-homes/PLAN.md § Status and Model rules 1–3 (2026-10-11); extension mirror: src/lib/notes/types.ts:4-6,23,45-55."
+          "source_contract": "Folders and the “no folder” filter are retired: each note has one required home, General represents the organization’s “nothing,” and a create with no chosen home defaults to that organization’s General. Canonical: common-docs/systems/data/scopes-context/projects/item-homes/PLAN.md § Status and Model rules 1–3 (2026-10-11); extension mirror: src/lib/notes/types.ts:4-6,23,45-55.",
+          "verification_status": "Member lazy-General picker subtarget passed independently reviewed hosted run 38204518274 on frozen v0.2.509/source 6692ecf; T02 remains partial because the original note creation, move/persistence, search/filter/open/cleanup and reload sequence did not run. Admin remains unverified.",
+          "results": {
+            "member": {
+              "status": "partial",
+              "run_id": "38204518274",
+              "evidence": "docs/stabilization/reports/notes-lazy-general-member-peer-run38204518274.json",
+              "verified_at": "2026-10-12T04:46:14.166Z",
+              "detail": "Independently reviewed bounded lazy-General home-filter picker only on frozen v0.2.509/source 6692ecf. Native assertions support visible, selected, stable synthetic General; screenshots omit the Notes picker. Full T02, note move/persistence, search/filter/open/cleanup, reload, admin, current-main, release and Store remain unverified."
+            }
+          }
         },
         {
           "id": "EXT-F-2006-T03",
@@ -43178,15 +43188,24 @@
           "retest_status": "not-run"
         },
         "member": {
-          "test_status": "unverified",
+          "test_status": "partial",
           "defect_ids": [
             "EXT-D-0061",
             "EXT-D-0062",
             "EXT-D-0069",
             "EXT-D-0201"
           ],
-          "run_ids": [],
-          "retest_status": "not-run"
+          "run_ids": [
+            "38204518274"
+          ],
+          "retest_status": "partial",
+          "retest_evidence": {
+            "run_id": "38204518274",
+            "report": "docs/stabilization/reports/notes-lazy-general-member-peer-run38204518274.json",
+            "version": "0.2.509",
+            "source_sha": "6692ecfba473e0b3cbcbad33ee3927208bd63024",
+            "scope": "Bounded lazy-General home-filter picker only; member T02 and feature remain partial. No move/persistence, reload, admin, release or Store credit."
+          }
         },
         "admin": {
           "test_status": "unverified",

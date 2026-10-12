@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "recorded_at": "2026-10-12T04:46:14.166Z",
+  "lane": "A",
+  "status": "bounded_native_pass_independently_reviewed",
+  "case_id": "EXT-D-0201-picker",
+  "feature_id": "EXT-F-2006",
+  "defect_id": "EXT-D-0201",
+  "source_sha": "6692ecfba473e0b3cbcbad33ee3927208bd63024",
+  "workflow_sha": "6692ecfba473e0b3cbcbad33ee3927208bd63024",
+  "ci_run_id": 38203968859,
+  "ci_conclusion": "success",
+  "development_artifact_id": 11726961611,
+  "development_artifact_digest": "sha256:d1350b742721c0326786c09804a15a83afa33368845e3d08bd602a349acd79ba",
+  "extension_version": "0.2.509",
+  "run_id": 38204518274,
+  "attempt": 1,
+  "run_conclusion": "success",
+  "result_artifact_id": 11727285835,
+  "result_artifact_digest": "sha256:755d0fba85bed0a4f17ff5b1db7f001216def65930c115897839470ffec6678a",
+  "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38204518274",
+  "verification": {
+    "command": "node scripts/hosted-remote-admission.mjs verify-notes-lazy-general --run-id 38204518274 --attempt 1 --artifact-zip <downloaded-result-archive> --development-run-id 38203968859 --development-artifact-id 11726961611 --source-sha 6692ecfba473e0b3cbcbad33ee3927208bd63024",
+    "exit_code": 0,
+    "strict_verifier_valid": true,
+    "native_verdict": "pass",
+    "resource_finals": {
+      "package": "valid",
+      "browser": "valid",
+      "guest": "valid"
+    },
+    "unexpected_write_requests": 0
+  },
+  "observed": "Non-admin member authenticated in the expected selected organization. Canonical General remained nullable and its scope absent before/after; synthetic General was visible, selected as filter, and stable. The owned panel scope recorded zero unexpected write attempts; its read-only transport blocks unexpected writes before dispatch. This run did not establish absence of writes outside that panel observation scope.",
+  "cleanup": {
+    "temporary_github_secret_deleted_at_terminal": true,
+    "secret_name_match_count": 0,
+    "local_identity_absent": true,
+    "local_one_use_link_absent": true,
+    "credential_values_persisted": false
+  },
+  "evidence": [
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/native-report.sanitized.json",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/resource-journals/hosted-package-38204518274-1.jsonl",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/resource-journals/hosted-browser-38204518274-1.jsonl",
+    "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/resource-journals/hosted-guest-38204518274-1.jsonl"
+  ],
+  "limitations": [
+    "Credit is limited to the signed-in non-admin member lazy-General home-filter picker subtarget: the synthetic General was visible, selected as the filter, and remained stable while canonical General stayed nullable and no General scope existed.",
+    "The archived screenshots show initial guest Chat and the controlled target page, not the signed-in Notes picker; behavior credit rests on native assertions.",
+    "Strict verification passed and package, browser, and guest resource finals are valid. The peer accepted bounded behavior and provenance. One-use secret deletion was checked by the execution agent but is not independently demonstrated in the archived sanitized evidence.",
+    "Within the owned panel scope, no unexpected write attempts were observed and the read-only transport blocked any unexpected write before dispatch. No global database-write audit was performed. Original full T02, note move/persistence, reload, admin, other roles, current-main runtime, release, and Store behavior remain unverified; no defect closure is assigned."
+  ],
+  "next_action": "Run and independently review the remaining original T02 member/admin scenario, including the move/persistence and reload paths, before advancing EXT-D-0201 beyond fixed.",
+  "independent_review": "docs/stabilization/reports/notes-lazy-general-member-peer-run38204518274.json"
+}

@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-12 04:20 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T04:17:33Z. 205 features · 792 cases · 1367 controls · 201 linked defect records.
+Generated 2026-10-12 04:50 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T04:50:10Z. 205 features · 792 cases · 1367 controls · 201 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1261** — Pass: 99 · Partial: 92 · Fail: 2 · Unverified: 1066 · N/A: 2.
-Unverified splits into **138 explicitly marked unverified** and **928 with no result record**.
+Applicable case-by-role slots: **1261** — Pass: 99 · Partial: 93 · Fail: 2 · Unverified: 1065 · N/A: 2.
+Unverified splits into **138 explicitly marked unverified** and **927 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -39,7 +39,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 10, n/a 0 | 0 |
 | [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
 | [Data side-panel](#data-side-panel) | 1 | 1 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 2, partial 3, fail 0, unverified 13, n/a 1 | 1 |
-| [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 4, n/a 0 | 4 |
+| [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 3, n/a 0 | 4 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 3 |
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
 | [Saved captures side-panel](#saved-captures-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 13, n/a 0 | 0 |
@@ -1520,7 +1520,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Find and create notes (EXT-F-2006)
 
-**Role status:** guest: N/A · member: Unverified · admin: Unverified. **Cases:** 3. **Controls:** 13.
+**Role status:** guest: N/A · member: Partial · admin: Unverified. **Cases:** 3. **Controls:** 13.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0061, EXT-D-0062, EXT-D-0069, EXT-D-0201
 
@@ -1529,8 +1529,13 @@ These historical checks retain their original artifact boundary; they do not est
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
 | EXT-F-2006-T01 Guest cannot open Notes | N/A | N/A | N/A | EXT-F-2006-C01 |
-| EXT-F-2006-T02 Find notes by title search and home | N/A | Unverified | Unverified | EXT-F-2006-C02, EXT-F-2006-C03, EXT-F-2006-C04, EXT-F-2006-C05, EXT-F-2006-C07, EXT-F-2006-C08, EXT-F-2006-C09, EXT-F-2006-C10 |
+| EXT-F-2006-T02 Find notes by title search and home | N/A | Partial | Unverified | EXT-F-2006-C02, EXT-F-2006-C03, EXT-F-2006-C04, EXT-F-2006-C05, EXT-F-2006-C07, EXT-F-2006-C08, EXT-F-2006-C09, EXT-F-2006-C10 |
 | EXT-F-2006-T03 Create first note and empty/loading states | N/A | Unverified | Unverified | EXT-F-2006-C01, EXT-F-2006-C06, EXT-F-2006-C11, EXT-F-2006-C12, EXT-F-2006-C13 |
+
+**Recorded case details and evidence:**
+
+- EXT-F-2006-T02 · member: Partial. Independently reviewed bounded lazy-General home-filter picker only on frozen v0.2.509/source 6692ecf. Native assertions support visible, selected, stable synthetic General; screenshots omit the Notes picker. Full T02, note move/persistence, search/filter/open/cleanup, reload, admin, current-main, release and Store remain unverified.
+  Evidence / build / date recorded: 38204518274, 2026-10-12T04:46:14.166Z, docs/stabilization/reports/notes-lazy-general-member-peer-run38204518274.json
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 

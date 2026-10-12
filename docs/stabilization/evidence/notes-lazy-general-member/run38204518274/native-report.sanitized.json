@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "cases": ["EXT-D-0201-picker"],
+  "status": "pass",
+  "role": "member",
+  "build": {
+    "before": {
+      "kind": "local_dev_unpacked",
+      "version": "0.2.509",
+      "treeSha256": "bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42"
+    },
+    "after": {
+      "kind": "local_dev_unpacked",
+      "version": "0.2.509",
+      "treeSha256": "bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42"
+    }
+  },
+  "observations": {
+    "hosted_authentication": {
+      "member_signed_in": true,
+      "non_admin_identity": true,
+      "organization_selected": true,
+      "account_fingerprint": "3d6137db6c081c07"
+    },
+    "D201": {
+      "case_id": "EXT-D-0201-picker",
+      "verdict": "pass",
+      "observations": {
+        "before": {
+          "canonical_general_nullable": true,
+          "general_scope_absent": true,
+          "selected_organization_confirmed": true
+        },
+        "picker": {
+          "synthetic_general_visible": true,
+          "selected_as_filter": true,
+          "selection_stable": true
+        },
+        "after": {
+          "canonical_general_nullable": true,
+          "general_scope_absent": true,
+          "unexpected_write_requests": 0
+        }
+      }
+    }
+  },
+  "fault_scope": "owned panel, read-only REST transport; unexpected database writes blocked before dispatch",
+  "data_scope": "read-only canonical General and Notes home picker; no fixture, note, or database write",
+  "imported_artifact": {
+    "schema_version": 1,
+    "kind": "ci_development_test",
+    "eligibleStore": false,
+    "publish_state": "not_published",
+    "repository": "armanisadeghi/matrx-extend",
+    "workflow": ".github/workflows/ci.yml",
+    "sourceSha": "6692ecfba473e0b3cbcbad33ee3927208bd63024",
+    "runId": 38203968859,
+    "runAttempt": 1,
+    "artifactId": 11726961611,
+    "githubArtifactDigest": "sha256:d1350b742721c0326786c09804a15a83afa33368845e3d08bd602a349acd79ba",
+    "version": "0.2.509",
+    "treeSha256": "bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42",
+    "source": {
+      "originMain": "daa8b3b6a9f08d8e5e048cb03fdbc910af9cb517",
+      "localHead": "6692ecfba473e0b3cbcbad33ee3927208bd63024",
+      "trackedDirty": false,
+      "untrackedRunnerInputs": [],
+      "claim": "exact_pushed_commit_only"
+    }
+  },
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "sanitization": {
+    "runner_paths_removed": true,
+    "credential_values_absent": true
+  }
+}
