@@ -1,7 +1,7 @@
 /** Safari OAuth tab transport. Apple does not implement the identity API. */
 
 import { ALARMS, ENV, STORAGE_KEYS } from '@/config/env';
-import { signInWithOpener } from '@/lib/auth/flow';
+import { completeSignInFromCallback, signInWithOpener } from '@/lib/auth/flow';
 import type { UserProfile } from '@/lib/auth/types';
 import { BROWSER } from '@/lib/browser/detect';
 import { log } from '@/lib/debug/log';
@@ -149,16 +149,20 @@ async function handleCallback(tabId: number, callbackUrl: string): Promise<void>
     await failAttempt(attempt, 'Sign-in could not verify its callback. Please try again.', true);
     return;
   }
-  const waiter = waiters.get(attempt.state);
-  if (!waiter) {
-    // The background context that started this sign-in is gone; its client state went with it.
-    await failAttempt(attempt, 'Sign-in could not be completed. Please try again.', true);
-    return;
-  }
   await chrome.storage.session.set({
     [STORAGE_KEYS.SAFARI_AUTH_ATTEMPT]: { ...attempt, claimed: true },
   });
-  waiter.resolve(callbackUrl);
+  const waiter = waiters.get(attempt.state);
+  if (waiter) {
+    waiter.resolve(callbackUrl);
+    return;
+  }
+  // The background context that started this sign-in was torn down; the package still holds the
+  // PKCE verifier for this state in chrome.storage.session, so finish from the captured redirect.
+  void completeSignInFromCallback(callbackUrl).then(
+    (result) => completeSafariSignIn(attempt.tabId, result.user),
+    (error) => failCurrentAttempt(attempt.tabId, error),
+  );
 }
 
 async function completeSafariSignIn(tabId: number, user: UserProfile): Promise<void> {

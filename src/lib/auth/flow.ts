@@ -65,14 +65,6 @@ const profilesByBearer = new Map<string, UserProfile>();
 let client: MatrxOAuthClient | null = null;
 let openAuthorization: AuthorizationOpener = (url) => launchWebAuthFlow(url);
 
-function safeRedirectUri(): string {
-  try {
-    return getRedirectUri();
-  } catch {
-    return 'about:blank';
-  }
-}
-
 /** The client, or null when this build has no OAuth client id configured. */
 function getClient(): MatrxOAuthClient | null {
   if (client) return client;
@@ -82,8 +74,9 @@ function getClient(): MatrxOAuthClient | null {
     {
       authUrl: ENV.SUPABASE_URL,
       clientId,
-      // Sign-in checks the identity API itself (below); read-only paths need no redirect.
-      redirectUri: safeRedirectUri(),
+      // Read when a sign-in starts or completes, never cached (the package refuses a blank one);
+      // read-only paths need no redirect.
+      redirectUri: () => getRedirectUri(),
       // Never include 'openid' — the server then fails minting an ID token.
       scope: 'email profile',
       publishableKey: ENV.SUPABASE_PUBLISHABLE_KEY,
@@ -190,18 +183,30 @@ export async function signInWithOpener(
   const previous = openAuthorization;
   openAuthorization = opener;
   try {
-    const session = await oauth.signIn();
-    const user = profilesByBearer.get(session.accessToken);
-    profilesByBearer.delete(session.accessToken);
-    if (!user) throw new Error('Sign-in finished without a verified profile');
-    await withAuthMutationLock(() =>
-      chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: user }),
-    );
-    log.success('auth', `signed in as ${user.email ?? user.id}`);
-    return { user };
+    return await storeSignedInProfile(await oauth.signIn());
   } finally {
     openAuthorization = previous;
   }
+}
+
+async function storeSignedInProfile(session: MatrxOAuthSession): Promise<{ user: UserProfile }> {
+  const user = profilesByBearer.get(session.accessToken);
+  profilesByBearer.delete(session.accessToken);
+  if (!user) throw new Error('Sign-in finished without a verified profile');
+  await withAuthMutationLock(() => chrome.storage.local.set({ [STORAGE_KEYS.USER_PROFILE]: user }));
+  log.success('auth', `signed in as ${user.email ?? user.id}`);
+  return { user };
+}
+
+/**
+ * Finish a sign-in whose redirect was already captured but whose `signInWithOpener` call is gone
+ * (Safari: the background page was torn down between showing the tab and catching the callback).
+ * The PKCE verifier for the attempt is still in chrome.storage.session, keyed by `state`.
+ */
+export async function completeSignInFromCallback(callbackUrl: string): Promise<{ user: UserProfile }> {
+  const oauth = getClient();
+  if (!oauth) throw new Error('OAuth sign-in is unavailable: no OAuth client is configured');
+  return storeSignedInProfile(await oauth.completeSignIn({ callbackUrl }));
 }
 
 export async function signIn(): Promise<SignInResult> {

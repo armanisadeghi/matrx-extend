@@ -8,6 +8,7 @@ const callbacks = vi.hoisted(() => ({
   alarm: undefined as ((alarm: { name: string }) => void) | undefined,
   handlers: new Map<string, () => Promise<unknown>>(),
   complete: vi.fn(),
+  completeFromCallback: vi.fn(),
   broadcasts: [] as Array<{ kind: string; payload: unknown }>,
 }));
 
@@ -15,6 +16,10 @@ vi.mock('@/lib/browser/detect', () => ({ BROWSER: 'safari' }));
 // The OAuth client (state, verifier, exchange) is the package's and has its own tests; here the
 // fake sign-in only shows the tab to the opener and reports what callback URL it was handed.
 vi.mock('@/lib/auth/flow', () => ({
+  completeSignInFromCallback: async (url: string) => {
+    callbacks.completeFromCallback(url);
+    return { user: { id: 'u', email: 'a@example.com' } };
+  },
   signInWithOpener: async (
     open: (url: string, ctx: { state: string; redirectUri: string }) => Promise<string>,
   ) => {
@@ -57,6 +62,7 @@ describe('Safari background OAuth tab transport', () => {
     callbacks.handlers.clear();
     callbacks.broadcasts.length = 0;
     callbacks.complete.mockReset();
+    callbacks.completeFromCallback.mockReset();
     removed.length = 0;
     tabUrl = 'https://db.example.test/auth/v1/oauth/authorize';
     const setSession = async (values: Record<string, unknown>) => {
@@ -183,5 +189,24 @@ describe('Safari background OAuth tab transport', () => {
       url: 'https://www.aimatrx.com/auth/extension-callback?code=code&state=state',
     });
     await vi.waitFor(() => expect(callbacks.complete).toHaveBeenCalledOnce());
+  });
+
+  it('finishes the sign-in from the captured redirect when the background context that started it was torn down', async () => {
+    await callbacks.handlers.get('auth:safari-start')?.();
+    await vi.waitFor(() => expect(session.has('safari-attempt')).toBe(true));
+    // Torn down: a fresh module realm has no waiter for the attempt, only chrome.storage.session.
+    vi.resetModules();
+    const { registerSafariAuthorizationBackground } = await import('@/lib/auth/safari-background');
+    registerSafariAuthorizationBackground();
+    const url = 'https://www.aimatrx.com/auth/extension-callback?code=code&state=state';
+    callbacks.committed?.({ tabId: 44, frameId: 0, url });
+    await vi.waitFor(() => expect(callbacks.completeFromCallback).toHaveBeenCalledWith(url));
+    await vi.waitFor(() =>
+      expect(callbacks.broadcasts).toContainEqual(
+        expect.objectContaining({ kind: 'auth:state-changed' }),
+      ),
+    );
+    expect(callbacks.broadcasts).not.toContainEqual(expect.objectContaining({ kind: 'auth:safari-failed' }));
+    expect(removed).toContain(44);
   });
 });

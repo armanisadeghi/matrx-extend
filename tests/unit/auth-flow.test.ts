@@ -214,4 +214,51 @@ describe('extension sign-in wiring', () => {
     await expect(flow.signIn()).rejects.toThrow('OAuth state mismatch');
     expect(server.tokenCalls).toHaveLength(0);
   });
+
+  it('finishes a sign-in from the captured redirect after the context that started it was torn down (Safari)', async () => {
+    let authorizeUrl = '';
+    authorize = () => {
+      throw new Error('unused');
+    };
+    // Context 1 shows the authorize URL, then dies: its opener promise never settles.
+    const first = await import('@/lib/auth/flow');
+    void first.signInWithOpener(async (url) => {
+      authorizeUrl = url;
+      return new Promise<string>(() => {});
+    });
+    await vi.waitFor(() => expect(authorizeUrl).not.toBe(''));
+    const state = new URL(authorizeUrl).searchParams.get('state');
+
+    // Context 2 (fresh module realm, same chrome.storage) catches the redirect.
+    vi.resetModules();
+    const second = await import('@/lib/auth/flow');
+    const result = await second.completeSignInFromCallback(
+      `https://abc.chromiumapp.org/?code=the-code&state=${state}`,
+    );
+    expect(result).toMatchObject({ user: { id: 'person-1' } });
+    expect(local.get('profile')).toMatchObject({ id: 'person-1' });
+    expect(await second.getAccessToken()).toBe(jwt('person-1', 'first'));
+    expect(server.tokenCalls[0]?.get('grant_type')).toBe('authorization_code');
+    // a second redirect for the same attempt has nothing left to finish
+    await expect(
+      second.completeSignInFromCallback(`https://abc.chromiumapp.org/?code=x&state=${state}`),
+    ).rejects.toThrow('Please try again');
+  });
+
+  it('never builds a sign-in on a redirect captured before the identity API was ready', async () => {
+    const identity = (globalThis as unknown as { chrome: { identity: unknown } }).chrome.identity;
+    (globalThis as unknown as { chrome: { identity: unknown } }).chrome.identity = undefined;
+    const flow = await import('@/lib/auth/flow');
+    // a read-only call creates (and caches) the client before the identity API exists
+    expect(await flow.getAccessToken()).toBeNull();
+    (globalThis as unknown as { chrome: { identity: unknown } }).chrome.identity = identity;
+    let authorizeUrl = '';
+    authorize = async (url) => {
+      authorizeUrl = url;
+      return `https://abc.chromiumapp.org/?code=the-code&state=${new URL(url).searchParams.get('state')}`;
+    };
+    await flow.signIn();
+    expect(new URL(authorizeUrl).searchParams.get('redirect_uri')).toBe('https://abc.chromiumapp.org/');
+    expect(server.tokenCalls[0]?.get('redirect_uri')).toBe('https://abc.chromiumapp.org/');
+  });
 });
