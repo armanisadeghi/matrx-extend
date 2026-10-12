@@ -1,0 +1,65 @@
+{
+  "id": "EXT-D-0215",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T13"],
+  "title": "Published chat package imports an API export removed before its rebuild",
+  "surface": "Extension WXT build consuming published @ai-matrx packages",
+  "auth_mode": "guest/member/admin; build is independent of sign-in",
+  "role_org_permissions": "Package build validation; runtime identity and organization are not exercised",
+  "preconditions": ["Exact source fbd8713e7 uses @ai-matrx/chat 0.8.64 and @ai-matrx/api 0.1.10."],
+  "reproduction": [
+    "Run CI checks on exact source fbd8713e7 (run 38274879341).",
+    "Install, Typecheck, Lint, unit tests and guest guard pass; WXT build encounters chat dist imports of logApiTarget from @ai-matrx/api root.",
+    "The API package root does not export logApiTarget, so bundling stops with MISSING_EXPORT."
+  ],
+  "expected": "The latest published chat package resolves all imports against the latest published API package and the extension build completes.",
+  "actual": "Published chat 0.8.64 still imports the removed API-root symbol in run-ai-stream.js and execute-manual-instance.thunk.js; WXT fails before native acceptance.",
+  "cause": "Chat 0.8.64 was published from aidream commit 45e0e9d182, which used the old API-root import. Chat source commit 9a02a81c6a later moved both imports to its own host/log-api-target. The earlier package workflow used a source snapshot older than that correction; automatic chat 0.8.65 publication subsequently included it.",
+  "sibling_census": "The published chat tarball contains two old logApiTarget imports, and current chat source has two corrected local imports. No extension host import of that symbol was found; repair belongs to the chat package release.",
+  "severity": "S1: required extension build blocked",
+  "priority": "P0",
+  "state": "in-fix",
+  "owner": "package_graph_sol_retry",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274879341: WXT MISSING_EXPORT on both published chat thunk paths against API 0.1.10.",
+    "aidream release commit 1cc0c91978 says chat 0.8.64 was published from 45e0e9d182; that source imports logApiTarget from @ai-matrx/api.",
+    "aidream commit 9a02a81c6a changes both chat thunks to ../../../../host/log-api-target and adds that local module. Automatic publish run 38269271283 used head c1a92de76c, which contains the correction, and its chat job succeeded; npm metadata now advertises 0.8.65.",
+    "npm registry tarball GET for chat 0.8.65 returned 404 at 16:16-16:19 UTC despite metadata/integrity being visible; chat 0.8.64 tarball GET returned 200 and registry.npmjs.com returned the same 404 for 0.8.65. By 16:22 UTC a real registry GET returned 200, establishing bounded propagation lag.",
+    "Automatic publish run 38269271283 uploaded https://github.com/AI-Matrix-Engine/aidream/actions/runs/38269271283/artifacts/11759245545 (npm-tarball-chat-0.8.65). The contained TGZ SHA-512 is ZcFEE0L0kOYEA+D23xDxoIdBerwANrOsWSRU291lWbXTKgWJPxp38YuQWRnprFSgS5ECmUAiKV0NpwTUQDP1Tg==, exactly matching npm dist.integrity. A later real npm pack fetched the same SHA-512 from the registry; both thunk files import ../../../../host/log-api-target.js.",
+    "Latest-only extension lockfile refresh resolves chat 0.8.65, agents 0.59.77 and associations 0.14.47 with no duplicate @ai-matrx package versions; frozen lockfile-only install passes. The published chat 0.8.65 tarball changelog and local agents/associations changelogs say no consumer action required. Fresh CI build remains pending.",
+    "aidream .github/actions/npm-publish-one/action.yml Hold the lane until npm serves step checks npm metadata gitHead and dist-tag, but does not fetch dist.tarball; its green verdict can precede a usable tarball.",
+    "Published chat 0.8.64 dist files in the extension's installed node_modules match the CI failing import; API root has no logApiTarget export."
+  ],
+  "build_receipt": {
+    "source_sha": "fbd8713e7dba9732f5d880ca6e1f752f0b69ae55",
+    "ci_run_id": 38274879341,
+    "chat_version": "0.8.64",
+    "api_version": "0.1.10"
+  },
+  "reproducibility_count": "Exact-source CI WXT build failure 1/1; local published artifact inspected",
+  "fix_commits": ["aidream source 9a02a81c6a (included in published chat 0.8.65)"],
+  "original_retest_runs": [],
+  "surrounding_case_runs": [],
+  "reviewer": null,
+  "next_action": "Independent review of the chat 0.8.65 package adoption and source evidence, then exact-path commit/push and automatic exact-source CI WXT build. Native acceptance remains open. Do not dispatch/publish while spend gate is red.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T16:13:34Z",
+      "from": null,
+      "to": "open",
+      "reason": "Exact-source CI WXT build failed on missing API root export imported by chat dist."
+    },
+    {
+      "at": "2026-10-12T16:13:34Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Source-to-tarball provenance identified a corrected chat source commit newer than the published snapshot."
+    },
+    {
+      "at": "2026-10-12T16:22:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Automatic chat 0.8.65 publish became fetchable; inspected registry tarball, then prepared latest-only lockfile adoption. CI build and native gates remain open."
+    }
+  ]
+}
