@@ -19,24 +19,25 @@
   "sibling_census": "The latest-only lockfile refresh changes the direct design-system importer and its dependent snapshots to 0.86.102, removes 0.86.101, and advances direct desktop-protocol 0.21.30 to current 0.21.31. No other @ai-matrx versions changed.",
   "severity": "S1: required CI acceptance blocked before source checks",
   "priority": "P0",
-  "state": "in-fix",
+  "state": "closed",
   "owner": "package_graph_sol_retry",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38273724898",
     "pnpm install --frozen-lockfile --lockfile-only --ignore-scripts passed after refresh; git diff --check passed.",
     "node scripts/check-matrx-packages.mjs --self-test passed. Local --duplicates remains red from stale node_modules copies and is not a fresh-install verdict.",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274298219: exact source 58f28a085 frozen Install dependencies and focused acceptance guards passed. This workflow did not run Typecheck."
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274298219: exact source 58f28a085 frozen Install dependencies and focused acceptance guards passed. This workflow did not run Typecheck.",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38277687185: exact main source 0b912a3fc passed fresh Install dependencies with postinstall package guard, Typecheck, Lint, 348 unit test files, guest observer, keyed WXT build and artifact provenance. This verifies the CI-only installation failure is gone; native guest/member/admin behavior remains separate and unverified."
   ],
   "build_receipt": {
     "source_sha": "f87e5d2fbe4fa5b28b5c9bf34b5daf07811c3060",
     "ci_run_id": 38273724898
   },
-  "reproducibility_count": "CI frozen-install/postinstall failure 1/1; refreshed lockfile validated without local installation",
+  "reproducibility_count": "Original CI frozen-install/postinstall failure 1/1; corrected graph passed focused fresh install 38274298219 and full main CI 38277687185",
   "fix_commits": ["a58781e8b"],
-  "original_retest_runs": [38274298219],
-  "surrounding_case_runs": [],
+  "original_retest_runs": [38274298219, 38277687185],
+  "surrounding_case_runs": [38277687185],
   "reviewer": "guest_chat_peer_review: independent lockfile/package graph source review passed",
-  "next_action": "Fresh frozen install and postinstall passed in 38274298219. Typecheck and native acceptance remain open; do not dispatch a workflow while the spend gate is red.",
+  "next_action": "CI package-install defect is closed. Broader release and native guest/member/admin case acceptance remain unverified and are tracked by their own cases.",
   "transition_history": [
     {
       "at": "2026-10-12T15:58:31Z",
@@ -55,6 +56,24 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Latest-only lockfile refresh prepared; peer and fresh-install CI verdicts remain pending."
+    },
+    {
+      "at": "2026-10-12T16:39:18Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Latest-only graph correction was committed as a58781e8b; independent source review passed, and focused fresh-install acceptance 38274298219 passed."
+    },
+    {
+      "at": "2026-10-12T16:39:18Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Full exact-source main CI 38277687185 passed fresh install/postinstall and surrounding Typecheck, Lint, unit, guest observer and keyed WXT build gates."
+    },
+    {
+      "at": "2026-10-12T16:39:18Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "The defect surface is CI package installation and its original failure no longer reproduces in fresh exact-source CI; native/persona feature cases remain unverified."
     }
   ]
 }
