@@ -30,11 +30,14 @@
     "ci_run_id": 38273033519
   },
   "reproducibility_count": "CI Typecheck failed 1/1 at exact source b9223b735; local guarded compile was refused before launch by host resource policy.",
-  "fix_commits": [],
+  "fix_commits": [
+    "f6bdbdcdf1 (concurrent contributor added getSettings import on origin/main)",
+    "5317aa929 (independent narrow repair attempt; source reconciled with the identical contributor import)"
+  ],
   "original_retest_runs": [],
   "surrounding_case_runs": [],
   "reviewer": null,
-  "next_action": "Complete independent source review, then commit and push the one-import repair. Use exact-source CI for the compile verdict after local resource admission refusal; source-only verification does not establish browser or Store acceptance.",
+  "next_action": "Use exact-source CI after the merged main push for the compile verdict; source-only verification does not establish browser or Store acceptance.",
   "transition_history": [
     {
       "at": "2026-10-12T15:53:01Z",

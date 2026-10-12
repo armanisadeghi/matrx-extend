@@ -11,6 +11,7 @@ const db = createScriptDb({
 });
 if (!db) throw new Error('Test database transport unavailable.');
 vi.mock('@/lib/supabase/client', () => ({ getSupabase: () => db.client }));
+vi.mock('@/lib/api/matrx-api', async () => (await import('../helpers/wire-bridge')).wireBridge(''));
 vi.mock('@/lib/api/client', () => ({ apiPut: harness.put, apiDelete: harness.remove }));
 import {
   readSwipeCollections,

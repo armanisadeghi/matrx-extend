@@ -12,18 +12,22 @@ import {
   type ApiRequestOptions,
   type ApiResult,
   STATUS_EXPECTED_ACTOR_MISMATCH,
-  SessionNotReadyError,
   STATUS_NO_ORGANIZATION,
   STATUS_SESSION_NOT_READY,
-  readSessionBearer,
 } from '@/lib/api/client';
+import {
+  SESSION_READY_TIMEOUT_MS,
+  SessionNotReadyError,
+  awaitSessionReady,
+  currentBearerOrRefuse,
+  sessionCredentials,
+} from '@/lib/api/session-credentials';
 import {
   getAccessToken,
   getStoredAccessToken,
   getVerifiedCurrentUser,
   refreshAccessToken,
 } from '@/lib/auth/flow';
-import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';
 import { CHANNELS } from '@/lib/messaging/schemas';
@@ -46,8 +50,6 @@ import {
 
 const DEFAULT_TOTAL_TIMEOUT_MS = 30_000;
 
-/** The bearer the most recent call dispatched with — handed to the refresh hook. */
-let lastBearer: string | null = null;
 /** Backend URL for the call in flight (resolveBaseUrl is synchronous). */
 let currentBase = '';
 
@@ -61,11 +63,12 @@ function buildApi(
     credentials,
     resolveBaseUrl: () => currentBase || undefined,
     totalTimeoutMs: DEFAULT_TOTAL_TIMEOUT_MS,
+    readyTimeoutMs: SESSION_READY_TIMEOUT_MS,
     ...(refresh
       ? {
           refreshCredentials: async () => {
             log.warn('api', '401 — refreshing & retrying');
-            return (await refreshAccessToken(lastBearer ?? undefined)) !== null;
+            return (await refreshAccessToken(sessionCredentials.lastBearer ?? undefined)) !== null;
           },
         }
       : {}),
@@ -74,12 +77,7 @@ function buildApi(
 }
 
 export function getMatrxApi(): Api {
-  instance ??= buildApi(async () => {
-    const token = await readSessionBearer();
-    lastBearer = token;
-    if (token) return { kind: 'user', accessToken: token };
-    return { kind: 'guest', fingerprintId: await getOrCreateGuestSignature() };
-  }, true);
+  instance ??= buildApi(sessionCredentials, true);
   return instance;
 }
 
@@ -93,13 +91,14 @@ async function pinnedApi(expected: {
   organizationId: string;
 }): Promise<Api | null> {
   for (let attempt = 0; attempt < 2; attempt++) {
-    const token = await readSessionBearer();
+    await awaitSessionReady();
+    const token = await currentBearerOrRefuse();
     if (!token) return null;
     const verified = await getVerifiedCurrentUser(token);
     const [after, org] = await Promise.all([getAccessToken(), getActiveOrganizationId()]);
     if (after !== token) continue;
     if (verified?.id !== expected.userId || org !== expected.organizationId) return null;
-    lastBearer = token;
+    sessionCredentials.lastBearer = token;
     return buildApi({ kind: 'user', accessToken: token }, false);
   }
   return null;
@@ -131,7 +130,8 @@ function isSessionNotReady(err: unknown): err is SessionNotReadyError {
 
 async function announceUnauthorized(): Promise<void> {
   // A 401 that survived the refresh-retry: tell the UI, unless a newer bearer exists.
-  if (lastBearer && lastBearer === (await getStoredAccessToken())) {
+  const rejected = sessionCredentials.lastBearer;
+  if (rejected && rejected === (await getStoredAccessToken())) {
     broadcast(CHANNELS.AUTH_STATE_CHANGED, { user: null, isAdmin: false, reason: 'unauthorized' });
   }
 }

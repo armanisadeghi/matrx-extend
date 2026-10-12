@@ -6,6 +6,9 @@ const { apiGet, getActiveOrganizationId } = vi.hoisted(() => ({
   getActiveOrganizationId: vi.fn(),
 }));
 
+vi.mock('@/lib/api/matrx-api', async () =>
+  (await import('../helpers/wire-bridge')).wireBridge('/api'),
+);
 vi.mock('@/lib/api/client', () => ({
   apiGet,
   apiPost: vi.fn(),

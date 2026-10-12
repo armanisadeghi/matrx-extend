@@ -9,6 +9,7 @@ const { post, getRow, result } = vi.hoisted(() => ({
   getRow: vi.fn(),
   result: vi.fn(),
 }));
+vi.mock('@/lib/api/matrx-api', async () => (await import('../helpers/wire-bridge')).wireBridge(''));
 vi.mock('@/lib/api/client', () => ({ apiPost: post }));
 vi.mock('@/lib/capture-ladder/queue', () => ({ getHandoff: getRow }));
 vi.mock('@/lib/capture-ladder/api', () => ({ postCaptureResult: result }));

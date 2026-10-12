@@ -9,6 +9,9 @@ const h = vi.hoisted(() => ({
   token: 'token' as string | null,
   organizationId: 'org' as string | null,
 }));
+vi.mock('@/lib/api/matrx-api', async () =>
+  (await import('../../../tests/helpers/wire-bridge')).wireBridge(''),
+);
 vi.mock('@/lib/api/client', () => ({
   ORGANIZATION_CONTEXT_HEADER: 'X-Organization-Id',
   apiGet: (...args: unknown[]) => h.get(...args),
