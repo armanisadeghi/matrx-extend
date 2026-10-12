@@ -264,6 +264,8 @@ function pointerFailure(code, location) {
         : null,
     hitTarget: location?.hitTarget === true,
     animating: location?.animating === true,
+    animationCategory: location?.animationCategory ?? null,
+    clickTargetCategory: location?.clickTargetCategory ?? null,
     stableSamples: location?.stableSamples ?? 0,
     positionStable: location?.positionStable === true,
     targetHasArea: pointer ? pointer.target_rect.width > 0 && pointer.target_rect.height > 0 : null,
@@ -844,14 +846,46 @@ export async function click(panel, kind, label, onPhase = undefined) {
       target_pointer_events_none: getComputedStyle(target).pointerEvents === 'none',
     };
     sampleFailureStage = 'animation_observation';
+    // Color interpolation cannot move or occlude a hit target. Everything
+    // else (including unknown/custom effects) keeps the animation veto.
+    // Inspect keyframes, not transitionProperty: "all" can include motion.
+    const colorProperties = new Set(['color', 'backgroundColor', 'borderTopColor',
+      'borderRightColor', 'borderBottomColor', 'borderLeftColor', 'outlineColor',
+      'textDecorationColor', 'textEmphasisColor', 'caretColor', 'accentColor',
+      'fill', 'stroke', 'stopColor', 'floodColor', 'lightingColor']);
+    const frameMetadata = new Set(['offset', 'computedOffset', 'easing', 'composite']);
+    const colorOnly = (animation) => {
+      try {
+        const frames = animation.effect?.getKeyframes();
+        if (!Array.isArray(frames) || frames.length === 0) return false;
+        const properties = frames.flatMap((frame) => Object.keys(frame))
+          .filter((key) => !frameMetadata.has(key));
+        return properties.length > 0 && properties.every((key) => colorProperties.has(key));
+      } catch {
+        return false;
+      }
+    };
     let animating = false;
+    let animationCategory = 'none';
     for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) {
-      if (ancestor.getAnimations({ subtree: false }).some((animation) => animation.playState === 'running')) {
-        animating = true;
-        break;
+      for (const animation of ancestor.getAnimations({ subtree: false })) {
+        if (animation.playState !== 'running') continue;
+        if (colorOnly(animation)) {
+          if (!animating) animationCategory = 'color_only';
+        } else {
+          animating = true;
+          animationCategory = 'hit_affecting_or_unknown';
+        }
       }
     }
+    const clickTargetCategory = kind === 'title' && label === 'Sync scroll with the live page'
+      ? 'scrape_scroll_sync_enable'
+      : kind === 'title' && label === 'Stop following the page scroll'
+        ? 'scrape_scroll_sync_disable'
+        : kind === 'scrape-result-tab' && label === 'Article'
+          ? 'scrape_article_tab' : 'other';
     return { count: 1, matchedCount, toolsPanelActive, settingsPanelActive, x, y, hitTarget, animating,
+      animationCategory, clickTargetCategory,
       viewport: { width: innerWidth, height: innerHeight },
       pointerDiagnostic, dataTabTargetDiagnostic };
     } catch {
