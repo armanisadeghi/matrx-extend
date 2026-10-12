@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "feature_id": "EXT-F-1007",
+  "status": "unverified",
+  "scope": "Two guarded native guest Scrape attempts on the exact imported CI development artifact, testing controlled Capture, tab results, navigation clearing, extension reload, and post-reload controls.",
+  "artifact": {
+    "source_sha": "5ae9d47eaaf7df5cb33699bf0956c8ab9e6f328e",
+    "ci_run_id": 38279845563,
+    "run_attempt": 1,
+    "artifact_id": 11760448679,
+    "kind": "ci_development_test",
+    "version": "0.2.509",
+    "tree_sha256": "22993e81dcb0d92ffe939fe8545d4262635a653cb5cdb356ca1c7264149fef20",
+    "unchanged_after_both_attempts": true
+  },
+  "attempts": [
+    {
+      "resource_run_id": "scrape-guest-cft-20261012-1802",
+      "resource_decision": "child_failed",
+      "resource_invalid": false,
+      "driver_status": "unverified",
+      "failure_stage": "guest_behavior_after_reload",
+      "failure_code": "pointer_stable_hit_not_observed",
+      "pointer_evidence": "Unique enabled 24x24 target, stable position, all nine interior hit points on target, no occluder; running animation was the sole failed gate. Exact click and animation effect unobserved.",
+      "raw_report_sha256": "afbd2034da140f3b47448eec9d2fc22249f8779a7fae89f92926a82b3ce92b0b",
+      "resource_journal": "docs/stabilization/resource-journals/scrape-guest-cft-20261012-1802.jsonl"
+    },
+    {
+      "resource_run_id": "scrape-guest-cft-retry-20261012-1815",
+      "resource_decision": "child_failed",
+      "resource_invalid": false,
+      "driver_status": "unverified",
+      "failure_stage": "guest_behavior_after_reload",
+      "failure_code": "pointer_stable_hit_not_observed",
+      "pointer_evidence": "Unique enabled 218.5x49.1 target, stable position, all nine interior hit points on target, no occluder; running hit-affecting-or-unknown ancestor animation blocked the driver. Target category was other; Article result tab is plausible but not confirmed.",
+      "raw_report_sha256": "4e8617d7e1fcd4fc89d748c515bbf80b8cc29cee7c9dd023a65ecb841689a0f8",
+      "resource_journal": "docs/stabilization/resource-journals/scrape-guest-cft-retry-20261012-1815.jsonl"
+    }
+  ],
+  "bounded_observations": {
+    "both_runs": "T20 navigation clearing and full extension reload/replacement-panel lifecycle passed; T07 warm scroll sync and T09 warm copy menus passed; T01 and T08/T10-T14 have partial warm evidence.",
+    "not_established": "Post-reload scroll-sync and copy controls, member/admin modes, exact Store ZIP or Store-installed behavior, and full Scrape health."
+  },
+  "independent_triage": "Two fresh Luna reviewers found no resource-invalid evidence or product scroll-sync failure. The second hitbox and category suggest the Article result tab or an ancestor transition; exact action and animation properties were not recorded, so a driver false positive remains likely rather than proven.",
+  "next_discriminating_step": "Record fixed semantic click stage and safe animation-property/timing categories at the failing sample, then rerun the same frozen artifact under the resource guard. Do not relax a hit-affecting animation veto until the effect is identified.",
+  "raw_page_content_or_auth_values_included": false
+}
