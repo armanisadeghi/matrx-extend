@@ -95,6 +95,38 @@ function nodesIn(root) {
   visit(root);
   return nodes;
 }
+// Keep offsets/newlines intact so URL findings still point to their source line.
+// The scanner recognizes comments without mistaking // inside quoted URLs for one.
+function withoutJsComments(source) {
+  const visible = source.split('');
+  const scanner = ts.createScanner(
+    ts.ScriptTarget.Latest,
+    false,
+    ts.LanguageVariant.Standard,
+    source,
+  );
+  const templateDepths = [];
+  for (let token = scanner.scan(); token !== ts.SyntaxKind.EndOfFileToken; token = scanner.scan()) {
+    if (
+      token === ts.SyntaxKind.SingleLineCommentTrivia ||
+      token === ts.SyntaxKind.MultiLineCommentTrivia
+    ) {
+      for (let i = scanner.getTokenPos(); i < scanner.getTextPos(); i++)
+        if (visible[i] !== '\n') visible[i] = ' ';
+    } else if (token === ts.SyntaxKind.TemplateHead) templateDepths.push(0);
+    else if (templateDepths.length && token === ts.SyntaxKind.OpenBraceToken)
+      templateDepths[templateDepths.length - 1]++;
+    else if (templateDepths.length && token === ts.SyntaxKind.CloseBraceToken) {
+      const last = templateDepths.length - 1;
+      if (templateDepths[last] > 0) templateDepths[last]--;
+      else {
+        token = scanner.reScanTemplateToken(false);
+        if (token === ts.SyntaxKind.TemplateTail) templateDepths.pop();
+      }
+    }
+  }
+  return visible.join('');
+}
 // Resolve only lexical UI-hook imports, never infer SDK aliases or return values.
 function uiHookCall(nodes, initializer) {
   if (!initializer || !ts.isCallExpression(initializer) || !ts.isIdentifier(initializer.expression))
@@ -203,8 +235,10 @@ export function findingsIn(source, file) {
       }
     }
   }
-  source.split('\n').forEach((line, i) => {
-    if (COMMENT.test(line)) return;
+  const jsLike = !/\.(py|sh)$/.test(file);
+  const urlSource = jsLike ? withoutJsComments(source) : source;
+  urlSource.split('\n').forEach((line, i) => {
+    if (!jsLike && COMMENT.test(line)) return;
     for (const match of line.matchAll(LOGOUT_URL)) {
       // Only an explicit local/others query value is accepted; variable scopes refuse.
       const scopes = [...match.groups.rest.matchAll(/[?&]scope=([^&\s]*)/g)];
@@ -336,6 +370,19 @@ async function selfTest() {
     ['fetch(`${url}/auth/v1/logout?scope=global`)', true],
     ['fetch(`${url}/auth/v1/logout?scope=local`)', false],
     ['fetch(`${url}/auth/v1/logout?scope=${scope}`)', true],
+    ['/* audit */ fetch("/auth/v1/logout")', true],
+    ['/* audit */ fetch("/auth/v1/logout?scope=global")', true],
+    ['/* audit */ fetch("/auth/v1/logout?scope=local")', false],
+    ['fetch("/auth/v1/logout") /* audit */', true],
+    ['// audit\nfetch("/auth/v1/logout")', true],
+    ['/* audit\n * checked */ fetch("/auth/v1/logout")', true],
+    ['/* fetch("/auth/v1/logout") */', false],
+    ['fetch("/auth/v1/logout?scope=local") /* fetch("/auth/v1/logout") */', false],
+    ['fetch("/auth/v1/logout?scope=local") // /auth/v1/logout', false],
+    ['// fetch("/auth/v1/logout")\nfetch("/auth/v1/logout?scope=local")', false],
+    ['fetch(`${root /* audit */}/auth/v1/logout?scope=local`)', false],
+    ['fetch(`https://${host}/auth/v1/logout`)', true],
+    ['fetch(`https://${host}/auth/v1/logout?scope=local`)', false],
     ['// supabase.auth.signOut()', false],
     ['supabase.auth.signOut(', true],
   ];

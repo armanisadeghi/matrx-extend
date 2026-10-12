@@ -1,0 +1,25 @@
+{
+  "status": "DONE_WITH_CONCERNS",
+  "defect_id": "EXT-D-0206",
+  "reviewed_head": "c3b632e137434f905351eddf0d76627b55a18e65",
+  "reviewed_fix_commit": "f1b79b9207a5abe9fca22cdbcaaf8b300f3be597",
+  "verdict_a": "PARTIAL: the exact reviewed flow.ts bare OAuth signOut is accepted and the installed @ai-matrx/auth 0.3.2 OAuth artifact performs a local revoke; a concrete unscoped literal GoTrue call can still pass the guard.",
+  "verdict_b": "FAIL: the source-contract guard has an Important bypass in its literal URL scan, so a green gate cannot establish its stated visible-source scope guarantee.",
+  "finding": {
+    "severity": "Important",
+    "location": "scripts/check-signout-scope.mjs:206-208",
+    "issue": "COMMENT.test(line) skips every line starting with a block-comment opener, including valid code after the closing delimiter. findingsIn('/* audit */ fetch(\"/auth/v1/logout\")', 'peer-probe.ts') returns no findings; the same happens for an explicit scope=global URL. Both sources parse without errors. A literal unscoped GoTrue call is therefore accepted within the guard's stated visible-source contract.",
+    "impact": "The required sign-out scope gate can pass a direct global-default logout request.",
+    "reproduced_twice": true
+  },
+  "verification_evidence": [
+    "pnpm check:signout-scope passed at reviewed HEAD.",
+    "node scripts/check-signout-scope.mjs --self-test passed: 46 source cases and installed-package local revoke behavior.",
+    "Independent 16-case source probe: 14 matched expectation; 2 valid block-comment-prefixed bare GoTrue calls were accepted. Follow-up reproduction also accepted block-comment-prefixed scope=global. No source or inventory file was modified for probes.",
+    "SHA-256 of src/lib/auth/flow.ts: a3918502f40c9b7c34a753d2c4a696b9a1613ec2a0804870e0cf9fb64f423e90. SHA-256 of resolved @ai-matrx/auth/matrx-oauth ESM artifact: ec69236f7f4522fa1f34fd402c1e302e518f2e16d7d9e6db5fcba079305ae0a6. Both match guard fingerprints.",
+    "Installed artifact's signOut clears local state and posts /auth/v1/logout?scope=local; package self-test observed the local POST. This does not establish live product behavior."
+  ],
+  "review_limits": "Static source review and isolated package behavior only. The guard expressly excludes dynamically assembled URLs, arbitrary imported functions, reflective access, dependency internals and full alias analysis. No live extension sign-out or full release readiness was tested.",
+  "files_touched": ["docs/stabilization/reports/d0206-final-guard-peer-20261012.json"],
+  "open_questions": ["Repair the block-comment line skip, add a forcing case for a valid comment followed by a bare or global GoTrue URL, and rerun the exact gate plus independent bypass probes before accepting this guard."]
+}
