@@ -65,6 +65,14 @@ const profilesByBearer = new Map<string, UserProfile>();
 let client: MatrxOAuthClient | null = null;
 let openAuthorization: AuthorizationOpener = (url) => launchWebAuthFlow(url);
 
+function safeRedirectUri(): string {
+  try {
+    return getRedirectUri();
+  } catch {
+    return 'about:blank';
+  }
+}
+
 /** The client, or null when this build has no OAuth client id configured. */
 function getClient(): MatrxOAuthClient | null {
   if (client) return client;
@@ -74,11 +82,13 @@ function getClient(): MatrxOAuthClient | null {
     {
       authUrl: ENV.SUPABASE_URL,
       clientId,
-      redirectUri: getRedirectUri(),
+      // Sign-in checks the identity API itself (below); read-only paths need no redirect.
+      redirectUri: safeRedirectUri(),
       // Never include 'openid' — the server then fails minting an ID token.
       scope: 'email profile',
       publishableKey: ENV.SUPABASE_PUBLISHABLE_KEY,
-      storageKeyPrefix: STORAGE_KEYS.AUTH_SESSION.replace(/\.session$/, ''),
+      // The package keeps its session at `${prefix}.session` === STORAGE_KEYS.AUTH_SESSION.
+      storageKeyPrefix: 'matrx.oauth',
     },
     {
       storage: extensionStorage(chrome.storage.local),
@@ -144,7 +154,11 @@ async function clearLocalSideEffects(): Promise<void> {
   } catch (err) {
     log.warn('auth', 'could not clear local sign-in side effects', err);
   }
-  await clearSupabaseSession?.().catch(() => undefined);
+  try {
+    await clearSupabaseSession?.();
+  } catch {
+    /* best-effort */
+  }
 }
 
 function scheduleRefresh(session: MatrxOAuthSession): void {
@@ -170,6 +184,7 @@ export async function signInWithOpener(
       'WXT_EXTENSION_OAUTH_CLIENT_ID is not set. Register the extension as a public PKCE client in the Matrx Supabase dashboard, then add the client ID to .env.* files.',
     );
   }
+  getRedirectUri(); // throws the plain 'no identity API' error before any state is created
   const oauth = getClient();
   if (!oauth) throw new Error('OAuth sign-in is unavailable: no OAuth client is configured');
   const previous = openAuthorization;

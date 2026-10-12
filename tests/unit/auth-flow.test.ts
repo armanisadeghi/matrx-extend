@@ -13,6 +13,7 @@ vi.mock('@/config/env', () => ({
   },
   STORAGE_KEYS: {
     USER_PROFILE: 'profile',
+    AUTH_SESSION: 'matrx.oauth.session',
     ACTIVE_ORGANIZATION: 'active-org',
     IS_ADMIN: 'is-admin',
   },
@@ -129,6 +130,7 @@ describe('extension sign-in wiring', () => {
     const result = await flow.signIn();
     expect(result).toMatchObject({ user: { id: 'person-1', email: 'p@example.com' } });
     expect(local.get('profile')).toMatchObject({ id: 'person-1' });
+    expect(local.has('matrx.oauth.session')).toBe(true);
     expect(alarms.create).toHaveBeenCalledWith('token-refresh', { delayInMinutes: 50 });
     expect(await flow.getAccessToken()).toBe(jwt('person-1', 'first'));
     expect(await flow.getCurrentUser()).toMatchObject({ id: 'person-1' });

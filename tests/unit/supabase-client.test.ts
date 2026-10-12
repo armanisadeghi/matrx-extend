@@ -5,13 +5,18 @@ const { createClient, realtimeSetAuth } = vi.hoisted(() => ({
   realtimeSetAuth: vi.fn(),
 }));
 
+const session = vi.hoisted(() => ({ token: 'stored-access-token' as string | null }));
 vi.mock('@supabase/supabase-js', () => ({ createClient }));
 vi.mock('@/config/env', () => ({
   ENV: {
     SUPABASE_URL: 'https://db.example.test',
     SUPABASE_PUBLISHABLE_KEY: 'test-publishable-key',
   },
-  STORAGE_KEYS: { ACCESS_TOKEN: 'matrx.auth.accessToken' },
+  STORAGE_KEYS: {},
+}));
+// The stored-session reader is the OAuth wiring's (tests/unit/auth-flow.test.ts covers it).
+vi.mock('@/lib/auth/flow', () => ({
+  getStoredAccessToken: async () => session.token,
 }));
 
 describe('Supabase client authentication', () => {
@@ -21,10 +26,10 @@ describe('Supabase client authentication', () => {
     realtimeSetAuth.mockReset();
     createClient.mockReturnValue({ realtime: { setAuth: realtimeSetAuth } });
     await chrome.storage.local.clear();
+    session.token = 'stored-access-token';
   });
 
   it('supplies the extension-owned access token to every Supabase request', async () => {
-    await chrome.storage.local.set({ 'matrx.auth.accessToken': 'stored-access-token' });
     const { getSupabase } = await import('@/lib/supabase/client');
 
     getSupabase();
@@ -34,7 +39,7 @@ describe('Supabase client authentication', () => {
     };
     await expect(options.accessToken()).resolves.toBe('stored-access-token');
 
-    await chrome.storage.local.remove('matrx.auth.accessToken');
+    session.token = null;
     await expect(options.accessToken()).resolves.toBeNull();
   });
 
