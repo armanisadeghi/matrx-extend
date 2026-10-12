@@ -56,13 +56,17 @@
         "No authentication values or raw network logs were collected.",
         "No post-reload article Apply was attempted because the retained capture was shown only in the Unsaved card."
       ],
-      "defect_ids": ["EXT-D-0217"]
+      "defect_ids": ["EXT-D-0217"],
+      "evidence_quality": "Tester-recorded observation only; not independently corroborated because no inspectable UI/Chrome artifact was retained.",
+      "next_retest_requirement": "Repeat applicable warm and post-reload UI steps on the exact target artifact and retain a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact for each outcome, plus artifact-binding evidence showing version, extension ID, loaded unpacked path, source SHA, CI run/artifact ID, and tree SHA."
     },
     {
       "case_id": "EXT-F-1007-T06",
       "status": "partial",
       "warm": "pass; Cancel closed the editor and left the original sentence visible, with no edit marker from the cancelled draft",
-      "post_reload": "unverified; editor was not re-opened after extension reload"
+      "post_reload": "unverified; editor was not re-opened after extension reload",
+      "evidence_quality": "Tester-recorded observation only; not independently corroborated because no inspectable UI/Chrome artifact was retained.",
+      "next_retest_requirement": "Repeat applicable warm and post-reload UI steps on the exact target artifact and retain a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact for each outcome, plus artifact-binding evidence showing version, extension ID, loaded unpacked path, source SHA, CI run/artifact ID, and tree SHA."
     },
     {
       "case_id": "EXT-F-1007-T07",
@@ -72,7 +76,9 @@
         "sync_on": "pass; scrolling the live page from top to bottom moved Article from its start to its end",
         "sync_off": "pass; after toggling off, scrolling the live page left Article at its established position"
       },
-      "post_reload": "unverified; Article result view did not restore automatically"
+      "post_reload": "unverified; Article result view did not restore automatically",
+      "evidence_quality": "Tester-recorded observation only; not independently corroborated because no inspectable UI/Chrome artifact was retained.",
+      "next_retest_requirement": "Repeat applicable warm and post-reload UI steps on the exact target artifact and retain a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact for each outcome, plus artifact-binding evidence showing version, extension ID, loaded unpacked path, source SHA, CI run/artifact ID, and tree SHA."
     },
     {
       "case_id": "EXT-F-1007-T08",
@@ -82,7 +88,9 @@
         "visible_content": "Article, one image, 17 links, SEO audit, and Schema metadata rendered in their selected panes",
         "media_limits": "One image only; no video content or other image-size tiers were available on the fixture."
       },
-      "post_reload": "unverified; capture result panes were not restored automatically"
+      "post_reload": "unverified; capture result panes were not restored automatically",
+      "evidence_quality": "Tester-recorded observation only; not independently corroborated because no inspectable UI/Chrome artifact was retained.",
+      "next_retest_requirement": "Repeat applicable warm and post-reload UI steps on the exact target artifact and retain a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact for each outcome, plus artifact-binding evidence showing version, extension ID, loaded unpacked path, source SHA, CI run/artifact ID, and tree SHA."
     }
   ],
   "evidence": {
@@ -103,5 +111,12 @@
     "Only warm T06/T07/T08 substeps were exercised; required case lifecycle dimensions remain partial.",
     "The page had one image and no video; unavailable media tiers and video content remain unverified.",
     "The additional Article text used for scroll testing remained in memory and was not saved."
-  ]
+  ],
+  "corroboration": {
+    "status": "tester-recorded-not-independently-corroborated",
+    "independent_review": "Peer Verdict B found no retained inspectable UI/Chrome artifact beyond the tester narrative.",
+    "retained_ui_artifact": false,
+    "scope": "All warm and post-reload product behavior statements in this report are tester-recorded observations. The resource journal validates admission/cleanup only; it is not UI evidence."
+  },
+  "required_retest_artifacts": "Repeat applicable warm and post-reload UI steps on the exact target artifact and retain a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact for each outcome, plus artifact-binding evidence showing version, extension ID, loaded unpacked path, source SHA, CI run/artifact ID, and tree SHA."
 }

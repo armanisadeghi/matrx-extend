@@ -23978,7 +23978,9 @@
               "defect_ids": [
                 "EXT-D-0217"
               ],
-              "detail": "Bounded current-artifact guest Save failure reproduced warm and after extension reload; no Source landed. Overall case remains partial because the editor and required auth lifecycle were not re-exercised after reload."
+              "detail": "Bounded current-artifact guest Save failure reproduced warm and after extension reload; no Source landed. Overall case remains partial because the editor and required auth lifecycle were not re-exercised after reload.",
+              "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
+              "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
             }
           },
           "verification_status": "unverified-after-source-change",
@@ -24040,7 +24042,9 @@
               "unverified": [
                 "Cancel after full extension reload."
               ],
-              "detail": "Warm behavior confirmed on the exact frozen development artifact; no post-reload editor state was available."
+              "detail": "Warm behavior confirmed on the exact frozen development artifact; no post-reload editor state was available.",
+              "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
+              "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
             }
           },
           "result_history": [
@@ -24099,7 +24103,9 @@
               "unverified": [
                 "Post-reload scroll controls; Article result view did not restore automatically."
               ],
-              "detail": "Warm guest scroll behavior confirmed on frozen development 0.2.509. The long Article was an unsaved in-memory test edit; no Source was written."
+              "detail": "Warm guest scroll behavior confirmed on frozen development 0.2.509. The long Article was an unsaved in-memory test edit; no Source was written.",
+              "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
+              "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
             }
           },
           "result_history": [
@@ -24368,7 +24374,9 @@
                 "Post-reload result tabs; the capture pane required a fresh capture.",
                 "Video content and image tiers beyond the fixture's single image."
               ],
-              "detail": "Warm guest result-tab behavior confirmed on frozen development 0.2.509; media absence and post-reload panes remain unverified."
+              "detail": "Warm guest result-tab behavior confirmed on frozen development 0.2.509; media absence and post-reload panes remain unverified.",
+              "evidence_quality": "Tester-recorded observation only; peer Verdict B found no retained inspectable UI/Chrome artifact, so these outcomes are not independently corroborated.",
+              "next_retest_requirement": "Repeat applicable warm and post-reload steps with a sanitized screenshot/AX snapshot or equivalent inspectable browser artifact, plus artifact-binding evidence (version, extension ID, unpacked path, source SHA, CI run/artifact ID, and tree SHA)."
             },
             "member": {
               "status": "partial",
