@@ -113,6 +113,8 @@
     "status": "source-fix-native-pending",
     "cause": "Manual capture exception admission checked only the React effect-driven capture sequence; an A rejection after synchronous document replacement but before the effect could write A error on B.",
     "fix": "Check the initiating pageKey synchronously before publishing thrown capture errors in both fast/deep modes.",
-    "native_remaining": "Source-bound peer fast/deep late rejection across same-URL reload and unchanged-document failure/retry; guest/member/admin and warm/full reload remain separate cells."
+    "native_remaining": "Source-bound peer fast/deep late rejection across same-URL reload and unchanged-document failure/retry; guest/member/admin and warm/full reload remain separate cells.",
+    "source_fix_commit": "21412d7d3",
+    "current_source_verification": "Current363c locked dependencies: guarded frozen install and compile passed;19 nearby identity regression tests passed. Source review passed. Native pending."
   }
 }

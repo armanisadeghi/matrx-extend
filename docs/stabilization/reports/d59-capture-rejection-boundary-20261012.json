@@ -93,5 +93,26 @@
       "tests/unit/pattern-from-data-document-race.test.tsx"
     ]
   },
-  "verification_boundaries": "Compile and 19 regression tests passed with fbb8a4a61 locked dependencies. A later remote-only lockfile update to agents/chat/design-system was discovered during final fetch; those package versions are outside this run verdict. The changed useScrape and test file hashes remain identical. No final-source native, release or Store verdict is inferred."
+  "verification_boundaries": "The source fix21412d7d3 passed compile and all19 nearby identity regressions after frozen installation of current363c1aa09 locked dependencies. Prior fbb CI failed before testing due duplicate package graph;363c fixes that baseline. The changed source/test hashes are unchanged since independent source review. No native, release or Store verdict is inferred.",
+  "source_fix_commit": "21412d7d3",
+  "current_candidate_verification": {
+    "source_commit": "21412d7d3",
+    "dependency_baseline": "363c1aa09bcb8942fccf60ef64d8a441b5102abc",
+    "lock_sha256": "7bf72353bd1fac4abee11cda977900f4d15405543960b4bfde21b83ca49a7244",
+    "install": {
+      "run_id": "d59-current-lock-install-20261012",
+      "journal": "docs/stabilization/resource-journals/d59-current-lock-install-20261012.jsonl",
+      "verdict": "valid exit0, resourceInvalid=false"
+    },
+    "compile": {
+      "run_id": "d59-current-lock-compile-20261012",
+      "journal": "docs/stabilization/resource-journals/d59-current-lock-compile-20261012.jsonl",
+      "verdict": "valid exit0, resourceInvalid=false"
+    },
+    "regressions": {
+      "run_id": "d59-current-lock-regressions-20261012",
+      "journal": "docs/stabilization/resource-journals/d59-current-lock-regressions-20261012.jsonl",
+      "verdict": "19 tests/5 files passed, valid exit0, resourceInvalid=false"
+    }
+  }
 }
