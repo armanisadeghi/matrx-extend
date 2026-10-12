@@ -14,6 +14,7 @@
  *   - `deleted_at` (timestamptz)     — null = live; replaced the old `is_deleted`.
  */
 
+import type { HomeChoice } from '@/lib/homes/queries';
 import { z } from 'zod';
 
 export const NoteListItemSchema = z.object({
@@ -36,19 +37,8 @@ export const NoteSchema = NoteListItemSchema.extend({
 });
 export type Note = z.infer<typeof NoteSchema>;
 
-/** A home the person can see: `custom.context_scopes` (id, organization_id, name). */
-export const NoteHomeSchema = z.object({
-  id: z.string().uuid(),
-  organization_id: z.string().uuid().nullable(),
-  name: z.string(),
-});
-export type NoteHome = z.infer<typeof NoteHomeSchema>;
-
-/** A home with the label to show: its name, plus the organization's name only
- * when two visible homes share a name ("General · AI Matrx"). */
-export interface NoteHomeChoice extends NoteHome {
-  label: string;
-}
+/** Shared home option contract; lazy General has a stable UI identity. */
+export type NoteHomeChoice = HomeChoice;
 
 /** A new note carries the active organization and NO home: the database files
  * it in that organization's General. */

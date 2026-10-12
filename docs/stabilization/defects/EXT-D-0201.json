@@ -1,0 +1,68 @@
+{
+  "id": "EXT-D-0201",
+  "feature_id": "EXT-F-2006",
+  "case_ids": ["EXT-F-2006-T02"],
+  "title": "Lazy organization General is missing from Notes home choices",
+  "surface": "Notes side-panel",
+  "auth_mode": "signed-in member/admin; focused unit reproduction uses an organization-visible lazy General fixture, live auth retest pending",
+  "role_org_permissions": {
+    "role": "member or admin",
+    "organization": "signed-in user can see an organization whose General has not yet been initialized",
+    "permissions": "Notes access; General initialization is expected only when moving a note"
+  },
+  "preconditions": [
+    "Use a signed-in member or admin with an active organization and visibility to an organization whose General scope has not yet been materialized.",
+    "The platform my_homes response includes that organization's synthetic General home; no context-tree scope row exists for it yet.",
+    "Open Notes and load the home filter or the note editor's home picker."
+  ],
+  "reproduction": [
+    "Arrange the lazy organization fixture described above: my_homes returns a General row with scope_id null, organization_id set, and a display name such as Intake; the spanning context tree returns no materialized scope for that organization.",
+    "Call the real listMyHomes query and pass its result to HomePicker, as NotesList and NoteEditor do.",
+    "Open the home picker and inspect its choices; then select the synthetic General when testing the editor move path.",
+    "Compare with the previous implementation of listMyHomes, which read only client.scopes.tree(organizationIds) and validated only those context-tree rows."
+  ],
+  "expected": "The organization-visible lazy General appears as a selectable home in the Notes filter and editor picker without initializing it on read or pick. When a note is moved to it, the write path initializes General and uses the returned real scope ID.",
+  "actual": "The previous listMyHomes implementation sourced choices only from the context tree. Before General initialization, that tree had no row, so the platform's synthetic General was absent from both Notes home pickers and could not be selected.",
+  "cause": "The home-list query omitted platform.my_homes, the source that includes synthetic General entries before their organization scope is initialized.",
+  "severity": "S2: users cannot filter to or move notes into the organization's General until it has already been initialized",
+  "priority": "P1: current Notes home-filter and move coverage wave",
+  "state": "fixed",
+  "owner": "notes_lazy_general_product_fix",
+  "evidence": [
+    "src/lib/notes/queries.ts:52",
+    "src/features/notes/HomePicker.lazy-general.test.tsx:23",
+    "src/features/notes/HomePicker.lazy-general.test.tsx:45",
+    "src/features/notes/HomePicker.lazy-general.test.tsx:55",
+    "src/features/notes/NotesList.tsx:42",
+    "src/features/notes/NoteEditor.current-general.test.tsx"
+  ],
+  "source_reproduction": "Reproduced in focused HomePicker/NotesList tests against the real listMyHomes query with an organization whose General exists only as a synthetic platform.my_homes row. The source-level behavior and focused unit reproduction support the defect; no live browser run or independent runtime retest has been performed.",
+  "verification_status": "Source-reproduced; focused unit tests exercise the missing picker choice, stable filter and label after materialization, and the lazy-General move path. Independent source review passed. Live member/admin browser retest remains pending; defect is not closed.",
+  "next_action": "Independently retest the original lazy-General home choice and move on a live Notes surface for a member and admin; record exact build and run evidence before promoting beyond fixed.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T03:31:45Z",
+      "from": null,
+      "to": "open",
+      "reason": "Lazy organization General was missing from Notes choices in focused source-backed reproduction."
+    },
+    {
+      "at": "2026-10-12T03:31:45Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Reproduction identifies the missing platform.my_homes synthetic row before scope initialization; scoped to Notes home filtering and moving in EXT-F-2006-T02."
+    },
+    {
+      "at": "2026-10-12T03:31:45Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Notes query and picker repair entered implementation with focused source-level reproduction."
+    },
+    {
+      "at": "2026-10-12T03:31:45Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Fix and forcing tests passed independent source review; live independent member/admin retest remains pending, so no retest-pass or closed transition is claimed."
+    }
+  ]
+}

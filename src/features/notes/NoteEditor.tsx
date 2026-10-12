@@ -74,15 +74,17 @@ export function NoteEditor({ noteId }: { noteId: string }) {
   // Moving a note is set_home as the signed-in person, immediately (it is not
   // part of the debounced autosave of label/content).
   const onMoveHome = async (scopeId: string) => {
-    if (!note || scopeId === note.home_scope_id) return;
+    const home = homes.find((h) => h.id === scopeId);
+    if (!note || (home?.scope_id ?? scopeId) === note.home_scope_id) return;
     setMovingHome(true);
     setHomeError(null);
     try {
-      const ok = await moveNoteHome(noteId, scopeId);
+      const ok = await moveNoteHome(noteId, home ?? scopeId);
       if (!ok) {
         setHomeError('Could not move the note to that home.');
         return;
       }
+      await queryClient.invalidateQueries({ queryKey: ['notes', 'homes'] });
       await queryClient.invalidateQueries({ queryKey: ['notes', 'detail', noteId] });
       await queryClient.invalidateQueries({ queryKey: ['notes', 'list'] });
     } finally {

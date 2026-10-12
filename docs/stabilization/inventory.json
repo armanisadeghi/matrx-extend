@@ -43165,7 +43165,8 @@
           "defect_ids": [
             "EXT-D-0061",
             "EXT-D-0062",
-            "EXT-D-0069"
+            "EXT-D-0069",
+            "EXT-D-0201"
           ],
           "run_ids": [],
           "retest_status": "not-run"
@@ -43175,7 +43176,8 @@
           "defect_ids": [
             "EXT-D-0061",
             "EXT-D-0062",
-            "EXT-D-0069"
+            "EXT-D-0069",
+            "EXT-D-0201"
           ],
           "run_ids": [
             "notes-native-20260930c",

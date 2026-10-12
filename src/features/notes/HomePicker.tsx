@@ -32,7 +32,9 @@ export function HomePicker({
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const visible = useMemo(() => searchHomes(homes, query), [homes, query]);
-  const current = homes.find((h) => h.id === value)?.label ?? null;
+  const current =
+    homes.find((h) => h.id === value || (h.scope_id !== null && h.scope_id === value))?.label ??
+    null;
 
   const choose = (id: string | null) => {
     setOpen(false);
@@ -78,10 +80,12 @@ export function HomePicker({
               <li key={h.id}>
                 <button
                   type="button"
-                  aria-pressed={h.id === value}
+                  aria-pressed={h.id === value || (h.scope_id !== null && h.scope_id === value)}
                   onClick={() => choose(h.id)}
                   className={`w-full truncate rounded px-2 py-1.5 text-left text-xs hover:bg-secondary/60 ${
-                    h.id === value ? 'font-semibold' : ''
+                    h.id === value || (h.scope_id !== null && h.scope_id === value)
+                      ? 'font-semibold'
+                      : ''
                   }`}
                 >
                   {h.label}

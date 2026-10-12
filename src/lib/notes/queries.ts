@@ -6,19 +6,16 @@
  */
 
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { listHomeChoices, resolveHomeScopeId } from '@/lib/homes/queries';
 import {
   type CreateNoteInput,
   type Note,
-  type NoteHome,
   type NoteHomeChoice,
-  NoteHomeSchema,
   type NoteListItem,
   NoteListItemSchema,
   NoteSchema,
   type UpdateNotePatch,
 } from '@/lib/notes/types';
-import { listMemberOrganizations } from '@/lib/org/active-org';
-import { openSpanningClient } from '@/lib/records/store';
 import { platformDb, workbenchDb } from '@/lib/supabase/schemas';
 
 const LIST_COLUMNS = 'id, created_by, label, home_scope_id, tags, updated_at, position';
@@ -50,47 +47,31 @@ export async function listMyNotes(): Promise<NoteListItem[]> {
 
 /**
  * Every home the person can see (each organization's General + scopes), with
- * a display label: the home's name, plus " · <organization>" only when two
- * visible homes share a name.
+ * a display label: the home's name, plus its organization for General or duplicate names.
  */
 export async function listMyHomes(): Promise<NoteHomeChoice[]> {
-  const { client, organizationIds } = await openSpanningClient();
-  const result = await client.scopes.tree(organizationIds);
-  if (!result.ok) {
-    throw new Error(`Could not load homes: ${result.error.message}`);
-  }
-  const homes: NoteHome[] = [];
-  for (const row of result.data.flatMap((type) => type.scopes)) {
-    const parsed = NoteHomeSchema.safeParse(row);
-    if (parsed.success) homes.push(parsed.data);
-  }
-  homes.sort((a, b) => a.name.localeCompare(b.name));
-  const taken = new Map<string, number>();
-  for (const h of homes)
-    taken.set(h.name.toLowerCase(), (taken.get(h.name.toLowerCase()) ?? 0) + 1);
-  const needsOrg = homes.some((h) => (taken.get(h.name.toLowerCase()) ?? 0) > 1);
-  const orgNames = new Map<string, string>();
-  if (needsOrg) {
-    for (const org of await listMemberOrganizations('active')) {
-      orgNames.set(org.id, org.name);
-    }
-  }
-  return homes.map((h) => {
-    const shared = (taken.get(h.name.toLowerCase()) ?? 0) > 1;
-    const org = h.organization_id ? orgNames.get(h.organization_id) : undefined;
-    return { ...h, label: shared && org ? `${h.name} \u00b7 ${org}` : h.name };
-  });
+  return listHomeChoices();
 }
 
 /**
  * Move a note to another home as the signed-in person. Never writes
  * `organization_id` or `home_scope_id` directly: the database refuses it.
  */
-export async function moveNoteHome(noteId: string, scopeId: string): Promise<boolean> {
+export async function moveNoteHome(
+  noteId: string,
+  home: string | NoteHomeChoice,
+): Promise<boolean> {
+  let resolvedScopeId: string;
+  try {
+    resolvedScopeId = await resolveHomeScopeId(home);
+  } catch (error) {
+    console.warn('[notes] resolve home error', error);
+    return false;
+  }
   const { error } = await platformDb().rpc('set_home', {
     p_entity_type: 'note',
     p_entity_id: noteId,
-    p_scope_id: scopeId,
+    p_scope_id: resolvedScopeId,
   });
   if (error) {
     console.warn('[notes] moveNoteHome error', error.message);

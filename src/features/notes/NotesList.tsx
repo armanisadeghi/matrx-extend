@@ -51,8 +51,9 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
 
   const homeFilteredNotes = useMemo(() => {
     if (selectedHome === null) return notes;
-    return notes.filter((n) => n.home_scope_id === selectedHome);
-  }, [notes, selectedHome]);
+    const scopeId = homes.find((h) => h.id === selectedHome)?.scope_id ?? selectedHome;
+    return notes.filter((n) => n.home_scope_id === scopeId);
+  }, [notes, selectedHome, homes]);
 
   const visibleNotes = useMemo(
     () => filterNotes(homeFilteredNotes, { search: deferredSearch }),
@@ -70,6 +71,7 @@ export function NotesList({ notes }: { notes: NoteListItem[] }) {
       const note = await createNote({ label });
       if (note) {
         setSelectedNoteId(note.id);
+        void queryClient.invalidateQueries({ queryKey: ['notes', 'homes'] });
         void queryClient.invalidateQueries({ queryKey: ['notes', 'list'] });
       } else {
         setCreateFailed(true);

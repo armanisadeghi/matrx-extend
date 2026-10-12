@@ -3617,6 +3617,14 @@ In Structured data or Showcase Patterns, run a saved pattern, then switch pages 
 - **Expected:** Old previews, recommendations, capture events, and auto-extracted rows are unavailable on the new document; late success or failure from the old document does not restore them. A fresh run on the new document works. Title and subframe churn preserve current results; a same-document URL change invalidates route-specific results. When identity cannot be resolved, page-result actions explain the problem and offer Retry. URL/domain history and saved-pattern lists retain their established lookup behavior. Network page-load discovery retains its own approved replay contract.
 - **Producer identity check:** Start ordinary Network capture on document A, reload at the same URL, start B, then deliver a queued A response. Only B's response appears. Start Data field picking on A, reload, start picking on B, then deliver A's Done result; only B's selectors may be saved. A framework tree read or extraction clicked on A must target A's Chrome document ID and fail visibly if B replaced it before injection. A page whose document cannot be resolved shows the shared reason and Retry near page-result controls; the controls do not act on an unproven page.
 
+### Notes lazy General home
+
+- **What it does:** The home picker includes each visible organization's General before its scope exists, using its current name and organization label.
+- **Where to test:** Signed-in Notes list and note editor, with another member organization whose General has not been initialized.
+- **Steps:** Open the home picker and search for that organization's General. Select it as a list filter; confirm no scope is created. In an existing note's editor, explicitly move the note to that option. Reopen the note and picker. Repeat with a renamed General, an ordinary home of the same name, and a refused home read or move.
+- **Expected:** Listing and filtering never initialize General. An explicit move initializes the chosen organization's General and moves through the platform home door. The saved home label remains visible after refetch. General is identified by platform metadata, including when renamed. Same-named ordinary homes carry organization labels. A failed read or move remains an error rather than an empty success.
+- **Verification status:** Query-to-picker regression guards only; exact-build native acceptance remains pending.
+
 ### Notes read failure (EXT-D-0061)
 
 - **What it does:** Notes distinguishes a failed read from an empty list and offers Retry loading notes.
