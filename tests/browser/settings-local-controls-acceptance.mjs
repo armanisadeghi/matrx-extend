@@ -25,6 +25,7 @@ import {
   observeGuestPreference,
   preferenceBaseline,
   preferenceMatches,
+  restoreGuestPreferenceBaseline,
   runGuestPreferenceCase,
   runGuestThemeRenderingProbe,
 } from './settings-guest-preference-batch.mjs';
@@ -617,6 +618,7 @@ try {
         });
         return;
       }
+      const caseEntryBaselines = {};
       for (const preference of GUEST_PREFERENCES) {
         await runCase(byId(preference.caseId), async () => {
           const c = byId(preference.caseId);
@@ -648,6 +650,10 @@ try {
               );
               await settings(panel);
               await openSection(panel, preference.section);
+            },
+            undefined,
+            (baseline) => {
+              caseEntryBaselines[preference.caseId] = baseline;
             },
           );
         });
@@ -1093,6 +1099,21 @@ try {
         recordGuestPhase('warm', warmGuest);
         await recordGuestAdvancedDenial('warm', panel, warmGuest);
         const preExtensionBaselines = await captureGuestPreferenceBaselines({
+          caseEntryBaselines,
+          restorePreferenceBaseline: (target, preference, baseline) =>
+            restoreGuestPreferenceBaseline(
+              target,
+              preference,
+              baseline,
+              (name, observation, passed) => {
+                criterion(
+                  byId(preference.caseId),
+                  `before first extension reload: ${name}`,
+                  passed ? 'pass' : 'fail',
+                  observation,
+                );
+              },
+            ),
           panel,
           preferences: GUEST_PREFERENCES,
           settings,

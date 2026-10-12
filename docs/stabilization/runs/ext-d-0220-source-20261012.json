@@ -1,0 +1,53 @@
+{
+  "run_id": "ext-d-0220-source-20261012",
+  "defect_id": "EXT-D-0220",
+  "source_base": "6285466d1762f6f1647d13d4d97ba050fc31fe77",
+  "scope": "Harness verification only; no product/native pass claimed",
+  "original_red": {
+    "procedure": "Copied browser test modules to external-volume scratch; replaced settings-full-extension-rechecks.mjs with exact git-show HEAD version; ran new absent-key cases.",
+    "verdict": "RED",
+    "exit_code": 1,
+    "tests": 4,
+    "failed": 4,
+    "failure": "Saved baseline storedPresent was true; expected false. No import/syntax failure."
+  },
+  "current_green": {
+    "command": "node --test tests/browser/settings-guest-preference-batch.test.mjs tests/browser/settings-guest-extension-rechecks.test.mjs tests/browser/settings-full-extension-rechecks.test.mjs tests/browser/settings-guest-scrape-controls.test.mjs tests/browser/settings-guest-privacy-batch.test.mjs",
+    "tests": 54,
+    "passed": 54,
+    "exit_code": 0
+  },
+  "mutation_rejection": [
+    {
+      "mutation": "Inside real restart runner, matchesBaseline = () => true",
+      "verdict": "REJECTED",
+      "failed": 2,
+      "failure": "Missing expected rejection when reload recreates explicit System for originally absent theme."
+    },
+    {
+      "mutation": "Inside real restart runner, return startingPanel before any work",
+      "verdict": "REJECTED",
+      "failed": 4,
+      "failure": "Zero replacement reloads versus expected three; corrupt reload cases fail missing-rejection assertion."
+    }
+  ],
+  "checks": {
+    "compile": {
+      "command": "pnpm compile",
+      "exit_code": 0
+    },
+    "lint": {
+      "command": "pnpm -s lint",
+      "exit_code": 0,
+      "warnings": 897,
+      "errors": 0
+    }
+  },
+  "native_acceptance": "UNVERIFIED; no owned native or hosted job",
+  "known_limits": [
+    "Browser I/O and lifecycle receipts in these tests are fixture boundaries; source tests establish harness behavior only.",
+    "Restoring an originally absent whole settings container uses the existing exact-shape cleanup contract, while a present container retains sibling fields. Full native preference/role cases require retest."
+  ],
+  "independent_review": "pending parent review",
+  "release": "pending"
+}

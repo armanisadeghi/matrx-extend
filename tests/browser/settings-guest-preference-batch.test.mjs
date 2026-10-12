@@ -512,3 +512,102 @@ test('guest new chat exposes both selected default modes through their real mode
     false,
   );
 });
+
+import { captureGuestPreferenceBaselines } from './settings-full-extension-rechecks.mjs';
+import { runGuestChoicesAcrossExtensionRestarts } from './settings-guest-extension-rechecks.mjs';
+import {
+  preferenceBaseline,
+  preferenceBaselineMatches,
+  restoreGuestPreferenceBaseline,
+} from './settings-guest-preference-batch.mjs';
+
+// The harness owns baseline capture/restoration/comparison; only browser I/O is a fixture.
+for (const storagePresent of [false, true]) {
+  for (const corruptReload of [false, true]) {
+    test(`T04 carries absent-key case entry across late writes and full reload (container=${storagePresent}, corrupt=${corruptReload})`, async () => {
+      const f = themeProbeFixture({
+        unpersistedBaseline: true,
+        storagePresent,
+        accurateAppearance: true,
+      });
+      const entry = await runGuestPreferenceCase(
+        {},
+        () => f.driver.reload(),
+        f.preference,
+        () => {},
+        async () => {},
+        f.driver,
+      );
+      // A later Settings control can persist all defaults, including implicit System.
+      await f.driver.click({}, 'option', 'System');
+      const events = [];
+      const baselines = await captureGuestPreferenceBaselines({
+        panel: {},
+        preferences: [f.preference],
+        settings: async () => {},
+        openSection: f.driver.openSection,
+        observePreference: (panel, preference) =>
+          observeGuestPreference(panel, preference, f.driver),
+        preferenceBaseline,
+        caseEntryBaselines: { T04: entry },
+        restorePreferenceBaseline: (panel, preference, baseline) =>
+          restoreGuestPreferenceBaseline(panel, preference, baseline, () => {}, f.driver),
+      });
+      assert.equal(baselines.T04.storedPresent, false);
+      assert.equal(baselines.T04.storagePresent, storagePresent);
+      assert.equal(f.read().storedPresent, false);
+      let generation = 0;
+      let panel = { targetId: 'initial' };
+      const run = () =>
+        runGuestChoicesAcrossExtensionRestarts({
+          panel,
+          section: 'Appearance',
+          controlLabel: 'Theme',
+          choices: f.preference.choices,
+          baseline: baselines.T04,
+          settings: async () => {},
+          openSection: f.driver.openSection,
+          read: (target) => observeGuestPreference(target, f.preference, f.driver),
+          matches: (state, value, label) => preferenceMatches(state, f.preference, value, label),
+          matchesBaseline: (state) => preferenceBaselineMatches(state, f.preference, baselines.T04),
+          restoreBaseline: (target) =>
+            restoreGuestPreferenceBaseline(target, f.preference, baselines.T04, () => {}, f.driver),
+          driver: f.driver,
+          record: (name, status, observation) => events.push({ name, status, observation }),
+          reloadExtension: async () => {
+            const absentBefore = f.read().storedPresent === false;
+            await f.driver.reload();
+            if (corruptReload && absentBefore) await f.driver.click({}, 'option', 'System');
+            panel = { targetId: `replacement-${++generation}` };
+            return {
+              panel,
+              management_reload_clicked: true,
+              old_targets_retired: true,
+              worker_replaced: true,
+              panel_replaced: true,
+              retirement_evidence: { timeline: { final_predicate: true } },
+            };
+          },
+        });
+      if (corruptReload) {
+        await assert.rejects(run(), /full_extension_preference_or_restore_failed/);
+        assert.equal(
+          events.some(({ name }) => name === 'original preference restored after extension reload'),
+          false,
+        );
+      } else {
+        await run();
+        assert.equal(generation, 3);
+        const final = events.find(
+          ({ name }) => name === 'original preference restored after extension reload',
+        );
+        assert.equal(final.status, 'pass');
+        assert.equal(final.observation.selected, 'System');
+        assert.equal(final.observation.stored, null);
+        assert.equal(final.observation.storedPresent, false);
+        assert.equal(final.observation.storagePresent, storagePresent);
+        if (storagePresent) assert.equal(f.readStoredSettings().state.sentinel, 'keep-me');
+      }
+    });
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "id": "EXT-D-0220",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T04"],
+  "title": "Settings full-reload harness replaces original absent-theme baseline with explicit System",
+  "surface": "Native Settings acceptance harness",
+  "auth_mode": "guest; member/admin runners unchanged",
+  "organization_context": "Guest local preferences; no authenticated backend mutation",
+  "preconditions": [
+    "T04 begins with System visible and theme absent from matrx.settings.v1 state.",
+    "Subsequent Settings control writes serialize defaults before the full-extension reload."
+  ],
+  "reproduction": [
+    "Run T04 choices and its original-baseline panel reload restoration.",
+    "Allow later Settings cases to write their preferences, serializing theme=system.",
+    "Invoke captureGuestPreferenceBaselines immediately before the extension reload.",
+    "Observe that the previous harness snapshots explicit System and only verifies explicit System through the full reload."
+  ],
+  "expected": "Carry the case-entry baseline, including theme-key and settings-container presence; restore that baseline before the first full extension reload and assert that same shape, selection, and rendered appearance after reload and final restoration.",
+  "actual": "The guarded native run restored the absent theme key after panel reload, but later baseline capture accepted explicit System. Absent-key behavior across a full-extension reload was untested.",
+  "evidence": [
+    "8d2d93da0",
+    "docs/stabilization/evidence/settings-controls-local/run-settings-t04-absent-key-20261012-2212/native-report.sanitized.json",
+    "docs/stabilization/resource-journals/settings-t04-absent-key-20261012-2212.jsonl",
+    "docs/stabilization/runs/settings-t04-absent-key-20261012-2212.json",
+    "docs/stabilization/runs/ext-d-0220-source-20261012.json"
+  ],
+  "reproducibility": "Deterministic harness regression; current-artifact native behavior remains unverified.",
+  "severity": "S2: false coverage of original theme-key shape across extension reload",
+  "priority": "P1: repair acceptance before interpreting T04 full-reload results",
+  "state": "in-fix",
+  "owner": "root/settings_t04_harness_repair",
+  "cause": "Late resnapshot overwrote case-entry absence; generic restart runner only compared stored value and restored through option selection.",
+  "sibling_census": "T04/T10 share baseline capture; T04/T10/T67 share replacement runner. Added optional exact baseline matching/restoration while retaining default T10/T67 paths and surrounding coverage.",
+  "acceptance_criteria": [
+    "Original key/container presence survives all baseline handoffs.",
+    "A reload which creates explicit System from an absent theme key fails.",
+    "Original explicit themes, default mode, scrape controls, and privacy controls retain their prior paths.",
+    "Native acceptance waits for the exact CI artifact and resource admission."
+  ],
+  "build_receipt": {
+    "source_base": "6285466d1762f6f1647d13d4d97ba050fc31fe77",
+    "native_evidence_commit": "8d2d93da0",
+    "fresh_native_artifact": "pending"
+  },
+  "source_verification": {
+    "run_id": "ext-d-0220-source-20261012",
+    "evidence": "docs/stabilization/runs/ext-d-0220-source-20261012.json",
+    "native_acceptance": "UNVERIFIED: no browser or hosted job launched",
+    "independent_review": "pending parent review",
+    "release": "pending"
+  },
+  "next_action": "Independent review, parent integration/push, then guarded native T04 retest on exact CI artifact. Link defect from inventory and feature-tests after D219 shared-file work completes.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T22:20:31.150692+00:00",
+      "from": null,
+      "to": "open",
+      "reason": "Independent review of 8d2d93da0 found absent-key full-reload coverage was not exercised."
+    },
+    {
+      "at": "2026-10-12T22:20:31.150692+00:00",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed late capture plus stored-value-only reload restoration as the two harness boundaries."
+    },
+    {
+      "at": "2026-10-12T22:20:31.150692+00:00",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Source repair and deterministic RED/GREEN and mutant evidence exist; review and native gates remain pending."
+    }
+  ]
+}

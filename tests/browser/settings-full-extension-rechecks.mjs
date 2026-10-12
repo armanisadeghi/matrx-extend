@@ -4,6 +4,10 @@ import {
   GUEST_POST_REPLACEMENT_STAGES,
   runGuestChoicesAcrossExtensionRestarts,
 } from './settings-guest-extension-rechecks.mjs';
+import {
+  preferenceBaselineMatches,
+  restoreGuestPreferenceBaseline,
+} from './settings-guest-preference-batch.mjs';
 import { AUTO_SCRAPE_MODE_FAILURE_STAGES } from './settings-guest-scrape-controls.mjs';
 import {
   observeGuestAutoScrapeMode,
@@ -178,15 +182,25 @@ export async function captureGuestPreferenceBaselines({
   openSection,
   observePreference,
   preferenceBaseline,
+  caseEntryBaselines = {},
+  restorePreferenceBaseline,
 }) {
-  const baselines = {};
+  const baselines = { ...caseEntryBaselines };
   await settings(panel);
   for (const preference of preferences.filter((item) => ['T04', 'T10'].includes(item.caseId))) {
+    if (baselines[preference.caseId]) continue;
     await openSection(panel, preference.section);
     baselines[preference.caseId] = preferenceBaseline(
       await observePreference(panel, preference),
       preference,
     );
+  }
+  for (const preference of preferences) {
+    if (caseEntryBaselines[preference.caseId]) {
+      if (typeof restorePreferenceBaseline !== 'function')
+        throw new Error('case_entry_baseline_restorer_required');
+      await restorePreferenceBaseline(panel, preference, baselines[preference.caseId]);
+    }
   }
   return baselines;
 }
@@ -241,12 +255,9 @@ export async function rerunGuestSettingsAfterExtensionReload({
       const item = cases.find((candidate) => candidate.id.endsWith(preference.caseId));
       const result = await runFullExtensionRecheck(item, async (record) => {
         const before = await observePreference(activePanel, preference);
-        const observed = preferenceBaseline(before, preference);
         const baseline = preExtensionBaselines?.[preference.caseId];
         const baselineMatched =
-          baseline?.matched === true &&
-          observed.matched === true &&
-          observed.value === baseline.value;
+          baseline?.matched === true && preferenceBaselineMatches(before, preference, baseline);
         record(
           `pre-run ${preference.label} matches saved baseline`,
           baselineMatched ? 'pass' : 'fail',
@@ -254,6 +265,8 @@ export async function rerunGuestSettingsAfterExtensionReload({
             before,
             expectedValue: baseline?.value ?? null,
             expectedLabel: baseline?.label ?? null,
+            expectedStoredPresent: baseline?.storedPresent ?? null,
+            expectedStoragePresent: baseline?.storagePresent ?? null,
           },
         );
 
@@ -268,6 +281,20 @@ export async function rerunGuestSettingsAfterExtensionReload({
             openSection,
             read: (target) => observePreference(target, preference),
             matches: (state, value, label) => preferenceMatches(state, preference, value, label),
+            ...(preference.caseId === 'T04' && {
+              matchesBaseline: (state) => preferenceBaselineMatches(state, preference, baseline),
+              ...(baseline?.storedPresent === false && {
+                restoreBaseline: (target) =>
+                  restoreGuestPreferenceBaseline(
+                    target,
+                    preference,
+                    baseline,
+                    (name, observation, passed) =>
+                      record(name, passed ? 'pass' : 'fail', observation),
+                    ...(choiceDriver && [{ ...choiceDriver, openSection }]),
+                  ),
+              }),
+            }),
             reloadExtension,
             acquireLivePanel,
             onPanelChanged: (target) => {

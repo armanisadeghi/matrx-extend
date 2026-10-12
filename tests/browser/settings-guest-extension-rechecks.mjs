@@ -90,6 +90,8 @@ export async function runGuestChoicesAcrossExtensionRestarts({
   openSection,
   read,
   matches,
+  matchesBaseline = (state) => matches(state, baseline.value, baseline.label),
+  restoreBaseline,
   reloadExtension,
   acquireLivePanel,
   onPanelChanged = () => {},
@@ -179,7 +181,7 @@ export async function runGuestChoicesAcrossExtensionRestarts({
     await openSection(activePanel, section);
     failureDetailStage = 'initial_baseline_observation';
     const state = await read(activePanel);
-    const matched = matches(state, baseline.value, baseline.label);
+    const matched = matchesBaseline(state);
     record(`${stage}: original preference matches`, matched ? 'pass' : 'fail', state);
     assert.equal(matched, true, `${stage}_baseline_mismatch`);
     return state;
@@ -243,7 +245,7 @@ export async function runGuestChoicesAcrossExtensionRestarts({
             observedState = await read(activePanel);
             return observedState;
           },
-          (observed) => matches(observed, value, label),
+          (observed) => (restoring ? matchesBaseline(observed) : matches(observed, value, label)),
         ),
       (result) => safeObservation(observedState ?? result, value, label),
     );
@@ -314,7 +316,10 @@ export async function runGuestChoicesAcrossExtensionRestarts({
       failureDetailStage = 'restore_recovered_observation';
       current = await read(activePanel);
     }
-    if (!matches(current, baseline.value, baseline.label)) {
+    if (restoreBaseline) {
+      failureDetailStage = 'restore_baseline_select';
+      current = await restoreBaseline(activePanel);
+    } else if (!matchesBaseline(current)) {
       const visible = current?.selected ?? current?.visible ?? null;
       if (visible === baseline.label && current?.stored !== baseline.value) {
         const alternate = choices.find(([value]) => value !== baseline.value);
@@ -346,12 +351,15 @@ export async function runGuestChoicesAcrossExtensionRestarts({
       }
     }
     failureDetailStage = 'restore_before_reload_record';
+    assert.equal(matchesBaseline(current), true, 'original_baseline_shape_mismatch');
     record('original preference restored before extension reload', 'pass', current);
     failureStage = 'restore_extension_reload';
     failureDetailStage = 'restore_extension_reload';
     await restartAndRead(baseline.value, baseline.label, failureStage);
     failureDetailStage = 'restore_final_observation';
-    record('original preference restored after extension reload', 'pass', await read(activePanel));
+    const final = await read(activePanel);
+    assert.equal(matchesBaseline(final), true, 'original_baseline_after_reload_mismatch');
+    record('original preference restored after extension reload', 'pass', final);
   } catch (error) {
     restoreFailure = true;
     restoreFailureStage = failureStage;

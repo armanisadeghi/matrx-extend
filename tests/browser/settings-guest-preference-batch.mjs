@@ -159,6 +159,7 @@ export async function runGuestPreferenceCase(
   record,
   afterReload = async () => {},
   driver = nativeDriver,
+  onBaseline = () => {},
 ) {
   await driver.openSection(panel, preference.section);
   const initial =
@@ -171,7 +172,10 @@ export async function runGuestPreferenceCase(
       (initial.storedPresent === false
         ? preference.choices.find(([, label]) => label === initial.selected)
         : undefined));
-  if (preference.key === 'theme') assert.ok(baselineChoice, 'theme_case_requires_visible_baseline');
+  if (preference.key === 'theme') {
+    assert.ok(baselineChoice, 'theme_case_requires_visible_baseline');
+    onBaseline(preferenceBaseline(initial, preference));
+  }
 
   let primaryError;
   try {
@@ -255,6 +259,7 @@ export async function runGuestPreferenceCase(
   }
 
   if (primaryError) throw primaryError;
+  return initial ? preferenceBaseline(initial, preference) : null;
 }
 
 export async function runGuestThemeRenderingProbe(
@@ -436,9 +441,32 @@ export function preferenceBaseline(observation, preference) {
   return {
     value,
     label: choice?.[1] ?? null,
+    storedPresent: observation?.storedPresent,
+    storagePresent: observation?.storagePresent,
     observation,
-    matched: !!choice && preferenceMatches(observation, preference, value, choice[1]),
+    matched:
+      !!choice &&
+      preferenceBaselineMatches(observation, preference, {
+        value,
+        label: choice[1],
+        storedPresent: observation?.storedPresent,
+        storagePresent: observation?.storagePresent,
+      }),
   };
+}
+
+export function preferenceBaselineMatches(observed, preference, baseline) {
+  if (preference.key !== 'theme' || baseline?.storedPresent === undefined)
+    return preferenceMatches(observed, preference, baseline?.value, baseline?.label);
+  return (
+    themeBaselineSelectionMatches(
+      observed,
+      baseline.value,
+      baseline.label,
+      baseline.storedPresent,
+      baseline.storagePresent,
+    ) && themeAppearanceMatches(observed, baseline.value)
+  );
 }
 
 export async function restoreGuestPreferenceBaseline(
@@ -457,12 +485,14 @@ export async function restoreGuestPreferenceBaseline(
     await driver.click(panel, 'settings-select', preference.label);
     await driver.click(panel, 'option', label);
   }
+  if (preference.key === 'theme' && baseline.storedPresent === false)
+    await restoreAbsentThemePreference(panel, preference, baseline.storagePresent, driver);
   const restored = await driver.waitFor(
     `${preference.caseId}_full_extension_baseline_restored`,
     () => observeGuestPreference(panel, preference, driver),
-    (state) => preferenceMatches(state, preference, value, label),
+    (state) => preferenceBaselineMatches(state, preference, baseline),
   );
-  const passed = preferenceMatches(restored, preference, value, label);
+  const passed = preferenceBaselineMatches(restored, preference, baseline);
   record(`original ${preference.label} preference restored`, restored, passed);
   if (!passed) throw new Error(`${preference.caseId}_full_extension_baseline_restore_failed`);
   return restored;
