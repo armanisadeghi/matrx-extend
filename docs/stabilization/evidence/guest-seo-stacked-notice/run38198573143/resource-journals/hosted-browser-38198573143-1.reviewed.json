@@ -1,0 +1,28 @@
+{
+  "run_id": "hosted-browser-38198573143-1",
+  "manual_review": "The official journal copier rejected the RESOURCE_MEASUREMENT_INVALID:cpu-busy event as unsupported. That rejected event contained bounded code fields and a duplicate detail field. The full source journal also contained a runner path in its open event. This reviewed receipt omits the path and duplicate detail while preserving the refusal and terminal decision; no credentials or user data were retained.",
+  "events": [
+    {
+      "schema": 1,
+      "at": "2026-10-12T03:12:30.846Z",
+      "runId": "hosted-browser-38198573143-1",
+      "code": "RESOURCE_JOURNAL_OPENED"
+    },
+    {
+      "schema": 1,
+      "at": "2026-10-12T03:13:38.285Z",
+      "runId": "hosted-browser-38198573143-1",
+      "code": "RESOURCE_MEASUREMENT_INVALID:cpu-busy"
+    },
+    {
+      "schema": 1,
+      "at": "2026-10-12T03:13:38.328Z",
+      "runId": "hosted-browser-38198573143-1",
+      "admitted": false,
+      "resourceInvalid": false,
+      "exitCode": 2,
+      "decision": "refused",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  ]
+}
