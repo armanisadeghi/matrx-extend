@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0217-native-retest-final-20261012",
+  "defect_id": "EXT-D-0217",
+  "feature_id": "EXT-F-1007",
+  "status": "blocked_resource_refusal",
+  "preflight": {
+    "run_id": "ext-d-0217-retest-preflight-recovery-20261012-01",
+    "journal": "docs/stabilization/resource-journals/ext-d-0217-retest-preflight-recovery-20261012-01.jsonl",
+    "decision": "refused",
+    "resource_invalid": false,
+    "exit_code": 2,
+    "sample": {
+      "pressure_level": 2,
+      "available_memory_gib": 5.44,
+      "required_memory_gib": 4,
+      "one_minute_load": 4.61,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.17857142857142858,
+      "swap_used_mib": 9800.88,
+      "repo_free_gib": 1648.0131072998047,
+      "system_free_gib": 35.030029296875
+    },
+    "refusal_reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_SWAP_GROWTH"]
+  },
+  "artifact": {
+    "channel": "development",
+    "version": "0.2.509",
+    "source_sha": "3e5b8f18293ae0317623d9c1c17a92d260108615",
+    "ci_run_id": "38306513126",
+    "artifact_id": "11773390470",
+    "tree_sha256_from_promotion_receipt": "feeeace4f3f6ec91eb3319fe412c77ce63e018f0582eae58e4d7714bd499c173",
+    "runtime_binding": "not observed; Chrome was not opened"
+  },
+  "browser": {"opened": false, "profile": null, "fixture": null, "inspectable_ui_artifact": null},
+  "behavior_observed": false,
+  "api_only": false,
+  "blocked_cases": ["EXT-F-1007-T05", "EXT-F-1007-T06", "EXT-F-1007-T07", "EXT-F-1007-T08"],
+  "credentials_or_auth_values_recorded": false,
+  "next_action": "Repeat the native browser retest only when a future guarded preflight admits. Do not retry this host in this run."
+}
