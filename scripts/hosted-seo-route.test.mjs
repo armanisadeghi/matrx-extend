@@ -870,11 +870,13 @@ test('SEO receipts retain only bounded native stacked geometry measurements', as
     await writeSeoGuestReport(path, report, false);
     const invalid = JSON.parse(await readFile(path, 'utf8'));
     assert.equal(invalid.stacked_notice_fixture_diagnostic.geometry, undefined);
-    geometry.observed = 8;
-    geometry.expected = 8;
+    geometry.native_sample.hit_point_count = 9;
+    geometry.observed = 9;
     await writeSeoGuestReport(path, report, false);
     const equalScalar = JSON.parse(await readFile(path, 'utf8'));
     assert.equal(equalScalar.stacked_notice_fixture_diagnostic.geometry, undefined);
+    geometry.native_sample.hit_point_count = 8;
+    geometry.observed = 8;
     geometry.failed_predicate = 'title_counts';
     geometry.expected = [1, 1];
     geometry.observed = [1, 1];
