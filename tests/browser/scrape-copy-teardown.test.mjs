@@ -65,3 +65,46 @@ test('missing active Scrape panel is not successful teardown', async () => {
   window.document.getElementById('scrape-pane').setAttribute('data-state', 'inactive');
   await assert.rejects(observe(window, [() => {}]), /owned_copy_popover_teardown_not_observed/);
 });
+
+test('a failed teardown reports bounded rendering evidence without clipboard text', async () => {
+  const window = fixture();
+  const dialog = window.document.getElementById('capture-menu');
+  dialog.style.cssText =
+    'opacity: 0; pointer-events: auto; animation-name: exit; animation-duration: 0.15s';
+  let observed;
+  await assert.rejects(
+    waitForCopyPopoverTeardown({
+      panel: {},
+      evaluate: async (_panel, expression) => window.eval(expression),
+      waitFor: async (_name, read, ready) => {
+        observed = await read();
+        assert.equal(ready(observed), false);
+        throw new Error('teardown blocked');
+      },
+    }),
+    /teardown blocked/,
+  );
+  assert.ok(Array.isArray(observed.dialogs), 'missing stuck-portal rendering diagnostic');
+  assert.equal(observed.dialogs.length, 1);
+  assert.equal(observed.dialogs[0].state, 'closed');
+  assert.equal(observed.dialogs[0].owned, true);
+  assert.equal(observed.dialogs[0].opacity, '0');
+  assert.equal(observed.dialogs[0].pointerEvents, 'auto');
+  assert.equal(observed.dialogs[0].animationName, 'exit');
+  assert.equal(JSON.stringify(observed).includes('Private clipboard payload'), false);
+  for (let i = 0; i < 5; i++) dialog.parentElement.append(dialog.cloneNode(true));
+  dialog.style.opacity = '1';
+  dialog.setAttribute('data-state', 'open');
+  await waitForCopyPopoverTeardown({
+    panel: {},
+    evaluate: async (_panel, expression) => window.eval(expression),
+    waitFor: async (_name, read) => {
+      const next = await read();
+      assert.equal(next.dialogs.length, 4);
+      assert.equal(next.dialogsTruncated, true);
+      assert.equal(next.dialogs[0].state, 'open');
+      assert.equal(next.dialogs[0].opacity, '1');
+      return next;
+    },
+  });
+});
