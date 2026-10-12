@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0187",
+  "lane": "pending destination cancellation and thrown rejection source guards",
+  "source_base": "9868783a6",
+  "status": "SOURCE_GUARDS_PASS; LOCAL_COMPILE_RESOURCE_REFUSED",
+  "sut": "Real ScrapeView > SaveSourceForm > PlaceResults, plus real source-save orchestration; external createEntityRow/API calls and identity reads are doubled in the existing test harness.",
+  "changes": [
+    "Native dialog cancel while destination creation is pending preserves the open Source draft; cancellation after settlement closes normally.",
+    "Deferred createEntityRow rejection shows error, unlocks Save/Close/type controls and preserves the Project draft. Retry lands with the returned Project; saving without retry lands with no destination."
+  ],
+  "production_change": "None; existing d610d3937 behavior passed these added tests.",
+  "verification": [
+    {
+      "run_id": "d187-cancel-throw-green2-20261012",
+      "verdict": "PASS",
+      "detail": "33 tests in 2 files; admitted, resourceInvalid false, child exit 0."
+    },
+    {
+      "run_id": "d187-cancel-red2-20261012",
+      "verdict": "MUTANT_KILLED",
+      "detail": "Removing destinationBusy from onCancel guard failed draft-retention assertion: dialog null while creation pending. plant.py restored production byte-identically."
+    },
+    {
+      "run_id": "d187-throw-release-red-20261012",
+      "verdict": "MUTANT_KILLED",
+      "detail": "Removing onCreateBusyChange(false) from finally failed both new rejection remedies at Save enabled assertion (true vs false disabled). plant.py restored production byte-identically."
+    },
+    {
+      "run_id": "d187-constant-form-red-20261012",
+      "verdict": "NOT_RUN_RESOURCE_REFUSED",
+      "detail": "Constant-output gut check refused before child start due RESOURCE_PRESSURE_UNSAFE (pressureLevel 2). No mutation test credit; plant.py restored production byte-identically."
+    },
+    {
+      "run_id": "d187-cancel-throw-compile-20261012",
+      "verdict": "NOT_RUN_RESOURCE_REFUSED",
+      "detail": "Compile refused before child start due RESOURCE_PRESSURE_UNSAFE (pressureLevel 2). Exact-source automatic CI compile remains pending."
+    },
+    {
+      "command": "pnpm exec biome check tests/unit/save-never-loses-input.test.tsx",
+      "verdict": "PASS"
+    }
+  ],
+  "invalid_setup_attempts": [
+    "d187-cancel-throw-green-20261012 refused before admission because scratch directory was absent; corrected before valid run.",
+    "d187-cancel-red-20261012 refused unsupported -t command filter before admission; no red credit. Corrected to supported single-file command."
+  ],
+  "peer": "docs/stabilization/reports/d187-cancel-throw-tests-peer-20261012.json; verdict A",
+  "cancel_seam": "React onCancel is directly wired to the dialog cancel event. The test dispatches that event without mocking its handler. JSDOM does not implement Escape producing cancel, so actual keyboard/browser behavior remains unverified.",
+  "limitations": [
+    "Source tests and mutation guards only. No native/product/browser retest, persistence readback, release or D0187 closure.",
+    "Constant-output gut check and local compile did not run because host safety refused; do not infer passes."
+  ],
+  "owned_jobs": "No active child, resource lease or mutation remains.",
+  "next_action": "Read exact-source automatic CI compile result; retain D0187 in-fix and T04/T29 partial pending native acceptance."
+}

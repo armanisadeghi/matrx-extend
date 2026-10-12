@@ -501,6 +501,108 @@ describe('Save never loses input', () => {
     expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
   });
 
+  it('keeps the draft through dialog cancellation while destination creation is pending', async () => {
+    const project = deferredApiResponse();
+    mocks.createEntityRow.mockReturnValueOnce(project.promise);
+    mocks.apiPost.mockResolvedValue(landedResponse);
+    render(<ScrapeView />);
+    fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+    fireEvent.change(await screen.findByLabelText('Source name'), {
+      target: { value: 'Harbor Dental intake evidence' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create new project' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'New Project name' }), {
+      target: { value: 'Harbor Dental intake research' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+    const dialog = screen.getByRole('dialog', { name: 'Save Source' });
+    // Escape's browser default emits cancel. JSDOM does not implement that
+    // default: dispatch its native event, without replacing the form handler.
+    try {
+      const cancel = new Event('cancel', { cancelable: true });
+      fireEvent(dialog, cancel);
+      expect(cancel.defaultPrevented).toBe(true);
+      expect(screen.queryByRole('dialog', { name: 'Save Source' })).toBe(dialog);
+      expect((screen.getByLabelText('Source name') as HTMLInputElement).value).toBe(
+        'Harbor Dental intake evidence',
+      );
+      expect(mocks.apiPost).not.toHaveBeenCalled();
+    } finally {
+      await act(async () =>
+        project.resolve({
+          ok: true,
+          data: { id: 'project-intake', title: 'Harbor Dental intake research' },
+        }),
+      );
+    }
+    // Once creation settles, normal cancellation must work again.
+    fireEvent(dialog, new Event('cancel', { cancelable: true }));
+    expect(screen.queryByRole('dialog', { name: 'Save Source' })).toBeNull();
+    expect(mocks.apiPost).not.toHaveBeenCalled();
+  });
+
+  it.each(['retry creation', 'save without a destination'] as const)(
+    'recovers from a thrown destination error and can %s',
+    async (remedy) => {
+      let reject!: (reason: Error) => void;
+      const project = new Promise<unknown>((_resolve, fail) => {
+        reject = fail;
+      });
+      mocks.createEntityRow.mockReturnValueOnce(project).mockResolvedValueOnce({
+        ok: true,
+        data: { id: 'project-intake', title: 'Harbor Dental intake research' },
+      });
+      mocks.apiPost.mockResolvedValue(landedResponse);
+      render(<ScrapeView />);
+      fireEvent.click(screen.getByRole('button', { name: /^Save$/ }));
+      fireEvent.change(await screen.findByLabelText('Source name'), {
+        target: { value: 'Harbor Dental intake evidence' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Choose a place' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Projects' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Create new project' }));
+      fireEvent.change(screen.getByRole('textbox', { name: 'New Project name' }), {
+        target: { value: 'Harbor Dental intake research' },
+      });
+      fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+      await act(async () => reject(new Error('Connection interrupted')));
+      expect(await screen.findByText('Could not create project.')).toBeTruthy();
+      expect(
+        (screen.getByRole('button', { name: /^Save Source$/ }) as HTMLButtonElement).disabled,
+      ).toBe(false);
+      expect(
+        (screen.getByRole('button', { name: 'Close Save Source' }) as HTMLButtonElement).disabled,
+      ).toBe(false);
+      expect((screen.getByRole('button', { name: 'Tasks' }) as HTMLButtonElement).disabled).toBe(
+        false,
+      );
+      expect(
+        (screen.getByRole('textbox', { name: 'New Project name' }) as HTMLInputElement).value,
+      ).toBe('Harbor Dental intake research');
+      expect(mocks.apiPost).not.toHaveBeenCalled();
+      if (remedy === 'retry creation') {
+        fireEvent.click(screen.getByRole('button', { name: 'Create' }));
+        await screen.findByRole('button', { name: 'Remove Harbor Dental intake research' });
+        expect(mocks.createEntityRow).toHaveBeenLastCalledWith('project', {
+          title: 'Harbor Dental intake research',
+          orgId: mocks.organizationId,
+        });
+      }
+      fireEvent.click(screen.getByRole('button', { name: /^Save Source$/ }));
+      await waitFor(() => expect(mocks.apiPost).toHaveBeenCalledTimes(1));
+      expect(mocks.apiPost.mock.calls[0]?.[1]).toMatchObject({
+        name: 'Harbor Dental intake evidence',
+        attach_to:
+          remedy === 'retry creation'
+            ? [{ entity_type: 'project', entity_id: 'project-intake' }]
+            : [],
+      });
+      expect(await screen.findByRole('button', { name: /^Saved$/ })).toBeTruthy();
+    },
+  );
+
   it('allows saving after destination creation is refused without attaching a missing destination', async () => {
     mocks.createEntityRow.mockResolvedValueOnce({ ok: false, error: 'Project creation refused.' });
     mocks.apiPost.mockResolvedValue(landedResponse);
