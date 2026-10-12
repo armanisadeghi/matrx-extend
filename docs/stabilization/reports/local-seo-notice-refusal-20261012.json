@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "run_id": "local-seo-notice-retest-20261012-1540",
+  "case_scope": "SEO_GUEST_CASE_SCOPE=notice",
+  "status": "refused_before_browser_zero_product_credit",
+  "product_artifact": {
+    "version": "0.2.509",
+    "source_sha": "6522427bb0c7e3620a187cdb2c7a123992036782",
+    "ci_run_id": 38266455996,
+    "development_artifact_id": 11754948253,
+    "digest": "sha256:ba58220ce2cec43d664d0e2a089467d5ab32e495104d62c18ea2ffa3bdd51ae4",
+    "receipt": "test-results/ci-artifacts/6522427bb0c7e3620a187cdb2c7a123992036782/38266455996-1/local-dev-receipt.json"
+  },
+  "attempts": [
+    {
+      "run_id": "local-seo-notice-retest-20261012-083927",
+      "command": "node scripts/stabilization-resource.mjs run --run-id local-seo-notice-retest-20261012-083927 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- node -e 'console.log(\"probe\")'",
+      "admitted": false,
+      "resource_invalid": false,
+      "exit_code": 2,
+      "refusal": "RESOURCE_COMMAND_NOT_ALLOWED",
+      "journal": "docs/stabilization/resource-journals/local-seo-notice-retest-20261012-083927.jsonl",
+      "product_execution": false
+    },
+    {
+      "run_id": "local-seo-notice-retest-20261012-1540",
+      "command": "SEO_GUEST_CASE_SCOPE=notice SEO_GUEST_EXTENSION_DIR=/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/6522427bb0c7e3620a187cdb2c7a123992036782/38266455996-1/chrome-mv3 SEO_GUEST_DEV_BUILD_RECEIPT=/Volumes/Samsung2TB/code/matrx-extend/test-results/ci-artifacts/6522427bb0c7e3620a187cdb2c7a123992036782/38266455996-1/local-dev-receipt.json node scripts/stabilization-resource.mjs run --run-id local-seo-notice-retest-20261012-1540 --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- node tests/browser/seo-guest-acceptance.mjs",
+      "admitted": false,
+      "resource_invalid": false,
+      "exit_code": 2,
+      "refusal": "RESOURCE_PRESSURE_UNSAFE",
+      "observed_at_utc": "2026-10-12T15:40:45.410Z",
+      "pressure_level": 2,
+      "available_memory_gib": 7.68,
+      "one_minute_load": 3.5,
+      "cpu_busy_fraction": 0.09428571428571428,
+      "swap_used_mib": 1647.81,
+      "journal": "docs/stabilization/resource-journals/local-seo-notice-retest-20261012-1540.jsonl",
+      "product_execution": false
+    }
+  ],
+  "product_observations": 0,
+  "inventory_credit": 0,
+  "next_action": "Retry the narrow notice scope only after a new guarded admission succeeds; independently review the complete native result and valid resource final before assigning any coverage credit."
+}
