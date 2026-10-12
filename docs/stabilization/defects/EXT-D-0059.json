@@ -49,9 +49,10 @@
     "docs/stabilization/reports/d59-pattern-probe-final-peer-20261002.json",
     ".research/prepare-native-acceptance-peer.json",
     ".research/snapshot-current-native.json",
-    ".research/snapshot-final-native-peer.json"
+    ".research/snapshot-final-native-peer.json",
+    "docs/stabilization/reports/d59-capture-rejection-boundary-20261012.json"
   ],
-  "verification_status": "Prepare and Snapshot have bounded independent native evidence. D59 remains in-fix for broader shared consumers; full T09 auth-transition/current-document service-error acceptance remains pending.",
+  "verification_status": "Prepare and Snapshot retain bounded independent native evidence. A newly reproduced manual Scrape stale-rejection gap is repaired in source with focused red-to-green guards; native peer acceptance remains pending. D59 remains in-fix for broader shared consumers and full T09 auth-transition/current-document service-error acceptance.",
   "transition_history": [
     {
       "at": "2026-09-28T15:30:38.553635+00:00",
@@ -106,5 +107,14 @@
       "verified": "Current-artifact Prepare passed same-URL reload and distinct-full-URL late success/rejection cases; destination document identity changed and stale outcomes did not surface.",
       "scope_limit": "Prepare only. Snapshot on this current artifact and the remaining shared document-identity consumers are unverified; keep D59 in-fix."
     }
-  ]
+  ],
+  "manual_capture_rejection_boundary": {
+    "report": "docs/stabilization/reports/d59-capture-rejection-boundary-20261012.json",
+    "status": "source-fix-native-pending",
+    "cause": "Manual capture exception admission checked only the React effect-driven capture sequence; an A rejection after synchronous document replacement but before the effect could write A error on B.",
+    "fix": "Check the initiating pageKey synchronously before publishing thrown capture errors in both fast/deep modes.",
+    "native_remaining": "Source-bound peer fast/deep late rejection across same-URL reload and unchanged-document failure/retry; guest/member/admin and warm/full reload remain separate cells.",
+    "source_fix_commit": "21412d7d3",
+    "current_source_verification": "Current363c locked dependencies: guarded frozen install and compile passed;19 nearby identity regression tests passed. Source review passed. Native pending."
+  }
 }

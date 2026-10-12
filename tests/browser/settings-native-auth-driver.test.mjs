@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { chmod, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { performance } from 'node:perf_hooks';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
 import {
@@ -147,6 +148,7 @@ function optionPanel({
   let scrollCount = 0;
   let currentY = targetY;
   const events = [];
+  const pointerSamples = [];
   const rect = (x, y, width, height) => ({
     x,
     y,
@@ -204,6 +206,15 @@ function optionPanel({
   }));
   const filter = { querySelectorAll: () => [{ textContent: 'Active only' }] };
   const document = {
+    // The real pointer sampler observes browser clocks and document focus even
+    // when no animation is running. Keep that boundary present in this VM.
+    hasFocus: () => true,
+    visibilityState: 'visible',
+    timeline: {
+      get currentTime() {
+        return performance.now();
+      },
+    },
     querySelectorAll: (selector) =>
       selector === 'span'
         ? [label]
@@ -222,6 +233,7 @@ function optionPanel({
   };
   return {
     events,
+    pointerSamples,
     get scrollCount() {
       return scrollCount;
     },
@@ -235,6 +247,7 @@ function optionPanel({
       reads += 1;
       const value = runInNewContext(expression, {
         document,
+        performance,
         getComputedStyle: () => ({
           display: 'block',
           visibility: 'visible',
@@ -246,6 +259,7 @@ function optionPanel({
         innerWidth: 300,
         innerHeight: 200,
       });
+      if (value?.animationDiagnostic) pointerSamples.push(value);
       return { result: { value } };
     },
   };
@@ -293,6 +307,13 @@ test('the actual selector reveals and hit-tests its owned offscreen option befor
       ['mousePressed', 'mouseReleased', 'mousePressed', 'mouseReleased'],
     );
     assert.equal(panel.events[2].y, 79);
+    assert.ok(panel.pointerSamples.length >= 6, 'both clicks must sample pointer readiness');
+    for (const { animationDiagnostic } of panel.pointerSamples) {
+      assert.ok(Number.isFinite(animationDiagnostic.sampledAt));
+      assert.ok(Number.isFinite(animationDiagnostic.documentTimelineTime));
+      assert.equal(animationDiagnostic.visibility, 'visible');
+      assert.equal(animationDiagnostic.focused, true);
+    }
   };
   await assert.rejects(
     run(async () => {}),

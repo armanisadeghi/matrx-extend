@@ -1,0 +1,118 @@
+{
+  "defect_id": "EXT-D-0059",
+  "feature_ids": [
+    "EXT-F-1007",
+    "EXT-F-1012"
+  ],
+  "date": "2026-10-12",
+  "status": "SOURCE_FIX_VERIFIED_NATIVE_PENDING",
+  "scope": "Manual fast/deep Scrape rejection at synchronous shared document replacement, before React's page-reset effect.",
+  "use_case": "A dental practice captures its new-patient intake page while the same URL reloads to a new document.",
+  "cause": "useScrape success checks both capture sequence and the synchronous shared page identity. Its exception handler checked only capture sequence, which changes later in React's effect. A deferred A rejection between identity replacement and that effect writes A's error into the current Scrape store.",
+  "hypothesis_results": [
+    "Effect-order gap confirmed: changing shared page identity without rerendering, then rejecting the pending real hook call, produces A's capture error; unchanged-document failure correctly remains visible.",
+    "Wrong target ruled out for this reproduction: the first capture call targets document-a; no second capture or URL change is needed.",
+    "Successful stale result admission ruled out in the same seam: the existing same-URL success regression passes and the production success path already checks current page identity."
+  ],
+  "change": "Capture the initiating identity outside the try so every exception checks its pageKey against the synchronous shared identity before publishing the error. The same catch handles fast capture, deep scrolling and deep capture exceptions.",
+  "regression_seam": "Real useScrape hook, real Zustand Scrape store and real capture-error classification. Chrome capture is an external deferred boundary; the mocked identity snapshot changes before React's reset effect. Both fast/deep modes assert that stale errors are absent while unchanged-document errors preserve the captured message.",
+  "red": {
+    "run_id": "d59-rejection-red-20261012",
+    "journal": "docs/stabilization/resource-journals/d59-rejection-red-20261012.jsonl",
+    "verdict": "4 passed, 1 failed: document replacement=true expected null error but received the old document's Capture connection interrupted error; admitted, resourceInvalid=false, child exit1."
+  },
+  "green": {
+    "run_id": "d59-rejection-green-20261012",
+    "journal": "docs/stabilization/resource-journals/d59-rejection-green-20261012.jsonl",
+    "verdict": "7 passed; admitted, resourceInvalid=false, valid exit0."
+  },
+  "sibling_census": [
+    "useExtraction, usePagePrep, useAutoScrape and usePatternFromData exception admission already checks synchronous shared identity in addition to local ownership.",
+    "Manual capture's result/refusal and scroll progress paths already check synchronous identity; this fix closes the thrown-exception sibling.",
+    "Screenshot gallery is historical URL-scoped with an explicit changed-page capture notice and is not treated as live Scrape output."
+  ],
+  "native_remaining": [
+    "Fresh peer must test fast/deep manual capture late rejection during same-URL reload on a source-bound artifact, plus same-document failure/retry, warm and full extension reload; guest/member/admin remain separate verdicts.",
+    "Broader D59 consumers retain their existing native gaps: automatic capture/context, extraction and pattern conversion/pickers, highlights, screenshot attribution, unresolved identity recovery and auth-transition/current-document service-error T09 criteria. Existing bounded Prepare/Snapshot evidence does not cover these."
+  ],
+  "limits": "Controlled source guard establishes the catch race, not observed native timing, deployed behavior, Store acceptance or D59 closure. No browser, credentials, build or release work in this lane.",
+  "mutation": {
+    "run_id": "d59-rejection-mutation-20261012",
+    "journal": "docs/stabilization/resource-journals/d59-rejection-mutation-20261012.jsonl",
+    "verdict": "plant.py removed only catch identity admission; both fast/deep replaced-document cases failed, unchanged-document cases passed (2 failed/5 passed); resourceInvalid=false child_failed exit1; plant verdict RED, source restored byte-identically."
+  },
+  "gut_check": {
+    "run_id": "d59-rejection-gut-20261012",
+    "journal": "docs/stabilization/resource-journals/d59-rejection-gut-20261012.jsonl",
+    "verdict": "plant.py replaced captureActiveTab work with return null; all 7 tests failed because the real capture boundary was never invoked; resourceInvalid=false child_failed exit1; plant verdict RED, source restored byte-identically SHA256 prefix6da75afdd482."
+  },
+  "independent_review": {
+    "reviewer": "/root/d59_source_peer_1012",
+    "behavior": "PASS for scoped source behavior only",
+    "code_quality": "PASS for narrow source and test quality",
+    "method": "Fresh source/test review; inspected red/green/mutation journals and restored source; did not independently run tests or native Chrome.",
+    "native": "PENDING"
+  },
+  "compile_initial": {
+    "run_id": "d59-rejection-compile-20261012",
+    "journal": "docs/stabilization/resource-journals/d59-rejection-compile-20261012.jsonl",
+    "verdict": "resourceInvalid=false, child_failed exit1. Two API package mismatch errors: matrx-api.ts readyTimeoutMs absent CreateApiOptions; session-credentials.ts ready absent CredentialsPort. No D59-path type error. Fetch found remote lockfile updates; guarded dependency reconciliation is required before final compile."
+  },
+  "verification_base_commit": "fbb8a4a61e0fb2b6b4650e3b6de891ed38a9af7a",
+  "source_sha256": {
+    "src/hooks/use-scrape.ts": "6da75afdd48287309c6f79b1ccef82e9f6000f5711d1c5bcf517a9e5a0ae8ed4",
+    "tests/unit/scrape-document-identity.test.tsx": "54adfafbb0c02ce8dd3c57a149d697aabbe90b7eaeaab582ae895debc8c03c40"
+  },
+  "journal_sanitization": "Read every completed run journal in full before staging: guard timestamps, run IDs, resource counters and terminal verdicts only; no credentials, arbitrary child stdout, process IDs or account data.",
+  "dependency_reconcile": {
+    "run_id": "d59-dependency-reconcile-20261012",
+    "journal": "docs/stabilization/resource-journals/d59-dependency-reconcile-20261012.jsonl",
+    "verdict": "admitted, resourceInvalid=false, valid exit0. Frozen lockfile install reconciled local API0.1.9 to remote-main locked API0.1.14; no tracked dependency edit."
+  },
+  "compile": {
+    "run_id": "d59-reconciled-compile-20261012",
+    "journal": "docs/stabilization/resource-journals/d59-reconciled-compile-20261012.jsonl",
+    "verdict": "admitted, resourceInvalid=false, valid exit0 after frozen dependency reconciliation; initial API mismatch resolved."
+  },
+  "non_admitted_retry": {
+    "run_id": "d59-reconciled-regressions-20261012",
+    "verdict": "refused RESOURCE_LEGACY_RUNNER_BUSY because the completed compile wrapper had not yet exited. Waited for authoritative wrapper exit and confirmed its process absent before the next unique run; no bypass or lease removal.",
+    "raw_sha256": "7a9e5d88d557496aafc5f271e0a31ee96dd656c6813096d3a7ffce79418aab94",
+    "raw_local_receipt": "/Volumes/Samsung2TB/code/.stabilization-scratch/d59-reconciled-regressions-20261012.raw.jsonl",
+    "note": "Raw refusal receipt contains local process identifiers, retained outside Git. Sanitized summary only; this is no product verdict."
+  },
+  "reconciled_regressions": {
+    "run_id": "d59-reconciled-regressions-final-20261012",
+    "journal": "docs/stabilization/resource-journals/d59-reconciled-regressions-final-20261012.jsonl",
+    "verdict": "5 files and 19 tests passed; admitted, resourceInvalid=false, valid exit0 on reconciled dependencies.",
+    "files": [
+      "tests/unit/scrape-document-identity.test.tsx",
+      "tests/unit/active-tab-document-identity.test.tsx",
+      "tests/unit/extraction-document-identity.test.tsx",
+      "tests/unit/auto-scrape-document-identity.test.tsx",
+      "tests/unit/pattern-from-data-document-race.test.tsx"
+    ]
+  },
+  "verification_boundaries": "The source fix21412d7d3 passed compile and all19 nearby identity regressions after frozen installation of current363c1aa09 locked dependencies. Prior fbb CI failed before testing due duplicate package graph;363c fixes that baseline. The changed source/test hashes are unchanged since independent source review. No native, release or Store verdict is inferred.",
+  "source_fix_commit": "21412d7d3",
+  "current_candidate_verification": {
+    "source_commit": "21412d7d3",
+    "dependency_baseline": "363c1aa09bcb8942fccf60ef64d8a441b5102abc",
+    "lock_sha256": "7bf72353bd1fac4abee11cda977900f4d15405543960b4bfde21b83ca49a7244",
+    "install": {
+      "run_id": "d59-current-lock-install-20261012",
+      "journal": "docs/stabilization/resource-journals/d59-current-lock-install-20261012.jsonl",
+      "verdict": "valid exit0, resourceInvalid=false"
+    },
+    "compile": {
+      "run_id": "d59-current-lock-compile-20261012",
+      "journal": "docs/stabilization/resource-journals/d59-current-lock-compile-20261012.jsonl",
+      "verdict": "valid exit0, resourceInvalid=false"
+    },
+    "regressions": {
+      "run_id": "d59-current-lock-regressions-20261012",
+      "journal": "docs/stabilization/resource-journals/d59-current-lock-regressions-20261012.jsonl",
+      "verdict": "19 tests/5 files passed, valid exit0, resourceInvalid=false"
+    }
+  }
+}
