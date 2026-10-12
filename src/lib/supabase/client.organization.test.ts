@@ -13,13 +13,17 @@ vi.mock('@/config/env', () => ({
   },
   STORAGE_KEYS: { ACTIVE_ORGANIZATION: 'organization' },
 }));
-vi.mock('@/lib/auth/flow', () => ({
+vi.mock('@/lib/auth/flow', async () => {
+  const { fakeOAuthClient } = await import('../../../tests/helpers/fake-organizations-db');
+  return {
+    getOAuthClient: () => fakeOAuthClient(() => state.userId),
   getCurrentUser: async () => (state.userId ? { id: state.userId } : null),
   getStoredAccessToken: async () => {
     const stored = await chrome.storage.local.get(['token']);
     return typeof stored.token === 'string' ? stored.token : null;
   },
-}));
+  };
+});
 vi.mock('@/lib/debug/log', () => ({ log: { error: vi.fn(), warn: vi.fn() } }));
 vi.mock('@/state/notices', () => ({ pushNotice: vi.fn() }));
 

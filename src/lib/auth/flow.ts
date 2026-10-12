@@ -108,6 +108,11 @@ function getClient(): MatrxOAuthClient | null {
   return client;
 }
 
+/** The OAuth client (the package's), for the organization store's session; null with no client id configured. */
+export function getOAuthClient(): MatrxOAuthClient | null {
+  return getClient();
+}
+
 function onSessionEvent(event: MatrxOAuthEvent): void {
   if (event.type === 'signed_out') {
     void clearLocalSideEffects().then(() => {

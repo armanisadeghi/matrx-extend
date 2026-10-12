@@ -55,3 +55,23 @@ export function accountRow(choice: { lastActiveOrganizationId?: unknown; startup
       }
     : null;
 }
+
+const farFuture = () => Date.now() + 3_600_000;
+const b64u = (text: string) => btoa(text).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+/** An unsigned JWT naming `sub` — the package reads the person id from the token's claims. */
+const tokenFor = (sub: string) =>
+  `${b64u('{"alg":"none"}')}.${b64u(JSON.stringify({ sub, exp: 9_999_999_999 }))}.sig`;
+
+/**
+ * The OAuth client slice the organization store's session reads (`getSession`, `onChange`), signed in as
+ * whoever `userId()` names (null = signed out). Stands in for `getOAuthClient()` from `@/lib/auth/flow`.
+ */
+export function fakeOAuthClient(userId: () => string | null | undefined | Promise<string | null | undefined>) {
+  return {
+    getSession: async () => {
+      const id = await userId();
+      return id ? { personId: id, email: null, accessToken: tokenFor(id), expiresAtMs: farFuture() } : null;
+    },
+    onChange: () => () => {},
+  };
+}

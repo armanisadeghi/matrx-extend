@@ -33,16 +33,19 @@
  */
 
 import { ENV, STORAGE_KEYS } from '@/config/env';
-import { getCurrentUser } from '@/lib/auth/flow';
+import { getCurrentUser, getOAuthClient } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { getOne, onChange, setOne } from '@/lib/storage/chrome-local';
 import { getOrganizationBootstrapClient, getSupabase } from '@/lib/supabase/client';
 import { pushNotice } from '@/state/notices';
 import {
-  readAccountOrganizationChoices,
+  type ActiveOrganization,
+  type HeldOrganizationStore,
+  createActiveOrganization,
   readMemberships,
-  resolveActiveOrganization as climbOrganizationLadder,
+  writeLastActiveOrganization,
 } from '@ai-matrx/auth/organizations';
+import { withOAuthSession } from '@ai-matrx/auth';
 import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 
 export interface MemberOrganization {
@@ -162,24 +165,49 @@ export async function listMemberOrganizations(
 }
 
 /**
- * THE ONLY READER of the account's two organization columns. Used by the load
- * ladder and nothing else (STATE rules 12 and 14). A failed read throws — a
- * guessed first organization would hide the person's real last choice.
+ * The package's active-organization store, with the extension's two rules:
+ *  - `holdResolved: false` — the ladder's own answer is NEVER written as the device choice (rule 14);
+ *    only a deliberate switch writes `STORAGE_KEYS.ACTIVE_ORGANIZATION`;
+ *  - the held choice lives in chrome.storage.local as `{ id, name }` (every context shares it).
+ * The data client carries no GoTrue session (its bearer comes from the OAuth client), so the
+ * package's session doors read the OAuth session through `withOAuthSession`.
  */
-async function readAccountOrganizationChoice(userId: string): Promise<{
-  lastActive: string | null;
-  startup: string | null;
-}> {
-  try {
-    const choice = await readAccountOrganizationChoices(getOrganizationBootstrapClient(), userId);
-    return { lastActive: choice.lastActiveOrganizationId, startup: choice.startupOrganizationId };
-  } catch (err) {
-    log.error('auth', 'organization ladder: account read failed', err);
-    const message = err instanceof Error ? err.message : String(err);
-    throw new Error(
-      `Could not read your saved organization: ${message.replace(/^The account's organization read failed: /, '')}`,
-    );
-  }
+let activeStore: ActiveOrganization | null = null;
+function getActiveStore(): ActiveOrganization | null {
+  if (activeStore) return activeStore;
+  const oauth = getOAuthClient();
+  if (!oauth) return null;
+  const held: HeldOrganizationStore = {
+    async read() {
+      return (await readStoredSelection())?.id ?? null;
+    },
+    async write(_userId, organizationId) {
+      const name = activeStore?.snapshot().memberships.find((m) => m.id === organizationId)?.name ?? '';
+      await setOne<StoredActiveOrganization>(STORAGE_KEYS.ACTIVE_ORGANIZATION, {
+        id: organizationId,
+        name,
+      });
+    },
+    async clear() {
+      await setOne(STORAGE_KEYS.ACTIVE_ORGANIZATION, null);
+    },
+  };
+  activeStore = createActiveOrganization({
+    client: withOAuthSession(getOrganizationBootstrapClient(), oauth),
+    held,
+    holdResolved: false,
+    autoLoad: false,
+  });
+  return activeStore;
+}
+
+/** The package's wording for a failed read, in the extension's own. */
+function readFailure(message: string): Error {
+  return new Error(
+    message
+      .replace(/^Your organizations could not be read: /, 'Could not read your organizations: ')
+      .replace(/^The account's organization read failed: /, 'Could not read your saved organization: '),
+  );
 }
 
 async function readStoredSelection(): Promise<StoredActiveOrganization | null> {
@@ -198,18 +226,18 @@ async function readStoredSelection(): Promise<StoredActiveOrganization | null> {
 async function validateActiveOrganization(userId: string): Promise<MemberOrganization | null> {
   validatedSelection = null;
   let generation = selectionGeneration;
-  const organizations = await listMemberOrganizations('active');
-  const byId = new Map(organizations.map((o) => [o.id, o]));
-
+  const store = getActiveStore();
+  if (!store) return null;
+  // The package's ladder: held (this device) → last active → start-up → first (oldest).
+  const snap = await store.load();
+  if (snap.status === 'error') {
+    log.error('auth', 'organization ladder: read failed', snap.error);
+    throw readFailure(snap.error ?? 'unknown error');
+  }
   const stored = await readStoredSelection();
   const currentUser = await getCurrentUser();
   if (selectionGeneration !== generation || currentUser?.id !== userId) return null;
-  if (stored) {
-    const match = byId.get(stored.id);
-    if (match) {
-      validatedSelection = { userId, organizationId: match.id };
-      return match;
-    }
+  if (stored && !snap.memberships.some((m) => m.id === stored.id)) {
     // Selection survived losing the membership — drop it rather than send an
     // organization the server will refuse.
     log.warn('auth', 'active organization is no longer a membership — clearing selection', {
@@ -219,27 +247,18 @@ async function validateActiveOrganization(userId: string): Promise<MemberOrganiz
     // Our own clear bumped the generation through the storage observer.
     generation = selectionGeneration;
   }
-
-  // Rungs 2-4: the account's last active organization, its start-up
-  // organization, then the first organization. Each only if still a current
-  // membership. The result is NOT written back as the device choice — only a
-  // deliberate switch does that.
-  if (organizations.length === 0) return null;
-  const account = await readAccountOrganizationChoice(userId);
-  if (selectionGeneration !== generation) return null;
-  // The ladder itself (last active → start-up → oldest membership) is the package's.
-  const rung = climbOrganizationLadder({
-    memberships: organizations.map((o) =>
-      o.joinedAt ? { id: o.id, joinedAt: o.joinedAt } : { id: o.id },
-    ),
-    account: {
-      lastActiveOrganizationId: account.lastActive,
-      startupOrganizationId: account.startup,
-    },
-  });
-  const chosen = rung ? byId.get(rung.organization.id) : undefined;
-  if (!chosen) return null;
-  validatedSelection = { userId, organizationId: chosen.id, viaLadder: true };
+  if (selectionGeneration !== generation || !snap.organization) return null;
+  const chosen: MemberOrganization = {
+    id: snap.organization.id,
+    name: snap.organization.name,
+    archivedAt: snap.organization.archivedAt ?? null,
+    joinedAt: snap.organization.joinedAt || null,
+  };
+  // A ladder answer (not this device's own choice) is held in memory only.
+  validatedSelection =
+    snap.rung === 'held'
+      ? { userId, organizationId: chosen.id }
+      : { userId, organizationId: chosen.id, viaLadder: true };
   return chosen;
 }
 
@@ -334,13 +353,13 @@ export async function requireActiveOrganizationId(): Promise<string> {
  * account write raises a notice and never undoes the switch here.
  */
 async function saveLastActiveOrganization(organizationId: string): Promise<void> {
-  const { error } = await getSupabase()
-    .schema('users')
-    .rpc('set_last_active_organization', { p_organization_id: organizationId });
-  if (error) {
+  try {
+    await writeLastActiveOrganization(getSupabase(), organizationId);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
     log.error('auth', 'could not save the last active organization to the account', {
       organization_id: organizationId,
-      message: error.message,
+      message,
     });
     // Visible, not silent: the switch stands here, the person is told.
     pushNotice({
@@ -348,7 +367,7 @@ async function saveLastActiveOrganization(organizationId: string): Promise<void>
       title: 'Organization not saved to your account',
       message:
         "You switched organization here, but it could not be saved to your account, so your other devices won't follow it. Switch again to retry.",
-      detail: error.message,
+      detail: message,
     });
   }
 }

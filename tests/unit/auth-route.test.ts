@@ -49,7 +49,14 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: mocks.getCurrentUser }));
+vi.mock('@/lib/auth/flow', async () => {
+  const { fakeOAuthClient } = await import('../helpers/fake-organizations-db');
+  return {
+    getCurrentUser: mocks.getCurrentUser,
+    getOAuthClient: () =>
+      fakeOAuthClient(async () => ((await mocks.getCurrentUser()) as { id?: string } | null)?.id),
+  };
+});
 vi.mock('@/lib/supabase/client', async () => {
   const { accountRow, fakeOrganizationsDb } = await import('../helpers/fake-organizations-db');
   return {

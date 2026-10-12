@@ -27,9 +27,13 @@ vi.mock('@/lib/api/client', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/api/client')>()),
   apiPost: mocks.apiPost,
 }));
-vi.mock('@/lib/auth/flow', () => ({
+vi.mock('@/lib/auth/flow', async () => {
+  const { fakeOAuthClient } = await import('../helpers/fake-organizations-db');
+  return {
+    getOAuthClient: () => fakeOAuthClient(() => '87a6e699-3622-4869-8843-d0867456c0dd'),
   getCurrentUser: vi.fn(async () => ({ id: '87a6e699-3622-4869-8843-d0867456c0dd' })),
-}));
+  };
+});
 // Keep the real active-organization resolver in this test: Saved is claimed
 // only for the workspace that received the Source. Model its live membership
 // read, including the archive filter, instead of assuming storage is enough.
