@@ -27,6 +27,9 @@ const EVENT_FIELDS = new Map([
   // An optional exact duplicate detail is checked and removed below.
   ['RESOURCE_MEASUREMENT_FAILED', []],
   ['RESOURCE_MEASUREMENT_INVALID:cpu-busy', []],
+  ['RESOURCE_MEASUREMENT_INVALID:cpu-busy:header', []],
+  ['RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count', []],
+  ['RESOURCE_MEASUREMENT_INVALID:cpu-busy:row-format', []],
   ['RESOURCE_MEASUREMENT_INVALID:cpu-idle', []],
   ['RESOURCE_MEASUREMENT_INVALID:cpu-or-memory', []],
   ['RESOURCE_MEASUREMENT_INVALID:available-memory', []],

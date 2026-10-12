@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mjs';
+import { cpuBusyFraction } from './stabilization-resource-safety.mjs';
 
 // SEO run 38198573143 refused before browser admission with a duplicate detail.
 // Losing it prevents the official copier from preserving the terminal refusal.
@@ -32,6 +33,47 @@ const source = (...events) => `${events.map((event) => JSON.stringify(event)).jo
 test('copies the captured measurement refusal without changing its terminal verdict', () => {
   const journal = source(opened, { ...measurement, detail: measurement.code }, final);
   assert.equal(sanitizeHostedResourceJournal(journal, runId), source(opened, measurement, final));
+});
+
+test('copies CPU shape refusals from the real sampler without changing their terminal verdict', async () => {
+  const header = 'cpu load average\nus sy id 1m 5m 15m';
+  const row = '12 7 80 2.61 2.60 2.84';
+  for (const [raw, code] of [
+    ['private-header-probe', 'RESOURCE_MEASUREMENT_INVALID:cpu-busy:header'],
+    [`${header}\n${row}`, 'RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count'],
+    [`${header}\n${row}\nprivate-row-probe`, 'RESOURCE_MEASUREMENT_INVALID:cpu-busy:row-format'],
+  ]) {
+    // Drive the producer so a reason lost at the journal boundary fails here.
+    await assert.rejects(
+      cpuBusyFraction(async () => raw),
+      { message: code },
+    );
+    const journal = source(opened, { ...measurement, code }, final);
+    assert.equal(sanitizeHostedResourceJournal(journal, runId), journal);
+    assert.equal(
+      sanitizeHostedResourceJournal(
+        source(opened, { ...measurement, code, detail: code }, final),
+        runId,
+      ),
+      journal,
+    );
+    assert.throws(
+      () =>
+        sanitizeHostedResourceJournal(
+          source(opened, { ...measurement, code, detail: raw }, final),
+          runId,
+        ),
+      { message: 'JOURNAL_EVENT_VALUE_UNSUPPORTED' },
+    );
+    assert.throws(
+      () =>
+        sanitizeHostedResourceJournal(
+          source(opened, { ...measurement, code, stdout: raw }, final),
+          runId,
+        ),
+      { message: 'JOURNAL_EVENT_FIELD_UNSUPPORTED' },
+    );
+  }
 });
 
 test('copies only the finite guard-owned measurement failure codes', () => {
@@ -90,6 +132,8 @@ test('refuses unknown measurement codes instead of treating the prefix as permis
   for (const code of [
     'RESOURCE_MEASUREMENT_INVALID:private-path',
     'RESOURCE_MEASUREMENT_FAILED:private-path',
+    'RESOURCE_MEASUREMENT_INVALID:cpu-busy:private-path',
+    'RESOURCE_MEASUREMENT_INVALID:cpu-busy:header:private-path',
   ])
     assert.throws(
       () => sanitizeHostedResourceJournal(source(opened, { ...measurement, code }, final), runId),

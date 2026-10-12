@@ -14,15 +14,15 @@ export async function cpuBusyFraction(output) {
     !/^\s*cpu\s+load average\s*$/.test(lines[0] ?? '') ||
     !/^\s*us\s+sy\s+id\s+1m\s+5m\s+15m\s*$/.test(lines[1] ?? '')
   )
-    throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-busy');
+    throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-busy:header');
   const readings = lines
     .slice(2)
     .map((line) =>
       line.match(/^\s*(\d+)\s+(\d+)\s+(\d+)\s+\d+(?:\.\d+)?\s+\d+(?:\.\d+)?\s+\d+(?:\.\d+)?\s*$/),
     );
-  if (readings.length !== 2) throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-busy');
+  if (readings.length !== 2) throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count');
   if (readings.some((reading) => !reading))
-    throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-busy');
+    throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-busy:row-format');
   const idle = Number(readings.at(-1)[3]);
   if (!Number.isFinite(idle) || idle < 0 || idle > 100)
     throw new Error('RESOURCE_MEASUREMENT_INVALID:cpu-idle');
