@@ -37,7 +37,10 @@ export function wireBridge(prefix = '') {
   const verbs = (): Verbs => {
     const c = client as unknown as Record<string, (...a: unknown[]) => Promise<ApiResult<unknown>>>;
     return {
-      GET: (path, _b, _s, opts) => c.apiGet?.(path, undefined, opts) as Promise<ApiResult<unknown>>,
+      GET: (path, _b, _s, opts) =>
+        (opts === undefined ? c.apiGet?.(path) : c.apiGet?.(path, undefined, opts)) as Promise<
+          ApiResult<unknown>
+        >,
       POST: (path, body, _s, opts) =>
         c.apiPost?.(path, body, undefined, opts) as Promise<ApiResult<unknown>>,
       PATCH: (path, body, _s, opts) =>
