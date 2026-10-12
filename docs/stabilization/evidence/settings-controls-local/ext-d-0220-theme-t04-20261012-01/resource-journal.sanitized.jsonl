@@ -1,0 +1,10 @@
+{"schema":1,"at":"2026-10-12T23:48:04.952Z","runId":"ext-d-0220-theme-t04-20261012-01","code":"RESOURCE_JOURNAL_OPENED"}
+{"schema":1,"at":"2026-10-12T23:49:12.185Z","runId":"ext-d-0220-theme-t04-20261012-01","code":"RESOURCE_ADMITTED","mode":"run","admitted":true,"resourceInvalid":false,"reasons":[]}
+{"schema":1,"at":"2026-10-12T23:49:28.230Z","runId":"ext-d-0220-theme-t04-20261012-01","code":"RESOURCE_WATCH_HEALTHY"}
+{"schema":1,"at":"2026-10-12T23:49:44.251Z","runId":"ext-d-0220-theme-t04-20261012-01","code":"RESOURCE_WATCH_HEALTHY"}
+{"schema":1,"at":"2026-10-12T23:50:00.274Z","runId":"ext-d-0220-theme-t04-20261012-01","code":"RESOURCE_WATCH_HEALTHY"}
+{"schema":1,"at":"2026-10-12T23:50:16.288Z","runId":"ext-d-0220-theme-t04-20261012-01","code":"RESOURCE_WATCH_HEALTHY"}
+{"schema":1,"at":"2026-10-12T23:50:32.311Z","runId":"ext-d-0220-theme-t04-20261012-01","code":"RESOURCE_WATCH_HEALTHY"}
+{"schema":1,"at":"2026-10-12T23:50:48.333Z","runId":"ext-d-0220-theme-t04-20261012-01","code":"RESOURCE_WATCH_HEALTHY"}
+{"schema":1,"at":"2026-10-12T23:50:52.310Z","runId":"ext-d-0220-theme-t04-20261012-01","code":"RESOURCE_JOB_EXIT","childExitCode":1,"childSignal":null}
+{"schema":1,"at":"2026-10-12T23:50:52.353Z","runId":"ext-d-0220-theme-t04-20261012-01","code":"RESOURCE_FINAL_DECISION","admitted":true,"resourceInvalid":false,"exitCode":1,"decision":"child_failed"}
