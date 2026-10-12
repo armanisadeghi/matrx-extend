@@ -50,19 +50,28 @@ const mocks = vi.hoisted(() => {
 });
 
 vi.mock('@/lib/auth/flow', () => ({ getCurrentUser: mocks.getCurrentUser }));
-vi.mock('@/lib/supabase/client', () => ({
-  readOrganizationBootstrapMemberships: mocks.membershipRead,
-  readOrganizationBootstrapLabels: (ids: string[], filter: string) => {
-    if (filter !== 'active') throw new Error('Archive filter missing');
-    return mocks.orgSelect('id', ids, 'archived_at', null);
-  },
-  readOrganizationBootstrapAccountChoice: mocks.prefsSelect,
+vi.mock('@/lib/supabase/client', async () => {
+  const { accountRow, fakeOrganizationsDb } = await import('../helpers/fake-organizations-db');
+  return {
+  getOrganizationBootstrapClient: () =>
+    fakeOrganizationsDb({
+      memberships: () => mocks.membershipRead(),
+      organizations: (ids) => mocks.orgSelect('id', ids, 'archived_at', null),
+      account: async () => {
+        const answer = (await mocks.prefsSelect()) as {
+          data: Parameters<typeof accountRow>[0];
+          error: { message: string } | null;
+        };
+        return { data: accountRow(answer.data), error: answer.error };
+      },
+    }),
   getSupabase: () => ({
     schema: (name: string) => ({
       rpc: (fn: string, args: unknown) => mocks.schemaRpc(name, fn, args),
     }),
   }),
-}));
+};
+});
 vi.mock('@/lib/supabase/schemas', () => ({
   iamDb: () => ({
     from: () => ({

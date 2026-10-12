@@ -11,11 +11,8 @@
 
 import { ENV } from '@/config/env';
 import { getStoredAccessToken } from '@/lib/auth/flow';
-import { readAccountOrganizationChoices } from '@ai-matrx/data/organizations';
-import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 import { type SupabaseClient, createClient } from '@supabase/supabase-js';
 import { organizationFetch } from './organization-fetch';
-import { iamDb } from './schemas';
 
 /**
  * DD-131 — the client-channel actor declaration.
@@ -93,13 +90,14 @@ export function getSupabase(): SupabaseClient {
 }
 
 /**
- * Private capability for the resolver's three fixed identity-scoped reads.
+ * Private capability for the resolver's identity-scoped reads (the package's `readMemberships` and
+ * `readAccountOrganizationChoices` run on it).
  * Before first-load selection there is no verified organization to send. A
  * cached selection is carried once available; this fetch NEVER starts the
  * resolution it is helping to perform. Ordinary clients cannot opt out.
  */
 let organizationBootstrapClient: SupabaseClient | null = null;
-function getOrganizationBootstrapClient(): SupabaseClient {
+export function getOrganizationBootstrapClient(): SupabaseClient {
   if (organizationBootstrapClient) return organizationBootstrapClient;
   organizationBootstrapClient = createExtensionClient({}, async (input, init) => {
     const request = new Request(input, init);
@@ -109,44 +107,6 @@ function getOrganizationBootstrapClient(): SupabaseClient {
     return globalThis.fetch(request);
   });
   return organizationBootstrapClient;
-}
-
-/** Resolver-only membership bootstrap: no arbitrary RPC name or args. */
-export async function readOrganizationBootstrapMemberships() {
-  return getOrganizationBootstrapClient().rpc('mbr_for_user', { p_container_type: 'organization' });
-}
-
-/** Resolver-only labels for the canonical membership ids, with the existing archive control. */
-export async function readOrganizationBootstrapLabels(
-  ids: string[],
-  archiveFilter: ArchiveFilterValue,
-) {
-  let query = iamDb(getOrganizationBootstrapClient())
-    .from('organizations')
-    .select('id,name,archived_at')
-    .in('id', ids);
-  if (archiveFilter === 'active') query = query.is('archived_at', null);
-  if (archiveFilter === 'archived') query = query.not('archived_at', 'is', null);
-  return query;
-}
-
-/** Resolver-only account choice; the identity filter cannot be supplied by a caller. */
-export async function readOrganizationBootstrapAccountChoice() {
-  const { getCurrentUser } = await import('@/lib/auth/flow');
-  const user = await getCurrentUser();
-  if (!user?.id) throw new Error('Organization bootstrap requires a signed-in account.');
-  try {
-    const choice = await readAccountOrganizationChoices(getOrganizationBootstrapClient(), user.id);
-    return {
-      data: choice,
-      error: null,
-    };
-  } catch (error) {
-    return {
-      data: null,
-      error: { message: error instanceof Error ? error.message : String(error) },
-    };
-  }
 }
 
 /**

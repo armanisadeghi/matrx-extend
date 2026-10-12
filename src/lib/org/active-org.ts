@@ -36,14 +36,13 @@ import { ENV, STORAGE_KEYS } from '@/config/env';
 import { getCurrentUser } from '@/lib/auth/flow';
 import { log } from '@/lib/debug/log';
 import { getOne, onChange, setOne } from '@/lib/storage/chrome-local';
-import {
-  getSupabase,
-  readOrganizationBootstrapAccountChoice,
-  readOrganizationBootstrapLabels,
-  readOrganizationBootstrapMemberships,
-} from '@/lib/supabase/client';
+import { getOrganizationBootstrapClient, getSupabase } from '@/lib/supabase/client';
 import { pushNotice } from '@/state/notices';
-import { resolveActiveOrganization as climbOrganizationLadder } from '@ai-matrx/auth/organizations';
+import {
+  readAccountOrganizationChoices,
+  readMemberships,
+  resolveActiveOrganization as climbOrganizationLadder,
+} from '@ai-matrx/auth/organizations';
 import type { ArchiveFilterValue } from '@ai-matrx/design-system';
 
 export interface MemberOrganization {
@@ -129,13 +128,6 @@ export function isOrganizationNoMembershipsError(
   return err instanceof OrganizationNoMembershipsError;
 }
 
-interface MembershipRow {
-  container_id?: unknown;
-  containerId?: unknown;
-  status?: unknown;
-  created_at?: unknown;
-}
-
 /**
  * Every organization the signed-in user is an active member of, via the
  * canonical `mbr_for_user` RPC (the platform's own membership read — the
@@ -145,43 +137,27 @@ interface MembershipRow {
 export async function listMemberOrganizations(
   archiveFilter: ArchiveFilterValue = 'active',
 ): Promise<MemberOrganization[]> {
-  const { data, error } = await readOrganizationBootstrapMemberships();
-  if (error) {
-    log.error('auth', 'listMemberOrganizations: membership read failed', error);
-    throw new Error(`Could not read your organizations: ${error.message}`);
+  const user = await getCurrentUser();
+  let memberships;
+  try {
+    memberships = await readMemberships(getOrganizationBootstrapClient(), user?.id ?? '', {
+      archived: archiveFilter,
+    });
+  } catch (err) {
+    log.error('auth', 'listMemberOrganizations: membership read failed', err);
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(
+      `Could not read your organizations: ${message.replace(/^Your organizations could not be read: /, '')}`,
+    );
   }
-  const rows: MembershipRow[] = Array.isArray(data) ? (data as MembershipRow[]) : [];
   // Oldest membership first: "first organization" is the head of this list.
-  const joinedAtById = new Map<string, string | null>();
-  for (const r of rows) {
-    if (r.status !== undefined && r.status !== 'active') continue;
-    const id = typeof r.container_id === 'string' ? r.container_id : r.containerId;
-    if (typeof id !== 'string' || id.length === 0) continue;
-    const joined = typeof r.created_at === 'string' ? r.created_at : null;
-    const prior = joinedAtById.get(id);
-    if (prior === undefined || (joined && (!prior || joined < prior))) joinedAtById.set(id, joined);
-  }
-  const ids = [...joinedAtById.keys()];
-  if (ids.length === 0) return [];
-
-  const { data: orgRows, error: orgError } = await readOrganizationBootstrapLabels(
-    ids,
-    archiveFilter,
-  );
-  if (orgError) {
-    log.error('auth', 'listMemberOrganizations: organization read failed', orgError);
-    throw new Error(`Could not read your organizations: ${orgError.message}`);
-  }
-  return (orgRows ?? [])
-    .map((row) => {
-      const id = String((row as { id: unknown }).id);
-      return {
-        id,
-        name: String((row as { name?: unknown }).name ?? 'Untitled organization'),
-        archivedAt: (row as { archived_at?: string | null }).archived_at ?? null,
-        joinedAt: joinedAtById.get(id) ?? null,
-      };
-    })
+  return memberships
+    .map((m) => ({
+      id: m.id,
+      name: m.name,
+      archivedAt: m.archivedAt ?? null,
+      joinedAt: m.joinedAt || null,
+    }))
     .sort((a, b) => (a.joinedAt ?? '').localeCompare(b.joinedAt ?? ''));
 }
 
@@ -190,24 +166,20 @@ export async function listMemberOrganizations(
  * ladder and nothing else (STATE rules 12 and 14). A failed read throws — a
  * guessed first organization would hide the person's real last choice.
  */
-async function readAccountOrganizationChoice(): Promise<{
+async function readAccountOrganizationChoice(userId: string): Promise<{
   lastActive: string | null;
   startup: string | null;
 }> {
-  const { data, error } = await readOrganizationBootstrapAccountChoice();
-  if (error) {
-    log.error('auth', 'organization ladder: account read failed', error);
-    throw new Error(`Could not read your saved organization: ${error.message}`);
+  try {
+    const choice = await readAccountOrganizationChoices(getOrganizationBootstrapClient(), userId);
+    return { lastActive: choice.lastActiveOrganizationId, startup: choice.startupOrganizationId };
+  } catch (err) {
+    log.error('auth', 'organization ladder: account read failed', err);
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(
+      `Could not read your saved organization: ${message.replace(/^The account's organization read failed: /, '')}`,
+    );
   }
-  const row = (data ?? {}) as {
-    lastActiveOrganizationId?: unknown;
-    startupOrganizationId?: unknown;
-  };
-  const pick = (v: unknown) => (typeof v === 'string' && v ? v : null);
-  return {
-    lastActive: pick(row.lastActiveOrganizationId),
-    startup: pick(row.startupOrganizationId),
-  };
 }
 
 async function readStoredSelection(): Promise<StoredActiveOrganization | null> {
@@ -253,7 +225,7 @@ async function validateActiveOrganization(userId: string): Promise<MemberOrganiz
   // membership. The result is NOT written back as the device choice — only a
   // deliberate switch does that.
   if (organizations.length === 0) return null;
-  const account = await readAccountOrganizationChoice();
+  const account = await readAccountOrganizationChoice(userId);
   if (selectionGeneration !== generation) return null;
   // The ladder itself (last active → start-up → oldest membership) is the package's.
   const rung = climbOrganizationLadder({

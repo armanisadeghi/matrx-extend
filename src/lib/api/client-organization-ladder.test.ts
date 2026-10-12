@@ -34,22 +34,31 @@ vi.mock('@/lib/auth/flow', () => ({
   refreshAccessToken: async () => null,
 }));
 vi.mock('@/lib/auth/guest-signature', () => ({ getOrCreateGuestSignature: async () => 'guest' }));
-vi.mock('@/lib/supabase/client', () => ({
-  readOrganizationBootstrapMemberships: async () => ({
-    data: harness.memberships.map((id) => ({ container_id: id, status: 'active' })),
-    error: null,
-  }),
-  readOrganizationBootstrapLabels: async () => ({
-    data: harness.memberships.map((id) => ({ id, name: `Org ${id.slice(0, 4)}` })),
-    error: null,
-  }),
-  readOrganizationBootstrapAccountChoice: async () => ({
-    data: {
-      lastActiveOrganizationId: harness.account.lastActive,
-      startupOrganizationId: harness.account.startup,
-    },
-    error: null,
-  }),
+vi.mock('@/lib/supabase/client', async () => {
+  const { fakeOrganizationsDb } = await import('../../../tests/helpers/fake-organizations-db');
+  return {
+  getOrganizationBootstrapClient: () =>
+    fakeOrganizationsDb({
+      memberships: () => ({
+        data: harness.memberships.map((id, i) => ({
+          container_id: id,
+          status: 'active',
+          created_at: `2026-01-0${i + 1}T00:00:00Z`,
+        })),
+        error: null,
+      }),
+      organizations: () => ({
+        data: harness.memberships.map((id) => ({ id, name: `Org ${id.slice(0, 4)}` })),
+        error: null,
+      }),
+      account: () => ({
+        data: {
+          last_active_organization_id: harness.account.lastActive,
+          startup_organization_id: harness.account.startup,
+        },
+        error: null,
+      }),
+    }),
   getSupabase: () => ({
     schema: () => ({ rpc: async () => ({ error: null }) }),
     rpc: async () => ({
@@ -61,7 +70,8 @@ vi.mock('@/lib/supabase/client', () => ({
       error: null,
     }),
   }),
-}));
+  };
+});
 vi.mock('@/lib/supabase/schemas', () => ({
   usersDb: () => ({
     from: () => ({
