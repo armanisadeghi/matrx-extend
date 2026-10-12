@@ -243,8 +243,7 @@ export function planHostedScrape({
 }
 
 export function requireScrapeDispatchAdmission({ localSha, remoteSha, sourceSha, dirty, runs }) {
-  requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
-  if (sourceSha !== remoteSha) refuse('HOSTED_SCRAPE_SOURCE_DRIFT');
+  requireExactDispatchSource(localSha, remoteSha, dirty, sourceSha, 'HOSTED_SCRAPE_SOURCE_DRIFT');
   if (
     !Array.isArray(runs) ||
     runs.some((run) => run.status !== 'completed' && !/^Native A · /.test(run.name ?? ''))
@@ -319,6 +318,152 @@ export function verifyHostedScrapeReport(report, identity) {
     !(report.panel_viewport.observed_px > 0)
   )
     refuse('HOSTED_SCRAPE_NATIVE_REPORT_PROVENANCE_INVALID');
+  return true;
+}
+
+/** Member account-popover only; preserve the normal exact-source and lane-A gates. */
+export function planHostedSettingsMember({ lane, acceptanceCase, runnerLabel, ...input }) {
+  if (lane !== 'A') refuse('HOSTED_SETTINGS_MEMBER_LANE_REFUSED');
+  if (acceptanceCase !== 'settings-account-popover-member')
+    refuse('HOSTED_SETTINGS_MEMBER_CASE_REFUSED');
+  if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_SETTINGS_MEMBER_RUNNER_REFUSED');
+  if (!SHA.test(input.sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
+  const plan = planHostedMemberData({ ...input, lane });
+  return {
+    ...plan,
+    args: plan.args
+      .map((arg) =>
+        arg === 'acceptance_case=member-data' ? `acceptance_case=${acceptanceCase}` : arg,
+      )
+      .filter(
+        (arg, index, args) =>
+          arg !== 'member_data_scope=auto-extract' &&
+          !(arg === '-f' && args[index + 1] === 'member_data_scope=auto-extract'),
+      )
+      .concat(['-f', 'runner_label=macos-15-intel']),
+  };
+}
+
+export function requireSettingsMemberDispatchAdmission({
+  localSha,
+  remoteSha,
+  sourceSha,
+  dirty,
+  runs,
+  secretNames,
+}) {
+  requireExactDispatchSource(
+    localSha,
+    remoteSha,
+    dirty,
+    sourceSha,
+    'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT',
+  );
+  if (
+    !Array.isArray(runs) ||
+    runs.some((run) => run.status !== 'completed' && !/^Native B · /.test(run.name ?? ''))
+  )
+    refuse('HOSTED_SETTINGS_MEMBER_A_CAPACITY_REFUSED');
+  if (!Array.isArray(secretNames) || !secretNames.includes('MATRX_REVIEWER_MAGIC_LINK_JSON'))
+    refuse('HOSTED_SETTINGS_MEMBER_SECRET_MISSING');
+  return true;
+}
+
+// The current native driver records no imported_artifact. Authenticated logs from the
+// same successful workflow bind its frozen CI import; never infer provenance from null.
+export function verifyHostedSettingsMemberLog(log, identity) {
+  if (
+    typeof log !== 'string' ||
+    log.length > 8_000_000 ||
+    !SHA.test(identity.sourceSha ?? '') ||
+    !DECIMAL.test(identity.developmentRunId ?? '') ||
+    !DECIMAL.test(String(identity.developmentRunAttempt ?? '')) ||
+    !DECIMAL.test(identity.artifactId ?? '') ||
+    !/^sha256:[a-f0-9]{64}$/.test(identity.githubArtifactDigest ?? '')
+  )
+    refuse('HOSTED_SETTINGS_MEMBER_LOG_INVALID');
+  // gh --log prefixes each line with job, step and ISO timestamp. Match full payloads only.
+  const payloads = log
+    .split('\n')
+    .map(
+      (line) =>
+        line.match(
+          /^[^\t\r\n]+\tExercise the selected Chrome side-panel case\t\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d+Z (.*)$/,
+        )?.[1] ?? '',
+    );
+  const imported = payloads.filter((line) => line.startsWith('DEVELOPMENT_TEST_IMPORTED '));
+  const prepared = payloads.filter((line) => line.startsWith('PREPARED_DEVELOPMENT '));
+  const importPattern = new RegExp(
+    `^DEVELOPMENT_TEST_IMPORTED /[^\\s]+/test-results/ci-artifacts/${identity.sourceSha}/${identity.developmentRunId}-${identity.developmentRunAttempt} (?:current_pushed_source|exact_pushed_commit_only)$`,
+  );
+  const preparePattern = new RegExp(`^PREPARED_DEVELOPMENT ${identity.sourceSha} ([a-f0-9]{64})$`);
+  if (
+    imported.length !== 1 ||
+    !importPattern.test(imported[0]) ||
+    prepared.length !== 1 ||
+    !preparePattern.test(prepared[0]) ||
+    payloads.indexOf(imported[0]) >= payloads.indexOf(prepared[0])
+  )
+    refuse('HOSTED_SETTINGS_MEMBER_LOG_PROVENANCE_INVALID');
+  return { treeSha256: prepared[0].match(preparePattern)[1] };
+}
+
+export function verifyHostedSettingsMemberReport(report) {
+  const cases = report?.cases;
+  const signedIn = (state) =>
+    state?.accessTokenPresent === true && state.profilePresent === true && state.isAdmin === false;
+  const guest = (state) =>
+    state?.accessTokenPresent === false && state.profilePresent === false && state.isAdmin !== true;
+  const menu = (state, profile, guestHeader) =>
+    state?.triggerCount === 1 &&
+    state.triggerState === 'open' &&
+    state.contentState === 'open' &&
+    state.wrapperCount === 1 &&
+    state.openDialogCount === 1 &&
+    state.profile === profile &&
+    state.preferences === 1 &&
+    state.signOut === 1 &&
+    state.guestHeader === guestHeader;
+  const profile = cases?.[0]?.observations;
+  const preferences = cases?.[1]?.observations;
+  const signOut = cases?.[2]?.observations;
+  if (
+    report?.schema_version !== 1 ||
+    report.role !== 'member' ||
+    report.status !== 'pass' ||
+    report.failure !== undefined ||
+    report.build?.kind !== 'local_dev_unpacked' ||
+    report.build.sourceSha !== null ||
+    !signedIn(report.identity_before) ||
+    !Array.isArray(cases) ||
+    cases.length !== 3 ||
+    cases.some(
+      (row, index) =>
+        row.id !== ['EXT-F-1001-T20', 'EXT-F-1001-T23', 'EXT-F-1001-T26'][index] ||
+        row.status !== 'pass',
+    ) ||
+    !Array.isArray(profile) ||
+    profile.length !== 2 ||
+    !menu(profile[0]?.menu, 1, false) ||
+    !signedIn(profile[1]?.identity) ||
+    profile[1]?.destination?.activePaneCount !== 1 ||
+    profile[1].destination.profilePaneCount !== 1 ||
+    profile[1].destination.backCount !== 1 ||
+    profile[1].destination.saveCount !== 1 ||
+    !Array.isArray(preferences) ||
+    preferences.length !== 1 ||
+    !signedIn(preferences[0]?.identity) ||
+    preferences[0]?.selected?.count !== 1 ||
+    preferences[0].selected.title !== 'Settings' ||
+    preferences[0].selected.paneActive !== true ||
+    !Array.isArray(signOut) ||
+    signOut.length !== 2 ||
+    !guest(signOut[0]?.guest) ||
+    !menu(signOut[0]?.reopenedMenu, 0, true) ||
+    !guest(signOut[1]?.persistedGuest) ||
+    !menu(signOut[1]?.persistedMenu, 0, true)
+  )
+    refuse('HOSTED_SETTINGS_MEMBER_NATIVE_REPORT_INVALID');
   return true;
 }
 
@@ -496,6 +641,12 @@ export function verifyHostedNotesLazyGeneralReport(report, identity) {
 export function requireSynchronizedDispatchSource(localSha, remoteSha, dirty) {
   if (!SHA.test(localSha ?? '') || localSha !== remoteSha || dirty)
     refuse('HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED');
+  return true;
+}
+
+export function requireExactDispatchSource(localSha, remoteSha, dirty, sourceSha, driftCode) {
+  requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
+  if (sourceSha !== remoteSha) refuse(driftCode);
   return true;
 }
 
@@ -710,13 +861,15 @@ function verifyArchive(zip, bytes, runId, attempt, sourceSha, acceptanceCase) {
     files[basename] = archiveEntry(zip, bytes, find(basename));
   }
   const reportName =
-    acceptanceCase === 'guest-scrape-development'
-      ? 'scrape-seo-schema-empty-guest-native.json'
-      : acceptanceCase === 'guest-seo'
-        ? 'seo-guest-acceptance.json'
-        : ['notes-find-member', 'notes-lazy-general-member'].includes(acceptanceCase)
-          ? 'notes-native-acceptance.json'
-          : 'data-member-auto-extract-acceptance.json';
+    acceptanceCase === 'settings-account-popover-member'
+      ? 'settings-account-popover-member.json'
+      : acceptanceCase === 'guest-scrape-development'
+        ? 'scrape-seo-schema-empty-guest-native.json'
+        : acceptanceCase === 'guest-seo'
+          ? 'seo-guest-acceptance.json'
+          : ['notes-find-member', 'notes-lazy-general-member'].includes(acceptanceCase)
+            ? 'notes-native-acceptance.json'
+            : 'data-member-auto-extract-acceptance.json';
   const report = JSON.parse(archiveEntry(zip, bytes, find(reportName)));
   if (
     acceptanceCase === 'member-data' &&
@@ -741,6 +894,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       mode === 'dispatch-guest-seo' ||
       mode === 'plan-scrape' ||
       mode === 'dispatch-scrape' ||
+      mode === 'plan-settings-member' ||
+      mode === 'dispatch-settings-member' ||
       mode === 'plan-notes' ||
       mode === 'dispatch-notes' ||
       mode === 'plan-notes-lazy-general' ||
@@ -751,6 +906,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const developmentArtifactId = args.get('--development-artifact-id');
       const sourceSha = args.get('--source-sha');
       const guestSeo = mode.endsWith('-guest-seo');
+      const settings = mode.endsWith('-settings-member');
       const notes = mode.endsWith('-notes') || mode.endsWith('-notes-lazy-general');
       const scrape = mode.endsWith('-scrape');
       if (
@@ -759,7 +915,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           (mode.endsWith('-notes-lazy-general') ? 'notes-lazy-general-member' : 'notes-find-member')
       )
         refuse('HOSTED_NOTES_CASE_MODE_MISMATCH');
-      if (notes || scrape)
+      if (settings && args.get('--case') !== 'settings-account-popover-member')
+        refuse('HOSTED_SETTINGS_MEMBER_CASE_MODE_MISMATCH');
+      if (notes || scrape || settings)
         for (const key of args.keys())
           if (
             ![
@@ -806,7 +964,16 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
                 developmentArtifactId,
                 sourceSha,
               })
-            : planHostedMemberData({ lane, developmentRunId, developmentArtifactId, sourceSha });
+            : settings
+              ? planHostedSettingsMember({
+                  lane,
+                  acceptanceCase: args.get('--case'),
+                  runnerLabel: args.get('--runner-label'),
+                  developmentRunId,
+                  developmentArtifactId,
+                  sourceSha,
+                })
+              : planHostedMemberData({ lane, developmentRunId, developmentArtifactId, sourceSha });
       if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
       const artifact = requireDevelopmentArtifact({
         runId: developmentRunId,
@@ -814,6 +981,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         sourceSha,
       });
       if (
+        mode === 'dispatch-settings-member' ||
         mode === 'dispatch' ||
         mode === 'dispatch-guest-seo' ||
         mode === 'dispatch-notes' ||
@@ -828,7 +996,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             'status',
             '--porcelain',
             '--',
-            ...(notes || scrape
+            ...(notes || scrape || settings
               ? []
               : [
                   '.github/workflows/hosted-guest-acceptance.yml',
@@ -839,19 +1007,35 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           { encoding: 'utf8' },
         ).trim();
         requireSynchronizedDispatchSource(localSha, remoteSha, dirty);
-        if (notes) {
+        if (notes || settings) {
           verifyHostedWorkflowCheckout({
             path: '.github/workflows/hosted-guest-acceptance.yml',
             head_sha: remoteSha,
           });
-          const ancestry = spawnSync('git', ['merge-base', '--is-ancestor', sourceSha, remoteSha]);
-          const changedPaths = execFileSync(
-            'git',
-            ['log', '--no-renames', '--format=', '--name-only', '-z', `${sourceSha}..${remoteSha}`],
-            { encoding: 'utf8' },
-          )
-            .split('\0')
-            .filter(Boolean);
+          const history = {};
+          if (notes) {
+            const ancestry = spawnSync('git', [
+              'merge-base',
+              '--is-ancestor',
+              sourceSha,
+              remoteSha,
+            ]);
+            history.ancestor = !ancestry.error && ancestry.status === 0;
+            history.changedPaths = execFileSync(
+              'git',
+              [
+                'log',
+                '--no-renames',
+                '--format=',
+                '--name-only',
+                '-z',
+                `${sourceSha}..${remoteSha}`,
+              ],
+              { encoding: 'utf8' },
+            )
+              .split('\0')
+              .filter(Boolean);
+          }
           const runs = ['hosted-guest-acceptance.yml', 'hosted-resource-diagnostic.yml'].flatMap(
             (workflow) =>
               ['queued', 'in_progress', 'waiting', 'pending', 'requested'].flatMap((status) => {
@@ -862,25 +1046,30 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
                   !Array.isArray(listing.workflow_runs) ||
                   listing.total_count !== listing.workflow_runs.length
                 )
-                  refuse('HOSTED_NOTES_A_CAPACITY_REFUSED');
+                  refuse(
+                    settings
+                      ? 'HOSTED_SETTINGS_MEMBER_A_CAPACITY_REFUSED'
+                      : 'HOSTED_NOTES_A_CAPACITY_REFUSED',
+                  );
                 return listing.workflow_runs;
               }),
           );
           const secrets = ghJson(`repos/${OWNER}/actions/secrets?per_page=100`);
-          requireNotesDispatchAdmission({
+          (settings ? requireSettingsMemberDispatchAdmission : requireNotesDispatchAdmission)({
             localSha,
             remoteSha,
             dirty,
             sourceSha,
-            ancestor: !ancestry.error && ancestry.status === 0,
-            changedPaths,
+            ...history,
             runs,
             secretNames: secrets.secrets?.map((secret) => secret.name),
           });
-          requireSynchronizedDispatchSource(
+          (settings ? requireExactDispatchSource : requireSynchronizedDispatchSource)(
             execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
             ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha,
             execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
+            sourceSha,
+            'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT',
           );
         }
         if (scrape) {
@@ -903,10 +1092,12 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
               }),
           );
           requireScrapeDispatchAdmission({ localSha, remoteSha, dirty, sourceSha, runs });
-          requireSynchronizedDispatchSource(
+          requireExactDispatchSource(
             execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
             ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha,
             execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
+            sourceSha,
+            'HOSTED_SCRAPE_SOURCE_DRIFT',
           );
         }
         const result = spawnSync(plan.command, [...plan.args, '-R', OWNER], { stdio: 'inherit' });
@@ -916,6 +1107,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         `${JSON.stringify({ mode, plan, artifact, host: 'github-hosted', localHeavyWork: false })}\n`,
       );
     } else if (
+      mode === 'verify-settings-member' ||
       mode === 'verify' ||
       mode === 'verify-guest-seo' ||
       mode === 'verify-notes' ||
@@ -927,6 +1119,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const zip = args.get('--artifact-zip');
       if (!zip) refuse('HOSTED_ARCHIVE_MISSING');
       const run = ghJson(`repos/${OWNER}/actions/runs/${runId}`);
+      const settings = mode === 'verify-settings-member';
       const guestSeo = mode === 'verify-guest-seo';
       const notes = mode === 'verify-notes' || mode === 'verify-notes-lazy-general';
       const lazyGeneral = mode === 'verify-notes-lazy-general';
@@ -934,13 +1127,15 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       if (
         run.path !== '.github/workflows/hosted-guest-acceptance.yml' ||
         run.name !==
-          (scrape
-            ? 'Native B · guest-scrape-development'
-            : guestSeo
-              ? 'Native B · guest-seo'
-              : notes
-                ? `Native A · ${lazyGeneral ? 'notes-lazy-general-member' : 'notes-find-member'}`
-                : 'Native A · member-data') ||
+          (settings
+            ? 'Native A · settings-account-popover-member'
+            : scrape
+              ? 'Native B · guest-scrape-development'
+              : guestSeo
+                ? 'Native B · guest-seo'
+                : notes
+                  ? `Native A · ${lazyGeneral ? 'notes-lazy-general-member' : 'notes-find-member'}`
+                  : 'Native A · member-data') ||
         run.event !== 'workflow_dispatch' ||
         run.head_branch !== 'main' ||
         run.conclusion !== 'success' ||
@@ -958,24 +1153,26 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         runId,
         attempt,
         sourceSha,
-        scrape
-          ? 'guest-scrape-development'
-          : guestSeo
-            ? 'guest-seo'
-            : notes
-              ? lazyGeneral
-                ? 'notes-lazy-general-member'
-                : 'notes-find-member'
-              : 'member-data',
+        settings
+          ? 'settings-account-popover-member'
+          : scrape
+            ? 'guest-scrape-development'
+            : guestSeo
+              ? 'guest-seo'
+              : notes
+                ? lazyGeneral
+                  ? 'notes-lazy-general-member'
+                  : 'notes-find-member'
+                : 'member-data',
       );
       const artifactRunId =
-        notes || scrape
+        notes || scrape || settings
           ? args.get('--development-run-id')
           : guestSeo
             ? String(report.imported_artifact?.runId ?? '')
             : String(report.artifact.run_id);
       const artifactId =
-        notes || scrape
+        notes || scrape || settings
           ? args.get('--development-artifact-id')
           : guestSeo
             ? String(report.imported_artifact?.artifactId ?? '')
@@ -1026,6 +1223,21 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           developmentArtifactId: artifact.artifactId,
         });
       }
+      let settingsProvenance;
+      if (settings) {
+        if (run.head_sha !== sourceSha) refuse('HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT');
+        verifyHostedSettingsMemberReport(report);
+        // Keep raw logs private and bounded; only the verified tree digest is returned.
+        const log = execFileSync(
+          'gh',
+          ['run', 'view', runId, '--attempt', attempt, '--log', '-R', OWNER],
+          {
+            encoding: 'utf8',
+            maxBuffer: 8_000_000,
+          },
+        );
+        settingsProvenance = verifyHostedSettingsMemberLog(log, artifact);
+      }
       if (scrape) {
         if (run.head_sha !== sourceSha) refuse('HOSTED_SCRAPE_SOURCE_DRIFT');
         verifyHostedScrapeReport(report, {
@@ -1035,7 +1247,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       }
       const verdict = verifyHostedResourceJournals({ runId, attempt, files });
       process.stdout.write(
-        `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...verdict })}\n`,
+        `${JSON.stringify({ runId, attempt, ...workflowSource, archiveDigest, artifact, ...(settings && { settingsProvenance }), ...verdict })}\n`,
       );
     } else refuse('HOSTED_MODE_INVALID');
   } catch (error) {

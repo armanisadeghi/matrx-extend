@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
 import { test } from 'node:test';
 import {
   planHostedGuestSeo,
@@ -458,4 +461,480 @@ test('hosted archive must contain exactly the current package, browser, and gues
       ),
     /HOSTED_ARCHIVE_JOURNAL_SET_INVALID/,
   );
+});
+
+// The Settings CLI owns routing/refusal/order; only GitHub and git are doubled.
+test('Settings member route refuses alternate lanes, cases, runners and unreviewed workflow', async () => {
+  const admission = await import('./hosted-remote-admission.mjs');
+  assert.equal(
+    typeof admission.planHostedSettingsMember,
+    'function',
+    'guarded Settings route is missing',
+  );
+  const input = settingsInput();
+  assert.deepEqual(admission.planHostedSettingsMember(input).args, [
+    'workflow',
+    'run',
+    'hosted-guest-acceptance.yml',
+    '--ref',
+    'main',
+    '-f',
+    'acceptance_lane=A',
+    '-f',
+    'acceptance_case=settings-account-popover-member',
+    '-f',
+    'scrape_auth_mode=member',
+    '-f',
+    'development_run_id=38205458398',
+    '-f',
+    'development_artifact_id=11730000001',
+    '-f',
+    'runner_label=macos-15-intel',
+  ]);
+  for (const change of [
+    { lane: 'B' },
+    { acceptanceCase: 'settings-account-popover-admin' },
+    { runnerLabel: 'macos-15' },
+    { sourceSha: null },
+    { developmentRunId: '0' },
+    { developmentArtifactId: '0' },
+    { workflowRef: 'other' },
+    {
+      workflow:
+        readFileSync(
+          new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+          'utf8',
+        ) + '\n# drift',
+    },
+  ])
+    assert.throws(() => admission.planHostedSettingsMember({ ...input, ...change }));
+});
+function settingsInput() {
+  return {
+    lane: 'A',
+    acceptanceCase: 'settings-account-popover-member',
+    runnerLabel: 'macos-15-intel',
+    developmentRunId: '38205458398',
+    developmentArtifactId: '11730000001',
+    sourceSha: '2d52a79cfa5920f82b16a4287986c2fcf51795a5',
+  };
+}
+// Current native report schema; no person identifiers or credentials are represented.
+function settingsReport() {
+  const signedIn = { accessTokenPresent: true, profilePresent: true, isAdmin: false };
+  const guest = { accessTokenPresent: false, profilePresent: false, isAdmin: null };
+  const menu = (signedIn) => ({
+    triggerCount: 1,
+    triggerState: 'open',
+    contentState: 'open',
+    openDialogCount: 1,
+    wrapperCount: 1,
+    profile: signedIn ? 1 : 0,
+    preferences: 1,
+    signOut: 1,
+    guestHeader: !signedIn,
+  });
+  return {
+    schema_version: 1,
+    role: 'member',
+    status: 'pass',
+    build: { kind: 'local_dev_unpacked', sourceSha: null },
+    identity_before: signedIn,
+    cases: [
+      {
+        id: 'EXT-F-1001-T20',
+        status: 'pass',
+        observations: [
+          { menu: menu(true) },
+          {
+            destination: { activePaneCount: 1, profilePaneCount: 1, backCount: 1, saveCount: 1 },
+            identity: signedIn,
+          },
+        ],
+      },
+      {
+        id: 'EXT-F-1001-T23',
+        status: 'pass',
+        observations: [
+          { selected: { count: 1, title: 'Settings', paneActive: true }, identity: signedIn },
+        ],
+      },
+      {
+        id: 'EXT-F-1001-T26',
+        status: 'pass',
+        observations: [
+          { guest, reopenedMenu: menu(false) },
+          { persistedGuest: guest, persistedMenu: menu(false) },
+        ],
+      },
+    ],
+  };
+}
+function settingsLog(input = settingsInput()) {
+  const prefix =
+    'hosted\tExercise the selected Chrome side-panel case\t2026-10-12T05:00:00.0000000Z ';
+  return (
+    prefix +
+    `DEVELOPMENT_TEST_IMPORTED /Users/runner/work/matrx-extend/matrx-extend/test-results/ci-artifacts/${input.sourceSha}/${input.developmentRunId}-1 exact_pushed_commit_only\n` +
+    prefix +
+    `PREPARED_DEVELOPMENT ${input.sourceSha} ${'c'.repeat(64)}\n`
+  );
+}
+test('Settings verifier refuses false native role, destination, signout and reload claims', async () => {
+  const a = await import('./hosted-remote-admission.mjs');
+  assert.equal(
+    typeof a.verifyHostedSettingsMemberReport,
+    'function',
+    'Settings native verifier missing',
+  );
+  assert.equal(a.verifyHostedSettingsMemberReport(settingsReport()), true);
+  for (const mutate of [
+    (r) => (r.status = 'unverified'),
+    (r) => (r.role = 'admin'),
+    (r) => (r.identity_before.isAdmin = true),
+    (r) => r.cases.pop(),
+    (r) => (r.cases[0].id = 'EXT-F-1001-T21'),
+    (r) => (r.cases[0].status = 'fail'),
+    (r) => (r.cases[0].observations[0].menu.profile = 0),
+    (r) => (r.cases[0].observations[1].destination.profilePaneCount = 0),
+    (r) => (r.cases[0].observations[1].destination.saveCount = 0),
+    (r) => (r.cases[1].observations[0].selected.title = 'Profile'),
+    (r) => (r.cases[1].observations[0].identity.accessTokenPresent = false),
+    (r) => (r.cases[2].observations[0].guest.accessTokenPresent = true),
+    (r) => (r.cases[2].observations[1].persistedGuest.profilePresent = true),
+    (r) => (r.cases[2].observations[1].persistedMenu.profile = 1),
+  ]) {
+    const r = settingsReport();
+    mutate(r);
+    assert.throws(() => a.verifyHostedSettingsMemberReport(r));
+  }
+});
+test('Settings log provenance requires exact step, source, run, attempt, complete markers and order', async () => {
+  const a = await import('./hosted-remote-admission.mjs');
+  assert.equal(
+    typeof a.verifyHostedSettingsMemberLog,
+    'function',
+    'Settings provenance verifier missing',
+  );
+  const input = settingsInput();
+  const identity = {
+    sourceSha: input.sourceSha,
+    developmentRunId: input.developmentRunId,
+    developmentRunAttempt: 1,
+    artifactId: input.developmentArtifactId,
+    githubArtifactDigest: `sha256:${'b'.repeat(64)}`,
+  };
+  const log = settingsLog();
+  assert.deepEqual(a.verifyHostedSettingsMemberLog(log, identity), { treeSha256: 'c'.repeat(64) });
+  assert.deepEqual(
+    a.verifyHostedSettingsMemberLog(log.replace('c'.repeat(64), 'd'.repeat(64)), identity),
+    { treeSha256: 'd'.repeat(64) },
+  );
+  for (const invalid of [
+    '',
+    log.replaceAll(input.sourceSha, 'f'.repeat(40)),
+    log.replace(input.developmentRunId, '38205458399'),
+    log.replace('-1 exact', '-2 exact'),
+    log.replaceAll('Exercise the selected Chrome side-panel case', 'Set up job'),
+    log + log,
+    log.replace('PREPARED_DEVELOPMENT', 'missing'),
+    log.replace('exact_pushed_commit_only', 'unverified'),
+    log.split('\n').filter(Boolean).reverse().join('\n'),
+    log.replace(/hosted\t[^\t]+\t[^ ]+ /g, ''),
+  ])
+    assert.throws(() => a.verifyHostedSettingsMemberLog(invalid, identity));
+});
+
+test('Settings CLI verification binds the real archive, authenticated logs and all resource finals', async () => {
+  const { createHash } = await import('node:crypto');
+  const dir = mkdtempSync(join(tmpdir(), 'settings-verify-'));
+  const input = settingsInput();
+  const runId = '38206000001';
+  const workflow = readFileSync(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  const zip = join(dir, 'evidence.zip');
+  const reportPath = join(dir, 'settings-account-popover-member.json');
+  const journal = (prefix, decision = 'valid') =>
+    [
+      { at: '2026-10-12T05:00:00Z', code: 'RESOURCE_JOURNAL_OPENED' },
+      { at: '2026-10-12T05:01:00Z', code: 'RESOURCE_ADMITTED', mode: 'run' },
+      { at: '2026-10-12T05:01:15Z', code: 'RESOURCE_WATCH_HEALTHY' },
+      { at: '2026-10-12T05:02:00Z', code: 'RESOURCE_JOB_EXIT', childExitCode: 0 },
+      {
+        at: '2026-10-12T05:02:01Z',
+        code: 'RESOURCE_FINAL_DECISION',
+        admitted: true,
+        resourceInvalid: decision !== 'valid',
+        exitCode: decision === 'valid' ? 0 : 3,
+        decision,
+      },
+    ]
+      .map((e) => JSON.stringify({ schema: 1, runId: `${prefix}-${runId}-1`, ...e }))
+      .join('\n') + '\n';
+  const { mkdirSync } = await import('node:fs');
+  const journals = join(dir, 'docs/stabilization/resource-journals');
+  mkdirSync(journals, { recursive: true });
+  const repack = (invalid = {}) => {
+    rmSync(zip, { force: true });
+    writeFileSync(reportPath, JSON.stringify(invalid.report ?? settingsReport()));
+    for (const prefix of ['hosted-package', 'hosted-browser', 'hosted-guest'])
+      writeFileSync(
+        join(journals, `${prefix}-${runId}-1.jsonl`),
+        journal(prefix, invalid.invalidPhase === prefix ? 'invalid' : 'valid'),
+      );
+    const packed = spawnSync(
+      'zip',
+      ['-q', '-r', zip, 'settings-account-popover-member.json', 'docs'],
+      { cwd: dir, encoding: 'utf8' },
+    );
+    assert.equal(packed.status, 0, packed.stderr);
+    return `sha256:${createHash('sha256').update(readFileSync(zip)).digest('hex')}`;
+  };
+  const state = {
+    sourceSha: input.sourceSha,
+    developmentRunId: input.developmentRunId,
+    artifactId: input.developmentArtifactId,
+    runId,
+    workflow,
+    nativeLog: settingsLog(),
+  };
+  const fake = `#!/usr/bin/env node
+const c=JSON.parse(process.env.SETTINGS_VERIFY_STUB), a=process.argv.slice(2);
+if(a[0]==='run'){process.stdout.write(c.nativeLog);process.exit(0);}
+const e=a[1];let r;
+if(e.includes('/contents/'))r={path:'.github/workflows/hosted-guest-acceptance.yml',type:'file',encoding:'base64',content:Buffer.from(c.workflow).toString('base64')};
+else if(e.includes('/artifacts?'))r={artifacts:e.includes('/'+c.runId+'/')?[{name:'hosted-guest-'+c.runId+'-1',expired:false,digest:c.archiveDigest}]:[{id:c.artifactId,expired:false,name:'matrx-extend-development-test-'+c.sourceSha+'-'+c.developmentRunId+'-1',digest:'sha256:'+'b'.repeat(64)}]};
+else if(e.endsWith('/'+c.runId))r={name:'Native A · settings-account-popover-member',path:'.github/workflows/hosted-guest-acceptance.yml',event:'workflow_dispatch',head_branch:'main',head_sha:c.workflowSha||c.sourceSha,conclusion:c.conclusion||'success',run_attempt:1};
+else if(e.endsWith('/'+c.developmentRunId))r={name:'CI',path:'.github/workflows/ci.yml',event:'push',head_branch:'main',head_sha:c.sourceSha,conclusion:'success',run_attempt:1};
+else process.exit(98);
+process.stdout.write(JSON.stringify(r));
+`;
+  writeFileSync(join(dir, 'gh'), fake);
+  chmodSync(join(dir, 'gh'), 0o700);
+  const execute = (change = {}, invalid = {}) =>
+    spawnSync(
+      process.execPath,
+      [
+        resolve('scripts/hosted-remote-admission.mjs'),
+        'verify-settings-member',
+        '--run-id',
+        runId,
+        '--attempt',
+        '1',
+        '--artifact-zip',
+        zip,
+        '--source-sha',
+        input.sourceSha,
+        '--development-run-id',
+        input.developmentRunId,
+        '--development-artifact-id',
+        input.developmentArtifactId,
+      ],
+      {
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          PATH: `${dir}:${process.env.PATH}`,
+          SETTINGS_VERIFY_STUB: JSON.stringify({
+            ...state,
+            archiveDigest: repack(invalid),
+            ...change,
+          }),
+        },
+      },
+    );
+  try {
+    const accepted = execute();
+    assert.equal(accepted.status, 0, accepted.stderr);
+    const receipt = JSON.parse(accepted.stdout);
+    assert.equal(receipt.valid, true);
+    assert.deepEqual(Object.keys(receipt.receipts), [
+      'hosted-package',
+      'hosted-browser',
+      'hosted-guest',
+    ]);
+    for (const [change, invalid, reason] of [
+      [{ nativeLog: '' }, {}, 'HOSTED_SETTINGS_MEMBER_LOG_PROVENANCE_INVALID'],
+      [{ workflowSha: 'f'.repeat(40) }, {}, 'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT'],
+      [{ conclusion: 'failure' }, {}, 'HOSTED_RUN_NOT_SUCCESSFUL'],
+      [{ archiveDigest: `sha256:${'f'.repeat(64)}` }, {}, 'HOSTED_ARCHIVE_DIGEST_MISMATCH'],
+      [
+        {},
+        { report: { ...settingsReport(), role: 'admin' } },
+        'HOSTED_SETTINGS_MEMBER_NATIVE_REPORT_INVALID',
+      ],
+      ...['hosted-package', 'hosted-browser', 'hosted-guest'].map((prefix) => [
+        {},
+        { invalidPhase: prefix },
+        'HOSTED_JOURNAL_NOT_VALID',
+      ]),
+    ]) {
+      const result = execute(change, invalid);
+      assert.notEqual(result.status, 0, reason);
+      assert.match(result.stderr, new RegExp(reason));
+    }
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+// The real CLI owns validation/order/routing. Only GitHub and git subprocesses are external doubles.
+test('normal Settings CLI dispatch sends exactly the guarded route and never dispatches after a refusal', async () => {
+  const admission = await import('./hosted-remote-admission.mjs');
+  const input = settingsInput();
+  const sourceSha = input.sourceSha;
+  const identity = { githubArtifactDigest: `sha256:${'b'.repeat(64)}` };
+  const dir = mkdtempSync(join(tmpdir(), 'notes-admission-'));
+  const log = join(dir, 'dispatch.json');
+  const workflow = readFileSync(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  const state = {
+    sourceSha,
+    artifactId: input.developmentArtifactId,
+    runId: input.developmentRunId,
+    digest: identity.githubArtifactDigest,
+    workflow,
+    log,
+  };
+  const fake = `#!/usr/bin/env node
+const fs = require('node:fs');
+const cfg = JSON.parse(process.env.SETTINGS_ADMISSION_STUB);
+const args = process.argv.slice(2);
+function selectedSource(name, original) {
+  if (!cfg.moveAfterAdmission) return original;
+  const path = cfg.log + '.' + name;
+  const count = fs.existsSync(path) ? Number(fs.readFileSync(path, 'utf8')) : 0;
+  fs.writeFileSync(path, String(count + 1));
+  return count === 0 ? original : 'f'.repeat(40);
+}
+if (process.argv[1].endsWith('/git')) {
+  if (args[0] === 'rev-parse') process.stdout.write(selectedSource('local', cfg.localSha || cfg.sourceSha));
+  else if (args[0] === 'status') process.stdout.write(cfg.dirty || '');
+  else if (args[0] === 'log' || args[0] === 'merge-base') fs.writeFileSync(cfg.log + '.history', args[0]);
+  else process.exit(99);
+} else if (args[0] === 'workflow') {
+  fs.writeFileSync(cfg.log, JSON.stringify(args));
+  process.exit(cfg.dispatchFailure ? 1 : 0);
+} else {
+  const endpoint = args[1]; let result;
+  if (endpoint.includes('/git/ref/')) result = { object: { sha: selectedSource('remote', cfg.remoteSha || cfg.sourceSha) } };
+  else if (endpoint.includes('/contents/')) result = { path: '.github/workflows/hosted-guest-acceptance.yml', type: 'file', encoding: 'base64', content: Buffer.from(cfg.workflow).toString('base64') };
+  else if (endpoint.includes('/actions/secrets')) result = { secrets: cfg.noSecret ? [] : [{ name: 'MATRX_REVIEWER_MAGIC_LINK_JSON' }] };
+  else if (endpoint.includes('/actions/workflows/')) result = { total_count: (cfg.runs || (endpoint.includes('hosted-resource-diagnostic') ? cfg.diagnosisRuns : []) || []).length, workflow_runs: cfg.runs || (endpoint.includes('hosted-resource-diagnostic') ? cfg.diagnosisRuns : []) || [] };
+  else if (endpoint.includes('/artifacts?')) result = { artifacts: [{ id: cfg.wrongArtifact || cfg.artifactId, expired: false, name: 'matrx-extend-development-test-' + cfg.sourceSha + '-' + cfg.runId + '-1', digest: cfg.digest }] };
+  else if (endpoint.endsWith('/actions/runs/' + cfg.runId)) result = { name: 'CI', path: '.github/workflows/ci.yml', event: 'push', head_branch: 'main', conclusion: 'success', head_sha: cfg.sourceSha, run_attempt: 1 };
+  else process.exit(98);
+  process.stdout.write(JSON.stringify(result));
+}
+`;
+  for (const name of ['gh', 'git']) {
+    writeFileSync(join(dir, name), fake);
+    chmodSync(join(dir, name), 0o700);
+  }
+  const execute = (mode, change = {}, extra = []) => {
+    for (const name of ['local', 'remote', 'history']) rmSync(`${log}.${name}`, { force: true });
+    const scrape = mode.endsWith('-scrape');
+    return spawnSync(
+      process.execPath,
+      [
+        resolve('scripts/hosted-remote-admission.mjs'),
+        mode,
+        '--lane',
+        scrape ? 'B' : 'A',
+        '--case',
+        scrape ? 'guest-scrape-development' : 'settings-account-popover-member',
+        ...(scrape ? ['--scrape-scope', 'seo-schema-empty', '--auth-mode', 'guest'] : []),
+        '--runner-label',
+        'macos-15-intel',
+        '--development-run-id',
+        input.developmentRunId,
+        '--development-artifact-id',
+        input.developmentArtifactId,
+        '--source-sha',
+        sourceSha,
+        ...extra,
+      ],
+      {
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          PATH: `${dir}:${process.env.PATH}`,
+          SETTINGS_ADMISSION_STUB: JSON.stringify({ ...state, ...change }),
+        },
+      },
+    );
+  };
+  try {
+    const plan = execute('plan-settings-member');
+    assert.equal(plan.status, 0, plan.stderr);
+    assert.equal(JSON.parse(plan.stdout).artifact.artifactId, input.developmentArtifactId);
+    for (const [change, reason] of [
+      [{ wrongArtifact: '11700000001' }, 'HOSTED_DEVELOPMENT_ARTIFACT_INVALID'],
+      [
+        { dirty: ' M .github/workflows/hosted-guest-acceptance.yml' },
+        'HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED',
+      ],
+      [{ dirty: '?? unrelated-pending.ts' }, 'HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED'],
+      [{ remoteSha: 'f'.repeat(40) }, 'HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED'],
+      [
+        { localSha: 'f'.repeat(40), remoteSha: 'f'.repeat(40) },
+        'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT',
+      ],
+      [{ workflow: `${workflow}\n# unreviewed` }, 'HOSTED_WORKFLOW_BLOB_UNREVIEWED'],
+      [
+        { runs: [{ name: 'Native A · member-data', status: 'queued' }] },
+        'HOSTED_SETTINGS_MEMBER_A_CAPACITY_REFUSED',
+      ],
+      [
+        { diagnosisRuns: [{ name: 'Hosted resource diagnosis', status: 'in_progress' }] },
+        'HOSTED_SETTINGS_MEMBER_A_CAPACITY_REFUSED',
+      ],
+      [{ noSecret: true }, 'HOSTED_SETTINGS_MEMBER_SECRET_MISSING'],
+    ]) {
+      const result = execute('dispatch-settings-member', change);
+      assert.notEqual(result.status, 0, reason);
+      assert.match(result.stderr, new RegExp(reason));
+      assert.throws(() => readFileSync(log), /ENOENT/, 'refusal was bypassed with a dispatch');
+    }
+    const unknown = execute('dispatch-settings-member', {}, [
+      '--startup-display-mode',
+      'notes-cdp',
+    ]);
+    assert.notEqual(unknown.status, 0);
+    assert.match(unknown.stderr, /HOSTED_ARGUMENT_INVALID/);
+    // Local and remote both advance after initial admission; artifact selection stays frozen.
+    for (const [mode, reason] of [
+      ['dispatch-settings-member', 'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT'],
+      ['dispatch-scrape', 'HOSTED_SCRAPE_SOURCE_DRIFT'],
+    ]) {
+      const moved = execute(mode, { moveAfterAdmission: true });
+      assert.notEqual(moved.status, 0, reason);
+      assert.match(moved.stderr, new RegExp(reason));
+      assert.throws(() => readFileSync(log), /ENOENT/, 'source race reached workflow dispatch');
+    }
+    const result = execute('dispatch-settings-member', {
+      runs: [{ name: 'Native B · guest-scrape-development', status: 'in_progress' }],
+    });
+    assert.equal(result.status, 0, result.stderr);
+    assert.throws(
+      () => readFileSync(`${log}.history`),
+      /ENOENT/,
+      'Settings queried Notes ancestry/history',
+    );
+    assert.deepEqual(JSON.parse(readFileSync(log)), [
+      ...admission.planHostedSettingsMember(input).args,
+      '-R',
+      'armanisadeghi/matrx-extend',
+    ]);
+    rmSync(log);
+    const failed = execute('dispatch-settings-member', { dispatchFailure: true });
+    assert.notEqual(failed.status, 0);
+    assert.match(failed.stderr, /HOSTED_DISPATCH_FAILED/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
