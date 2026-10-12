@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "review_scope": "Fresh read-only re-review of Notes CDP startup diagnostic activation and instrumentation; no authorship.",
+  "verdicts": {
+    "A_fit_to_objective": "PARTIAL",
+    "B_code_and_quality": "PASS"
+  },
+  "prior_findings": [
+    {
+      "finding": "The original diagnostic had no valid Notes A activation route because the SEO diagnostic was scoped to guest SEO.",
+      "status": "ADDRESSED",
+      "evidence": "Workflow now defines default-false notes_startup_diagnostic; admission allows it only for notes-find-member/A; the runner maps the Notes input to MATRX_CDP_STARTUP_DIAGNOSTIC and its native harness callsite. Focused route tests pass enabled and disabled routing and reject other cases/lanes."
+    },
+    {
+      "finding": "The first peer's B verdict was PARTIAL pending this activation repair.",
+      "status": "ADDRESSED",
+      "evidence": "The route test parses workflow YAML, executes the admission shell, evaluates the workflow env expression, evaluates runner childEnv/driver source, and reaches the real harness callsite with the observer."
+    }
+  ],
+  "new_breakage": [],
+  "findings": [
+    {
+      "severity": "Important",
+      "status": "OPEN_LIMITATION",
+      "area": "A objective completion",
+      "detail": "This review verifies that an authorized Notes A run can activate the diagnostic, but no hosted run was launched and no live Chrome failure phase was observed. The experiment therefore remains unconfirmed as a diagnosis of the original incident."
+    }
+  ],
+  "checks": {
+    "focused_tests": "PASS: node --test scripts/hosted-notes-startup-diagnostic-route.test.mjs tests/browser/native-cdp-startup-diagnostic.test.mjs tests/browser/native-startup-interval-callsite.test.mjs (14/14).",
+    "safety_review": "Source inspection found existing startup deadlines and connector timeout/cleanup behavior unchanged; no retry or guard widening. Probe starts after connector ownership validation and is destroyed when the connector settles. Receipt contains fixed phase names, durations, counts, and bounded integer HTTP status only; no URL/port/path, headers, body, credentials, process arguments, or exception text. SEO CPU diagnostics retain their previous mapping; the CDP probe is separately controlled."
+  }
+}

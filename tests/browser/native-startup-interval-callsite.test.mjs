@@ -27,6 +27,7 @@ async function run({
   beginFails = false,
   finishFails = false,
   enabled = true,
+  cdpEnabled = false,
 } = {}) {
   const events = [];
   const output = [];
@@ -51,7 +52,10 @@ async function run({
     rm: async () => events.push('remove-profile'),
     performance,
     process: {
-      env: { MATRX_STARTUP_INTERVAL_DIAGNOSTIC: enabled ? '1' : '0' },
+      env: {
+        MATRX_STARTUP_INTERVAL_DIAGNOSTIC: enabled ? '1' : '0',
+        MATRX_CDP_STARTUP_DIAGNOSTIC: cdpEnabled ? '1' : '0',
+      },
       stderr: { write: (line) => output.push(line) },
     },
     beginStartupProcessInterval: async () => {
@@ -146,4 +150,10 @@ test('ordinary startup performs no diagnostic process reads', async () => {
   const { events, brackets } = await run({ enabled: false });
   assert.deepEqual(events, ['spawn', 'connect', 'detach', 'cleanup', 'remove-profile']);
   assert.deepEqual(brackets, []);
+});
+test('Notes CDP diagnostic brackets actual startup without enabling SEO diagnostics', async () => {
+  const { events, brackets } = await run({ enabled: false, cdpEnabled: true });
+  assert.equal(brackets.length, 1, 'Notes startup lost its process CPU bracket');
+  assert.equal(brackets[0].outcome, 'cdp_connected');
+  assert.deepEqual(events.slice(0, 4), ['snapshot', 'spawn', 'connect', 'snapshot']);
 });

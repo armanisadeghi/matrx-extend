@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "review_scope": "Fresh independent review of the Notes workflow input-limit repair and its guards; no authorship, commit, push, or hosted dispatch.",
+  "verdicts": {
+    "A_fit_to_objective": "PARTIAL",
+    "B_code_and_quality": "PASS"
+  },
+  "prior_findings": [
+    {
+      "finding": "The workflow had 26 workflow_dispatch inputs, beyond GitHub's limit of 25, and the prior guarded check rejected the changed workflow bytes.",
+      "status": "ADDRESSED",
+      "evidence": "Parsed workflow has exactly 25 top-level inputs. The reviewed source SHA-256 is bf120de2e84356722122829790a52deeefb2177f3a87b93181368b2fdeb1910e, matching the guard constant."
+    }
+  ],
+  "new_breakage": [],
+  "findings": [
+    {
+      "severity": "Important",
+      "status": "OPEN_LIMITATION",
+      "area": "A objective completion",
+      "detail": "The repair makes the Notes A diagnostic dispatchable, but no hosted diagnostic run was launched in this review. It provides no live Chrome diagnosis or Notes product acceptance credit."
+    }
+  ],
+  "checks": {
+    "focused_tests": "PASS: node --test scripts/hosted-notes-startup-diagnostic-route.test.mjs scripts/hosted-remote-admission.test.mjs (11/11).",
+    "workflow_contract": "PASS: YAML parse reports 25 inputs; exact workflow SHA-256 matches the guarded reviewed hash. The test mutation removing notes-cdp is refused as HOSTED_WORKFLOW_BLOB_UNREVIEWED.",
+    "activation_and_isolation": "PASS: executable route tests map notes-cdp to diagnostic activation only for notes-find-member/A; other cases and lane B are rejected. Headed remains the default, headed/headless display mappings remain intact, and SEO's CPU diagnostic does not activate the CDP probe.",
+    "guard_review": "PASS: source retains lane admission, phase guards, fixture serialization, artifact provenance, secret boundary, and journal upload checks. Review found no guard weakening or credential values in the changed workflow/report/test source.",
+    "ci_context": "Runs 38187079776 and 38187079767 on pre-repair commit 92fe038891d38736fd3ed7b730f431f35f49d363 show HOSTED_WORKFLOW_BLOB_UNREVIEWED failures; run 38187079059 was rejected before jobs. These are consistent with the reported pre-repair state, not evidence against the current candidate.",
+    "limitations": "No live Chrome run or broad local checks were performed."
+  }
+}

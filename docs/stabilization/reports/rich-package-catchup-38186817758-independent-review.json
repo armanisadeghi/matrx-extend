@@ -1,0 +1,38 @@
+{
+  "status": {
+    "A": "PARTIAL",
+    "B": "CONCERN"
+  },
+  "findings": [
+    {
+      "verdict": "A",
+      "severity": "important",
+      "finding": "The lock-only candidate is structurally safe to adopt: package.json remains unchanged with @ai-matrx dependencies declared latest; the candidate only resolves rich-content 0.2.149 and rich-editor 0.5.104. Extension source has no direct imports or uses of changed/removed package APIs (including CopyMenuButton.copyRaw). I could not establish exact-candidate user behavior in the live extension."
+    },
+    {
+      "verdict": "B",
+      "severity": "important",
+      "finding": "Both published CHANGELOG entries claim metadata-only republishing and no consumer action, but the published dist differs materially: rich-content changes 21 emitted files, including copy menu/API changes, formatted copy, HTML page menu actions and selection copy; rich-editor changes four emitted files and adds visual-selection serialization used by editor selection sources. The Consumer-action gate correctly passes the declarations but does not validate the published runtime delta."
+    },
+    {
+      "verdict": "B",
+      "severity": "note",
+      "finding": "Because the extension mounts @ai-matrx/chat in PackageChatView, downstream chat/editor reachability is plausible; source inspection alone does not prove whether these changed rich-content/editor paths render there. Treat adoption as package-graph-safe, with product acceptance limited to chat copy menu defaults/Markdown-text-formatted rows, selection copy from visual and source editors, and HTML publish menu availability/absence under the extension host bindings."
+    }
+  ],
+  "verification": [
+    "GitHub Actions run 38186817758 succeeded on source SHA 128273c6bf481f3b43045a427e47966308aa1daa; hosted job completed latest resolution, lock graph verification, frozen install plus real postinstall, installed graph verification, provenance capture, and artifact upload.",
+    "Downloaded hosted artifact package.json and pnpm-lock.yaml SHA-256 values match the SSD candidate manifest and package-sync patch evidence. package.json is byte-identical to the current checkout; pnpm-lock.yaml contains only these two package version/integrity/snapshot updates in its diff.",
+    "Published dist diff compared rich-content 0.2.148→0.2.149 and rich-editor 0.5.103→0.5.104; inspected both published CHANGELOG entries and package manifests.",
+    "Source grep found no direct extension call sites for changed or removed rich-content/editor APIs. PackageChatView imports ChatConversationRoom from @ai-matrx/chat, so indirect reachability remains to be checked at runtime.",
+    "No local tests or builds were run, honoring the supplied low-disk guard; the requested package-agent report also identifies the disk guard refusal."
+  ],
+  "files_touched": [
+    "docs/stabilization/reports/rich-package-catchup-38186817758-independent-review.json"
+  ],
+  "open_questions": [
+    "Does the exact candidate render and behave correctly in the extension's PackageChatView, especially the copy rows and editor selection-copy action?",
+    "Does the extension's rich-content host binding expose html-page service? The added action hook returns no items when the service or user is unavailable, but this was not exercised in the extension."
+  ],
+  "evidence_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/matrx-catchup-20261012-evidence/published-dist.diff; hosted artifact downloaded to /tmp/rich-package-review-38186817758/package-graph-sync-38186817758; published manifests/changelogs in /Volumes/Samsung2TB/code/.stabilization-scratch/matrx-catchup-20261012-consumer-review/node_modules/@ai-matrx/"
+}

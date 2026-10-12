@@ -10,8 +10,8 @@ import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mj
 const OWNER = 'armanisadeghi/matrx-extend';
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
 // Reviewed bytes of this narrow lane's active hosted workflow. Any workflow edit needs review.
-// Reviewed 55337817c..a5c214647: popover/Notes cases and SEO notice scope; guards unchanged.
-const REVIEWED_WORKFLOW_SHA256 = '1ed645168b28c6b6fdb2cc10839efeed3ee88c2263c65da4ab4c43b99eac78f7';
+// Notes CDP opt-in uses startup_display_mode; 25 inputs; phase/fixture guards unchanged.
+const REVIEWED_WORKFLOW_SHA256 = 'bf120de2e84356722122829790a52deeefb2177f3a87b93181368b2fdeb1910e';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );
