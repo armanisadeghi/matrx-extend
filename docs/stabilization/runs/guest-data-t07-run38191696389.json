@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "run_id": 38191696389,
+  "feature_id": "EXT-F-2005",
+  "scope": "Guarded hosted native guest Data retest of T07 C18 hover, C19 field selection, C22 Clear, C21 selected Cancel, and zero observed guest pattern writes.",
+  "mode": "guest",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "workflow_lane": "B",
+  "runner_label": "macos-15-intel",
+  "source_sha": "20ca6173c40cf670fb5dd6c24c14f3439321c102",
+  "version": "0.2.509",
+  "started_at": "2026-10-12T01:23:27Z",
+  "finished_at": "2026-10-12T01:31:11Z",
+  "outcome": "independently_reviewed_bounded_guest_pass_with_evidence_limits",
+  "build": {
+    "kind": "native_ci_development_artifact",
+    "source_sha": "5720310991c36ae39ed8a32e0f9ae20226f62b62",
+    "ci_run_id": 38189416372,
+    "artifact_id": 11721207192,
+    "artifact_name": "matrx-extend-development-test-5720310991c36ae39ed8a32e0f9ae20226f62b62-38189416372-1",
+    "artifact_digest": "sha256:a1183de454bde13ecf00698688e5e403d2df455a82e9e077986fcda9e3084bec",
+    "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "version": "0.2.509",
+    "current_main_runtime_src_diff": "none"
+  },
+  "hosted_result_artifact": {
+    "id": 11722305033,
+    "name": "hosted-guest-38191696389-1",
+    "digest": "sha256:b4b74d92b288a8f031f850d714c783fbe0c62eb2ed5a49eed9af44cf20cd13d5",
+    "expired": false
+  },
+  "case_results": {
+    "EXT-F-2005-T07": {
+      "guest": "partial_bounded_guest_subtargets_independently_reviewed",
+      "observations": [
+        "C18 hover highlights appeared on two distinct fields.",
+        "C19 selected Cedar chair; field_1 selector uniquely matched the clicked heading.",
+        "C22 Clear removed the selected Cedar chair entry.",
+        "C21 selected-field Cancel restored the empty Data panel baseline.",
+        "Zero non-GET /wbx_pattern writes were observed during the action window."
+      ],
+      "resource_valid": true,
+      "new_acceptance_credit": "C18, C19, C21 and C22 bounded guest observations only; T07 remains partial.",
+      "evidence": "docs/stabilization/evidence/guest-data-t07/run38191696389/receipt.sanitized.json",
+      "independent_review": "docs/stabilization/reports/guest-data-t07-peer-38191696389.json"
+    }
+  },
+  "resource_admission": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "evidence": [
+    "docs/stabilization/evidence/guest-data-t07/run38191696389/receipt.sanitized.json",
+    "docs/stabilization/evidence/guest-data-t07/run38191696389/native-report.sanitized.json",
+    "docs/stabilization/evidence/guest-data-t07/run38191696389/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/guest-data-t07/run38191696389/resource-journals/hosted-package-38191696389-1.jsonl",
+    "docs/stabilization/evidence/guest-data-t07/run38191696389/resource-journals/hosted-browser-38191696389-1.jsonl",
+    "docs/stabilization/evidence/guest-data-t07/run38191696389/resource-journals/hosted-guest-38191696389-1.jsonl",
+    "docs/stabilization/evidence/guest-data-t07/run38191696389/artifact-native-sidepanel.png",
+    "docs/stabilization/evidence/guest-data-t07/run38191696389/artifact-normal-target-after-open.png",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38191696389",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38189416372"
+  ],
+  "limits": [
+    "Guest behavior only; no member/admin or published Store claim.",
+    "No backend persistence query or cross-target write audit; zero non-GET /wbx_pattern writes were observed only by the panel CDP listener during the action window.",
+    "Screenshots omit Data picker states; native assertions provide the interaction evidence.",
+    "Harness finally-path cleanup ran, but post-run process/profile absence was not independently verified.",
+    "The official raw guest journal contained a process-attribution event omitted from the sanitized local journal; other events align and the sanitized copy hash matches its receipt. All three resource finals are valid."
+  ],
+  "independent_review": "docs/stabilization/reports/guest-data-t07-peer-38191696389.json"
+}

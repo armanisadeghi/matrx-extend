@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2005-T07",
+  "mode": "guest",
+  "status": "observed_pass_pending_independent_native_review",
+  "workflow": ".github/workflows/hosted-guest-acceptance.yml",
+  "hosted_run_id": 38191696389,
+  "hosted_run_attempt": 1,
+  "hosted_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38191696389",
+  "hosted_conclusion": "success",
+  "hosted_source_sha": "20ca6173c40cf670fb5dd6c24c14f3439321c102",
+  "workflow_lane": "B",
+  "runner_label": "macos-15-intel",
+  "runtime_eligibility": {
+    "development_source_sha": "5720310991c36ae39ed8a32e0f9ae20226f62b62",
+    "development_ci_run_id": 38189416372,
+    "development_artifact_id": 11721207192,
+    "development_artifact_digest": "sha256:a1183de454bde13ecf00698688e5e403d2df455a82e9e077986fcda9e3084bec",
+    "version": "0.2.509",
+    "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "source_ancestor_of_current_main": true,
+    "current_main_runtime_src_diff": "none"
+  },
+  "hosted_result_artifact": {
+    "id": 11722305033,
+    "name": "hosted-guest-38191696389-1",
+    "digest": "sha256:b4b74d92b288a8f031f850d714c783fbe0c62eb2ed5a49eed9af44cf20cd13d5",
+    "expired": false
+  },
+  "native_report": {
+    "path": "docs/stabilization/evidence/guest-data-t07/run38191696389/native-report.sanitized.json",
+    "sha256": "85e7ef198b9b0a453cfa32180281f279b366949daf600af1213cd1bc35ca0c6c",
+    "raw_report_sha256": "9a45aa2e988ca7f8dfc56502092fb1ae3682bdd4b3c03e86c429e22e13ac8e4d"
+  },
+  "screenshots": {
+    "sidepanel": {
+      "path": "docs/stabilization/evidence/guest-data-t07/run38191696389/artifact-native-sidepanel.png",
+      "sha256": "bd0971bed42cd3c5fdb62360b28cb8b0ac645da8d961f2a9242c85b3aa63acff"
+    },
+    "target_after_open": {
+      "path": "docs/stabilization/evidence/guest-data-t07/run38191696389/artifact-normal-target-after-open.png",
+      "sha256": "fb1191c2cbd2a6e88c3d4e9a167c3c6cd55f39a2c7e75f7022ead9e929b4263d"
+    }
+  },
+  "resource_phases": {
+    "package": {
+      "journal": "docs/stabilization/evidence/guest-data-t07/run38191696389/resource-journals/hosted-package-38191696389-1.jsonl",
+      "sha256": "b4dd9ab8aa6c46dd53e755e8386232b1996d8dcccc1fa6bb5d1d7abb48f542ca",
+      "final": {
+        "at": "2026-10-12T01:25:44.760Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    },
+    "browser": {
+      "journal": "docs/stabilization/evidence/guest-data-t07/run38191696389/resource-journals/hosted-browser-38191696389-1.jsonl",
+      "sha256": "5edd29e78464875c42686b5677b8f5ee20f7639cf1ded91ebe4c65808e2f3e8e",
+      "final": {
+        "at": "2026-10-12T01:27:49.636Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    },
+    "guest": {
+      "journal": "docs/stabilization/evidence/guest-data-t07/run38191696389/resource-journals/hosted-guest-38191696389-1.jsonl",
+      "sha256": "92b21187cc2200684c3d321de2e87cf0e454815145b7a0b0ca1b0df10827944a",
+      "final": {
+        "at": "2026-10-12T01:30:58.784Z",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid"
+      }
+    }
+  },
+  "dispatch_inputs": {
+    "acceptance_lane": "B",
+    "runner_label": "macos-15-intel",
+    "acceptance_case": "guest-data",
+    "development_run_id": 38189416372,
+    "development_artifact_id": 11721207192,
+    "scrape_auth_mode": "guest"
+  },
+  "observations": {
+    "c18_hover_highlight": "two distinct field targets displayed hover highlights",
+    "c19_click_to_select": "Cedar chair preview; field_1 selector uniquely matched the clicked heading",
+    "c22_clear": "selected Cedar chair entry removed",
+    "c21_selected_cancel": "selected-field Cancel restored empty Data panel baseline",
+    "unauthorized_pattern_writes": 0
+  },
+  "cleanup": {
+    "loopback_fixture_server": "closed in harness finally",
+    "owned_chromium_child": "stopped in harness finally",
+    "temporary_profile_root": "removed in harness finally",
+    "post_run_absence_independently_verified": false,
+    "runner": "isolated ephemeral hosted runner completed successfully"
+  },
+  "limits": [
+    "No independent runtime peer review yet; no inventory or T07 credit.",
+    "Guest behavior only; no member/admin or published Store behavior.",
+    "No pattern writes were observed during the native action window; no backend persistence query was performed.",
+    "Uploaded screenshots show the generic side panel and controlled research target page, not the Data picker states; interaction credit rests on native assertions."
+  ]
+}

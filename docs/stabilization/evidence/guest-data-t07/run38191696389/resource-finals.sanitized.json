@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "hosted_run_id": 38191696389,
+  "resource_finals": {
+    "package": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "browser": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "guest": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  },
+  "source": "Hosted artifact 11722305033; sanitized terminal journals retained beside this file."
+}

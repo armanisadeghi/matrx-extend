@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_native_review",
+  "reviewer": "Codex peer reviewer",
+  "reviewed_at": "2026-10-12",
+  "feature_id": "EXT-F-2005",
+  "target_case_id": "EXT-F-2005-T07",
+  "run_id": 38191696389,
+  "verdict_a": {
+    "status": "PASS_BOUNDED_GUEST_SUBTARGET",
+    "scope": "Guest T07 native observations on the imported v0.2.509 development artifact only.",
+    "findings": [],
+    "observations": {
+      "C18_two_distinct_hover_targets": "PASS. The exact driver calls hoverPickerField for .product-name and .product-price; it requires distinct rectangles and reports both highlights visible.",
+      "C19_unique_field_1_selector": "PASS. Native report records the clicked Cedar chair heading, field_1 selector, one matching element, and matching clicked element.",
+      "C22_clear": "PASS. Driver checks Cedar chair exists in picker before Clear and asserts there is no picked-item afterward; report records after_entries=0.",
+      "C21_selected_cancel": "PASS. Driver proves $429 is selected before Cancel, then compares selected fields, picker/Cancel controls, Save pattern control, and name input against the empty baseline.",
+      "guest_pattern_writes": "PASS_WITH_OBSERVATION_BOUNDARY. Driver listens for non-GET /wbx_pattern requests on the panel CDP session during the sequence and asserts an empty list. This does not establish backend state or activity outside that target/window."
+    },
+    "acceptance_credit": "These observations support only bounded guest T07 subtarget credit after this peer review; they do not establish full T07, member/admin, or Store acceptance."
+  },
+  "verdict_b": {
+    "status": "PASS_WITH_EVIDENCE_LIMITS",
+    "provenance": {
+      "hosted_run": "GitHub API confirms workflow Hosted guest side-panel acceptance, run 38191696389, attempt 1, main head 20ca6173c40cf670fb5dd6c24c14f3439321c102, success; job guest succeeded.",
+      "development_run": "GitHub API confirms CI run 38189416372 was a successful push to main at 5720310991c36ae39ed8a32e0f9ae20226f62b62.",
+      "development_artifact": "GitHub artifact metadata confirms artifact 11721207192, expected source-keyed name, non-expired status, and digest sha256:a1183de454bde13ecf00698688e5e403d2df455a82e9e077986fcda9e3084bec. The hosted native report and receipt identify this same artifact, tree e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb, and version 0.2.509.",
+      "runtime_equivalence": "The development source is an ancestor of origin/main b92d4e2fa9e7861b228e3625fe258938253882fe; a direct git diff over src is empty. The receipt also records current_main_runtime_src_diff=none.",
+      "hosted_result_artifact": "GitHub API confirms artifact 11722305033, hosted-guest-38191696389-1, non-expired, digest sha256:b4b74d92b288a8f031f850d714c783fbe0c62eb2ed5a49eed9af44cf20cd13d5. Its downloaded native report hash matches the receipt's raw_report_sha256."
+    },
+    "resource_journals": {
+      "package": "PASS: one RESOURCE_FINAL_DECISION, valid/admitted/exit 0; local journal SHA matches receipt and downloaded hosted artifact.",
+      "browser": "PASS: one RESOURCE_FINAL_DECISION, valid/admitted/exit 0; local journal SHA matches receipt and downloaded hosted artifact.",
+      "guest": "PASS: one RESOURCE_FINAL_DECISION, valid/admitted/exit 0. The raw hosted journal shows CPU_PENDING followed by CPU_RECOVERED before job exit/final. Its raw hash differs from the sanitized local copy because raw includes one RESOURCE_PROCESS_ATTRIBUTION event omitted from the sanitized copy; the remaining events align and the sanitized copy SHA matches its receipt. This transformation is a provenance limitation, not a failed resource final."
+    },
+    "visual_and_cleanup_limits": [
+      "Both archived screenshots were inspected: one shows the generic guest side panel, the other the controlled target page after panel open. Neither depicts the Data picker interactions, so screenshots add no direct evidence for C18/C19/C22/C21; the native assertions carry those claims.",
+      "Harness finally-path cleanup is recorded, but post-run absence of Chromium, fixture server, and profile was not independently verified.",
+      "No backend persistence query or cross-target network audit was performed; zero writes is limited to the panel CDP listener and action window."
+    ],
+    "secret_review": "The downloaded native report and supplied sanitized evidence contain no credential or token values. The raw journal's additional process-attribution row contains process names/PIDs and no credential values."
+  },
+  "verified": {
+    "browser_relaunched": false,
+    "hosted_lane_retried": false,
+    "inventory_edited": false,
+    "persistence_audited": false
+  },
+  "limitations": [
+    "Guest-only, exact development artifact behavior; no member/admin or published Store claim.",
+    "No database persistence audit; no post-run cleanup absence check.",
+    "Visuals omit picker states.",
+    "The sanitized guest journal omits a raw process-attribution event, as detailed above."
+  ]
+}
