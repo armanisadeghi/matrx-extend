@@ -70,7 +70,7 @@
     "inventory_preservation": "All Screenshots role/case statuses and historical verified_substeps unchanged from 178510e33; explicit current-source staleness metadata added."
   },
   "limitations": [
-    "No hosted/native browser job launched while CI spend gate RED.",
+    "No hosted or local Screenshots native browser job was launched. CI spend RED blocks hosted dispatch/release and relocating a refused job; separately scoped local native tests remain subject to host resource admission and exact artifact provenance.",
     "DOM fixtures test harness orchestration only. Real API success and persisted revoke, anonymous public access, expiry/view limits and clipboard/service refusal are unverified.",
     "Viewer loading/error branches source-censused only; no current runtime verdict.",
     "Historical T04/T05 receipt retained with source-staleness annotations; no product pass upgraded.",
@@ -78,5 +78,5 @@
     "Release/Store/current-artifact native acceptance remain unverified."
   ],
   "owned_jobs": "None: all local test/compile/lint commands terminal; no browser/profile/hosted processes created.",
-  "next_action": "Parent independent review of one-defect commit, reconcile/push; run current-artifact native acceptance only after spend gate GREEN."
+  "next_action": "Parent independent review of one-defect commit, reconcile/push; hosted native dispatch requires GREEN spend admission, while separately scoped local native acceptance may run under its host resource guard and exact artifact receipt. Screenshots native acceptance remains unverified."
 }

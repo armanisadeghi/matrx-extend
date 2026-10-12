@@ -147,5 +147,5 @@
     "live_browser_or_backend_run_performed": false,
     "existing_cases": "T01-T09 and linked native evidence remain as recorded in inventory.json; this report does not upgrade, downgrade, or replace any runtime verdict beyond flagging the T04 substep as stale against current source."
   },
-  "next_action": "EXT-D-0219 repairs the native harness and procedure, anchors and stale-substep annotations. After independent harness review and GREEN spend admission, run guarded native viewer close/reopen, Files route and public-link create/copy/revoke checks; no current product acceptance is inferred."
+  "next_action": "EXT-D-0219 repairs the native harness and procedure, anchors and stale-substep annotations. After independent harness review, run guarded native viewer close/reopen, Files route and public-link create/copy/revoke checks against an exact artifact receipt. Hosted dispatch/release requires GREEN spend admission; separately scoped local native testing requires its host resource guard and artifact provenance. No current product acceptance is inferred."
 }

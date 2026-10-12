@@ -10,7 +10,7 @@
   "permission_context": "original clipboard write permission; read permission temporarily observed then restored",
   "preconditions": [
     "Current source at 178510e33; fresh owned screenshot card has View screenshot, one Open in Files, and Share.",
-    "No browser/hosted execution while CI spend gate is RED."
+    "No hosted dispatch/release or relocation of a refused hosted job while CI spend gate is RED; independent local native testing remains subject to its host resource guard and exact artifact provenance."
   ],
   "reproduction": [
     "Run SCREENSHOT_OLD_DRIVER=/tmp/ext-d-0219-old-driver.mjs node --test tests/browser/screenshot-current-controls.test.mjs after extracting HEAD settings-panel-driver.mjs.",
@@ -26,7 +26,7 @@
   ],
   "build_receipt": {
     "source": "178510e33",
-    "runtime": "not run; CI spend admission RED"
+    "runtime": "not run: this repair has source/harness evidence only"
   },
   "reproducibility": "Deterministic harness DOM boundary: old driver 2 failures, repaired driver passes both control clicks.",
   "severity": "S2: acceptance infrastructure cannot exercise current Screenshots UI",
@@ -35,7 +35,7 @@
   "owner": "root/screenshots_runner_repair",
   "cause": "Screenshot UI evolved to local thumbnail viewer and public sharing; native control selectors, gallery cardinality and orchestration remained on two Files buttons and durable Files copy.",
   "sibling_census": "Capture and admin-readonly runners shared retired two-button cardinality/identity selectors; both corrected. Capture and full-page runners shared the retired persistence-warning text; both corrected. Full-page, guest and gallery-failure have no retired durable-copy control. All Screenshots case statuses and historical receipts retained.",
-  "next_action": "Independent parent-arranged review then push exact defect unit; guarded current-artifact native run only after spend admission GREEN. Native, release and Store remain unverified.",
+  "next_action": "Independent parent-arranged review then push exact defect unit. Hosted dispatch/release requires GREEN spend admission; a separately scoped local native test may run under its host resource guard and exact artifact receipt. Native Screenshots, release and Store remain unverified.",
   "transition_history": [
     {
       "at": "2026-10-12T22:16:41.559182+00:00",
@@ -60,7 +60,7 @@
     "run_id": "ext-d-0219-source-20261012",
     "evidence": "docs/stabilization/runs/ext-d-0219-source-20261012.json",
     "independent_review": "pending parent-dispatched fresh peer",
-    "native_acceptance": "UNVERIFIED: spend admission RED",
+    "native_acceptance": "UNVERIFIED: no Screenshots native run performed; local testing requires host resource admission and exact artifact provenance",
     "release": "UNVERIFIED"
   }
 }
