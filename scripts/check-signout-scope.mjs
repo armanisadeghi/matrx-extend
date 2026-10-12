@@ -31,9 +31,10 @@ const SKIP = /(^|\/)(node_modules|dist|target|build|\.next|\.venv|__pycache__|\.
 const LOGOUT_URL = /(?:\/auth\/v1\/logout|["'`]\/logout)(?<rest>[^"'`\n]*)/g;
 const COMMENT = /^\s*(?:\/\/|\*|\/\*|#)/;
 const FLOW = 'src/lib/auth/flow.ts';
-// Reviewed against @ai-matrx/auth 0.3.2. Approval fingerprints, not dependency pins.
+// Reviewed against @ai-matrx/auth 0.3.5. Approval fingerprints, not dependency pins.
+// Since the prior artifact, only the token-error helper was renamed; signOut is unchanged.
 const FLOW_SHA = 'a3918502f40c9b7c34a753d2c4a696b9a1613ec2a0804870e0cf9fb64f423e90';
-const OAUTH_SHA = 'ec69236f7f4522fa1f34fd402c1e302e518f2e16d7d9e6db5fcba079305ae0a6';
+const OAUTH_SHA = 'b66094b64bb503c5c89164355f790fc09a721cc95fcaacdd21bf557410c67b50';
 const hash = (text) => createHash('sha256').update(text).digest('hex');
 const approvedImplementation = (source) => hash(source) === OAUTH_SHA;
 const logout = (name) => name === 'signOut' || name === 'sign_out';
@@ -282,11 +283,11 @@ function scan() {
   }
   return findings;
 }
-async function packageProof() {
+async function packageProof(createClient) {
   const { createMatrxOAuth } = await import('@ai-matrx/auth/matrx-oauth');
   const values = new Map();
   const requests = [];
-  const client = createMatrxOAuth(
+  const client = (createClient ?? createMatrxOAuth)(
     {
       authUrl: 'https://auth.invalid',
       clientId: 'extension-guard',
@@ -425,8 +426,30 @@ async function selfTest() {
     'changed OAuth artifact must lose approval',
   );
   await packageProof();
+  // Execute mutations of the real installed artifact in memory: changing scope,
+  // skipping local cleanup, or returning success without work must fail this proof.
+  const parsed = ts.createSourceFile('oauth.js', implementation, ts.ScriptTarget.Latest, true);
+  const signOut = nodesIn(parsed).find(
+    (node) => ts.isMethodDeclaration(node) && nameOf(node.name) === 'signOut',
+  );
+  assert.ok(signOut?.body, 'installed OAuth signOut method must be measurable');
+  const mutants = [
+    implementation.replace('scope=local', 'scope=global'),
+    implementation.replace(
+      'const access = await lock(clearLocal);',
+      'const access = (await loadStored())?.accessToken ?? null;',
+    ),
+    `${implementation.slice(0, signOut.body.getStart(parsed))}{ return { revoked: true }; }${implementation.slice(signOut.body.end)}`,
+  ];
+  for (const mutant of mutants) {
+    assert.notEqual(mutant, implementation, 'behavior mutation must change the installed artifact');
+    const { createMatrxOAuth } = await import(
+      `data:text/javascript;base64,${Buffer.from(mutant).toString('base64')}`
+    );
+    await assert.rejects(() => packageProof(createMatrxOAuth), assert.AssertionError);
+  }
   console.log(
-    `check:signout-scope self-test: PASS (${cases.length} source cases + installed-package local revoke behavior)`,
+    `check:signout-scope self-test: PASS (${cases.length} source cases + installed-package local revoke behavior + ${mutants.length} rejected behavior mutations)`,
   );
 }
 const isMain = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
@@ -439,9 +462,11 @@ if (isMain) {
         `Sign-out source contract failed:\n${findings.map((finding) => `  ${finding}`).join('\n')}`,
       );
       process.exitCode = 1;
-    } else
+    } else {
+      await packageProof();
       console.log(
-        'check:signout-scope: PASS (visible source contract and reviewed OAuth artifact; not whole-program analysis)',
+        'check:signout-scope: PASS (visible source contract, reviewed OAuth artifact and local revoke behavior; not whole-program analysis)',
       );
+    }
   }
 }
