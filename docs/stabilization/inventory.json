@@ -7968,14 +7968,17 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
-            "Verify the Settings panel is signed out (Sign in is visible; account email is unavailable); do not infer guest state from a profile label."
+            "Verify the Settings panel is signed out (Sign in is visible; account email is unavailable); do not infer guest state from a profile label.",
+            "Verify Settings shows Sign in and no account email; do not create, seed or assume an authenticated Vault login for this guest.",
+            "Use a controlled disposable HTTPS sign-in fixture with synthetic username/password only, a submit counter, and recorded pre-test field values. Record the fixture URL and cleanup plan without recording credential values."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Toggle login capture offer."
+            "Record the original Offer to save logins to the Vault value. Turn it off, submit the synthetic fixture login, and verify no Save/Update prompt appears and the fixture submit counter increments once.",
+            "Turn the setting on, submit a second synthetic fixture login, and again verify no prompt or Vault write appears: guests have no Vault actor. Reopen Settings after panel-document reload and confirm the chosen setting persisted.",
+            "Restore and verify the original setting. Restore the fixture fields to their recorded values and reset/remove the case-owned fixture state."
           ],
           "expected": [
-            "Toggle state persists and controls the post-login offer."
+            "The guest can change and persist the preference, but neither setting value creates a Vault save offer or authenticated Vault path; submitted page behavior remains normal and no Vault item is written."
           ],
           "dimensions": [
             "warm",
@@ -8132,14 +8135,17 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
-            "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance."
+            "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance.",
+    "Use a case-owned disposable Vault login matching the fixture URL and synthetic username; record the exact returned Vault item_id as <capture-update-item-id> before the run. Keep the submitted username the same and use a different synthetic password so Update has an observable change. Never use a real credential.",
+            "Use a controlled disposable HTTPS sign-in fixture with synthetic username/password only, a submit counter, and recorded pre-test field values. Record the fixture URL and cleanup plan without recording credential values."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Toggle login capture offer."
+            "Record the original Offer to save logins to the Vault value. Turn it off and submit the synthetic fixture credentials; verify the page completes normally, no Save/Update offer appears in the page or Vault tab, and no Vault mutation occurs.",
+    "Turn the setting on and submit the same synthetic username with a changed synthetic password. Verify the Save this login? offer appears in the Vault tab (and on the page only if on-page presentation is enabled), then choose Update on <capture-update-item-id>. Verify the stored synthetic credential reflects the changed value and the item_id is unchanged.",
+    "Reopen Settings after panel-document reload and full extension Reload; verify the original on/off choice persists across each reload. Restore and verify the original preference and fixture field values; if this case created the matching Vault item, delete its recorded item_id and verify it is absent."
           ],
           "expected": [
-            "Toggle state persists and controls the post-login offer."
+    "The setting gates the actual post-submit Save/Update consumer: off produces no offer or Vault mutation; on produces an explicit offer, and this matching-login run exercises Update on the recorded item_id. No Vault write occurs without a click; any case-created item is removed and verified absent."
           ],
           "dimensions": [
             "warm",
@@ -8162,14 +8168,17 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
-            "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance."
+            "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance.",
+    "Use a case-owned disposable Vault login matching the fixture URL and synthetic username; record the exact returned Vault item_id as <capture-update-item-id> before the run. Keep the submitted username the same and use a different synthetic password so Update has an observable change. Never use a real credential.",
+            "Use a controlled disposable HTTPS sign-in fixture with synthetic username/password only, a submit counter, and recorded pre-test field values. Record the fixture URL and cleanup plan without recording credential values."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Toggle login capture offer."
+            "Record the original Offer to save logins to the Vault value. Turn it off and submit the synthetic fixture credentials; verify the page completes normally, no Save/Update offer appears in the page or Vault tab, and no Vault mutation occurs.",
+    "Turn the setting on and submit the same synthetic username with a changed synthetic password. Verify the Save this login? offer appears in the Vault tab (and on the page only if on-page presentation is enabled), then choose Update on <capture-update-item-id>. Verify the stored synthetic credential reflects the changed value and the item_id is unchanged.",
+    "Reopen Settings after panel-document reload and full extension Reload; verify the original on/off choice persists across each reload. Restore and verify the original preference and fixture field values; if this case created the matching Vault item, delete its recorded item_id and verify it is absent."
           ],
           "expected": [
-            "Toggle state persists and controls the post-login offer."
+    "The setting gates the actual post-submit Save/Update consumer: off produces no offer or Vault mutation; on produces an explicit offer, and this matching-login run exercises Update on the recorded item_id. No Vault write occurs without a click; any case-created item is removed and verified absent."
           ],
           "dimensions": [
             "warm",
@@ -9148,14 +9157,17 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
-            "Verify the Settings panel is signed out (Sign in is visible; account email is unavailable); do not infer guest state from a profile label."
+            "Verify the Settings panel is signed out (Sign in is visible; account email is unavailable); do not infer guest state from a profile label.",
+            "Verify Settings shows Sign in and no account email. Do not create, seed or assume an authenticated Vault login for this guest.",
+            "Use a controlled disposable HTTPS sign-in fixture with synthetic username/password only, a submit counter, and recorded pre-test field values. Record the fixture URL and cleanup plan without recording credential values."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Toggle password suggestions."
+            "Record the original Show password suggestions on websites value. Turn it on and focus the fixture sign-in field; verify the guest lookup leaves the page quiet (no chooser, focus theft, or prevented page interaction) because no real Vault actor exists.",
+            "Turn it off, refocus the field and verify the page remains quiet. Reopen Settings after panel-document reload and verify the preference persists.",
+            "Restore and verify the original presentation and matching-gate values and fixture field values; reset/remove case-owned fixture state."
           ],
           "expected": [
-            "On-page suggestion presentation switches between enabled and quiet and persists."
+            "The guest may change and persist presentation preference, but focus lookup cannot produce a Vault choice while signed out; page typing, focus and submit behavior remain ordinary."
           ],
           "dimensions": [
             "warm",
@@ -9344,14 +9356,17 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
-            "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance."
+            "Verify the real signed-in principal is an ordinary non-admin member using the displayed account/role and known test-principal provenance.",
+    "Seed or create an owned disposable Vault login whose allowed URL matches the recorded fixture URL and whose username/password are synthetic; record the returned Vault item_id as <suggestion-fixture-item-id> for cleanup.",
+            "Use a controlled disposable HTTPS sign-in fixture with synthetic username/password only, a submit counter, and recorded pre-test field values. Record the fixture URL and cleanup plan without recording credential values."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Toggle password suggestions."
+            "Record the original Show password suggestions on websites value and original fixture field values. Turn the setting off, focus the matching login field, and verify no chooser appears and typing, focus and submit remain page behavior.",
+            "Turn the setting on and refocus the matching field. Verify the Matrx saved-login chooser appears; choose the synthetic login and verify only its synthetic username/password fill. Confirm the fixture submit counter does not change until you separately submit the page.",
+    "Record the original Offer to save logins to the Vault value before enabling it. Restore the fixture field values, enable that setting, and submit synthetic credentials; verify on-page Save/Update presentation while presentation is on_page. Set presentation to quiet, submit a second synthetic login and verify the page stays quiet while the offer remains available in the Vault tab; choose Not now in both runs so no Vault write occurs. Reopen Settings after panel-document reload and full extension Reload; verify presentation, matching-gate and capture-offer preferences persist. Restore and verify all three original preference values and fixture field values, delete the case-owned Vault login by its recorded item_id, and verify it is absent."
           ],
           "expected": [
-            "On-page suggestion presentation switches between enabled and quiet and persists."
+            "Quiet mode leaves the page unchanged; on-page mode shows a chooser only for a ready matching saved login. A user click fills the chosen synthetic values but never submits the form; settings, form values and Vault fixture are restored."
           ],
           "dimensions": [
             "warm",
@@ -9374,14 +9389,17 @@
             "Open the named surface in the actual extension; record current role, device organization, permissions and build channel.",
             "Record a resource permit and build receipt for the current source SHA, lockfile hash, WXT mode, output hash, runtime extension ID/version, browser version, profile, permissions and timestamp; never use source appearance alone as a result.",
             "Wait for a fresh build to finish, install/load its generated extension output, fully Reload the extension when code, manifest, permissions or environment changed, then reopen the actual side panel and verify its running identity before exercising this case.",
-            "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance."
+            "Verify the real signed-in principal is the authorized admin using the displayed account/role and known test-principal provenance.",
+    "Seed or create an owned disposable Vault login whose allowed URL matches the recorded fixture URL and whose username/password are synthetic; record the returned Vault item_id as <suggestion-fixture-item-id> for cleanup.",
+            "Use a controlled disposable HTTPS sign-in fixture with synthetic username/password only, a submit counter, and recorded pre-test field values. Record the fixture URL and cleanup plan without recording credential values."
           ],
           "steps": [
-            "Open Settings tab.",
-            "Toggle password suggestions."
+            "Record the original Show password suggestions on websites value and original fixture field values. Turn the setting off, focus the matching login field, and verify no chooser appears and typing, focus and submit remain page behavior.",
+            "Turn the setting on and refocus the matching field. Verify the Matrx saved-login chooser appears; choose the synthetic login and verify only its synthetic username/password fill. Confirm the fixture submit counter does not change until you separately submit the page.",
+    "Record the original Offer to save logins to the Vault value before enabling it. Restore the fixture field values, enable that setting, and submit synthetic credentials; verify on-page Save/Update presentation while presentation is on_page. Set presentation to quiet, submit a second synthetic login and verify the page stays quiet while the offer remains available in the Vault tab; choose Not now in both runs so no Vault write occurs. Reopen Settings after panel-document reload and full extension Reload; verify presentation, matching-gate and capture-offer preferences persist. Restore and verify all three original preference values and fixture field values, delete the case-owned Vault login by its recorded item_id, and verify it is absent."
           ],
           "expected": [
-            "On-page suggestion presentation switches between enabled and quiet and persists."
+            "Quiet mode leaves the page unchanged; on-page mode shows a chooser only for a ready matching saved login. A user click fills the chosen synthetic values but never submits the form; settings, form values and Vault fixture are restored."
           ],
           "dimensions": [
             "warm",
