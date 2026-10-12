@@ -1,0 +1,42 @@
+{
+  "id": "EXT-D-0218",
+  "feature_id": "EXT-F-0002",
+  "case_ids": ["EXT-F-0002-T08"],
+  "title": "Active browser acceptance drivers read retired OAuth token storage",
+  "surface": "Authenticated native test fixtures",
+  "auth_mode": "member/admin",
+  "reproduction": [
+    "On current main, inspect src/config/env.ts STORAGE_KEYS.AUTH_SESSION: it is matrx.oauth.session, introduced by 9fbf35f035.",
+    "Inspect the active member-data route in scripts/hosted-guest-acceptance.mjs and its tests/browser/data-member-native-acceptance.mjs driver.",
+    "In the driver's saved-pattern lookup and cleanup functions, observe that both read only matrx.auth.accessToken and return status 0 without making their request when that retired key is absent."
+  ],
+  "expected": "A signed-in native acceptance driver obtains the current OAuth session in the browser realm, sends authenticated fixture/readback requests, and records only sanitized outcomes.",
+  "actual": "Current source uses the OAuth session blob, but the active Data member driver still reads the retired token key for lookup and cleanup. The source mismatch is reproducible; the failure on a fresh current-artifact browser session has not yet been observed. A historical Data member pass on v0.2.493 predates the October 12 OAuth storage change and does not verify the current driver.",
+  "evidence": [
+    "src/config/env.ts",
+    "scripts/hosted-guest-acceptance.mjs",
+    "tests/browser/data-member-native-acceptance.mjs",
+    "9fbf35f035",
+    "docs/stabilization/reports/data-t08-member-run38118648430-peer-20261011.json"
+  ],
+  "severity": "S2: authenticated acceptance can stop in fixture setup or cleanup before product behavior, obscuring current member/admin coverage",
+  "priority": "P1: repair active native auth consumers before interpreting new signed-in test failures",
+  "state": "triaged",
+  "owner": "root",
+  "sibling_census": "A source search finds 50 browser .mjs/.cjs files referencing matrx.auth.accessToken, including historical scripts. This count is a review queue, not 50 proven active failures. EXT-D-0217's hosted Save route is being repaired separately; enumerate active routes before extending this fix.",
+  "next_action": "Review the current hosted route graph, migrate active browser fixture consumers to one shared current-OAuth session reader without exposing bearer values in reports, show old-code RED/current-code GREEN, and perform one guarded current-artifact member run with independent review. Preserve historical v0.2.493 Data evidence as historical.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T21:46:25Z",
+      "from": null,
+      "to": "open",
+      "reason": "Current OAuth storage and active Data member driver source disagree after the October 12 auth change."
+    },
+    {
+      "at": "2026-10-12T21:46:25Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "The exact source mismatch and affected request helpers are identified; fresh browser impact and remaining active siblings still require verification."
+    }
+  ]
+}

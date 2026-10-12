@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d0217-native-retest-20261012-2148",
+  "defect_id": "EXT-D-0217",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T05", "EXT-F-1007-T22"],
+  "status": "blocked_environment",
+  "started_at": "2026-10-12T21:42:51.636Z",
+  "stopped_at": "2026-10-12T21:44:38.069Z",
+  "resource": {
+    "command": "node scripts/stabilization-resource.mjs browser --run-id ext-d0217-native-retest-20261012-2148 --profile-dir '/Users/armanisadeghi/Library/Application Support/Google/Chrome'",
+    "permit_session_id": 50888,
+    "journal": "docs/stabilization/resource-journals/ext-d0217-native-retest-20261012-2148.jsonl",
+    "decision": "valid",
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "final_code": "RESOURCE_FINAL_DECISION"
+  },
+  "artifact_candidate": {
+    "channel": "development",
+    "version": "0.2.509",
+    "expected_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "expected_unpacked_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "source_sha": "3e5b8f18293ae0317623d9c1c17a92d260108615",
+    "ci_run_id": "38306513126",
+    "artifact_id": "11773390470",
+    "tree_sha256": "feeeace4f3f6ec91eb3319fe412c77ce63e018f0582eae58e4d7714bd499c173",
+    "runtime_binding": "unverified; these values come from the existing promotion receipt, not this browser session"
+  },
+  "browser": {
+    "profile": "unverified; CUA browser metadata named armansadeghi.com and did not establish Chrome Profile 8 or its user-data subdirectory",
+    "visible_tab_inventory": [
+      "https://www.aimatrx.com/matrx-extend-demo",
+      "chrome://extensions/?id=cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "chrome://extensions/?id=hnfolienncfklkgmdjjmhhegglimlamg"
+    ],
+    "control_refusal": "CUA refused to claim the existing chrome://extensions tab: Chrome internal tab 2091581713 cannot be claimed.",
+    "stop_rule": "Stopped immediately after the Chrome internal-page control refusal; no alternate browser control path was attempted.",
+    "inspectable_sanitized_ui_artifact": null,
+    "loaded_extension_id_version_path_source": "unverified"
+  },
+  "behavior": {
+    "product_interaction_started": false,
+    "guest_save_and_retry": "unverified",
+    "edited_draft_retention": "unverified",
+    "visible_sign_in_remedy": "unverified",
+    "guest_organization_or_source_requests": "unverified; no network capture was made",
+    "full_extension_reload_and_retry": "unverified",
+    "signed_in_non_admin_retry": "unverified; no fixture or credentials were used",
+    "adjacent_cases_t06_t07_t08": "unverified"
+  },
+  "credentials_or_auth_values_recorded": false,
+  "raw_network_or_transcript_recorded": false,
+  "product_credit": "zero; the environment blocker occurred before any product interaction",
+  "product_verdict": "none",
+  "next_action": "Repeat only in a fresh guarded browser run when the authorized Chrome controller can inspect the loaded extension details page; first bind the exact runtime artifact and profile, then perform the bounded guest Save/Retry steps with inspectable sanitized evidence."
+}

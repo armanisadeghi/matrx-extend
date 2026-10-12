@@ -53,7 +53,7 @@
     "hosted-guest-acceptance.yml": {
       "triggers": ["workflow_dispatch"],
       "crons": [],
-      "benefit": "Native side-panel acceptance on a hosted Mac guest.",
+      "benefit": "Native side-panel acceptance on a hosted Mac guest, including EXT-D-0217 retained-profile guest Save/Retry and member recovery on the existing guarded lane; no extra job or schedule.",
       "owner_reason": "Extension acceptance on a real browser.",
       "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): 288 dispatches/week x 4.8 macOS min",
       "usd_per_week": 85.71,

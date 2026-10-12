@@ -12,6 +12,7 @@ import {
   observeCanonicalAdminCheck,
   supabaseOrigin,
 } from './member-native-auth-proof.mjs';
+import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import {
   observeMemberExtensionIdentity,
   runMemberAuthBoundary,
@@ -142,11 +143,11 @@ export async function approvedShowcaseOrganization(file) {
 export async function panelIdentity(panel) {
   return evaluate(
     panel,
-    `(() => chrome.storage.local.get([
-    'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.user.isAdmin', 'matrx.org.active',
-  ]).then((stored) => ({
+    `(async () => chrome.storage.local.get([
+    'matrx.oauth.session', 'matrx.user.profile', 'matrx.user.isAdmin', 'matrx.org.active',
+  ]).then(async (stored) => ({
     profileId: stored['matrx.user.profile']?.id ?? null,
-    accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
+    accessTokenPresent: Boolean(${nativeOAuthBearerExpression}),
     isAdmin: stored['matrx.user.isAdmin'] === true ? true : stored['matrx.user.isAdmin'] === false ? false : null,
     organizationId: stored['matrx.org.active']?.id ?? null,
     organizationName: stored['matrx.org.active']?.name ?? null,

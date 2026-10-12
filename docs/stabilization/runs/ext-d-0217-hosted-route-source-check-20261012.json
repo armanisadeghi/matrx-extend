@@ -1,0 +1,65 @@
+{
+  "defect_id": "EXT-D-0217",
+  "lane": "hosted-native-route-implementation",
+  "status": "source-verified-native-unverified",
+  "route": {
+    "workflow": "hosted-guest-acceptance.yml",
+    "acceptance_case": "scrape-save-member",
+    "acceptance_lane": "A",
+    "scrape_auth_mode": "member",
+    "scrape_save_destination": "none",
+    "scrape_save_scope": "stale-profile-retry",
+    "artifact": "Exact successful CI main-push development_run_id and development_artifact_id, consumed through existing importer/receipt/tree-hash gates. No artifact was imported or launched in this lane.",
+    "guards": "Existing hosted concurrency lane A, credential preflight, package/browser/acceptance resource permits and uploaded resource journals remain unchanged. No dispatch occurred."
+  },
+  "fixture": "Real non-admin member sign-in fetches profile; remove OAuth/session credentials only in disposable owned extension profile, retain real profile; native extension reload invokes production failed-restore guest path. Assert guest Settings UI and absence of OAuth/legacy/Supabase session storage. No auth/HTTP response is mocked.",
+  "browser_assertions_not_yet_run": [
+    "Guest Save and warm Retry: visible sign-in-required remedy, edited portions retained, zero membership RPC and Source landing HTTP calls.",
+    "Full native extension reload: replacement worker/panel and retired old targets; retained queued edit; guest Retry repeats refusal with zero calls.",
+    "Real member re-sign-in: same person and organization, canonical non-admin check; authenticated HTTP read finds zero Sources for run-owned canonical identity before Retry.",
+    "Member Retry: one real landing response HTTP 200, matching organization in header/body, edited portions sent; queued draft clears; existing independent Source/association reads, UI reopen and exact owned-row cleanup must pass.",
+    "Independent authenticated HTTP Source read selects persisted content and verifies the D217 edited marker after member Retry, separately from landing request payload and original-file UI."
+  ],
+  "source_verification": {
+    "red": "New scope guard initially failed scrape_save_scope_invalid before scope admission was added.",
+    "green_command": "node --test scripts/hosted-scrape-route.test.mjs tests/browser/settings-native-auth-driver.test.mjs tests/browser/scrape-save-native-acceptance.test.mjs",
+    "green_count": 36,
+    "compile": "pnpm compile passed",
+    "mutation": "plant.py removed membership refusal assertion: test failed Missing expected exception; restored identical. Whole oracle replaced with constant queued:true: test failed Missing expected exception; restored identical. An earlier return-only mutation survived because assertions still executed; corrected whole-function gut check killed it.",
+    "format": "Biome check/write on exact changed paths; git diff --check passed"
+  },
+  "spend_gate": {
+    "command": "python3 scripts/check_workflow_runner_cost.py",
+    "exit_code": 1,
+    "reason": "All-repo manifest estimate $250.04/week exceeds $100/week ceiling; aidream $250.04, extension billable estimate $0 due public visibility. No workaround or hosted dispatch.",
+    "manifest_change": "Existing hosted acceptance benefit updated before workflow edit; no added job, runner, schedule or increased dispatch cadence."
+  },
+  "sibling_census": {
+    "raw_browser_files_with_retired_key": 52,
+    "meaning": "Raw text census includes historical scripts, test fixtures and new negative assertions; it is not a count of active failures.",
+    "concrete_active_routes_requiring_followup": [
+      "member-data: data-member-native-acceptance.mjs panel HTTP reads still obtain retired matrx.auth.accessToken.",
+      "notes-find-member / notes-lazy-general-member: notes-native-acceptance.mjs auth observation still requires retired token storage.",
+      "guest-scrape-development with member/admin selection: scrape-guest-native-acceptance.mjs auth observation still requires retired token storage."
+    ],
+    "owned_repair": "Save Source HTTP/association driver and shared settings-native-auth-driver panelIdentity now read current serialized matrx.oauth.session through one browser-realm expression; no unrelated drivers changed."
+  },
+  "limitations": [
+    "No native/browser result; fresh peer review and a green shared spend gate are required before dispatch.",
+    "Controlled credential removal reproduces absent bearer plus real cached profile via production restore; server-caused refresh rejection itself is not exercised.",
+    "Member secret must still support real re-sign-in using the retained first-party web session; this is unverified and must fail truthfully if expired/reused link prevents identity proof.",
+    "Existing Source cleanup soft-deletes the run-owned Source and removes associations; original-file physical reclamation is outside this route.",
+    "No Store or release files changed; no release claim."
+  ],
+  "next_action": "Fresh independent source review, then integrate/push exact reviewed paths. When the shared spend gate is green, dispatch the existing hosted workflow once with requested_by and exact CI development artifact IDs; inspect sanitized result, cleanup and complete resource journals before assigning any native verdict.",
+  "peer_review_followup": {
+    "A_behavior": "Targeted route but incomplete until edited marker independently verified in persisted Source; request payload alone and original-content reopen are insufficient. Follow-up source fix now reads and verifies persisted content; fresh re-review pending.",
+    "B_quality": "Source/focused test quality pass; initial route test 4/4; no browser/full test. Artifact and cleanup checks appear sound. Fresh follow-up re-review pending.",
+    "change": "D217-only independent HTTP Source query now selects content. After the existing response/status/row/identity/org checks, requirePersistedD217Edit asserts the edited marker in that persisted content and records only boolean proof. Existing original-content UI and request-payload oracles remain intact.",
+    "red": "Metadata-only version of persisted-content oracle failed the new test with Missing expected exception because it accepted a Source whose edited text was absent.",
+    "green": "36 focused checks passed, including refusal of metadata-only and original-only content, wrong Source, wrong organization, acceptance of persisted edited content, and no content in the emitted boolean proof.",
+    "gut_check": "plant.py replaced the entire persisted-content oracle with constant success; the new test failed Missing expected exception; original file restored identically.",
+    "native_status": "Unverified. No browser launches, heavy suite, fixture access or hosted dispatch occurred during this follow-up.",
+    "observer_limit": "Guest network observer counts the named mbr_for_user RPC and POST /sources/land only; it does not claim surveillance of every possible organization read/write endpoint."
+  }
+}
