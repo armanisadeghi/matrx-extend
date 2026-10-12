@@ -19,14 +19,19 @@
   "cause": "The Save/Retry send path tests the cached profile as if it proved current authentication. The UI correctly treats the failed bearer restore as guest, so the stale profile can reach organization resolution and the membership RPC.",
   "severity": "S2: a signed-out person cannot understand or complete Scrape Save retry after an expired or failed session; the draft is retained",
   "priority": "P1: fix the shared Save/Retry identity boundary and retest guest and signed-in transitions",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "guest_scrape_save_fix",
   "evidence": [
     "src/lib/sources/save-capture.ts",
     "src/lib/auth/flow.ts",
-    "docs/stabilization/runs/guest-scrape-controls-https-20261012.json"
+    "docs/stabilization/runs/guest-scrape-controls-https-20261012.json",
+    "docs/stabilization/runs/guest-save-d217-source-verification-20261012.json",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38306513126",
+    "docs/stabilization/runs/ext-d-0217-native-retest-20261012-resource-refused.json"
   ],
-  "next_action": "Complete the verified-bearer Save/Retry repair and independent source review, then repeat the original guest Save and Retry in a refreshed exact-main development artifact. Verify the edited draft survives, sign-in remedy appears, no organization read occurs while signed out, and signed-in Retry lands the edited text. Keep postreload and Store-installed states separate.",
+  "fix_sha": "c5e739074325d553a59c42e2e9d113b668cbcd4d",
+  "review": "Fresh independent source review passed A correctness and B evidence after the guarded RED/GREEN/mutation/compile report. Exact-main CI at 3e5b8f182 passed and its v0.2.509 development artifact was promoted on disk; Chrome loaded state is not verified.",
+  "next_action": "Repeat the original stale-profile guest Save and Retry in a guarded Chrome run bound to the promoted 3e5b8f182 development artifact. Verify edited draft retention, sign-in remedy, no guest organization/landing call, full reload, and signed-in Retry landing the edited text. The first native retest was resource-refused before launch; it is not a product verdict. Keep postreload and Store-installed states separate.",
   "transition_history": [
     {
       "at": "2026-10-12T20:18:00Z",
@@ -45,6 +50,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "A focused shared Save/Retry identity repair and regression test are underway."
+    },
+    {
+      "at": "2026-10-12T21:00:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "The verified-bearer source repair passed meaningful guarded RED/GREEN/mutation/compile checks, fresh independent review, and exact-main hosted CI. Native original-reproduction retest is pending after a resource refusal before launch."
     }
   ]
 }
