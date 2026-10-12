@@ -20,11 +20,7 @@
  * extension is (and will remain) mixed v1/v2 for these three routes.
  */
 
-import { runOpAs } from '@/lib/api/matrx-api';
-import {
-  conversationsListConversationPendingCallsGet,
-  conversationsSubmitToolResultsPost,
-} from '@ai-matrx/api/chat';
+import { apiGet, apiPost } from '@/lib/api/client';
 import type { ApiResult } from '@/lib/api/client';
 import { log } from '@/lib/debug/log';
 
@@ -70,17 +66,12 @@ export async function postToolResults(
   log.info('msg', `→ POST /ai/conversations/${conversationId}/tool_results (${results.length})`, {
     results,
   });
+  const path = `/ai/conversations/${encodeURIComponent(conversationId)}/tool_results`;
   const maxAttempts = 3;
   const baseDelayMs = 500;
   let last: ApiResult<ToolResultsResponse> | null = null;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-    const r = await runOpAs<ToolResultsResponse>((api, o) =>
-      conversationsSubmitToolResultsPost(
-        api,
-        { path: { conversation_id: conversationId }, body: { results } },
-        o,
-      ),
-    );
+    const r = await apiPost<ToolResultsResponse>(path, { results });
     last = r;
     if (r.ok) {
       // Defensive shape check — server bugs / a stale gateway returning HTML
@@ -151,14 +142,9 @@ export interface PendingCall {
  * cold-resume (see src/lib/chat/cold-resume.ts). Pure read; never mutates.
  */
 export async function getPendingCalls(conversationId: string): Promise<ApiResult<PendingCall[]>> {
-  log.info('msg', `→ GET /ai/conversations/${conversationId}/pending_calls`);
-  const r = await runOpAs<PendingCall[]>((api, o) =>
-    conversationsListConversationPendingCallsGet(
-      api,
-      { path: { conversation_id: conversationId } },
-      o,
-    ),
-  );
+  const path = `/ai/conversations/${encodeURIComponent(conversationId)}/pending_calls`;
+  log.info('msg', `→ GET ${path}`);
+  const r = await apiGet<PendingCall[]>(path);
   if (r.ok) {
     log.success('msg', `← pending_calls (${(r.data ?? []).length})`);
   } else {

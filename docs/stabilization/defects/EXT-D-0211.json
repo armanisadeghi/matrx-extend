@@ -1,0 +1,65 @@
+{
+  "id": "EXT-D-0211",
+  "feature_id": "EXT-F-2013",
+  "case_ids": ["EXT-F-2013-T02", "EXT-F-2013-T04", "EXT-F-2013-T10"],
+  "title": "Generated Chat operations refuse fingerprint guests before transport",
+  "surface": "Chat queue controls and delegated tool continuation",
+  "auth_mode": "guest/member/admin",
+  "role_org_permissions": "Guests carry fingerprint only; signed-in requests require explicit organization",
+  "preconditions": [
+    "Current source f87e5d2fb includes generated-operation migration; lockfile resolves @ai-matrx/api 0.1.10."
+  ],
+  "reproduction": [
+    "A signed-out install calls enqueueInboxMessage, cancelRequest, editInboxMessage, cancelInboxMessage or postToolResults.",
+    "Generated guest-tier operation declares organization required. createApi.organizationFor calls requireOrganizationContext before credentials are read; runOp retries via requireActiveOrganizationId and returns STATUS_NO_ORGANIZATION without fetch."
+  ],
+  "expected": "Guest operations reach transport with X-Fingerprint-ID and no fabricated organization; authenticated operations carry explicit X-Organization-Id.",
+  "actual": "Source-confirmed org refusal before transport. Runtime reproduction is pending resource admission, not claimed.",
+  "cause": "Generated org-required descriptor is enforced independently of credential kind; the server-owned guest organization funnel cannot be reached.",
+  "sibling_census": "Restored seven operations together: enqueue, cancel run, list inbox, edit inbox, cancel inbox, submit tool results, list pending calls. Stream first-send/continue/resume still uses existing stream path and requires native surrounding retest. Exact import-to-published-descriptor census also finds guest+org-required descriptors used by capture-ladder, prospects, sources, PDF extraction, research, Google Gmail send, and file upload/download. Their host guest eligibility is not established; parent owns follow-up census rather than expanding this Chat restoration without evidence.",
+  "severity": "S1: public guest Chat follow-up/control/delegated continuation regression",
+  "priority": "P0",
+  "state": "in-fix",
+  "owner": "guest_generated_ops_repair",
+  "evidence": [
+    "Published npm @ai-matrx/api 0.1.10 tarball dist/chunk-FLANGLCG.js lines 1145-1155: org required before sendOnWire credentials. Its changelog adds types only; guest descriptors still org required.",
+    "docs/stabilization/resource-journals/guest-generated-red2-20261012.jsonl: RESOURCE_PRESSURE_UNSAFE before test launch; no red/green verdict.",
+    "src/lib/api/routes/guest-chat-transport.test.ts: 21 real-route transport assertions, unrun."
+  ],
+  "build_receipt": {
+    "source_sha": "f87e5d2fb",
+    "installed_api_version": "0.1.9",
+    "locked_api_version": "0.1.10",
+    "published_0_1_10": "source inspected directly from npm tarball"
+  },
+  "reproducibility_count": "source confirmation only; runtime suite admission refused",
+  "fix_commits": [],
+  "original_retest_runs": [],
+  "surrounding_case_runs": [],
+  "reviewer": {
+    "source": "Fresh parent-assigned Luna peer A: conditional source pass; requested operation-shaped fixtures now supplied",
+    "runtime": "not run"
+  },
+  "next_action": "Parent-authorized integration after source peer fixture correction; automatic exact-source CI next. Execute red/green and constant-return/mutation tests when resource admission permits. Native guest first/follow-up, queue controls and delegated continuation plus signed-in org checks remain open. Package/server contract correction is prerequisite to reapplying the generated Chat migration; no host org shim added.",
+  "remedy": "Narrowly restore ai.ts calls from before 0d4f952af and tool-results.ts calls from before 26653b2e7 to the existing canonical client; preserve all other generated migrations.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T15:57:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Independent source review found generated guest Chat org preflight regression."
+    },
+    {
+      "at": "2026-10-12T15:57:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed unchanged in published API 0.1.10 artifact."
+    },
+    {
+      "at": "2026-10-12T15:57:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow restoration prepared; test launch refused by resource guard; runtime and peer gates open."
+    }
+  ]
+}
