@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-home-precondition-peer-20261012",
+  "reviewed_at": "2026-10-12T02:32:02.559Z",
+  "reviewer": "independent-code-review",
+  "scope": "Read-only review of the uncommitted Notes T02 General-home precondition classifier and focused unit test; no browser, build, source edit, commit, or push.",
+  "prior_run": {
+    "run_id": 38195252012,
+    "status": "EXT-F-2006-T02 remains unverified with zero product credit.",
+    "evidence": "Member sign-in and organization selection completed, then the prior broad General-home prerequisite failed before Notes tab entry, home writes, note writes, or original T02 assertions.",
+    "limitation": "The prior run retained no scope counts or branch evidence. It does not establish the precise missing/duplicate/type failure branch or a product defect."
+  },
+  "verdicts": {
+    "A_diagnostic_usefulness_and_live_behavior": {
+      "status": "diagnostic improvement supported; live behavior unverified",
+      "product_credit": 0,
+      "findings": [
+        "The revised path records only selected-organization scope/type counts, literal General count, and two booleans before throwing a specific prerequisite code. It does not record row IDs, names, raw rows, or credential values.",
+        "The source order is tree read → classifier/diagnostic → refusal or home planning and scope writes → Notes tab entry. This supports the claim that the read-only precondition runs before fixture writes.",
+        "The bounded values can distinguish no literal General with zero scopes from no literal General while other scopes exist, and distinguish duplicate General, malformed type ID, and valid-but-unavailable type ID branches. The latter valid-but-unavailable branch is not directly exercised by the focused test.",
+        "The live selected-organization data has not been re-read with this classifier. No branch is assigned to run 38195252012 and no T02 product behavior is credited."
+      ]
+    },
+    "B_implementation_and_test_quality": {
+      "status": "supported",
+      "findings": [
+        "The implementation filters both scopes and types by the selected organization, then requires exactly one case-insensitive General scope, a UUID scope_type_id, and a matching type in that organization.",
+        "The call site uses custom.context_tree with p_organization_ids: [organizationId], matching the Records scope-door contract; the scope write retains explicit p_organization_id and uses the selected General type.",
+        "Focused node tests passed (2/2); Biome check passed for all three touched files; git diff --check passed.",
+        "A scratch-copy mutation removing the missing-General refusal failed the focused test with the expected branch mismatch, confirming a meaningful red for that refusal. The repository source was not modified for the mutation.",
+        "Coverage update: the added case exercises both an absent selected-organization type and a matching type row present only in another organization; both are refused with notes_find_general_home_type_unavailable, null writable selection, and bounded counts/booleans.",
+        "The positive test name says before fixture writes, but that unit test exercises only the classifier. Ordering is established by inspecting the current call site, not by an automated orchestration-level test."
+      ],
+      "sources": [
+        "docs/stabilization/reports/notes-find-member-run38195252012.json",
+        "docs/stabilization/evidence/notes-find-member/run38195252012/native-receipt.json",
+        "tests/browser/notes-find-native-case.mjs",
+        "tests/browser/notes-find-home-precondition.mjs",
+        "tests/browser/notes-find-home-precondition.test.mjs",
+        "../aidream/apps/shared/records/src/__tests__/a-scope-is-read-and-written-through-the-records-client.test.ts"
+      ],
+      "verification": [
+        {
+          "command": "node --test tests/browser/notes-find-home-precondition.test.mjs",
+          "result": "PASS: 3 top-level tests (including missing and foreign-organization type siblings)"
+        },
+        {
+          "command": "pnpm exec biome check tests/browser/notes-find-native-case.mjs tests/browser/notes-find-home-precondition.mjs tests/browser/notes-find-home-precondition.test.mjs",
+          "result": "PASS"
+        },
+        {
+          "command": "git diff --check",
+          "result": "PASS"
+        },
+        {
+          "command": "scratch-copy mutation: replace general.length === 0 with general.length < 0",
+          "result": "Expected RED: missing-General case returned notes_find_general_home_type_id_invalid instead of notes_find_general_home_missing"
+        }
+      ],
+      "limitations": [
+        "No hosted/browser rerun; live General-home eligibility and Notes T02 remain unverified.",
+        "No claim about the backend's actual organization tree or the root cause of the prior run.",
+        "The automated test covers classifier cases; ordering before fixture writes is confirmed by call-site inspection rather than an orchestration-level test."
+      ]
+    }
+  }
+}

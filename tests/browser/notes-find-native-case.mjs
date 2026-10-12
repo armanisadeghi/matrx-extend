@@ -10,6 +10,7 @@ import {
   requireNotesFindHomeWrite,
   writeNotesFindLedger,
 } from './notes-find-fixture.mjs';
+import { inspectNotesFindHomePrecondition } from './notes-find-home-precondition.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -57,17 +58,13 @@ async function makeOwnedHomes(
   ledger,
   ledgerPath,
   token,
+  report,
 ) {
   const tree = await selectedOrgTree(panel, origin, publishableKey, organizationId);
-  const general = tree.scopes.filter(
-    (scope) =>
-      scope.organization_id === organizationId && scope.name?.toLocaleLowerCase() === 'general',
-  );
-  if (general.length !== 1 || !UUID.test(general[0]?.scope_type_id ?? ''))
-    throw new Error('notes_find_general_home_unavailable');
-  const typeId = general[0].scope_type_id;
-  if (!tree.types.some((type) => type.id === typeId && type.organization_id === organizationId))
-    throw new Error('notes_find_general_home_type_unavailable');
+  const precondition = inspectNotesFindHomePrecondition(tree, organizationId);
+  report.observations.home_precondition = precondition.diagnostic;
+  if (precondition.code) throw new Error(precondition.code);
+  const typeId = precondition.typeId;
   const names = [`Harbor Dental Intake ${token}`, `Harbor Dental Follow-up ${token}`];
   for (const name of names) {
     planNotesFindHome(ledger, name);
@@ -101,7 +98,7 @@ async function makeOwnedHomes(
     )
       throw new Error('notes_find_created_home_readback_missing');
   }
-  return { general: general[0], homes: ledger.owned_homes };
+  return { general: precondition.general, homes: ledger.owned_homes };
 }
 
 function rootExpression() {
@@ -529,6 +526,7 @@ export async function runNotesFindAcceptance({
       ledger,
       ledgerPath,
       token,
+      report,
     );
     await click(panel, 'title', 'Notes');
     await waitFor(
