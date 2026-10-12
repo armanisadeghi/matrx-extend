@@ -14,17 +14,22 @@
     "Generated guest-tier operation declares organization required. createApi.organizationFor calls requireOrganizationContext before credentials are read; runOp retries via requireActiveOrganizationId and returns STATUS_NO_ORGANIZATION without fetch."
   ],
   "expected": "Guest operations reach transport with X-Fingerprint-ID and no fabricated organization; authenticated operations carry explicit X-Organization-Id.",
-  "actual": "Source-confirmed org refusal before transport. Runtime reproduction is pending resource admission, not claimed.",
+  "actual": "The migration source refused before transport because the generated descriptors required an organization for fingerprint guests. The restoration is covered by exact-source CI, including 21/21 guest-chat transport assertions. Native guest acceptance on the resulting 0.2.509 artifact remains unverified: the first driver stopped before browser launch because Playwright was unavailable, and the corrected run was refused at resource pressure level 2; no assistant reply was observed.",
   "cause": "Generated org-required descriptor is enforced independently of credential kind; the server-owned guest organization funnel cannot be reached.",
   "sibling_census": "Restored seven operations together: enqueue, cancel run, list inbox, edit inbox, cancel inbox, submit tool results, list pending calls. Stream first-send/continue/resume still uses existing stream path and requires native surrounding retest. Exact import-to-published-descriptor census also finds guest+org-required descriptors used by capture-ladder, prospects, sources, PDF extraction, research, Google Gmail send, and file upload/download. Their host guest eligibility is not established; parent owns follow-up census rather than expanding this Chat restoration without evidence.",
   "severity": "S1: public guest Chat follow-up/control/delegated continuation regression",
   "priority": "P0",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "guest_generated_ops_repair",
   "evidence": [
     "Published npm @ai-matrx/api 0.1.10 tarball dist/chunk-FLANGLCG.js lines 1145-1155: org required before sendOnWire credentials. Its changelog adds types only; guest descriptors still org required.",
     "docs/stabilization/resource-journals/guest-generated-red2-20261012.jsonl: RESOURCE_PRESSURE_UNSAFE before test launch; no red/green verdict.",
-    "src/lib/api/routes/guest-chat-transport.test.ts: 21 real-route transport assertions, unrun."
+    "src/lib/api/routes/guest-chat-transport.test.ts: 21 real-route transport assertions, unrun.",
+    "src/lib/api/routes/ai.ts and src/lib/api/routes/tool-results.ts: commit e2ff2a6d9 restores the established client transport for guest Chat operations while retaining fingerprint-only guest identity and signed-in organization behavior.",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38277687185: exact source 0b912a3fc215b840e803cb97ce82f9006c14e4e1, artifact 11759653605, version 0.2.509; CI reports guest-chat-transport.test.ts 21/21, adapter session suite 5/5, 2476 unit tests total, guest transport observer passed, and exact-source build succeeded.",
+    "docs/stabilization/reports/d0211-native-guest-attempts-20261012.json: bounded native attempts on artifact 11759653605. The acceptance driver failed before browser launch with browser_runtime_playwright_missing; a corrected run was refused by the resource guard at pressure 2. No guest AI request or assistant reply was observed.",
+    "docs/stabilization/resource-journals/d0211-native-attempt-1641.sanitized.jsonl and docs/stabilization/resource-journals/d0211-native-refusal-1648.sanitized.jsonl: sanitized completed guard records; process attribution and private paths are excluded.",
+    "Artifact source 0b912a3fc215b840e803cb97ce82f9006c14e4e1 predates current-main package refresh 5ae9d47ea, which advanced @ai-matrx/api from 0.1.10 to 0.1.11 and Zod from 4.6.6 to 4.6.7. The artifact is not evidence for current-main runtime behavior."
   ],
   "build_receipt": {
     "source_sha": "f87e5d2fb",
@@ -32,15 +37,15 @@
     "locked_api_version": "0.1.10",
     "published_0_1_10": "source inspected directly from npm tarball"
   },
-  "reproducibility_count": "source confirmation only; runtime suite admission refused",
-  "fix_commits": [],
-  "original_retest_runs": [],
+  "reproducibility_count": "Historical source reproduction; focused exact-source CI passed 21 guest transport assertions; native acceptance remains unverified before behavior.",
+  "fix_commits": ["e2ff2a6d9"],
+  "original_retest_runs": [38277687185],
   "surrounding_case_runs": [],
   "reviewer": {
-    "source": "Fresh parent-assigned Luna peer A: conditional source pass; requested operation-shaped fixtures now supplied",
-    "runtime": "not run"
+    "source": "Fresh parent-assigned source review: conditional pass after operation-shaped transport fixtures; exact-source CI later passed the guest transport suite.",
+    "runtime": "Unverified: artifact-bound native driver did not launch Chrome; the corrected attempt was refused by the host resource guard. No guest reply or follow-up observed."
   },
-  "next_action": "Parent-authorized integration after source peer fixture correction; automatic exact-source CI next. Execute red/green and constant-return/mutation tests when resource admission permits. Native guest first/follow-up, queue controls and delegated continuation plus signed-in org checks remain open. Package/server contract correction is prerequisite to reapplying the generated Chat migration; no host org shim added.",
+  "next_action": "Do not close or promote EXT-F-2013-T02/T04/T10 from these CI or setup attempts. Existing T10 evidence on 0.2.205 is historical and unchanged; the 0.2.509 attempt adds no case coverage. Artifact source 0b912a3fc215b840e803cb97ce82f9006c14e4e1 predates current-main package refresh 5ae9d47ea. After a current-main exact-source development artifact is promoted and a new resource admission succeeds, run the native signed-out first assistant reply to terminal completion and same-conversation follow-up, then exercise queue controls and delegated continuation plus signed-in organization transport. Add no case or mode passes until those outcomes are observed.",
   "remedy": "Narrowly restore ai.ts calls from before 0d4f952af and tool-results.ts calls from before 26653b2e7 to the existing canonical client; preserve all other generated migrations.",
   "transition_history": [
     {
@@ -60,6 +65,23 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Narrow restoration prepared; test launch refused by resource guard; runtime and peer gates open."
+    },
+    {
+      "at": "2026-10-12T16:51:45Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Commit e2ff2a6d9 restores guest Chat transport and exact-source CI 38277687185 passed 21/21 guest transport assertions plus the full unit suite. Native acceptance was attempted only to the owned-profile boundary and remained unverified; a later run was refused at pressure 2. No cases or modes are marked passed and the defect remains open to native retest."
     }
-  ]
+  ],
+  "native_attempt_receipt": {
+    "source_sha": "0b912a3fc215b840e803cb97ce82f9006c14e4e1",
+    "ci_run_id": 38277687185,
+    "development_artifact_id": 11759653605,
+    "version": "0.2.509",
+    "tree_sha256": "26e507184ef4476d813a4bf2bb61b43aef0394eec25ec27c19d9ba21bc75762a",
+    "server_git_sha_before": "a4cedbb8a88c7251ef053934321bee8fd522bf9b",
+    "server_git_sha_after": "a4cedbb8a88c7251ef053934321bee8fd522bf9b",
+    "native_acceptance_status": "unverified_before_browser_launch",
+    "current_main_package_refresh_after_artifact": "5ae9d47ea"
+  }
 }

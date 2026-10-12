@@ -1,6 +1,7 @@
 {
   "schema_version": 1,
   "observed_at": "2026-10-12T14:56:34Z",
+  "checkpoint_at": "2026-10-12T16:56:39Z",
   "item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
   "public_listing": {
     "method": "Direct read-only HTTPS, no-cache request",
@@ -29,27 +30,70 @@
   "gates": {
     "command": "python3 scripts/check_workflow_runner_cost.py",
     "exit_code": 1,
-    "modeled_billed_usd_per_week": 284.4,
+    "modeled_billed_usd_per_week": 250.04,
     "ceiling_usd_per_week": 100,
     "aidream_usd_per_week": 250.04,
-    "matrx_local_usd_per_week": 34.36,
+    "matrx_local_usd_per_week": 0,
     "matrx_extend_usd_per_week": 0,
-    "additional_failure": "matrx-local/scripts/check_workflow_runner_cost.py differs from matrx-extend guard",
+    "additional_failure": null,
     "billing_endpoint": {
       "path": "/organizations/AI-Matrix-Engine/settings/billing/usage?month=10&year=2026",
       "actions_net_amount_sum": 0,
       "meaning": "Separate October endpoint result, not proof that the mandatory modeled weekly cost gate passes."
+    },
+    "release_blocker_audit": {
+      "audited_at": "2026-10-12T17:10:00Z",
+      "aidream_source": "9cf1145c84f3fa594f246220a917174804b2439f",
+      "source_status": "Local aidream HEAD matched local origin/main; clean checkout at audit.",
+      "command": "python3 scripts/check_workflow_runner_cost.py --summary",
+      "exit_code": 1,
+      "aidream_repo_share_usd_per_week": 70,
+      "modeled_drivers_usd_per_week": {
+        "publish-npm-package.yml": 82.16,
+        "deploy.yml": 57.84,
+        "repo-only-checks.yml": 30.24,
+        "test.yml": 24.77,
+        "publish-watch.yml": 12.91,
+        "remaining_workflows": 42.12
+      },
+      "obsolete_publish_watch_forecast": {
+        "manifest_runs_per_week": 1434,
+        "current_behavior": "Job skips successful npm publishes; runs on failed publishes and successful four-hour verification batches, plus manual dispatches.",
+        "evidence": "Current workflow job condition and live skipped runs, including 38281864863 and 38281228818.",
+        "bounded_scenario": "42 verification batches/week at the existing 1.5-minute assumption would model $0.38/week before failure/manual allowance, reducing the shared total to $237.51 before that allowance. This is arithmetic only, not measured current billing savings."
+      },
+      "approved_cadence_constraint": "repo-only-checks.yml records the owner-approved hourly :05 schedule and requires the owner instruction before changing its cron. Preserve cadence; investigate reuse only when both aidream and frontend inputs match successful findings.",
+      "remaining_investigation": "Measure npm dispatch deduplication and deployment hashing effects before changing forecasts; inspect paid publish-lock waiting and repeated workspace installs while preserving consumer gates and publish ordering.",
+      "conclusion": "No substantiated narrow change clears the $100 shared ceiling or the separate $70 aidream share. Existing post-fix estimates require measured reconciliation; do not lower estimates merely to pass the gate.",
+      "current_billing_savings_claimed": false,
+      "workflow_edits": false,
+      "workflow_dispatches": false,
+      "budget_changed": false,
+      "jobs_relocated": false
     }
   },
   "source_snapshot": {
-    "origin_main": "6522427bb0c7e3620a187cdb2c7a123992036782",
-    "ci_run": 38266455996,
-    "ci_status": "queued",
-    "focused_run": 38266455773,
-    "focused_status": "in_progress",
+    "origin_main": "8986a2398e6d1f4fb6b7556f73fbdbd80fd2b932",
+    "latest_dependency_graph_commit": "5ae9d47eaaf7df5cb33699bf0956c8ab9e6f328e",
+    "previous_ci_source": "0b912a3fc215b840e803cb97ce82f9006c14e4e1",
+    "package_version": "0.2.509",
+    "installed_print_version": "0.12.34",
+    "ci_run": 38279845563,
+    "ci_status": "success",
+    "ci_scope": "Fresh install, Typecheck, Lint, unit, guest observer, keyed WXT build, and provenance passed at the current dependency graph.",
+    "development_artifact_id": 11760448679,
+    "development_artifact_tree_sha256": "22993e81dcb0d92ffe939fe8545d4262635a653cb5cdb356ca1c7264149fef20",
+    "development_artifact_promoted_at": "2026-10-12T16:56Z",
+    "development_artifact_pdfobject_scan": "No cdnjs.cloudflare.com/ajax/libs/pdfobject occurrence; pdfobjectnewwindow throws Remote PDF viewers are unavailable. Development WXT evidence only, not a Store ZIP scan.",
+    "focused_run": 38277340923,
+    "focused_status": "success",
+    "later_commits": "Only stabilization records changed after the current dependency-graph source; main is runtime-equivalent to 5ae9d47ea.",
+    "ci_applies_to_current_dependency_graph": true,
+    "native_guest_behavior": "unverified; host pressure level 2",
+    "chrome_loaded_path_reload_pin": "unverified",
     "snapshot_is_candidate_acceptance": false
   },
-  "next_action": "Clear the shared modeled-spend and guard-drift failures; obtain exact primary-item private status through permitted authenticated access; then guarded hosted release, exact ZIP gates and guest/non-admin acceptance before resubmission.",
+  "next_action": "Aidream spending owner clears the shared modeled $100/week gate; release owner obtains exact primary-item private status through permitted authenticated access; native lane completes current guest/non-admin acceptance; then release owner runs guarded hosted release and exact ZIP gates before any resubmission.",
   "no_local_build_release": true,
   "new_schedule": false
 }

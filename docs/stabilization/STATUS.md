@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-12 16:40 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T16:18:36Z. 207 features · 807 cases · 1397 controls · 215 linked defect records.
+Generated 2026-10-12 17:20 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T17:17:10Z. 207 features · 812 cases · 1400 controls · 215 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1294** — Pass: 103 · Partial: 93 · Fail: 2 · Unverified: 1094 · N/A: 2.
-Unverified splits into **145 explicitly marked unverified** and **949 with no result record**.
+Applicable case-by-role slots: **1299** — Pass: 103 · Partial: 93 · Fail: 2 · Unverified: 1099 · N/A: 2.
+Unverified splits into **147 explicitly marked unverified** and **952 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -20,12 +20,12 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 12, n/a 0 | 2 |
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 20, n/a 0 | 0 |
-| [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
+| [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 19 pass · 6 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 33, partial 16, fail 0, unverified 48, n/a 1 | 3 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
-| [Scrape](#scrape) | 1 | 9 pass · 4 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 25 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 35 unverified · 0 deferred; 0/1 full | pass 9, partial 14, fail 0, unverified 75, n/a 0 | 11 |
+| [Scrape](#scrape) | 1 | 9 pass · 4 partial · 0 fail · 14 unverified · 0 deferred; 0/1 full | 0 pass · 10 partial · 0 fail · 26 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 36 unverified · 0 deferred; 0/1 full | pass 9, partial 14, fail 0, unverified 76, n/a 0 | 11 |
 | [SEO](#seo) | 1 | 0 pass · 7 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 15 unverified · 0 deferred; 0/1 full | pass 0, partial 7, fail 0, unverified 38, n/a 0 | 2 |
 | [Screenshots](#screenshots) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 16, n/a 0 | 4 |
 | [Highlights](#highlights) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 20 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 40, n/a 0 | 1 |
@@ -377,7 +377,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Use popup shortcuts and microphone permission entrypoint (EXT-F-1002)
 
-**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 20. **Controls:** 6.
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 24. **Controls:** 7.
 
 **Next:** Run the remaining role cases in the extension and attach a result.
 
@@ -405,6 +405,10 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1002-T18 admin: Store toolbar action opens sidepanel | N/A | N/A | Unverified | EXT-F-1002-C06 |
 | EXT-F-1002-T19 member: Capture page reports launch failure and permits retry | N/A | Unverified | N/A | EXT-F-1002-C02 |
 | EXT-F-1002-T20 admin: Capture page reports launch failure and permits retry | N/A | N/A | Unverified | EXT-F-1002-C02 |
+| EXT-F-1002-T21 member: Close microphone permission window before permission attempt | N/A | Unverified | N/A | EXT-F-1002-C07 |
+| EXT-F-1002-T22 admin: Close microphone permission window before permission attempt | N/A | N/A | Unverified | EXT-F-1002-C07 |
+| EXT-F-1002-T23 member: Close microphone permission success page | N/A | Unverified | N/A | EXT-F-1002-C07 |
+| EXT-F-1002-T24 admin: Close microphone permission success page | N/A | N/A | Unverified | EXT-F-1002-C07 |
 
 **Recorded case details and evidence:**
 
@@ -887,7 +891,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Capture and manage current page scrape (EXT-F-1007)
 
-**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 39. **Controls:** 37.
+**Role status:** guest: Partial · member: Partial · admin: Unverified. **Cases:** 40. **Controls:** 39.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0022, EXT-D-0059, EXT-D-0118, EXT-D-0127, EXT-D-0128, EXT-D-0133, EXT-D-0138, EXT-D-0139, EXT-D-0166, EXT-D-0187, EXT-D-0192
 
@@ -898,7 +902,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1007-T01 Fast capture | Partial | Partial | Unverified | EXT-F-1007-C01 |
 | EXT-F-1007-T02 Deep capture | Partial | Partial | Unverified | EXT-F-1007-C02 |
 | EXT-F-1007-T03 Recapture unsaved edits guard | Pass | Unverified | Unverified | EXT-F-1007-C03 |
-| EXT-F-1007-T04 Save capture as a Source | Unverified | Partial | Unverified | EXT-F-1007-C04, EXT-F-1007-C21 |
+| EXT-F-1007-T04 Save capture as a Source | N/A | Partial | Unverified | EXT-F-1007-C04, EXT-F-1007-C21 |
 | EXT-F-1007-T05 Article markdown edit/apply | Unverified | Unverified | Unverified | EXT-F-1007-C05 |
 | EXT-F-1007-T06 Article markdown cancel | Pass | Unverified | Unverified | EXT-F-1007-C06 |
 | EXT-F-1007-T07 Article scroll sync | Pass | Unverified | Unverified | EXT-F-1007-C07 |
@@ -923,7 +927,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1007-T26 Saved-page lookup failure is not reported as unsaved | Unverified | Unverified | Unverified | EXT-F-1007-C27 |
 | EXT-F-1007-T27 Show not-yet-a-Source state with its next action | N/A | Unverified | Unverified | EXT-F-1007-C28 |
 | EXT-F-1007-T28 Preserve inline chart, caption and surrounding HTML labels | Unverified | Unverified | Unverified | EXT-F-1007-C01, EXT-F-1007-C02, EXT-F-1007-C08 |
-| EXT-F-1007-T29 Optional Source destination is chosen before landing and can be skipped | N/A | Partial | Unverified | EXT-F-1007-C29, EXT-F-1007-C30, EXT-F-1007-C31 |
+| EXT-F-1007-T29 Optional Source destination is chosen before landing and can be skipped | N/A | Partial | Unverified | EXT-F-1007-C29, EXT-F-1007-C30, EXT-F-1007-C31, EXT-F-1007-C38 |
 | EXT-F-1007-T30 Late save cannot mark another workspace or capture saved | N/A | Unverified | Unverified | EXT-F-1007-C32 |
 | EXT-F-1007-T31 Unsaved retry owns the held URL save action | Unverified | Unverified | Unverified | EXT-F-1007-C22, EXT-F-1007-C23, EXT-F-1007-C33 |
 | EXT-F-1007-T32 Retry unavailable active page identity without stale capture | Unverified | Unverified | Unverified | EXT-F-1007-C34, EXT-F-1007-C01, EXT-F-1007-C02 |
@@ -934,6 +938,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1007-T37 guest: Retry or dismiss a failed Diagnose picker launch | Unverified | N/A | N/A | EXT-F-1007-C16, EXT-F-1007-C37 |
 | EXT-F-1007-T38 member: Retry or dismiss a failed Diagnose picker launch | N/A | Unverified | N/A | EXT-F-1007-C16, EXT-F-1007-C37 |
 | EXT-F-1007-T39 admin: Retry or dismiss a failed Diagnose picker launch | N/A | N/A | Unverified | EXT-F-1007-C16, EXT-F-1007-C37 |
+| EXT-F-1007-T40 Open a Source recognized across accessible organizations | N/A | Unverified | Unverified | EXT-F-1007-C39 |
 
 **Recorded case details and evidence:**
 
@@ -986,7 +991,7 @@ These historical checks retain their original artifact boundary; they do not est
 - EXT-F-1007-T29 · member: Partial. Valid exact-build member run confirms the selected Project association persisted when independently inspected from the Project page. The case remains partial: this does not establish scrolling/search, focus containment, other destination flows, or Save Source UI changes committed in 3e3c2770c. Hosted no-destination run 38043392549 is infrastructure-invalid before authentication/Save (`owned_cdp_endpoint_timeout`, inputs/cdp_connect; guest resource final invalid exit 3), so it adds no behavior credit; the no-destination path remains unverified. Hosted member run 38044665604 independently saved a custom-named Source with destination none, read zero association edges, reopened matching captured content and verified cleanup on frozen v0.2.459. This is bounded evidence only; the case remains partial and EXT-D-0187 remains in-fix. Independent review of hosted member run 38107457332 adds bounded no-destination duplicate rename refusal/retry evidence on unpublished development v0.2.490: HTTP 503 preserved the original name and draft, Retry completed with HTTP 200, one renamed Source and zero associations were independently read, reopened content matched, all resource finals were valid, and cleanup was verified. This does not promote the case; T04/T29 remain partial and EXT-D-0187 remains in-fix.
   Evidence / build / date recorded: scrape-save-native-5-browser, development 0.2.457; extension cihdmkcdjjckfhjpgoedmgfpoljebaml; loaded source 7cf16860846756eb0f50cd6d2595b4d7529dda05; exact build reloaded, 2026-10-10T01:27:29Z, docs/stabilization/evidence/scrape-save-native-5-browser/receipt.json; /tmp/scrape-save-native-5.md; docs/stabilization/resource-journals/scrape-save-native-5-browser.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight-root2.jsonl; docs/stabilization/resource-journals/scrape-save-native-5-preflight2.jsonl; docs/stabilization/evidence/scrape-save-rename-retry-member/run38107457332/receipt.sanitized.json; docs/stabilization/reports/d187-rename-retry-native-peer-20261011.json
 
-**Other remaining work:** Source landing, refusal/retry, organization authorization, and server persistence require live member/admin evidence; guest Save must show sign-in remedy while retaining the device-local capture. Endpoint/RLS behavior is a runtime readiness gap, not a source-census blocker.; D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json.
+**Other remaining work:** D59 document identity: candidate a021ae82 remains partial; guarded peer a702ba6c passes narrow capture tests/compile but finds mixed-document Diagnose bundle and refresh status race. Native guest/member/admin retest pending; reports/scrape-document-peer.json.; Source landing and organization-scoped persistence require live member/admin evidence. Guest Save is a sign-in refusal with device-local retry. The independent File elsewhere and recognized-Source open controls have source cases but remain unverified in native warm/reload runs.
 
 
 ## SEO
@@ -1732,7 +1737,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0074, EXT-D-0075, EXT-D-0096, EXT-D-0156, EXT-D-0211
 
-**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (in-fix)
+**Linked defects:** [EXT-D-0066](defects/EXT-D-0066.json) (retest-pass), [EXT-D-0074](defects/EXT-D-0074.json) (fixed), [EXT-D-0075](defects/EXT-D-0075.json) (triaged), [EXT-D-0088](defects/EXT-D-0088.json) (closed), [EXT-D-0096](defects/EXT-D-0096.json) (fixed), [EXT-D-0097](defects/EXT-D-0097.json) (retest-pass), [EXT-D-0112](defects/EXT-D-0112.json) (retest-pass), [EXT-D-0113](defects/EXT-D-0113.json) (closed), [EXT-D-0134](defects/EXT-D-0134.json) (closed), [EXT-D-0144](defects/EXT-D-0144.json) (closed), [EXT-D-0156](defects/EXT-D-0156.json) (fixed), [EXT-D-0172](defects/EXT-D-0172.json) (closed), [EXT-D-0211](defects/EXT-D-0211.json) (fixed)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |

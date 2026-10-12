@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "defect_id": "EXT-D-0211",
+  "status": "unverified",
+  "scope": "Bounded native guest Chat acceptance setup attempts for two exact CI development artifacts; no assistant response was observed.",
+  "artifact": {
+    "source_sha": "0b912a3fc215b840e803cb97ce82f9006c14e4e1",
+    "ci_run_id": 38277687185,
+    "artifact_id": 11759653605,
+    "version": "0.2.509",
+    "tree_sha256": "26e507184ef4476d813a4bf2bb61b43aef0394eec25ec27c19d9ba21bc75762a"
+  },
+  "current_artifact_probe": {
+    "source_sha": "5ae9d47eaaf7df5cb33699bf0956c8ab9e6f328e",
+    "ci_run_id": 38279845563,
+    "artifact_id": 11760448679,
+    "version": "0.2.509",
+    "tree_sha256": "22993e81dcb0d92ffe939fe8545d4262635a653cb5cdb356ca1c7264149fef20",
+    "source_relation": "Runtime-equivalent to current main cc66c0554; intervening paths are documentation and evidence only.",
+    "server_sha": "9081f9c4a78618fe1b2d7bce56a7feb1aecbcfa1",
+    "server_stable_during_attempt": true
+  },
+  "earlier_server_version_endpoint": {
+    "before_sha": "a4cedbb8a88c7251ef053934321bee8fd522bf9b",
+    "after_sha": "a4cedbb8a88c7251ef053934321bee8fd522bf9b",
+    "stable_during_attempt": true,
+    "guest_chat_request_sent": false
+  },
+  "attempts": [
+    {
+      "resource_run_id": "guest-chat-native-0211-20261012-1641",
+      "resource_decision": "child_failed",
+      "resource_invalid": false,
+      "driver_status": "unverified",
+      "failure_stage": "owned_profile",
+      "failure_code": "browser_runtime_playwright_missing",
+      "browser_launched": false,
+      "first_assistant_reply": "not_observed",
+      "same_conversation_followup": "not_observed",
+      "resource_journal": "docs/stabilization/resource-journals/d0211-native-attempt-1641.sanitized.jsonl"
+    },
+    {
+      "resource_run_id": "guest-chat-native-0211-20261012-1648",
+      "resource_decision": "refused",
+      "resource_invalid": false,
+      "refusal_reason": "RESOURCE_PRESSURE_UNSAFE",
+      "pressure_level": 2,
+      "browser_launched": false,
+      "first_assistant_reply": "not_observed",
+      "same_conversation_followup": "not_observed",
+      "resource_journal": "docs/stabilization/resource-journals/d0211-native-refusal-1648.sanitized.jsonl"
+    },
+    {
+      "resource_run_id": "guest-chat-current-20261012-1721",
+      "resource_decision": "child_failed",
+      "resource_invalid": false,
+      "driver_status": "unverified",
+      "failure_stage": "owned_profile",
+      "failure_code": "native_sidepanel_expected_extension_missing",
+      "browser_launched": true,
+      "guest_chat_request_sent": false,
+      "first_assistant_reply": "not_observed",
+      "same_conversation_followup": "not_observed",
+      "raw_report_sha256": "872164c963ba41a3fbd40cfc45eda6a21f69f2b1a7292fa8818ff02780e19ecf",
+      "resource_journal": "docs/stabilization/resource-journals/guest-chat-current-20261012-1721.jsonl"
+    },
+    {
+      "resource_run_id": "guest-chat-startup-diag-20261012-1736",
+      "resource_decision": "child_failed",
+      "resource_invalid": false,
+      "driver_status": "unverified",
+      "failure_stage": "owned_profile",
+      "failure_code": "native_sidepanel_expected_extension_missing",
+      "browser_launched": true,
+      "guest_chat_request_sent": false,
+      "first_assistant_reply": "not_observed",
+      "same_conversation_followup": "not_observed",
+      "extension_startup_diagnostic": {
+        "status": "unknown",
+        "registry_available": true,
+        "registry_complete": false,
+        "expected_target_count": 0,
+        "expected_worker_count": 0,
+        "load_failure_reported": false
+      },
+      "raw_report_sha256": "872164c963ba41a3fbd40cfc45eda6a21f69f2b1a7292fa8818ff02780e19ecf",
+      "resource_journal": "docs/stabilization/resource-journals/guest-chat-startup-diag-20261012-1736.jsonl"
+    }
+  ],
+  "freshness_limit": "The first two attempts used artifact source 0b912a3fc215b840e803cb97ce82f9006c14e4e1, which predates package refresh 5ae9d47ea. The later two use runtime-equivalent current main, but never reached an extension worker or guest Chat; none is product acceptance evidence.",
+  "raw_assistant_content_included": false,
+  "private_paths_or_process_attribution_included": false
+}
