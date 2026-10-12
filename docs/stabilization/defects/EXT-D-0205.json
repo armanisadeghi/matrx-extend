@@ -19,7 +19,7 @@
   "cause": "CI spend attribution was added as a new workflow_dispatch input without consolidating an existing diagnostic input, refreshing the workflow admission pin, or updating the dispatch/verification contract.",
   "severity": "S2: hosted browser acceptance and main CI are unavailable; this is infrastructure failure, not a product behavior result",
   "priority": "P0: restore the guarded acceptance route before further hosted product testing or release gating",
-  "state": "in-fix",
+  "state": "fixed",
   "owner": "matrx_extend_stabilization",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38213966412",
@@ -27,8 +27,8 @@
     "scripts/hosted-notes-startup-diagnostic-route.test.mjs",
     "scripts/hosted-remote-admission.test.mjs"
   ],
-  "source_repair": "The mutually exclusive SEO resource and controlled-interruption diagnostics now share one choice input. requested_by remains and all guarded dispatch planners send the stabilization lane; the verifier accepts exact attributed route names while preserving earlier evidence. The reviewed SHA pin matches the 25-input workflow. The macOS-only resource integration job has an explicit documented cost-guard exception in this public repository, and the contributed cost manifest was formatted for the mandatory lint gate. Focused admission, Notes and SEO tests passed 54/54 before the final narrow test additions; an independent peer found no valid route loss. Exact-main CI and hosted dispatch remain unverified.",
-  "next_action": "The cross-repo CI spend guard still reports aidream at about $250 billed/week against the $100 ceiling; do not bypass or dispatch a paid job. Once the concurrent cost changes restore the gate, require exact-main green CI, then a permitted guarded hosted dispatch and original admission/input-cap plus surrounding route retest before closure. Do not count infrastructure source tests as product acceptance.",
+  "source_repair": "The mutually exclusive SEO resource and controlled-interruption diagnostics now share one choice input. requested_by remains and all guarded dispatch planners send the stabilization lane; the verifier accepts exact attributed route names while preserving earlier evidence. The reviewed SHA pin matches the 25-input workflow. The macOS-only resource integration job has an explicit documented cost-guard exception in this public repository, and the contributed cost manifest was formatted for the mandatory lint gate. Focused admission, Notes and SEO tests passed 54/54 before the final narrow test additions; an independent peer found no valid route loss. Exact-main focused acceptance CI 38215491147 and full CI 38215491148 passed at source 2c7cf7e06. No actual hosted dispatch retest has run.",
+  "next_action": "Run one permitted guarded hosted dispatch against the repaired exact-main workflow, then independently check the original admission/input-cap and surrounding routes before closure. The cross-repo CI spend guard still reports aidream at about $250 billed/week against the $100 ceiling; do not bypass or dispatch a paid job. Do not count infrastructure source tests as product acceptance.",
   "transition_history": [
     {
       "at": "2026-10-12T06:46:00Z",
@@ -47,6 +47,12 @@
       "from": "triaged",
       "to": "in-fix",
       "reason": "Source repair and 53 focused tests pass; exact-main CI and hosted retest remain pending."
+    },
+    {
+      "at": "2026-10-12T07:20:00Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Exact-main focused and full CI passed at 2c7cf7e06; guarded hosted dispatch and independent runtime retest remain pending."
     }
   ]
 }
