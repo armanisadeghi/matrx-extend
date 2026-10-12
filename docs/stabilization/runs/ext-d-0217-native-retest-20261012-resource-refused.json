@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0217-native-retest-20261012-resource-refused",
+  "defect_id": "EXT-D-0217",
+  "feature_id": "EXT-F-1007",
+  "status": "blocked_resource_refusal",
+  "artifact": {
+    "channel": "development",
+    "version": "0.2.509",
+    "expected_extension_id_from_prior_run": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "loaded_from_expected": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+    "source_sha": "3e5b8f18293ae0317623d9c1c17a92d260108615",
+    "ci_run_id": "38306513126",
+    "artifact_id": "11773390470",
+    "tree_sha256_from_promotion_receipt": "feeeace4f3f6ec91eb3319fe412c77ce63e018f0582eae58e4d7714bd499c173",
+    "binding_status": "promotion receipt and on-disk manifest version inspected; Chrome loaded path, extension ID, and runtime source were not observed because resource admission refused"
+  },
+  "resource": {
+    "journal": "docs/stabilization/resource-journals/ext-d-0217-retest-preflight.jsonl",
+    "decision": "refused",
+    "resource_invalid": false,
+    "exit_code": 2,
+    "observed": {
+      "pressure_level": 2,
+      "available_memory_gib": 4.8,
+      "required_memory_gib": 4,
+      "one_minute_load": 7.96,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.5128571428571429,
+      "swap_used_mib": 9625.81,
+      "repo_free_gib": 1647.9848251342773,
+      "system_free_gib": 36.005489349365234
+    },
+    "refusal_reasons": ["RESOURCE_PRESSURE_UNSAFE", "RESOURCE_MEMORY_LOW", "RESOURCE_SWAP_GROWTH"],
+    "additional_busy_attempt_journal": "docs/stabilization/resource-journals/ext-d-0217-retest-preflight2.jsonl"
+  },
+  "browser": {
+    "opened": false,
+    "profile": null,
+    "fixture": null,
+    "inspectable_ui_artifact": null,
+    "reason": "The guarded browser resource preflight refused; no browser/profile action was taken."
+  },
+  "cases": [
+    {"case_id":"EXT-F-1007-T05","verdict":"blocked","detail":"Neither clean-guest behavior nor stale-profile reproduction was tested. Save, Retry, warm/reload retention, sign-in remedy, membership access, no-Source-landed behavior, and signed-in Retry landing are all unobserved in this run."},
+    {"case_id":"EXT-F-1007-T06","verdict":"blocked","detail":"Not tested."},
+    {"case_id":"EXT-F-1007-T07","verdict":"blocked","detail":"Not tested."},
+    {"case_id":"EXT-F-1007-T08","verdict":"blocked","detail":"Not tested."}
+  ],
+  "api_only": false,
+  "credentials_or_auth_values_recorded": false,
+  "raw_network_or_transcript_recorded": false,
+  "next_action": "Repeat the single guarded native browser run only after the resource guard admits on a healthy Mac host; use an isolated profile and capture inspectable sanitized UI plus Chrome extension binding evidence before product steps."
+}
