@@ -29,6 +29,27 @@
       "verdict": "REJECTED",
       "failed": 4,
       "failure": "Zero replacement reloads versus expected three; corrupt reload cases fail missing-rejection assertion."
+    },
+    {
+      "mutation": "Actual exported preferenceBaselineMatches checker returns constant expected success (return true) before all selection, storage-presence, and appearance checks.",
+      "boundary": "tests/browser/settings-guest-preference-batch.mjs::preferenceBaselineMatches, called by actual restoreGuestPreferenceBaseline and replacement-runner baseline predicate",
+      "command": "node --test --test-name-pattern='T04 carries absent-key' /Volumes/Samsung2TB/code/.tmp/d220-constant-answer/browser/settings-guest-preference-batch.test.mjs",
+      "isolation": "Copied current browser modules to external-volume scratch; replaced actual checker only in scratch. Working source never mutated.",
+      "verdict": "REJECTED",
+      "exit_code": 1,
+      "tests": 4,
+      "passed": 2,
+      "failed": 2,
+      "failure": "Both corrupt=true cases fail with Missing expected rejection: an extension reload which recreates explicit System from absent theme is falsely accepted by the constant checker.",
+      "restoration": {
+        "working_source_unchanged": true,
+        "scratch_restored_byte_identically": true,
+        "sha256": "3e92aa942c1082d1130241593748defdbfec2722832bca3dc1f85e68b70a1145",
+        "restored_green_command": "node --test --test-name-pattern='T04 carries absent-key' /Volumes/Samsung2TB/code/.tmp/d220-constant-answer/browser/settings-guest-preference-batch.test.mjs",
+        "restored_green_exit_code": 0,
+        "restored_green_passed": 4
+      },
+      "permanent_coverage": "Existing two corruptReload=true behavioral tests exercise this actual checker through the baseline-restoration/full-reload chain; no new test was required."
     }
   ],
   "checks": {
