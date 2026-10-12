@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0220-native-20261012-2252",
+  "verdict": "fail_with_core_absent_baseline_observed",
+  "scope": "Isolated signed-out guest Settings native side panel; exact absent theme-key baseline through full extension reload, with Dark/Light/System and panel reload surrounding checks.",
+  "source": {
+    "task_source_sha": "c2205e2daab3936b703b68d5a95404e7ce2e6d61",
+    "artifact_source_sha": "fe631ec14c443d025dec04c1fa00795b1feaddb0",
+    "relationship": "Runtime-equivalent: the only commit/path difference is docs/stabilization/reports/store-release-checkpoint-20261012-2227.json.",
+    "artifact_ci_run_id": 38316843884,
+    "artifact_id": 11777408625,
+    "artifact_digest": "sha256:23f19b512ac8896c8d5bc2f19ee7a6fa07af98980e6f2a6baf6877a28dd4b275",
+    "artifact_tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "ci_conclusion": "success",
+    "focused_acceptance_conclusion": "success",
+    "imported_receipt": "test-results/ci-artifacts/fe631ec14c443d025dec04c1fa00795b1feaddb0/38316843884-1/import-status.json",
+    "promotion_receipt": "test-results/ci-dev-promotion-receipt.json"
+  },
+  "browser": {
+    "product": "Chrome for Testing",
+    "version": "151.0.7922.34",
+    "playwright": "1.62.1",
+    "auth_mode": "guest",
+    "profile": "runner-owned disposable isolated profile"
+  },
+  "resource": {
+    "run_journal": "docs/stabilization/resource-journals/ext-d-0220-native-20261012-2252.jsonl",
+    "decision": "child_failed",
+    "child_exit_code": 1,
+    "resource_invalid": false,
+    "admitted_at": "2026-10-12T22:49:53.811Z",
+    "terminal_at": "2026-10-12T22:51:34.181Z",
+    "cleanup": "guard reached terminal decision after owned child/group cleanup; no active heavy permit remained",
+    "prior_setup_attempt": {
+      "run_journal": "docs/stabilization/resource-journals/ext-d-0220-native-20261012-2250.jsonl",
+      "decision": "child_failed_before_browser_launch",
+      "reason": "Playwright module was not configured; no product interaction or credit."
+    }
+  },
+  "result": {
+    "overall_settings_cases": {
+      "pass": 12,
+      "fail": 1,
+      "unverified": 7
+    },
+    "failed_case_ids": [
+      "EXT-F-1003-T04"
+    ],
+    "unverified_case_ids": [
+      "EXT-F-1003-T16",
+      "EXT-F-1003-T19",
+      "EXT-F-1003-T31",
+      "EXT-F-1003-T34",
+      "EXT-F-1003-T40",
+      "EXT-F-1003-T63",
+      "EXT-F-1003-T70"
+    ],
+    "t04": {
+      "status": "fail",
+      "baseline_at_case_entry": "theme key absent; settings container absent",
+      "checkpoints": [
+        {
+          "name": "Dark changes UI, persisted preference, and applied appearance",
+          "status": "pass"
+        },
+        {
+          "name": "Dark survives panel reload",
+          "status": "pass"
+        },
+        {
+          "name": "Light changes UI, persisted preference, and applied appearance",
+          "status": "pass"
+        },
+        {
+          "name": "Light survives panel reload",
+          "status": "pass"
+        },
+        {
+          "name": "System changes UI, persisted preference, and applied appearance",
+          "status": "pass"
+        },
+        {
+          "name": "System survives panel reload",
+          "status": "pass"
+        },
+        {
+          "name": "Original theme baseline restored after panel reload",
+          "status": "pass"
+        },
+        {
+          "name": "before first extension reload: original Theme preference restored",
+          "status": "pass"
+        },
+        {
+          "name": "full extension reload: pre-run Theme matches saved baseline",
+          "status": "pass",
+          "expected": {
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false
+          },
+          "observed": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackground": "rgb(244, 244, 245)"
+          }
+        },
+        {
+          "name": "full extension reload: initial: original preference matches",
+          "status": "pass",
+          "observed": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackground": "rgb(244, 244, 245)"
+          }
+        },
+        {
+          "name": "full extension reload: full extension reload recheck completed",
+          "status": "fail",
+          "diagnostic": {
+            "category": "full_extension_preference_or_restore_failed",
+            "firstChoiceFailureStage": "not_failed",
+            "firstChoiceTransportClass": "other",
+            "restorationFailureStage": "restore_baseline_select",
+            "restorationTransportClass": "none",
+            "postReplacementStages": [
+              {
+                "stage": "choice_detach_previous_panel",
+                "outcome": "completed"
+              },
+              {
+                "stage": "choice_settings_reopen",
+                "outcome": "completed"
+              },
+              {
+                "stage": "choice_section_reopen",
+                "outcome": "completed"
+              },
+              {
+                "stage": "choice_preference_observation",
+                "outcome": "completed",
+                "observation": {
+                  "settingsActive": true,
+                  "sectionOpen": null,
+                  "selectedMatches": true,
+                  "storedMatches": true,
+                  "preferenceMatches": true
+                }
+              },
+              {
+                "stage": "choice_after_reload_callback",
+                "outcome": "completed"
+              },
+              {
+                "stage": "choice_detach_previous_panel",
+                "outcome": "completed"
+              },
+              {
+                "stage": "choice_settings_reopen",
+                "outcome": "completed"
+              },
+              {
+                "stage": "choice_section_reopen",
+                "outcome": "completed"
+              },
+              {
+                "stage": "choice_preference_observation",
+                "outcome": "completed",
+                "observation": {
+                  "settingsActive": true,
+                  "sectionOpen": null,
+                  "selectedMatches": true,
+                  "storedMatches": true,
+                  "preferenceMatches": true
+                }
+              },
+              {
+                "stage": "choice_after_reload_callback",
+                "outcome": "completed"
+              }
+            ],
+            "restorationPostReplacementStages": []
+          }
+        },
+        {
+          "name": "full extension reload recheck required",
+          "status": "fail"
+        }
+      ],
+      "interpretation": "The absent key and settings-container shape were restored before full extension reload, and the selected System appearance was observed with both storage-presence flags false after reload. Dark and Light replacement cycles passed. The later attempt to restore the absent baseline after those cycles failed at restore_baseline_select, so the complete T04 case remains failed and is not promoted."
+    },
+    "t10": {
+      "status": "pass",
+      "passing_criteria": 17,
+      "fail_count": 0
+    },
+    "extension_reload": {
+      "managementReloadClicked": true,
+      "oldTargetsRetired": true,
+      "workerReplaced": true,
+      "panelReplaced": true
+    },
+    "raw_local_report_sha256": "7fb9fc55ff6c20673780372f360b90f9eadb1320a1ff17d9566ffec78e17ad30",
+    "raw_report_and_screenshots": "Retained only under ignored test-results; raw screenshot/image files are not committed."
+  },
+  "next_action": "Sol diagnosis of restore_baseline_select using this sanitized trace; fresh guarded native retest after repair and independent native review."
+}
