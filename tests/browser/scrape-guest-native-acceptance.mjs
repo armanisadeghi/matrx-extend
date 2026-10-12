@@ -6,6 +6,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
   classifyPanelTransition,
@@ -1175,8 +1176,8 @@ try {
         const auth = await evaluate(
           panel,
           `(async () => {
-        const stored = await chrome.storage.local.get(['matrx.auth.accessToken', 'matrx.user.profile']);
-        return { hasAccessToken: typeof stored['matrx.auth.accessToken'] === 'string',
+        const stored = await chrome.storage.local.get(['matrx.oauth.session', 'matrx.user.profile']);
+        return { hasAccessToken: Boolean(${nativeOAuthStoredBearerExpression}),
           hasUserProfile: stored['matrx.user.profile'] != null };
       })()`,
         );

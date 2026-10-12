@@ -18,6 +18,7 @@ import {
   observeCanonicalAdminCheck,
   supabaseOrigin,
 } from './member-native-auth-proof.mjs';
+import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { storageShapeExpression } from './reviewer-chat-storage-shape.mjs';
 import { click, evaluate, openSection, waitFor } from './settings-panel-driver.mjs';
@@ -205,10 +206,10 @@ async function memberPanelIdentity(panel) {
   return evaluate(
     panel,
     `(() => chrome.storage.local.get([
-      'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.user.isAdmin',
+      'matrx.oauth.session', 'matrx.user.profile', 'matrx.user.isAdmin',
     ]).then((stored) => ({
       profileId: stored['matrx.user.profile']?.id ?? null,
-      accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
+      accessTokenPresent: Boolean(${nativeOAuthStoredBearerExpression}),
       isAdmin: stored['matrx.user.isAdmin'] === true ? true : stored['matrx.user.isAdmin'] === false ? false : null,
     })))()`,
   );

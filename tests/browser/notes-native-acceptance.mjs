@@ -11,6 +11,7 @@ import {
   sourcePackageVersion,
 } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
+import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { runNotesFindAcceptance, runNotesLazyGeneralPicker } from './notes-find-native-case.mjs';
 import { readMemberCredential } from './notes-member-credential.mjs';
@@ -266,12 +267,12 @@ async function memberPanelIdentity(panel, expectedEmail) {
     const section = account?.parentElement?.nextElementSibling;
     const row = label => [...(section?.querySelectorAll('span') ?? [])]
       .find(span => span.textContent.trim() === label)?.parentElement?.textContent.trim() ?? null;
-    return chrome.storage.local.get(['matrx.auth.accessToken','matrx.user.profile','matrx.user.isAdmin'])
+    return chrome.storage.local.get(['matrx.oauth.session','matrx.user.profile','matrx.user.isAdmin'])
       .then(stored => ({
         emailMatches: row('Email') === ${JSON.stringify(`Email${expectedEmail}`)},
         userId: stored['matrx.user.profile']?.id ?? null,
         userProfilePresent: Boolean(stored['matrx.user.profile']?.id),
-        accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
+        accessTokenPresent: Boolean(${nativeOAuthStoredBearerExpression}),
         isAdmin: stored['matrx.user.isAdmin'] === true ? true : stored['matrx.user.isAdmin'] === false ? false : null,
         signOutVisible: [...document.querySelectorAll('button')].some(button => button.textContent.trim() === 'Sign out'),
       }));

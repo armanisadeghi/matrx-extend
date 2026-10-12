@@ -476,7 +476,10 @@ function storagePanel(organization) {
             local: {
               async get() {
                 return {
-                  'matrx.auth.accessToken': 'test-only-placeholder',
+                  'matrx.oauth.session': JSON.stringify({
+                    v: 1,
+                    accessToken: 'test-only-placeholder',
+                  }),
                   'matrx.user.profile': { id: MEMBER },
                   'matrx.user.isAdmin': false,
                   'matrx.org.active': organization,

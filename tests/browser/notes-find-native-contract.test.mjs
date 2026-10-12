@@ -27,7 +27,14 @@ async function observePrecondition(tree, canonicalHomes) {
       const value = await runInNewContext(args.expression, {
         chrome: {
           storage: {
-            local: { get: async () => ({ 'matrx.auth.accessToken': 'local-contract-token' }) },
+            local: {
+              get: async () => ({
+                'matrx.oauth.session': JSON.stringify({
+                  v: 1,
+                  accessToken: 'local-contract-token',
+                }),
+              }),
+            },
           },
         },
         async fetch(url, options) {

@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
 import { Window } from 'happy-dom';
+import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import { evaluate, openSection } from './settings-panel-driver.mjs';
 
 // Captured boundary: run 37763007487 had verified admin identity and a rendered
@@ -18,6 +19,7 @@ function load(transform = (value) => value) {
     .replace(/^import[\s\S]*?from '[^']+';\n/gm, '')
     .replace(/^export /gm, '');
   return new Function(
+    'nativeOAuthBearerExpression',
     'assert',
     'createHash',
     'signInAdminSettings',
@@ -26,6 +28,7 @@ function load(transform = (value) => value) {
     'waitFor',
     `${implementation}; return { signInSettings, verifyCurrentSettingsIdentity };`,
   )(
+    nativeOAuthBearerExpression,
     assert,
     createHash,
     async () => ({ email: 'admin@admin.com', userId: profileId }),
@@ -58,7 +61,7 @@ async function check(driver, changed = {}, expectedReady = true) {
       local: {
         get: async () => ({
           'matrx.user.profile': { id: state.profileId },
-          'matrx.auth.accessToken': state.token,
+          'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: state.token }),
           'matrx.user.isAdmin': state.isAdmin,
           'matrx.org.active': state.device,
         }),

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import { activeTabPanelExpression, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -132,8 +133,7 @@ export async function ownedPatternRootRequest({
   const result = await evaluate(
     panel,
     `(async () => {
-      const stored = await chrome.storage.local.get(['matrx.auth.accessToken']);
-      const token = stored['matrx.auth.accessToken'];
+      const token = ${nativeOAuthBearerExpression};
       if (typeof token !== 'string' || !token) return { status: 0, rows: null };
       const response = await fetch(${JSON.stringify(url.toString())}, {
         method: ${JSON.stringify(method)},

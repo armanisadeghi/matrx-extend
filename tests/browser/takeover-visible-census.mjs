@@ -6,6 +6,7 @@ import { open, readFile, readdir, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
+import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { signInSettings } from './settings-native-auth-driver.mjs';
 import {
@@ -369,7 +370,7 @@ export async function observeGuestAuthentication(panel) {
     panel,
     `(async () => {
     const stored = await chrome.storage.local.get([
-      'matrx.auth.accessToken', 'matrx.auth.refreshTokenEnc', 'matrx.auth.refreshTokenIv',
+      'matrx.oauth.session', 'matrx.auth.refreshTokenEnc', 'matrx.auth.refreshTokenIv',
       'matrx.user.profile', 'matrx.user.isAdmin',
     ]);
     const visible = el => { const r = el.getBoundingClientRect(), s = getComputedStyle(el);
@@ -380,7 +381,7 @@ export async function observeGuestAuthentication(panel) {
     const content = headers.length === 1 ? document.getElementById(headers[0].getAttribute('aria-controls')) : null;
     const buttons = [...(settingsPane?.querySelectorAll('button') ?? [])].filter(visible);
     return {
-      access_token_present: stored['matrx.auth.accessToken'] != null,
+      access_token_present: Boolean(${nativeOAuthStoredBearerExpression}),
       refresh_token_present: stored['matrx.auth.refreshTokenEnc'] != null || stored['matrx.auth.refreshTokenIv'] != null,
       profile_present: stored['matrx.user.profile'] != null,
       admin_role: stored['matrx.user.isAdmin'] === true,

@@ -1,6 +1,13 @@
-export function storedSessionSummary(stored) {
+import {
+  nativeOAuthBearerFromSession,
+  nativeOAuthStoredBearerExpression,
+} from './native-oauth-session.mjs';
+export function storedSessionSummary(
+  stored,
+  bearerPresent = Boolean(nativeOAuthBearerFromSession(stored['matrx.oauth.session'])),
+) {
   return {
-    accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
+    accessTokenPresent: bearerPresent,
     profilePresent: Boolean(stored['matrx.user.profile']?.id),
     activeOrganizationPresent:
       typeof stored['matrx.org.active']?.id === 'string' &&
@@ -10,6 +17,6 @@ export function storedSessionSummary(stored) {
 
 export function storageShapeExpression() {
   return `(() => chrome.storage.local.get([
-    'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.org.active',
-  ]).then((stored) => (${storedSessionSummary.toString()})(stored)))()`;
+    'matrx.oauth.session', 'matrx.user.profile', 'matrx.org.active',
+  ]).then((stored) => (${storedSessionSummary.toString()})(stored, Boolean(${nativeOAuthStoredBearerExpression}))))()`;
 }

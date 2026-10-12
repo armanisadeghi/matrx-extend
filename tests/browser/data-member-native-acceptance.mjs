@@ -22,6 +22,7 @@ import {
   assertPatternWriteOrganization,
   observePatternWrites,
 } from './data-member-save-observer.mjs';
+import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import { safeReloadOperationFailure } from './native-reload-operation-boundary.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { captureFailure, captureSenderDocument } from './profile-reload-capture.mjs';
@@ -197,8 +198,7 @@ async function lookupSavedPattern(panel, name, organizationId) {
   return evaluate(
     panel,
     `(async () => {
-      const stored = await chrome.storage.local.get(['matrx.auth.accessToken']);
-      const token = stored['matrx.auth.accessToken'];
+      const token = ${nativeOAuthBearerExpression};
       if (typeof token !== 'string' || !token) return { status: 0, rows: null };
       const response = await fetch(${JSON.stringify(buildDataPatternLookupUrl(supabaseUrl.origin, name, organizationId))}, {
         headers: {
@@ -246,8 +246,7 @@ async function deleteSavedPattern(panel, target) {
   const result = await evaluate(
     panel,
     `(async () => {
-      const stored = await chrome.storage.local.get(['matrx.auth.accessToken']);
-      const token = stored['matrx.auth.accessToken'];
+      const token = ${nativeOAuthBearerExpression};
       if (typeof token !== 'string' || !token) return { status: 0, rowCount: null, rowIdMatches: false, organizationMatches: false };
       const response = await fetch(${JSON.stringify(buildDataPatternDeleteUrl(supabaseUrl.origin, target.patternId, target.organizationId))}, {
         method: 'DELETE',

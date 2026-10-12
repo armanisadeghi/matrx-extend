@@ -28,7 +28,10 @@ async function precondition(homes) {
           storage: {
             local: {
               get: async () => ({
-                'matrx.auth.accessToken': 'local-contract-token',
+                'matrx.oauth.session': JSON.stringify({
+                  v: 1,
+                  accessToken: 'local-contract-token',
+                }),
               }),
             },
           },
@@ -130,7 +133,10 @@ function workingPanel({
               storage: {
                 local: {
                   get: async () => ({
-                    'matrx.auth.accessToken': 'local-contract-token',
+                    'matrx.oauth.session': JSON.stringify({
+                      v: 1,
+                      accessToken: 'local-contract-token',
+                    }),
                   }),
                 },
               },

@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-12 21:46 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-12T21:46:25Z.
+Generated 2026-10-12 21:52 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-12T21:46:25Z.
 
 ## Current truth
 
@@ -8,7 +8,7 @@ Generated 2026-10-12 21:46 UTC from inventory.json, defect records, daily Store 
 - Case results: pass 101, partial 96, fail 1, unverified 1099, n/a 2; 147 explicitly unverified and 952 with no result record. Missing results count as unverified, including later-wave surfaces.
 - Fully verified feature-role pairs: 0/402 under the rule that every applicable case passes and every control maps to a case.
 - Procedure gaps: 0 missing steps; 0 missing expected outcomes; 0 missing control links; 1 explicitly control-less procedures.
-- Defect states: closed 135, retest-pass 9, fixed 60, in-fix 11, open 1. A fixed or closed defect is not a feature-level UI pass.
+- Defect states: closed 135, retest-pass 9, fixed 60, in-fix 12, open 1. A fixed or closed defect is not a feature-level UI pass.
 
 ## Current Store release observations
 
@@ -26,7 +26,7 @@ These observations are bounded to their recorded times; source versions and loca
 
 ## Inventory freshness review
 
-Since inventory source `636d00857f774a7b15fe70032dd9c35cef44c015`, **231 `src/` paths changed** through `565440257b3b4283b98647fb655dcf760805e614`. A direct path-anchor comparison matched 39 and left 192 without an exact inventory anchor.
+Since inventory source `636d00857f774a7b15fe70032dd9c35cef44c015`, **231 `src/` paths changed** through `f95263f7423d85eeb911a318fa4ac1addbfc63d9`. A direct path-anchor comparison matched 39 and left 192 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities

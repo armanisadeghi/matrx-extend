@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
+import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import {
   accountIdentity,
   panelIdentity,
@@ -127,8 +128,7 @@ export async function panelBearerHash(panel) {
   return evaluate(
     panel,
     `(async () => {
-    const stored = await chrome.storage.local.get('matrx.auth.accessToken');
-    const token = stored['matrx.auth.accessToken'];
+    const token = ${nativeOAuthBearerExpression};
     if (typeof token !== 'string' || !token) return null;
     const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token));
     return [...new Uint8Array(bytes)].map(value => value.toString(16).padStart(2, '0')).join('');

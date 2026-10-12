@@ -21,10 +21,10 @@
   ],
   "severity": "S2: authenticated acceptance can stop in fixture setup or cleanup before product behavior, obscuring current member/admin coverage",
   "priority": "P1: repair active native auth consumers before interpreting new signed-in test failures",
-  "state": "triaged",
-  "owner": "root",
-  "sibling_census": "A source search finds 50 browser .mjs/.cjs files referencing matrx.auth.accessToken, including historical scripts. This count is a review queue, not 50 proven active failures. EXT-D-0217's hosted Save route is being repaired separately; enumerate active routes before extending this fix.",
-  "next_action": "Review the current hosted route graph, migrate active browser fixture consumers to one shared current-OAuth session reader without exposing bearer values in reports, show old-code RED/current-code GREEN, and perform one guarded current-artifact member run with independent review. Preserve historical v0.2.493 Data evidence as historical.",
+  "state": "in-fix",
+  "owner": "root/d218_fixture_repair",
+  "sibling_census": "The guarded hosted runner and enabled route modules reach 24 entry drivers. Thirteen active modules consumed the retired bearer; all now use the shared current-OAuth reader. The separate D217 helper deliberately checks retired-key absence and is preserved. Profile dispatch is explicitly disabled by the hosted runner; historical/manual drivers are outside this active-route repair.",
+  "next_action": "Independent code/harness review, then root reconciliation and push. When CI spend admission is GREEN, run guarded current-artifact member Data acceptance; no native/product acceptance is claimed by source tests.",
   "transition_history": [
     {
       "at": "2026-10-12T21:46:25Z",
@@ -37,6 +37,20 @@
       "from": "open",
       "to": "triaged",
       "reason": "The exact source mismatch and affected request helpers are identified; fresh browser impact and remaining active siblings still require verification."
+    },
+    {
+      "at": "2026-10-12T21:52:27.394641Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Active-route fixture repair has source RED\u2192GREEN evidence; independent review and current-artifact native acceptance remain pending."
     }
-  ]
+  ],
+  "cause": "Active fixture request helpers and authentication summaries still consumed the retired standalone bearer after AUTH_SESSION moved to the versioned JSON OAuth session. Current-only browser storage reproduces skipped authenticated requests and false signed-out summaries.",
+  "source_verification": {
+    "run_id": "ext-d-0218-source-20261012",
+    "evidence": "docs/stabilization/runs/ext-d-0218-source-20261012.json",
+    "native_acceptance": "UNVERIFIED: no browser job launched while hosted CI spend gate is RED",
+    "independent_review": "pending root review",
+    "release": "pending"
+  }
 }

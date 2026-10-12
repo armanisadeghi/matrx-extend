@@ -341,7 +341,9 @@ test('recovery GET reports the bounded browser preflight phase without exception
             local: {
               get: async () => {
                 if (phase === 'token_read') throw new Error('private token=must-not-leak');
-                return { 'matrx.auth.accessToken': 'unit-test-token' };
+                return {
+                  'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: 'unit-test-token' }),
+                };
               },
             },
           },
@@ -666,7 +668,15 @@ test('real page request uses the signed-in principal and returns only safe recei
   let request;
   const evaluate = async (_panel, expression) =>
     new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
-      { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+      {
+        storage: {
+          local: {
+            get: async () => ({
+              'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: token }),
+            }),
+          },
+        },
+      },
       webcrypto,
       async (url, options) => {
         request = { url, options };
@@ -707,7 +717,15 @@ test('slow page fetch completes through short CDP commands without resending the
     evaluations++;
     return Promise.race([
       new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
-        { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+        {
+          storage: {
+            local: {
+              get: async () => ({
+                'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: token }),
+              }),
+            },
+          },
+        },
         webcrypto,
         async () => {
           fetches++;
@@ -748,7 +766,15 @@ test('timed-out create aborts once and leaves a durable ambiguous-write journal'
   const diagnostics = [];
   const evaluate = async (_panel, expression) =>
     new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
-      { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+      {
+        storage: {
+          local: {
+            get: async () => ({
+              'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: token }),
+            }),
+          },
+        },
+      },
       webcrypto,
       async (_url, options) => {
         requests.push(options.method);
@@ -860,7 +886,15 @@ test('page-local recovery scan verifies omitted list descriptions through canoni
   const requests = [];
   const evaluate = async (_panel, expression) =>
     new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
-      { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+      {
+        storage: {
+          local: {
+            get: async () => ({
+              'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: token }),
+            }),
+          },
+        },
+      },
       webcrypto,
       async (url) => {
         requests.push(url);
@@ -912,7 +946,15 @@ test('the real page request path archives a listed fixture whose description is 
   const requests = [];
   const evaluate = async (_panel, expression) =>
     new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
-      { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+      {
+        storage: {
+          local: {
+            get: async () => ({
+              'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: token }),
+            }),
+          },
+        },
+      },
       webcrypto,
       async (url, options) => {
         requests.push({ url, method: options.method ?? 'GET' });
@@ -1007,7 +1049,15 @@ test('foreign marker on a same-name table refuses creation and archival', async 
   const requests = [];
   const evaluate = async (_panel, expression) =>
     new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
-      { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+      {
+        storage: {
+          local: {
+            get: async () => ({
+              'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: token }),
+            }),
+          },
+        },
+      },
       webcrypto,
       async (url, options) => {
         requests.push(options.method ?? 'GET');
@@ -1075,7 +1125,15 @@ test('unavailable or mismatched detail cannot turn a visible candidate into a co
   ]) {
     const evaluate = async (_panel, expression) =>
       new Function('chrome', 'crypto', 'fetch', `return ${expression};`)(
-        { storage: { local: { get: async () => ({ 'matrx.auth.accessToken': token }) } } },
+        {
+          storage: {
+            local: {
+              get: async () => ({
+                'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: token }),
+              }),
+            },
+          },
+        },
         webcrypto,
         async (url) =>
           url.endsWith('/columns')

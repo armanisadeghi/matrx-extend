@@ -15,6 +15,7 @@ import {
   hoverPickerField,
   pickerText,
 } from './data-guest-picker-driver.mjs';
+import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
   activeTabPanelExpression,
@@ -136,8 +137,8 @@ try {
       const guest = await evaluate(
         panel,
         `(async () => {
-          const stored = await chrome.storage.local.get(['matrx.auth.accessToken','matrx.user.profile']);
-          return { token: Boolean(stored['matrx.auth.accessToken']), profile: Boolean(stored['matrx.user.profile']) };
+          const stored = await chrome.storage.local.get(['matrx.oauth.session','matrx.user.profile']);
+          return { token: Boolean(${nativeOAuthStoredBearerExpression}), profile: Boolean(stored['matrx.user.profile']) };
         })()`,
       );
       assert.deepEqual(guest, { token: false, profile: false }, 'data_guest_auth_state_wrong');

@@ -1,0 +1,65 @@
+{
+  "run_id": "ext-d-0218-source-20261012",
+  "defect_id": "EXT-D-0218",
+  "source_head_before_commit": "f95263f7423d85eeb911a318fa4ac1addbfc63d9",
+  "scope": "Active hosted browser fixture consumers only; no product/native acceptance verdict",
+  "active_entry_driver_count": 24,
+  "affected_active_module_count": 13,
+  "changed_paths": [
+    "tests/browser/admin-readiness-class.test.mjs",
+    "tests/browser/data-guest-native-acceptance.mjs",
+    "tests/browser/data-member-auto-extract-driver.mjs",
+    "tests/browser/data-member-native-acceptance.mjs",
+    "tests/browser/guest-chat-store-acceptance.mjs",
+    "tests/browser/native-oauth-session.mjs",
+    "tests/browser/notes-find-native-case.mjs",
+    "tests/browser/notes-find-native-contract.test.mjs",
+    "tests/browser/notes-lazy-general-picker.test.mjs",
+    "tests/browser/notes-native-acceptance.mjs",
+    "tests/browser/records-positive-fixture.mjs",
+    "tests/browser/records-positive-fixture.test.mjs",
+    "tests/browser/reviewer-chat-storage-shape.mjs",
+    "tests/browser/reviewer-chat-storage-shape.test.mjs",
+    "tests/browser/reviewer-chat-store-acceptance.mjs",
+    "tests/browser/scrape-guest-native-acceptance.mjs",
+    "tests/browser/settings-native-auth-driver.test.mjs",
+    "tests/browser/settings-panel-driver.mjs",
+    "tests/browser/showcase-organization-checkpoint.mjs",
+    "tests/browser/takeover-visible-census.mjs",
+    "tests/browser/takeover-visible-census.test.mjs",
+    "tests/browser/active-native-oauth-session.test.mjs"
+  ],
+  "red": {
+    "command": "node --test tests/browser/notes-find-native-contract.test.mjs tests/browser/records-positive-fixture.test.mjs tests/browser/reviewer-chat-storage-shape.test.mjs",
+    "fixture": "Only current v1 JSON OAuth session; retired standalone bearer absent",
+    "tests": 33,
+    "failed": 12,
+    "passed": 21,
+    "symptoms": "Actual emitted request scripts stop before fetch; auth summary incorrectly reports no bearer"
+  },
+  "green": {
+    "original_and_new_guards": {
+      "tests": 37,
+      "passed": 37
+    },
+    "compile": "PASS pnpm compile",
+    "lint": "PASS pnpm -s lint, 896 pre-existing warnings",
+    "surrounding": {
+      "tests": 130,
+      "passed": 130,
+      "failed": 0,
+      "command": "node --test tests/browser/{active-native-oauth-session,notes-find-native-contract,records-positive-fixture,reviewer-chat-storage-shape,notes-lazy-general-picker,data-member-auto-extract-driver,takeover-visible-census,admin-readiness-class,settings-native-auth-driver,showcase-organization-diagnostic,showcase-request-boundary,scrape-save-stale-profile-route}.test.mjs"
+    }
+  },
+  "mutations": [
+    "Retired bearer reader must reject against current credential request oracle",
+    "Skipped request/constant expected row must reject because fetch was never emitted",
+    "Active-route graph census detects a planted retired-key consumer"
+  ],
+  "limitations": [
+    "No hosted heavy browser launched: CI spend gate RED",
+    "Product acceptance, installed artifact, Store and release remain unverified",
+    "Independent review pending"
+  ],
+  "owned_jobs": []
+}

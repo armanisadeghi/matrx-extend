@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash, randomUUID } from 'node:crypto';
 import { open, readFile, rename } from 'node:fs/promises';
+import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const OWNED_NAME =
@@ -125,7 +126,7 @@ export async function recordsFixtureRequest(
     globalThis[${JSON.stringify(slot)}] = state;
     void (async () => {
     let token;
-    try { token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken']; }
+    try { token = ${nativeOAuthBearerExpression}; }
     catch { return { token_matches: false, preflight_error_stage: 'token_read' }; }
     if (typeof token !== 'string' || !token) return { token_matches: false };
     let digest;

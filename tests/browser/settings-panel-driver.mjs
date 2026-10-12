@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 
 // DOM observation/viewport preparation plus trusted CDP input in the owned panel.
 export async function evaluate(panel, expression) {
@@ -126,7 +127,7 @@ export async function guestSettingsState(panel) {
     panel,
     `(async () => {
     const stored = await chrome.storage.local.get([
-      'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.org.active',
+      'matrx.oauth.session', 'matrx.user.profile', 'matrx.org.active',
     ]);
     const tabs = [...document.querySelectorAll('button[role="tab"][data-state="active"]')]
       .filter((tab) => tab.title === 'Settings');
@@ -153,7 +154,7 @@ export async function guestSettingsState(panel) {
       compactText(allOrgText) === compactText(org[0].textContent ?? '');
     return {
       active,
-      accessTokenPresent: typeof stored['matrx.auth.accessToken'] === 'string',
+      accessTokenPresent: Boolean(${nativeOAuthStoredBearerExpression}),
       profilePresent: Boolean(stored['matrx.user.profile']?.id),
       organizationChoicePresent: Boolean(stored['matrx.org.active']?.id),
       accountSectionCount: account.count, accountOpen: account.open,

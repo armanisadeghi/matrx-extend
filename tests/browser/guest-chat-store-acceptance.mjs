@@ -12,6 +12,7 @@ import {
   requireGuestTransport,
   watchGuestAiRequests,
 } from './guest-chat-transport-observer.mjs';
+import { nativeOAuthStoredBearerExpression } from './native-oauth-session.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
@@ -140,14 +141,14 @@ async function observe(panel, expected = {}) {
         .filter(visible)
         .some((element) => /(?:interruption|interrupted|retry)/i.test(element.innerText ?? ''));
       const textarea = active ? pane.querySelector('textarea') : null;
-      const stored = chrome.storage.local.get([
-        'matrx.auth.accessToken', 'matrx.user.profile', 'matrx.org.active',
+      const storedPromise = chrome.storage.local.get([
+        'matrx.oauth.session', 'matrx.user.profile', 'matrx.org.active',
       ]);
-      return stored.then((values) => ({
+      return storedPromise.then((stored) => ({
         guestAccount: visible(document.querySelector('button[title="Account"]')),
-        accessTokenAbsent: !values['matrx.auth.accessToken'],
-        profileAbsent: !values['matrx.user.profile'],
-        organizationAbsent: !values['matrx.org.active'],
+        accessTokenAbsent: !(${nativeOAuthStoredBearerExpression}),
+        profileAbsent: !stored['matrx.user.profile'],
+        organizationAbsent: !stored['matrx.org.active'],
         chatVisible: visible(chat),
         chatSelected: chat?.getAttribute('aria-selected') === 'true',
         paneVisible: Boolean(active),

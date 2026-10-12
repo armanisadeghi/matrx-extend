@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import { nativeOAuthBearerExpression } from './native-oauth-session.mjs';
 import {
   createNotesFindLedger,
   planNotesFindHome,
@@ -27,7 +28,7 @@ async function scopeDoor(
   const result = await evaluate(
     panel,
     `(async () => {
-    const token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken'];
+    const token = ${nativeOAuthBearerExpression};
     if (typeof token !== 'string' || !token) return { status: 0, data: null };
     const response = await fetch(${JSON.stringify(`${origin}/rest/v1/rpc/`)} + ${JSON.stringify(door)}, {
       method: 'POST',

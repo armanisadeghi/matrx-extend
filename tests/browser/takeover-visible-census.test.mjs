@@ -738,7 +738,7 @@ test('guest evidence requires observed signed-out account and absent credentials
 
 test('guest observation refuses every contradictory or missing auth signal without leaking identity', async () => {
   for (const [html, stored] of [
-    [guestHtml, { 'matrx.auth.accessToken': 'private-token' }],
+    [guestHtml, { 'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: 'private-token' }) }],
     [guestHtml, { 'matrx.auth.refreshTokenEnc': 'private-refresh' }],
     [guestHtml, { 'matrx.auth.refreshTokenIv': 'private-iv' }],
     [guestHtml, { 'matrx.user.profile': { id: 'private-profile' } }],
@@ -788,7 +788,13 @@ test('guest contract detects a constant signed-out replacement', async () => {
     assert.equal(signedOut.signed_out_observed, true);
     await assert.rejects(
       () =>
-        observe(guestPanel(domContext(guestHtml, { 'matrx.auth.accessToken': 'private-token' }))),
+        observe(
+          guestPanel(
+            domContext(guestHtml, {
+              'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: 'private-token' }),
+            }),
+          ),
+        ),
       /census_guest_signed_out_unverified/,
     );
   };

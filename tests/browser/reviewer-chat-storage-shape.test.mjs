@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { runInNewContext } from 'node:vm';
+import { nativeOAuthBearerFromSession } from './native-oauth-session.mjs';
 import { storageShapeExpression, storedSessionSummary } from './reviewer-chat-storage-shape.mjs';
 
 const selected = {
-  'matrx.auth.accessToken': 'opaque-token-handle',
+  'matrx.oauth.session': JSON.stringify({ v: 1, accessToken: 'opaque-token-handle' }),
   'matrx.user.profile': { id: 'member-handle' },
   'matrx.org.active': { id: 'organization-handle', name: 'Matrx Review' },
 };
@@ -55,7 +56,7 @@ test('storage guard kills constant and string-only diagnostic mutations', () => 
         "typeof stored['matrx.org.active'] === 'string'",
       ),
   ]) {
-    const mutant = runInNewContext(`(${body})`);
+    const mutant = runInNewContext(`(${body})`, { nativeOAuthBearerFromSession });
     assert.throws(() => selectionContract(mutant), { code: 'ERR_ASSERTION' });
   }
 });
