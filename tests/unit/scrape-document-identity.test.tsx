@@ -28,10 +28,12 @@ import { useScrapeStore } from '@/state/scrape';
 
 function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((yes) => {
+  let reject!: (error: Error) => void;
+  const promise = new Promise<T>((yes, no) => {
     resolve = yes;
+    reject = no;
   });
-  return { promise, resolve };
+  return { promise, resolve, reject };
 }
 
 const soup = (title: string) => ({ url: 'https://harbor-dental.test/intake', article: { title } });
@@ -96,3 +98,39 @@ it('late A manual capture cannot replace B at the same URL', async () => {
   expect(useScrapeStore.getState().pageKey).toBe('page-b');
   expect(useScrapeStore.getState().current?.article.title).toBe('B intake');
 });
+
+// A page navigation updates the external identity before React's reset effect runs.
+// Removing the catch boundary's identity check makes the replaced-page case fail.
+it.each([
+  ['fast', false],
+  ['fast', true],
+  ['deep', false],
+  ['deep', true],
+] as const)(
+  '%s capture rejection respects synchronous document replacement=%s before React resets',
+  async (mode, replaced) => {
+    const pending = deferred<unknown>();
+    mocks.capture.mockReturnValueOnce(pending.promise);
+    const hook = renderHook(() => useScrape());
+    let completion!: Promise<unknown>;
+    act(() => {
+      completion = hook.result.current.captureActiveTab({ mode });
+    });
+    await waitFor(() => expect(mocks.capture).toHaveBeenCalledOnce());
+    await act(async () => {
+      if (replaced) {
+        mocks.tab.documentId = 'document-b';
+        mocks.tab.pageKey = 'page-b';
+      }
+      pending.reject(new Error('Capture connection interrupted'));
+      await completion;
+    });
+    if (replaced) {
+      expect(useScrapeStore.getState().error).toBeNull();
+    } else {
+      expect(useScrapeStore.getState().error?.rawMessage).toContain(
+        'Capture connection interrupted',
+      );
+    }
+  },
+);

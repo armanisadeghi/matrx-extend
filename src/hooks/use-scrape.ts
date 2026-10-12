@@ -195,12 +195,10 @@ export function useScrape() {
       setActiveMode(mode);
       setError(null);
       setProgress(null);
-      let tabId: number | null = null;
-      let tabUrl: string | null = null;
+      const page = getActiveTabIdentitySnapshot();
+      const tabId = page.id;
+      const tabUrl = page.url;
       try {
-        const page = getActiveTabIdentitySnapshot();
-        tabId = page.id;
-        tabUrl = page.url;
         if (!page.id || !page.documentId || !page.pageKey) {
           setError(
             buildCaptureError({
@@ -257,7 +255,7 @@ export function useScrape() {
         );
         return null;
       } catch (err) {
-        if (run === captureSequenceRef.current)
+        if (run === captureSequenceRef.current && isCurrentPageIdentity(page.pageKey))
           setError(buildCaptureError({ err, url: tabUrl, tabId }));
         return null;
       } finally {
