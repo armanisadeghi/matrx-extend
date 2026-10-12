@@ -58,27 +58,25 @@ let instance: Api | null = null;
 
 function buildApi(
   credentials: NonNullable<CreateApiOptions['credentials']>,
-  refresh: boolean,
+  refreshCredentials: () => Promise<boolean>,
 ): Api {
   return createApi({
     credentials,
     resolveBaseUrl: () => currentBase || undefined,
     totalTimeoutMs: DEFAULT_TOTAL_TIMEOUT_MS,
     readyTimeoutMs: SESSION_READY_TIMEOUT_MS,
-    ...(refresh
-      ? {
-          refreshCredentials: async () => {
-            log.warn('api', '401 — refreshing & retrying');
-            return (await refreshAccessToken(sessionCredentials.lastBearer ?? undefined)) !== null;
-          },
-        }
-      : {}),
+    refreshCredentials,
     onRequest: (info) => log.info('api', `→ ${info.method} ${info.url}`),
   });
 }
 
+const refreshSession = async (): Promise<boolean> => {
+  log.warn('api', '401 — refreshing & retrying');
+  return (await refreshAccessToken(sessionCredentials.lastBearer ?? undefined)) !== null;
+};
+
 export function getMatrxApi(): Api {
-  instance ??= buildApi(sessionCredentials, true);
+  instance ??= buildApi(sessionCredentials, refreshSession);
   return instance;
 }
 
@@ -100,7 +98,18 @@ async function pinnedApi(expected: {
     if (after !== token) continue;
     if (verified?.id !== expected.userId || org !== expected.organizationId) return null;
     sessionCredentials.lastBearer = token;
-    return buildApi({ kind: 'user', accessToken: token }, false);
+    // The pin survives a 401 refresh: the retry happens only if the SAME person and
+    // organization still own the fresh bearer; the port then serves that bearer.
+    let bearer = token;
+    return buildApi({ get: async () => ({ kind: 'user', accessToken: bearer }) }, async () => {
+      if (!(await refreshAccessToken(bearer))) return false;
+      const [current, orgNow] = await Promise.all([getAccessToken(), getActiveOrganizationId()]);
+      if (!current || orgNow !== expected.organizationId) return false;
+      if ((await getVerifiedCurrentUser(current))?.id !== expected.userId) return false;
+      bearer = current;
+      sessionCredentials.lastBearer = current;
+      return true;
+    });
   }
   return null;
 }

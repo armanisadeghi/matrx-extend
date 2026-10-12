@@ -6,11 +6,13 @@ const state = vi.hoisted(() => ({
   userId: '00000000-0000-4000-8000-000000000001',
   verified: null as Promise<void> | null,
   verificationStarted: null as (() => void) | null,
+  refresh: null as null | ((rejected?: string) => Promise<string | null>),
 }));
 
 vi.mock('@/config/backend', () => ({ getBackendUrl: async () => 'https://example.invalid' }));
 vi.mock('@/lib/auth/flow', () => ({
   getAccessToken: async () => state.token,
+  getStoredAccessToken: async () => state.token,
   describeStoredSession: async () => ({
     hasAccessToken: false,
     expiresInMs: null,
@@ -18,7 +20,7 @@ vi.mock('@/lib/auth/flow', () => ({
     hasOauthClientId: true,
   }),
   getCurrentUser: async () => ({ id: state.userId }),
-  refreshAccessToken: async () => null,
+  refreshAccessToken: async (rejected?: string) => (state.refresh ? state.refresh(rejected) : null),
   getVerifiedCurrentUser: async () => {
     state.verificationStarted?.();
     await state.verified;
@@ -49,6 +51,18 @@ vi.mock('@/lib/debug/log', () => ({
 vi.mock('@/lib/messaging/native', () => ({ broadcast: vi.fn() }));
 
 import { STATUS_EXPECTED_ACTOR_MISMATCH, apiPost } from './client';
+import { runOp } from './matrx-api';
+
+const pinnedOp = {
+  m: 'POST',
+  p: '/api/vault/items',
+  d: 'aidream',
+  a: 'user',
+  o: 'required',
+  n: 'test.pinned',
+} as const;
+const pinnedCall = () =>
+  runOp((api, o) => api.call(pinnedOp, { body: {} }, o), { expectedActor: actor, silent: true });
 
 const actor = {
   userId: '00000000-0000-4000-8000-000000000001',
@@ -81,6 +95,52 @@ describe('expectedActor transport binding', () => {
       Object.keys(headers).filter((name) => name.toLowerCase() === 'x-organization-id'),
     ).toHaveLength(1);
     expect(headers.ACCEPT).toBe('text/plain');
+  });
+
+  it('a 401 on a pinned call refreshes once, retries once with the fresh bearer, and a second 401 surfaces', async () => {
+    const json = { 'content-type': 'application/json' };
+    const refresh = vi.fn(async () => {
+      state.token = 'token-fresh';
+      return 'token-fresh';
+    });
+    state.refresh = refresh;
+    const seen: string[] = [];
+    const fetchMock = vi.fn(async (_url: string, init: RequestInit) => {
+      const auth = (init.headers as Record<string, string>).Authorization as string;
+      seen.push(auth);
+      return auth === 'Bearer token-fresh'
+        ? new Response('{"ok":true}', { headers: json })
+        : new Response('{"detail":"expired"}', { status: 401, headers: json });
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    await expect(pinnedCall()).resolves.toMatchObject({ ok: true });
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(seen).toEqual(['Bearer token-a', 'Bearer token-fresh']);
+
+    // A second 401 is never retried again: it surfaces as the sign-in error.
+    refresh.mockClear();
+    state.token = 'token-a';
+    const always401 = vi.fn(async () => new Response('{"detail":"expired"}', { status: 401, headers: json }));
+    vi.stubGlobal('fetch', always401);
+    await expect(pinnedCall()).resolves.toMatchObject({ ok: false, status: 401 });
+    expect(refresh).toHaveBeenCalledTimes(1);
+    expect(always401).toHaveBeenCalledTimes(2);
+
+    // The pin still holds after a refresh: if the refreshed identity differs, no retry is sent.
+    refresh.mockClear();
+    state.token = 'token-a';
+    state.refresh = async () => {
+      state.token = 'token-other';
+      state.organizationId = '00000000-0000-4000-8000-000000000003';
+      return 'token-other';
+    };
+    const pinBroken = vi.fn(async () => new Response('{"detail":"expired"}', { status: 401, headers: json }));
+    vi.stubGlobal('fetch', pinBroken);
+    await expect(pinnedCall()).resolves.toMatchObject({ ok: false, status: 401 });
+    expect(pinBroken).toHaveBeenCalledTimes(1);
+    state.refresh = null;
+    state.token = 'token-a';
+    state.organizationId = actor.organizationId;
   });
 
   it('does not dispatch when identity context changes during bearer verification', async () => {
