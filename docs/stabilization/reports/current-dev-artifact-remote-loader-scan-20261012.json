@@ -10,7 +10,7 @@
   "run_attempt": 1,
   "artifact_id": 11771632770,
   "source_sha": "0c4ecdce25ff06dbc25db72f277cce75bb9c6a2b",
-  "source_claim": "current_pushed_source",
+  "source_claim": "current_pushed_source_at_observed_at_utc; later main commits require a new artifact",
   "version": "0.2.509",
   "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
   "github_artifact_digest": "sha256:b28f21373d429475b359b6d6bf8543e13414d24a8a2c749905692a707269753d",
