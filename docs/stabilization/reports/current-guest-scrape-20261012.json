@@ -2,7 +2,7 @@
   "schema_version": 1,
   "feature_id": "EXT-F-1007",
   "status": "unverified",
-  "scope": "Five guarded native guest Scrape attempts on the exact imported CI development artifact, testing controlled Capture, tab results, navigation clearing, extension reload, and post-reload controls.",
+  "scope": "Six guarded native guest Scrape attempts on the exact imported CI development artifact, testing controlled Capture, tab results, navigation clearing, extension reload, and post-reload controls.",
   "artifact": {
     "source_sha": "5ae9d47eaaf7df5cb33699bf0956c8ab9e6f328e",
     "ci_run_id": 38279845563,
@@ -68,13 +68,24 @@
       "pointer_evidence": "Before selecting Copy article Plain text, the unique enabled 218.5x49.1 target was stable and all nine interior hit points struck it. The driver refused a running ancestor animation categorized as transform or visibility/hit affecting. Five earlier copy options completed. The newly added closed-dialog diagnostic did not fire because this attempt stopped at the pointer gate before teardown.",
       "raw_report_sha256": "a9ad46b2c241e02c0e786d87ef699b399acdc87ce3728395bfeb0f98cca60cea",
       "resource_journal": "docs/stabilization/resource-journals/scrape-guest-popover-diagnostic-20261012.jsonl"
+    },
+    {
+      "resource_run_id": "scrape-guest-animation-timeline-20261012",
+      "resource_decision": "child_failed",
+      "resource_invalid": false,
+      "driver_status": "unverified",
+      "failure_stage": "post_reload_copy_menus",
+      "failure_code": "pointer_stable_hit_not_observed",
+      "pointer_evidence": "Before selecting Copy article Plain text, the unique enabled stable target had all nine interior hits on itself. The open bottom-side ancestor animation remained pending with currentTime 0, null startTime, one 150ms iteration and progress 0 from sampledAt 6197ms to 9210ms, while document timeline advanced 6191ms to 9207ms and panel remained visible/focused. The pointer guard refused the hit-affecting transform/visibility animation; no click was sent. The closed-dialog diagnostic again did not fire.",
+      "raw_report_sha256": "896c72068e2faad0a283fc28371b87c7512a9772b035c39e22f408d6800cc0cc",
+      "resource_journal": "docs/stabilization/resource-journals/scrape-guest-animation-timeline-20261012.jsonl"
     }
   ],
   "bounded_observations": {
-    "all_runs": "T20 navigation clearing and full extension reload/replacement-panel lifecycle passed in all five runs. T07 scroll sync passed warm and after reload in all five reports. T09 copy menus passed warm, after navigation and after reload in the second and third reports; the first report reached a partial after-navigation copy matrix, while the fourth and fifth reached five completed post-reload copy options before distinct driver stops. T01 and T08/T10-T14 remain partial.",
+    "all_runs": "T20 navigation clearing and full extension reload/replacement-panel lifecycle passed in all six runs. T07 scroll sync passed warm and after reload in all six reports. T09 copy menus passed warm, after navigation and after reload in the second and third reports; the first report reached a partial after-navigation copy matrix, while the fourth through sixth reached five completed post-reload copy options before distinct driver stops. T01 and T08/T10-T14 remain partial.",
     "not_established": "The remaining post-reload export and pane checks, member/admin modes, exact Store ZIP or Store-installed behavior, and full Scrape health."
   },
-  "independent_triage": "Fresh case-level review confirmed the first failure occurred while opening a later copy-menu option; post-reload scroll and copy cases passed before the second and third failures. The third run has a real dialog hit-test occlusion. The fourth narrows the stop to a connected closed popover following Copy article Plain text; its owner remains unverified. The fifth stopped earlier on a transient or persistent ancestor animation and did not exercise the new portal diagnostic. None proves a product Scrape behavior defect or full feature health.",
-  "next_discriminating_step": "Diagnose why a hit-affecting ancestor animation remains running while the option target is otherwise stable; isolate it from the closed-dialog failure before another heavy rerun. Do not click through an occluder or relax the pointer safety gate. If a closed dialog recurs, use the new bounded rendering diagnostic to determine its owner and pointer impact.",
+  "independent_triage": "Fresh case-level review confirmed the first failure occurred while opening a later copy-menu option; post-reload scroll and copy cases passed before the second and third failures. The third run has a real dialog hit-test occlusion. The fourth narrows the stop to a connected closed popover following Copy article Plain text; its owner remains unverified. The fifth stopped earlier on an ancestor animation; the sixth proves a pending, zero-progress 150ms animation despite three seconds of advancing document time and a visible focused panel. Neither later run exercised the closed-dialog diagnostic. None proves full feature health.",
+  "next_discriminating_step": "Do not repeat headed Mac runs while the Mac is locked: the pending zero-progress animation may be a suspended renderer/compositor, not a product defect. After the display is unlocked, rerun once with the same guarded exact artifact and compare animation readiness plus closed-dialog rendering. No source-supported product animation fix or pointer-gate relaxation is justified yet; if the issue recurs unlocked, isolate the shared popover or Chrome lifecycle before changing behavior.",
   "raw_page_content_or_auth_values_included": false
 }

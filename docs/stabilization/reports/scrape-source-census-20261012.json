@@ -1,0 +1,93 @@
+{
+  "task": "scrape-source-census-20261012",
+  "feature_id": "EXT-F-1007",
+  "scope": "Scrape tab source controls, nested flows, errors, identity and reload states",
+  "source_sha": "a0eab7dcad7dc61098bb64d1f82cab8493be116a",
+  "result": "no-new-source-controls; feature-test-procedure-gap",
+  "source_mapping": [
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:66-189,202-252,392-528",
+      "controls": ["EXT-F-1007-C01", "EXT-F-1007-C02", "EXT-F-1007-C03", "EXT-F-1007-C14", "EXT-F-1007-C15", "EXT-F-1007-C16", "EXT-F-1007-C17", "EXT-F-1007-C18", "EXT-F-1007-C19", "EXT-F-1007-C20", "EXT-F-1007-C21", "EXT-F-1007-C27", "EXT-F-1007-C28", "EXT-F-1007-C32", "EXT-F-1007-C34", "EXT-F-1007-C37", "EXT-F-1007-C39"],
+      "cases": ["EXT-F-1007-T01", "EXT-F-1007-T02", "EXT-F-1007-T03", "EXT-F-1007-T14", "EXT-F-1007-T15", "EXT-F-1007-T16", "EXT-F-1007-T17", "EXT-F-1007-T18", "EXT-F-1007-T19", "EXT-F-1007-T20", "EXT-F-1007-T21", "EXT-F-1007-T26", "EXT-F-1007-T27", "EXT-F-1007-T30", "EXT-F-1007-T32", "EXT-F-1007-T37", "EXT-F-1007-T40"],
+      "behavior": "Header identity retry, stale-capture warning, highlight handoff, Source recognition/lookup messages, diagnose launch and result, and error recovery are rendered adjacent to the main capture controls. Fast/deep capture use the guarded recapture flow; current capture state gates Save and result access. Each behavior maps to an existing control and case."
+    },
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:418-419,453-502,530-811,813-824,827-959",
+      "controls": ["EXT-F-1007-C01", "EXT-F-1007-C02", "EXT-F-1007-C03", "EXT-F-1007-C04", "EXT-F-1007-C05", "EXT-F-1007-C06", "EXT-F-1007-C07", "EXT-F-1007-C08", "EXT-F-1007-C09", "EXT-F-1007-C10", "EXT-F-1007-C11", "EXT-F-1007-C12", "EXT-F-1007-C13", "EXT-F-1007-C19", "EXT-F-1007-C21", "EXT-F-1007-C25", "EXT-F-1007-C28", "EXT-F-1007-C29", "EXT-F-1007-C32", "EXT-F-1007-C33", "EXT-F-1007-C35", "EXT-F-1007-C38"],
+      "cases": ["EXT-F-1007-T01", "EXT-F-1007-T02", "EXT-F-1007-T03", "EXT-F-1007-T04", "EXT-F-1007-T05", "EXT-F-1007-T06", "EXT-F-1007-T07", "EXT-F-1007-T08", "EXT-F-1007-T09", "EXT-F-1007-T10", "EXT-F-1007-T11", "EXT-F-1007-T12", "EXT-F-1007-T13", "EXT-F-1007-T19", "EXT-F-1007-T21", "EXT-F-1007-T24", "EXT-F-1007-T27", "EXT-F-1007-T28", "EXT-F-1007-T29", "EXT-F-1007-T30", "EXT-F-1007-T31", "EXT-F-1007-T33", "EXT-F-1007-T34", "EXT-F-1007-T40"],
+      "behavior": "Capture header/export, not-yet-a-Source and recognized-Source banners, six result tabs, article edit/apply/cancel and scroll sync, per-section copy menus, media/link row actions, empty state, Save form entry, save-success actions, inline rename retry, File elsewhere, and unsaved-edits confirmation all have existing control/case mappings."
+    },
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:963-1163",
+      "controls": ["EXT-F-1007-C09", "EXT-F-1007-C10", "EXT-F-1007-C11", "EXT-F-1007-C12", "EXT-F-1007-C13"],
+      "cases": ["EXT-F-1007-T09", "EXT-F-1007-T10", "EXT-F-1007-T11", "EXT-F-1007-T12", "EXT-F-1007-T13"],
+      "behavior": "Image size tiers expose open/copy/remove affordances as applicable; AddItemRow controls expose draft inputs, Add validation, and Cancel for image, video and link rows. No additional control is missing from inventory."
+    },
+    {
+      "source": "src/features/scrape/ScrapeView.tsx:1165-1247",
+      "controls": ["EXT-F-1007-C14", "EXT-F-1007-C15"],
+      "cases": ["EXT-F-1007-T14", "EXT-F-1007-T15"],
+      "behavior": "Capture error card renders Dismiss and offered Reload page/Try again actions. Diagnostics disclosure is conditionally rendered for admin only; the existing case includes guest/member negative visibility checks."
+    },
+    {
+      "source": "src/features/scrape/DiagnoseCard.tsx:25-160,170-239",
+      "controls": ["EXT-F-1007-C16", "EXT-F-1007-C17", "EXT-F-1007-C37"],
+      "cases": ["EXT-F-1007-T16", "EXT-F-1007-T17", "EXT-F-1007-T37", "EXT-F-1007-T38", "EXT-F-1007-T39"],
+      "behavior": "Missing/Unwanted mode selection, picker launch, diagnosis note, expandable selectors/HTML, copy variants, dismissal, picker launch failure with Retry picker/Dismiss are registered."
+    },
+    {
+      "source": "src/features/scrape/SaveSourceForm.tsx:246-501",
+      "controls": ["EXT-F-1007-C04", "EXT-F-1007-C29", "EXT-F-1007-C30", "EXT-F-1007-C31", "EXT-F-1007-C36"],
+      "cases": ["EXT-F-1007-T04", "EXT-F-1007-T21", "EXT-F-1007-T22", "EXT-F-1007-T24", "EXT-F-1007-T29", "EXT-F-1007-T35", "EXT-F-1007-T36"],
+      "behavior": "Native Save Source dialog exposes name and URL, close/Escape, optional place type and search-all controls, staged destination removal, optional Library including No Library, create-place flow and Save Source submission. The existing cases cover destination choices, cancellation, create, and role-specific behavior."
+    },
+    {
+      "source": "src/features/scrape/FileSourcePanel.tsx:89-389",
+      "controls": ["EXT-F-1007-C31", "EXT-F-1007-C38"],
+      "cases": ["EXT-F-1007-T29"],
+      "behavior": "File elsewhere exposes existing Source destination selection, optional Library, and close. This is already covered as part of destination filing."
+    },
+    {
+      "source": "src/features/scrape/UnsavedCapturesCard.tsx:19-145",
+      "controls": ["EXT-F-1007-C04", "EXT-F-1007-C22", "EXT-F-1007-C23", "EXT-F-1007-C24", "EXT-F-1007-C26", "EXT-F-1007-C33"],
+      "cases": ["EXT-F-1007-T22", "EXT-F-1007-T23", "EXT-F-1007-T25", "EXT-F-1007-T31"],
+      "behavior": "Device-local refused captures display their reason and expose Retry save and confirmed Discard. Retry preserves the item on refusal and informs Scrape on landing; the URL ownership rule suppresses duplicate Save."
+    }
+  ],
+  "documentation_comparison": {
+    "source": "docs/feature-tests.md:868-874,875-885,887-935,964-992",
+    "covered_procedures": [
+      "Guest fast/deep capture, busy state, six tabs, navigation stale-state and restricted-page dismissal",
+      "Save Source and unsaved capture retry/discard/reload, destination and Library selection, recognized Source and organization behavior",
+      "Diagnose Missing/Unwanted picker, copy actions, picker launch refusal and document transition",
+      "Inline SVG figure preservation, caption/HTML-label order and unavailable fallbacks"
+    ],
+    "gaps": [
+      {
+        "missing_procedure": "A single explicit manual procedure for Article edit/apply/cancel and live-page scroll sync, per-pane copy menus, image open/remove/add, and video and link open/copy/remove/add.",
+        "controls": ["EXT-F-1007-C05", "EXT-F-1007-C06", "EXT-F-1007-C07", "EXT-F-1007-C09", "EXT-F-1007-C10", "EXT-F-1007-C11", "EXT-F-1007-C12", "EXT-F-1007-C13"],
+        "cases": ["EXT-F-1007-T05", "EXT-F-1007-T06", "EXT-F-1007-T07", "EXT-F-1007-T09", "EXT-F-1007-T10", "EXT-F-1007-T11", "EXT-F-1007-T12", "EXT-F-1007-T13"],
+        "modes": ["guest", "member", "admin"],
+        "evidence": "These controls are registered in inventory.json with procedures, but the Scrape-focused feature-test sections do not provide a corresponding human walkthrough."
+      },
+      {
+        "missing_procedure": "An explicit guest/member/admin walkthrough for capture error actions and the admin-only Diagnostics disclosure's negative visibility in guest/member modes.",
+        "controls": ["EXT-F-1007-C14", "EXT-F-1007-C15"],
+        "cases": ["EXT-F-1007-T14", "EXT-F-1007-T15"],
+        "modes": ["guest", "member", "admin"],
+        "evidence": "Feature-tests mentions restricted-page Dismiss and some picker/save recovery, while the full recoverable/nonrecoverable action set and role visibility check are only in the inventory procedures."
+      }
+    ]
+  },
+  "inventory_decision": "No new controls, entry points, or cases found. The source control census maps to existing EXT-F-1007 controls/cases. The documented procedure gaps above affect human walkthrough completeness only; no inventory status or product verdict is inferred.",
+  "feature_cells": {
+    "guest": "Applicable; source census does not change the existing inventory cell or its evidence status.",
+    "member": "Applicable; source census does not change the existing inventory cell or its evidence status.",
+    "admin": "Applicable; source census does not change the existing inventory cell or its evidence status."
+  },
+  "limitations": [
+    "Source inspection only; no browser was launched and no product behavior was observed.",
+    "Case IDs and applicable modes are existing inventory declarations; this report does not claim those cases passed.",
+    "The prior-save lookup and organization/error states are documented as controls but remain runtime-unverified wherever inventory evidence says so."
+  ]
+}
