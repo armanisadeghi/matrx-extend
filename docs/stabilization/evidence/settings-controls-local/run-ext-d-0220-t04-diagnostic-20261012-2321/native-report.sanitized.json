@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0220-t04-diagnostic-20261012-2321",
+  "defect_id": "EXT-D-0220",
+  "case_id": "EXT-F-1003-T04",
+  "purpose": "Capture the reviewed inner baseline-restoration diagnostic after the earlier restore_baseline_select failure.",
+  "result": "zero_credit_setup_failure",
+  "product_observation": "none",
+  "browser_launched": false,
+  "ui_interactions": 0,
+  "failure_stage": "local_dev_build_receipt_refused",
+  "failure_boundary": "The acceptance runner rejected the supplied receipt before browser_runtime/profile preparation; no product or theme state was observed.",
+  "resource": {
+    "first_preflight": {
+      "run_id": "ext-d-0220-t04-diagnostic-20261012-01",
+      "decision": "refused",
+      "reason": "RESOURCE_MEASUREMENT_FAILED: profile directory did not exist",
+      "browser_launched": false
+    },
+    "corrected_preflight": {
+      "run_id": "ext-d-0220-t04-diagnostic-20261012-2320-check",
+      "decision": "valid",
+      "admitted": true,
+      "resource_invalid": false,
+      "profile_volume": "system temporary directory used by the native harness"
+    },
+    "native_child": {
+      "run_id": "ext-d-0220-t04-diagnostic-20261012-2321",
+      "decision": "child_failed",
+      "admitted": true,
+      "resource_invalid": false,
+      "child_exit_code": 1,
+      "cleanup": "No owned Chrome or acceptance process remained; heavy lease was absent after finalization."
+    }
+  },
+  "artifact": {
+    "ci_run_id": 38320662877,
+    "ci_attempt": 1,
+    "ci_conclusion": "success",
+    "source_sha": "62ba4838655b48502388b8f1813686f3545fb71b",
+    "artifact_id": 11778284430,
+    "artifact_digest": "sha256:7a121694e4bcf8ab61b7256367c476bdf3442e903c913bac86238dce73dcfc6b",
+    "import_status": "current_pushed_source",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "promotion": "promoted through scripts/promote-ci-dev-artifact.mjs; no local build"
+  },
+  "diagnostic_sources": {
+    "implementation": "ac4f5b565e977a9c0a49a6baec0d723fd6abd5ba",
+    "review": "e59d7ec9e1b61d482b5f3e713e2571dfc6e9bcda"
+  },
+  "runtime": {
+    "playwright_version": "1.62.1",
+    "chrome_for_testing_version_resolved_before_run": "151.0.7922.34",
+    "chrome_launch_observed": false
+  },
+  "receipt_mismatch": {
+    "provided": "CI promotion receipt",
+    "required": "Imported artifact local-dev-receipt.json",
+    "effect": "Runner provenance check rejected setup before Chrome launch."
+  },
+  "verdict": {
+    "t04": "unverified by this run; zero product credit",
+    "existing_product_status_changed": false,
+    "fullExtensionReload_baselineRestoration": "not reached; no new inner-stage diagnostic captured"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-local/run-ext-d-0220-t04-diagnostic-20261012-2321/ext-d-0220-t04-diagnostic-20261012-01.sanitized.jsonl",
+    "docs/stabilization/evidence/settings-controls-local/run-ext-d-0220-t04-diagnostic-20261012-2321/ext-d-0220-t04-diagnostic-20261012-2320-check.sanitized.jsonl",
+    "docs/stabilization/evidence/settings-controls-local/run-ext-d-0220-t04-diagnostic-20261012-2321/ext-d-0220-t04-diagnostic-20261012-2321.sanitized.jsonl"
+  ],
+  "next_operation": "After a fresh exact-main artifact and guarded admission, rerun the full Settings controls runner with SETTINGS_DEV_BUILD_RECEIPT pointing to the imported artifact's local-dev-receipt.json, not ci-dev-promotion-receipt.json; then capture fullExtensionReload.baselineRestoration.stage and its allowlisted error/boolean observation."
+}
