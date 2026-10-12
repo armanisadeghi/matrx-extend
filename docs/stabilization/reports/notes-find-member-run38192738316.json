@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-find-member-run38192738316",
+  "recorded_at": "2026-10-12T01:50:47.336Z",
+  "status": "diagnostic-callback-failure-product-unverified",
+  "run": {
+    "id": 38192738316,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38192738316",
+    "conclusion": "failure",
+    "acceptance_lane": "A",
+    "acceptance_case": "notes-find-member",
+    "startup_display_mode": "notes-cdp",
+    "workflow_head_sha": "b68ba9eb597c88cbbed143fdf7ddf529f677eb58",
+    "tested_artifact_source_sha": "b92d4e2fa9e7861b228e3625fe258938253882fe",
+    "development_ci_run_id": 38191947214,
+    "development_artifact_id": 11721887256,
+    "development_artifact_digest": "sha256:ee70575a63c4aa553cb5ef45faf1401027cc2a1ace93c0d6aaf3812eed501626",
+    "version": "0.2.509",
+    "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "sanitized_artifact": {
+      "id": 11721878720,
+      "name": "hosted-guest-38192738316-1",
+      "digest": "sha256:c6e88f904119a5cbfb2ea0f92c615f59b43e6310086d5fd0c4e2a1056490d5a1"
+    }
+  },
+  "dispatch_preflight": {
+    "exact_source_ci_success": true,
+    "artifact_provenance_verified": true,
+    "reviewed_workflow_sha256": "bf120de2e84356722122829790a52deeefb2177f3a87b93181368b2fdeb1910e",
+    "source_delta": "Dispatch main advanced only with documentation beyond green CI source; checked immediately before dispatch and source stable after secret stage.",
+    "all_hosted_browser_lanes_idle": true,
+    "shared_fixture_conflict_observed": false,
+    "temporary_secret_absent_before_stage": true,
+    "identity": {
+      "platform_nonadmin": true,
+      "current_organization_membership": true,
+      "organization_role": "owner",
+      "role_changes": false
+    },
+    "runtime_mode": "Existing notes-cdp mode enables Notes hosted-find lane A callback configured for15000ms read-only post-timeout observation; original startup limits/guards/retries unchanged."
+  },
+  "startup": {
+    "cdp": {
+      "schema": 1,
+      "outcome": "connected",
+      "phases": [
+        {
+          "phase": "endpoint_read",
+          "elapsedMs": 4050
+        },
+        {
+          "phase": "owner_check_started",
+          "elapsedMs": 4052
+        },
+        {
+          "phase": "owner_verified",
+          "elapsedMs": 4143
+        },
+        {
+          "phase": "socket_constructed",
+          "elapsedMs": 4157
+        },
+        {
+          "phase": "probe_tcp_connected",
+          "elapsedMs": 4168
+        },
+        {
+          "phase": "socket_open",
+          "elapsedMs": 8499
+        },
+        {
+          "phase": "connector_settled",
+          "elapsedMs": 8500
+        }
+      ],
+      "longestTimerDelayMs": 423,
+      "timerSamples": 47,
+      "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+    },
+    "bounded_failure": {
+      "failureCode": "unclassified",
+      "elapsedMs": 8621,
+      "exitCode": null,
+      "signalCode": null,
+      "launchFailed": false,
+      "spawnObserved": true,
+      "stderrFlags": {
+        "hadStderr": true,
+        "codeSignature": false,
+        "dynamicLoader": false,
+        "permissionDenied": false,
+        "sandbox": true,
+        "crash": false,
+        "devtoolsListening": true
+      }
+    },
+    "interpretation": "CDP connection succeeded at8500ms: endpoint read4050ms, owner verified4143ms, socket constructed4157ms, probe TCP connected4168ms, socket open8499ms. Total exceeds8s because endpoint discovery and socket opening have distinct unchanged deadlines; no endpoint timeout was emitted.",
+    "http_status": "No independent HTTP status event before successful connector settlement; TCP probe connectivity alone is recorded.",
+    "timer": "Longest timer delay423ms across47 samples; this does not identify a startup failure cause."
+  },
+  "first_failure": {
+    "reported_stage": "native_cdp_connect",
+    "native_code": "stage_operation_failed",
+    "native_category": "operation_failed",
+    "bounded_startup_code": "unclassified",
+    "source_proven_category": "notes_endpoint_observation_phase_refused",
+    "source_contract": "At run source the harness invokes onStartupEndpointObservation with phase cdp_connected immediately after successful connection. The Notes callback initializes startup_endpoint=[], then safeNotesEndpointObservation rejects every phase except cdp_timeout or post_timeout. Its throw is caught by the same startup catch and forwarded unchanged, before the next endpoint_read stage or sign-in.",
+    "reproduction": {
+      "command": "node --input-type=module -e \"import {safeNotesEndpointObservation as observe} from './tests/browser/notes-startup-diagnostic.mjs'; observe({phase:'cdp_connected',endpointPresent:true,inspectionFailed:false,exitObserved:false,elapsedMs:8500,polls:0});\"",
+      "observed_fixed_error_category": "notes_endpoint_observation_phase_refused",
+      "performed": true,
+      "source_edited": false
+    },
+    "limits": "The native receipt intentionally omits exception text; exact subtype is inferred from the observed successful connection, empty initialized callback array, deterministic source path and direct sanitizer reproduction. No product behavior failure is inferred."
+  },
+  "post_timeout_observation": {
+    "enabled": true,
+    "configured_window_ms": 15000,
+    "natural_endpoint_timeout": false,
+    "fired": false,
+    "classifications": [],
+    "reason": "Successful connection entered the success callback and failed its phase sanitizer. The endpoint-timeout-only15s branch was never reached; no late endpoint/child-exit verdict is available."
+  },
+  "resource_finals": {
+    "package": {
+      "schema": 1,
+      "at": "2026-10-12T01:42:28.359Z",
+      "runId": "hosted-package-38192738316-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "browser": {
+      "schema": 1,
+      "at": "2026-10-12T01:46:18.242Z",
+      "runId": "hosted-browser-38192738316-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "guest": {
+      "schema": 1,
+      "at": "2026-10-12T01:48:32.051Z",
+      "runId": "hosted-guest-38192738316-1",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "resource_timeline": "Acceptance admitted01:47:59.435Z busy0.01/load2.28 on4 CPUs; CPU pending01:48:15.669Z busy0.86/load1.21. CDP CPU bracket01:48:20.726–01:48:29.365Z. Next pending sample01:48:31.842Z healthy busy0.29/load7.98; child exit1 at01:48:31.883Z before three healthy watches; guest invalid01:48:32.051Z exit3. Browser preparation had a separate CPU episode which recovered and finalized valid.",
+  "cpu_limits": "Existing-process snapshot totals otherHost18.36s/provisioner0.82s/ownedOther0.34s bracket startup; newly appeared Chromium is recorded separately. ownedChromium0 excludes new processes. These are not iostat interval allocations or evidence that host CPU caused the deterministic callback rejection.",
+  "native_fixture_boundary": {
+    "authentication": "Not reached",
+    "notes_ui": "Not reached",
+    "owned_home_creation": "Not reached",
+    "owned_note_creation": "Not reached",
+    "original_t02_assertions": "Not reached",
+    "fixture_ledger": "Not started; runNotesFindAcceptance is after sign-in, and hosted artifact contains only native receipt plus3 resource journals.",
+    "fixture_cleanup_required": false,
+    "fixture_repair_live_verdict": "Unverified"
+  },
+  "credential_cleanup": {
+    "fresh_one_use_link": true,
+    "earlier_links_reused": false,
+    "local_link_removed_before_dispatch": true,
+    "temporary_repository_secret_deleted_immediately_at_terminal": true,
+    "secret_name_match_count": 0,
+    "local_link_absent": true,
+    "local_identity_absent": true,
+    "credential_values_persisted": false
+  },
+  "product_verdict": {
+    "case_id": "EXT-F-2006-T02",
+    "status": "unverified",
+    "credit": 0,
+    "reason": "Diagnostic callback stopped startup before UI and guest resource final invalid. No original Notes assertion completed."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/notes-find-member/run38192738316/native-receipt.json",
+    "docs/stabilization/evidence/notes-find-member/run38192738316/startup-diagnostics.json",
+    "docs/stabilization/evidence/notes-find-member/run38192738316/resource-events.json"
+  ],
+  "sanitization": "Extension directory removed; journal paths omitted. Bounded startup labels/timings, numeric host metrics, process basenames and artifact provenance retained. No endpoint URLs/ports, auth values, raw exception text, private identity or fixture payload persisted.",
+  "next": "Fresh independent review; repair the diagnostic success-phase contract with a real-callsite forcing guard before any separately authorized future attempt. No source edit, second browser run or retry performed here. Original startup-timeout cause and live fixture/product behavior remain unresolved."
+}

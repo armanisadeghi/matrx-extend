@@ -47,7 +47,7 @@ export function notesEndpointObservationEnabled(env) {
 }
 
 export function safeNotesEndpointObservation(value) {
-  if (!['cdp_timeout', 'post_timeout'].includes(value?.phase))
+  if (!['cdp_connected', 'cdp_timeout', 'post_timeout'].includes(value?.phase))
     throw new Error('notes_endpoint_observation_phase_refused');
   for (const key of ['endpointPresent', 'inspectionFailed', 'exitObserved'])
     if (typeof value[key] !== 'boolean')
@@ -56,15 +56,17 @@ export function safeNotesEndpointObservation(value) {
     if (!Number.isSafeInteger(value[key]) || value[key] < 0)
       throw new Error('notes_endpoint_observation_shape_refused');
   const outcome =
-    value.phase === 'cdp_timeout'
-      ? 'timed_out'
-      : value.inspectionFailed
-        ? 'inspection_failed'
-        : value.endpointPresent
-          ? 'late_endpoint'
-          : value.exitObserved
-            ? 'child_exited'
-            : 'still_absent';
+    value.phase === 'cdp_connected'
+      ? 'connected'
+      : value.phase === 'cdp_timeout'
+        ? 'timed_out'
+        : value.inspectionFailed
+          ? 'inspection_failed'
+          : value.endpointPresent
+            ? 'late_endpoint'
+            : value.exitObserved
+              ? 'child_exited'
+              : 'still_absent';
   return {
     phase: value.phase,
     outcome,

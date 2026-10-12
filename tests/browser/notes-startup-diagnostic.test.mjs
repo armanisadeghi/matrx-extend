@@ -72,28 +72,41 @@ async function drive(failureAt, error, nativeStage = 'cdp_connect', diagnostic =
       browserCalls++;
       if (failureAt === 'native-real') return realNativeRunner(options);
       options.onStage?.(nativeStage);
-      if (diagnostic && failureAt === 'native') {
+      if (diagnostic && ['native', 'authentication'].includes(failureAt)) {
         assert.equal(options.startupEndpointObservationMs, 15_000);
-        for (const value of [
-          {
-            phase: 'cdp_timeout',
-            endpointPresent: false,
-            inspectionFailed: false,
-            exitObserved: false,
-            elapsedMs: 8006,
-            polls: 218,
-          },
-          {
-            phase: 'post_timeout',
-            endpointPresent: true,
-            inspectionFailed: false,
-            exitObserved: false,
-            elapsedMs: 1250,
-            polls: 13,
-            privatePath: '/owned/profile/DevToolsActivePort',
-            pid: 123,
-          },
-        ])
+        for (const value of failureAt === 'authentication'
+          ? [
+              {
+                phase: 'cdp_connected',
+                endpointPresent: true,
+                inspectionFailed: false,
+                exitObserved: false,
+                elapsedMs: 8500,
+                polls: 0,
+                privatePath: '/owned/profile/DevToolsActivePort',
+                pid: 123,
+              },
+            ]
+          : [
+              {
+                phase: 'cdp_timeout',
+                endpointPresent: false,
+                inspectionFailed: false,
+                exitObserved: false,
+                elapsedMs: 8006,
+                polls: 218,
+              },
+              {
+                phase: 'post_timeout',
+                endpointPresent: true,
+                inspectionFailed: false,
+                exitObserved: false,
+                elapsedMs: 1250,
+                polls: 13,
+                privatePath: '/owned/profile/DevToolsActivePort',
+                pid: 123,
+              },
+            ])
           options.onStartupEndpointObservation(value);
       } else assert.equal(options.onStartupEndpointObservation, undefined);
       if (failureAt === 'authentication') return options.exercisePanel({});
@@ -173,6 +186,33 @@ test('authentication failures stay outside the startup diagnostic boundary', asy
   assert.equal(exitCode, 1);
 });
 
+test('connected CDP observation lets Notes reach sign-in without product credit', async () => {
+  const { persisted, exitCode, browserCalls } = await drive(
+    'authentication',
+    new Error('private authentication'),
+    'cdp_connect',
+    true,
+  );
+  assert.equal(browserCalls, 1);
+  assert.equal(exitCode, 1);
+  assert.equal(persisted.status, 'unverified');
+  assert.equal(persisted.failure_stage, 'real_signin');
+  assert.equal(persisted.observations.startup_failure, undefined);
+  assert.equal(persisted.observations.T02, undefined);
+  assert.deepEqual(persisted.observations.startup_endpoint, [
+    {
+      phase: 'cdp_connected',
+      outcome: 'connected',
+      endpointPresent: true,
+      inspectionFailed: false,
+      exitObserved: false,
+      elapsedMs: 8500,
+      polls: 0,
+    },
+  ]);
+  assert.doesNotMatch(JSON.stringify(persisted), /DevToolsActivePort|\/owned\/profile|"pid"/);
+});
+
 test('Notes A retains late endpoint evidence after the original timeout remains unverified', async () => {
   const original = new Error('owned_cdp_endpoint_timeout');
   const { persisted, exitCode } = await drive('native', original, 'cdp_connect', true);
@@ -209,6 +249,14 @@ test('post-timeout observation classifies exit and stall without private values'
     'inspection_failed',
   );
   assert.equal(Object.hasOwn(safeNotesEndpointObservation(base), 'pid'), false);
+  assert.throws(
+    () => safeNotesEndpointObservation({ ...base, phase: 'private' }),
+    /notes_endpoint_observation_phase_refused/,
+  );
+  assert.throws(
+    () => safeNotesEndpointObservation({ ...base, elapsedMs: 'private' }),
+    /notes_endpoint_observation_shape_refused/,
+  );
   assert.equal(
     notesEndpointObservationEnabled({
       NOTES_HOSTED_FIND: '1',

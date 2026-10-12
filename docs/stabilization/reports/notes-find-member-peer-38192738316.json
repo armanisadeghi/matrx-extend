@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-find-member-peer-38192738316",
+  "recorded_at": "2026-10-12T01:51:59Z",
+  "review_scope": "Independent review of hosted Notes A run evidence only. No browser run, retry, or implementation review performed.",
+  "run": {
+    "id": 38192738316,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38192738316",
+    "conclusion": "failure",
+    "head_sha": "b68ba9eb597c88cbbed143fdf7ddf529f677eb58",
+    "acceptance_case": "notes-find-member",
+    "lane": "A"
+  },
+  "verdicts": {
+    "A_product_acceptance": {
+      "verdict": "zero_credit_unverified",
+      "credit": 0,
+      "reason": "The native receipt records native_cdp_connect failure and empty startup endpoint observations. Authentication, Notes UI, owned-home/note creation, and the original T02 assertions were not reached. The guest resource journal also finalized invalid (child exit 1; resource exit 3)."
+    },
+    "B_evidence_integrity": {
+      "verdict": "credible_with_bounded_limits",
+      "reason": "GitHub run metadata confirms the hosted run id, failure conclusion, and workflow head SHA. GitHub artifact metadata independently confirms the upstream development artifact id/name/digest and sanitized guest artifact id/digest stated in the report. The checked-in evidence is internally consistent on startup phases, resource outcomes, and the unverified product boundary. The upstream artifact payload was not downloaded and independently rehashed during this review; payload identity is supported by its recorded source metadata and GitHub digest metadata."
+    }
+  },
+  "provenance_checks": {
+    "tested_artifact_source_sha": "b92d4e2fa9e7861b228e3625fe258938253882fe",
+    "development_run_id": 38191947214,
+    "development_artifact_id": 11721887256,
+    "development_artifact_name": "matrx-extend-development-test-b92d4e2fa9e7861b228e3625fe258938253882fe-38191947214-1",
+    "development_artifact_digest": "sha256:ee70575a63c4aa553cb5ef45faf1401027cc2a1ace93c0d6aaf3812eed501626",
+    "sanitized_guest_artifact_id": 11721878720,
+    "sanitized_guest_artifact_name": "hosted-guest-38192738316-1",
+    "sanitized_guest_artifact_digest": "sha256:c6e88f904119a5cbfb2ea0f92c615f59b43e6310086d5fd0c4e2a1056490d5a1",
+    "checks": "Hosted GitHub run API reports head b68ba9eb597c88cbbed143fdf7ddf529f677eb58 and failure. GitHub artifact APIs returned exact matching upstream and sanitized artifact ids, names, and SHA-256 digests. At tested artifact source b92d4e2fa9e7861b228e3625fe258938253882fe, notes safeNotesEndpointObservation accepts only cdp_timeout and post_timeout. The native harness calls the supplied observation callback with cdp_connected immediately after connectNativeStartupOwnedCdp resolves and connector settlement is recorded."
+  },
+  "failure_assessment": {
+    "startup_observation": "CDP connected: endpoint read 4050 ms; owner verified 4143 ms; socket constructed 4157 ms; TCP probe connected 4168 ms; WebSocket open 8499 ms; connector settled 8500 ms. There is no independent HTTP status event in the receipt.",
+    "immediate_cause": "High confidence: at the tested source commit the Notes sanitizer rejects cdp_connected, while the harness invokes the callback with that phase immediately after successful connection. This rejection is caught by the encompassing startup catch and surfaces as a native_cdp_connect operation failure before sign-in. The empty observations array is consistent with the callback throwing before it appends a sanitized observation.",
+    "cause_confidence": "High for the deterministic callback contract as the immediate cause, based on the exact tested source plus recorded connected phases and receipt. The receipt omits raw exception text and the callback reproduction stated in the primary report was not re-executed independently here, so the exact thrown subtype is not directly present in native evidence.",
+    "unresolved": "The run did not produce a natural CDP endpoint timeout; therefore it provides no post-timeout observation and cannot explain the separate/original startup-timeout concern. TCP reachability does not establish an HTTP status. No product behavior conclusion follows."
+  },
+  "resource_and_fixture_boundary": {
+    "package": "Valid, exit 0.",
+    "browser": "Valid, exit 0 after a CPU-pending interval and recovery.",
+    "guest": "Invalid, exit 3; guest child exited 1 shortly after a pending CPU sample. This invalidates the hosted guest evidence as an acceptance result, independently of the callback diagnosis.",
+    "fixture": "No sign-in or fixture ledger started; fixture cleanup was not required. The run offers no live Notes UI or persistence verdict."
+  },
+  "credential_cleanup": {
+    "assessment": "Primary report attests that the one-use link was removed before dispatch, the temporary repository secret was deleted at terminal state, secret-name count is zero, local link and identity are absent, and credential values were not persisted. This review found no contrary evidence in the sanitized native receipt. These cleanup claims cannot be independently proven from the three sanitized evidence files or artifact metadata alone."
+  },
+  "evidence_reviewed": [
+    "docs/stabilization/reports/notes-find-member-run38192738316.json",
+    "docs/stabilization/evidence/notes-find-member/run38192738316/native-receipt.json",
+    "docs/stabilization/evidence/notes-find-member/run38192738316/startup-diagnostics.json",
+    "docs/stabilization/evidence/notes-find-member/run38192738316/resource-events.json",
+    "GitHub run metadata for run 38192738316 and GitHub artifact metadata for artifacts 11721887256 and 11721878720",
+    "Tested-source callback and callsite at b92d4e2fa9e7861b228e3625fe258938253882fe"
+  ],
+  "review_actions": {
+    "browser_run_or_retry": false,
+    "implementation_review": false,
+    "source_edits": false,
+    "commit_or_push": false
+  }
+}

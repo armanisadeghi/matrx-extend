@@ -1,0 +1,54 @@
+{
+  "reviewed_at_utc": "2026-10-12T01:53:00Z",
+  "reviewer_lane": "notes_cdp_connected_fix_fresh_peer",
+  "scope": {
+    "files": [
+      "tests/browser/notes-startup-diagnostic.mjs",
+      "tests/browser/notes-startup-diagnostic.test.mjs"
+    ],
+    "purpose": "Independent review of the Notes diagnostic callback failure for successful CDP connection",
+    "prior_evidence": "docs/stabilization/reports/notes-find-member-run38192738316.json",
+    "product_behavior_credit": "none"
+  },
+  "verdict_a": {
+    "status": "UNVERIFIED_LIVE",
+    "findings": [],
+    "confirmed": [
+      "Run 38192738316 records successful CDP socket settlement at 8500ms and identifies the Notes callback rejection as the deterministic failure before endpoint_read and sign-in.",
+      "Source confirms the native driver emits phase cdp_connected after successful owned CDP connection and before advancing to endpoint_read; the revised sanitizer now admits that fixed phase and maps it to connected.",
+      "The focused orchestration test reaches the real_signin boundary after accepting the connected observation, then deliberately fails fake authentication and retains status unverified with no T02/product observation."
+    ],
+    "unsupported_claims": [
+      "No browser or hosted acceptance run was performed for this review; actual sign-in, Notes UI, fixture creation, and T02 behavior remain unverified.",
+      "The original run's guest resource journal was invalid, so it provides diagnostic evidence but no product acceptance evidence."
+    ]
+  },
+  "verdict_b": {
+    "status": "PASS",
+    "findings": [],
+    "tests": {
+      "command": "node --test tests/browser/notes-startup-diagnostic.test.mjs",
+      "passed": 11,
+      "failed": 0,
+      "new_tests": 1,
+      "forcing_evidence": [
+        "The added test drives the actual Notes startup orchestration source with a connected observation and asserts progression to real_signin; the earlier sanitizer contract rejected cdp_connected, and run 38192738316 records that same phase at the production caller boundary.",
+        "The expected result is not product success: the test asserts exit code 1, unverified status, real_signin failure stage, and absence of T02/product observations.",
+        "The test asserts the persisted observation's exact fixed fields and confirms private DevToolsActivePort path and PID are stripped.",
+        "Existing timeout and post-timeout cases still classify timeout, late endpoint, child exit, inspection failure, and bounded stall; malformed phase/elapsed values remain refused."
+      ]
+    },
+    "lint": {
+      "command": "pnpm exec biome check tests/browser/notes-startup-diagnostic.mjs tests/browser/notes-startup-diagnostic.test.mjs",
+      "result": "pass"
+    },
+    "source_review": [
+      "The repair is limited to the diagnostic phase allowlist and a connected outcome mapping; it adds no catch, timeout, retry, pass status, or product verdict behavior.",
+      "The native harness still only invokes the post-timeout observer inside the owned endpoint timeout branch; successful connection remains a separate observation.",
+      "Startup exception handling forwards the original error and the authentication callback remains outside the startup diagnostic boundary."
+    ]
+  },
+  "open_items": [
+    "No independent live browser retest was run, per review scope. A separately authorized future run must use valid resource evidence and exercise the original case before product credit is considered."
+  ]
+}
