@@ -64,7 +64,9 @@ for (const file of emittedFiles.filter((candidate) => candidate.endsWith('.js'))
     if (source.includes(token)) failures.push(`${path.relative(root, file)} contains ${token}.`);
   }
   if (containsScriptSrcLoader(source)) {
-    failures.push(`${path.relative(root, file)} creates an executable script element and assigns its src.`);
+    failures.push(
+      `${path.relative(root, file)} creates an executable script element and assigns its src.`,
+    );
   }
 }
 

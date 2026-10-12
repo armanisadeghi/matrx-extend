@@ -1,0 +1,55 @@
+{
+  "id": "EXT-D-0204",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T12"],
+  "title": "Store candidate bundles a jsPDF branch that loads remote executable code",
+  "surface": "Chrome Web Store release package",
+  "auth_mode": "guest/member/admin; package-level failure independent of sign-in",
+  "preconditions": [
+    "Inspect the primary Matrx Extend Chrome Web Store submission rejected in Google's October 12, 2026 Blue Argon email.",
+    "Inspect the emitted Store JavaScript chunk containing jsPDF 4.2.1."
+  ],
+  "reproduction": [
+    "Find the bundled jsPDF PDFObject viewer branch in the Store candidate chunk.",
+    "Observe that output('pdfobjectnewwindow') creates a script element, assigns its src to the cdnjs PDFObject URL, and appends it to the document.",
+    "Run the previous Store risk gate against that emitted chunk; it checks eval/new Function/DevTools Runtime tokens but does not reject the script-src loader.",
+    "Read Google's official rejection email for primary item hnfolienncfklkgmdjjmhhegglimlamg, routing ID FZSL. It cites Manifest V3 remotely hosted code and this jsPDF chunk."
+  ],
+  "expected": "Every executable path shipped in the Store package is local. The package gate rejects a remotely sourced script loader, and a new candidate passes full release and guest/non-admin acceptance before submission.",
+  "actual": "The submitted package included a branch that can inject https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js. Google rejected its most recent submission; the email does not name the version. The last authenticated dashboard observation showed 0.2.479 pending and 0.2.205 published, but the post-email dashboard transition remains unverified.",
+  "cause": "The shared @ai-matrx/print package bundled jsPDF's unused PDFObject viewer branches, while the extension Store risk gate recognized only several string-evaluation tokens and missed executable script-src loading.",
+  "severity": "S1: Google rejected the Store update, preventing distribution of later fixes; the rejected code path is not known to run in normal PDF use",
+  "priority": "P0: restore a policy-compliant candidate and resubmit after all release gates",
+  "state": "in-fix",
+  "owner": "matrx_extend_release_recovery",
+  "evidence": [
+    "/Users/armanisadeghi/code/common-docs/systems/apps/extension/CHROME-WEB-STORE.md",
+    "scripts/check-cws-release-risk.mjs",
+    "scripts/detect-remote-script-loader.mjs",
+    "scripts/detect-remote-script-loader.test.mjs",
+    "https://github.com/AI-Matrix-Engine/aidream/actions/runs/38212403015"
+  ],
+  "source_repair": "Aidream commit ebaa05766f removes the jsPDF remote-viewer branches before bundling and checks the exact upstream interval; extension commit 2bbc571a5 adds a Store gate that independently detects the actual rejected emitted loader. Source peer review and narrow Node tests passed. The package build, published tarball, adopted extension artifact, and final Store ZIP remain unverified.",
+  "release_blocker": "The guarded aidream npm publish run 38212403015 failed before any step with GitHub's account-payment/spending-limit annotation. npm @ai-matrx/print latest remains 0.12.32, before the source repair. The ci-spend rule forbids moving the job elsewhere; a human must restore the organization's Actions billing or limit.",
+  "next_action": "After the AI-Matrix-Engine GitHub Actions billing block is resolved, use the guarded package publish path, independently inspect emitted ESM/CJS and tarball for the loader, verify PDF blob/save, adopt the released latest package in synchronized extension main, run the hosted Store release gates and real guest/non-admin acceptance, then verify the primary dashboard's exact state and submit a new policy-compliant candidate. Do not infer that 0.2.479 was rejected solely from the versionless email.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T05:10:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Google sent the Blue Argon rejection for the primary item and identified the jsPDF CDN loader."
+    },
+    {
+      "at": "2026-10-12T06:10:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "The emitted jsPDF branch and Store risk-gate gap were reproduced; the rejected email does not name a version."
+    },
+    {
+      "at": "2026-10-12T06:24:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Source repairs and independent reviews are pushed, but hosted package build/publish was refused before execution by GitHub billing."
+    }
+  ]
+}
