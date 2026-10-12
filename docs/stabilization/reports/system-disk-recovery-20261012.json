@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-12",
+  "status": "partial_recovery_local_guard_still_refuses",
+  "before_available": "about 520 MiB on the macOS Data volume",
+  "after_available": "about 2.8 GiB on the macOS Data volume",
+  "action": "Moved an inactive three-day-old Sparkle installation download cache to a reversible backup on the external SSD. Verified the source path is absent and the backup occupies 2.3 GiB.",
+  "backup_path": "/Volumes/Samsung2TB/code/.stabilization-scratch/codex-sparkle-Installation-backup-20261012",
+  "safety_checks": [
+    "No Sparkle or Updater process was running at the sample.",
+    "No file under the source installation cache was open at the sample.",
+    "CloudKit, FileProvider, installed applications, Claude state, and Codex sessions were untouched."
+  ],
+  "remaining_limit": "The local test resource guard requires at least 20 GiB available, so no local heavy browser test, build, or package update is authorized by this recovery. Continue guarded work on isolated hosted runners."
+}
