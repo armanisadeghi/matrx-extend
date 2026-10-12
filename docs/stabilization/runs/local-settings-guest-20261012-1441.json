@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "id": "local-settings-guest-20261012-1441",
+  "created_at_utc": "2026-10-12T14:41:35Z",
+  "feature_id": "EXT-F-1003",
+  "mode": "guest",
+  "status": "independently_reviewed_partial",
+  "scope": "Twenty guest Settings cases exercised in an isolated Chromium 141 native side panel on unpublished development 0.2.509; thirteen supportable passes and seven unverified.",
+  "product_source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+  "development_ci_run_id": 38261957044,
+  "development_artifact_id": 11752953286,
+  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+  "browser": "Chromium 141.0.7390.37",
+  "playwright": "1.56.1",
+  "resource": {
+    "admitted": true,
+    "final_decision": "valid",
+    "resource_invalid": false,
+    "journal": "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+  },
+  "passed_case_ids": [
+    "EXT-F-1003-T04",
+    "EXT-F-1003-T10",
+    "EXT-F-1003-T13",
+    "EXT-F-1003-T22",
+    "EXT-F-1003-T28",
+    "EXT-F-1003-T37",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T64",
+    "EXT-F-1003-T67",
+    "EXT-F-1003-T73",
+    "EXT-F-1003-T76",
+    "EXT-F-1003-T92",
+    "EXT-F-1003-T93"
+  ],
+  "unverified_case_ids": [
+    "EXT-F-1003-T16",
+    "EXT-F-1003-T19",
+    "EXT-F-1003-T31",
+    "EXT-F-1003-T34",
+    "EXT-F-1003-T40",
+    "EXT-F-1003-T63",
+    "EXT-F-1003-T70"
+  ],
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+    "docs/stabilization/reports/local-settings-guest-peer-20261012.json"
+  ],
+  "preceding_zero_credit_attempts": [
+    {
+      "run_id": "local-settings-guest-20261012-1435",
+      "reason": "Playwright module unavailable before browser launch",
+      "journal": "docs/stabilization/resource-journals/local-settings-guest-20261012-1435.jsonl"
+    },
+    {
+      "run_id": "local-settings-guest-20261012-1438",
+      "reason": "Consumer Chrome did not load expected extension in disposable profile; no case ran",
+      "journal": "docs/stabilization/resource-journals/local-settings-guest-20261012-1438.jsonl"
+    }
+  ],
+  "later_zero_credit_attempt": {
+    "run_id": "local-seo-controlled-20261012-1443",
+    "reason": "Preflight refused due to unsafe memory pressure; no browser/case ran",
+    "journal": "docs/stabilization/resource-journals/local-seo-controlled-20261012-1443.jsonl"
+  },
+  "limits": [
+    "T04 exact absent-key baseline restoration after full extension reload is unproved.",
+    "Temporary profile deletion is not independently proven in retained evidence.",
+    "No member/admin, user Chrome profile, Store ZIP, or Store-installed behavior is established."
+  ]
+}

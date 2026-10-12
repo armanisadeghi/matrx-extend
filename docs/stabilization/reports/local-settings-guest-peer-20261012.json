@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "run_id": "local-settings-guest-20261012-1441",
+  "verdict_a": "PARTIAL",
+  "verdict_b": "PASS_WITH_LIMITS",
+  "scope": "Signed-out guest Settings behavior on isolated Chrome for Testing native side panel; local development build 0.2.509 only.",
+  "supportable_pass_case_ids": [
+    "EXT-F-1003-T04",
+    "EXT-F-1003-T10",
+    "EXT-F-1003-T13",
+    "EXT-F-1003-T22",
+    "EXT-F-1003-T28",
+    "EXT-F-1003-T37",
+    "EXT-F-1003-T46",
+    "EXT-F-1003-T64",
+    "EXT-F-1003-T67",
+    "EXT-F-1003-T73",
+    "EXT-F-1003-T76",
+    "EXT-F-1003-T92",
+    "EXT-F-1003-T93"
+  ],
+  "unverified_case_ids": [
+    "EXT-F-1003-T16",
+    "EXT-F-1003-T19",
+    "EXT-F-1003-T31",
+    "EXT-F-1003-T34",
+    "EXT-F-1003-T40",
+    "EXT-F-1003-T63",
+    "EXT-F-1003-T70"
+  ],
+  "evidence": {
+    "acceptance_report": "test-results/settings-local-controls-acceptance.json",
+    "resource_journal": "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl",
+    "resource_valid": true,
+    "resource_basis": "Journal records admission, healthy samples, child exit code 0, and final decision valid/resourceInvalid=false.",
+    "build_identity": {
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "version": "0.2.509",
+      "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+      "ci_run_id": 38261957044,
+      "artifact_id": 11752953286,
+      "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+      "match": "Local receipt, imported artifact provenance, report, and manifest agree on version/tree; manifest key derives the reported extension ID. CI receipt identifies a development artifact, eligibleStore=false."
+    },
+    "oracle": "tests/browser/settings-readiness-oracle.mjs; runner keeps downstream consumer, ordinary-member, and alternate browser API/update branches explicitly unverified.",
+    "behavior_basis": "The 13 listed cases have passing observed criteria on the native guest panel. T10 includes new-chat inheritance; T46 includes an observed worker rediscovery after saving; T93 includes native panel replacement and reopened value. The seven unverified cases each retain a named missing dimension in the report.",
+    "sanitized_report": "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+    "raw_local_report_sha256": "68c4e2bd3774a3d25d63eb4414ca56589481523663f5a93f38a60bab464c9f05"
+  },
+  "limits": [
+    "T04 records an initial absent theme preference restored after panel reload, but its later full-extension phase records a saved System value as the pre-run baseline and leaves System stored at the end. Theme switching/persistence observations are valid; restoration of the original absent-key state is not established.",
+    "Journal and harness source support that the run was admitted and the browser/profile was disposable; retained evidence does not independently prove deletion of the actual temporary profile after this specific run.",
+    "All evidence is for the exact unpublished local development artifact and signed-out guest. It does not establish Store behavior, current installed Chrome profile health, ordinary-member/admin behavior, or overall Settings health."
+  ],
+  "product_defect": {
+    "emerged": false,
+    "detail": "No reproducible product behavior failure is shown. T04's baseline mismatch is a test-state/cleanup evidence inconsistency, not evidence of a product defect."
+  },
+  "next_action": "Keep the 13 guest subtargets credited within this exact build scope and the seven cases unverified. Resolve T04's absent-key versus System baseline restoration in a fresh disposable run before claiming exact preference cleanup; pursue separate member and browser-API branch evidence for the unverified cases.",
+  "files_reviewed": [
+    "test-results/settings-local-controls-acceptance.json",
+    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl",
+    "test-results/ci-dev-promotion-receipt.json",
+    "test-results/ci-artifacts/7606430875ad3efa633513f4423004cb8e5b95e1/38261957044-1/import-status.json",
+    "test-results/ci-artifacts/7606430875ad3efa633513f4423004cb8e5b95e1/38261957044-1/provenance.json",
+    "test-results/ci-artifacts/7606430875ad3efa633513f4423004cb8e5b95e1/38261957044-1/local-dev-receipt.json",
+    "tests/browser/settings-local-controls-acceptance.mjs",
+    "tests/browser/settings-readiness-oracle.mjs"
+  ]
+}

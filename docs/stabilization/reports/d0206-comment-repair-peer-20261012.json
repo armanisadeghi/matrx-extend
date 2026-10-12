@@ -1,0 +1,24 @@
+{
+  "status": "DONE",
+  "defect_id": "EXT-D-0206",
+  "reviewed_head": "c3b632e137434f905351eddf0d76627b55a18e65",
+  "verdict_a": "PARTIAL: the guard accepts the approved bare OAuth flow and rejects tested literal global or unscoped logout URLs, but this is a static source-contract review and does not establish live product sign-out behavior.",
+  "verdict_b": "PASS for the reported block-comment repair and tested lexer cases. The scanner now masks JavaScript comments while preserving offsets and newlines, allowing valid code after comments to remain visible to the URL scan.",
+  "finding": null,
+  "reproduction": {
+    "prior_bypass": "findingsIn('/* audit */ fetch(\"/auth/v1/logout\")', 'probe.ts') now returns a finding; scope=global after the same comment also returns a finding. Explicit scope=local after the comment returns no finding.",
+    "comment_only": "A logout URL appearing only inside a block comment produces no finding.",
+    "line_and_multiline_comments": "Executable URLs after line comments and multiline block comments are still detected. Comment-only URL lines do not create findings.",
+    "templates": "Comments and URL text inside nested template interpolations are masked as comments; literal logout URLs in template strings remain checked, including variable scope expressions, which are rejected.",
+    "whitespace_newlines": "Leading comments and newlines do not hide subsequent executable URL calls; newline and comment offsets are preserved for line reporting."
+  },
+  "verification_evidence": [
+    "pnpm check:signout-scope passed: visible source contract and reviewed OAuth artifact.",
+    "node scripts/check-signout-scope.mjs --self-test passed: 59 source cases plus installed-package local revoke behavior.",
+    "Independent 11-case probe passed: leading block and line comments before bare/global URLs rejected; comment-only URL ignored; URL text in strings and nested template comments handled; local/global scope mixed with comments remained correctly classified.",
+    "Reviewed the lexer and URL scan at scripts/check-signout-scope.mjs:98-128, 238-249."
+  ],
+  "review_limits": "Static visible-source checks only. This does not prove behavior of arbitrary imported functions, reflective access, dynamically assembled URLs, dependency internals beyond the guard's existing fingerprint/package proof, live extension sign-out, or Store readiness.",
+  "files_touched": ["docs/stabilization/reports/d0206-comment-repair-peer-20261012.json"],
+  "open_questions": []
+}

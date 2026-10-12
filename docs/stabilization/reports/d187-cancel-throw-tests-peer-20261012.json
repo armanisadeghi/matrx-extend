@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "review_type": "independent_source_test_review",
+  "reviewer": "/root/d187_test_peer",
+  "defect_id": "EXT-D-0187",
+  "case_ids": [
+    "EXT-F-1007-T04",
+    "EXT-F-1007-T29"
+  ],
+  "verdict": "A",
+  "reviewed_file": "tests/unit/save-never-loses-input.test.tsx",
+  "scope": "New pending destination-creation cancellation and thrown-rejection recovery tests in the real ScrapeView-to-SaveSourceForm orchestration.",
+  "covered_paths": [
+    "With Project creation deferred, Save, Close, and place-type controls are disabled; Save cannot land early. A cancelable native dialog cancel event is prevented while pending, the dialog and Source draft remain, and cancellation works after creation resolves.",
+    "A thrown Project creation rejection displays an error, clears pending state, preserves the project-name draft, and does not land early. Retrying stages the returned Project and lands with its association; proceeding without a destination lands with an empty association list."
+  ],
+  "limitation": "The test asserts the Close control is disabled but does not separately invoke a direct cancellation callback while creation is pending, bypassing that control.",
+  "product_or_browser_claim": "None. This is a source-test review only; no tests were run and no browser, native, persisted-product, or full defect-closure claim is made.",
+  "state": "EXT-D-0187 remains in-fix; T04/T29 remain partial."
+}
