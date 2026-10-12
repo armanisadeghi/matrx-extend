@@ -107,6 +107,7 @@ for (const property of [
         assert.equal(error.driverFailure.animating, true);
         assert.equal(error.driverFailure.animationCategory, 'hit_affecting_or_unknown');
         assert.equal(error.driverFailure.clickTargetCategory, 'scrape_scroll_sync_enable');
+        assert.equal(error.driverFailure.animationDiagnostic.effects[0].relation, 'ancestor');
         assert(!JSON.stringify(error.driverFailure).includes('private-effect-value'));
         assert(!JSON.stringify(error.driverFailure).includes('--private-animation'));
         return true;
@@ -151,3 +152,41 @@ for (const options of [
     }
   });
 }
+
+test('animation diagnostics bound effects and allowlist properties, timing and ownership', async (t) => {
+  const { window, panel, events } = fixture();
+  const target = window.document.querySelector('button');
+  target.getAnimations = () =>
+    Array.from({ length: 12 }, () => ({
+      playState: 'running',
+      effect: {
+        getKeyframes: () => [{ transform: 'private transform', '--secret-url': 'private auth' }],
+        getTiming: () => ({ duration: 500, delay: -50, easing: 'private timing' }),
+      },
+    }));
+  let time = 0;
+  t.mock.method(Date, 'now', () => {
+    time += 1000;
+    return time;
+  });
+  try {
+    await assert.rejects(click(panel, 'title', 'Sync scroll with the live page'), (error) => {
+      const diagnostic = error.driverFailure.animationDiagnostic;
+      assert.equal(diagnostic.runningCount, 12);
+      assert.equal(diagnostic.truncated, true);
+      assert.equal(diagnostic.effects.length, 8);
+      assert.deepEqual(JSON.parse(JSON.stringify(diagnostic.effects[0])), {
+        relation: 'target',
+        propertyCategories: ['other_or_custom', 'transform'],
+        duration: 'up_to_1000ms',
+        delay: 'negative',
+      });
+      assert(!JSON.stringify(error.driverFailure).includes('private'));
+      assert(!JSON.stringify(error.driverFailure).includes('secret-url'));
+      return true;
+    });
+    assert.deepEqual(events, []);
+  } finally {
+    window.happyDOM.abort();
+  }
+});

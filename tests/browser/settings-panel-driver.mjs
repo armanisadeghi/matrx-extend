@@ -265,6 +265,7 @@ function pointerFailure(code, location) {
     hitTarget: location?.hitTarget === true,
     animating: location?.animating === true,
     animationCategory: location?.animationCategory ?? null,
+    animationDiagnostic: location?.animationDiagnostic ?? null,
     clickTargetCategory: location?.clickTargetCategory ?? null,
     stableSamples: location?.stableSamples ?? 0,
     positionStable: location?.positionStable === true,
@@ -865,11 +866,42 @@ export async function click(panel, kind, label, onPhase = undefined) {
         return false;
       }
     };
+    const animationDiagnostic = { runningCount: 0, truncated: false, effects: [] };
+    const timingBucket = (value) => typeof value !== 'number' || !Number.isFinite(value)
+      ? 'unknown_or_infinite' : value < 0 ? 'negative' : value === 0 ? 'zero'
+        : value <= 250 ? 'up_to_250ms' : value <= 1000 ? 'up_to_1000ms' : 'over_1000ms';
+    const summarizeAnimation = (animation, relation) => {
+      let propertyCategories = ['unknown'];
+      let duration = 'unknown_or_infinite';
+      let delay = 'unknown_or_infinite';
+      try {
+        const frames = animation.effect?.getKeyframes();
+        const properties = Array.isArray(frames) ? frames.flatMap((frame) => Object.keys(frame))
+          .filter((key) => !frameMetadata.has(key)) : [];
+        if (properties.length) propertyCategories = [...new Set(properties.map((key) =>
+          colorProperties.has(key) ? 'color'
+            : ['transform', 'translate', 'rotate', 'scale'].includes(key) ? 'transform'
+              : ['width', 'height', 'top', 'right', 'bottom', 'left', 'margin', 'padding',
+                'maxWidth', 'maxHeight', 'minWidth', 'minHeight'].includes(key) ? 'layout'
+                : ['opacity', 'filter', 'clipPath', 'visibility', 'pointerEvents'].includes(key)
+                  ? 'visibility_or_hit' : 'other_or_custom'))].sort();
+      } catch {}
+      try {
+        const timing = animation.effect?.getTiming();
+        duration = timingBucket(timing?.duration);
+        delay = timingBucket(timing?.delay);
+      } catch {}
+      return { relation, propertyCategories, duration, delay };
+    };
     let animating = false;
     let animationCategory = 'none';
     for (let ancestor = target; ancestor; ancestor = ancestor.parentElement) {
       for (const animation of ancestor.getAnimations({ subtree: false })) {
         if (animation.playState !== 'running') continue;
+        animationDiagnostic.runningCount = Math.min(999, animationDiagnostic.runningCount + 1);
+        if (animationDiagnostic.effects.length < 8)
+          animationDiagnostic.effects.push(summarizeAnimation(animation, ancestor === target ? 'target' : 'ancestor'));
+        else animationDiagnostic.truncated = true;
         if (colorOnly(animation)) {
           if (!animating) animationCategory = 'color_only';
         } else {
@@ -885,7 +917,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
         : kind === 'scrape-result-tab' && label === 'Article'
           ? 'scrape_article_tab' : 'other';
     return { count: 1, matchedCount, toolsPanelActive, settingsPanelActive, x, y, hitTarget, animating,
-      animationCategory, clickTargetCategory,
+      animationCategory, animationDiagnostic, clickTargetCategory,
       viewport: { width: innerWidth, height: innerHeight },
       pointerDiagnostic, dataTabTargetDiagnostic };
     } catch {
