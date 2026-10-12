@@ -31,7 +31,7 @@ vi.mock('@/lib/auth/flow', async () => {
   const { fakeOAuthClient } = await import('../helpers/fake-organizations-db');
   return {
     getOAuthClient: () => fakeOAuthClient(() => '87a6e699-3622-4869-8843-d0867456c0dd'),
-  getCurrentUser: vi.fn(async () => ({ id: '87a6e699-3622-4869-8843-d0867456c0dd' })),
+    getCurrentUser: vi.fn(async () => ({ id: '87a6e699-3622-4869-8843-d0867456c0dd' })),
   };
 });
 // Keep the real active-organization resolver in this test: Saved is claimed
@@ -40,28 +40,31 @@ vi.mock('@/lib/auth/flow', async () => {
 vi.mock('@/lib/supabase/client', async () => {
   const { fakeOrganizationsDb } = await import('../helpers/fake-organizations-db');
   return {
-  getOrganizationBootstrapClient: () =>
-    fakeOrganizationsDb({
-      memberships: () => ({
+    getOrganizationBootstrapClient: () =>
+      fakeOrganizationsDb({
+        memberships: () => ({
+          data: [
+            { container_id: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f', status: 'active' },
+            { container_id: '8e530f1e-a236-4bca-8131-f15327796301', status: 'active' },
+          ],
+          error: null,
+        }),
+        organizations: (ids) => ({
+          data: ids.map((id) => ({ id, name: 'Workspace' })),
+          error: null,
+        }),
+        account: () => ({ data: null, error: null }),
+      }),
+    getSupabase: () => ({
+      rpc: async () => ({
         data: [
-          { container_id: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f', status: 'active' },
-          { container_id: '8e530f1e-a236-4bca-8131-f15327796301', status: 'active' },
+          { container_id: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f' },
+          { container_id: '8e530f1e-a236-4bca-8131-f15327796301' },
         ],
         error: null,
       }),
-      organizations: (ids) => ({ data: ids.map((id) => ({ id, name: 'Workspace' })), error: null }),
-      account: () => ({ data: null, error: null }),
     }),
-  getSupabase: () => ({
-    rpc: async () => ({
-      data: [
-        { container_id: '884d1ce8-7b49-4fba-a2f3-0f7dd7c83d4f' },
-        { container_id: '8e530f1e-a236-4bca-8131-f15327796301' },
-      ],
-      error: null,
-    }),
-  }),
-};
+  };
 });
 vi.mock('@/lib/supabase/schemas', () => ({
   iamDb: () => ({

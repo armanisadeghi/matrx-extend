@@ -258,7 +258,9 @@ describe('extension sign-in wiring', () => {
       return `https://abc.chromiumapp.org/?code=the-code&state=${new URL(url).searchParams.get('state')}`;
     };
     await flow.signIn();
-    expect(new URL(authorizeUrl).searchParams.get('redirect_uri')).toBe('https://abc.chromiumapp.org/');
+    expect(new URL(authorizeUrl).searchParams.get('redirect_uri')).toBe(
+      'https://abc.chromiumapp.org/',
+    );
     expect(server.tokenCalls[0]?.get('redirect_uri')).toBe('https://abc.chromiumapp.org/');
   });
 });

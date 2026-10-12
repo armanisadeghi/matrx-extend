@@ -206,7 +206,9 @@ describe('Safari background OAuth tab transport', () => {
         expect.objectContaining({ kind: 'auth:state-changed' }),
       ),
     );
-    expect(callbacks.broadcasts).not.toContainEqual(expect.objectContaining({ kind: 'auth:safari-failed' }));
+    expect(callbacks.broadcasts).not.toContainEqual(
+      expect.objectContaining({ kind: 'auth:safari-failed' }),
+    );
     expect(removed).toContain(44);
   });
 });

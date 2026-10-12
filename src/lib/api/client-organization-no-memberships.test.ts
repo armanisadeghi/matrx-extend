@@ -25,37 +25,37 @@ vi.mock('@/lib/auth/flow', async () => {
   const { fakeOAuthClient } = await import('../../../tests/helpers/fake-organizations-db');
   return {
     getOAuthClient: () => fakeOAuthClient(() => USER_ID),
-  getAccessToken: async () => 'token-1',
-  getStoredAccessToken: async () => 'token-1',
-  getCurrentUser: async () => ({ id: USER_ID }),
-  getVerifiedCurrentUser: async () => ({ id: USER_ID }),
-  describeStoredSession: async () => ({}),
-  refreshAccessToken: async () => null,
+    getAccessToken: async () => 'token-1',
+    getStoredAccessToken: async () => 'token-1',
+    getCurrentUser: async () => ({ id: USER_ID }),
+    getVerifiedCurrentUser: async () => ({ id: USER_ID }),
+    describeStoredSession: async () => ({}),
+    refreshAccessToken: async () => null,
   };
 });
 vi.mock('@/lib/auth/guest-signature', () => ({ getOrCreateGuestSignature: async () => 'guest' }));
 vi.mock('@/lib/supabase/client', async () => {
   const { fakeOrganizationsDb } = await import('../../../tests/helpers/fake-organizations-db');
   return {
-  getOrganizationBootstrapClient: () =>
-    fakeOrganizationsDb({
-      memberships: () => ({
-        data: harness.memberships.map((id) => ({ container_id: id, status: 'active' })),
+    getOrganizationBootstrapClient: () =>
+      fakeOrganizationsDb({
+        memberships: () => ({
+          data: harness.memberships.map((id) => ({ container_id: id, status: 'active' })),
+          error: null,
+        }),
+        organizations: () => ({
+          data: harness.memberships.map((id) => ({ id, name: `Org ${id.slice(0, 4)}` })),
+          error: null,
+        }),
+        account: () => ({ data: null, error: null }),
+      }),
+    getSupabase: () => ({
+      rpc: async () => ({
+        data: harness.memberships.map((id) => ({ container_id: id })),
         error: null,
       }),
-      organizations: () => ({
-        data: harness.memberships.map((id) => ({ id, name: `Org ${id.slice(0, 4)}` })),
-        error: null,
-      }),
-      account: () => ({ data: null, error: null }),
     }),
-  getSupabase: () => ({
-    rpc: async () => ({
-      data: harness.memberships.map((id) => ({ container_id: id })),
-      error: null,
-    }),
-  }),
-};
+  };
 });
 vi.mock('@/lib/supabase/schemas', () => ({
   iamDb: () => ({

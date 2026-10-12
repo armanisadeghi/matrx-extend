@@ -15,8 +15,8 @@ import {
 } from '@/lib/org/active-org';
 import { onChange } from '@/lib/storage/chrome-local';
 import { useAuthStore } from '@/state/auth';
-import { type ArchiveFilterValue, DEFAULT_ARCHIVE_FILTER } from '@ai-matrx/design-system';
 import { useActiveOrganizationView as useAuthActiveOrganizationView } from '@ai-matrx/auth/react';
+import { type ArchiveFilterValue, DEFAULT_ARCHIVE_FILTER } from '@ai-matrx/design-system';
 
 export interface UseActiveOrganizationResult {
   /** The organization every request carries (the load ladder's answer); null only for zero memberships or signed out. */

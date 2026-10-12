@@ -1,0 +1,68 @@
+{
+  "id": "EXT-D-0208",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T08"],
+  "title": "Required full-repository lint failed on formatting and fake database thenable typing",
+  "surface": "Release infrastructure lint gate",
+  "auth_mode": "guest/member/admin; lint gate is independent of sign-in",
+  "preconditions": ["Run pnpm -s lint against main source 2e3e67 during the auth-wave work."],
+  "reproduction": [
+    "Run pnpm -s lint (Biome check .) on main 2e3e67.",
+    "Observe 13 formatting/import errors and suspicious/noThenProperty in tests/helpers/fake-organizations-db.ts."
+  ],
+  "expected": "The required repository-wide lint gate passes on current main, including formatter checks and the fake organizations database thenable helper.",
+  "actual": "The required lint gate failed on 13 formatting/import issues and a then-property lint error in the fake organizations database helper, blocking auth-wave validation.",
+  "cause": "Auth-wave edits included unformatted/import-order source and a thenable helper shape that triggered Biome's suspicious/noThenProperty rule.",
+  "severity": "S2: required release/CI validation is blocked; no product behavior impact established",
+  "priority": "P1: keep the required full-repository lint gate green before candidate validation",
+  "state": "fixed",
+  "owner": "matrx_extend_stabilization",
+  "evidence": [
+    "main source 2e3e67: pnpm -s lint reported 13 formatting/import errors and suspicious/noThenProperty",
+    "tests/helpers/fake-organizations-db.ts",
+    "focused formatting and Object.defineProperty repair: full lint passed",
+    "focused tests: 50/50 passed before subsequent auth-race repair changed test counts"
+  ],
+  "source_repair": "Formatting/import issues were corrected and the fake database thenable used Object.defineProperty to avoid exposing a .then property to Biome. Full lint passed after this repair. The 50/50 focused test result predates the subsequent auth-race repair and is not a result for the final combined candidate.",
+  "next_action": "On the final combined candidate, rerun the required full lint and relevant auth-wave tests, recording exact source and results. Keep this separate from the sign-out guard false positive in EXT-D-0206.",
+  "transition_history": [
+    {
+      "at": "2026-10-12",
+      "from": null,
+      "to": "open",
+      "reason": "Required pnpm -s lint failed on main source 2e3e67 with formatting/import errors and suspicious/noThenProperty."
+    },
+    {
+      "at": "2026-10-12",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Failure is classified as release-infrastructure lint failure; no product behavior defect is established."
+    },
+    {
+      "at": "2026-10-12",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Formatting/import cleanup and an Object.defineProperty thenable repair were applied."
+    },
+    {
+      "at": "2026-10-12",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "Full lint passed after repair. Final combined-candidate lint and focused tests remain to be recorded."
+    }
+  ],
+  "control_ids": ["EXT-F-0003-C03"],
+  "role_org_permissions": "Guest, member, and admin behavior is identical because this is a repository lint gate. Organization and runtime permissions are not applicable.",
+  "build_receipt": null,
+  "reproducibility_count": "1/1 reported on main source 2e3e67; the lint failure was followed by a full lint pass after the formatting and helper repair.",
+  "sibling_census": "The reported Biome failures were 13 formatting/import findings plus suspicious/noThenProperty in tests/helpers/fake-organizations-db.ts. A full repo-wide sibling audit beyond the recorded full-lint pass is not separately attached.",
+  "fix_commits": "No fix commit SHA supplied; the focused repair and lint pass are reported in the stabilization handoff.",
+  "original_repro_retest": "Full pnpm -s lint passed after repair. Final combined-candidate lint and focused tests remain pending because later auth-race edits changed test counts.",
+  "surrounding_case_runs": "EXT-F-0003-T08 is linked. No separate surrounding release-gate run IDs supplied.",
+  "reviewer_identity": "No independent reviewer identity or review artifact supplied for this repair.",
+  "role": "Guest, member, and admin share the same repository lint gate.",
+  "organization": "Not applicable to repository-wide lint.",
+  "permissions": "Not applicable to repository-wide lint.",
+  "build_receipt_status": "Not applicable: lint runs against repository source, not a browser artifact.",
+  "retest_status": "Full lint passed after repair; final combined-candidate lint and focused tests remain pending."
+}

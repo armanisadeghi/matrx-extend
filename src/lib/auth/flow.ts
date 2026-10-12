@@ -208,7 +208,9 @@ async function storeSignedInProfile(session: MatrxOAuthSession): Promise<{ user:
  * (Safari: the background page was torn down between showing the tab and catching the callback).
  * The PKCE verifier for the attempt is still in chrome.storage.session, keyed by `state`.
  */
-export async function completeSignInFromCallback(callbackUrl: string): Promise<{ user: UserProfile }> {
+export async function completeSignInFromCallback(
+  callbackUrl: string,
+): Promise<{ user: UserProfile }> {
   const oauth = getClient();
   if (!oauth) throw new Error('OAuth sign-in is unavailable: no OAuth client is configured');
   return storeSignedInProfile(await oauth.completeSignIn({ callbackUrl }));

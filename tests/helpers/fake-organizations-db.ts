@@ -17,11 +17,12 @@ export interface FakeOrganizationsSource {
 
 function chain(read: () => Promise<Answer> | Answer) {
   const builder: Record<string, unknown> = {};
-  for (const name of ['order', 'range', 'select', 'eq', 'maybeSingle']) builder[name] = () => builder;
-  builder.then = (resolve: (value: Answer) => unknown, reject?: (reason: unknown) => unknown) =>
-    Promise.resolve()
-      .then(read)
-      .then(resolve, reject);
+  for (const name of ['order', 'range', 'select', 'eq', 'maybeSingle'])
+    builder[name] = () => builder;
+  Object.defineProperty(builder, 'then', {
+    value: (resolve: (value: Answer) => unknown, reject?: (reason: unknown) => unknown) =>
+      Promise.resolve().then(read).then(resolve, reject),
+  });
   return builder;
 }
 
@@ -47,7 +48,9 @@ export function fakeOrganizationsDb(source: FakeOrganizationsSource): unknown {
 }
 
 /** The ladder's account-choice shape (camelCase, as the old resolver seam returned it) as the table row. */
-export function accountRow(choice: { lastActiveOrganizationId?: unknown; startupOrganizationId?: unknown } | null) {
+export function accountRow(
+  choice: { lastActiveOrganizationId?: unknown; startupOrganizationId?: unknown } | null,
+) {
   return choice
     ? {
         last_active_organization_id: choice.lastActiveOrganizationId ?? null,
@@ -57,7 +60,8 @@ export function accountRow(choice: { lastActiveOrganizationId?: unknown; startup
 }
 
 const farFuture = () => Date.now() + 3_600_000;
-const b64u = (text: string) => btoa(text).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const b64u = (text: string) =>
+  btoa(text).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 /** An unsigned JWT naming `sub` — the package reads the person id from the token's claims. */
 const tokenFor = (sub: string) =>
   `${b64u('{"alg":"none"}')}.${b64u(JSON.stringify({ sub, exp: 9_999_999_999 }))}.sig`;
@@ -66,11 +70,15 @@ const tokenFor = (sub: string) =>
  * The OAuth client slice the organization store's session reads (`getSession`, `onChange`), signed in as
  * whoever `userId()` names (null = signed out). Stands in for `getOAuthClient()` from `@/lib/auth/flow`.
  */
-export function fakeOAuthClient(userId: () => string | null | undefined | Promise<string | null | undefined>) {
+export function fakeOAuthClient(
+  userId: () => string | null | undefined | Promise<string | null | undefined>,
+) {
   return {
     getSession: async () => {
       const id = await userId();
-      return id ? { personId: id, email: null, accessToken: tokenFor(id), expiresAtMs: farFuture() } : null;
+      return id
+        ? { personId: id, email: null, accessToken: tokenFor(id), expiresAtMs: farFuture() }
+        : null;
     },
     onChange: () => () => {},
   };
