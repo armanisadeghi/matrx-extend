@@ -24,9 +24,10 @@
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38251459600",
     "src/lib/auth/flow.ts: oauth.signOut()",
-    "scripts/check-signout-scope.mjs"
+    "scripts/check-signout-scope.mjs",
+    "Combined unit suite receipt owner-vitest-20261012-1329 passed at 619ebf923d4867b4a4e1fbeca74092b25b2b6ea1; it does not replace pnpm check:signout-scope or review of guard bypass resistance."
   ],
-  "next_action": "Complete the guard repair with independent review of the discovered bypasses, then rerun the exact-main failing gate and the surrounding sign-out scope controls. Keep the original CI failure as infrastructure evidence; do not claim product sign-out failure or retest closure from source repair alone.",
+  "next_action": "Obtain a fresh independent safety review of f1b79b920 and rerun pnpm check:signout-scope plus surrounding scoped-local and unscoped refusal controls on the exact integrated source; retain exact-main CI 38251459600 as original infrastructure failure.",
   "transition_history": [
     {
       "at": "2026-10-12",
@@ -52,13 +53,13 @@
   "build_receipt": null,
   "reproducibility_count": "1/1 observed in exact-main CI run 38251459600; a local post-repair rerun is pending.",
   "sibling_census": "The guard checks sign-out paths in the extension, including the migrated src/lib/auth/flow.ts OAuth call. Other genuine sign-out callers and local/global scope assertions remain to be independently censused after repair; reviewers found bypasses in the current repair.",
-  "fix_commits": "No repair commit SHA recorded; guard repair remains under review.",
-  "original_repro_retest": "Pending: rerun pnpm check:signout-scope against the exact repaired source and verify the original oauth.signOut() call passes for the intended local scope.",
-  "surrounding_case_runs": "Pending: exercise the guard’s existing scoped-local and genuine-unscoped refusal controls; no surrounding run IDs supplied.",
-  "reviewer_identity": "Independent safety reviews found bypasses; reviewer identities and review artifact paths were not supplied.",
+  "fix_commits": "f1b79b9207a5abe9fca22cdbcaaf8b300f3be597 (guard repair).",
+  "original_repro_retest": "Combined full unit suite passed on 619ebf923d4867b4a4e1fbeca74092b25b2b6ea1 (run owner-vitest-20261012-1329). Exact pnpm check:signout-scope gate and surrounding controls have not been recorded after f1b79b920.",
+  "surrounding_case_runs": "Pending: exercise the guard\u2019s existing scoped-local and genuine-unscoped refusal controls; no surrounding run IDs supplied.",
+  "reviewer_identity": "Earlier independent safety reviews found bypasses in the repair then under review. No independent review artifact or reviewer identity for final commit f1b79b920 was supplied; current combined unit run is not an independent review.",
   "role": "Guest, member, and admin share the same static guard path.",
   "organization": "Not applicable to the static CI check.",
   "permissions": "Not applicable to the static CI check.",
   "build_receipt_status": "Not applicable: no browser/native artifact is involved; exact-main CI run 38251459600 is the source evidence.",
-  "retest_status": "Pending: exact repaired gate and surrounding scoped-signout controls have not been rerun."
+  "retest_status": "Combined unit suite passed at 619ebf923d4867b4a4e1fbeca74092b25b2b6ea1. Exact signout-scope gate, surrounding controls and fresh independent guard review remain pending."
 }

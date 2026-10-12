@@ -1,0 +1,48 @@
+{
+  "id": "owner-vitest-20261012-1329",
+  "status": "pass-unit-suite",
+  "at": "2026-10-12T13:28:36.767Z",
+  "source_sha": "619ebf923d4867b4a4e1fbeca74092b25b2b6ea1",
+  "lockfile_sha256": "dd3df2cece80484b2220bc2a4205760e9e400c49719e3d7adc4357584f5d822f",
+  "command": "node scripts/stabilization-resource.mjs run --run-id owner-vitest-20261012-1329 -- pnpm exec vitest run --maxWorkers=1",
+  "exit_code": 0,
+  "test_files_passed": 346,
+  "test_files_skipped": 2,
+  "tests_passed": 2452,
+  "tests_skipped": 5,
+  "duration_seconds": 248.33,
+  "resource_journal": "docs/stabilization/resource-journals/owner-vitest-20261012-1329.jsonl",
+  "resource_verdict": {
+    "admitted": true,
+    "resource_invalid": false,
+    "exit_code": 0,
+    "decision": "valid"
+  },
+  "limitations": [
+    "Unit suite only; no native browser acceptance, Web Store package verification, or Store behavior retest."
+  ],
+  "defect_relevance": {
+    "EXT-D-0206": "Includes unit tests in the combined checkout; does not independently review the sign-out guard or replace the exact CI gate rerun.",
+    "EXT-D-0207": "Includes deterministic regression coverage in the combined checkout; does not reproduce the timing race in native Chrome.",
+    "EXT-D-0208": "Combined-candidate unit suite passed; this run is not the full lint gate."
+  },
+  "runtime_observation": {
+    "source": "read-only /health/version",
+    "observed_at_utc": "2026-10-12T13:30:00Z",
+    "deployed_sha": "63d7fd1430cbe05b6ed9f0e638ae4c630232497a",
+    "built_at_utc": "2026-10-12T12:42:42Z",
+    "relation": "deployed runtime differs from tested source; no browser acceptance is claimed and earlier guest/member browser acceptance does not transfer."
+  },
+  "ci_status": {
+    "run_id": "38256053803",
+    "source_sha": "619ebf923d4867b4a4e1fbeca74092b25b2b6ea1",
+    "status": "in progress at receipt preparation"
+  },
+  "additional_gate": {
+    "command": "pnpm -s lint",
+    "source_sha": "619ebf923d4867b4a4e1fbeca74092b25b2b6ea1",
+    "exit_code": 0,
+    "warnings": 894,
+    "errors": 0
+  }
+}

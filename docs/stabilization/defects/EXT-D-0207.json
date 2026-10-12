@@ -28,9 +28,10 @@
     "src/lib/org/active-org.ts",
     "fresh race-repair review: A/B passed 20/20",
     "EXT-F-1015-T42",
-    "EXT-F-1015-T43"
+    "EXT-F-1015-T43",
+    "Combined unit suite receipt owner-vitest-20261012-1329 passed at 619ebf923d4867b4a4e1fbeca74092b25b2b6ea1, including tests/unit/auth-route.test.ts; this does not claim native reproduction."
   ],
-  "next_action": "Run native supporting checks EXT-F-1015-T42 and T43 on fresh receipt-matched unpacked builds: update matrx.org.active to B from the extension service-worker DevTools context without a picker click, verify the open panel and real org-scoped read use B, then restore the original organization. Keep delayed/reordered callback claims limited to the named deterministic unit tests; do not mark native reproduction complete.",
+  "next_action": "Run native supporting checks EXT-F-1015-T42 and T43 on fresh receipt-matched unpacked builds; pending-validation race remains unit-only because no native timing fixture is recorded.",
   "transition_history": [
     {
       "at": "2026-10-12",
@@ -62,13 +63,13 @@
   "build_receipt": null,
   "reproducibility_count": "1/1 focused unit reproduction reported before repair in tests/unit/auth-route.test.ts, test \u201cdoes not certify or clear a choice changed while validation was in flight\u201d.",
   "sibling_census": "The focused unit test delays the active-organization row read while changing the mocked active-org storage value. The unit tests also manually schedule late and reordered own-clear notifications. No repo-owned native interception path for holding that read or controlling Chrome callback order was found. Native cases T42/T43 cover only cross-context selection persistence, request routing and cleanup.",
-  "fix_commits": "No repair commit SHA supplied; source repair was reviewed in the current stabilization work.",
-  "original_repro_retest": "Fresh source review A/B passed 20/20. Deterministic unit coverage exists for the original race and two late/reordered notification variants. Independent native original-reproduction retest remains unverified.",
+  "fix_commits": "27db80fa1f4fdcac2fa9551d00e4dc23467ac0b1 (active-organization race repair).",
+  "original_repro_retest": "Deterministic original-race and late/reordered callback tests are included in the passing combined unit suite owner-vitest-20261012-1329 at 619ebf923d4867b4a4e1fbeca74092b25b2b6ea1. Independent native original-reproduction retest remains unverified.",
   "surrounding_case_runs": "EXT-F-1015-T06/T07 remain ordinary member/admin picker-click cases and are unrelated. T42/T43 are native cross-context A/B supporting checks only; both are unverified and do not exercise pending validation or callback ordering.",
-  "reviewer_identity": "Fresh race-repair reviewers A/B; identities and review artifact paths were not supplied.",
+  "reviewer_identity": "Fresh race-repair reviewers A/B; identities and review artifact paths were not supplied. The stated A/B 20/20 source review remains the only named review evidence.",
   "role": "Signed-in ordinary member and signed-in admin.",
   "organization": "At least two current memberships. Unit reproduction changes active device choice A\u2192B while validation of A is pending; native supporting checks update the stored choice to B from a separate extension context without pending validation.",
   "permissions": "No special browser permissions required.",
   "build_receipt_status": "No browser/native build receipt recorded; the reproduction is a focused unit regression.",
-  "retest_status": "Source review A/B passed 20/20; deterministic unit tests cover original and late/reordered callback races. Native supporting A/B checks T42/T43 remain pending; no native race retest is claimed."
+  "retest_status": "Combined unit suite passed at 619ebf923d4867b4a4e1fbeca74092b25b2b6ea1. Source review A/B reported 20/20; native supporting A/B checks T42/T43 remain pending and no native race retest is claimed."
 }

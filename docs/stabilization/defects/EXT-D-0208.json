@@ -21,10 +21,11 @@
     "main source 2e3e67: pnpm -s lint reported 13 formatting/import errors and suspicious/noThenProperty",
     "tests/helpers/fake-organizations-db.ts",
     "focused formatting and Object.defineProperty repair: full lint passed",
-    "focused tests: 50/50 passed before subsequent auth-race repair changed test counts"
+    "focused tests: 50/50 passed before subsequent auth-race repair changed test counts",
+    "pnpm -s lint passed (exit 0) on combined source 619ebf923d4867b4a4e1fbeca74092b25b2b6ea1; Biome reported 894 warnings and no errors."
   ],
   "source_repair": "Formatting/import issues were corrected and the fake database thenable used Object.defineProperty to avoid exposing a .then property to Biome. Full lint passed after this repair. The 50/50 focused test result predates the subsequent auth-race repair and is not a result for the final combined candidate.",
-  "next_action": "On the final combined candidate, rerun the required full lint and relevant auth-wave tests, recording exact source and results. Keep this separate from the sign-out guard false positive in EXT-D-0206.",
+  "next_action": "Await exact-source CI run 38256053803; if the candidate changes, rerun the full lint gate before integration.",
   "transition_history": [
     {
       "at": "2026-10-12",
@@ -56,13 +57,13 @@
   "build_receipt": null,
   "reproducibility_count": "1/1 reported on main source 2e3e67; the lint failure was followed by a full lint pass after the formatting and helper repair.",
   "sibling_census": "The reported Biome failures were 13 formatting/import findings plus suspicious/noThenProperty in tests/helpers/fake-organizations-db.ts. A full repo-wide sibling audit beyond the recorded full-lint pass is not separately attached.",
-  "fix_commits": "No fix commit SHA supplied; the focused repair and lint pass are reported in the stabilization handoff.",
-  "original_repro_retest": "Full pnpm -s lint passed after repair. Final combined-candidate lint and focused tests remain pending because later auth-race edits changed test counts.",
+  "fix_commits": "b5ada0be6f9539dc204f03b5fe0863ab780ab373 (lint-gate formatting and thenable repair).",
+  "original_repro_retest": "Full pnpm -s lint passed on combined source 619ebf923d4867b4a4e1fbeca74092b25b2b6ea1. Combined unit suite also passed in owner-vitest-20261012-1329; neither result substitutes for native/browser acceptance.",
   "surrounding_case_runs": "EXT-F-0003-T08 is linked. No separate surrounding release-gate run IDs supplied.",
-  "reviewer_identity": "No independent reviewer identity or review artifact supplied for this repair.",
+  "reviewer_identity": "No independent reviewer identity or review artifact supplied for the repair. The combined unit run is execution evidence, not independent review.",
   "role": "Guest, member, and admin share the same repository lint gate.",
   "organization": "Not applicable to repository-wide lint.",
   "permissions": "Not applicable to repository-wide lint.",
   "build_receipt_status": "Not applicable: lint runs against repository source, not a browser artifact.",
-  "retest_status": "Full lint passed after repair; final combined-candidate lint and focused tests remain pending."
+  "retest_status": "Full pnpm -s lint passed at 619ebf923d4867b4a4e1fbeca74092b25b2b6ea1 (894 warnings, no errors); combined unit suite passed in owner-vitest-20261012-1329. No independent reviewer artifact is recorded."
 }
