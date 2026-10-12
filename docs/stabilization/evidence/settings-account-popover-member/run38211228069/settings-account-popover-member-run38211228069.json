@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-account-popover-member-run38211228069",
+  "recorded_at": "2026-10-12T06:21:50.295037+00:00",
+  "status": "strict_verification_pass_pending_independent_review",
+  "run": {
+    "id": 38211228069,
+    "attempt": 1,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38211228069",
+    "conclusion": "success",
+    "workflow_head_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+    "acceptance_case": "settings-account-popover-member",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "generic_scrape_auth_mode": "guest",
+    "actual_case_authentication": "member"
+  },
+  "development_artifact": {
+    "ci_run_id": 38210411822,
+    "ci_run_attempt": 1,
+    "mandatory_hosted_remote_admission_routes_step": "success",
+    "ci_conclusion": "success",
+    "artifact_id": 11728859637,
+    "github_digest": "sha256:63571e95aa65aefaee4482c258db56e98457f7b9651f7973afcc82da8e65c7e4",
+    "source_sha": "5743859143df2c281f579dc0318a2787be4fb11b"
+  },
+  "hosted_archive": {
+    "artifact_id": 11730125397,
+    "name": "hosted-guest-38211228069-1",
+    "sha256": "01e929711ab08891027ce6df507555fee33787a20d9aa0c4110eb3e59e71091b",
+    "size_bytes": 60924
+  },
+  "strict_verification": {
+    "command": "verify-settings-member",
+    "exit_code": 0,
+    "valid": true,
+    "workflow_source_sha256": "68beefb4d0f6fbbeb70486be539cf042e13328733d99b49f343d53803d028cba",
+    "authenticated_imported_tree_sha256": "bfd2e2232969b1c6ff43be0b0bc18f8ee8de53f8ba0f4a427d7b2dc06dabec42",
+    "native_report_shape_and_semantics": "pass",
+    "source_and_artifact_provenance": "pass"
+  },
+  "native_behaviors": {
+    "EXT-F-1001-T20": "One open account popover with Profile/Preferences/Sign out; Profile opens one active Profile pane with Back and Save; nonadmin member remains signed in.",
+    "EXT-F-1001-T23": "Preferences selects exactly one active Settings pane; nonadmin member remains signed in.",
+    "EXT-F-1001-T26": "Sign out removes token/profile; reopened account menu has guest header and no Profile; guest identity/menu persist after reopen."
+  },
+  "resource_finals": {
+    "hosted-package": {
+      "decision": "valid",
+      "raw_sha256": "14b4e6ecd935c19e0378a17132b438012a10680a9442f6b378cb711aac0871e0",
+      "sanitized_sha256": "14b4e6ecd935c19e0378a17132b438012a10680a9442f6b378cb711aac0871e0",
+      "final_code": "RESOURCE_FINAL_DECISION"
+    },
+    "hosted-browser": {
+      "decision": "valid",
+      "raw_sha256": "7b377f483456d8888577f2925f106d4efc5ebfca2df8ba1f489fa87f2da3af40",
+      "sanitized_sha256": "7b377f483456d8888577f2925f106d4efc5ebfca2df8ba1f489fa87f2da3af40",
+      "final_code": "RESOURCE_FINAL_DECISION"
+    },
+    "hosted-guest": {
+      "decision": "valid",
+      "raw_sha256": "6d8c1e57a0956551dd432f9a35e7b5951ed60a2bf84a765888b4f5ad39e56cf2",
+      "sanitized_sha256": "5d5c51da2537d4d86a960c2e62285787201680316477c4454e5e33e785456f8b",
+      "final_code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "cleanup": {
+    "temporary_github_secret_deleted_at_terminal": true,
+    "temporary_github_secret_absence_verified": true,
+    "local_private_link_removed_before_dispatch": true,
+    "local_private_link_absence_verified": true,
+    "temporary_identity_created": false,
+    "canonical_recovery_identity": "Read in place without copying or changing."
+  },
+  "product_credit": 0,
+  "independent_review": "pending",
+  "limits": [
+    "Only T20/T23/T26 native assertions were executed; surrounding feature cases are not claimed.",
+    "Screenshots show startup native side panel guest state and normal fixture target, not each tested assertion.",
+    "Native build.sourceSha is null by current driver contract; exact source and imported artifact are independently bound by authenticated workflow logs and strict verifier.",
+    "No inventory/coordinator/source edits or commit/push."
+  ],
+  "sanitized_files": [
+    {
+      "name": "hosted-browser-38211228069-1.jsonl",
+      "sha256": "7b377f483456d8888577f2925f106d4efc5ebfca2df8ba1f489fa87f2da3af40"
+    },
+    {
+      "name": "hosted-guest-38211228069-1.jsonl",
+      "sha256": "5d5c51da2537d4d86a960c2e62285787201680316477c4454e5e33e785456f8b"
+    },
+    {
+      "name": "hosted-package-38211228069-1.jsonl",
+      "sha256": "14b4e6ecd935c19e0378a17132b438012a10680a9442f6b378cb711aac0871e0"
+    },
+    {
+      "name": "native-side-panel.png",
+      "sha256": "c5c2895937ccbe6c55e55f9d5d53fae341164c49aac0c1264858f18f5534e1c2"
+    },
+    {
+      "name": "normal-target-after-open.png",
+      "sha256": "b40fd4bba1a54c1403ccecf49f36bc9de1cb5f67ef081a74294abfef37e8ef5c"
+    },
+    {
+      "name": "settings-account-popover-member.json",
+      "sha256": "21087c0220a370a5432130944d195011d64d0fb695d58c5913e2503e4326408b"
+    }
+  ]
+}

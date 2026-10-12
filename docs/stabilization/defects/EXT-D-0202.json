@@ -1,7 +1,11 @@
 {
   "id": "EXT-D-0202",
   "feature_id": "EXT-F-0002",
-  "case_ids": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
+  "case_ids": [
+    "EXT-F-1001-T20",
+    "EXT-F-1001-T23",
+    "EXT-F-1001-T26"
+  ],
   "title": "Settings member admission plan sends a generic Scrape auth field rejected by hosted preflight",
   "surface": "Hosted acceptance admission harness",
   "auth_mode": "member Settings account popover",
@@ -15,21 +19,24 @@
     "The actual Require exactly one artifact provenance mode workflow shell reaches its generic non-Scrape/non-Notes/non-Data branch and exits 1 because SCRAPE_AUTH_MODE is member."
   ],
   "expected": "The plan passes generic workflow provenance preflight while settings-account-popover-member still requires and uses the designated nonadmin member credential.",
-  "actual": "Run 38209892749 failed before checkout, resource admission, artifact import and native Settings execution. No product case earned credit.",
+  "actual": "Run 38211228069 passed the guarded macos-15-intel member Settings route on exact-source development artifact 11728859637; generic Scrape auth was guest while the acceptance case authenticated as an ordinary member. The independent peer accepted T20/T23/T26 only. This retests the admission regression; it does not establish broader Settings acceptance.",
   "cause": "Planner reuse carried a Data-specific generic Scrape field into a Settings route. CLI tests doubled GitHub dispatch and did not execute the production provenance shell.",
   "severity": "S2: guarded member Settings acceptance cannot start",
-  "priority": "P1: blocks member Settings T20/T23/T26 retest",
-  "state": "in-fix",
+  "priority": "P1: resolved for the guarded member Settings admission route",
+  "state": "closed",
   "owner": "settings_member_popover_retest",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38209892749",
     "docs/stabilization/reports/settings-account-popover-member-run38209892749.json",
     "scripts/hosted-remote-admission.mjs",
-    "scripts/hosted-remote-admission.test.mjs"
+    "scripts/hosted-remote-admission.test.mjs",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38211228069",
+    "docs/stabilization/runs/settings-account-popover-member-run38211228069.json",
+    "docs/stabilization/reports/settings-account-popover-member-run38211228069.json"
   ],
   "source_fix": "The Settings-only plan maps inherited scrape_auth_mode=member to guest. Member authentication remains determined by acceptance_case; workflow and resource policies are unchanged.",
-  "verification_status": "Live hosted preflight failure confirms the original regression. A new forcing test executes the real workflow provenance shell with actual workflow defaults/env bindings and planner fields; it requires valid Settings provenance to pass and mutated member generic auth, missing artifact and Store mode to fail. It separately checks that member credentials remain required. Test execution and source review remain pending; no local tests were launched below the resource floor.",
-  "next_action": "Fresh independent source review, CI/focused tests on the exact repair source, then one guarded resource-valid member native retest and independent evidence review before closure.",
+  "verification_status": "Retested by a successful hosted run using generic Scrape auth guest and the actual Settings member acceptance case. Independent reviewer accepted the limited native T20/T23/T26 results. The strict-verifier receipt was not independently replayed; startup-only screenshots and receipt-level cleanup do not broaden this retest. No claim is made for neighboring cases or full Settings.",
+  "next_action": "No further action for this admission regression. Member Settings coverage remains bounded to T20/T23/T26; all other cases and roles remain separately tracked.",
   "transition_history": [
     {
       "at": "2026-10-12T05:53:19Z",
@@ -42,6 +49,12 @@
       "from": "open",
       "to": "in-fix",
       "reason": "Narrow planner mapping and production-shell forcing test prepared; review and runtime gates remain pending."
+    },
+    {
+      "at": "2026-10-12T06:23:00Z",
+      "from": "in-fix",
+      "to": "closed",
+      "reason": "Successful guarded member route and limited independent PASS retested the admission regression; strict-verifier replay and broad Settings coverage remain outside this closure."
     }
   ]
 }

@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "report_id": "settings-account-popover-member-run38211228069",
+  "recorded_at": "2026-10-12T06:21:50Z",
+  "status": "independently_reviewed_limited_pass",
+  "scope": "One guarded hosted lane A ordinary-member Settings account-popover run covering only T20, T23 and T26 on exact-source unpublished development artifact 11728859637. Independent peer accepted only those three member case outcomes.",
+  "run": {
+    "id": 38211228069,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38211228069",
+    "conclusion": "success",
+    "workflow_head_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+    "acceptance_case": "settings-account-popover-member",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "generic_scrape_auth_mode": "guest",
+    "actual_case_authentication": "member"
+  },
+  "development_artifact": {
+    "source_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+    "ci_run_id": 38210411822,
+    "artifact_id": 11728859637,
+    "artifact_digest": "sha256:63571e95aa65aefaee4482c258db56e98457f7b9651f7973afcc82da8e65c7e4"
+  },
+  "hosted_archive": {
+    "artifact_id": 11730125397,
+    "name": "hosted-guest-38211228069-1",
+    "sha256": "01e929711ab08891027ce6df507555fee33787a20d9aa0c4110eb3e59e71091b",
+    "size_bytes": 60924
+  },
+  "strict_verification": {
+    "command": "verify-settings-member",
+    "exit_code": 0,
+    "valid": true,
+    "native_report_shape_and_semantics": "pass",
+    "source_and_artifact_provenance": "pass",
+    "independent_replay": "not performed; this is the retained receipt claim"
+  },
+  "native_observation": {
+    "cases": {
+      "EXT-F-1001-T20": "Account popover contained Profile, Preferences and Sign out; Profile opened the active Profile pane with Back and Save while ordinary-member identity remained signed in.",
+      "EXT-F-1001-T23": "Preferences selected exactly one active Settings pane while ordinary-member identity remained signed in.",
+      "EXT-F-1001-T26": "Sign out cleared token/profile; reopened menu showed guest identity and omitted Profile; guest identity/menu persisted after reopen."
+    },
+    "other_cases": "None covered by this integration."
+  },
+  "resource_finals": {
+    "package": {
+      "decision": "valid",
+      "journal": "docs/stabilization/evidence/settings-account-popover-member/run38211228069/hosted-package-38211228069-1.jsonl"
+    },
+    "browser": {
+      "decision": "valid",
+      "journal": "docs/stabilization/evidence/settings-account-popover-member/run38211228069/hosted-browser-38211228069-1.jsonl"
+    },
+    "acceptance": {
+      "decision": "valid",
+      "journal": "docs/stabilization/evidence/settings-account-popover-member/run38211228069/hosted-guest-38211228069-1.jsonl"
+    }
+  },
+  "evidence_quality_limits": [
+    "Both screenshots show startup native side-panel guest state and the normal target page; they do not show the three tested assertions.",
+    "The independent reviewer reported checking receipt hashes against native, journal and screenshot files, but did not separately replay the strict verifier or inspect its terminal execution.",
+    "Temporary-secret deletion and local-link absence are claims in the retained receipt only; cleanup was not independently verified."
+  ],
+  "cleanup": "Retained receipt reports temporary GitHub secret deletion and absence verification, local private-link removal and absence verification, and no temporary identity creation. These are receipt-level claims only.",
+  "evidence": [
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/settings-account-popover-member-run38211228069.json",
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/settings-account-popover-member.json",
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/hosted-package-38211228069-1.jsonl",
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/hosted-browser-38211228069-1.jsonl",
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/hosted-guest-38211228069-1.jsonl",
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/native-side-panel.png",
+    "docs/stabilization/evidence/settings-account-popover-member/run38211228069/normal-target-after-open.png"
+  ],
+  "independent_review": {
+    "status": "pass_limited",
+    "reviewer_attestation": "Independent reviewer reported PASS for EXT-F-1001-T20, T23 and T26 in coordinator conversation at approximately 2026-10-12 06:23 UTC.",
+    "separate_review_artifact": false,
+    "reviewed": "Receipt hashes matched retained native receipt, journals and screenshots; three member case results were accepted.",
+    "not_reviewed": "Strict verifier terminal execution was not independently replayed. Screenshots do not corroborate tested states. Cleanup remains receipt-only."
+  },
+  "next": "Run integration limited to the three member cases and update EXT-D-0202 retest state. Whole Settings, other cases, admin, current-main runtime, release and Store remain unverified."
+}

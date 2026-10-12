@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-12 04:50 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T04:50:10Z. 205 features · 792 cases · 1367 controls · 201 linked defect records.
+Generated 2026-10-12 06:24 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T04:50:10Z. 205 features · 792 cases · 1367 controls · 203 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1261** — Pass: 99 · Partial: 93 · Fail: 2 · Unverified: 1065 · N/A: 2.
-Unverified splits into **138 explicitly marked unverified** and **927 with no result record**.
+Applicable case-by-role slots: **1261** — Pass: 102 · Partial: 93 · Fail: 2 · Unverified: 1062 · N/A: 2.
+Unverified splits into **138 explicitly marked unverified** and **924 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -16,9 +16,9 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | Tab or surface | Features | Guest cases | Member cases | Admin cases | All-role case slots | Active defects |
 | --- | ---: | --- | --- | --- | --- | ---: |
 | [Development installation](#development-installation) | 1 | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 6, partial 1, fail 0, unverified 14, n/a 0 | 4 |
-| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 1, unverified 19, n/a 0 | 7 |
+| [Testing infrastructure](#testing-infrastructure) | 1 | 3 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 3 pass · 1 partial · 1 fail · 6 unverified · 0 deferred; 0/1 full | 2 pass · 1 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 8, partial 3, fail 1, unverified 19, n/a 0 | 8 |
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 6, n/a 0 | 0 |
-| [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 11 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 4, partial 6, fail 0, unverified 23, n/a 0 | 0 |
+| [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 20, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
 | [Settings](#settings) | 1 | 18 pass · 6 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 32, partial 16, fail 0, unverified 49, n/a 1 | 3 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
@@ -121,9 +121,9 @@ These historical checks retain their original artifact boundary; they do not est
 
 **Role status:** guest: Partial · member: Fail · admin: Partial. **Cases:** 11. **Controls:** 11.
 
-**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083, EXT-D-0101, EXT-D-0107, EXT-D-0149, EXT-D-0151
+**Next:** Resolve linked defect and repeat its affected native case: EXT-D-0073, EXT-D-0079, EXT-D-0083, EXT-D-0101, EXT-D-0107, EXT-D-0149, EXT-D-0151, EXT-D-0203
 
-**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (fixed), [EXT-D-0102](defects/EXT-D-0102.json) (closed), [EXT-D-0103](defects/EXT-D-0103.json) (closed), [EXT-D-0107](defects/EXT-D-0107.json) (in-fix), [EXT-D-0117](defects/EXT-D-0117.json) (closed), [EXT-D-0119](defects/EXT-D-0119.json) (closed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0136](defects/EXT-D-0136.json) (closed), [EXT-D-0149](defects/EXT-D-0149.json) (fixed), [EXT-D-0151](defects/EXT-D-0151.json) (fixed), [EXT-D-0152](defects/EXT-D-0152.json) (closed), [EXT-D-0153](defects/EXT-D-0153.json) (closed), [EXT-D-0168](defects/EXT-D-0168.json) (closed), [EXT-D-0181](defects/EXT-D-0181.json) (closed), [EXT-D-0182](defects/EXT-D-0182.json) (closed), [EXT-D-0183](defects/EXT-D-0183.json) (closed)
+**Linked defects:** [EXT-D-0025](defects/EXT-D-0025.json) (closed), [EXT-D-0051](defects/EXT-D-0051.json) (closed), [EXT-D-0056](defects/EXT-D-0056.json) (closed), [EXT-D-0060](defects/EXT-D-0060.json) (closed), [EXT-D-0072](defects/EXT-D-0072.json) (closed), [EXT-D-0073](defects/EXT-D-0073.json) (fixed), [EXT-D-0079](defects/EXT-D-0079.json) (in-fix), [EXT-D-0083](defects/EXT-D-0083.json) (fixed), [EXT-D-0098](defects/EXT-D-0098.json) (closed), [EXT-D-0101](defects/EXT-D-0101.json) (fixed), [EXT-D-0102](defects/EXT-D-0102.json) (closed), [EXT-D-0103](defects/EXT-D-0103.json) (closed), [EXT-D-0107](defects/EXT-D-0107.json) (in-fix), [EXT-D-0117](defects/EXT-D-0117.json) (closed), [EXT-D-0119](defects/EXT-D-0119.json) (closed), [EXT-D-0122](defects/EXT-D-0122.json) (closed), [EXT-D-0136](defects/EXT-D-0136.json) (closed), [EXT-D-0149](defects/EXT-D-0149.json) (fixed), [EXT-D-0151](defects/EXT-D-0151.json) (fixed), [EXT-D-0152](defects/EXT-D-0152.json) (closed), [EXT-D-0153](defects/EXT-D-0153.json) (closed), [EXT-D-0168](defects/EXT-D-0168.json) (closed), [EXT-D-0181](defects/EXT-D-0181.json) (closed), [EXT-D-0182](defects/EXT-D-0182.json) (closed), [EXT-D-0183](defects/EXT-D-0183.json) (closed), [EXT-D-0202](defects/EXT-D-0202.json) (closed), [EXT-D-0203](defects/EXT-D-0203.json) (in-fix)
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
@@ -307,13 +307,13 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1001-T17 Explicit persistent grant and temporary-access preservation | Partial | Unverified | Partial | EXT-F-1001-C07 |
 | EXT-F-1001-T18 Explicit reload recovers withheld page action | Partial | Unverified | Partial | EXT-F-1001-C08 |
 | EXT-F-1001-T19 guest: Profile menu entry is hidden | Pass | N/A | N/A | EXT-F-1001-C09 |
-| EXT-F-1001-T20 member: Profile menu entry opens Profile | N/A | Unverified | N/A | EXT-F-1001-C09 |
+| EXT-F-1001-T20 member: Profile menu entry opens Profile | N/A | Pass | N/A | EXT-F-1001-C09 |
 | EXT-F-1001-T21 admin: Profile menu entry opens Profile | N/A | N/A | Unverified | EXT-F-1001-C09 |
 | EXT-F-1001-T22 guest: Preferences menu entry opens Settings | Pass | N/A | N/A | EXT-F-1001-C10 |
-| EXT-F-1001-T23 member: Preferences menu entry opens Settings | N/A | Unverified | N/A | EXT-F-1001-C10 |
+| EXT-F-1001-T23 member: Preferences menu entry opens Settings | N/A | Pass | N/A | EXT-F-1001-C10 |
 | EXT-F-1001-T24 admin: Preferences menu entry opens Settings | N/A | N/A | Unverified | EXT-F-1001-C10 |
 | EXT-F-1001-T25 guest: Sign out menu action | Pass | N/A | N/A | EXT-F-1001-C11 |
-| EXT-F-1001-T26 member: Sign out menu action | N/A | Unverified | N/A | EXT-F-1001-C11 |
+| EXT-F-1001-T26 member: Sign out menu action | N/A | Pass | N/A | EXT-F-1001-C11 |
 | EXT-F-1001-T27 admin: Sign out menu action | N/A | N/A | Unverified | EXT-F-1001-C11 |
 
 **Recorded case details and evidence:**
@@ -336,10 +336,16 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: siteaccess-prepare-pathchecked-sol-20261002-01, docs/stabilization/reports/siteaccess-prepare-pathchecked-native-20261002.json
 - EXT-F-1001-T19 · guest: Pass. Native guest avatar menu rendered no Profile entry while Preferences and Sign out were present; selected tab and guest identity stayed unchanged on the exact driver's pass path. Frozen unpublished development v0.2.502 only.
   Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
+- EXT-F-1001-T20 · member: Pass. Independent peer accepted the bounded native member observation: Profile/Preferences/Sign out were present; Profile opened the active Profile pane with Back and Save while member identity remained signed in. Frozen exact-source development artifact only. Screenshots show startup, and strict-verifier replay was not independently performed.
+  Evidence / build / date recorded: 38211228069, docs/stabilization/reports/settings-account-popover-member-run38211228069.json
 - EXT-F-1001-T22 · guest: Pass. Trusted native pointer chose Preferences; the menu closed, Settings tab and pane became active, and guest identity remained unchanged on frozen unpublished development v0.2.502.
   Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
+- EXT-F-1001-T23 · member: Pass. Independent peer accepted the bounded native member observation: Preferences selected exactly one active Settings pane while member identity remained signed in. Frozen exact-source development artifact only. Screenshots show startup, and strict-verifier replay was not independently performed.
+  Evidence / build / date recorded: 38211228069, docs/stabilization/reports/settings-account-popover-member-run38211228069.json
 - EXT-F-1001-T25 · guest: Pass. Trusted native pointer chose Sign out; the menu closed, guest session and rendered Guest header persisted through reopening and full panel document reload on frozen unpublished development v0.2.502.
   Evidence / build / date recorded: 38167323328, docs/stabilization/reports/settings-account-popover-guest-run38167323328.json
+- EXT-F-1001-T26 · member: Pass. Independent peer accepted the bounded native member observation: Sign out cleared token/profile; reopened menu showed guest identity and omitted Profile; guest menu persisted after reopen. Frozen exact-source development artifact only. Cleanup is receipt-level only; screenshots show startup, and strict-verifier replay was not independently performed.
+  Evidence / build / date recorded: 38211228069, docs/stabilization/reports/settings-account-popover-member-run38211228069.json
 
 
 ## Popup / options / mic permission

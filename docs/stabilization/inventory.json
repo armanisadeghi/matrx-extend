@@ -3056,7 +3056,17 @@
           "dimensions": [
             "warm",
             "navigation"
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "pass",
+              "run_id": "38211228069",
+              "detail": "Independent peer accepted the bounded native member observation: Profile/Preferences/Sign out were present; Profile opened the active Profile pane with Back and Save while member identity remained signed in. Frozen exact-source development artifact only. Screenshots show startup, and strict-verifier replay was not independently performed.",
+              "evidence": "docs/stabilization/reports/settings-account-popover-member-run38211228069.json",
+              "source_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+              "workflow_source_sha": "5743859143df2c281f579dc0318a2787be4fb11b"
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T21",
@@ -3141,7 +3151,17 @@
           "dimensions": [
             "warm",
             "navigation"
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "pass",
+              "run_id": "38211228069",
+              "detail": "Independent peer accepted the bounded native member observation: Preferences selected exactly one active Settings pane while member identity remained signed in. Frozen exact-source development artifact only. Screenshots show startup, and strict-verifier replay was not independently performed.",
+              "evidence": "docs/stabilization/reports/settings-account-popover-member-run38211228069.json",
+              "source_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+              "workflow_source_sha": "5743859143df2c281f579dc0318a2787be4fb11b"
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T24",
@@ -3226,7 +3246,17 @@
           "dimensions": [
             "warm",
             "navigation"
-          ]
+          ],
+          "results": {
+            "member": {
+              "status": "pass",
+              "run_id": "38211228069",
+              "detail": "Independent peer accepted the bounded native member observation: Sign out cleared token/profile; reopened menu showed guest identity and omitted Profile; guest menu persisted after reopen. Frozen exact-source development artifact only. Cleanup is receipt-level only; screenshots show startup, and strict-verifier replay was not independently performed.",
+              "evidence": "docs/stabilization/reports/settings-account-popover-member-run38211228069.json",
+              "source_sha": "5743859143df2c281f579dc0318a2787be4fb11b",
+              "workflow_source_sha": "5743859143df2c281f579dc0318a2787be4fb11b"
+            }
+          }
         },
         {
           "id": "EXT-F-1001-T27",

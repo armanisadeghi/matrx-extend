@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "scope": "receipt-bound disposable Chrome native side panel",
+  "role": "member",
+  "status": "pass",
+  "cases": [
+    {
+      "id": "EXT-F-1001-T20",
+      "status": "pass",
+      "observations": [
+        {
+          "menu": {
+            "triggerCount": 1,
+            "triggerState": "open",
+            "contentState": "open",
+            "openDialogCount": 1,
+            "wrapperCount": 1,
+            "profile": 1,
+            "preferences": 1,
+            "signOut": 1,
+            "guestHeader": false
+          }
+        },
+        {
+          "destination": {
+            "activePaneCount": 1,
+            "profilePaneCount": 1,
+            "backCount": 1,
+            "saveCount": 1
+          },
+          "identity": {
+            "accessTokenPresent": true,
+            "profilePresent": true,
+            "isAdmin": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "EXT-F-1001-T23",
+      "status": "pass",
+      "observations": [
+        {
+          "selected": {
+            "count": 1,
+            "title": "Settings",
+            "paneActive": true
+          },
+          "identity": {
+            "accessTokenPresent": true,
+            "profilePresent": true,
+            "isAdmin": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "EXT-F-1001-T26",
+      "status": "pass",
+      "observations": [
+        {
+          "guest": {
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "isAdmin": false
+          },
+          "reopenedMenu": {
+            "triggerCount": 1,
+            "triggerState": "open",
+            "contentState": "open",
+            "openDialogCount": 1,
+            "wrapperCount": 1,
+            "profile": 0,
+            "preferences": 1,
+            "signOut": 1,
+            "guestHeader": true
+          }
+        },
+        {
+          "persistedGuest": {
+            "accessTokenPresent": false,
+            "profilePresent": false,
+            "isAdmin": false
+          },
+          "persistedMenu": {
+            "triggerCount": 1,
+            "triggerState": "open",
+            "contentState": "open",
+            "openDialogCount": 1,
+            "wrapperCount": 1,
+            "profile": 0,
+            "preferences": 1,
+            "signOut": 1,
+            "guestHeader": true
+          }
+        }
+      ]
+    }
+  ],
+  "build": {
+    "kind": "local_dev_unpacked",
+    "sourceSha": null
+  },
+  "identity_before": {
+    "accessTokenPresent": true,
+    "profilePresent": true,
+    "isAdmin": false
+  }
+}
