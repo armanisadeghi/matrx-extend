@@ -1,0 +1,145 @@
+{
+    "schema_version": 1,
+    "feature": "EXT-F-1009",
+    "scope": "Bounded source-to-inventory census of the non-Chat Screenshots surface; no runtime testing performed.",
+    "source_snapshot": {
+        "feature_source": "src/features/screenshots/ScreenshotsView.tsx",
+        "share_manager_source": "src/features/screenshots/ScreenshotShareLinks.tsx",
+        "visibility_source": "src/config/sidepanel-visibility.ts",
+        "navigation_source": "src/entrypoints/sidepanel/App.tsx",
+        "inventory": "docs/stabilization/inventory.json",
+        "procedure": "docs/feature-tests.md"
+    },
+    "applicability_from_source": {
+        "guest": "Screenshots navigation and content are gated; screenshots audience is signed-in at src/config/sidepanel-visibility.ts:16-54 and src/entrypoints/sidepanel/App.tsx:521-525,713-719. Guest must retain the negative-access case; source alone does not establish denial behavior at runtime.",
+        "member": "Applicable. The signed-in audience rule admits any signed-in viewer; no admin-only condition is present (src/config/sidepanel-visibility.ts:14-54).",
+        "admin": "Applicable under the same signed-in rule; no admin-only condition is present (src/config/sidepanel-visibility.ts:14-54)."
+    },
+    "visible_controls_and_entry_points": [
+        {
+            "surface": "Side-panel Screenshots tab",
+            "controls": [
+                {
+                    "label": "Screenshots navigation trigger",
+                    "source": "src/entrypoints/sidepanel/App.tsx:521-525",
+                    "inventory": "EXT-F-1009 entry_points; guest denial is C09/T09"
+                },
+                {
+                    "label": "Refresh gallery",
+                    "source": "src/features/screenshots/ScreenshotsView.tsx:313-322",
+                    "inventory": "C01/T01"
+                },
+                {
+                    "label": "Visible capture",
+                    "source": "src/features/screenshots/ScreenshotsView.tsx:390-403",
+                    "inventory": "C02/T02"
+                },
+                {
+                    "label": "Full page capture",
+                    "source": "src/features/screenshots/ScreenshotsView.tsx:404-417",
+                    "inventory": "C03/T03"
+                },
+                {
+                    "label": "No active page, loading, empty, and load-error presentations",
+                    "source": "src/features/screenshots/ScreenshotsView.tsx:330-363",
+                    "inventory": "C08/T08"
+                },
+                {
+                    "label": "Capture error, persistence warning, document-change notice, delete error",
+                    "source": "src/features/screenshots/ScreenshotsView.tsx:366-388",
+                    "inventory": "C02/T02, C03/T03, C06/T06; ensure case coverage includes each visible branch"
+                },
+                {
+                    "label": "Screenshot thumbnail opens in-panel image viewer; viewer has Share and dialog close",
+                    "source": "src/features/screenshots/ScreenshotsView.tsx:525-549,627-653",
+                    "inventory": "C04/T04 and C05/T05; source behavior differs from older procedure and recorded substep"
+                },
+                {
+                    "label": "Open in Files",
+                    "source": "src/features/screenshots/ScreenshotsView.tsx:459-461,563-572",
+                    "inventory": "C04/T04"
+                },
+                {
+                    "label": "Share popover",
+                    "source": "src/features/screenshots/ScreenshotsView.tsx:573-608",
+                    "inventory": "C05/T05"
+                },
+                {
+                    "label": "Delete and destructive confirmation",
+                    "source": "src/features/screenshots/ScreenshotsView.tsx:265-300,610-619",
+                    "inventory": "C06/T06"
+                },
+                {
+                    "label": "Nested public-link manager: label, expiration, max views, create, copy, refresh, existing-link list, revoke, status/error",
+                    "source": "src/features/screenshots/ScreenshotShareLinks.tsx:100-163,164-283",
+                    "inventory": "Grouped under C05/T05; nested source anchors are absent from EXT-F-1009"
+                },
+                {
+                    "label": "Lazy preview load and failed-image presentation",
+                    "source": "src/features/screenshots/ScreenshotsView.tsx:479-521,533-548",
+                    "inventory": "C07/T07"
+                }
+            ]
+        },
+        {
+            "surface": "Files side-panel, secondary screenshot browser",
+            "controls": [
+                {
+                    "label": "Files navigation then Screenshots filter tab",
+                    "source": "src/entrypoints/sidepanel/App.tsx:516-520,706-711; src/features/files/FilesView.tsx:253-271,307-343",
+                    "inventory": "Separate feature EXT-F-2008-C05; signed-in audience by src/config/sidepanel-visibility.ts:33-35"
+                },
+                {
+                    "label": "Open screenshot in Files, inspect family, attach to current chat",
+                    "source": "src/features/files/FilesView.tsx:319-339",
+                    "inventory": "Separate feature EXT-F-2008-C09 through C11; outside the per-page Screenshots feature boundary"
+                }
+            ]
+        }
+    ],
+    "inventory_comparison": {
+        "coverage": "EXT-F-1009 has C01-C09 for the direct Screenshots tab surface and separate EXT-F-2008 controls already cover the cross-page Files screenshot browser. No new control ID is proposed from this census.",
+        "source_anchor_gaps": [
+            "EXT-F-1009 source_anchors omit the navigation trigger/content gate (src/entrypoints/sidepanel/App.tsx:521-525,713-719) and audience rule (src/config/sidepanel-visibility.ts:16-54).",
+            "EXT-F-1009 source_anchors omit ScreenshotShareLinks, despite C05 including link creation and management (src/features/screenshots/ScreenshotShareLinks.tsx:45-99,100-163,164-283)."
+        ],
+        "recorded_substep_mismatch": [
+            "EXT-F-1009-T04 admin verified_substeps says both thumbnail and Files icon opened tabs (inventory.json around EXT-F-1009-T04). Current source opens the thumbnail in a Dialog and only Open in Files creates a tab (src/features/screenshots/ScreenshotsView.tsx:525-549,563-572,627-653). The historical observation must be treated as stale for current source until rechecked; this census does not overwrite it or infer a runtime result."
+        ],
+        "proposed_exact_inventory_changes": [
+            "Add src/entrypoints/sidepanel/App.tsx:521, src/entrypoints/sidepanel/App.tsx:713, and src/config/sidepanel-visibility.ts:16 to EXT-F-1009.source_anchors to make entry point and audience provenance explicit.",
+            "Add src/features/screenshots/ScreenshotShareLinks.tsx:45, src/features/screenshots/ScreenshotShareLinks.tsx:100, and src/features/screenshots/ScreenshotShareLinks.tsx:164 to EXT-F-1009.source_anchors for C05/T05 nested controls.",
+            "Preserve existing C01-C09 IDs; explicitly distinguish the local viewer action from Open in Files in the T04 action/expected wording and mark the old thumbnail-opens-tab verified_substep stale pending native re-observation.",
+            "Keep Files > Screenshots under existing EXT-F-2008-C05; do not duplicate it as a new EXT-F-1009 control."
+        ]
+    },
+    "procedure_discrepancies": [
+        {
+            "source": "docs/feature-tests.md:1098",
+            "finding": "Says thumbnail (or open icon) opens the Files viewer and a link icon copies the durable Files URL. Current thumbnail opens the in-panel viewer, Open in Files opens the canonical Files route, and Share opens public sharing (ScreenshotsView.tsx:525-549,563-609,627-653). No durable-Files-URL copy control is present in this view.",
+            "proposed_correction": "Describe thumbnail as opening the in-panel viewer; Open in Files as the durable Files route; Share as public-link creation/copy and management."
+        },
+        {
+            "source": "docs/feature-tests.md:1088",
+            "finding": "The acceptance description says it clicks both thumbnail and Open in Files and checks each new tab, conflicting with the current in-panel thumbnail viewer. It also describes copied text as a durable Files URL while current public-share controls produce public share links.",
+            "proposed_correction": "Separate viewer assertion from Files-tab assertion, and label clipboard observation as public share-link behavior only when the runner invokes Share."
+        },
+        {
+            "source": "docs/feature-tests.md:1104",
+            "finding": "Documented persistence warning text is `Captured, but failed to save to the gallery.`; current source renders `Captured, but could not save. Try again.` at ScreenshotsView.tsx:221-229.",
+            "proposed_correction": "Update the expected string to the current source wording, or treat this text as stale until the owning procedure is updated."
+        },
+        {
+            "source": "docs/feature-tests.md:1110",
+            "finding": "Says mid-capture navigation may result in capture of the new page; adjacent current source flow snapshots and asserts document identity around capture (ScreenshotsView.tsx:184-203,230-237), so the procedure no longer states a reliable expected outcome.",
+            "proposed_correction": "Reconcile against current handler/document-ownership contract and require a visible failure or an explicit saved-for-origin-page notice; do not retain the permissive 'may end up on new page' expectation without current source evidence."
+        }
+    ],
+    "verification_boundary": {
+        "source_only": true,
+        "product_behavior_pass_claimed": false,
+        "live_browser_or_backend_run_performed": false,
+        "existing_cases": "T01-T09 and linked native evidence remain as recorded in inventory.json; this report does not upgrade, downgrade, or replace any runtime verdict beyond flagging the T04 substep as stale against current source."
+    },
+    "next_action": "Inventory coordinator should apply the exact anchor and T04 wording/staleness changes, then update the feature-test procedure. A native observation must recheck thumbnail viewer, Files route, public-link clipboard, and any relevant persistence-warning/document-change branches before restoring current behavior credit."
+}
