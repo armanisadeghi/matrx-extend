@@ -56448,32 +56448,21 @@
           ],
           "design_status": "ready",
           "preconditions": [
-            "Resource permit is admitted and recorded before the run; this report itself does not authorize runtime resource use.",
-            "Use the exact unpacked artifact/build; record extension ID, version, source/lock or archive hash and installed path before and after reload.",
-            "Use a clean controlled member/admin profile whose identity/role is recorded. Keep the active extension installation and selected tool row constant across before/after reload.",
-            "These are local discovery tools; no browser page fixture, account data, Supabase query, credential or DB mutation is required."
+            "Record the exact unpacked extension artifact identity (extension ID, version, source/build hash and path) and signed-in admin profile; obtain the applicable resource permit before any runtime invocation.",
+            "This category-discovery tool reports extension-local handlers and server-catalog entries in the WebMCP category. It does not inspect a page's document.modelContext, register page tools, or prove page-origin invocation. Use the linked 4118/4119/4120/4162 cases for that native contract; keep their outcomes unverified until a supporting browser run.",
+            "No page fixture, account data mutation, credential, or database write is needed. The handler may read tool descriptions from the live registry through ensureToolDescriptions()."
           ],
           "steps": [
-            "In the extension sidepanel open Tools → Catalog. Set the surface filter to All handlers, then search the exact name and open its row. Set the JSON runner input to {} and click Run.",
-            "Inspect the inline output.",
-            "Reload the same unpacked extension and reopen Tools → Catalog, set the surface filter to All handlers, search this exact name, select its row and repeat the same probe; verify extension ID/version/build hash are unchanged and record whether the same expected UI/result predicate holds.",
-            "In Tools → Catalog, set the surface filter to All handlers, search the exact tool name and select its row.",
-            "With this row selected, enter { and click Run; observe the error.",
-            "Replace input with JSON null and click Run; observe the error.",
-            "With an admin session and this read-tier discovery row selected, click Run using {}. Observe whether a permission/approval prompt appears and inspect output.",
-            "Record this specifically as Tools catalog manual-run behavior; do not infer normal chat-dispatch authorization from it.",
-            "Record Chrome extension ID, version and exact unpacked build artifact identity/hash; obtain the applicable resource permit. Run {} once and save the visible JSON/error as the before-reload observation.",
-            "Reload that same unpacked extension in chrome://extensions, reopen the sidepanel and Tools → Catalog, set the surface filter to All handlers, search this exact name, run {} again. Record post-reload output and identity."
+            "In the sidepanel open Tools → Catalog, set the surface filter to All handlers, search list_webmcp_tools, select the exact row, enter {} and click Run. Record the displayed output and artifact identity.",
+            "Check that the result identifies category webmcp, count equals tools.length, and each local-handler entry has a string name plus schema metadata or each server-catalog entry has execution:\"server\". Descriptions may be null because they are loaded from the live registry.",
+            "Enter malformed JSON text and run; record the Tools editor parser error. Then enter valid JSON null and run; record the NoArgs object-schema rejection. These local input checks do not invoke a handler result.",
+            "Repeat {} after reloading the same unpacked extension. Confirm extension ID, version and build hash still match, then compare the structure and errors with the pre-reload observation. Record this as manual Tools catalog behavior only."
           ],
           "expected": [
-            "Result.category === 'webmcp', result.count === result.tools.length, and each tool has a string name plus schema metadata for local handlers or execution:'server' for SERVER_CATALOG entries. Do not require descriptions to be non-null; they are loaded live and may be absent.",
-            "After reload, the tool remains available in the catalog and the same source-backed structural result is observed; a surfaced error is a failed positive probe, and an environment refusal preventing invocation is unverified, never pass.",
-            "Malformed JSON shows an inline error beginning “Invalid JSON:” and does not run the handler.",
-            "JSON null parses but fails NoArgs object schema validation; inline error begins “Schema mismatch:” and no output is rendered.",
-            "After reload, the tool remains available in the catalog and the same source-backed result/error predicate is observed; a different outcome is recorded as a discrepancy, not silently treated as pass.",
-            "Source marks each discovery handler tier read and declares no required_optional_permissions; manual ToolsView invokes handler.run directly with permissionMode act and bypasses the dispatcher permission gate. Therefore manual Run should invoke directly with no approval/optional-permission prompt, subject to handler/environment errors.",
-            "Normal dispatcher behavior remains unverified by this procedure.",
-            "The same extension ID/version/build identity is loaded after reload; exact tool name remains searchable/selectable and the post-reload invocation again yields the valid-input structural result above before and after reload. A surfaced error after invocation fails this positive probe; an environment refusal preventing invocation is unverified, never pass. Compare behavior and report differences; do not require live description text or dynamic tool inventory to be byte-identical."
+            "A valid {} invocation returns the extension tool registry view for category webmcp, with count equal to the returned entries. It does not establish which tools a page registered through document.modelContext or that a page-origin call works.",
+            "Malformed JSON is rejected by the Tools editor before handler invocation; valid JSON null fails the NoArgs object schema. Do not describe either parser outcome as a WebMCP native API failure.",
+            "After reload, the same extension artifact remains loaded and the catalog procedure can be repeated. A runtime/API/environment refusal is unverified, never a pass.",
+            "ToolsView invokes the selected handler directly with assignedTabId:null; this procedure does not test a page target, active/assigned-tab routing, dispatcher authorization, admin enforcement, permission gates, Ask/Act confirmation, or native registration. Those remain separate and unverified in the linked page-native procedures."
           ],
           "dimensions": [
             "valid-input",
