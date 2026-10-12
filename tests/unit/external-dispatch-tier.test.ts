@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from '@/config/env';
 import { handleWebmcpCall } from '@/lib/tools/dispatch';
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { AnyToolHandler } from '@/lib/tools/types';
@@ -48,6 +49,38 @@ describe('external dispatcher effective permission tier', () => {
     expect(result).toEqual({ ok: true, result: { status: 'executed' } });
     expect(deps.run).toHaveBeenCalledTimes(1);
     expect(deps.run.mock.calls[0]?.[0]).toEqual({ action: 'read' });
+  });
+
+  it('denies a guest page-origin call to an admin-only tool before any side effect', async () => {
+    vi.stubGlobal('chrome', {
+      storage: {
+        local: {
+          get: vi.fn(async () => ({ [STORAGE_KEYS.IS_ADMIN]: false })),
+        },
+      },
+    });
+    deps.lookup.mockReturnValue({
+      name: 'admin_webmcp_fixture',
+      tier: 'action',
+      admin_only: true,
+      argsSchema: z.object({}),
+      run: deps.run,
+    } satisfies AnyToolHandler);
+    try {
+      const result = await handleWebmcpCall(
+        { callId: 'guest-origin-test', toolName: 'admin_webmcp_fixture', args: {} },
+        { permissionMode: 'act', initiator: 'page' },
+      );
+      expect(result).toEqual({
+        ok: false,
+        error:
+          "webmcp: tool 'admin_webmcp_fixture' is admin-only and cannot be invoked externally for this user",
+      });
+      expect(deps.run).not.toHaveBeenCalled();
+      expect(deps.broadcast).not.toHaveBeenCalled();
+    } finally {
+      vi.unstubAllGlobals();
+    }
   });
 
   it('keeps an external page read on its assigned tab after focus changes, and reports a closed origin', async () => {

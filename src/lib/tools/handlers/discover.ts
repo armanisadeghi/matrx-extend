@@ -20,6 +20,7 @@
  * the agent already has; useful for "what's always-on?" questions.
  */
 
+import { readIsAdminFromStorage } from '@/lib/auth/is-admin';
 import {
   ALL_CATEGORIES,
   CATEGORIES,
@@ -47,12 +48,10 @@ interface CategoryEntry {
   admin_only: boolean;
 }
 
-function ctxIsAdmin(_ctx: ToolContext): boolean {
-  // Agent context doesn't carry isAdmin yet. The dispatcher upstream filters
-  // admin tools out of non-admin advertisement; here we err on the safe side
-  // and assume non-admin unless we have signal otherwise. The Python server
-  // tells the agent which categories are visible.
-  return false;
+function ctxIsAdmin(_ctx: ToolContext): Promise<boolean> {
+  // Discovery must match the same fail-closed extension-owned role state as
+  // execution and native registration. Request payloads do not authorize admin visibility.
+  return readIsAdminFromStorage();
 }
 
 export const list_chrome_categories: ToolHandler<NoArgs, unknown> = {
@@ -61,7 +60,7 @@ export const list_chrome_categories: ToolHandler<NoArgs, unknown> = {
   argsSchema: NoArgs,
   run: async (_args, ctx) => {
     const handlers = listAllHandlers();
-    const isAdmin = ctxIsAdmin(ctx);
+    const isAdmin = await ctxIsAdmin(ctx);
     const categories: CategoryEntry[] = [];
     for (const cat of ALL_CATEGORIES) {
       const meta = CATEGORIES[cat];
@@ -99,7 +98,7 @@ function buildCategoryListTool(category: ToolCategory): ToolHandler<NoArgs, unkn
     admin_only: meta.admin_only,
     argsSchema: NoArgs,
     run: async (_args, ctx) => {
-      const isAdmin = ctxIsAdmin(ctx) || !!meta.admin_only === false;
+      const isAdmin = (await ctxIsAdmin(ctx)) || !!meta.admin_only === false;
       const handlers = listAllHandlers();
       const tools = toolsInCategory(handlers, category, { isAdmin: isAdmin });
       const registered = SERVER_CATALOG.filter(
