@@ -219,6 +219,8 @@ def case_details(case, feature):
         result = case.get("results", {}).get(mode, {})
         if status not in ("N/A", "Unverified", "Deferred") or evidence(result) or detail.startswith("Unrecognized"):
             lines.append(f"- {case['id']} · {mode}: {status}. {md(detail)}".rstrip())
+            if result.get("evidence_quality"):
+                lines.append("  Evidence quality: " + md(result["evidence_quality"]))
             if evidence(result):
                 lines.append("  Evidence / build / date recorded: " + md(", ".join(evidence(result))))
     return "\n".join(lines)
@@ -263,6 +265,7 @@ def feature_html(feature, defects):
             ev_html = " · ".join(esc(v) for v in ev)
             cells.append(f'<td><span class="badge {status.lower().replace("/", "")}">{esc(status)}</span>' +
                          (f'<small>{esc(detail)}</small>' if detail else "") +
+                         (f'<small>Evidence quality: {esc(result["evidence_quality"])}</small>' if result.get("evidence_quality") else "") +
                          (f'<small>{ev_html}</small>' if ev else "") + '</td>')
         rows.append(f'<tr><th scope="row">{esc(case["title"])}<small>{esc(case["id"])}</small></th>' +
                     "".join(cells) + f'<td><small>{esc(", ".join(case.get("control_ids", [])) or "No control mapped")}</small></td></tr>')
