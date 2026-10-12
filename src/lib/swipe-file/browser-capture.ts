@@ -1,5 +1,6 @@
 /** Start the existing org-private guided capture for an already saved post. */
-import { apiPost } from '@/lib/api/client';
+import { runOpAs } from '@/lib/api/matrx-api';
+import { gatedCaptureDoor } from '@ai-matrx/api/marketing';
 import { type OpenGuidedResult, adoptGuidedTab, openGuidedTab } from '@/lib/guided-capture/host';
 import { recipeForUrl } from '@/lib/guided-capture/recipes';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
@@ -27,16 +28,21 @@ export async function startSwipeBrowserCapture(args: {
       target.platform !== receipt.platform
     )
       return { ok: false, sentence: 'Browser slide capture is unavailable for this post.' };
-    const result = await apiPost<{ job: { id: string } }>(
-      '/social/gated-captures',
-      {
-        platform: receipt.platform,
-        handle_or_url: target.url,
-        target: 'post',
-        path: 'guided',
-        post_id: receipt.postId,
-      },
-      undefined,
+    const result = await runOpAs<{ job: { id: string } }>(
+      (api, o) =>
+        gatedCaptureDoor(
+          api,
+          {
+            body: {
+              platform: receipt.platform,
+              handle_or_url: target.url,
+              target: 'post',
+              path: 'guided',
+              post_id: receipt.postId,
+            },
+          },
+          o,
+        ),
       { organizationId: receipt.organizationId },
     );
     if (!result.ok) return { ok: false, sentence: result.error };
@@ -70,10 +76,20 @@ export async function startFeedCapture(args: {
       return { ok: false, sentence: 'Open a profile or feed to capture more posts from it.' };
     const organizationId = await getActiveOrganizationId();
     if (!organizationId) return { ok: false, sentence: 'Sign in to Matrx to capture posts.' };
-    const result = await apiPost<{ job: { id: string } }>(
-      '/social/gated-captures',
-      { platform: recipe.platform, handle_or_url: args.url, target: 'profile', path: 'guided' },
-      undefined,
+    const result = await runOpAs<{ job: { id: string } }>(
+      (api, o) =>
+        gatedCaptureDoor(
+          api,
+          {
+            body: {
+              platform: recipe.platform,
+              handle_or_url: args.url,
+              target: 'profile',
+              path: 'guided',
+            },
+          },
+          o,
+        ),
       { organizationId },
     );
     if (!result.ok) return { ok: false, sentence: result.error };

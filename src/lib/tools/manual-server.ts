@@ -1,12 +1,13 @@
 /** The existing one-tool test door executes a registered server tool in the person's seat. */
 import {
   ORGANIZATION_CONTEXT_HEADER,
-  apiGet,
   buildHeaders,
   getApiBaseUrl,
   readSessionBearer,
 } from '@/lib/api/client';
+import { runOpAs } from '@/lib/api/matrx-api';
 import { requireRequestOrganizationId } from '@/lib/api/routes/auth';
+import { toolTestingListTools } from '@ai-matrx/api/agents';
 import { streamFetch } from '@/lib/api/stream';
 import { getAccessToken } from '@/lib/auth/flow';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
@@ -16,8 +17,8 @@ export interface ServerToolDefinition {
 }
 
 export async function getManualServerToolDefinition(name: string): Promise<ServerToolDefinition> {
-  const response = await apiGet<{ tools: (ServerToolDefinition & { name: string })[] }>(
-    '/tools/test/list',
+  const response = await runOpAs<{ tools: (ServerToolDefinition & { name: string })[] }>((api, o) =>
+    toolTestingListTools(api, undefined, o),
   );
   if (!response.ok) throw new Error(response.error);
   const tool = response.data.tools.find((candidate) => candidate.name === name);

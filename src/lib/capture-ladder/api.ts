@@ -21,7 +21,14 @@
  *     handlers, same as every other route module in this folder.
  */
 
-import { type ApiResult, STATUS_INVALID_BODY, apiGet, apiPost } from '@/lib/api/client';
+import { type ApiResult, STATUS_INVALID_BODY } from '@/lib/api/client';
+import { runOpAs } from '@/lib/api/matrx-api';
+import {
+  claimHandoff as claimHandoffOp,
+  dismissHandoff as dismissHandoffOp,
+  needsDrive,
+  recordResult,
+} from '@ai-matrx/api/media';
 import { type LandingNotice, LandingNoticeSchema } from '@/lib/api/routes/sources';
 import { getAccessToken } from '@/lib/auth/flow';
 import {
@@ -31,7 +38,6 @@ import {
   handoffSchema,
 } from '@/lib/capture-ladder/types';
 
-const BASE = '/capture/handoffs';
 /** The result door lands the page (and any images) before it answers. */
 const RESULT_POST_TIMEOUT_MS = 180_000;
 
@@ -147,11 +153,9 @@ export async function claimHandoff(
   organizationId?: string,
 ): Promise<ApiResult<Handoff>> {
   if (!(await getAccessToken())) return signedOut();
-  const res = await apiPost<unknown>(
-    `${BASE}/${id}/claim`,
-    body,
-    signal,
-    organizationId ? { organizationId } : undefined,
+  const res = await runOpAs<unknown>(
+    (api, o) => claimHandoffOp(api, { path: { handoff_id: id }, body }, o),
+    { signal, ...(organizationId ? { organizationId } : {}) },
   );
   return parseHandoff(res);
 }
@@ -165,10 +169,14 @@ export async function postCaptureResult(
   if (!(await getAccessToken())) return signedOut();
   // Landing a social capture copies its images into the person's private files
   // before the door answers, which can take well over the 30s default.
-  const res = await apiPost<unknown>(`${BASE}/${id}/result`, body, signal, {
-    timeoutMs: RESULT_POST_TIMEOUT_MS,
-    ...(organizationId ? { organizationId } : {}),
-  });
+  const res = await runOpAs<unknown>(
+    (api, o) => recordResult(api, { path: { handoff_id: id }, body }, o),
+    {
+      signal,
+      timeoutMs: RESULT_POST_TIMEOUT_MS,
+      ...(organizationId ? { organizationId } : {}),
+    },
+  );
   return res.ok ? { ok: true, data: parseResultResponse(res.data) } : res;
 }
 
@@ -179,11 +187,9 @@ export async function postNeedsDrive(
   organizationId?: string,
 ): Promise<ApiResult<Handoff>> {
   if (!(await getAccessToken())) return signedOut();
-  const res = await apiPost<unknown>(
-    `${BASE}/${id}/needs-drive`,
-    body,
-    signal,
-    organizationId ? { organizationId } : undefined,
+  const res = await runOpAs<unknown>(
+    (api, o) => needsDrive(api, { path: { handoff_id: id }, body }, o),
+    { signal, ...(organizationId ? { organizationId } : {}) },
   );
   return parseHandoff(res);
 }
@@ -195,11 +201,14 @@ export async function dismissHandoff(
   organizationId?: string,
 ): Promise<ApiResult<Handoff>> {
   if (!(await getAccessToken())) return signedOut();
-  const res = await apiPost<unknown>(
-    `${BASE}/${id}/dismiss`,
-    note !== undefined ? { note } : {},
-    signal,
-    organizationId ? { organizationId } : undefined,
+  const res = await runOpAs<unknown>(
+    (api, o) =>
+      dismissHandoffOp(
+        api,
+        { path: { handoff_id: id }, body: note !== undefined ? { note } : {} },
+        o,
+      ),
+    { signal, ...(organizationId ? { organizationId } : {}) },
   );
   return parseHandoff(res);
 }
@@ -246,7 +255,9 @@ export async function getCapturePolicy(signal?: AbortSignal): Promise<CapturePol
         'standard defaults were used. Sign in and run these again to use your own settings.',
     };
   }
-  const res = await apiGet<MediaSettingsResponse>('/media/settings', signal);
+  const res = await runOpAs<MediaSettingsResponse>((api, o) => getSettings(api, undefined, o), {
+    signal,
+  });
   if (!res.ok) {
     return {
       ...DEFAULT_CAPTURE_POLICY,

@@ -1,5 +1,6 @@
 /** Canonical social library reads under caller RLS; no local content copies. */
-import { apiDelete, apiPut } from '@/lib/api/client';
+import { runOp } from '@/lib/api/matrx-api';
+import { removeItemDoor, setItemNotesDoor } from '@ai-matrx/api/marketing';
 import { getSupabase } from '@/lib/supabase/client';
 import { associations } from '@/lib/supabase/generated/platform';
 import {
@@ -168,18 +169,38 @@ export async function updateSwipeCollection(
     );
 }
 export async function updateSwipeNotes(membership: SwipeMembership, note: string, tags: string[]) {
-  const result = await apiPut(
-    `/social/collections/${membership.source_id}/items/social_post/${membership.target_id}`,
-    { note, tags },
-    undefined,
+  const result = await runOp(
+    (api, o) =>
+      setItemNotesDoor(
+        api,
+        {
+          path: {
+            collection_id: membership.source_id,
+            item_type: 'social_post',
+            item_id: membership.target_id,
+          },
+          body: { note, tags },
+        },
+        o,
+      ),
     { organizationId: membership.organization_id },
   );
   if (!result.ok) throw new Error(result.error);
 }
 export async function removeSwipeMembership(membership: SwipeMembership) {
-  const result = await apiDelete(
-    `/social/collections/${membership.source_id}/items/${membership.target_type}/${membership.target_id}`,
-    undefined,
+  const result = await runOp(
+    (api, o) =>
+      removeItemDoor(
+        api,
+        {
+          path: {
+            collection_id: membership.source_id,
+            item_type: membership.target_type,
+            item_id: membership.target_id,
+          },
+        },
+        o,
+      ),
     { organizationId: membership.organization_id },
   );
   if (!result.ok) throw new Error(result.error);

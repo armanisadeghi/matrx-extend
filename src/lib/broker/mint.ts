@@ -6,12 +6,12 @@
  * index.ts), which layers caching + refresh-ahead on top.
  */
 
-import { apiPost, withSchema } from '@/lib/api/client';
+import { withSchema } from '@/lib/api/client';
+import { runOpAs } from '@/lib/api/matrx-api';
+import { mintToken } from '@ai-matrx/api/architecture';
 import { log } from '@/lib/debug/log';
 import type { BrokerResult, BrokeredCredential, MintOptions, TierPolicy } from './types';
 import { BrokeredCredentialSchema } from './types';
-
-const MINT_PATH = '/broker/tokens';
 
 /**
  * Mint a brokered credential. `tierPolicy` is a REQUIRED explicit argument —
@@ -35,7 +35,9 @@ export async function mintCredential(
     ...(opts.model !== undefined && { model: opts.model }),
     ...(opts.scopes !== undefined && { scopes: opts.scopes }),
   };
-  const raw = await apiPost<unknown>(MINT_PATH, body);
+  const raw = await runOpAs<unknown>((api, o) =>
+    mintToken(api, { body: body as unknown as Parameters<typeof mintToken>[1]['body'] }, o),
+  );
   const result = withSchema(raw, BrokeredCredentialSchema);
   if (!result.ok) {
     // Never log the token; on failure there is none. Log everything else.

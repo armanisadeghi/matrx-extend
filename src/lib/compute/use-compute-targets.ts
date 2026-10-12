@@ -16,7 +16,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useRequestOrganizationId } from '@/hooks/use-request-organization';
-import { apiGet, apiPost } from '@/lib/api/client';
+import { runOpAs } from '@/lib/api/matrx-api';
+import {
+  listComputeTargets,
+  resolveComputeTarget as resolveComputeTargetOp,
+} from '@ai-matrx/api/architecture';
 import { useAuthStore } from '@/state/auth';
 import type {
   ComputeTargetListResponse,
@@ -51,7 +55,9 @@ export function useComputeTargets(enabled = true): UseComputeTargetsResult {
     const myId = ++fetchIdRef.current;
     setLoading(true);
     setError(null);
-    const result = await apiGet<ComputeTargetListResponse>('/api/compute-targets/');
+    const result = await runOpAs<ComputeTargetListResponse>((api, o) =>
+      listComputeTargets(api, undefined, o),
+    );
     if (myId !== fetchIdRef.current) return;
     if (result.ok) {
       setData(result.data);
@@ -82,10 +88,9 @@ export function useComputeTargets(enabled = true): UseComputeTargetsResult {
 export async function resolveComputeTarget(
   ref: ComputeTargetRef,
 ): Promise<SandboxBindingPayload | null> {
-  const result = await apiPost<SandboxBindingPayload>('/api/compute-targets/resolve', {
-    kind: ref.kind,
-    id: ref.id,
-  });
+  const result = await runOpAs<SandboxBindingPayload>((api, o) =>
+    resolveComputeTargetOp(api, { body: { kind: ref.kind, id: ref.id } }, o),
+  );
   if (!result.ok) {
     // The server's structured errors arrive as `result.error`; surface them
     // to the picker via the chat-store's `boundTargetUnavailable` flag.
