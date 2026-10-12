@@ -1,4 +1,5 @@
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
+import { waitForCopyPopoverTeardown } from './scrape-copy-teardown.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 export const GUEST_COPY_MENUS = [
@@ -452,6 +453,8 @@ export async function runGuestCopyMenus({
         };
         if (!entry.menuCorrect || !copyResultMatches(copied) || !entry.permissionRestored)
           throw new Error(`scrape_copy_mismatch:${title}:${option}`);
+        action.stage = 'wait_menu_teardown';
+        await waitForCopyPopoverTeardown({ panel, evaluate: sample, waitFor: poll });
         evidence.push(entry);
       }
     }

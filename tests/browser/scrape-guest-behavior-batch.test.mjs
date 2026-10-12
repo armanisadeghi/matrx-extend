@@ -310,6 +310,8 @@ test('schema AI uses JSON fence; wrong fence, no-op, stale and wrong option fail
           if (kind === 'scrape-copy-option') clipboard = producer(option, clipboard);
         },
         evaluate: async (_panel, expression) => {
+          if (expression.includes('connectedOwnedDialogs'))
+            return { activeScrapePanel: true, connectedOwnedDialogs: 0, connectedClosedDialogs: 0 };
           if (expression.includes('[data-radix-popper-content-wrapper]'))
             return ['Markdown', 'JSON', 'For AI agent'];
           return Function('navigator', `return ${expression}`)(navigator);
