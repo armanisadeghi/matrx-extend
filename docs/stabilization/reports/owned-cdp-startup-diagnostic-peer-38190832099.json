@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "review_id": "owned-cdp-startup-diagnostic-peer-38190832099",
+  "reviewed_at": "2026-10-12T01:21:25Z",
+  "reviewer": "/root/startup_diag_peer_1012",
+  "scope": "Fresh independent review of hosted startup-resource-diagnostic run 38190832099, artifact provenance, saved report and sanitized journals. No browser run, product changes, or inventory changes.",
+  "verdict": {
+    "A": "NO_PRODUCT_CREDIT",
+    "B": "ACCEPT_DIAGNOSTIC_WITH_LIMITS"
+  },
+  "product_credit": {
+    "credit": 0,
+    "assessment": "Correct. The run only observed startup and exercised the existing panel resource-health boundary. It did not perform product actions or assertions, authenticate, or create a product fixture. Its infrastructure result cannot establish extension feature acceptance."
+  },
+  "endpoint_observation": {
+    "assessment": "The headed owned Chromium CDP connection was observed in 2,565 ms, inside the existing 8,000 ms endpoint deadline. The saved native report places endpoint_read at 01:17:06.879Z and records the connected observation at 01:17:06.878Z; it reports endpointPresent=true, inspectionFailed=false, exitObserved=false, polls=0. Headed mode was verified with Browser.getBrowserCommandLine.",
+    "post_timeout_watch": "Not exercised. The harness enters its additional 8-second post-timeout observation only after owned_cdp_endpoint_timeout. Since CDP connected within deadline, this run says nothing about delayed endpoint publication, child exit at timeout, or a live child without an endpoint.",
+    "resource_state": "The three retained package, browser, and startup journals each terminate with admitted=true, resourceInvalid=false, exitCode=0, decision=valid. The startup journal records four healthy watch samples after admission; this is a single admitted macOS Intel observation and does not reproduce the earlier high-CPU condition."
+  },
+  "provenance": {
+    "hosted_run": {
+      "id": 38190832099,
+      "attempt": 1,
+      "event": "workflow_dispatch",
+      "head_sha": "026785d714be6f059ecb81afdcbd0573ea64be81",
+      "conclusion": "success",
+      "artifact_id": 11721448895,
+      "artifact_name": "hosted-guest-38190832099-1",
+      "artifact_digest": "sha256:b8ef3a66b221c9b7d9e3e7f0e9e2e08ea37d7243da12578e2edcd35480646bd1",
+      "artifact_size_bytes": 76442
+    },
+    "development_ci": {
+      "id": 38189416372,
+      "attempt": 1,
+      "event": "push",
+      "head_sha": "5720310991c36ae39ed8a32e0f9ae20226f62b62",
+      "conclusion": "success",
+      "artifact_id": 11721207192,
+      "artifact_name": "matrx-extend-development-test-5720310991c36ae39ed8a32e0f9ae20226f62b62-38189416372-1",
+      "artifact_digest": "sha256:a1183de454bde13ecf00698688e5e403d2df455a82e9e077986fcda9e3084bec",
+      "artifact_size_bytes": 40049056,
+      "version": "0.2.509"
+    },
+    "checks": [
+      "GitHub API reports the hosted run completed successfully on main at 026785d, attempt 1, workflow_dispatch; its only job completed successfully.",
+      "GitHub Actions artifact metadata IDs, run bindings, names, digests, and sizes match the saved report for both the hosted and CI artifacts.",
+      "GitHub API reports CI run 38189416372 completed successfully on main at 5720310. The workflow source to CI source diff contains only docs/stabilization/reports/hosted-cdp-resource-escalation-20261012.json and docs/stabilization/reports/system-disk-recovery-20261012.json; src, package.json, pnpm-lock.yaml, and wxt.config.ts have no diff.",
+      "The hosted workflow log summary shows the selected Chrome side-panel case and auth preflight skipped for this diagnostic case, while the dedicated startup measurement step succeeded and artifact upload succeeded. The saved startup report records the expected diagnostic-only verdict and no product assertions."
+    ]
+  },
+  "sanitization_and_evidence": {
+    "assessment": "The retained startup report contains bounded phase names, booleans, counts, timestamps, and renderer metadata. The retained resource journals contain run identifiers, admission/watch samples, and final decisions; the reviewed copies contain no endpoint address, auth value, fixture payload, command line, argv, or raw exception. The journal writer uses an allowlist and strips unapproved keys; its startup-bracket sanitizer, when used, permits only bounded timing/accounting fields and process identifiers/basenames, excluding raw command fields.",
+    "omitted_interval_snapshots": "The saved report explicitly says RESOURCE_STARTUP_INTERVAL_BRACKET snapshots were manually reviewed and omitted because they carry PID/process attribution. This is a transparent, privacy-conservative omission, not evidence that interval attribution was unavailable or that the sanitizer rejected the event. The raw bracket snapshots were not retained in the reviewed evidence, so their contents and the manual review cannot be independently reproduced from this archive. The omission does not change the supported endpoint-timing or resource-final conclusions.",
+    "artifact_verification": "GitHub artifact metadata digest matched the report. The ZIP was not downloaded or unpacked; raw screenshots and workflow logs were not inspected."
+  },
+  "next_safe_action": "Keep this result diagnostic-only. If the timeout branch still needs evidence, use a separate, resource-admitted hosted diagnostic in which the natural owned-CDP startup reaches the existing timeout; retain only the sanitized endpoint observations and resource finals. Do not infer or claim a post-timeout outcome from this fast-connect run, and do not inject artificial load or add product exercise to obtain it.",
+  "evidence_checked": [
+    "GitHub API workflow-run and job-step metadata for runs 38190832099 and 38189416372.",
+    "GitHub artifact metadata for artifact IDs 11721448895 and 11721207192, including digest and run binding.",
+    "docs/stabilization/reports/owned-cdp-startup-diagnostic-38190832099.json.",
+    "docs/stabilization/evidence/startup-resource-diagnostic/run38190832099/startup-interval-diagnostic.json and the three sanitized resource journals.",
+    "Workflow source at 026785d, startup diagnostic code, native CDP timeout/post-timeout branch, and resource-journal allowlist/sanitizer."
+  ],
+  "limits": [
+    "No product feature behavior or product acceptance assertions were exercised.",
+    "The additional post-timeout watch was not reached; prior high-CPU startup behavior remains unresolved.",
+    "Only one admitted macOS Intel startup observation is available.",
+    "The raw process bracket snapshots and screenshots were not independently reviewed; this review relies on the sanitized report, retained journals, source rules, and GitHub artifact metadata."
+  ]
+}
