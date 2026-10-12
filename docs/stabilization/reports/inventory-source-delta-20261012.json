@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "task_id": "inventory-source-delta-20261012",
+  "lane": "inventory_maintenance",
+  "status": "source_inventory_updated_runtime_unverified",
+  "inventory_source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
+  "compared_main_sha": "99ce325ac8d4dfd3b9c5b45046aee9123eef7f80",
+  "scope": "Runtime/UI source paths in the source_sha..origin/main delta; excluded Chat and Pilot controls and tests/docs-only changes.",
+  "inventory_gate_before": {
+    "scope_complete": false,
+    "behavior_claimed": false
+  },
+  "inventory_gate_after": {
+    "scope_complete": false,
+    "behavior_claimed": false
+  },
+  "findings": [
+    {
+      "kind": "new_feature",
+      "feature_id": "EXT-F-2018",
+      "summary": "New signed-in Swipe file sidepanel plus social-page save pill, context-menu save, and guided browser capture are absent from the source-census inventory.",
+      "source_evidence": [
+        {
+          "path": "src/entrypoints/sidepanel/App.tsx",
+          "lines": "462-465, 650-655",
+          "detail": "Gated Swipe file trigger and view are mounted."
+        },
+        {
+          "path": "src/config/sidepanel-visibility.ts",
+          "lines": "23-25",
+          "detail": "Swipe file audience is signed-in."
+        },
+        {
+          "path": "src/features/swipe-file/SwipeFileView.tsx",
+          "lines": "183-220, 235-259, 286-308, 394-501, 520-577",
+          "detail": "Refresh, detail, capture refresh, note/tag editing, removal/addition, collection filtering, archived toggle, create/rename/archive/restore, search and item rows."
+        },
+        {
+          "path": "src/lib/swipe-file/pill.ts",
+          "lines": "35-52, 106-168, 183-238",
+          "detail": "Page pill contains collection/save, feed capture, progress/duplicate/partial results, missing-slide retry, browser capture and extension/web links."
+        },
+        {
+          "path": "src/lib/context-menus/setup.ts",
+          "lines": "79-90, 150-156",
+          "detail": "Page/link Save to swipe file context-menu action."
+        },
+        {
+          "path": "src/lib/guided-capture/overlay.ts",
+          "lines": "350-394",
+          "detail": "Guided capture quantity, scroll/stop, reveal, capture, retry, back and close controls."
+        }
+      ],
+      "inventory_delta": [
+        "EXT-F-2018",
+        "EXT-F-2018-C01..C20",
+        "EXT-F-2018-T01..T05"
+      ],
+      "role_applicability": "Guest is applicable for hidden-tab and page/context-menu refusal; member and admin are applicable for signed-in library and capture flows. All cells remain unverified."
+    },
+    {
+      "kind": "new_control",
+      "feature_id": "EXT-F-2005",
+      "control_id": "EXT-F-2005-C34",
+      "case_id": "EXT-F-2005-T09",
+      "summary": "Data now offers Get as table for a matching live-data source; no corresponding control/case existed.",
+      "source_evidence": [
+        {
+          "path": "src/features/data/DataView.tsx",
+          "detail": "New LiveDataOffer mounted when active tab URL exists."
+        },
+        {
+          "path": "src/features/data/LiveDataOffer.tsx",
+          "lines": "19-51, 53-57, 80-146",
+          "detail": "Signed-in matching-source gate, record count, points/limit estimate, fetch/progress, refusal/result and Open table link."
+        }
+      ],
+      "role_applicability": "Guest sees no offer; member/admin controls are source-visible. All behavior remains unverified."
+    },
+    {
+      "kind": "changed_control",
+      "feature_id": "EXT-F-2007",
+      "control_ids": [
+        "EXT-F-2007-C05",
+        "EXT-F-2007-C25"
+      ],
+      "case_id": "EXT-F-2007-T01",
+      "summary": "Note editor removed the old free-form folder input and added a HomePicker backed by moveNoteHome; prior inventory described folder editing/no-folder. Stable controls were retained and corrected to home selection/movement.",
+      "source_evidence": [
+        {
+          "path": "src/features/notes/NoteEditor.tsx",
+          "lines": "74-92, 466-482",
+          "detail": "Explicit moveNoteHome operation and HomePicker in the editor, disabled while moving, with visible failure feedback."
+        },
+        {
+          "path": "src/features/notes/HomePicker.tsx",
+          "detail": "Searchable home selection control."
+        }
+      ],
+      "role_applicability": "Signed-in notes feature; member/admin organization scopes remain relevant. Runtime unverified."
+    },
+    {
+      "kind": "new_control",
+      "feature_id": "EXT-F-1006",
+      "control_id": "EXT-F-1006-C37",
+      "case_id": "EXT-F-1006-T37",
+      "summary": "Debug > Bridges now contains a Matrx 2 connection panel and Reconnect action with session fields; absent from existing Bridges inventory.",
+      "source_evidence": [
+        {
+          "path": "src/features/debug/BridgesView.tsx",
+          "detail": "Matrx2Panel added to admin Bridges surface."
+        },
+        {
+          "path": "src/features/debug/Matrx2Panel.tsx",
+          "lines": "13-61",
+          "detail": "Connected/routable status, Reconnect, port, app version, client label, account and call count."
+        }
+      ],
+      "role_applicability": "Admin-only Bridges entry point; member/guest denial already covered by EXT-F-1006-T18/T19. Runtime unverified."
+    }
+  ],
+  "source_changes_reviewed_as_existing_coverage": [
+    "SEO History button/loading/empty/error/retry changes map to EXT-F-1008-C05/C06.",
+    "Scrape Save Source dialog, destination choice, optional Library selection, rename retry, and File elsewhere map to EXT-F-1007-C29..C37; no additional stable control identified in this bounded review.",
+    "Guided capture is inventoried under new Swipe File controls for its social workflow; existing Capture handoff controls remain under EXT-F-2010.",
+    "Chat/Pilot source delta and tests/docs-only files were excluded by task scope."
+  ],
+  "inventory_changes": [
+    "Updated EXT-F-1001-C01 and T01/T02/T03 for the new signed-in Swipe file tab.",
+    "Added EXT-F-2005-C34 / T09 live-data offer case.",
+    "Corrected EXT-F-2007-C05/C25 and T01 from removed folder field semantics to home selection/move.",
+    "Added EXT-F-1006-C37 / T37 Matrx 2 admin Bridges section.",
+    "Added EXT-F-2018 with 20 controls and five cases; all cells remain unverified.",
+    "Independent review found EXT-F-2018-C14 and C16 initially orphaned; they are linked to member T02 and admin T03, whose explicit steps and expected outcomes now cover post capture refresh, completion/refusal, stored-media preview, and download fallback."
+  ],
+  "validation": {
+    "json_parse": "pass",
+    "tracker_regenerated": "yes",
+    "behavior_tests": "not_run",
+    "reason": "Source inventory task only; host resource admission pressure was reported as 2, and user instructions prohibit product verdicts from source alone."
+  },
+  "changed_files": [
+    "docs/stabilization/inventory.json",
+    "docs/stabilization/CHECKLIST.md",
+    "docs/stabilization/STATUS.md",
+    "docs/stabilization/STATUS.html",
+    "docs/stabilization/reports/inventory-source-delta-20261012.json"
+  ],
+  "open_questions": [
+    "Does Swipe file require any member-specific or admin-specific write restriction beyond current organization authorization? Source shows a shared signed-in gate, so runtime/server evidence is needed.",
+    "Do source anchors/status for other changed controls need a subsequent dedicated non-Chat/Pilot audit beyond this bounded delta?"
+  ],
+  "independent_review_followup": {
+    "finding": "EXT-F-2018-C14 and C16 had links, but the T02/T03 procedure text did not explicitly exercise post capture refresh, its result/refusal, stored-media open, or download fallback.",
+    "correction": "T02 and T03 steps now explicitly activate Refresh capture, inspect completion/refusal and refreshed media state, open stored media, test supported previews and the non-preview/download fallback. Expected outcomes remain source expectations; no behavior status changed.",
+    "status": "awaiting_fresh_peer_verification"
+  },
+  "source_delta_followup_after_sync": {
+    "reviewed_range": "807e2c20405ce8d74734c137331c3df555ba6c6d..99ce325ac8d4dfd3b9c5b45046aee9123eef7f80",
+    "changed_runtime_paths": [
+      "src/lib/api/matrx-api.ts",
+      "src/lib/api/routes/ai.ts",
+      "src/lib/api/routes/files.ts",
+      "src/lib/api/routes/google-workspace.ts",
+      "src/lib/api/routes/health.ts",
+      "src/lib/api/routes/prospects.ts",
+      "src/lib/api/routes/research.ts",
+      "src/lib/api/routes/social.ts",
+      "src/lib/api/routes/sources.ts",
+      "src/lib/api/routes/tool-results.ts",
+      "src/lib/api/routes/vault.ts",
+      "src/lib/broker/mint.ts",
+      "src/lib/capture-ladder/api.ts",
+      "src/lib/compute/use-compute-targets.ts",
+      "src/lib/swipe-file/browser-capture.ts",
+      "src/lib/swipe-file/library.ts",
+      "src/lib/tools/manual-server.ts"
+    ],
+    "finding": "The intervening delta refactors route calls through the shared API operation doors and adjusts request/response plumbing; no new UI controls or changed role gates were identified in the reviewed sources. The changed social media read path still feeds the existing Swipe File stored-media control EXT-F-2018-C16. Existing controls remain runtime-unverified.",
+    "evidence": [
+      {
+        "path": "src/lib/api/routes/social.ts",
+        "detail": "Collection/media route implementations moved to @ai-matrx/api/marketing and shared runOp; this feeds existing Swipe File capture/media actions."
+      },
+      {
+        "path": "src/lib/swipe-file/browser-capture.ts",
+        "detail": "Guided capture uses API operation door and retains the existing saved-post/feed controls."
+      },
+      {
+        "path": "src/lib/api/routes/files.ts",
+        "detail": "Upload/download transport moved to shared API operation wrappers; existing Files/media controls remain the user surface."
+      }
+    ],
+    "excluded": [
+      "Test-only changes; no Chat or Pilot controls were added to the inventory."
+    ]
+  }
+}

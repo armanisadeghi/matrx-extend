@@ -1,14 +1,14 @@
 # Extension stabilization status
 
-Generated 2026-10-12 14:59 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T14:45:00Z. 205 features · 796 cases · 1370 controls · 209 linked defect records.
+Generated 2026-10-12 15:49 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T15:46:06Z. 206 features · 802 cases · 1391 controls · 209 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1269** — Pass: 103 · Partial: 93 · Fail: 2 · Unverified: 1069 · N/A: 2.
-Unverified splits into **145 explicitly marked unverified** and **924 with no result record**.
-Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
+Applicable case-by-role slots: **1279** — Pass: 103 · Partial: 93 · Fail: 2 · Unverified: 1079 · N/A: 2.
+Unverified splits into **145 explicitly marked unverified** and **934 with no result record**.
+Full feature-role pairs: **0/399**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview
@@ -38,7 +38,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tasks capture flow](#tasks-capture-flow) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 2, n/a 0 | 0 |
 | [Lists side-panel](#lists-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 10, n/a 0 | 0 |
 | [Agenda side-panel](#agenda-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 0 |
-| [Data side-panel](#data-side-panel) | 1 | 1 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 5 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | pass 2, partial 3, fail 0, unverified 13, n/a 1 | 1 |
+| [Data side-panel](#data-side-panel) | 1 | 1 pass · 1 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 1 pass · 1 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 2, partial 3, fail 0, unverified 16, n/a 1 | 1 |
 | [Notes side-panel](#notes-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 1, fail 0, unverified 3, n/a 0 | 4 |
 | [Notes editor](#notes-editor) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 3 |
 | [Files side-panel](#files-side-panel) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 0 pass · 1 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | pass 0, partial 2, fail 0, unverified 4, n/a 0 | 0 |
@@ -52,6 +52,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Tools Recorder](#tools-recorder) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 8, n/a 0 | 0 |
 | [Vault password generator](#vault-password-generator) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 6, n/a 0 | 0 |
 | [Tools / registered executor](#tools--registered-executor) | 169 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 1 partial · 0 fail · 153 unverified · 0 deferred; 0/150 full | 0 pass · 1 partial · 0 fail · 172 unverified · 0 deferred; 0/169 full | pass 0, partial 2, fail 0, unverified 325, n/a 0 | 7 |
+| [Swipe file side-panel and social-page capture controls](#swipe-file-side-panel-and-social-page-capture-controls) | 1 | 0 pass · 0 partial · 0 fail · 1 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 7, n/a 0 | 0 |
 
 Role counts include only case-role combinations listed in each case. The all-role column includes every applicable recorded or unrecorded slot. Open each feature for case evidence, defects, and next action.
 
@@ -1491,7 +1492,7 @@ These historical checks retain their original artifact boundary; they do not est
 
 ### Extract structured data from the active page (EXT-F-2005)
 
-**Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 8. **Controls:** 33.
+**Role status:** guest: Partial · member: Partial · admin: Partial. **Cases:** 9. **Controls:** 34.
 
 **Next:** Resolve linked defect and repeat its affected native case: EXT-D-0054
 
@@ -1507,6 +1508,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-2005-T06 Data page identity during navigation and Retry recovery | Unverified | Unverified | Unverified | EXT-F-2005-C32, EXT-F-2005-C14, EXT-F-2005-C02, EXT-F-2005-C07 |
 | EXT-F-2005-T07 Picker hover, Clear and selected-field Cancel | Partial | Unverified | Unverified | EXT-F-2005-C18, EXT-F-2005-C19, EXT-F-2005-C21, EXT-F-2005-C22 |
 | EXT-F-2005-T08 Automatic extraction running, success, no-match and failure states | N/A | Pass | Unverified | EXT-F-2005-C29, EXT-F-2005-C30, EXT-F-2005-C31, EXT-F-2005-C33 |
+| EXT-F-2005-T09 Live-data source offer, fetch and guest visibility | Unverified | Unverified | Unverified | EXT-F-2005-C34 |
 
 **Recorded case details and evidence:**
 
@@ -1562,12 +1564,12 @@ These historical checks retain their original artifact boundary; they do not est
 
 | Case | Guest | Member | Admin | Controls exercised by case |
 | --- | --- | --- | --- | --- |
-| EXT-F-2007-T01 Edit, preview, and autosave note fields | N/A | Unverified | Unverified | EXT-F-2007-C02, EXT-F-2007-C03, EXT-F-2007-C04, EXT-F-2007-C05, EXT-F-2007-C06 |
+| EXT-F-2007-T01 Edit, preview, and autosave note fields | N/A | Unverified | Unverified | EXT-F-2007-C02, EXT-F-2007-C03, EXT-F-2007-C04, EXT-F-2007-C05, EXT-F-2007-C06, EXT-F-2007-C25 |
 | EXT-F-2007-T02 Append each active-page content type | N/A | Unverified | Unverified | EXT-F-2007-C10, EXT-F-2007-C11, EXT-F-2007-C12, EXT-F-2007-C13, EXT-F-2007-C14, EXT-F-2007-C15, EXT-F-2007-C16 |
 | EXT-F-2007-T03 Delete note and cancel confirmation | N/A | Unverified | Unverified | EXT-F-2007-C07, EXT-F-2007-C09, EXT-F-2007-C08, EXT-F-2007-C01 |
 | EXT-F-2007-T04 Detail-read failure, missing note, and retry | N/A | Unverified | Unverified | EXT-F-2007-C01, EXT-F-2007-C27 |
 
-**Controls without a mapped case:** EXT-F-2007-C17 Open append-from-page menu; EXT-F-2007-C18 Close append-from-page menu; EXT-F-2007-C19 Append page URL and title; EXT-F-2007-C20 Append selected page text; EXT-F-2007-C21 Append readable page text; EXT-F-2007-C22 Append page links; EXT-F-2007-C23 Append page metadata; EXT-F-2007-C24 Append from restricted page; EXT-F-2007-C25 Edit note folder to no folder; EXT-F-2007-C26 Preview markdown after autosave
+**Controls without a mapped case:** EXT-F-2007-C17 Open append-from-page menu; EXT-F-2007-C18 Close append-from-page menu; EXT-F-2007-C19 Append page URL and title; EXT-F-2007-C20 Append selected page text; EXT-F-2007-C21 Append readable page text; EXT-F-2007-C22 Append page links; EXT-F-2007-C23 Append page metadata; EXT-F-2007-C24 Append from restricted page; EXT-F-2007-C26 Preview markdown after autosave
 
 **Other remaining work:** No runtime behavior verdict from source reading; execute role, organization, permission, error and persistence cases in the live side panel.
 
@@ -4067,4 +4069,23 @@ Registered tools are executor capabilities, listed separately from the visible T
 | EXT-F-4169-T01 Controlled manual execution: cdp_emulate | N/A | N/A | Unverified | EXT-F-4169-C01, EXT-F-4169-C02, EXT-F-4169-C03 |
 
 **Other remaining work:** Author concrete fixture-specific procedures before this tool is executed; gated/negative permission cases required; Confirm current catalog against imported source registry before source inventory signoff
+
+
+## Swipe file side-panel and social-page capture controls
+
+### Save and manage social posts in Swipe file (EXT-F-2018)
+
+**Role status:** guest: Unverified · member: Unverified · admin: Unverified. **Cases:** 5. **Controls:** 20.
+
+**Next:** Run the remaining role cases in the extension and attach a result.
+
+| Case | Guest | Member | Admin | Controls exercised by case |
+| --- | --- | --- | --- | --- |
+| EXT-F-2018-T01 Guest hidden-tab and external-entry refusal | Unverified | N/A | N/A | EXT-F-2018-C01, EXT-F-2018-C02, EXT-F-2018-C06 |
+| EXT-F-2018-T02 Member collection lifecycle and saved-post detail | N/A | Unverified | N/A | EXT-F-2018-C07, EXT-F-2018-C08, EXT-F-2018-C09, EXT-F-2018-C10, EXT-F-2018-C11, EXT-F-2018-C12, EXT-F-2018-C13, EXT-F-2018-C14, EXT-F-2018-C15, EXT-F-2018-C16, EXT-F-2018-C17, EXT-F-2018-C18, EXT-F-2018-C19 |
+| EXT-F-2018-T03 Admin collection lifecycle and saved-post detail | N/A | N/A | Unverified | EXT-F-2018-C07, EXT-F-2018-C08, EXT-F-2018-C09, EXT-F-2018-C10, EXT-F-2018-C11, EXT-F-2018-C12, EXT-F-2018-C13, EXT-F-2018-C14, EXT-F-2018-C15, EXT-F-2018-C16, EXT-F-2018-C17, EXT-F-2018-C18, EXT-F-2018-C19 |
+| EXT-F-2018-T04 Social post save, duplicate and capture controls | N/A | Unverified | Unverified | EXT-F-2018-C01, EXT-F-2018-C03, EXT-F-2018-C04, EXT-F-2018-C05, EXT-F-2018-C06 |
+| EXT-F-2018-T05 Guided capture of feed or post media | N/A | Unverified | Unverified | EXT-F-2018-C02, EXT-F-2018-C04, EXT-F-2018-C20 |
+
+**Other remaining work:** No runtime behavior verdict from source reading; execute applicable guest denial and member/admin workflows in a live side panel and supported social pages.; Verify collection organization scope, access boundaries, ingest refusal, stored-media links, guided capture completion and reload behavior using real authorized fixtures.
 
