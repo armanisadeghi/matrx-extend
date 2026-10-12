@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "run_id": 38190156680,
+  "task": "guarded hosted guest Chat development acceptance",
+  "lane": "B",
+  "case": "guest-chat",
+  "workflow": {
+    "name": "Hosted guest side-panel acceptance",
+    "event": "workflow_dispatch",
+    "runner_image": "macos-15-intel",
+    "head_branch": "main",
+    "workflow_head_sha": "026785d714be6f059ecb81afdcbd0573ea64be81",
+    "started_at_utc": "2026-10-12T00:59:58Z",
+    "completed_at_utc": "2026-10-12T01:08:15Z",
+    "conclusion": "failure",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38190156680"
+  },
+  "tested_artifact": {
+    "channel": "CI development artifact, loaded unpacked with test key",
+    "version": "0.2.509",
+    "product_source_sha": "5720310991c36ae39ed8a32e0f9ae20226f62b62",
+    "ci_run_id": 38189416372,
+    "artifact_id": 11721207192,
+    "artifact_digest": "sha256:a1183de454bde13ecf00698688e5e403d2df455a82e9e077986fcda9e3084bec",
+    "runtime_tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "current_main_at_dispatch": "026785d714be6f059ecb81afdcbd0573ea64be81",
+    "main_delta_from_product_source": [
+      "docs/stabilization/reports/hosted-cdp-resource-escalation-20261012.json",
+      "docs/stabilization/reports/system-disk-recovery-20261012.json"
+    ],
+    "channel_note": "Development acceptance only; no Chrome Web Store package or installation was tested."
+  },
+  "native_observation": {
+    "driver_status": "pass",
+    "fresh_signed_out_guest": true,
+    "initial_real_assistant_reply_completed": true,
+    "same_conversation_followup_completed": true,
+    "post_reload_new_conversation_reply_completed": true,
+    "all_three_chat_requests_http_200": true,
+    "unpredictable_fixture_grounding_observed": true,
+    "terminal_driver_stage": "artifact_unchanged",
+    "raw_reply_content_retained": false,
+    "server_git_sha_before_and_after": "251793812c9866890320f37fe10977d8e5415755",
+    "server_sha_stable": true,
+    "model": "server-selected; no model override supplied; model ID not observable in retained report"
+  },
+  "resource_finals": [
+    {
+      "phase": "package",
+      "run_id": "hosted-package-38190156680-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "evidence": "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-package-38190156680.jsonl"
+    },
+    {
+      "phase": "browser",
+      "run_id": "hosted-browser-38190156680-1",
+      "decision": "valid",
+      "resource_invalid": false,
+      "exit_code": 0,
+      "evidence": "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-browser-38190156680.jsonl"
+    },
+    {
+      "phase": "guest exercise",
+      "run_id": "hosted-guest-38190156680-1",
+      "decision": "invalid",
+      "resource_invalid": true,
+      "exit_code": 3,
+      "reason": "RESOURCE_CPU_CONFIRMATION_EXPIRED; stopped at safe boundary after recovery did not confirm",
+      "evidence": "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-guest-38190156680.jsonl"
+    }
+  ],
+  "classification": {
+    "acceptance_credit": "zero",
+    "reason": "The native driver completed all three observed assistant replies, but the enclosing guest resource final is invalid, so the run cannot count as acceptance.",
+    "startup_resource_final": "skipped after the guest resource-guard failure",
+    "product_defect_claim": false,
+    "retry": "none; one-run limit honored",
+    "inventory_updated": false,
+    "independent_peer_review": "completed: A FAIL_ZERO_CREDIT; B PARTIAL (opening screenshot does not visually corroborate the reply)"
+  },
+  "evidence": {
+    "native_report": "docs/stabilization/evidence/guest-chat-development/run38190156680/native-report.sanitized.json",
+    "hosted_artifact_id": 11720608461,
+    "hosted_artifact_digest": "sha256:aeea8ed592988e4691ac9c3d6448787f011f9bb6fc1833c102b678c103c945d5",
+    "resource_journals": [
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-package-38190156680.jsonl",
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-browser-38190156680.jsonl",
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-guest-38190156680.jsonl"
+    ],
+    "sanitization": "Native report retains only status, booleans, safe build/server provenance, and HTTP statuses; raw assistant text, screenshots, credentials, browser profile data, and process attribution were excluded."
+  },
+  "summary_mapping_check": {
+    "source": "scripts/guest-chat-evidence-summary.mjs",
+    "test": "scripts/guest-chat-evidence-summary.test.mjs",
+    "verification": "targeted node:test passed after planted always-terminal mutation correctly failed",
+    "peer_finding": "corrected: the native artifact uses terminal_answer verdicts, not pass"
+  }
+}

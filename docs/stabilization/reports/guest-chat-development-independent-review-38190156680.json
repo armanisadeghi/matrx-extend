@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "review": {
+    "run_id": 38190156680,
+    "lane": "B",
+    "case": "guest-chat",
+    "review_type": "independent hosted-evidence review",
+    "raw_assistant_text_retained_or_reported": false,
+    "sources": [
+      "https://github.com/armanisadeghi/matrx-extend/actions/runs/38190156680",
+      "https://github.com/armanisadeghi/matrx-extend/actions/runs/38189416372",
+      "docs/stabilization/reports/guest-chat-development-run38190156680.json",
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/native-report.sanitized.json",
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-package-38190156680.jsonl",
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-browser-38190156680.jsonl",
+      "docs/stabilization/evidence/guest-chat-development/run38190156680/resource-guest-38190156680.jsonl",
+      "hosted artifact 11720608461 (sha256:aeea8ed592988e4691ac9c3d6448787f011f9bb6fc1833c102b678c103c945d5)"
+    ]
+  },
+  "verdicts": {
+    "A_live_acceptance": {
+      "verdict": "FAIL_ZERO_CREDIT",
+      "reason": "The hosted workflow failed because the guest resource final was invalid with CPU_CONFIRMATION_EXPIRED; startup measurement was skipped. The run is explicitly classified as zero acceptance credit.",
+      "bounded_positive_observation": "The full hosted artifact records terminal answers for the opening turn, same-conversation follow-up, and post-reload new-conversation turn. All three requests returned HTTP 200; the same-conversation fingerprint stayed the same and the post-reload conversation fingerprint changed. Fixture-grounding checks are true."
+    },
+    "B_implementation_quality": {
+      "verdict": "NOT_ASSESSED",
+      "reason": "This review examined hosted run evidence, not an implementation diff. The resource guard did fail closed and stop at a safe boundary, but that does not establish source-level quality."
+    }
+  },
+  "verified": {
+    "workflow": {
+      "conclusion": "failure",
+      "failed_step": "Exercise the selected Chrome side-panel case",
+      "startup_measurement": "skipped",
+      "hosted_head_sha": "026785d714be6f059ecb81afdcbd0573ea64be81"
+    },
+    "tested_build": {
+      "channel": "CI development artifact loaded unpacked with test key",
+      "version": "0.2.509",
+      "source_sha": "5720310991c36ae39ed8a32e0f9ae20226f62b62",
+      "ci_run_id": 38189416372,
+      "artifact_id": 11721207192,
+      "artifact_digest": "sha256:a1183de454bde13ecf00698688e5e403d2df455a82e9e077986fcda9e3084bec",
+      "runtime_tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+      "channel_limit": "No Chrome Web Store package or installation was tested; this is not current main's artifact."
+    },
+    "server": {
+      "version_endpoint_status_before_and_after": 200,
+      "git_sha_before_and_after": "251793812c9866890320f37fe10977d8e5415755",
+      "stable": true
+    },
+    "resource_finals": [
+      {"phase": "package", "decision": "valid", "exit_code": 0},
+      {"phase": "browser", "decision": "valid", "exit_code": 0},
+      {"phase": "guest exercise", "decision": "invalid", "exit_code": 3, "reason": "CPU_CONFIRMATION_EXPIRED; stopped at safe boundary after recovery did not confirm"}
+    ],
+    "model_selection": "Workflow dispatch has no model-override input. The report says server-selected and records no model ID. The catalog DNS failure is not evidence of a model override; the actual model cannot be independently identified from retained evidence."
+  },
+  "finding": {
+    "severity": "Important",
+    "location": "docs/stabilization/evidence/guest-chat-development/run38190156680/native-report.sanitized.json",
+    "issue": "Its three completion booleans are false, while the hosted artifact's guest-chat result records all three turn verdicts as terminal_answer and the companion run report summarizes them as completed.",
+    "impact": "The native sanitized summary is internally inconsistent with the richer hosted result. Acceptance must remain zero due to the invalid resource final; correct the summary before treating it as a reliable compact receipt."
+  },
+  "limitations": [
+    "Assistant response text and screenshots were not inspected or reproduced; completion, terminal state, transport, and grounding were checked from retained status/boolean evidence only.",
+    "No model ID was retained, so the model choice cannot be verified.",
+    "No source diff, Store build, or Store-installed extension was reviewed."
+  ]
+}
