@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-12T20:58:48Z",
+  "kind": "ci_development_test_artifact_scan",
+  "eligible_store": false,
+  "publish_state": "not_published",
+  "repository": "armanisadeghi/matrx-extend",
+  "workflow": ".github/workflows/ci.yml",
+  "run_id": 38306513126,
+  "run_attempt": 1,
+  "artifact_id": 11773390470,
+  "source_sha": "3e5b8f18293ae0317623d9c1c17a92d260108615",
+  "source_claim": "current_pushed_source",
+  "version": "0.2.509",
+  "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+  "github_artifact_digest": "sha256:d701611bd6ff4c55f7ace16128529333b1d67d061d57513b828c83966fe11578",
+  "tree_sha256": "feeeace4f3f6ec91eb3319fe412c77ce63e018f0582eae58e4d7714bd499c173",
+  "artifact_directory": "test-results/ci-artifacts/3e5b8f18293ae0317623d9c1c17a92d260108615/38306513126-1",
+  "emitted_javascript_files": 1059,
+  "scans": [
+    {
+      "target": "known rejected jsPDF cdnjs/PDFObject executable loader",
+      "detector": "scripts/detect-remote-script-loader.mjs: containsScriptSrcLoader; matches an assigned variable receiving createElement('script'), then requires that same variable's .src assignment and appendChild within the next 2000 source characters. Handles minified identifier characters including $.",
+      "matches": 0,
+      "finding_files": []
+    },
+    {
+      "target": "tldraw Gist srcDoc remote-script path",
+      "detector": "For each emitted JS/MJS file, flagged only when all three heuristics were present: a gist.github.com URL, a srcDoc/srcdoc assignment, and either a literal script tag with src or createElement('script') followed within 500 characters by .src assignment.",
+      "matches": 0,
+      "finding_files": []
+    }
+  ],
+  "verification": {
+    "imported_evidence_reverified": true,
+    "provenance_and_github_digest_verified_by_importer": true,
+    "complete_tree_hash_verified_by_importer": true,
+    "origin_main_and_head_equal_source_sha": true,
+    "tracked_tree_clean_and_no_untracked_runner_inputs": true,
+    "promotion_or_local_build_performed": false,
+    "chrome_ui_or_runtime_check_performed": false
+  },
+  "limitations": [
+    "This is a GitHub CI development artifact, not a Store ZIP; it does not approve a Store release.",
+    "No Chrome UI or runtime behavior was checked.",
+    "The Gist scan is a heuristic over emitted strings and can miss obfuscated, computed, or structurally different loaders."
+  ],
+  "next_action": "Scan the exact candidate Store ZIP with the Store release gate before any Store approval or submission."
+}
