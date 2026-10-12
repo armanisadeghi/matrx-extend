@@ -14,6 +14,7 @@
  */
 
 import { runOpAs } from '@/lib/api/matrx-api';
+import { ENRICH_GOALS, type EnrichGoal } from '@/lib/research/enrich-types';
 import {
   addSource as addSourceOp,
   applySourceVerdict,
@@ -25,7 +26,6 @@ import {
   submitExtensionContent as submitExtensionContentOp,
   updateSource as updateSourceOp,
 } from '@ai-matrx/api/knowledge';
-import { ENRICH_GOALS, type EnrichGoal } from '@/lib/research/enrich-types';
 import { z } from 'zod';
 
 export type CaptureLevel = 1 | 2 | 3 | 4;

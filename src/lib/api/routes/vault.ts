@@ -48,8 +48,19 @@
  * they consume — same convention as every other file in this folder.
  */
 
-import { type ApiRequestOptions, type ApiResult } from '@/lib/api/client';
+import type { ApiRequestOptions, ApiResult } from '@/lib/api/client';
 import { runOpAs } from '@/lib/api/matrx-api';
+import { getAccessToken, getCurrentUser } from '@/lib/auth/flow';
+import { log } from '@/lib/debug/log';
+import { getActiveOrganizationId } from '@/lib/org/active-org';
+import { platformDb } from '@/lib/supabase/schemas';
+import {
+  FILL_SETUP_REQUIRED_MESSAGE,
+  type FillSurface,
+  markFillDeviceUnregistered,
+  refusalOf,
+  signFillRequest,
+} from '@/lib/vault/fill-device';
 import type { Api, CallOptions } from '@ai-matrx/api';
 import {
   addField,
@@ -72,17 +83,6 @@ import {
   updateFieldValue,
   updateItem,
 } from '@ai-matrx/api/account';
-import { getAccessToken, getCurrentUser } from '@/lib/auth/flow';
-import { log } from '@/lib/debug/log';
-import { getActiveOrganizationId } from '@/lib/org/active-org';
-import { platformDb } from '@/lib/supabase/schemas';
-import {
-  FILL_SETUP_REQUIRED_MESSAGE,
-  type FillSurface,
-  markFillDeviceUnregistered,
-  refusalOf,
-  signFillRequest,
-} from '@/lib/vault/fill-device';
 
 /** One generated vault operation with its arguments applied. */
 type VaultCall = (api: Api, options: CallOptions) => Promise<unknown>;

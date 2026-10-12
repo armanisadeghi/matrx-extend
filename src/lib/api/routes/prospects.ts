@@ -31,10 +31,10 @@
  *    (aidream/services/seo/prospect_capture.py).
  */
 
-import { type ApiResult } from '@/lib/api/client';
+import type { ApiResult } from '@/lib/api/client';
 import { runOp } from '@/lib/api/matrx-api';
-import { previewProspectCapture as previewOp, runProspectCapture } from '@ai-matrx/api/marketing';
 import { getAccessToken } from '@/lib/auth/flow';
+import { previewProspectCapture as previewOp, runProspectCapture } from '@ai-matrx/api/marketing';
 
 /** One website the user could file this prospect under. */
 export interface CaptureSite {

@@ -8,8 +8,8 @@
 
 import { withSchema } from '@/lib/api/client';
 import { runOpAs } from '@/lib/api/matrx-api';
-import { mintToken } from '@ai-matrx/api/architecture';
 import { log } from '@/lib/debug/log';
+import { mintToken } from '@ai-matrx/api/architecture';
 import type { BrokerResult, BrokeredCredential, MintOptions, TierPolicy } from './types';
 import { BrokeredCredentialSchema } from './types';
 

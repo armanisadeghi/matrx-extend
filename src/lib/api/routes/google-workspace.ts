@@ -31,11 +31,11 @@
  *    `ReviewedGmailResponse` (aidream/api/routers/google_workspace.py).
  */
 
-import { type ApiResult } from '@/lib/api/client';
-import { requireActiveOrganizationId } from '@/lib/org/active-org';
+import type { ApiResult } from '@/lib/api/client';
 import { runOp } from '@/lib/api/matrx-api';
-import { sendGmail } from '@ai-matrx/api/integrations';
 import { getAccessToken } from '@/lib/auth/flow';
+import { requireActiveOrganizationId } from '@/lib/org/active-org';
+import { sendGmail } from '@ai-matrx/api/integrations';
 
 /** Exactly what the user approved on screen — never the agent's arguments. */
 export interface ReviewedGmailDraft {

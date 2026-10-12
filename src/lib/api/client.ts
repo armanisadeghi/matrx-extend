@@ -8,16 +8,16 @@
 
 import { getBackendUrl } from '@/config/backend';
 import {
+  SessionNotReadyError,
+  awaitSessionReady,
+  currentBearerOrRefuse,
+} from '@/lib/api/session-credentials';
+import {
   getAccessToken,
   getStoredAccessToken,
   getVerifiedCurrentUser,
   refreshAccessToken,
 } from '@/lib/auth/flow';
-import {
-  SessionNotReadyError,
-  awaitSessionReady,
-  currentBearerOrRefuse,
-} from '@/lib/api/session-credentials';
 import { getOrCreateGuestSignature } from '@/lib/auth/guest-signature';
 import { log } from '@/lib/debug/log';
 import { broadcast } from '@/lib/messaging/native';

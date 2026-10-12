@@ -17,16 +17,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { useRequestOrganizationId } from '@/hooks/use-request-organization';
 import { runOpAs } from '@/lib/api/matrx-api';
-import {
-  listComputeTargets,
-  resolveComputeTarget as resolveComputeTargetOp,
-} from '@ai-matrx/api/architecture';
 import { useAuthStore } from '@/state/auth';
 import type {
   ComputeTargetListResponse,
   ComputeTargetRef,
   SandboxBindingPayload,
 } from '@/types/compute-target';
+import {
+  listComputeTargets,
+  resolveComputeTarget as resolveComputeTargetOp,
+} from '@ai-matrx/api/architecture';
 
 interface UseComputeTargetsResult {
   data: ComputeTargetListResponse | null;

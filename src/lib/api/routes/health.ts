@@ -1,7 +1,7 @@
 import { getApiBaseUrl, withSchema } from '@/lib/api/client';
 import { runOpAs } from '@/lib/api/matrx-api';
-import { detailedHealthCheck, healthCheck as healthCheckOp } from '@ai-matrx/api/architecture';
 import { log } from '@/lib/debug/log';
+import { detailedHealthCheck, healthCheck as healthCheckOp } from '@ai-matrx/api/architecture';
 import { z } from 'zod';
 
 export const HealthSchema = z.object({

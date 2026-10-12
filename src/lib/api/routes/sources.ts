@@ -20,9 +20,9 @@ import {
   STATUS_EXPECTED_ACTOR_MISMATCH,
 } from '@/lib/api/client';
 import { runOp } from '@/lib/api/matrx-api';
-import { edit, keep, land } from '@ai-matrx/api/knowledge';
-import type { Api, CallOptions } from '@ai-matrx/api';
 import type { SectionPortion } from '@/lib/sources/portions';
+import type { Api, CallOptions } from '@ai-matrx/api';
+import { edit, keep, land } from '@ai-matrx/api/knowledge';
 import { z } from 'zod';
 
 export type OriginClient = 'extension';

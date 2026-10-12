@@ -1,6 +1,5 @@
 /** Canonical social library reads under caller RLS; no local content copies. */
 import { runOp } from '@/lib/api/matrx-api';
-import { removeItemDoor, setItemNotesDoor } from '@ai-matrx/api/marketing';
 import { getSupabase } from '@/lib/supabase/client';
 import { associations } from '@/lib/supabase/generated/platform';
 import {
@@ -10,6 +9,7 @@ import {
   socialProfile,
   swipeCollection,
 } from '@/lib/supabase/generated/social';
+import { removeItemDoor, setItemNotesDoor } from '@ai-matrx/api/marketing';
 import { createDb, listAll, read, update } from '@ai-matrx/data/db';
 import { z } from 'zod';
 

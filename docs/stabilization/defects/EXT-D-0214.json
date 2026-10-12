@@ -1,0 +1,58 @@
+{
+  "id": "EXT-D-0214",
+  "feature_id": "EXT-F-0003",
+  "case_ids": ["EXT-F-0003-T07"],
+  "title": "Generated-operation migration leaves twelve files failing Biome import checks",
+  "surface": "Extension CI Lint",
+  "auth_mode": "guest/member/admin; source lint is independent of sign-in",
+  "role_org_permissions": "No runtime identity or organization is exercised",
+  "preconditions": [
+    "Exact source 58f28a085 in CI run 38274298374 includes generated-operation migration imports."
+  ],
+  "reproduction": [
+    "Run CI Lint on exact source 58f28a085.",
+    "Biome reports 15 organizeImports or useImportType errors across 12 source files and blocks subsequent checks."
+  ],
+  "expected": "The required Biome lint gate passes with generated-operation imports correctly ordered and type-only declarations explicit.",
+  "actual": "CI Lint fails with 15 import-only diagnostics across the twelve paths recorded in the run log.",
+  "cause": "Generated-operation migration introduced imports without the repository's Biome order and type-only syntax.",
+  "sibling_census": "All twelve paths from the CI diagnostic census were passed explicitly to biome check --write; the resulting diff changes only import order and type-only syntax. No other files were formatted.",
+  "severity": "S2: required CI Lint gate blocked",
+  "priority": "P0",
+  "state": "in-fix",
+  "owner": "package_graph_sol_retry",
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274298374: Lint fails with 15 import diagnostics across 12 files.",
+    "pnpm exec biome check --write on only those 12 files completed with 12 files fixed; git diff --check passed. Full CI retest remains pending."
+  ],
+  "build_receipt": {
+    "source_sha": "58f28a085622a3c41784ab317ec3753918bdd9bf",
+    "ci_run_id": 38274298374
+  },
+  "reproducibility_count": "CI Lint failure 1/1 at exact source 58f28a085",
+  "fix_commits": [],
+  "original_retest_runs": [],
+  "surrounding_case_runs": [],
+  "reviewer": null,
+  "next_action": "Independent source review, exact-path commit/push, then automatic exact-source CI lint and Typecheck. Do not dispatch a workflow while spend gate is red.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T16:02:49Z",
+      "from": null,
+      "to": "open",
+      "reason": "Exact-source CI Lint identified 15 import diagnostics."
+    },
+    {
+      "at": "2026-10-12T16:02:49Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "All diagnostics are Biome organizeImports or useImportType in twelve files."
+    },
+    {
+      "at": "2026-10-12T16:02:49Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Applied Biome only to the twelve CI-reported files; peer and exact-source CI remain open."
+    }
+  ]
+}

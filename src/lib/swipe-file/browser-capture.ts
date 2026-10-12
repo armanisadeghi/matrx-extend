@@ -1,11 +1,11 @@
 /** Start the existing org-private guided capture for an already saved post. */
 import { runOpAs } from '@/lib/api/matrx-api';
-import { gatedCaptureDoor } from '@ai-matrx/api/marketing';
 import { type OpenGuidedResult, adoptGuidedTab, openGuidedTab } from '@/lib/guided-capture/host';
 import { recipeForUrl } from '@/lib/guided-capture/recipes';
 import { getActiveOrganizationId } from '@/lib/org/active-org';
 import { readSwipeReceipt } from '@/lib/swipe-file/receipt';
 import { swipeTargetFromUrl } from '@/lib/swipe-file/urls';
+import { gatedCaptureDoor } from '@ai-matrx/api/marketing';
 
 export async function startSwipeBrowserCapture(args: {
   postId: string;
