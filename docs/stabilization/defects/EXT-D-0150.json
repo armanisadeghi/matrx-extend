@@ -40,9 +40,9 @@
   "verification": {
     "source": "API boundary db2ecc8d and origin-tab correction87bb6a5c pushed. API causal3/3 RED then5/5 GREEN; receiver and dispatcher causalRED; final30/30 GREEN and final typecheck valid. Catalog/docs valid. Two failed typechecks were incomplete test-fixture typing and were corrected; not product runtime failures.",
     "native": "unverified; existing guest harness installed Chromium141, older than documented149+ origin-trial support. This is not evidence of product native behavior.",
-    "independent_review": "c3ea3e6c: routing and procedure findings addressed; source contract and quality accepted. Native acceptance remains open.",
+    "independent_review": "c3ea3e6c: routing and procedure findings addressed; source contract and quality accepted. Fresh 2026-10-12 review found and then verified correction of a stale admin-discovery inventory predicate; shared discovery and guest page-initiator handler checks passed 8/8. Native acceptance remains open.",
     "release": "not submitted",
-    "automatic_ci": "API repair merge6fbf8a0b passed CI37629542966. Latest routing repair full-CI status unverified: GitHub API returned rate-limit403 at2026-10-07T13:56:34Z; no repeated polling or full-trunk health claim."
+    "automatic_ci": "API repair merge6fbf8a0b passed CI37629542966. Exact-main CI for the latest discovery correction at d62a94d3c is running as 38217216779; focused acceptance is 38217216839. No current-main CI pass claimed yet."
   },
   "transition_history": [
     {
@@ -71,6 +71,6 @@
     }
   ],
   "closure_requirement": "Independent source review plus native original discovery/call/registration reproduction and surrounding failure/reload cases in a supporting receipt-bound browser. No source fixture alone closes this defect.",
-  "fix_shas": ["db2ecc8d", "87bb6a5c"],
-  "next_action": "Revise held WebMCP inventory procedure proposals to the reviewed native contract, independently review/integrate them without runtime promotion, then use a supporting receipt-bound browser for original discovery/call/registration, origin-tab switch/closure and surrounding cases. Recheck latest automaticCI after API availability returns."
+  "fix_shas": ["db2ecc8d", "87bb6a5c", "a1b8409f4", "d62a94d3c"],
+  "next_action": "Use a supporting receipt-bound browser for original page-native discovery/call/registration, assigned-tab switch/closure, admin extension registry discovery, guest registration omission and direct page-origin denial/no side effect. Keep all role cells unverified until actual behavior is observed and independently retested. Recheck exact-main CI 38217216779 and focused acceptance 38217216839."
 }
