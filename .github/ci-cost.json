@@ -1,0 +1,144 @@
+{
+  "about": "CI cost manifest (ci-spend law, 2026-10-11). One entry per workflow, one leg per runner OS. scripts/check_workflow_runner_cost.py fails a workflow or OS leg without an entry, an entry without a benefit, triggers/crons/jobs that differ from the workflow file, $ that do not add up, a repo total over repo_share_usd, and (locally, with sibling repos beside it) a sum over the weekly ceiling.",
+  "repo": "matrx-extend",
+  "weekly_ceiling_usd": 100.0,
+  "repo_share_usd": 4,
+  "prices_usd_per_minute": {
+    "linux": 0.006,
+    "windows": 0.01,
+    "macos": 0.062
+  },
+  "prices_source": "GitHub billing API pricePerUnit (Actions Linux / Windows / macOS 3-core), read 2026-10-11",
+  "total_usd_per_week": 369.53,
+  "workflows": {
+    "ci.yml": {
+      "triggers": [
+        "pull_request",
+        "push"
+      ],
+      "crons": [],
+      "benefit": "Extension build/lint/tests on every push and PR; macOS resource-guard integration.",
+      "owner_reason": "Before it, nothing was enforced on PRs (AUDIT P0-8).",
+      "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): ~2500 runs/week; sampled Linux 3.2 min, macOS 1.5 min",
+      "usd_per_week": 280.5,
+      "legs": {
+        "linux": {
+          "jobs": [
+            "checks"
+          ],
+          "runs_per_week": 2500,
+          "minutes_per_run": 3.2,
+          "usd_per_week": 48.0
+        },
+        "macos": {
+          "jobs": [
+            "resource-guard-integration"
+          ],
+          "runs_per_week": 2500,
+          "minutes_per_run": 1.5,
+          "usd_per_week": 232.5
+        }
+      }
+    },
+    "focused-acceptance.yml": {
+      "triggers": [
+        "push"
+      ],
+      "crons": [],
+      "benefit": "Newest relevant main commit's focused acceptance, outside the CI queue.",
+      "owner_reason": "Fast acceptance signal on main.",
+      "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): 466/week x 1 min",
+      "usd_per_week": 2.8,
+      "legs": {
+        "linux": {
+          "jobs": [
+            "acceptance"
+          ],
+          "runs_per_week": 466,
+          "minutes_per_run": 1,
+          "usd_per_week": 2.8
+        }
+      }
+    },
+    "hosted-guest-acceptance.yml": {
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "crons": [],
+      "benefit": "Native side-panel acceptance on a hosted Mac guest.",
+      "owner_reason": "Extension acceptance on a real browser.",
+      "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): 288 dispatches/week x 4.8 macOS min",
+      "usd_per_week": 85.71,
+      "legs": {
+        "macos": {
+          "jobs": [
+            "guest"
+          ],
+          "runs_per_week": 288,
+          "minutes_per_run": 4.8,
+          "usd_per_week": 85.71
+        }
+      }
+    },
+    "hosted-package-sync.yml": {
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "crons": [],
+      "benefit": "Syncs the hosted package graph.",
+      "owner_reason": "Hosted build inputs stay current.",
+      "basis": "manual; ~1/week estimate",
+      "usd_per_week": 0.01,
+      "legs": {
+        "linux": {
+          "jobs": [
+            "sync"
+          ],
+          "runs_per_week": 1,
+          "minutes_per_run": 2,
+          "usd_per_week": 0.01
+        }
+      }
+    },
+    "hosted-resource-diagnostic.yml": {
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "crons": [],
+      "benefit": "On-demand hosted Mac resource diagnosis.",
+      "owner_reason": "Incident tool.",
+      "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): 1/week x 2 macOS min",
+      "usd_per_week": 0.12,
+      "legs": {
+        "macos": {
+          "jobs": [
+            "diagnose"
+          ],
+          "runs_per_week": 1,
+          "minutes_per_run": 2,
+          "usd_per_week": 0.12
+        }
+      }
+    },
+    "release.yml": {
+      "triggers": [
+        "workflow_dispatch"
+      ],
+      "crons": [],
+      "benefit": "Hosted release: publishes main and the immutable v* tag with the Store ZIP.",
+      "owner_reason": "The extension's release path.",
+      "basis": "observed 2026-10-02..09 (runs list + sampled jobs' billed minutes): 13/week x 5 min",
+      "usd_per_week": 0.39,
+      "legs": {
+        "linux": {
+          "jobs": [
+            "release"
+          ],
+          "runs_per_week": 13,
+          "minutes_per_run": 5,
+          "usd_per_week": 0.39
+        }
+      }
+    }
+  }
+}
