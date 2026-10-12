@@ -1,4 +1,5 @@
 name: Hosted release
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('{0} (by {1})', github.workflow, inputs.requested_by || 'manual') || '' }}
 
 on:
   workflow_dispatch:
@@ -10,6 +11,11 @@ on:
       message:
         description: 'Release note appended to the generated release commit'
         required: true
+        type: string
+      requested_by:
+        description: "Agent session or lane that asked for this run (ci-spend attribution)"
+        required: false
+        default: ""
         type: string
 
 # release.sh publishes main and an immutable v* tag atomically.  The workflow

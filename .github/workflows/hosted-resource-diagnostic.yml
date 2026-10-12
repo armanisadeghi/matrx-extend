@@ -1,7 +1,14 @@
 name: Hosted resource diagnosis
+run-name: ${{ github.event_name == 'workflow_dispatch' && format('{0} (by {1})', github.workflow, inputs.requested_by || 'manual') || '' }}
 
 on:
   workflow_dispatch:
+    inputs:
+      requested_by:
+        description: "Agent session or lane that asked for this run (ci-spend attribution)"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read

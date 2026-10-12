@@ -1,5 +1,5 @@
 name: Hosted guest side-panel acceptance
-run-name: "Native ${{ inputs.acceptance_lane }} · ${{ inputs.acceptance_case }}"
+run-name: "Native ${{ inputs.acceptance_lane }} · ${{ inputs.acceptance_case }}${{ inputs.requested_by && format(' (by {0})', inputs.requested_by) || '' }}"
 
 on:
   workflow_dispatch:
@@ -217,6 +217,11 @@ on:
       scrape_normal_width_px:
         description: Required observed side-panel viewport width in normal mode
         required: false
+        type: string
+      requested_by:
+        description: "Agent session or lane that asked for this run (ci-spend attribution)"
+        required: false
+        default: ""
         type: string
 
 permissions:
