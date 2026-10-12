@@ -180,9 +180,71 @@ test('animation diagnostics bound effects and allowlist properties, timing and o
         propertyCategories: ['other_or_custom', 'transform'],
         duration: 'up_to_1000ms',
         delay: 'negative',
+        currentTime: null,
+        startTime: null,
+        playbackRate: null,
+        pending: null,
+        iterations: null,
+        endTime: null,
+        progress: null,
+        elementState: 'other_or_none',
+        elementSide: 'other_or_none',
       });
       assert(!JSON.stringify(error.driverFailure).includes('private'));
       assert(!JSON.stringify(error.driverFailure).includes('secret-url'));
+      return true;
+    });
+    assert.deepEqual(events, []);
+  } finally {
+    window.happyDOM.abort();
+  }
+});
+
+test('failed pointer retains first and last animation clocks without dispatching input', async (t) => {
+  const { window, panel, events } = fixture();
+  const target = window.document.querySelector('button');
+  let currentTime = 0;
+  target.setAttribute('data-state', 'open');
+  target.setAttribute('data-side', 'bottom');
+  target.getAnimations = () => {
+    currentTime += 10;
+    return [
+      {
+        playState: 'running',
+        pending: false,
+        startTime: 25,
+        currentTime,
+        playbackRate: 1,
+        effect: {
+          getKeyframes: () => [{ transform: 'private page content' }],
+          getTiming: () => ({ duration: 150, delay: 0, iterations: 1 }),
+          getComputedTiming: () => ({ endTime: 150, progress: 0.25 }),
+        },
+      },
+    ];
+  };
+  let time = 0;
+  t.mock.method(Date, 'now', () => {
+    time += 1000;
+    return time;
+  });
+  try {
+    await assert.rejects(click(panel, 'title', 'Sync scroll with the live page'), (error) => {
+      const first = error.driverFailure.animationInitialDiagnostic;
+      const last = error.driverFailure.animationDiagnostic;
+      assert.ok(first, 'missing initial animation clock at pointer failure');
+      assert.equal(first.effects[0].currentTime, 10);
+      assert.ok(last.effects[0].currentTime > first.effects[0].currentTime);
+      assert.equal(last.effects[0].startTime, 25);
+      assert.equal(last.effects[0].iterations, 1);
+      assert.equal(last.effects[0].endTime, 150);
+      assert.equal(last.effects[0].pending, false);
+      assert.equal(last.effects[0].elementState, 'open');
+      assert.equal(last.effects[0].elementSide, 'bottom');
+      assert.ok(last.sampledAt >= first.sampledAt);
+      assert.equal(typeof last.focused, 'boolean');
+      assert.ok(['visible', 'hidden', 'prerender', 'other'].includes(last.visibility));
+      assert(!JSON.stringify(error.driverFailure).includes('private page content'));
       return true;
     });
     assert.deepEqual(events, []);
