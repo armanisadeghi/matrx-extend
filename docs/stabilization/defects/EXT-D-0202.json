@@ -1,11 +1,7 @@
 {
   "id": "EXT-D-0202",
   "feature_id": "EXT-F-0002",
-  "case_ids": [
-    "EXT-F-1001-T20",
-    "EXT-F-1001-T23",
-    "EXT-F-1001-T26"
-  ],
+  "case_ids": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
   "title": "Settings member admission plan sends a generic Scrape auth field rejected by hosted preflight",
   "surface": "Hosted acceptance admission harness",
   "auth_mode": "member Settings account popover",

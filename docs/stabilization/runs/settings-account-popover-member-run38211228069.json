@@ -31,11 +31,7 @@
     "workflow_conclusion": "success",
     "last_safe_stage": "strict_verification_pass"
   },
-  "cases": [
-    "EXT-F-1001-T20",
-    "EXT-F-1001-T23",
-    "EXT-F-1001-T26"
-  ],
+  "cases": ["EXT-F-1001-T20", "EXT-F-1001-T23", "EXT-F-1001-T26"],
   "evidence": [
     "docs/stabilization/reports/settings-account-popover-member-run38211228069.json",
     "docs/stabilization/evidence/settings-account-popover-member/run38211228069/settings-account-popover-member-run38211228069.json",
