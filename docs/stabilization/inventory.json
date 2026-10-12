@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T21:33:56Z",
+  "updated_at": "2026-10-12T21:46:25Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -1139,7 +1139,8 @@
             "EXT-D-0117",
             "EXT-D-0122",
             "EXT-D-0181",
-            "EXT-D-0183"
+            "EXT-D-0183",
+            "EXT-D-0218"
           ],
           "results": {
             "admin": {
@@ -1505,6 +1506,9 @@
       "readiness_gaps": [
         "Concrete procedure and evidence required before executing each control.",
         "EXT-D-0136 closed: startup owner metadata race repaired; independent actual-wrapper retest and hostedCI37245762934 pass. No product coverage promoted."
+      ],
+      "defect_ids": [
+        "EXT-D-0218"
       ]
     },
     {
