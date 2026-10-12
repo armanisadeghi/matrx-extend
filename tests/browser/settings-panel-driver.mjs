@@ -266,6 +266,7 @@ function pointerFailure(code, location) {
     animating: location?.animating === true,
     animationCategory: location?.animationCategory ?? null,
     animationDiagnostic: location?.animationDiagnostic ?? null,
+    animationInitialDiagnostic: location?.animationInitialDiagnostic ?? null,
     clickTargetCategory: location?.clickTargetCategory ?? null,
     stableSamples: location?.stableSamples ?? 0,
     positionStable: location?.positionStable === true,
@@ -866,14 +867,25 @@ export async function click(panel, kind, label, onPhase = undefined) {
         return false;
       }
     };
-    const animationDiagnostic = { runningCount: 0, truncated: false, effects: [] };
+    const finiteNumber = value => typeof value === 'number' && Number.isFinite(value) ? value : null;
+    const animationDiagnostic = {
+      runningCount: 0, truncated: false, effects: [],
+      sampledAt: finiteNumber(performance.now()),
+      documentTimelineTime: finiteNumber(document.timeline?.currentTime),
+      visibility: ['visible', 'hidden', 'prerender'].includes(document.visibilityState)
+        ? document.visibilityState : 'other',
+      focused: document.hasFocus(),
+    };
     const timingBucket = (value) => typeof value !== 'number' || !Number.isFinite(value)
       ? 'unknown_or_infinite' : value < 0 ? 'negative' : value === 0 ? 'zero'
         : value <= 250 ? 'up_to_250ms' : value <= 1000 ? 'up_to_1000ms' : 'over_1000ms';
-    const summarizeAnimation = (animation, relation) => {
+    const summarizeAnimation = (animation, relation, element) => {
       let propertyCategories = ['unknown'];
       let duration = 'unknown_or_infinite';
       let delay = 'unknown_or_infinite';
+      let iterations = null;
+      let endTime = null;
+      let progress = null;
       try {
         const frames = animation.effect?.getKeyframes();
         const properties = Array.isArray(frames) ? frames.flatMap((frame) => Object.keys(frame))
@@ -890,8 +902,25 @@ export async function click(panel, kind, label, onPhase = undefined) {
         const timing = animation.effect?.getTiming();
         duration = timingBucket(timing?.duration);
         delay = timingBucket(timing?.delay);
+        iterations = finiteNumber(timing?.iterations);
       } catch {}
-      return { relation, propertyCategories, duration, delay };
+      try {
+        const computed = animation.effect?.getComputedTiming();
+        endTime = finiteNumber(computed?.endTime);
+        progress = finiteNumber(computed?.progress);
+      } catch {}
+      const state = element.getAttribute('data-state');
+      const side = element.getAttribute('data-side');
+      return { relation, propertyCategories, duration, delay,
+        currentTime: finiteNumber(animation.currentTime),
+        startTime: finiteNumber(animation.startTime),
+        playbackRate: finiteNumber(animation.playbackRate),
+        pending: typeof animation.pending === 'boolean' ? animation.pending : null,
+        iterations, endTime, progress,
+        elementState: ['open', 'closed', 'active', 'inactive', 'delayed-open', 'instant-open']
+          .includes(state) ? state : 'other_or_none',
+        elementSide: ['top', 'bottom', 'left', 'right'].includes(side) ? side : 'other_or_none',
+      };
     };
     let animating = false;
     let animationCategory = 'none';
@@ -900,7 +929,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
         if (animation.playState !== 'running') continue;
         animationDiagnostic.runningCount = Math.min(999, animationDiagnostic.runningCount + 1);
         if (animationDiagnostic.effects.length < 8)
-          animationDiagnostic.effects.push(summarizeAnimation(animation, ancestor === target ? 'target' : 'ancestor'));
+          animationDiagnostic.effects.push(summarizeAnimation(animation, ancestor === target ? 'target' : 'ancestor', ancestor));
         else animationDiagnostic.truncated = true;
         if (colorOnly(animation)) {
           if (!animating) animationCategory = 'color_only';
@@ -935,6 +964,9 @@ export async function click(panel, kind, label, onPhase = undefined) {
   if (location?.count !== 1) throw pointerFailure('pointer_target_not_unique', location);
   // Poll outside the page: a paused requestAnimationFrame must not strand
   // Runtime.evaluate(awaitPromise) or hide the last pointer diagnostic.
+  // Retain two content-free observations to distinguish a suspended clock
+  // from a restarted animation; never alter the pointer admission condition.
+  const animationInitialDiagnostic = location?.animationDiagnostic ?? null;
   const deadline = Date.now() + 3000;
   let previous;
   let stableSamples = 0;
@@ -955,7 +987,7 @@ export async function click(panel, kind, label, onPhase = undefined) {
       location?.count === 1 && location.hitTarget && !location.animating && positionStable
         ? stableSamples + 1
         : 0;
-    location = { ...location, stableSamples, positionStable };
+    location = { ...location, stableSamples, positionStable, animationInitialDiagnostic };
     if (stableSamples >= 2) break;
     previous = location?.count === 1 ? { x: location.x, y: location.y } : undefined;
   } while (Date.now() < deadline);
