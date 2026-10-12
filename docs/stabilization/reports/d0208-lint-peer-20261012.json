@@ -1,0 +1,53 @@
+{
+  "defect_id": "EXT-D-0208",
+  "reviewed_commit": "b5ada0be6f9539dc204f03b5fe0863ab780ab373",
+  "reviewed_checkout": "a60d3c47fafe454f299fdc623dcef221b7b6f306",
+  "status": "complete",
+  "verdict": {
+    "A": {
+      "result": "pass",
+      "basis": "The stated outcome is a green required repository-wide lint gate. Replaying the recorded baseline commit 2e3e67f03a68983a04e1828763a3971438a3956f in a temporary archive reproduced lint failure (exit 1, 13 errors); the current checkout passes the same full command."
+    },
+    "B": {
+      "result": "pass",
+      "basis": "The commit's formatting/import edits match Biome's baseline diagnostics. In tests/helpers/fake-organizations-db.ts, Object.defineProperty preserves the thenable query contract while avoiding the suspicious/noThenProperty finding. Focused consumers pass."
+    }
+  },
+  "evidence": [
+    {
+      "check": "Baseline reproduction",
+      "command": "pnpm -s lint --diagnostic-level=error",
+      "source": "temporary git archive of 2e3e67f03a68983a04e1828763a3971438a3956f",
+      "result": "exit 1; Biome reported 13 errors across the recorded formatting/import changes and fake thenable helper."
+    },
+    {
+      "check": "Current full lint",
+      "command": "pnpm -s lint --diagnostic-level=error",
+      "source": "a60d3c47fafe454f299fdc623dcef221b7b6f306",
+      "result": "exit 0; checked 2827 files, no errors."
+    },
+    {
+      "check": "Focused helper consumers",
+      "command": "pnpm exec vitest run tests/unit/auth-route.test.ts src/lib/api/client-organization-ladder.test.ts src/lib/api/client-organization-no-memberships.test.ts src/lib/supabase/client.organization.test.ts tests/unit/save-never-loses-input.test.tsx",
+      "result": "5 test files passed; 72 tests passed."
+    },
+    {
+      "check": "Thenable contract inspection",
+      "file": "tests/helpers/fake-organizations-db.ts:18-26",
+      "result": "The builder methods still return the same builder. The non-enumerable then method still delegates to Promise.resolve().then(read).then(resolve, reject), preserving async/sync read assimilation and rejection propagation for await."
+    },
+    {
+      "check": "Patch whitespace",
+      "command": "git diff b5ada0be^ b5ada0be --check",
+      "result": "Passed."
+    }
+  ],
+  "files_touched": [
+    "docs/stabilization/reports/d0208-lint-peer-20261012.json"
+  ],
+  "open_questions": [],
+  "limits": [
+    "No browser or hosted run was performed; neither is part of this lint defect's acceptance claim.",
+    "The baseline lint failure was independently reproduced from the cited commit. The report does not claim that the original fix commit alone was linted in isolation; the current combined checkout was checked."
+  ]
+}
