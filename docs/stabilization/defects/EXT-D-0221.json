@@ -7,12 +7,12 @@
   "auth_mode": "signed-in admin runner; member runner not established",
   "organization_context": "No organization request or product operation occurred; the runner stopped before Chrome startup.",
   "preconditions": [
-    "Successful exact-source CI development artifact 38316843884 is imported and promoted to .output/chrome-mv3-dev.",
+    "Successful exact-source CI development artifact is imported and promoted to .output/chrome-mv3-dev.",
     "test-results/ci-dev-promotion-receipt.json identifies the promotion, source SHA, extension ID, version, and tree hash.",
     "The Screenshots runner is invoked through the resource guard with SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT pointing to that receipt."
   ],
   "reproduction": [
-    "Use CI run 38316843884, attempt 1, artifact 11777408625, source fe631ec14c443d025dec04c1fa00795b1feaddb0, version 0.2.509, extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, and tree hash 2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a.",
+    "Use a successful exact-source CI development artifact with its run, artifact, source, version, extension ID, and tree identity verified.",
     "Promote the imported artifact using the existing CI development artifact promotion flow; its receipt kind is ci_development_test_promotion and its destination is .output/chrome-mv3-dev.",
     "Run SCREENSHOT_CAPTURE_DEV_BUILD_RECEIPT=<promotion-receipt> node scripts/stabilization-resource.mjs run --run-id <unique-id> --profile-dir /Volumes/Samsung2TB/code/.stabilization-scratch -- node tests/browser/screenshot-capture-acceptance.mjs.",
     "After resource admission, the runner emits UNVERIFIED screenshot_capture; its sanitized result has status unverified, build null, failure stage build_start, and code owned_harness_or_ui_stage_failed. No browser starts."
@@ -30,7 +30,7 @@
   "reproducibility": "One guard-admitted attempt deterministically stopped at build_start. A second permit was stopped before admission and browser startup after the provenance issue was identified.",
   "severity": "S2: blocks native acceptance of the current CI-built Screenshots artifact",
   "priority": "P1: repair before interpreting any new Screenshots native retest",
-  "state": "triaged",
+  "state": "fixed",
   "owner": "root",
   "cause": "The runner's receipt contract only recognizes local builds, while stabilization now supplies a CI-built and promoted artifact with a distinct promotion receipt kind.",
   "sibling_census": "Other native runners may share the local-only receipt assumption; check existing CI artifact consumers before closing this defect. No sibling runner was changed in this task.",
@@ -42,11 +42,11 @@
     "Independent source review and fresh green focused CI precede another resource-admitted native attempt."
   ],
   "build_receipt": {
-    "source_sha": "fe631ec14c443d025dec04c1fa00795b1feaddb0",
-    "ci_run_id": 38316843884,
+    "source_sha": "62ba4838655b48502388b8f1813686f3545fb71b",
+    "ci_run_id": 38320662877,
     "ci_attempt": 1,
-    "artifact_id": 11777408625,
-    "artifact_digest": "sha256:23f19b512ac8896c8d5bc2f19ee7a6fa07af98980e6f2a6baf6877a28dd4b275",
+    "artifact_id": 11778284430,
+    "artifact_digest": "sha256:7a121694e4bcf8ab61b7256367c476bdf3442e903c913bac86238dce73dcfc6b",
     "version": "0.2.509",
     "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
     "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
@@ -54,14 +54,14 @@
     "compatibility": "exact-source"
   },
   "source_verification": {
-    "run_id": "ext-d-0219-native-20261012",
-    "evidence": "docs/stabilization/runs/ext-d-0219-native-20261012.json",
-    "native_acceptance": "ZERO CREDIT: resource admitted, then rejected before browser startup at build_start. T04/T05 admin and member behaviors remain unverified.",
-    "independent_review": "pending",
-    "fix_commits": [],
+    "run_id": "ext-d-0221-native-20261012",
+    "evidence": "docs/stabilization/runs/ext-d-0221-native-20261012.json",
+    "native_acceptance": "The guarded exact-source runner accepted and recorded the true CI promotion receipt, verifying the original provenance-gate defect. It then stopped before browser startup because MATRX_PLAYWRIGHT_MODULE was absent. No T04/T05 product behavior was exercised; no retest-pass or closure is claimed.",
+    "independent_review": "PASS: docs/stabilization/reports/ext-d-0221-independent-review-20261012.json",
+    "fix_commits": ["a10bd7fd3"],
     "release": "not assessed"
   },
-  "next_action": "Repair and independently review the receipt gate using the existing CI promotion contract; obtain a fresh green exact-source artifact before another native attempt.",
+  "next_action": "A later owner-coordinated native attempt must provide the supported Playwright runtime path, then exercise the actual Screenshots cases. Keep EXT-F-1009 T04/T05 unverified until real UI behavior is observed and independently reviewed.",
   "transition_history": [
     {
       "at": "2026-10-12T22:53:37.651Z",
@@ -74,6 +74,12 @@
       "from": "open",
       "to": "triaged",
       "reason": "Isolated deterministic receipt-kind mismatch; product behavior was not exercised."
+    },
+    {
+      "at": "2026-10-12T23:25:32.000Z",
+      "from": "triaged",
+      "to": "fixed",
+      "reason": "Receipt validation repair a10bd7fd3 passed independent review 62ba48386 and exact-source CI 38320662877. Guarded native execution accepted and recorded the true promotion receipt; it later stopped before Chrome startup because MATRX_PLAYWRIGHT_MODULE was absent. This fixes the provenance gate only; product T04/T05 remain unverified, with no retest-pass or closure."
     }
   ]
 }
