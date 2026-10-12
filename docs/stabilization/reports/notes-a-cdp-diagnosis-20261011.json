@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "status": "diagnostic-experiment-peer-passed-ready-for-integration-live-unverified",
+  "product_credit": 0,
+  "confirmed_boundary": "A run 38185461370 failed opening the owned browser WebSocket after endpoint record and Chrome process/profile ownership validation succeeded. Native sign-in and Notes interactions were never reached.",
+  "cause": "Undetermined; current evidence cannot distinguish Chrome handshake latency, Node WebSocket-specific failure, and event-loop starvation. No timeout, retry, resource gate, browser argument or product code was changed.",
+  "evidence": {
+    "failed_run": 38185461370,
+    "successful_sibling_run": 38185230023,
+    "source_sha": "456239f59efc76413f7f8b56ce482d8b5bd1b965",
+    "version": "0.2.509",
+    "ci_artifact": 11718734199,
+    "chromium_revision_both_runs": 1194,
+    "shared_path": "Both cases use hosted-guest-acceptance, native-sidepanel-qa-harness, connectNativeStartupOwnedCdp and vault-owned-cdp. Lane is admission/dispatch metadata; no distinct A/B Chrome spawn arguments or CDP connector were found.",
+    "failed_run_timeline_utc": {
+      "admitted": "23:51:15.949",
+      "initial_cpu_pending": "23:51:32.056; CPU busy 0.92; before PREPARED_DEVELOPMENT and Chrome startup",
+      "prepared_development": "23:51:48.465",
+      "startup_started_inferred": "approximately 23:51:52.714 from failure log time minus reported elapsedMs",
+      "cpu_pending_during_startup": "23:52:04.997; CPU busy 1; load 3.4 on 4 logical CPUs",
+      "startup_failure": "23:52:07.151; owned_cdp_open_timeout; elapsedMs 14437; spawnObserved and devtoolsListening true; no exit, launch error or crash observed",
+      "final": "23:52:08.787; resource invalid; child exit 1"
+    },
+    "successful_sibling": "B was admitted at 23:47:48.083, prepared development at 23:48:00.200, then recorded CPU pending at 23:48:04.254 with busy 0.82 and load 12.27. It recovered and ended resource-valid at 23:48:57.608. Thus CPU pending alone is insufficient evidence for the A connection failure.",
+    "elapsed_caveat": "The 14437ms startup measurement includes endpoint polling, process inspection, the unchanged 5000ms WebSocket open timeout, and closeSocket cleanup which can wait another 5000ms. It is not a 14437ms WebSocket opening measurement.",
+    "prior_failure": "38181935400 stopped with opaque receipt-stage failure and resource invalidity; its retained report cannot establish the same CDP cause."
+  },
+  "experiment": {
+    "launch_authority": "Parent coordinator only; no hosted run launched by this lane.",
+    "activation": "Use the new default-false hosted workflow notes_startup_diagnostic=true input on the explicitly authorized notes-find-member lane A run. Actual lane admission rejects enabling it for any other case or lane. Acceptance maps MATRX_CDP_STARTUP_DIAGNOSTIC=1 only for that input/case/lane; the native harness enables both the existing process CPU bracket and new owned-CDP phase receipt. SEO resource diagnostics retain their prior input, admission and CPU-only behavior.",
+    "peer_round_one": "Fresh peer rejected the original activation claim: seo_resource_diagnostic is guest-seo/full/airbnb-only, so it could not lawfully enable this on Notes. Corrected with a separate Notes input and an executable workflow-to-native routing test; no hosted retry launched.",
+    "ordinary_mode": "Disabled by default; passes identical options to the original connector without timers, process reads, or extra loopback handshakes.",
+    "measurement": "BROWSER_CDP_STARTUP_INTERVAL records relative endpoint-read, owner-check, owner-verified, socket-constructed, socket-open/error, close-requested/closed and connector-settled times; timer sample count and maximum lateness; independent TCP-connect and HTTP Upgrade numeric status. The independent request begins only after the real connector validates owned Chrome identity and profile.",
+    "privacy": "No endpoint URL, port, path, headers, body, auth, process arguments or exception text is emitted. Only fixed categories, durations, counts and HTTP status numbers leave the helper.",
+    "limits": "The diagnostic probe and timer are stopped when the original connector settles. No retry, wider timeout, new admission decision or product acceptance result is introduced. The probe can affect an already failing Chrome slightly; it is opt-in and evidence is diagnostic only.",
+    "predictions": [
+      {
+        "hypothesis": "Node event-loop starvation",
+        "distinguishing_observation": "Large timer lateness aligned with the open/close boundary; compare the existing CPU process bracket for owned Node versus external/Chrome work. Timely timers would weaken this hypothesis."
+      },
+      {
+        "hypothesis": "Chrome listener accepts TCP but cannot complete a browser WebSocket handshake",
+        "distinguishing_observation": "Independent TCP-connect occurs, but neither independent 101 Upgrade nor native socket-open appears while Node timers remain timely. A prompt independent 101 would weaken this hypothesis."
+      },
+      {
+        "hypothesis": "Native Node WebSocket-specific open failure",
+        "distinguishing_observation": "Independent handshake returns 101 promptly while native socket never opens and timers remain timely. If both transports stall this hypothesis loses support."
+      },
+      {
+        "hypothesis": "Reported startup duration inflated by socket-close cleanup",
+        "distinguishing_observation": "Close-requested precedes connector-settled by approximately the unchanged cleanup budget; separate the open wait from cleanup in the receipt."
+      }
+    ],
+    "interpretation_limit": "A CPU bracket establishes activity during the interval, not sole causation. If both transports stall without event-loop delay, the evidence localizes Chrome/loopback; it does not by itself prove an external host CPU cause."
+  },
+  "verification": {
+    "original_red": "Before adding the real startup callsite wrapper, native-cdp-startup-diagnostic.test.mjs failed: owned CDP boundary diagnostic missing at actual native startup callsite (0 versus 1).",
+    "green": "45/45 focused tests passed after activation repair: Notes startup route and existing Notes/SEO routes, diagnostic seam, startup CPU interval callsite, and Notes startup diagnostic. Initial source files passed node --check and focused Biome check; current round compile is explicitly held by the parent because system temp disk is below the resource gate.",
+    "route_red_green": "Before the workflow change, the executable route test failed with Notes diagnostic needs a reachable boolean workflow input, and Notes diagnostic escaped admission onto guest-data/B. After repair it executes parsed workflow Bash admission, evaluates the actual GitHub env expression, executes the hosted childEnv and driver selection source, and reaches the actual native startup callsite with the real observer. Enabled and disabled Notes A paths differ; other cases/lanes are refused, and the existing SEO CPU flag cannot activate the new handshake probe.",
+    "route_mutations": "plant.py separately forced the actual workflow diagnostic mapping off and disabled its Notes admission condition. Tests failed respectively with workflow input was lost before the actual owned-CDP callsite, and Notes diagnostic escaped admission onto guest-data/B. Both restored the exact original workflow SHA256 92f7879e6583; restored route and interval tests passed 9/9.",
+    "independent_review": "notes-a-cdp-activation-repeer-20261012.json: B code/quality PASS, A fit-to-objective PARTIAL solely because the authorized hosted diagnostic has not yet run. No new breakage; peer independently ran 14/14 focused tests. This is readiness to run the experiment, not a hosted-cause or Notes-product completion claim.",
+    "mutation_proof": "plant.py restored byte-identical helper after separately killing a constant successful connector replacement (executed return-expected gut check), diagnostic bypass (return real connector without capture), wrong connected outcome, and omitted independent probe. Each mutation failed the named behavior assertion. Probe test uses a real local HTTP Upgrade, and successful native opening uses Node's actual WebSocket.",
+    "scope": "These checks verify diagnostic capture, isolation and unchanged connector decisions; they do not reproduce or repair the hosted Chrome failure and confer no Notes case credit."
+  },
+  "owned_files": [
+    "tests/browser/native-cdp-startup-diagnostic.mjs",
+    "tests/browser/native-cdp-startup-diagnostic.test.mjs",
+    "tests/browser/native-sidepanel-qa-harness.mjs",
+    "tests/browser/native-startup-interval-callsite.test.mjs",
+    "scripts/hosted-notes-startup-diagnostic-route.test.mjs",
+    ".github/workflows/hosted-guest-acceptance.yml",
+    "docs/stabilization/reports/notes-a-cdp-diagnosis-20261011.json"
+  ],
+  "open_question": "Which connection phase stalls on a resource-valid authorized Notes A diagnostic run, and is timer lateness or an independent 101 handshake observed?"
+}

@@ -27,6 +27,7 @@ import { beginStartupProcessInterval } from '../../scripts/startup-process-inter
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { markBrowserAgentTraffic } from './agent-traffic.mjs';
 import { resolveBrowserRuntime } from './browser-runtime.mjs';
+import { observeNativeCdpStartup } from './native-cdp-startup-diagnostic.mjs';
 import { runOwnedPanelReopen } from './native-panel-reopen-boundary.mjs';
 import { reloadOperationBoundary } from './native-reload-operation-boundary.mjs';
 import { awaitNativeResourceHealth, runNativeResourceAction } from './native-resource-boundary.mjs';
@@ -59,10 +60,13 @@ export async function nativeCdpStartupDeadlineMs() {
 }
 
 export async function connectNativeStartupOwnedCdp(options) {
-  return connectOwnedCdp({
-    ...options,
-    startupDeadlineMs: await nativeCdpStartupDeadlineMs(),
-  });
+  return observeNativeCdpStartup(
+    {
+      ...options,
+      startupDeadlineMs: await nativeCdpStartupDeadlineMs(),
+    },
+    connectOwnedCdp,
+  );
 }
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -1570,7 +1574,9 @@ export async function runNativeSidepanelQa({
   let gpuAbort;
   let finishStartupInterval;
   let startupIntervalFinished = false;
-  const startupIntervalEnabled = process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1';
+  const startupIntervalEnabled =
+    process.env.MATRX_STARTUP_INTERVAL_DIAGNOSTIC === '1' ||
+    process.env.MATRX_CDP_STARTUP_DIAGNOSTIC === '1';
   const recordStartupInterval = async (outcome) => {
     if (!startupIntervalEnabled || startupIntervalFinished) return;
     startupIntervalFinished = true;
