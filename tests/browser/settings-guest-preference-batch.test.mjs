@@ -521,6 +521,66 @@ import {
   restoreGuestPreferenceBaseline,
 } from './settings-guest-preference-batch.mjs';
 
+test('T10 baseline is captured after T04 restores its original absent settings container', async () => {
+  const theme = GUEST_PREFERENCES.find((item) => item.caseId === 'T04');
+  const mode = GUEST_PREFERENCES.find((item) => item.caseId === 'T10');
+  const state = {
+    T04: {
+      activeSettings: true,
+      count: 1,
+      selected: 'System',
+      stored: 'system',
+      storedPresent: true,
+      storagePresent: true,
+    },
+    T10: {
+      activeSettings: true,
+      count: 1,
+      selected: 'Ask before acting',
+      stored: 'ask',
+      storedPresent: true,
+      storagePresent: true,
+    },
+  };
+  const originalTheme = preferenceBaseline(
+    {
+      ...state.T04,
+      stored: null,
+      storedPresent: false,
+      storagePresent: false,
+      darkClass: false,
+      systemDark: false,
+      renderedBackgroundMatches: true,
+    },
+    theme,
+  );
+  const baselines = await captureGuestPreferenceBaselines({
+    panel: {},
+    preferences: [theme, mode],
+    settings: async () => {},
+    openSection: async () => {},
+    observePreference: async (_panel, preference) => ({ ...state[preference.caseId] }),
+    preferenceBaseline,
+    caseEntryBaselines: { T04: originalTheme },
+    restorePreferenceBaseline: async () => {
+      state.T04 = { ...state.T04, stored: null, storedPresent: false, storagePresent: false };
+      state.T10 = { ...state.T10, stored: null, storedPresent: false, storagePresent: false };
+    },
+  });
+  assert.equal(baselines.T10.value, 'ask');
+  assert.equal(baselines.T10.storedPresent, false);
+  assert.equal(baselines.T10.storagePresent, false);
+  assert.equal(preferenceBaselineMatches(state.T10, mode, baselines.T10), true);
+  assert.equal(
+    preferenceBaselineMatches(
+      { ...state.T10, stored: 'ask', storedPresent: true, storagePresent: true },
+      mode,
+      baselines.T10,
+    ),
+    false,
+  );
+});
+
 // The harness owns baseline capture/restoration/comparison; only browser I/O is a fixture.
 for (const storagePresent of [false, true]) {
   for (const corruptReload of [false, true]) {

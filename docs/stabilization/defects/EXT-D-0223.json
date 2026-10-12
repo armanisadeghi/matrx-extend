@@ -1,0 +1,75 @@
+{
+  "id": "EXT-D-0223",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T10"],
+  "title": "Settings full-extension recheck captures explicit Ask before absent Theme restoration removes its container",
+  "surface": "Native Settings acceptance harness",
+  "auth_mode": "guest",
+  "organization_context": "Guest local preferences; no authenticated backend mutation",
+  "preconditions": [
+    "T04 case-entry Theme is implicit System with no matrx.settings.v1 container.",
+    "T10 warm choice cycles have saved an explicit Ask value in that container."
+  ],
+  "reproduction": [
+    "Run the guarded Settings native runner through T04 and T10 warm choice cycles.",
+    "The old captureGuestPreferenceBaselines snapshots T10 explicit Ask before restoring T04's absent-container baseline.",
+    "T04 restoration removes the container; the T10 full-extension recheck sees implicit Ask and fails at initial_baseline_observation before its first choice."
+  ],
+  "expected": "Capture T10 after T04's container restoration and preserve the resulting implicit Ask baseline through Act, full-extension reload, and final restoration without creating a stored key.",
+  "actual": "The exact-source native run passed T04 but failed surrounding T10: expected Ask with storedPresent/storagePresent true; observed Ask with both false.",
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/native-report.sanitized.json",
+    "tests/browser/settings-guest-preference-batch.test.mjs",
+    "tests/browser/settings-full-extension-rechecks.test.mjs"
+  ],
+  "build_receipt": {
+    "native_source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
+    "native_ci_run_id": 38323077277,
+    "native_artifact_id": 11779353985,
+    "native_artifact_digest": "sha256:e6ecb243273238079a6f7d18c7e2ec154b9bd0ecf9f1bb0c29c91918a64a665f",
+    "repair_base_sha": "1bf201b287233b6402bf7f201972aace5e33dba5",
+    "repair_native_artifact": "pending"
+  },
+  "reproducibility": "Deterministic harness ordering; native report and focused production callback regression agree.",
+  "severity": "S2: false T10 failure and no full-extension mode acceptance",
+  "priority": "P1: repair before next guarded Settings native run",
+  "state": "in-fix",
+  "owner": "root/d223_t10_baseline_diagnostic",
+  "cause": "The T04 case-entry baseline owns the whole absent Settings container. Capturing T10 before applying that restoration records a state that T04 subsequently deletes; the T10 callback also lacked implicit-default comparison and restoration.",
+  "sibling_census": "T04 and T10 share late baseline capture; T04/T10/T67 share the replacement runner. T04 absent-container and T10 implicit Ask are covered; T67 uses its own persisted scrape-mode baseline and is unchanged.",
+  "acceptance_criteria": [
+    "Capture T10 only after T04's case-entry restoration has completed.",
+    "Implicit Ask checks the visible selector, absent key, and absent container before and after full-extension replacement.",
+    "T10 Act choice and new-chat inheritance remain executable; final restoration returns to implicit Ask.",
+    "An independent source review precedes push; guarded exact-source native T10 retest remains required."
+  ],
+  "source_verification": {
+    "focused_tests": "35/35 pass",
+    "compile": "pass",
+    "lint": "pass with existing repository warnings",
+    "independent_source_review": "pending",
+    "native_acceptance": "pending",
+    "release": "pending"
+  },
+  "next_action": "Independent source review, then exact-path push and guarded exact-source native T10 plus surrounding Settings retest. Do not promote native T10 or overall Settings coverage from source tests.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T23:54:47Z",
+      "from": null,
+      "to": "open",
+      "reason": "Guarded T04 native run exposed a surrounding T10 baseline mismatch before its first choice."
+    },
+    {
+      "at": "2026-10-12T23:54:47Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Confirmed T04 container restoration invalidates the earlier explicit T10 snapshot; implicit Ask is product-default behavior."
+    },
+    {
+      "at": "2026-10-12T23:54:47Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow callback repair and focused source tests pass; independent source and native gates remain pending."
+    }
+  ]
+}

@@ -189,6 +189,13 @@ export async function captureGuestPreferenceBaselines({
 }) {
   const baselines = { ...caseEntryBaselines };
   await settings(panel);
+  // A case-entry Theme baseline may own the entire Settings container. Restore
+  // it before capturing Default mode, since removal also resets that mode.
+  for (const preference of preferences.filter((item) => caseEntryBaselines[item.caseId])) {
+    if (typeof restorePreferenceBaseline !== 'function')
+      throw new Error('case_entry_baseline_restorer_required');
+    await restorePreferenceBaseline(panel, preference, baselines[preference.caseId]);
+  }
   for (const preference of preferences.filter((item) => ['T04', 'T10'].includes(item.caseId))) {
     if (baselines[preference.caseId]) continue;
     await openSection(panel, preference.section);
@@ -196,13 +203,6 @@ export async function captureGuestPreferenceBaselines({
       await observePreference(panel, preference),
       preference,
     );
-  }
-  for (const preference of preferences) {
-    if (caseEntryBaselines[preference.caseId]) {
-      if (typeof restorePreferenceBaseline !== 'function')
-        throw new Error('case_entry_baseline_restorer_required');
-      await restorePreferenceBaseline(panel, preference, baselines[preference.caseId]);
-    }
   }
   return baselines;
 }
@@ -283,19 +283,17 @@ export async function rerunGuestSettingsAfterExtensionReload({
             openSection,
             read: (target) => observePreference(target, preference),
             matches: (state, value, label) => preferenceMatches(state, preference, value, label),
-            ...(preference.caseId === 'T04' && {
-              matchesBaseline: (state) => preferenceBaselineMatches(state, preference, baseline),
-              ...(baseline?.storedPresent === false && {
-                restoreBaseline: (target) =>
-                  restoreGuestPreferenceBaseline(
-                    target,
-                    preference,
-                    baseline,
-                    (name, observation, passed) =>
-                      record(name, passed ? 'pass' : 'fail', observation),
-                    ...(choiceDriver ? [{ ...choiceDriver, openSection }] : []),
-                  ),
-              }),
+            matchesBaseline: (state) => preferenceBaselineMatches(state, preference, baseline),
+            ...(baseline?.storedPresent === false && {
+              restoreBaseline: (target) =>
+                restoreGuestPreferenceBaseline(
+                  target,
+                  preference,
+                  baseline,
+                  (name, observation, passed) =>
+                    record(name, passed ? 'pass' : 'fail', observation),
+                  ...(choiceDriver ? [{ ...choiceDriver, openSection }] : []),
+                ),
             }),
             reloadExtension,
             acquireLivePanel,
