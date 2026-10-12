@@ -351,6 +351,135 @@ async function chooseHome(panel, label) {
   );
 }
 
+/** EXT-D-0201 only: a canonical General may exist before its scope is initialized. */
+export async function runNotesLazyGeneralPicker({
+  panel,
+  transport,
+  origin,
+  publishableKey,
+  selectedOrganizationId,
+}) {
+  if (!UUID.test(selectedOrganizationId ?? ''))
+    throw new Error('notes_lazy_general_selected_organization_invalid');
+  let writeRequests = 0;
+  const off = panel.on('Network.requestWillBeSent', (event) => {
+    try {
+      const url = new URL(event.request.url);
+      if (url.origin !== origin || !url.pathname.startsWith('/rest/v1/')) return;
+      const readRpc =
+        event.request.method === 'POST' &&
+        ['/rest/v1/rpc/context_tree', '/rest/v1/rpc/my_homes'].includes(url.pathname);
+      if (!readRpc && event.request.method !== 'GET') writeRequests += 1;
+    } catch {
+      writeRequests += 1;
+    }
+  });
+  const report = {
+    case_id: 'EXT-D-0201-picker',
+    verdict: 'unverified',
+    observations: {},
+  };
+  try {
+    const snapshot = async () => {
+      const tree = await selectedOrgTree(panel, origin, publishableKey, selectedOrganizationId);
+      const homes = await scopeDoor(
+        panel,
+        origin,
+        publishableKey,
+        selectedOrganizationId,
+        'my_homes',
+        {},
+        'platform',
+      );
+      if (!Array.isArray(homes)) throw new Error('notes_lazy_general_homes_invalid');
+      const canonical = homes.filter(
+        (home) => home.organization_id === selectedOrganizationId && home.is_general === true,
+      );
+      if (canonical.length !== 1 || canonical[0].scope_id !== null)
+        throw new Error('notes_lazy_general_precondition_missing');
+      const home = canonical[0];
+      const selectedScopes = tree.scopes.filter(
+        (scope) => scope.organization_id === selectedOrganizationId,
+      );
+      if (
+        typeof home.name !== 'string' ||
+        !home.name.trim() ||
+        typeof home.organization_name !== 'string' ||
+        !home.organization_name.trim() ||
+        selectedScopes.length !== 0
+      )
+        throw new Error('notes_lazy_general_precondition_invalid');
+      return {
+        name: home.name,
+        organizationName: home.organization_name,
+        selectedOrgScopeCount: selectedScopes.length,
+      };
+    };
+    const before = await snapshot();
+    report.observations.before = {
+      canonical_general_nullable: true,
+      general_scope_absent: true,
+      selected_organization_confirmed: true,
+    };
+    await click(panel, 'title', 'Notes');
+    await waitFor(
+      'notes_lazy_general_loaded',
+      () => t02State(panel),
+      (state) => state.active && state.create && state.homeLabel === 'All homes',
+      30_000,
+    );
+    const label = `${before.name} · ${before.organizationName}`;
+    await openHomePicker(panel, label);
+    const open = await t02State(panel);
+    if (open.homeOptions.filter((option) => option === label).length !== 1)
+      throw new Error('notes_lazy_general_picker_option_missing');
+    await chooseHome(panel, label);
+    const selected = await t02State(panel);
+    if (!selected.active || selected.homeLabel !== label || selected.homeExpanded)
+      throw new Error('notes_lazy_general_selection_unstable');
+    const after = await snapshot();
+    if (
+      after.name !== before.name ||
+      after.organizationName !== before.organizationName ||
+      after.selectedOrgScopeCount !== 0 ||
+      writeRequests !== 0 ||
+      (transport?.state().blockedWrites ?? 0) !== 0 ||
+      transport?.state().interceptionFailed
+    )
+      throw new Error('notes_lazy_general_unexpected_write_or_initialization');
+    report.observations.picker = {
+      synthetic_general_visible: true,
+      selected_as_filter: true,
+      selection_stable: true,
+    };
+    report.observations.after = {
+      canonical_general_nullable: true,
+      general_scope_absent: true,
+      unexpected_write_requests: writeRequests,
+    };
+    report.verdict = 'pass';
+  } catch (error) {
+    const safeCodes = new Set([
+      'notes_lazy_general_selected_organization_invalid',
+      'notes_lazy_general_homes_invalid',
+      'notes_lazy_general_precondition_missing',
+      'notes_lazy_general_precondition_invalid',
+      'notes_lazy_general_picker_option_missing',
+      'notes_lazy_general_selection_unstable',
+      'notes_lazy_general_unexpected_write_or_initialization',
+      'notes_find_scope_tree_shape_invalid',
+      'notes_find_home_trigger_ambiguous',
+      'notes_find_home_picker_did_not_open',
+    ]);
+    report.failure_code = safeCodes.has(error?.message)
+      ? error.message
+      : 'notes_lazy_general_unverified';
+  } finally {
+    off();
+  }
+  return report;
+}
+
 async function clickBySelector(panel, selector, expectedText, label) {
   const point = await evaluate(
     panel,

@@ -13,6 +13,7 @@ const HOSTED_ACCEPTANCE_CASES = new Set([
   'tab-groups-member',
   'native-ai-member-probe',
   'notes-find-member',
+  'notes-lazy-general-member',
   'settings-controls',
   'settings-theme-rendering',
   'settings-auto-scrape-capture',

@@ -60,6 +60,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       'tab-groups-member',
       'native-ai-member-probe',
       'notes-find-member',
+      'notes-lazy-general-member',
     ].includes(acceptanceCase) ||
     scrapeMode === 'member'
   ) {
@@ -70,6 +71,7 @@ export function requireHostedAcceptanceCredential(acceptanceCase, env) {
       acceptanceCase === 'tab-groups-member' ||
       acceptanceCase === 'native-ai-member-probe' ||
       acceptanceCase === 'notes-find-member' ||
+      acceptanceCase === 'notes-lazy-general-member' ||
       acceptanceCase === 'settings-account-popover-member'
     )
       requireSettingsCredential('member', env.MATRX_HOSTED_MEMBER_LINK_JSON);

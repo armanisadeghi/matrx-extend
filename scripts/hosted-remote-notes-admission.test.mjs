@@ -105,6 +105,92 @@ test('normal Notes plan dispatches member T02 on A rather than member Data or st
     /HOSTED_WORKFLOW_BLOB_UNREVIEWED/,
   );
 });
+test('D201 plan is a distinct reviewed lane A member route', () => {
+  const plan = admission.planHostedNotes({ ...input, acceptanceCase: 'notes-lazy-general-member' });
+  const fields = plan.args.filter((_value, index) => plan.args[index - 1] === '-f');
+  assert.ok(fields.includes('acceptance_case=notes-lazy-general-member'));
+  assert.ok(fields.includes('scrape_auth_mode=member'));
+  assert.ok(fields.includes('development_run_id=38116138170'));
+  assert.throws(() =>
+    admission.planHostedNotes({ ...input, lane: 'B', acceptanceCase: 'notes-lazy-general-member' }),
+  );
+  const workflow = readFileSync(
+    new URL('../.github/workflows/hosted-guest-acceptance.yml', import.meta.url),
+    'utf8',
+  );
+  assert.throws(
+    () =>
+      admission.planHostedNotes({
+        ...input,
+        acceptanceCase: 'notes-lazy-general-member',
+        workflow: `${workflow}\n# drift`,
+      }),
+    /HOSTED_WORKFLOW_BLOB_UNREVIEWED/,
+  );
+  const mismatchedMode = spawnSync(
+    process.execPath,
+    [
+      new URL('./hosted-remote-admission.mjs', import.meta.url).pathname,
+      'plan-notes-lazy-general',
+      '--case',
+      'notes-find-member',
+    ],
+    { encoding: 'utf8' },
+  );
+  assert.notEqual(mismatchedMode.status, 0);
+  assert.match(mismatchedMode.stderr, /HOSTED_NOTES_CASE_MODE_MISMATCH/);
+});
+
+test('D201 verifier refuses absent picker, writes, initialized General, and T02 claim', () => {
+  const base = nativeReport();
+  base.cases = ['EXT-D-0201-picker'];
+  base.observations.T02 = undefined;
+  base.observations.D201 = {
+    case_id: 'EXT-D-0201-picker',
+    verdict: 'pass',
+    observations: {
+      before: {
+        canonical_general_nullable: true,
+        general_scope_absent: true,
+        selected_organization_confirmed: true,
+      },
+      picker: { synthetic_general_visible: true, selected_as_filter: true, selection_stable: true },
+      after: {
+        canonical_general_nullable: true,
+        general_scope_absent: true,
+        unexpected_write_requests: 0,
+      },
+    },
+  };
+  assert.equal(admission.verifyHostedNotesLazyGeneralReport(base, identity), true);
+  for (const change of [
+    (r) => {
+      r.observations.D201.observations.before.canonical_general_nullable = false;
+    },
+    (r) => {
+      r.observations.D201.observations.picker.synthetic_general_visible = false;
+    },
+    (r) => {
+      r.observations.D201.observations.picker.selected_as_filter = false;
+    },
+    (r) => {
+      r.observations.D201.observations.after.unexpected_write_requests = 1;
+    },
+    (r) => {
+      r.observations.T02 = nativeReport().observations.T02;
+    },
+    (r) => {
+      r.imported_artifact.sourceSha = 'd'.repeat(40);
+    },
+  ]) {
+    const report = structuredClone(base);
+    change(report);
+    assert.throws(
+      () => admission.verifyHostedNotesLazyGeneralReport(report, identity),
+      /HOSTED_NOTES_LAZY_GENERAL_REPORT_INVALID/,
+    );
+  }
+});
 
 test('Notes admission refuses dirty checkout, workflow/runtime drift, A capacity or missing credential metadata', () => {
   assert.equal(

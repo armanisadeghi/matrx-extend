@@ -11,7 +11,7 @@ const OWNER = 'armanisadeghi/matrx-extend';
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
 // Reviewed bytes of this narrow lane's active hosted workflow. Any workflow edit needs review.
 // Notes CDP opt-in uses startup_display_mode; 25 inputs; phase/fixture guards unchanged.
-const REVIEWED_WORKFLOW_SHA256 = '83ae5e708cd38edede3754455533271d9e0f33a8fb6fb78540071d838473553a';
+const REVIEWED_WORKFLOW_SHA256 = '68beefb4d0f6fbbeb70486be539cf042e13328733d99b49f343d53803d028cba';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );
@@ -322,10 +322,11 @@ export function verifyHostedScrapeReport(report, identity) {
   return true;
 }
 
-/** Normal member Notes T02 only; CDP startup diagnostics have no acceptance route. */
+/** Normal member Notes cases only; CDP startup diagnostics have no acceptance route. */
 export function planHostedNotes({ lane, acceptanceCase, runnerLabel, ...input }) {
   if (lane !== 'A') refuse('HOSTED_NOTES_LANE_REFUSED');
-  if (acceptanceCase !== 'notes-find-member') refuse('HOSTED_NOTES_CASE_REFUSED');
+  if (!['notes-find-member', 'notes-lazy-general-member'].includes(acceptanceCase))
+    refuse('HOSTED_NOTES_CASE_REFUSED');
   if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_NOTES_RUNNER_REFUSED');
   if (!SHA.test(input.sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
   // Reuse the existing artifact-id, main-ref and reviewed workflow guards.
@@ -340,7 +341,7 @@ export function planHostedNotes({ lane, acceptanceCase, runnerLabel, ...input })
       'main',
       ...[
         'acceptance_lane=A',
-        'acceptance_case=notes-find-member',
+        `acceptance_case=${acceptanceCase}`,
         'scrape_auth_mode=member',
         'runner_label=macos-15-intel',
         'startup_display_mode=headed',
@@ -442,6 +443,53 @@ export function verifyHostedNotesReport(report, identity) {
     report.build?.after?.treeSha256 !== artifact.treeSha256
   )
     refuse('HOSTED_NOTES_NATIVE_REPORT_PROVENANCE_INVALID');
+  return true;
+}
+
+/** D201 picker only; this verdict never implies T02 search, move, or cleanup coverage. */
+export function verifyHostedNotesLazyGeneralReport(report, identity) {
+  const artifact = report?.imported_artifact;
+  const auth = report?.observations?.hosted_authentication;
+  const d201 = report?.observations?.D201;
+  if (
+    report?.schema_version !== 1 ||
+    report.status !== 'pass' ||
+    report.role !== 'member' ||
+    JSON.stringify(report.cases) !== '["EXT-D-0201-picker"]' ||
+    report.observations?.T02 !== undefined ||
+    report.observations?.startup_endpoint !== undefined ||
+    report.failure_code !== undefined ||
+    !/^[a-p]{32}$/.test(report.extension_id ?? '') ||
+    auth?.member_signed_in !== true ||
+    auth.non_admin_identity !== true ||
+    auth.organization_selected !== true ||
+    d201?.case_id !== 'EXT-D-0201-picker' ||
+    d201.verdict !== 'pass' ||
+    d201.failure_code !== undefined ||
+    d201.observations?.before?.canonical_general_nullable !== true ||
+    d201.observations.before.general_scope_absent !== true ||
+    d201.observations.before.selected_organization_confirmed !== true ||
+    d201.observations.picker?.synthetic_general_visible !== true ||
+    d201.observations.picker.selected_as_filter !== true ||
+    d201.observations.picker.selection_stable !== true ||
+    d201.observations.after?.canonical_general_nullable !== true ||
+    d201.observations.after.general_scope_absent !== true ||
+    d201.observations.after.unexpected_write_requests !== 0 ||
+    artifact?.kind !== 'ci_development_test' ||
+    artifact.eligibleStore !== false ||
+    artifact.repository !== OWNER ||
+    artifact.workflow !== '.github/workflows/ci.yml' ||
+    artifact.sourceSha !== identity.sourceSha ||
+    String(artifact.runId) !== identity.developmentRunId ||
+    String(artifact.artifactId) !== identity.developmentArtifactId ||
+    artifact.runAttempt !== Number(identity.developmentRunAttempt) ||
+    !/^sha256:[a-f0-9]{64}$/.test(artifact.githubArtifactDigest ?? '') ||
+    artifact.githubArtifactDigest !== identity.githubArtifactDigest ||
+    !/^[a-f0-9]{64}$/.test(artifact.treeSha256 ?? '') ||
+    report.build?.before?.treeSha256 !== artifact.treeSha256 ||
+    report.build?.after?.treeSha256 !== artifact.treeSha256
+  )
+    refuse('HOSTED_NOTES_LAZY_GENERAL_REPORT_INVALID');
   return true;
 }
 
@@ -666,7 +714,7 @@ function verifyArchive(zip, bytes, runId, attempt, sourceSha, acceptanceCase) {
       ? 'scrape-seo-schema-empty-guest-native.json'
       : acceptanceCase === 'guest-seo'
         ? 'seo-guest-acceptance.json'
-        : acceptanceCase === 'notes-find-member'
+        : ['notes-find-member', 'notes-lazy-general-member'].includes(acceptanceCase)
           ? 'notes-native-acceptance.json'
           : 'data-member-auto-extract-acceptance.json';
   const report = JSON.parse(archiveEntry(zip, bytes, find(reportName)));
@@ -694,15 +742,23 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       mode === 'plan-scrape' ||
       mode === 'dispatch-scrape' ||
       mode === 'plan-notes' ||
-      mode === 'dispatch-notes'
+      mode === 'dispatch-notes' ||
+      mode === 'plan-notes-lazy-general' ||
+      mode === 'dispatch-notes-lazy-general'
     ) {
       const lane = args.get('--lane');
       const developmentRunId = args.get('--development-run-id');
       const developmentArtifactId = args.get('--development-artifact-id');
       const sourceSha = args.get('--source-sha');
       const guestSeo = mode.endsWith('-guest-seo');
-      const notes = mode.endsWith('-notes');
+      const notes = mode.endsWith('-notes') || mode.endsWith('-notes-lazy-general');
       const scrape = mode.endsWith('-scrape');
+      if (
+        notes &&
+        args.get('--case') !==
+          (mode.endsWith('-notes-lazy-general') ? 'notes-lazy-general-member' : 'notes-find-member')
+      )
+        refuse('HOSTED_NOTES_CASE_MODE_MISMATCH');
       if (notes || scrape)
         for (const key of args.keys())
           if (
@@ -761,6 +817,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         mode === 'dispatch' ||
         mode === 'dispatch-guest-seo' ||
         mode === 'dispatch-notes' ||
+        mode === 'dispatch-notes-lazy-general' ||
         mode === 'dispatch-scrape'
       ) {
         const localSha = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
@@ -862,6 +919,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       mode === 'verify' ||
       mode === 'verify-guest-seo' ||
       mode === 'verify-notes' ||
+      mode === 'verify-notes-lazy-general' ||
       mode === 'verify-scrape'
     ) {
       const runId = args.get('--run-id');
@@ -870,7 +928,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       if (!zip) refuse('HOSTED_ARCHIVE_MISSING');
       const run = ghJson(`repos/${OWNER}/actions/runs/${runId}`);
       const guestSeo = mode === 'verify-guest-seo';
-      const notes = mode === 'verify-notes';
+      const notes = mode === 'verify-notes' || mode === 'verify-notes-lazy-general';
+      const lazyGeneral = mode === 'verify-notes-lazy-general';
       const scrape = mode === 'verify-scrape';
       if (
         run.path !== '.github/workflows/hosted-guest-acceptance.yml' ||
@@ -880,7 +939,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             : guestSeo
               ? 'Native B · guest-seo'
               : notes
-                ? 'Native A · notes-find-member'
+                ? `Native A · ${lazyGeneral ? 'notes-lazy-general-member' : 'notes-find-member'}`
                 : 'Native A · member-data') ||
         run.event !== 'workflow_dispatch' ||
         run.head_branch !== 'main' ||
@@ -904,7 +963,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           : guestSeo
             ? 'guest-seo'
             : notes
-              ? 'notes-find-member'
+              ? lazyGeneral
+                ? 'notes-lazy-general-member'
+                : 'notes-find-member'
               : 'member-data',
       );
       const artifactRunId =
@@ -960,7 +1021,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
           paths.some((path) => !NOTES_NON_RUNTIME_PATH.test(path))
         )
           refuse('HOSTED_NOTES_RUNTIME_SOURCE_DRIFT');
-        verifyHostedNotesReport(report, {
+        (lazyGeneral ? verifyHostedNotesLazyGeneralReport : verifyHostedNotesReport)(report, {
           ...artifact,
           developmentArtifactId: artifact.artifactId,
         });

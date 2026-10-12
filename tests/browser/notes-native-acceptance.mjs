@@ -12,7 +12,7 @@ import {
 } from '../../scripts/record-local-dev-build.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
-import { runNotesFindAcceptance } from './notes-find-native-case.mjs';
+import { runNotesFindAcceptance, runNotesLazyGeneralPicker } from './notes-find-native-case.mjs';
 import { readMemberCredential } from './notes-member-credential.mjs';
 import {
   ownedNotesFixtureReceipt,
@@ -58,17 +58,23 @@ const report = {
   cases:
     CASE === 't02'
       ? ['EXT-F-2006-T02']
-      : ['EXT-D-0061', 'EXT-D-0062', 'EXT-D-0063', 'EXT-D-0067', 'EXT-D-0068'],
+      : CASE === 'lazy-general-picker'
+        ? ['EXT-D-0201-picker']
+        : ['EXT-D-0061', 'EXT-D-0062', 'EXT-D-0063', 'EXT-D-0067', 'EXT-D-0068'],
   status: 'unverified',
   role: ROLE,
   build: null,
   observations: {},
   fault_scope:
-    'owned panel, workbench.notes transport; detail/delete faults restricted to the owned note id',
+    CASE === 'lazy-general-picker'
+      ? 'owned panel, read-only REST transport; unexpected database writes blocked before dispatch'
+      : 'owned panel, workbench.notes transport; detail/delete faults restricted to the owned note id',
   data_scope:
-    CASE === 't02'
-      ? 'three synthetic notes created and deleted through the Notes UI; recovery ledger is private and records only owned ids, titles, homes, role and build identity'
-      : 'one newly created Harbor Dental intake handoff note; delete is verified only after live retry',
+    CASE === 'lazy-general-picker'
+      ? 'read-only canonical General and Notes home picker; no fixture, note, or database write'
+      : CASE === 't02'
+        ? 'three synthetic notes created and deleted through the Notes UI; recovery ledger is private and records only owned ids, titles, homes, role and build identity'
+        : 'one newly created Harbor Dental intake handoff note; delete is verified only after live retry',
 };
 function fail(code) {
   report.failure_code = code;
@@ -534,6 +540,7 @@ function armNotesTransport(panel, origin) {
   let passed = 0;
   let passedGet = 0;
   let interceptionFailed = false;
+  let blockedWrites = 0;
   let pendingPatch = null;
   const detailIds = [];
   const createdNoteIds = [];
@@ -603,6 +610,27 @@ function armNotesTransport(panel, origin) {
   const off = panel.on('Fetch.requestPaused', (event) => {
     const request = event.request;
     const url = new URL(request.url);
+    if (
+      CASE === 'lazy-general-picker' &&
+      url.origin === origin &&
+      url.pathname.startsWith('/rest/v1/') &&
+      request.method !== 'GET' &&
+      !(
+        request.method === 'POST' &&
+        ['/rest/v1/rpc/context_tree', '/rest/v1/rpc/my_homes'].includes(url.pathname)
+      )
+    ) {
+      blockedWrites += 1;
+      void panel
+        .send('Fetch.failRequest', {
+          requestId: event.requestId,
+          errorReason: 'BlockedByClient',
+        })
+        .catch(() => {
+          interceptionFailed = true;
+        });
+      return;
+    }
     const headers = Object.entries(request.headers).map(([key, value]) => [
       key.toLowerCase(),
       value,
@@ -691,7 +719,13 @@ function armNotesTransport(panel, origin) {
     start: async () => {
       await panel.send('Network.enable');
       return panel.send('Fetch.enable', {
-        patterns: [{ urlPattern: `${origin}/rest/v1/notes*`, requestStage: 'Request' }],
+        patterns: [
+          {
+            urlPattern:
+              CASE === 'lazy-general-picker' ? `${origin}/rest/v1/*` : `${origin}/rest/v1/notes*`,
+            requestStage: 'Request',
+          },
+        ],
       });
     },
     setMode: (next) => {
@@ -720,6 +754,7 @@ function armNotesTransport(panel, origin) {
       passed,
       passedGet,
       interceptionFailed,
+      blockedWrites,
       patchPending: Boolean(pendingPatch),
     }),
     releasePatch: async () => {
@@ -857,7 +892,7 @@ try {
   if (HOSTED_FIND) {
     stage = 'hosted_provenance_verify';
     assert.equal(ROLE, 'member');
-    assert.equal(CASE, 't02');
+    assert.ok(['t02', 'lazy-general-picker'].includes(CASE));
     assert.equal(report.imported_artifact.runId, Number(process.env.NOTES_EXPECTED_CI_RUN_ID));
     assert.equal(
       report.imported_artifact.artifactId,
@@ -907,7 +942,8 @@ try {
           account_fingerprint: hostedIdentity.account_fingerprint,
         };
       stage = 'organization';
-      if (CASE === 't02' && ROLE !== 'member') fail('t02_requires_member_role');
+      if (['t02', 'lazy-general-picker'].includes(CASE) && ROLE !== 'member')
+        fail('notes_member_role_required');
       const memberOrganization = hostedIdentity
         ? { id: hostedIdentity.organizationId, name: MEMBER_TEST_ORGANIZATION_NAME }
         : ROLE === 'member'
@@ -942,6 +978,19 @@ try {
           report.observations.T02 = result;
           if (result.verdict !== 'pass')
             fail(result.failure_code ?? 't02_member_acceptance_unverified');
+          return;
+        }
+        if (CASE === 'lazy-general-picker') {
+          stage = 'D201_lazy_general_picker';
+          report.observations.D201 = await runNotesLazyGeneralPicker({
+            panel,
+            transport,
+            origin,
+            publishableKey: await supabasePublishableKey(),
+            selectedOrganizationId,
+          });
+          if (report.observations.D201.verdict !== 'pass')
+            fail(report.observations.D201.failure_code ?? 'd201_picker_unverified');
           return;
         }
         stage = 'D61_failed_list';
