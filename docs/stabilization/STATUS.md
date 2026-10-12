@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-12 14:29 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T13:11:57Z. 205 features · 796 cases · 1370 controls · 209 linked defect records.
+Generated 2026-10-12 14:47 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T14:45:00Z. 205 features · 796 cases · 1370 controls · 209 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1269** — Pass: 102 · Partial: 93 · Fail: 2 · Unverified: 1070 · N/A: 2.
-Unverified splits into **146 explicitly marked unverified** and **924 with no result record**.
+Applicable case-by-role slots: **1269** — Pass: 103 · Partial: 93 · Fail: 2 · Unverified: 1069 · N/A: 2.
+Unverified splits into **145 explicitly marked unverified** and **924 with no result record**.
 Full feature-role pairs: **0/396**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -20,7 +20,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Release infrastructure](#release-infrastructure) | 1 | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 9 pass · 0 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | pass 27, partial 0, fail 0, unverified 9, n/a 0 | 3 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 20, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 7 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 20, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 18 pass · 6 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 32, partial 16, fail 0, unverified 49, n/a 1 | 3 |
+| [Settings](#settings) | 1 | 19 pass · 6 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 33, partial 16, fail 0, unverified 48, n/a 1 | 3 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -495,7 +495,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T90 Concurrent audit key rotation preserves receipt verification | N/A | N/A | Pass | EXT-F-1003-C09, EXT-F-1003-C25 |
 | EXT-F-1003-T91 Audit storage locking unavailable recovery | N/A | N/A | Partial | EXT-F-1003-C09, EXT-F-1003-C24, EXT-F-1003-C25, EXT-F-1003-C37 |
 | EXT-F-1003-T92 Archived organization management link and guest visibility | Pass | Unverified | Unverified | EXT-F-1003-C39 |
-| EXT-F-1003-T93 guest: Chat version selector persistence | Unverified | N/A | N/A | EXT-F-1003-C40 |
+| EXT-F-1003-T93 guest: Chat version selector persistence | Pass | N/A | N/A | EXT-F-1003-C40 |
 | EXT-F-1003-T94 member: Chat version selector persistence | N/A | Unverified | N/A | EXT-F-1003-C40 |
 | EXT-F-1003-T95 admin: Chat version selector persistence | N/A | N/A | Unverified | EXT-F-1003-C40 |
 
@@ -611,8 +611,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: 37699585477, ['.research/audit-selected-native-20261007.json', '.research/settings-audit-native-peer-20261007.json', '.research/desktop-route-audit-final-peer-20261007.json']
 - EXT-F-1003-T92 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 2 passed criteria; native case pass. Guest negative access only; no signed-in role credit.
   Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
-- EXT-F-1003-T93 · guest: Unverified. Frozen v0.2.490 artifact only. Before T93 interaction, extension reload retired the old worker/panel and created a replacement worker; trusted open-panel click/send returned but the callback was not entered and no replacement panel target appeared. The later native_extension_live_panel_unavailable_for_cleanup is a cascading cleanup error. Lockfile @ai-matrx versions differ from the frozen source, so there is no current-main runtime acceptance claim. Keep T93 unverified.
-  Evidence / build / date recorded: 38102203927, ['docs/stabilization/evidence/guest-settings-t93/run38102203927/receipt.sanitized.json', 'docs/stabilization/evidence/guest-settings-t93/run38102203927/native-report.sanitized.json', 'docs/stabilization/evidence/guest-settings-t93/run38102203927/resource-finals.sanitized.json']
+- EXT-F-1003-T93 · guest: Pass. Fresh isolated native guest run verified New and Current persisted through actual panel close/reopen and restored the original Current value. Full Settings and Store remain unverified.
+  Evidence / build / date recorded: local-settings-guest-20261012-1441, ['docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json', 'docs/stabilization/reports/local-settings-guest-peer-20261012.json', 'docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl']
 
 
 ## Profile

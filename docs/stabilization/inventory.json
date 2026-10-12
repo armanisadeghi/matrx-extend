@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T13:11:57Z",
+  "updated_at": "2026-10-12T14:45:00Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6387,6 +6387,27 @@
                     "Screenshots do not depict the Theme control; selection/rendering evidence comes from native structured assertions and trusted native-driver path.",
                     "Guest Theme T04 only; overall Settings, member/admin, Store, and full Settings remain unverified."
                   ]
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim.",
+                  "unverified": [
+                    "Original absent-key theme preference restoration after full extension reload is not proved."
+                  ]
                 }
               ]
             }
@@ -7024,6 +7045,24 @@
                     "status": "pass"
                   },
                   "passed_criteria_count": 17
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             }
@@ -7361,6 +7400,24 @@
                   ],
                   "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
                   "passed_criteria_count": 4
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             }
@@ -8279,6 +8336,24 @@
                   ],
                   "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
                   "passed_criteria_count": 2
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             }
@@ -8723,6 +8798,24 @@
                     "status": "pass"
                   },
                   "passed_criteria_count": 88
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             }
@@ -9500,6 +9593,24 @@
                   ],
                   "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
                   "passed_criteria_count": 3
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             }
@@ -10482,6 +10593,24 @@
                   ],
                   "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
                   "passed_criteria_count": 8
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             }
@@ -12019,6 +12148,24 @@
                   ],
                   "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
                   "passed_criteria_count": 5
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             }
@@ -12296,6 +12443,24 @@
                     "status": "pass"
                   },
                   "passed_criteria_count": 13
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             }
@@ -12920,6 +13085,24 @@
                   ],
                   "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
                   "passed_criteria_count": 2
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             }
@@ -13161,6 +13344,24 @@
                   ],
                   "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
                   "passed_criteria_count": 2
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             }
@@ -14058,6 +14259,24 @@
                   "scope": "Reviewed bounded guest observations on frozen development artifact only; no current-main, Store, member/admin or full Settings claim.",
                   "native_scope": "guest-negative-access-only",
                   "passed_criteria_count": 2
+                },
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
                 }
               ]
             },
@@ -14232,28 +14451,73 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": "38102203927",
+              "status": "pass",
+              "run_id": "local-settings-guest-20261012-1441",
               "workflow_source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
-              "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
-              "build_version": "0.2.490",
+              "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+              "build_version": "0.2.509",
               "build_tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
               "hosted_result_artifact_id": 11688730538,
               "runner_arch": "ARM64",
               "resource_valid": true,
               "native_case_status": "fail",
               "evidence": [
-                "docs/stabilization/evidence/guest-settings-t93/run38102203927/receipt.sanitized.json",
-                "docs/stabilization/evidence/guest-settings-t93/run38102203927/native-report.sanitized.json",
-                "docs/stabilization/evidence/guest-settings-t93/run38102203927/resource-finals.sanitized.json"
+                "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
               ],
               "verified_substeps": [],
               "unverified_substeps": [
                 "No T93 selector step ran: initial Current/default observation, New/package persistence after reopen, Current persistence after reopen, and original preference restoration remain unverified."
               ],
-              "independent_review": "Completed; reviewer confirms zero T93 steps, all resource finals valid, and an earlier extension-reload failure. No T93 pass or product-defect inference.",
-              "detail": "Frozen v0.2.490 artifact only. Before T93 interaction, extension reload retired the old worker/panel and created a replacement worker; trusted open-panel click/send returned but the callback was not entered and no replacement panel target appeared. The later native_extension_live_panel_unavailable_for_cleanup is a cascading cleanup error. Lockfile @ai-matrx versions differ from the frozen source, so there is no current-main runtime acceptance claim. Keep T93 unverified.",
-              "release_scope": "Exact unpublished CI development artifact v0.2.490 only; lockfile runtime drift from current main; no current-main, Store, member/admin or full Settings claim."
+              "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+              "detail": "Fresh isolated native guest run verified New and Current persisted through actual panel close/reopen and restored the original Current value. Full Settings and Store remain unverified.",
+              "release_scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim.",
+              "bounded_subtarget_evidence": [
+                {
+                  "run_id": "local-settings-guest-20261012-1441",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "7606430875ad3efa633513f4423004cb8e5b95e1",
+                  "build_version": "0.2.509",
+                  "development_ci_run_id": 38261957044,
+                  "development_artifact_id": 11752953286,
+                  "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625",
+                  "resource_valid": true,
+                  "independent_review": "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/evidence/settings-controls-local/run-local-settings-guest-20261012-1441/native-report.sanitized.json",
+                    "docs/stabilization/reports/local-settings-guest-peer-20261012.json",
+                    "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
+                  ],
+                  "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
+                }
+              ],
+              "previous_attempt": {
+                "status": "unverified",
+                "run_id": "38102203927",
+                "workflow_source_sha": "6ed4289da90f19cab72e2d77feb7e845f71c02b7",
+                "source_sha": "3aae9d33afebd158f8f5e33478f194afcc45279a",
+                "build_version": "0.2.490",
+                "build_tree_sha256": "ec43f38e74f3d309070b4a9a2db3ffc583f933b0f1f81b359f170da3ef0d50fc",
+                "hosted_result_artifact_id": 11688730538,
+                "runner_arch": "ARM64",
+                "resource_valid": true,
+                "native_case_status": "fail",
+                "evidence": [
+                  "docs/stabilization/evidence/guest-settings-t93/run38102203927/receipt.sanitized.json",
+                  "docs/stabilization/evidence/guest-settings-t93/run38102203927/native-report.sanitized.json",
+                  "docs/stabilization/evidence/guest-settings-t93/run38102203927/resource-finals.sanitized.json"
+                ],
+                "verified_substeps": [],
+                "unverified_substeps": [
+                  "No T93 selector step ran: initial Current/default observation, New/package persistence after reopen, Current persistence after reopen, and original preference restoration remain unverified."
+                ],
+                "independent_review": "Completed; reviewer confirms zero T93 steps, all resource finals valid, and an earlier extension-reload failure. No T93 pass or product-defect inference.",
+                "detail": "Frozen v0.2.490 artifact only. Before T93 interaction, extension reload retired the old worker/panel and created a replacement worker; trusted open-panel click/send returned but the callback was not entered and no replacement panel target appeared. The later native_extension_live_panel_unavailable_for_cleanup is a cascading cleanup error. Lockfile @ai-matrx versions differ from the frozen source, so there is no current-main runtime acceptance claim. Keep T93 unverified.",
+                "release_scope": "Exact unpublished CI development artifact v0.2.490 only; lockfile runtime drift from current main; no current-main, Store, member/admin or full Settings claim."
+              },
+              "tree_sha256": "2dadb266ca2b6bfbdea0085556cca1f15a3346ed47a01aca462d5c913f09f625"
             }
           }
         },
@@ -14356,9 +14620,10 @@
             "settings-local397-native-20261008",
             "38041519886",
             38089377803,
-            "38124123515"
+            "38124123515",
+            "local-settings-guest-20261012-1441"
           ],
-          "retest_status": "Partial surface. Reviewed frozen129 guest Settings controls run38041519886 observed 12/19 native case passes and seven unverified rows; per-case criteria and stronger historical evidence retain their own provenance. Independent D186 adjudication closes only the guest repeated-target full-extension reload and saved-baseline scope for T04/T10/T67; absent-key restoration remains unverified. T16/T19/T31/T34 downstream behavior, T40 capture in this run, T63 member denial, T70 branches and T67 nested capture remain unverified. No full Settings/current-main/Store/member/admin promotion. Fresh hosted guest Settings controls run 38124123515 independently revalidated T22, T37 and T46 on frozen development v0.2.493. T70 remains partial: identity/no-update observations, but Ready/Available wording reconciled to exact Available by original UI commit and independent test-oracle review; alternate branches still unverified. Generic screenshots do not show Settings. Whole feature, signed-in modes, current-main runtime and Store remain unverified."
+          "retest_status": "Frozen isolated development 0.2.509 guest Settings run local-settings-guest-20261012-1441 is independently reviewed: 13 of 20 selected native cases support a pass, including newly completed T93 Chat version selector persistence; seven remain unverified (T16/T19/T31/T34/T40/T63/T70). T04 theme behavior passed but exact absent-key restoration after full extension reload is not proved. Historical bounded results retain their case-level provenance. Full Settings, member/admin, user Chrome profile and Store remain unverified."
         },
         "member": {
           "test_status": "unverified",
