@@ -70,6 +70,19 @@
       "workflow_dispatches": false,
       "budget_changed": false,
       "jobs_relocated": false
+    },
+    "current_spend_recheck": {
+      "observed_at_utc": "2026-10-12T20:36:36Z",
+      "command": "python3 scripts/check_workflow_runner_cost.py --summary",
+      "exit_code": 1,
+      "modeled_billed_usd_per_week": 250.04,
+      "ceiling_usd_per_week": 100,
+      "aidream_usd_per_week": 250.04,
+      "matrx_extend_usd_per_week": 0,
+      "workflow_edits": false,
+      "workflow_dispatches": false,
+      "jobs_relocated": false,
+      "budget_changed": false
     }
   },
   "source_snapshot": {
@@ -93,7 +106,34 @@
     "chrome_loaded_path_reload_pin": "unverified",
     "snapshot_is_candidate_acceptance": false
   },
-  "next_action": "Aidream spending owner clears the shared modeled $100/week gate; release owner obtains exact primary-item private status through permitted authenticated access; native lane completes current guest/non-admin acceptance; then release owner runs guarded hosted release and exact ZIP gates before any resubmission.",
+  "next_action": "The shared modeled spend gate must clear and the primary-item private dashboard status must be established through permitted authenticated access. Synchronize the four local main commits, then obtain exact-source green CI. Only afterward run the guarded hosted Store release, build and scan its exact ZIP, complete exact-candidate acceptance, and consider resubmission.",
   "no_local_build_release": true,
-  "new_schedule": false
+  "new_schedule": false,
+  "current_local_source_audit": {
+    "observed_at_utc": "2026-10-12T20:36:36Z",
+    "local_head": "c5e739074325d553a59c42e2e9d113b668cbcd4d",
+    "origin_main": "ec6b731a0d99c38c581ab15ceb9a8c0dd58933a1",
+    "local_main_ahead_commits": 4,
+    "local_worktree": "Source changes are committed; untracked EXT-D-0217 resource journals and a verification receipt remain outside this report-only commit.",
+    "known_green_ci_artifact": {
+      "run_id": 38301959261,
+      "source_sha": "0c4ecdce25ff06dbc25db72f277cce75bb9c6a2b",
+      "applies_to_exact_local_head": false,
+      "store_eligible": false
+    },
+    "current_source_ci": "No CI result established for local HEAD c5e739074 or newer origin/main ec6b731a.",
+    "release_eligibility": "blocked",
+    "blockers": [
+      "Mandatory modeled shared Actions spend recheck remains $250.04/week against $100; aidream is $250.04/week and matrx-extend is $0/week.",
+      "Authenticated primary-item dashboard state after the rejection remains unverified; public listing reads and email do not establish it.",
+      "No exact-current-source Store ZIP exists or has passed the Store package risk gate; the known green CI artifact is development-only and stale to local HEAD.",
+      "Current local source is four commits ahead of origin/main; release must be based on synchronized origin/main after those changes are integrated."
+    ],
+    "next_safe_steps": [
+      "Clear the shared modeled spend gate without relocating work or lowering estimates without measured evidence.",
+      "Integrate and synchronize intended source through the shared main workflow; obtain green CI for that exact source.",
+      "Establish the primary item status through permitted authenticated access; do not infer it from public listing or email.",
+      "Only after blockers clear, run the authorized guarded hosted release and inspect its exact Store ZIP with all required release gates before submission."
+    ]
+  }
 }
