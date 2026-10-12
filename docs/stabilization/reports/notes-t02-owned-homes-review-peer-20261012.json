@@ -1,0 +1,38 @@
+{
+  "review_id": "notes-t02-owned-homes-review-peer-20261012",
+  "scope": "Independent review of the uncommitted Notes T02 fixture harness repair in four requested files",
+  "verdict_a": {
+    "result": "FAIL",
+    "summary": "The repair addresses the missing-home prerequisite in concept, but the live acceptance path cannot pass the new provisioning step because it reads the custom scope write response using the wrong shape.",
+    "findings": [
+      {
+        "severity": "Important",
+        "location": "tests/browser/notes-find-native-case.mjs:87-89",
+        "issue": "The code expects context_scope_write RPC data to be a bare scope row (row.id / row.organization_id / row.name). The canonical records door contract unwraps the RPC envelope's `row` member; the RPC itself returns an envelope (`{ ok, row, store }`). The aidream test helper also documents `_answer_id` reading `(answer.get('row') or {}).get('id')` in tests/test_scope_values_are_everyones_types_are_admins_and_creators_live.py. Here `scopeDoor` returns the raw RPC data, so the first successful create will be rejected as `notes_find_created_home_response_invalid`.",
+        "impact": "Every run stops before the original Notes T02 oracle, and the newly created scope is left planned in the ledger until cleanup can rediscover it by name.",
+        "fix": "Validate and record the nested `row` object (and its organization/name), or explicitly normalize the write envelope in scopeDoor."
+      }
+    ],
+    "not_verified": "No live platform-member run was performed; successful RPC authorization and UI readback therefore remain unverified."
+  },
+  "verdict_b": {
+    "result": "PARTIAL",
+    "summary": "The run-owned fixture strategy is appropriately organization-scoped and the recovery ledger is substantially safer than relying on preexisting custom homes. Focused local checks pass, but the critical RPC response mismatch blocks trusting the harness end to end.",
+    "findings": [],
+    "observations": [
+      "Both RPC calls carry the selected organization ID in X-Organization-Id, and creation passes that same organization_id explicitly; the tree read is constrained to that organization.",
+      "The General scope is only read. Home archival targets only scope IDs recorded or uniquely recovered from a planned run-owned name; it does not select arbitrary preexisting custom homes.",
+      "The ledger is written before each create, can recover a lost response through an exact run-specific name in the selected organization's tree, preserves pending cleanup state, and refuses to archive homes while any note fixture remains created.",
+      "Names are synthetic business-context labels with an 8-hex run suffix; no hardcoded org, scope, or credential was added. The publishable key is read from the existing development env file and the access token from extension storage."
+    ]
+  },
+  "checks": [
+    "node --test tests/browser/notes-find-fixture.test.mjs — PASS (6 tests)",
+    "node --check tests/browser/notes-find-native-case.mjs — PASS",
+    "node --check tests/browser/notes-native-acceptance.mjs — PASS"
+  ],
+  "review_limits": [
+    "Did not run the hosted/native browser acceptance flow due to the required live platform identity and resource run context.",
+    "Did not mutate the four harness files or run a database write."
+  ]
+}

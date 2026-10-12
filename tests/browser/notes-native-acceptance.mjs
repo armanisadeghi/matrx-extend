@@ -104,6 +104,13 @@ async function supabaseOrigin() {
   if (url.protocol !== 'https:' || url.pathname !== '/') fail('supabase_origin_invalid');
   return url.origin;
 }
+async function supabasePublishableKey() {
+  const source = await readFile(DEV_ENV, 'utf8').catch(() => fail('dev_env_unavailable'));
+  const line = source.split(/\r?\n/).find((entry) => /^WXT_SUPABASE_PUBLISHABLE_KEY=/.test(entry));
+  const key = line?.slice('WXT_SUPABASE_PUBLISHABLE_KEY='.length).replace(/^['"]|['"]$/g, '');
+  if (!key) fail('supabase_publishable_key_unavailable');
+  return key;
+}
 async function privateConfig() {
   if (ROLE === 'member' && INTERACTIVE_MEMBER && MEMBER_CREDENTIAL_FILE)
     fail('member_login_mode_conflict');
@@ -915,6 +922,7 @@ try {
             panel,
             transport,
             origin,
+            publishableKey: await supabasePublishableKey(),
             selectedOrganizationId,
             selectedOrganizationName: memberOrganization?.name,
             role: ROLE,

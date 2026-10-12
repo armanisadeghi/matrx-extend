@@ -34,7 +34,53 @@ export function createNotesFindLedger({ runId, organizationId, role, sourceSha, 
     tree_sha256: treeSha256,
     status: 'creating',
     fixtures: [],
+    owned_homes: [],
   };
+}
+
+export function planNotesFindHome(ledger, name) {
+  assert.equal(ledger.status, 'creating', 'notes_find_ledger_not_creating');
+  assert.ok(
+    typeof name === 'string' && /^Harbor Dental (Intake|Follow-up) [a-f0-9]{8}$/.test(name),
+    'notes_find_home_name_invalid',
+  );
+  assert.ok(
+    !ledger.owned_homes.some((item) => item.name === name),
+    'notes_find_home_name_duplicate',
+  );
+  assert.ok(ledger.owned_homes.length < 2, 'notes_find_owned_home_count_invalid');
+  ledger.owned_homes.push({ name, scope_id: null, status: 'planned' });
+  return ledger;
+}
+
+export function recordNotesFindHomeCreated(ledger, name, scopeId) {
+  requireUuid(scopeId, 'notes_find_home_scope_id_invalid');
+  const home = ledger.owned_homes.find((item) => item.name === name);
+  assert.ok(home && home.status === 'planned', 'notes_find_home_not_planned');
+  assert.ok(
+    !ledger.owned_homes.some((item) => item.scope_id === scopeId),
+    'notes_find_home_scope_id_duplicate',
+  );
+  home.scope_id = scopeId;
+  home.status = 'created';
+  return ledger;
+}
+
+/** The scope write RPC returns the store envelope, while the read tree returns rows. */
+export function requireNotesFindHomeWrite(answer, organizationId, name) {
+  const row = answer?.ok === true ? answer.row : null;
+  requireUuid(row?.id, 'notes_find_created_home_response_invalid');
+  assert.equal(row.organization_id, organizationId, 'notes_find_created_home_response_invalid');
+  assert.equal(row.name, name, 'notes_find_created_home_response_invalid');
+  return row.id;
+}
+
+export function recordNotesFindHomeArchived(ledger, scopeId) {
+  requireUuid(scopeId, 'notes_find_home_scope_id_invalid');
+  const home = ledger.owned_homes.find((item) => item.scope_id === scopeId);
+  assert.ok(home && home.status === 'created', 'notes_find_home_archive_foreign_id');
+  home.status = 'archived_confirmed';
+  return ledger;
 }
 
 export function recordNotesFindCreated(ledger, { noteId, title, homeScopeId = null }) {
@@ -119,6 +165,33 @@ export function validateNotesFindLedger(ledger) {
   const ids = new Set();
   const titles = new Set();
   const homeIds = new Set();
+  assert.ok(
+    Array.isArray(ledger.owned_homes) && ledger.owned_homes.length <= 2,
+    'notes_find_owned_home_count_invalid',
+  );
+  const ownedNames = new Set();
+  const ownedIds = new Set();
+  for (const home of ledger.owned_homes) {
+    assert.ok(
+      typeof home.name === 'string' &&
+        /^Harbor Dental (Intake|Follow-up) [a-f0-9]{8}$/.test(home.name),
+      'notes_find_home_name_invalid',
+    );
+    assert.ok(
+      ['planned', 'created', 'archived_confirmed'].includes(home.status),
+      'notes_find_owned_home_status_invalid',
+    );
+    if (home.status === 'planned')
+      assert.equal(home.scope_id, null, 'notes_find_planned_home_has_id');
+    else requireUuid(home.scope_id, 'notes_find_home_scope_id_invalid');
+    assert.ok(!ownedNames.has(home.name), 'notes_find_home_name_duplicate');
+    assert.ok(
+      home.scope_id === null || !ownedIds.has(home.scope_id),
+      'notes_find_home_scope_id_duplicate',
+    );
+    ownedNames.add(home.name);
+    if (home.scope_id) ownedIds.add(home.scope_id);
+  }
   for (const fixture of ledger.fixtures) {
     requireUuid(fixture.note_id, 'notes_find_note_id_invalid');
     if (fixture.home_scope_id !== null)

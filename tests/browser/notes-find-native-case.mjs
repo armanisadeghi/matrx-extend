@@ -1,14 +1,108 @@
 import { randomUUID } from 'node:crypto';
 import {
   createNotesFindLedger,
+  planNotesFindHome,
   recordNotesFindDeleted,
+  recordNotesFindHomeArchived,
   recordNotesFindHomeAssigned,
+  recordNotesFindHomeCreated,
   recordNotesFindInsertBeforeValidation,
+  requireNotesFindHomeWrite,
   writeNotesFindLedger,
 } from './notes-find-fixture.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
+async function scopeDoor(panel, origin, publishableKey, organizationId, door, args) {
+  const result = await evaluate(
+    panel,
+    `(async () => {
+    const token = (await chrome.storage.local.get('matrx.auth.accessToken'))['matrx.auth.accessToken'];
+    if (typeof token !== 'string' || !token) return { status: 0, data: null };
+    const response = await fetch(${JSON.stringify(`${origin}/rest/v1/rpc/`)} + ${JSON.stringify(door)}, {
+      method: 'POST',
+      headers: {
+        apikey: ${JSON.stringify(publishableKey)},
+        Authorization: 'Bearer ' + token,
+        'X-Organization-Id': ${JSON.stringify(organizationId)},
+        'Content-Profile': 'custom',
+        'Accept-Profile': 'custom',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(${JSON.stringify(args)}),
+    });
+    return { status: response.status, data: await response.json().catch(() => null) };
+  })()`,
+  );
+  if (!result || result.status < 200 || result.status >= 300)
+    throw new Error(`notes_find_${door}_failed_${result?.status ?? 0}`);
+  return result.data;
+}
+
+async function selectedOrgTree(panel, origin, publishableKey, organizationId) {
+  const data = await scopeDoor(panel, origin, publishableKey, organizationId, 'context_tree', {
+    p_organization_ids: [organizationId],
+  });
+  if (!Array.isArray(data?.scopes) || !Array.isArray(data?.types))
+    throw new Error('notes_find_scope_tree_shape_invalid');
+  return data;
+}
+
+async function makeOwnedHomes(
+  panel,
+  origin,
+  publishableKey,
+  organizationId,
+  ledger,
+  ledgerPath,
+  token,
+) {
+  const tree = await selectedOrgTree(panel, origin, publishableKey, organizationId);
+  const general = tree.scopes.filter(
+    (scope) =>
+      scope.organization_id === organizationId && scope.name?.toLocaleLowerCase() === 'general',
+  );
+  if (general.length !== 1 || !UUID.test(general[0]?.scope_type_id ?? ''))
+    throw new Error('notes_find_general_home_unavailable');
+  const typeId = general[0].scope_type_id;
+  if (!tree.types.some((type) => type.id === typeId && type.organization_id === organizationId))
+    throw new Error('notes_find_general_home_type_unavailable');
+  const names = [`Harbor Dental Intake ${token}`, `Harbor Dental Follow-up ${token}`];
+  for (const name of names) {
+    planNotesFindHome(ledger, name);
+    await writeLedger(ledgerPath, ledger);
+    const answer = await scopeDoor(
+      panel,
+      origin,
+      publishableKey,
+      organizationId,
+      'context_scope_write',
+      {
+        p_organization_id: organizationId,
+        p_scope_id: null,
+        p_type_id: typeId,
+        p_spec: { name, slug: name.toLowerCase().replaceAll(' ', '-'), description: '' },
+      },
+    );
+    const scopeId = requireNotesFindHomeWrite(answer, organizationId, name);
+    recordNotesFindHomeCreated(ledger, name, scopeId);
+    await writeLedger(ledgerPath, ledger);
+  }
+  const readback = await selectedOrgTree(panel, origin, publishableKey, organizationId);
+  for (const home of ledger.owned_homes) {
+    if (
+      !readback.scopes.some(
+        (scope) =>
+          scope.id === home.scope_id &&
+          scope.organization_id === organizationId &&
+          scope.name === home.name,
+      )
+    )
+      throw new Error('notes_find_created_home_readback_missing');
+  }
+  return { general: general[0], homes: ledger.owned_homes };
+}
 
 function rootExpression() {
   return `(() => {
@@ -395,6 +489,7 @@ export async function runNotesFindAcceptance({
   panel,
   transport,
   origin,
+  publishableKey,
   selectedOrganizationId,
   selectedOrganizationName,
   role,
@@ -424,6 +519,17 @@ export async function runNotesFindAcceptance({
   let ledgerStarted = false;
   let testError;
   try {
+    ledgerStarted = true;
+    await writeLedger(ledgerPath, ledger);
+    const owned = await makeOwnedHomes(
+      panel,
+      origin,
+      publishableKey,
+      selectedOrganizationId,
+      ledger,
+      ledgerPath,
+      token,
+    );
     await click(panel, 'title', 'Notes');
     await waitFor(
       'notes_find_list_ready',
@@ -446,10 +552,16 @@ export async function runNotesFindAcceptance({
     const generals = activeOrgScopes.filter(
       (scope) => scope.name.toLocaleLowerCase() === 'general',
     );
-    const customs = activeOrgScopes.filter((scope) => scope.name.toLocaleLowerCase() !== 'general');
-    if (generals.length !== 1 || customs.length < 2)
+    const customs = owned.homes.map((home) =>
+      activeOrgScopes.find((scope) => scope.id === home.scope_id && scope.name === home.name),
+    );
+    if (
+      generals.length !== 1 ||
+      generals[0].id !== owned.general.id ||
+      customs.some((scope) => !scope)
+    )
       throw new Error('notes_find_three_home_fixture_unavailable');
-    const names = [generals[0].name, ...customs.slice(0, 2).map((scope) => scope.name)];
+    const names = [generals[0].name, ...customs.map((scope) => scope.name)];
     if (new Set(names.map((value) => value.toLocaleLowerCase())).size !== 3)
       throw new Error('notes_find_home_names_not_unique');
     const homeLabels = names.map((name) =>
@@ -466,8 +578,6 @@ export async function runNotesFindAcceptance({
       'notes_find_all_homes_option',
     );
 
-    ledgerStarted = true;
-    await writeLedger(ledgerPath, ledger);
     const fixtures = [];
     const fixtureTitles = [
       `Harbor Dental intake insurance eligibility ${token}`,
@@ -731,7 +841,59 @@ export async function runNotesFindAcceptance({
           .filter((item) => item.status === 'created')
           .map((item) => item.note_id);
       }
-      report.cleanup_complete = ledger.status === 'deleted_confirmed';
+      if (ledger.owned_homes.length) {
+        const recoveryTree = await selectedOrgTree(
+          panel,
+          origin,
+          publishableKey,
+          selectedOrganizationId,
+        ).catch(() => ({ scopes: [] }));
+        for (const home of [...ledger.owned_homes].reverse()) {
+          if (home.status === 'archived_confirmed') continue;
+          const found = recoveryTree.scopes.filter(
+            (scope) => scope.organization_id === selectedOrganizationId && scope.name === home.name,
+          );
+          if (home.status === 'planned' && found.length === 1) {
+            recordNotesFindHomeCreated(ledger, home.name, found[0].id);
+            await writeLedger(ledgerPath, ledger);
+          }
+          if (
+            home.status !== 'created' ||
+            !UUID.test(home.scope_id ?? '') ||
+            ledger.fixtures.some((item) => item.status === 'created')
+          )
+            continue;
+          try {
+            await scopeDoor(
+              panel,
+              origin,
+              publishableKey,
+              selectedOrganizationId,
+              'context_scope_archive',
+              {
+                p_scope_id: home.scope_id,
+              },
+            );
+            const archivedTree = await selectedOrgTree(
+              panel,
+              origin,
+              publishableKey,
+              selectedOrganizationId,
+            );
+            if (!archivedTree.scopes.some((scope) => scope.id === home.scope_id)) {
+              recordNotesFindHomeArchived(ledger, home.scope_id);
+              await writeLedger(ledgerPath, ledger);
+            }
+          } catch {
+            /* The private ledger retains the exact owned scope for recovery. */
+          }
+        }
+      }
+      report.home_cleanup_pending = ledger.owned_homes
+        .filter((item) => item.status !== 'archived_confirmed')
+        .map((item) => ({ name: item.name, scope_id: item.scope_id }));
+      report.cleanup_complete =
+        ledger.status === 'deleted_confirmed' && report.home_cleanup_pending.length === 0;
       if (ledgerStarted) await writeLedger(ledgerPath, ledger);
     } catch {
       report.cleanup_complete = false;
