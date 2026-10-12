@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-find-member-peer-38195252012",
+  "reviewed_at": "2026-10-12T02:30:00Z",
+  "reviewer": "independent-evidence-review",
+  "scope": "Hosted Notes A/member T02 run 38195252012 failure evidence only; no browser execution or retry",
+  "sources_reviewed": [
+    "docs/stabilization/reports/notes-find-member-run38195252012.json",
+    "docs/stabilization/evidence/notes-find-member/run38195252012/native-receipt.json",
+    "docs/stabilization/evidence/notes-find-member/run38195252012/startup-diagnostics.json",
+    "docs/stabilization/evidence/notes-find-member/run38195252012/resource-events.json",
+    "GitHub run 38195252012 metadata",
+    "GitHub CI run 38194572642 metadata"
+  ],
+  "verdicts": {
+    "A_product": {
+      "status": "unverified",
+      "credit": 0,
+      "reason": "Run failed at notes_find_general_home_unavailable before the original T02 assertions and Notes UI; no positive Notes search/filter/create assertion was observed.",
+      "evidence": {
+        "case": "EXT-F-2006-T02",
+        "role": "member",
+        "failure_stage": "T02_native_member_find",
+        "failure_code": "notes_find_general_home_unavailable",
+        "member_signed_in": true,
+        "platform_nonadmin": true,
+        "organization_selected": true,
+        "notes_tab_entered": false,
+        "owned_home_writes": 0,
+        "owned_note_writes": 0,
+        "original_t02_assertions": "not reached"
+      }
+    },
+    "B_evidence_and_provenance": {
+      "status": "supported_with_limits",
+      "normal_admission": "The run report records normal hosted-remote admission exit 0, twice in final dispatch, and again after secret staging; workflow/helper clean and refusal not overridden. This is consistent with dispatch preflight evidence.",
+      "tested_artifact": {
+        "source_sha": "a65ae6425c99cc48e66c9330f8191f03152796bb",
+        "ci_run_id": 38194572642,
+        "ci_run_conclusion": "success",
+        "ci_run_head_sha": "a65ae6425c99cc48e66c9330f8191f03152796bb",
+        "artifact_id": 11722987560,
+        "artifact_digest": "sha256:d6937dfecbc4eb257fdf9e04c4f794c6e55b563dba0c652508b559c3c17832a6",
+        "version": "0.2.509",
+        "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+        "workflow_head_sha": "622c40957e7f24cc1987ea2a38e7c5c18f49bdbd",
+        "result": "The evidence identifies the exact successful pushed CI artifact as the tested artifact; the hosted run's dispatch head is distinct."
+      },
+      "startup": {
+        "cdp_connector_settled_elapsed_ms": 2327,
+        "native_sanitized_connected_elapsed_ms": 2333,
+        "member_signin_and_org_selection": "reported completed after connection",
+        "limitation": "Successful startup is diagnostic only and does not establish Notes product acceptance or explain earlier intermittent startup timeouts."
+      },
+      "prerequisite": {
+        "result": "General-home eligibility guard failed before selected-org type validation, planned custom homes, home writes, Notes tab entry, or note writes.",
+        "predicate_context": "Selected-org tree is read through authenticated custom.context_tree; General count must equal one and scope_type_id must be UUID.",
+        "branch_diagnosis": "Not established: persisted evidence lacks raw tree rows/counts, so it does not establish whether General count, UUID shape, visibility, payload shape, or backend row contents caused the failure. Do not infer a specific branch."
+      },
+      "resource_finals": {
+        "package": "valid (admitted=true, resourceInvalid=false, exitCode=0)",
+        "browser": "valid (admitted=true, resourceInvalid=false, exitCode=0)",
+        "guest": "invalid (admitted=true, resourceInvalid=true, exitCode=3)",
+        "guest_cpu": "CPU pending was recorded before guest child exit 1; evidence does not causally connect CPU load to the General-home failure. No guard relaxation is supported."
+      }
+    },
+    "cleanup_and_credentials": {
+      "status": "clean_for_run_owned_fixtures; credential cleanup supported",
+      "ledger": "Initial empty recovery ledger; no home was planned/created and no note fixture recorded.",
+      "cleanup": "home_cleanup_pending=[] and createdNoteIds=[]; no run-owned fixture exists to clean. cleanup_complete=false reflects initial empty ledger state, not an orphan.",
+      "credential_cleanup": {
+        "one_use_link": true,
+        "staged_via_stdin": true,
+        "local_link_removed_before_dispatch": true,
+        "temporary_repository_secret_deleted_at_terminal": true,
+        "secret_name_match_count": 0,
+        "local_link_absent": true,
+        "local_identity_absent": true,
+        "credential_values_persisted": false
+      },
+      "limit": "Private recovery ledger was not uploaded; cleanup conclusion relies on the recorded receipt, run report, and runner source/order claims."
+    }
+  },
+  "overall": "The hosted run is a validly admitted, provenance-linked attempt with successful CDP connection and member/org sign-in, but it earns zero product credit because the General-home prerequisite failed before the T02 oracle. Package and browser resource finals were valid; guest final was invalid on CPU evidence. No owned fixture cleanup is indicated. The precise General predicate branch remains unknown because tree counts were not retained.",
+  "prohibited_inferences_respected": [
+    "No claim that T02 search/filter/create works or fails.",
+    "No claim identifying the General predicate branch without tree counts.",
+    "No causal attribution of the General-home failure to guest CPU load.",
+    "No claim that cleanup_complete=false means an orphan exists."
+  ]
+}

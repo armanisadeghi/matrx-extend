@@ -1,0 +1,183 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-find-member-run38195252012",
+  "recorded_at": "2026-10-12T02:28:23.701Z",
+  "status": "general-home-prerequisite-failed-product-unverified",
+  "run": {
+    "id": 38195252012,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38195252012",
+    "conclusion": "failure",
+    "acceptance_lane": "A",
+    "acceptance_case": "notes-find-member",
+    "startup_display_mode": "notes-cdp",
+    "workflow_head_sha": "622c40957e7f24cc1987ea2a38e7c5c18f49bdbd",
+    "tested_artifact_source_sha": "a65ae6425c99cc48e66c9330f8191f03152796bb",
+    "development_ci_run_id": 38194572642,
+    "development_artifact_id": 11722987560,
+    "development_artifact_digest": "sha256:d6937dfecbc4eb257fdf9e04c4f794c6e55b563dba0c652508b559c3c17832a6",
+    "version": "0.2.509",
+    "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "sanitized_artifact": {
+      "id": 11723142569,
+      "name": "hosted-guest-38195252012-1",
+      "digest": "sha256:d08b2bb26e21156ebc4f0ae2a3d76f5f2f119db16e194522dc6cc7243358186f"
+    }
+  },
+  "dispatch_preflight": {
+    "exact_source_ci_success": true,
+    "artifact_provenance_verified": true,
+    "checkout_clean": true,
+    "source_delta": "Only PLAN.md differed between successful CI source and dispatch main; remote rechecked immediately before dispatch and stable after secret stage.",
+    "hosted_browser_lanes_idle": true,
+    "shared_fixture_conflict_observed": false,
+    "temporary_secret_absent_before_stage": true,
+    "normal_admission": {
+      "command": "node scripts/hosted-remote-admission.mjs plan --lane A --development-run-id 38194572642 --development-artifact-id 11722987560 --source-sha a65ae6425c99cc48e66c9330f8191f03152796bb",
+      "exit_code": 0,
+      "passed_before_link_mint": true,
+      "passed_twice_in_final_dispatch_sequence": true,
+      "passed_after_secret_stage_before_dispatch": true,
+      "workflow_and_helper_clean": true,
+      "reviewed_workflow_sha256": "bc0f9f2a0205db4ae69a70f4d4b38a566b902b11e9c37ead3ae6be7a1826d745",
+      "refusal_overridden": false
+    },
+    "identity": {
+      "platform_nonadmin": true,
+      "current_organization_membership": true,
+      "organization_role": "owner",
+      "role_changes": false
+    },
+    "mode": "Existing Notes A notes-cdp; unchanged guards/startup limits/retries; fixed connected-phase sanitizer included in hosted source."
+  },
+  "startup": {
+    "cdp": {
+      "schema": 1,
+      "outcome": "connected",
+      "phases": [
+        {
+          "phase": "endpoint_read",
+          "elapsedMs": 1279
+        },
+        {
+          "phase": "owner_check_started",
+          "elapsedMs": 1279
+        },
+        {
+          "phase": "owner_verified",
+          "elapsedMs": 1372
+        },
+        {
+          "phase": "socket_constructed",
+          "elapsedMs": 1385
+        },
+        {
+          "phase": "probe_tcp_connected",
+          "elapsedMs": 1403
+        },
+        {
+          "phase": "socket_open",
+          "elapsedMs": 2326
+        },
+        {
+          "phase": "connector_settled",
+          "elapsedMs": 2327
+        }
+      ],
+      "longestTimerDelayMs": 53,
+      "timerSamples": 13,
+      "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+    },
+    "native_connected_observation": {
+      "phase": "cdp_connected",
+      "outcome": "connected",
+      "endpointPresent": true,
+      "inspectionFailed": false,
+      "exitObserved": false,
+      "elapsedMs": 2333,
+      "polls": 0
+    },
+    "meaning": "CDP connected2327ms and the corrected success callback accepted/persisted the connected observation; real member sign-in and organization selection then completed. Prior callback rejection did not recur.",
+    "post_timeout": {
+      "enabled": true,
+      "window_ms": 15000,
+      "natural_endpoint_timeout": false,
+      "fired": false,
+      "late_endpoint_or_child_exit_verdict": null
+    },
+    "limits": "No HTTP status event before settlement; loopback TCP connected1403ms. Max timer delay53ms across13 samples. Successful startup in this run does not diagnose earlier intermittent timeouts."
+  },
+  "native_boundary": {
+    "member_signed_in": true,
+    "platform_nonadmin": true,
+    "organization_selected": true,
+    "failure_stage": "T02_native_member_find",
+    "failure_code": "notes_find_general_home_unavailable",
+    "notes_tab_entered": false,
+    "original_t02_assertions": "Not reached",
+    "classification": "Run-owned fixture prerequisite failure; not an observed Notes search/filter/create defect.",
+    "source_predicate": "makeOwnedHomes reads selectedOrgTree through the authenticated custom.context_tree door. selectedOrgTree requires successful HTTP and arrays scopes/types. The first General guard fails when selected-org General count is not exactly1 OR its scope_type_id is not a UUID. It runs before type check, planned custom homes, home writes, Notes tab click, or note writes.",
+    "limits": "Raw tree rows/counts were not persisted, so the failing predicate branch and whether actual General data, visibility, or payload shape caused it remain unresolved. The successful shape check does not prove correct backend row contents. Shared records codec expects scope_type_id as does the driver; no schema mismatch was established.",
+    "owned_home_writes": 0,
+    "owned_note_writes": 0,
+    "ledger": "Initial empty recovery ledger was written before preflight; no owned home was planned or created and no note fixture was recorded. Private ledger is not in uploaded artifact.",
+    "cleanup": "home_cleanup_pending=[] and createdNoteIds=[]; source order plus preflight failure establishes no owned fixtures exist from this run. cleanup_complete=false is the initial empty ledger state, not an orphaned fixture. No fixture cleanup is required."
+  },
+  "resource_finals": {
+    "package": {
+      "schema": 1,
+      "at": "2026-10-12T02:20:37.640Z",
+      "runId": "hosted-package-38195252012-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "browser": {
+      "schema": 1,
+      "at": "2026-10-12T02:22:42.554Z",
+      "runId": "hosted-browser-38195252012-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "guest": {
+      "schema": 1,
+      "at": "2026-10-12T02:25:11.461Z",
+      "runId": "hosted-guest-38195252012-1",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "resource_timeline": "Guest admitted02:24:27.946Z busy0.024286/load1.5 on4 CPUs; healthy02:24:44.181Z busy0.41/load1.0. CDP snapshots02:24:51.133–02:24:53.599Z. CPU pending02:25:00.443Z busy1.00/load1.36; child exit1 at02:25:11.258Z while pending; invalid final02:25:11.461Z exit3. Package/browser finals valid.",
+  "resource_limits": "CPU pending followed successful CDP settlement. Process CPU snapshots do not identify a cause for the separate General-home eligibility failure. No causal resource diagnosis or guard relaxation follows.",
+  "credential_cleanup": {
+    "fresh_one_use_link": true,
+    "cancelled_or_prior_links_reused": false,
+    "staged_via_stdin": true,
+    "local_link_removed_before_dispatch": true,
+    "temporary_repository_secret_deleted_at_terminal": true,
+    "secret_name_match_count": 0,
+    "local_link_absent": true,
+    "local_identity_absent": true,
+    "credential_values_persisted": false
+  },
+  "product_verdict": {
+    "case_id": "EXT-F-2006-T02",
+    "status": "unverified",
+    "credit": 0,
+    "reason": "Prerequisite failed before original UI oracle; guest resource final invalid. No positive Notes T02 assertion."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/notes-find-member/run38195252012/native-receipt.json",
+    "docs/stabilization/evidence/notes-find-member/run38195252012/startup-diagnostics.json",
+    "docs/stabilization/evidence/notes-find-member/run38195252012/resource-events.json"
+  ],
+  "sanitization": "Removed extension directory, private ledger path and account fingerprint. Resource events omit journal paths. No credentials, endpoint URLs/ports, raw exception text, scope payload or note data retained. Hosted screenshots were not copied; UI claims rely on native receipt/source order.",
+  "next": "Fresh independent review. Diagnose the selected-org General prerequisite with bounded tree structure/count evidence before any separately authorized future browser attempt. No source changes or second retry in this task. The connected-phase callback fix now has bounded live progression through sign-in, but Notes T02 and owned-home provisioning remain unverified."
+}
