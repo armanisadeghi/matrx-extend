@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "report_id": "notes-find-member-run38197849070",
+  "recorded_at": "2026-10-12T03:08:19.910Z",
+  "status": "classified-empty-selected-org-tree-product-unverified",
+  "run": {
+    "id": 38197849070,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38197849070",
+    "conclusion": "failure",
+    "acceptance_lane": "A",
+    "acceptance_case": "notes-find-member",
+    "startup_display_mode": "notes-cdp",
+    "workflow_head_sha": "292393cf34cd11a1c89fa97d150f06c20794ef9a",
+    "tested_artifact_source_sha": "292393cf34cd11a1c89fa97d150f06c20794ef9a",
+    "development_ci_run_id": 38197190416,
+    "development_artifact_id": 11724376193,
+    "development_artifact_digest": "sha256:50d1a68afea08fc2e61a666e034969b178c06dd66e6cd9eca31f3d32e0d442ff",
+    "version": "0.2.509",
+    "tree_sha256": "e6e2db77db750f5d939c75985a32c6a3e6c32d705e5fb8b04c8c263f3e921ccb",
+    "sanitized_artifact": {
+      "id": 11724661571,
+      "name": "hosted-guest-38197849070-1",
+      "digest": "sha256:590243946669345f5594ee91781f34ffdcb54ffdf65638822a87692c07919b0d"
+    }
+  },
+  "changed_hypothesis": "The prior broad General prerequisite failure did not distinguish absent General, duplicate General, invalid type id or missing type. The new classifier retains bounded counts/booleans and the exact branch before any fixture write.",
+  "admission": {
+    "exact_current_source_ci_success": true,
+    "old_classifier_artifact_not_used": true,
+    "source_delta_at_dispatch": "none",
+    "checkout_clean": true,
+    "normal_helper": {
+      "command": "node scripts/hosted-remote-admission.mjs plan --lane A --development-run-id 38197190416 --development-artifact-id 11724376193 --source-sha 292393cf34cd11a1c89fa97d150f06c20794ef9a",
+      "exit_code": 0,
+      "passed_before_mint": true,
+      "passed_twice_final_sequence": true,
+      "last_pass_after_secret_stage": true,
+      "workflow_helper_clean": true,
+      "refusal_overridden": false
+    },
+    "coexisting_hosted_run": {
+      "id": 38197782055,
+      "lane": "B",
+      "case": "guest-seo",
+      "separate_ephemeral_host": true,
+      "shared_credentials": false,
+      "shared_mutable_fixture": false
+    },
+    "hosted_cap": "Two browser jobs globally, one heavy job per isolated ephemeral host; A remained exclusive member identity owner.",
+    "identity": {
+      "platform_nonadmin": true,
+      "current_organization_membership": true,
+      "organization_role": "owner",
+      "role_changes": false
+    }
+  },
+  "startup": {
+    "cdp": {
+      "schema": 1,
+      "outcome": "connected",
+      "phases": [
+        {
+          "phase": "endpoint_read",
+          "elapsedMs": 3278
+        },
+        {
+          "phase": "owner_check_started",
+          "elapsedMs": 3279
+        },
+        {
+          "phase": "owner_verified",
+          "elapsedMs": 3342
+        },
+        {
+          "phase": "socket_constructed",
+          "elapsedMs": 3352
+        },
+        {
+          "phase": "probe_tcp_connected",
+          "elapsedMs": 3366
+        },
+        {
+          "phase": "socket_open",
+          "elapsedMs": 4411
+        },
+        {
+          "phase": "connector_settled",
+          "elapsedMs": 4411
+        }
+      ],
+      "longestTimerDelayMs": 579,
+      "timerSamples": 23,
+      "verdict": "DIAGNOSTIC_ONLY_NO_PRODUCT_ACCEPTANCE"
+    },
+    "connected_callback": {
+      "phase": "cdp_connected",
+      "outcome": "connected",
+      "endpointPresent": true,
+      "inspectionFailed": false,
+      "exitObserved": false,
+      "elapsedMs": 4419,
+      "polls": 0
+    },
+    "authentication": {
+      "member_signed_in": true,
+      "platform_nonadmin": true,
+      "organization_selected": true
+    },
+    "post_timeout_observer": {
+      "enabled": true,
+      "window_ms": 15000,
+      "natural_endpoint_timeout": false,
+      "fired": false
+    },
+    "limits": "CDP connected4411ms, callback recorded4419ms. Longest timer delay579ms across23 samples. Independent loopback TCP connected3366ms but no HTTP status event before settlement. No inference about earlier intermittent startup failures."
+  },
+  "classified_precondition": {
+    "failure_stage": "T02_native_member_find",
+    "failure_code": "notes_find_general_home_missing",
+    "diagnostic": {
+      "selected_org_scope_count": 0,
+      "selected_org_type_count": 0,
+      "literal_general_count": 0,
+      "general_type_id_valid": false,
+      "general_type_in_tree": false
+    },
+    "meaning": "The selected-organization subset of the accepted returned context_tree contained zero scopes and zero types, with no literal General. This excludes duplicate-General or invalid-existing-General-type as the classifier branch for this run.",
+    "data_path": "After real sign-in the driver evaluates an authenticated browser fetch to /rest/v1/rpc/context_tree, with custom Content-Profile and Accept-Profile, selected organization in X-Organization-Id, and p_organization_ids:[selected organization]. scopeDoor requires a2xx HTTP response; selectedOrgTree requires scopes/types arrays. The classifier filters both arrays by organization_id, records only counts/booleans, then refuses before any home planning/write.",
+    "bounded_limit": "The evidence establishes an empty selected-org subset in the response, not a physically empty database. Top-level tree counts, row payloads, door source, authorization decision and server-side existence were not retained. Underlying absence, visibility/door omission and organization-key mismatch remain possible. No backend defect or data absence is claimed.",
+    "fixture_boundary": "Initial empty private ledger was written; no home planning, scope write, note write, Notes tab entry or original Find assertion occurred.",
+    "cleanup": {
+      "owned_home_writes": 0,
+      "owned_note_writes": 0,
+      "home_cleanup_pending": [],
+      "note_created_ids": [],
+      "required": false,
+      "explanation": "cleanup_complete=false is the untouched empty ledger state; precondition failure precedes every fixture write. Private ledger is not included in hosted artifact."
+    }
+  },
+  "resource_finals": {
+    "package": {
+      "schema": 1,
+      "at": "2026-10-12T03:00:06.679Z",
+      "runId": "hosted-package-38197849070-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "browser": {
+      "schema": 1,
+      "at": "2026-10-12T03:02:22.956Z",
+      "runId": "hosted-browser-38197849070-1",
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid",
+      "code": "RESOURCE_FINAL_DECISION"
+    },
+    "guest": {
+      "schema": 1,
+      "at": "2026-10-12T03:04:55.605Z",
+      "runId": "hosted-guest-38197849070-1",
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid",
+      "code": "RESOURCE_FINAL_DECISION"
+    }
+  },
+  "resource_timeline": "Acceptance admitted03:04:11.348Z busy0.037143/load1.48 on4 CPUs; healthy03:04:27.481Z busy0.27/load1.24; CDP CPU snapshots03:04:31.755–03:04:36.303Z; CPU pending03:04:43.747Z busy1.00/load1.95; child exit1 at03:04:55.422Z while pending; invalid final03:04:55.605Z exit3. Package/browser valid.",
+  "resource_limits": "CPU pending came after successful CDP connection. Process snapshot category totals exclude newly appeared processes and are not exact iostat allocations; resource contention does not explain the semantic tree branch.",
+  "credential_cleanup": {
+    "fresh_one_use_link": true,
+    "prior_links_reused": false,
+    "staged_via_stdin": true,
+    "local_link_removed_before_dispatch": true,
+    "temporary_repository_secret_deleted_at_terminal": true,
+    "secret_name_match_count": 0,
+    "local_link_absent": true,
+    "private_identity_absent": true,
+    "credential_values_persisted": false
+  },
+  "product_verdict": {
+    "case_id": "EXT-F-2006-T02",
+    "status": "unverified",
+    "credit": 0,
+    "reason": "Changed diagnostic identified the General-missing branch, but failed before UI/fixture assertions and acceptance resource final invalid. No inventory credit."
+  },
+  "next_diagnostic": {
+    "action": "One read-only comparison: under the existing authorized server inspection path, count the selected-org General marker/type existence in the backing store, and compare with same-principal custom.context_tree total/selected-org counts. Persist only counts/booleans and authorization category, never raw org/scope rows or IDs.",
+    "falsifiable_outcomes": "Backing General/type present but authenticated returned selected-org counts0 points to read visibility/door/organization matching; backing General/type absent supports an uninitialized fixture prerequisite. Compare total versus selected-org counts to distinguish empty response from mismatched row organization keys.",
+    "fixture_hypothesis": "Canonical item-homes PLAN documents lazy General creation via platform.ensure_general_scope and permits renaming. The fixture assumes a literal General already exists before its first note creation; this assumption may be invalid for a previously unused organization. This is a hypothesis, not a proved cause. A separately reviewed fixture repair should resolve canonical General identity/bootstrap rather than relabel an arbitrary scope.",
+    "canonical_source": "../common-docs/systems/data/scopes-context/projects/item-homes/PLAN.md",
+    "performed_here": false,
+    "writes_here": false
+  },
+  "evidence": [
+    "docs/stabilization/evidence/notes-find-member/run38197849070/native-receipt.json",
+    "docs/stabilization/evidence/notes-find-member/run38197849070/startup-diagnostics.json",
+    "docs/stabilization/evidence/notes-find-member/run38197849070/resource-events.json"
+  ],
+  "sanitization": "Removed extension directory, account fingerprint and private ledger path; resource events omit journal paths. Only bounded classification, timings, metrics, ephemeral process IDs/basenames and provenance retained. No credentials, endpoint URLs/ports, raw exception text, scope/note payload or screenshot copied into repo.",
+  "next": "Fresh independent peer; no source edit, database diagnostic, write, second run or retry in this task. Original Notes T02 and live owned-home provisioning remain unverified."
+}
