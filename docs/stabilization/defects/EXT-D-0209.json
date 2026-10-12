@@ -2,7 +2,7 @@
   "id": "EXT-D-0209",
   "feature_id": "EXT-F-0003",
   "case_ids": ["EXT-F-0003-T07"],
-  "title": "Published chat package imported an absent data subpath and blocked extension CI",
+  "title": "Published shared-package graph contains consumers of absent data subpaths",
   "surface": "Release infrastructure shared-package dependency graph",
   "auth_mode": "guest/member/admin; package CI is independent of sign-in",
   "preconditions": [
@@ -15,11 +15,11 @@
     "Trace the package error to published @ai-matrx/chat@0.8.62/dist/host/diagnostics.js importing @ai-matrx/data/net, a subpath not exported by @ai-matrx/data@0.29.23."
   ],
   "expected": "The latest published shared-package graph exports every subpath imported by its dependents, so extension unit tests and mandatory CI pass. A stale or incompatible package graph is identified before it reaches release acceptance.",
-  "actual": "Extension CI run 38257589484 failed four unit-test suites with ERR_PACKAGE_PATH_NOT_EXPORTED because published @ai-matrx/chat@0.8.62 imported @ai-matrx/data/net, absent from @ai-matrx/data@0.29.23 exports. Corrected shared chat source was published as @ai-matrx/chat@0.8.63 after the chat job in aidream run 38252153771 succeeded; its public tarball diagnostics imports @ai-matrx/api/net and a scan of 1,553 dist JavaScript files found zero data/net imports. The extension package graph is refreshed to chat@0.8.63 and rich-content@0.2.151 in this change. The guarded package-catchup-chat-20261012 run passed the latest-package guard, compile, lint, and the four originally failing unit suites (9 tests). Full extension CI and browser/Store acceptance remain pending.",
-  "cause": "The published chat@0.8.62 package retained an import of @ai-matrx/data/net after the latest data package removed that export. The corrected shared source now imports @ai-matrx/api/net and is published as chat@0.8.63; the extension needed to refresh its package graph to consume it.",
+  "actual": "The original CI run 38257589484 failed four unit suites because chat@0.8.62 imported the absent data/net subpath. Chat@0.8.63 corrected that import, but exact-source CI 38260278753 then found 12 analogous imports in agents@0.59.75 during the WXT build. Agents@0.59.76 removed those imports. An agents-only adoption at 06507f41b failed postinstall because direct data@0.29.23 and transitive data@0.29.24 coexisted. Commit 760643087 synchronized the complete 25-package graph. At that exact SHA, full CI 38261957044 and focused acceptance 38261957050 succeeded, including unit tests and the keyed development artifact build. This establishes package/build recovery; it does not establish browser behavior or Store acceptance.",
+  "cause": "Published chat@0.8.62 and agents@0.59.75 retained imports of a data/net subpath removed from current @ai-matrx/data, while an intermediate extension adoption left duplicate direct/transitive data versions. Corrected chat@0.8.63, agents@0.59.76, and a synchronized extension lockfile resolve the package graph.",
   "severity": "S2: required unit CI and release validation are blocked; no product runtime impact has been established.",
   "priority": "P0: unblock current CI and release validation by publishing and adopting a compatible latest package graph.",
-  "state": "fixed",
+  "state": "closed",
   "owner": "matrx_extend_stabilization",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38257589484",
@@ -27,9 +27,22 @@
     "https://github.com/AI-Matrix-Engine/aidream/actions/runs/38252153771 (chat job succeeded; published @ai-matrx/chat@0.8.63)",
     "Public @ai-matrx/chat@0.8.63 tarball: dist/host/diagnostics.js imports @ai-matrx/api/net; scan of 1,553 dist JavaScript files found zero @ai-matrx/data/net imports.",
     "Guarded extension run package-catchup-chat-20261012: latest-package guard, compile, lint, and the four original failing unit suites (9 tests) passed with @ai-matrx/chat@0.8.63 and @ai-matrx/rich-content@0.2.151.",
-    "pnpm-lock.yaml contains the extension dependency refresh in this change."
+    "pnpm-lock.yaml contains the extension dependency refresh in this change.",
+    "docs/stabilization/resource-journals/package-catchup-chat-20261012.jsonl",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38260278753 (exact-source CI at d382db851: full unit tests passed; keyed development test extension build failed on agents@0.59.75 importing @ai-matrx/data/net)",
+    "Published @ai-matrx/agents@0.59.75 tarball inspection: 12 dist imports of @ai-matrx/data/net, which @ai-matrx/data@0.29.23 does not export.",
+    "https://github.com/AI-Matrix-Engine/aidream/commit/5b6959d55d (corrected agents source) and https://github.com/AI-Matrix-Engine/aidream/commit/fabb3e3dff (uv.lock publishing fix).",
+    "https://github.com/AI-Matrix-Engine/aidream/actions/runs/38258986959 (authorized run published @ai-matrx/agents@0.59.76); public .76 tarball scan found zero @ai-matrx/data/net imports.",
+    "Extension lockfile refresh prepared in this change for chat@0.8.63 and rich-content@0.2.151; extension adoption of agents@0.59.76 is underway.",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38261653674 (focused acceptance failed at postinstall after commit 06507f41b adopted agents@0.59.76 only; duplicate @ai-matrx/data@0.29.23 direct and .24 transitive; full CI install also failed).",
+    "Extension commit 7606430875ad3efa633513f4423004cb8e5b95e1 synchronized the 25-package graph with one version per package and data@0.29.24.",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38261957044 (exact-source full CI succeeded, including full unit suite and keyed development test artifact build).",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38261957050 (exact-source focused acceptance succeeded).",
+    "Guarded local run package-catchup-agents76-20261012 passed latest-package guard, compile, lint and four focused suites (42 tests); installed 25-package graph scan found zero data/net imports in 2,748 JS/CJS/MJS files.",
+    "docs/stabilization/resource-journals/package-catchup-agents76-20261012.jsonl",
+    "Independent Luna package-graph review: source-level package coherence PASS; release readiness conditional on browser and Store acceptance."
   ],
-  "next_action": "Run full extension CI against the updated latest package graph and verify its result. Preserve the four-suite guarded pass as focused retest evidence; do not call it full CI. Browser/native and Chrome Web Store acceptance remain unverified and are not implied by package publication or CI. Reopen the defect if full CI reproduces the dependency failure.",
+  "next_action": "Package/build defect closed for source 760643087. Keep browser, live guest/non-admin, and Store ZIP/Google acceptance as separate open release gates under EXT-D-0204 and the feature inventory. Recheck latest-package guard before any release because npm can advance.",
   "transition_history": [
     {
       "at": "2026-10-12",
@@ -54,20 +67,50 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "The chat job in aidream run 38252153771 succeeded and published @ai-matrx/chat@0.8.63; public tarball inspection found @ai-matrx/api/net and zero @ai-matrx/data/net imports across 1,553 dist JS files. The guarded extension run package-catchup-chat-20261012 passed the latest-package guard, compile, lint, and all four original failing suites (9 tests) using chat@0.8.63 and rich-content@0.2.151. Full CI and browser/Store retests remain pending."
+    },
+    {
+      "at": "2026-10-12T14:17:28Z",
+      "from": "fixed",
+      "to": "retest-fail",
+      "reason": "Exact-source extension CI run 38260278753 at d382db851 passed full unit tests but failed the keyed development test extension build because published agents@0.59.75 imports @ai-matrx/data/net, absent from data@0.29.23 exports. The earlier chat@0.8.63 focused suites remain passed; the complete shared-package graph is not yet healthy."
+    },
+    {
+      "at": "2026-10-12T14:17:28Z",
+      "from": "retest-fail",
+      "to": "in-fix",
+      "reason": "Corrected agents source is present in aidream commit 5b6959d55d and authorized run 38258986959 published agents@0.59.76 after uv.lock fix fabb3e3dff; public tarball scan found zero old imports. The extension package graph refresh and exact-source CI rerun remain underway."
+    },
+    {
+      "at": "2026-10-12T14:29:01Z",
+      "from": "in-fix",
+      "to": "fixed",
+      "reason": "chat@0.8.63 and agents@0.59.76 removed the absent data/net imports; extension commit 760643087 synchronized all 25 package versions including data@0.29.24."
+    },
+    {
+      "at": "2026-10-12T14:29:01Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Original four suites and surrounding 42 focused tests passed under the resource guard; exact-source full CI 38261957044 and focused acceptance 38261957050 passed, including the keyed development artifact build. Independent package-graph review passed."
+    },
+    {
+      "at": "2026-10-12T14:29:01Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "Package/build defect reproduction no longer occurs on exact source 760643087; browser and Store acceptance remain separate unverified gates."
     }
   ],
   "control_ids": ["EXT-F-0003-C12"],
   "role_org_permissions": "Guest, member, and admin share the same package graph and CI behavior. Organization and runtime permissions are not applicable.",
   "build_receipt": null,
-  "reproducibility_count": "1/1 observed in original extension CI run 38257589484; repaired graph passed the four focused suites in guarded run package-catchup-chat-20261012.",
-  "sibling_census": "The original failure was in published @ai-matrx/chat@0.8.62/dist/host/diagnostics.js. Public @ai-matrx/chat@0.8.63 diagnostics imports @ai-matrx/api/net; a scan of 1,553 dist JavaScript files found zero @ai-matrx/data/net imports. Extension adoption uses chat@0.8.63 and rich-content@0.2.151; package graph guard, compile, lint and four affected suites passed. Full CI remains pending.",
-  "fix_commits": "aidream 5b6959d55de corrected the shared chat source and run 38252153771 published chat@0.8.63. The extension pnpm-lock.yaml refresh to chat@0.8.63 and rich-content@0.2.151 is included in this change.",
-  "original_repro_retest": "The four originally failing suites (9 tests) passed in guarded extension run package-catchup-chat-20261012 after refreshing to chat@0.8.63 and rich-content@0.2.151; the latest-package guard, compile and lint also passed. Full extension CI is pending.",
-  "surrounding_case_runs": "Focused guarded package catch-up run package-catchup-chat-20261012 passed four original failing suites (9 tests), latest-package guard, compile and lint. No full CI or browser/Store run is recorded.",
-  "reviewer_identity": "No independent reviewer identity supplied; recorded verification is the guarded package-catchup-chat-20261012 run and public tarball inspection.",
+  "reproducibility_count": "Original chat incompatibility reproduced 1/1 in CI 38257589484; agents sibling reproduced 1/1 in CI 38260278753; duplicate-data graph reproduced in 38261653674. Exact-source recovery passed in full CI 38261957044 and focused acceptance 38261957050.",
+  "sibling_census": "chat@0.8.62 had one absent data/net import; agents@0.59.75 had 12. Corrected published chat@0.8.63 and agents@0.59.76 have zero such imports. The extension installed graph at 760643087 has one current version each of 25 packages and zero data/net imports across 2,748 JS/CJS/MJS files.",
+  "fix_commits": "Aidream 5b6959d55de corrected chat and agents source; fabb3e3dff repaired uv.lock publishing. Authorized runs published chat@0.8.63 and agents@0.59.76. Extension d382db851 adopted chat@0.8.63, 06507f41b adopted agents@0.59.76, and 760643087 synchronized all 25 packages including data@0.29.24.",
+  "original_repro_retest": "The four original failing chat suites and surrounding 42 focused tests passed. Exact-source full CI 38261957044 and focused acceptance 38261957050 passed at 760643087, including development artifact build. This is package/build evidence only.",
+  "surrounding_case_runs": "Resource-guarded latest-package guard, compile, lint and four focused suites (42 tests) passed at 760643087. Full CI 38261957044 and focused acceptance 38261957050 passed at the same SHA. No live browser or Store acceptance is claimed.",
+  "reviewer_identity": "Independent Luna agent reviewed 760643087 package graph and accepted source-level coherence; full CI and focused acceptance provide separate machine verification.",
   "role": "Guest, member, and admin share the same package CI behavior.",
   "organization": "Not applicable to package CI.",
   "permissions": "Not applicable to package CI.",
-  "build_receipt_status": "No browser artifact is involved in the focused CI evidence. Browser/native and Store acceptance remain unverified.",
-  "retest_status": "Focused retest passed: four original failing suites (9 tests), latest-package guard, compile and lint in guarded run package-catchup-chat-20261012 using chat@0.8.63 and rich-content@0.2.151. Full extension CI and browser/Store acceptance remain pending."
+  "build_receipt_status": "Exact-source CI 38261957044 succeeded and uploaded development test artifact 11752953286 for 760643087. Artifact adoption into Chrome and Store ZIP remain unverified.",
+  "retest_status": "Package/build retest passed and defect closed at 760643087. Live browser, guest/non-admin, Store ZIP and Google acceptance remain unverified and tracked separately."
 }
