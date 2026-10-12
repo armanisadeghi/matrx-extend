@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T14:45:00Z",
+  "updated_at": "2026-10-12T15:46:06Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -2408,7 +2408,7 @@
       "controls": [
         {
           "id": "EXT-F-1001-C01",
-          "label": "Sidepanel tab triggers (21 direct tabs; Profile via User menu)",
+          "label": "Sidepanel tab triggers (22 direct tabs; Profile via User menu)",
           "action": "Select every source-authorized tab for the current role; verify stale persisted selection falls back to Chat.",
           "tab_values_by_mode": {
             "guest": [
@@ -2435,7 +2435,8 @@
               "screenshots",
               "vault",
               "tools",
-              "settings"
+              "settings",
+              "swipe-file"
             ],
             "admin": [
               "chat",
@@ -2458,7 +2459,8 @@
               "settings",
               "showcase",
               "broker",
-              "debug"
+              "debug",
+              "swipe-file"
             ]
           },
           "profile_navigation": "User menu > Profile is signed-in and has TabsContent but no direct TabsTrigger."
@@ -2584,7 +2586,7 @@
           ],
           "steps": [
             "Open the sidepanel tab strip.",
-            "Select each available direct tab: chat, tasks, agenda, lists, scrape, saved-captures, capture, data, highlight, guidance, seo, notes, files, screenshots, vault, tools, settings.",
+            "Select each available direct tab: chat, tasks, agenda, lists, scrape, saved-captures, capture, data, highlight, guidance, seo, notes, files, screenshots, vault, tools, settings, swipe-file.",
             "Persist a restricted tab, change to a lower role, and reload.",
             "For member/admin, open Profile from the User menu."
           ],
@@ -2612,7 +2614,7 @@
           ],
           "steps": [
             "Open the sidepanel tab strip.",
-            "Select each available direct tab: chat, pilot, tasks, agenda, lists, scrape, saved-captures, capture, data, highlight, guidance, seo, notes, files, screenshots, vault, tools, settings, showcase, broker, debug.",
+            "Select each available direct tab: chat, pilot, tasks, agenda, lists, scrape, saved-captures, capture, data, highlight, guidance, seo, notes, files, screenshots, vault, tools, settings, showcase, broker, debug, swipe-file.",
             "Persist a restricted tab, change to a lower role, and reload.",
             "For member/admin, open Profile from the User menu."
           ],
@@ -42586,6 +42588,14 @@
           "render_condition": "A saved pattern is URL-matched and its automatic run record has status no_match.",
           "test_design_status": "unverified",
           "test_design_item": "Verify the automatic no_match badge and explanatory text in EXT-F-2005-T08 for applicable signed-in roles."
+        },
+        {
+          "id": "EXT-F-2005-C34",
+          "label": "Fetch matching live-data source as table",
+          "action": "For a matching active-page URL, choose a record count, inspect estimated points and limits, run Get as table, inspect progress/refusal/result, then open the created table. Guest renders no offer.",
+          "source_anchor": "src/features/data/LiveDataOffer.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify matching live-data source offer, cost/limit quote, fetch, progress/refusal and table link in member/admin; confirm guest has no offer."
         }
       ],
       "source_anchors": [
@@ -43391,6 +43401,36 @@
             }
           },
           "verification_status": "member-pass-frozen-0.2.493; guest-not-applicable; admin-unverified; feature-incomplete"
+        },
+        {
+          "id": "EXT-F-2005-T09",
+          "title": "Live-data source offer, fetch and guest visibility",
+          "control_ids": [
+            "EXT-F-2005-C34"
+          ],
+          "modes": [
+            "guest",
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Controlled active-page URL matching a configured live-data source; signed-in members/admins with a usable organization and authorized live-data access; genuinely signed-out guest profile."
+          ],
+          "steps": [
+            "As guest, open Data on a matching URL and inspect the offer area. As member and admin, inspect the matching source label, record input, configured limit and points estimate; run Get as table and capture progress, refusal, result rows and Open table destination. Repeat with a URL that does not match a source and with a refused fetch."
+          ],
+          "expected": [
+            "Guest sees no live-data offer. A matching signed-in URL exposes the source offer; a non-matching URL does not. The fetch result or refusal is explicit, and success exposes the created table link. These are source-derived expectations only; runtime behavior remains unverified."
+          ],
+          "dimensions": [
+            "guest",
+            "member",
+            "admin",
+            "organization",
+            "network"
+          ],
+          "verification_status": "Source inventory added from current UI implementation; no runtime behavior verdict.",
+          "results": {}
         }
       ],
       "cells": {
@@ -43800,10 +43840,11 @@
         },
         {
           "id": "EXT-F-2007-C05",
-          "label": "Edit folder name",
-          "action": "Move/rename folder assignment by entering a value",
+          "label": "Choose note home",
+          "action": "Choose the displayed home for the current note using HomePicker; home selection is separate from title/body autosave.",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Edit folder name (Move/rename folder assignment by entering a value) on Notes editor in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Verify HomePicker displays current home and selection semantics in the note editor.",
+          "source_anchor": "src/features/notes/NoteEditor.tsx"
         },
         {
           "id": "EXT-F-2007-C06",
@@ -43948,11 +43989,11 @@
         },
         {
           "id": "EXT-F-2007-C25",
-          "label": "Edit note folder to no folder",
-          "action": "Clear folder assignment",
+          "label": "Move note to another home",
+          "action": "Choose a different home in HomePicker and persist the move using the explicit move action.",
           "source_anchor": "src/features/notes/NoteEditor.tsx",
           "test_design_status": "unverified",
-          "test_design_item": "Verify Edit note folder to no folder (Clear folder assignment) on Notes editor in source-applicable roles; include refusal and reload where state persists."
+          "test_design_item": "Move a note to another visible home and verify server persistence and Notes list/detail reconciliation."
         },
         {
           "id": "EXT-F-2007-C26",
@@ -44012,7 +44053,8 @@
             "EXT-F-2007-C03",
             "EXT-F-2007-C04",
             "EXT-F-2007-C05",
-            "EXT-F-2007-C06"
+            "EXT-F-2007-C06",
+            "EXT-F-2007-C25"
           ],
           "modes": [
             "member",
@@ -44022,16 +44064,17 @@
             "Signed-in owner of one controlled note; autosave status initially idle."
           ],
           "steps": [
-            "Edit title, folder and markdown body separately; wait for saved indicator; switch Preview and Back; reload note."
+            "Edit title and body; switch Edit/Preview; select a different home with HomePicker; revisit the note and list to check saved home and autosaved content."
           ],
           "expected": [
-            "Each field change saves and is reflected after reload; Preview renders markdown and Edit restores editable content; save/error indicator is visible."
+            "Title/body autosave and preview reflect the latest content. Home changes persist through the explicit move operation and are reflected by the home-filtered list; report failures visibly."
           ],
           "dimensions": [
             "member",
             "admin",
             "reload",
-            "network"
+            "network",
+            "organization"
           ],
           "verification_status": "Admin overlapping autosave and latest draft persistence after reopen/reload passed on exact139 in notes-review-139-native-20260930-01. Folder/preview/full case and member coverage remain unverified."
         },
@@ -91632,6 +91675,422 @@
           "retest_status": "not-run"
         }
       }
+    },
+    {
+      "id": "EXT-F-2018",
+      "name": "Save and manage social posts in Swipe file",
+      "surface": "Swipe file side-panel and social-page capture controls",
+      "entry_points": [
+        "Signed-in Swipe file side-panel tab (src/entrypoints/sidepanel/App.tsx)",
+        "Social post/ad page pill and social feed Capture more (src/entrypoints/swipe-pill.content.ts)",
+        "Page/link context menu Save to swipe file (src/lib/context-menus/setup.ts)",
+        "Guided social-page capture overlay launched from Swipe file workflows (src/entrypoints/guided-capture.content.ts)"
+      ],
+      "controls": [
+        {
+          "id": "EXT-F-2018-C01",
+          "label": "Social post save pill",
+          "action": "On a supported social post, choose an existing/new collection and save; inspect progress, duplicate result, receipt warnings and failure feedback.",
+          "source_anchor": "src/lib/swipe-file/pill.ts",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Social post save pill (On a supported social post, choose an existing/new collection and save; inspect progress, duplicate result, receipt warnings and failure feedback.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C02",
+          "label": "Capture more from a social feed",
+          "action": "From a supported profile/feed, start guided capture on the current tab; inspect refusal and handoff feedback.",
+          "source_anchor": "src/lib/swipe-file/pill.ts",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Capture more from a social feed (From a supported profile/feed, start guided capture on the current tab; inspect refusal and handoff feedback.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C03",
+          "label": "Retry missing slides",
+          "action": "Retry an incomplete capture’s missing media and inspect per-slide progress/result.",
+          "source_anchor": "src/lib/swipe-file/pill.ts",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Retry missing slides (Retry an incomplete capture’s missing media and inspect per-slide progress/result.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C04",
+          "label": "Capture remaining slides",
+          "action": "Start browser capture for remaining slides of an already saved post.",
+          "source_anchor": "src/lib/swipe-file/pill.ts",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Capture remaining slides (Start browser capture for remaining slides of an already saved post.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C05",
+          "label": "View saved item in extension",
+          "action": "Use View in extension from the page pill and verify the correct post/collection opens in Swipe file.",
+          "source_anchor": "src/lib/swipe-file/pill.ts",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify View saved item in extension (Use View in extension from the page pill and verify the correct post/collection opens in Swipe file.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C06",
+          "label": "Save page or linked post from context menu",
+          "action": "Use Save to swipe file on a supported post page or right-clicked post link; inspect completion/failure notification.",
+          "source_anchor": "src/lib/context-menus/setup.ts",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Save page or linked post from context menu (Use Save to swipe file on a supported post page or right-clicked post link; inspect completion/failure notification.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C07",
+          "label": "Refresh Swipe file",
+          "action": "Reload collection and membership data; inspect loading, error and retry behavior.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Refresh Swipe file (Reload collection and membership data; inspect loading, error and retry behavior.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C08",
+          "label": "Filter collections and archived items",
+          "action": "Choose All or a named collection and toggle Show archived collections.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Filter collections and archived items (Choose All or a named collection and toggle Show archived collections.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C09",
+          "label": "Search saved notes and tags",
+          "action": "Filter saved memberships by collection, note and tags; inspect empty result.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Search saved notes and tags (Filter saved memberships by collection, note and tags; inspect empty result.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C10",
+          "label": "Create collection",
+          "action": "Enter a collection name and create it; inspect refusal and success feedback.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Create collection (Enter a collection name and create it; inspect refusal and success feedback.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C11",
+          "label": "Rename, archive and restore collection",
+          "action": "Rename the selected collection; archive it and restore it from the archived filter.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Rename, archive and restore collection (Rename the selected collection; archive it and restore it from the archived filter.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C12",
+          "label": "Open saved post detail and return",
+          "action": "Open a saved-post row, inspect detail, and return to collections.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Open saved post detail and return (Open a saved-post row, inspect detail, and return to collections.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C13",
+          "label": "Open original post or Matrx record",
+          "action": "Follow Original post and Open in Matrx links from detail.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Open original post or Matrx record (Follow Original post and Open in Matrx links from detail.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C14",
+          "label": "Refresh saved post capture",
+          "action": "Refresh capture for a post already in a collection and inspect updated capture status.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Refresh saved post capture (Refresh capture for a post already in a collection and inspect updated capture status.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C15",
+          "label": "Inspect capture, metrics, caption and transcript",
+          "action": "Read capture coverage/warnings, post metrics, caption/hashtags, transcript availability and detail states.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Inspect capture, metrics, caption and transcript (Read capture coverage/warnings, post metrics, caption/hashtags, transcript availability and detail states.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C16",
+          "label": "Open or download stored media",
+          "action": "Open stored image/video/audio/file and use download fallback when preview fails.",
+          "source_anchor": "src/features/swipe-file/StoredMedia.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Open or download stored media (Open stored image/video/audio/file and use download fallback when preview fails.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C17",
+          "label": "Edit collection note and tags",
+          "action": "Edit note and comma-separated tags, then save changes.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Edit collection note and tags (Edit note and comma-separated tags, then save changes.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C18",
+          "label": "Remove post from collection",
+          "action": "Remove the current membership and return to collection list.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Remove post from collection (Remove the current membership and return to collection list.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C19",
+          "label": "Add post to destination collection",
+          "action": "Choose an active destination collection and add the post.",
+          "source_anchor": "src/features/swipe-file/SwipeFileView.tsx",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Add post to destination collection (Choose an active destination collection and add the post.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        },
+        {
+          "id": "EXT-F-2018-C20",
+          "label": "Guided browser capture on social page",
+          "action": "Inspect guided instructions/count; expand/collapse; choose item count; scroll/stop where applicable; capture; inspect retry, Back to Matrx and Close states.",
+          "source_anchor": "src/lib/guided-capture/overlay.ts",
+          "test_design_status": "unverified",
+          "test_design_item": "Verify Guided browser capture on social page (Inspect guided instructions/count; expand/collapse; choose item count; scroll/stop where applicable; capture; inspect retry, Back to Matrx and Close states.) in the Swipe file surface for source-applicable roles; include refusal and reload where state persists."
+        }
+      ],
+      "source_anchors": [
+        "src/config/sidepanel-visibility.ts",
+        "src/entrypoints/sidepanel/App.tsx",
+        "src/features/swipe-file/SwipeFileView.tsx",
+        "src/features/swipe-file/StoredMedia.tsx",
+        "src/entrypoints/swipe-pill.content.ts",
+        "src/lib/swipe-file/pill.ts",
+        "src/lib/swipe-file/host.ts",
+        "src/lib/swipe-file/save.ts",
+        "src/lib/swipe-file/browser-capture.ts",
+        "src/entrypoints/guided-capture.content.ts",
+        "src/lib/guided-capture/overlay.ts",
+        "src/lib/context-menus/setup.ts"
+      ],
+      "dependency_class": "cross-system",
+      "wave": "C",
+      "inventory_status": "source-complete",
+      "applicability": {
+        "guest": {
+          "applicable": true,
+          "reason": "The Swipe file tab is source-gated to signed-in users, but the social-page save pill/context-menu entrypoints are available on matching pages and explicitly refuse without sign-in; inventory both the denial path and hidden-tab behavior."
+        },
+        "member": {
+          "applicable": true,
+          "reason": "The tab is gated to signed-in users; collection/post operations depend on current membership and organization authorization."
+        },
+        "admin": {
+          "applicable": true,
+          "reason": "The tab is gated to signed-in users; collection/post operations depend on current membership and organization authorization."
+        }
+      },
+      "cases": [
+        {
+          "id": "EXT-F-2018-T01",
+          "title": "Guest hidden-tab and external-entry refusal",
+          "control_ids": [
+            "EXT-F-2018-C01",
+            "EXT-F-2018-C02",
+            "EXT-F-2018-C06"
+          ],
+          "modes": [
+            "guest"
+          ],
+          "preconditions": [
+            "Genuinely signed-out profile and controlled supported social post plus feed page."
+          ],
+          "steps": [
+            "Attempt to select/restore Swipe file in the sidepanel; on a supported social post use the save pill and context menu; on a feed try Capture more."
+          ],
+          "expected": [
+            "Swipe file tab/view are unavailable to guest. External entrypoints either visibly ask for sign-in/refuse or remain safely unavailable; no successful save is claimed."
+          ],
+          "dimensions": [
+            "guest",
+            "reload",
+            "content-script",
+            "context-menu"
+          ],
+          "verification_status": "Source inventory only; runtime behavior remains unverified.",
+          "results": {}
+        },
+        {
+          "id": "EXT-F-2018-T02",
+          "title": "Member collection lifecycle and saved-post detail",
+          "control_ids": [
+            "EXT-F-2018-C07",
+            "EXT-F-2018-C08",
+            "EXT-F-2018-C09",
+            "EXT-F-2018-C10",
+            "EXT-F-2018-C11",
+            "EXT-F-2018-C12",
+            "EXT-F-2018-C13",
+            "EXT-F-2018-C14",
+            "EXT-F-2018-C15",
+            "EXT-F-2018-C16",
+            "EXT-F-2018-C17",
+            "EXT-F-2018-C18",
+            "EXT-F-2018-C19"
+          ],
+          "modes": [
+            "member"
+          ],
+          "preconditions": [
+            "Signed-in ordinary member with authorized collections, saved social post and at least two visible organizations when testing cross-organization selection."
+          ],
+          "steps": [
+            "Refresh collections; create, search, filter, rename, archive and restore a collection.",
+            "Open a saved post detail and activate Refresh capture; wait for the refreshed capture state or visible refusal/error, then reload the detail and inspect the resulting media status.",
+            "Open each stored-media item; verify image/video/audio preview when supported. For a non-previewable file, use Download file; when a preview fails, activate Download stored file and confirm the fallback is offered.",
+            "Edit and save note/tags; add the post to another authorized destination collection; remove a membership; follow Original post and Open in Matrx links."
+          ],
+          "expected": [
+            "Collection state reflects the selected organization and the requested create/search/filter/rename/archive/restore actions; failures are visible.",
+            "Refresh capture either completes and updates the displayed capture/media status or gives a visible refusal/error; no success is inferred from source alone.",
+            "Stored media opens in the supported preview or provides the visible download path. A failed preview offers Download stored file.",
+            "Note/tag and membership changes affect the selected records; the original and Matrx links point to the selected post. Runtime outcomes remain unverified."
+          ],
+          "dimensions": [
+            "member",
+            "organization",
+            "network",
+            "reload"
+          ],
+          "verification_status": "Source inventory only; runtime behavior remains unverified.",
+          "results": {}
+        },
+        {
+          "id": "EXT-F-2018-T03",
+          "title": "Admin collection lifecycle and saved-post detail",
+          "control_ids": [
+            "EXT-F-2018-C07",
+            "EXT-F-2018-C08",
+            "EXT-F-2018-C09",
+            "EXT-F-2018-C10",
+            "EXT-F-2018-C11",
+            "EXT-F-2018-C12",
+            "EXT-F-2018-C13",
+            "EXT-F-2018-C14",
+            "EXT-F-2018-C15",
+            "EXT-F-2018-C16",
+            "EXT-F-2018-C17",
+            "EXT-F-2018-C18",
+            "EXT-F-2018-C19"
+          ],
+          "modes": [
+            "admin"
+          ],
+          "preconditions": [
+            "Signed-in admin with authorized collection and saved-post fixtures."
+          ],
+          "steps": [
+            "Refresh collections; create, search, filter, rename, archive and restore a collection.",
+            "Open a saved post detail and activate Refresh capture; wait for the refreshed capture state or visible refusal/error, then reload the detail and inspect the resulting media status.",
+            "Open each stored-media item; verify image/video/audio preview when supported. For a non-previewable file, use Download file; when a preview fails, activate Download stored file and confirm the fallback is offered.",
+            "Edit and save note/tags; add the post to another authorized destination collection; remove a membership; follow Original post and Open in Matrx links."
+          ],
+          "expected": [
+            "Collection state reflects the selected organization and the requested create/search/filter/rename/archive/restore actions; failures are visible.",
+            "Refresh capture either completes and updates the displayed capture/media status or gives a visible refusal/error; no success is inferred from source alone.",
+            "Stored media opens in the supported preview or provides the visible download path. A failed preview offers Download stored file.",
+            "Note/tag and membership changes affect the selected records; the original and Matrx links point to the selected post. Runtime outcomes remain unverified."
+          ],
+          "dimensions": [
+            "admin",
+            "organization",
+            "network",
+            "reload"
+          ],
+          "verification_status": "Source inventory only; runtime behavior remains unverified.",
+          "results": {}
+        },
+        {
+          "id": "EXT-F-2018-T04",
+          "title": "Social post save, duplicate and capture controls",
+          "control_ids": [
+            "EXT-F-2018-C01",
+            "EXT-F-2018-C03",
+            "EXT-F-2018-C04",
+            "EXT-F-2018-C05",
+            "EXT-F-2018-C06"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Member/admin session with active organization, supported social post, collection, and a post/link containing media eligible for slide capture."
+          ],
+          "steps": [
+            "On a supported post, save to an existing and a new collection; repeat to observe already-saved behavior; inspect warning/partial coverage; retry missing slides or capture remaining slides; use View in extension and context-menu save on a post/link."
+          ],
+          "expected": [
+            "Each outcome is explicit; save target and collection are correct; partial/retry and handoff controls report their completion or refusal honestly."
+          ],
+          "dimensions": [
+            "member",
+            "admin",
+            "organization",
+            "network",
+            "content-script",
+            "context-menu"
+          ],
+          "verification_status": "Source inventory only; runtime behavior remains unverified.",
+          "results": {}
+        },
+        {
+          "id": "EXT-F-2018-T05",
+          "title": "Guided capture of feed or post media",
+          "control_ids": [
+            "EXT-F-2018-C02",
+            "EXT-F-2018-C04",
+            "EXT-F-2018-C20"
+          ],
+          "modes": [
+            "member",
+            "admin"
+          ],
+          "preconditions": [
+            "Signed-in member/admin and supported feed or saved post with a valid capture receipt."
+          ],
+          "steps": [
+            "Launch Capture more from a supported feed; inspect count/recipe, select target quantity, start/stop Scroll for me, Capture, and observe Back/Close or Try again. Separately launch remaining-slide browser capture from saved post."
+          ],
+          "expected": [
+            "Guide appears only for the assigned capture tab; no scrolling/capture occurs until its respective user action; completion/refusal is visible and navigation returns to the intended Matrx context. Source does not prove runtime."
+          ],
+          "dimensions": [
+            "member",
+            "admin",
+            "organization",
+            "network",
+            "reload",
+            "content-script"
+          ],
+          "verification_status": "Source inventory only; runtime behavior remains unverified.",
+          "results": {}
+        }
+      ],
+      "cells": {
+        "guest": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        },
+        "member": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        },
+        "admin": {
+          "test_status": "unverified",
+          "defect_ids": [],
+          "run_ids": [],
+          "retest_status": "not-run"
+        }
+      },
+      "readiness_gaps": [
+        "No runtime behavior verdict from source reading; execute applicable guest denial and member/admin workflows in a live side panel and supported social pages.",
+        "Verify collection organization scope, access boundaries, ingest refusal, stored-media links, guided capture completion and reload behavior using real authorized fixtures."
+      ],
+      "runtime_evidence": null
     }
   ],
   "notes": [
