@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "case_id": "EXT-F-2013-T10",
+  "status": "pass",
+  "scope": "Fresh owned guest profile with the exact CI development artifact loaded unpacked in Chrome for Testing; first reply, same-conversation follow-up, and new-conversation reply after panel reload on a controlled page.",
+  "artifact": {
+    "source_sha": "5ae9d47eaaf7df5cb33699bf0956c8ab9e6f328e",
+    "ci_run_id": 38279845563,
+    "artifact_id": 11760448679,
+    "receipt_kind": "local_dev_unpacked",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "22993e81dcb0d92ffe939fe8545d4262635a653cb5cdb356ca1c7264149fef20",
+    "unchanged_during_run": true,
+    "source_relation": "Runtime-equivalent to main at 1b84dd190; later commits since the artifact alter stabilization scripts, tests and records only."
+  },
+  "server": {
+    "before_sha": "9081f9c4a78618fe1b2d7bce56a7feb1aecbcfa1",
+    "after_sha": "9081f9c4a78618fe1b2d7bce56a7feb1aecbcfa1",
+    "before_after_http_status": 200,
+    "stable_during_run": true
+  },
+  "observed": {
+    "fresh_guest_without_account_session": true,
+    "chat_visible": true,
+    "first_page_grounded_reply_terminal": true,
+    "same_conversation_followup_terminal": true,
+    "same_conversation_identity_verified": true,
+    "post_reload_new_conversation_terminal": true,
+    "all_three_guest_requests_observed": true,
+    "all_three_requests_http_200": true,
+    "no_login_paywall_or_error": true
+  },
+  "resource": {
+    "browser_install_run_id": "chromium-install-20261012-01",
+    "browser_install_final": "valid",
+    "acceptance_run_id": "guest-chat-cft-20261012-1742",
+    "acceptance_final": "valid",
+    "resource_invalid": false,
+    "journals": [
+      "docs/stabilization/resource-journals/chromium-install-20261012-01.jsonl",
+      "docs/stabilization/resource-journals/guest-chat-cft-20261012-1742.jsonl"
+    ]
+  },
+  "raw_report_sha256": "b03fb961df5f441ce9b69b564e9811d0c0a3885b56312965e575f954a55c127b",
+  "independent_review": "Fresh Luna peer verified the artifact identity, three terminal HTTP 200 guest turns, conversation identities, stable server revision, and valid resource final on 2026-10-12.",
+  "limits": [
+    "Development unpacked artifact; no exact Store ZIP, Store-installed update lifecycle, or private Store-dashboard acceptance was tested.",
+    "The context-rule read observer attached after panel load; earlier reads are not established.",
+    "Intermediate tool-boundary assigned-tab matches were unobserved; completed tool results and terminal checks matched the controlled fixture.",
+    "This case pass does not establish all Chat controls or close EXT-D-0211, whose fingerprint-guest tool-continuation reproduction was not exercised."
+  ],
+  "raw_assistant_content_included": false,
+  "credentials_or_guest_auth_values_included": false
+}

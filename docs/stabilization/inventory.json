@@ -49540,6 +49540,18 @@
                 "https://github.com/armanisadeghi/matrx-extend/actions/runs/38066064258"
               ],
               "scope": "bounded current live guest Chat path, not whole Chat health",
+              "current_development_result": {
+                "status": "pass",
+                "run_id": "guest-chat-cft-20261012-1742",
+                "artifact_kind": "local_dev_unpacked",
+                "artifact_source_sha": "5ae9d47eaaf7df5cb33699bf0956c8ab9e6f328e",
+                "build_version": "0.2.509",
+                "server_sha": "9081f9c4a78618fe1b2d7bce56a7feb1aecbcfa1",
+                "resource_valid": true,
+                "independently_reviewed": true,
+                "evidence": "docs/stabilization/reports/native-guest-chat-20261012.json",
+                "scope": "Fresh owned guest first, same-conversation follow-up and post-reload new conversation; development unpacked artifact, not Store ZIP or Store-installed."
+              },
               "detail": "On Oct 10, actual Store-installed 0.2.205 in Arman's Chrome profile displayed guest state and completed a page-grounded first answer and same-conversation follow-up with terminal Send state. Separately, resource-valid hosted run 38066064258 used a fresh clean guest profile and Google's public CRX loaded unpacked, with real terminal opening, same-conversation and post-panel-reload answers; all three current journals were valid, the artifact tree was unchanged, and the deployed server SHA matched before/after. The native Store observation does not establish a clean-profile installed acceptance or post-reload path; the hosted run is not a Store UI install. No whole Chat or current development health follows."
             }
           },
