@@ -15,6 +15,7 @@ import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { formatCount } from '@ai-matrx/kit/format';
 import { Loader2, Table2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 /**
  * "Get as table" — offered when the current page belongs to a live-data source in the server's
@@ -133,14 +134,12 @@ export function LiveDataOffer({ url, signedIn }: { url: string; signedIn: boolea
             {result.tableName} · {result.rowsCreated + result.rowsUpdated} rows
             {result.limitApplied ? ` (limited to ${result.limitApplied.value})` : ''}
           </span>
-          <a
+          <OutboundLink
             href={tableUrl(ENV.FRONTEND_URL, result.tableId)}
-            target="_blank"
-            rel="noreferrer"
             className="shrink-0 rounded-full bg-primary px-2.5 py-1 text-primary-foreground"
           >
             Open table
-          </a>
+          </OutboundLink>
         </div>
       )}
     </div>

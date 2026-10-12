@@ -27,6 +27,7 @@ import { Switch } from '@ai-matrx/design-system';
 import { formatDurationMs, formatDurationSeconds, formatFileSize } from '@ai-matrx/kit/format';
 import { Circle, Copy, ExternalLink, Square, Trash2, Video, VideoOff } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 const MIN_DURATION_S = 1;
 const MAX_DURATION_S = 60;
@@ -364,14 +365,12 @@ function RecordingRow({
         </div>
         <div className="mt-1 flex items-center gap-1.5">
           {entry.fileUrl ? (
-            <a
+            <OutboundLink
               href={entry.fileUrl}
-              target="_blank"
-              rel="noopener noreferrer"
               className="inline-flex items-center gap-1 rounded-md border bg-background px-1.5 py-0.5 text-[10px] hover:bg-accent"
             >
               <ExternalLink className="size-2.5" /> Open
-            </a>
+            </OutboundLink>
           ) : null}
           <button
             type="button"

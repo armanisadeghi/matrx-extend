@@ -30,6 +30,7 @@ import { Badge, Button, BasicTextarea as Textarea } from '@ai-matrx/design-syste
 import { formatDurationSeconds } from '@ai-matrx/kit/format';
 import { ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 const PHASE_LABEL: Record<RunPhase, string> = {
   claiming: 'Taking it…',
@@ -156,7 +157,7 @@ export function NeedsYourBrowserView(): React.JSX.Element {
       return;
     }
     try {
-      const tab = await chrome.tabs.create({ url: handoff.url, active: true });
+      const tab = await chrome.tabs.create({ url: withReferral(handoff.url), active: true });
       setDriving({
         handoffId: handoff.id,
         tabId: typeof tab.id === 'number' ? tab.id : null,

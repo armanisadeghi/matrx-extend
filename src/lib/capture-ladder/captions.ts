@@ -45,6 +45,7 @@ import {
 } from '@/lib/capture-ladder/types';
 import { log } from '@/lib/debug/log';
 import { formatCount } from '@ai-matrx/kit/format';
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 const LOAD_TIMEOUT_MS = 45_000;
 
@@ -351,7 +352,7 @@ export async function captureCaptions(
 
     let tabId = options.tabId;
     if (typeof tabId !== 'number') {
-      const tab = await chrome.tabs.create({ url: handoff.url, active: false });
+      const tab = await chrome.tabs.create({ url: withReferral(handoff.url), active: false });
       if (typeof tab.id !== 'number') {
         return await handToPerson(
           'wrong_resource',

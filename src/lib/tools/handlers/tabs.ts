@@ -17,6 +17,7 @@
 import { getAssignedTabId } from '@/lib/tools/handlers/_active-tab';
 import type { ToolHandler } from '@/lib/tools/types';
 import { z } from 'zod';
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 const NoArgs = z.object({}).default({});
 type NoArgs = z.infer<typeof NoArgs>;
@@ -153,7 +154,7 @@ export const open_new_tab: ToolHandler<OpenNewTabArgs, unknown> = {
   argsSchema: OpenNewTabArgs,
   run: async (args) => {
     const tab = await chrome.tabs.create({
-      url: args.url,
+      url: withReferral(args.url),
       active: args.active,
       pinned: args.pinned,
       windowId: args.window_id,

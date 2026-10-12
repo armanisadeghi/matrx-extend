@@ -434,6 +434,8 @@ CHECKS+=(
     "archived-items-self-test|300|ERROR|the archived-items detector can no longer fail|pnpm check:archived-items-law:self-test|pnpm -s check:archived-items-law:self-test"
     "org-default-ban|300|ERROR|a default organization is back (never a saved default or the personal org)|pnpm check:org-default-ban|pnpm -s check:org-default-ban"
     "org-default-ban-self-test|300|ERROR|the org-default-ban detector can no longer fail|pnpm check:org-default-ban:self-test|pnpm -s check:org-default-ban:self-test"
+    "outbound-referral|300|ERROR|a link leaves AI Matrx without our referral data (use @ai-matrx/kit/outbound)|pnpm check:outbound-referral|pnpm -s check:outbound-referral"
+    "outbound-referral-self-test|300|ERROR|the outbound-referral detector can no longer fail|pnpm check:outbound-referral:self-test|pnpm -s check:outbound-referral:self-test"
     "swallowed-refusals|300|ERROR|a server refusal is swallowed silently|pnpm check:swallowed-refusals|pnpm -s check:swallowed-refusals"
     "migrations|300|ERROR|unapplied migrations (or the ledger was unreachable)|pnpm check:migrations|pnpm -s check:migrations:strict"
 )

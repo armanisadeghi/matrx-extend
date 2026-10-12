@@ -75,6 +75,7 @@ import {
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ScreenshotShareLinks } from './ScreenshotShareLinks';
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 type LoadState = 'idle' | 'loading' | 'ready' | 'error';
 type CaptureMode = 'visible' | 'full_page';
@@ -457,7 +458,7 @@ function ScreenshotCard({
   const canonicalFileUrl = `${ENV.FRONTEND_URL}/files/f/${encodeURIComponent(row.file_id)}`;
 
   const openFullSize = useCallback(() => {
-    void chrome.tabs.create({ url: canonicalFileUrl });
+    void chrome.tabs.create({ url: withReferral(canonicalFileUrl) });
   }, [canonicalFileUrl]);
 
   useEffect(() => {

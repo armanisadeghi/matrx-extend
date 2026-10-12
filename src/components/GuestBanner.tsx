@@ -2,6 +2,7 @@ import { ENV } from '@/config/env';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@ai-matrx/design-system';
 import { LogIn, Sparkles } from 'lucide-react';
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 /**
  * Slim banner shown to guests. Mounts at the top of ChatView (and any
@@ -18,7 +19,7 @@ export function GuestBanner() {
   if (status === 'unknown') return null;
 
   const openSignup = () => {
-    void chrome.tabs.create({ url: ENV.FRONTEND_URL });
+    void chrome.tabs.create({ url: withReferral(ENV.FRONTEND_URL) });
   };
 
   return (

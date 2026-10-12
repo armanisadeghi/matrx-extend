@@ -33,6 +33,7 @@ import {
   Sheet,
 } from 'lucide-react';
 import { useCallback, useState } from 'react';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 export function GoogleFileAttachmentChip() {
   const items = useGoogleFilesStore((s) => s.items);
@@ -179,15 +180,13 @@ export function GoogleFileAttachmentChip() {
                 ? 'Choose a Google Doc or Sheet in AI Matrx and it shows up here. Attach it to a message and the agent can read and edit that one file — nothing else in your Drive.'
                 : 'Looking for the Google files you’ve shared with AI Matrx…'}
             </p>
-            <a
+            <OutboundLink
               href={GOOGLE_WORKSPACE_SETTINGS_URL}
-              target="_blank"
-              rel="noreferrer"
               className="mt-2 inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline"
             >
               Choose files in AI Matrx
               <ExternalLink className="size-3" />
-            </a>
+            </OutboundLink>
           </div>
         )}
       </PopoverContent>

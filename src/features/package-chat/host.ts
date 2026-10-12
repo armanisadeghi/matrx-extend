@@ -34,6 +34,7 @@ import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';
 import { extensionKnobs } from './knobs';
 import { registerExtensionToolRenderers } from './tool-renderers';
+import { withReferral } from "@ai-matrx/kit/outbound";
 
 /** The panel's last chat address survives a reopen (session storage); a side panel's own URL never moves. */
 const ADDRESS_KEY = 'matrx-extend:chat-address';
@@ -147,7 +148,7 @@ export async function createExtensionChatHost(): Promise<ChatHost> {
       persist: (address) =>
         void chrome.storage?.session?.set({ [ADDRESS_KEY]: address }).catch(() => undefined),
       // An aimatrx.com page opens in a browser tab, never inside the panel.
-      openExternal: (href) => void chrome.tabs.create({ url: href }),
+      openExternal: (href) => void chrome.tabs.create({ url: withReferral(href) }),
     }),
     // Drafts and density in the page's own storage, plus the platform settings register (the composer's quick starts are a setting).
     prefs: { ...createWebPrefs(), knobs: extensionKnobs },

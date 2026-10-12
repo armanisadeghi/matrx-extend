@@ -137,6 +137,14 @@ jobs:
       - name: the sign-out scope guard can still fail (self-test)
         run: pnpm check:signout-scope:self-test
 
+      # EVERY LINK LEAVING AI MATRX CARRIES OUR REFERRAL DATA (Arman, 2026-10-12). A raw
+      # <a target="_blank">, literal third-party anchor, window.open, chrome.tabs.create without
+      # withReferral, or a hand-rolled utm_source outside @ai-matrx/kit/outbound fails. Zero tolerance.
+      - name: Every link leaving AI Matrx carries our referral data
+        run: pnpm check:outbound-referral
+      - name: the outbound-referral guard can still fail (self-test)
+        run: pnpm check:outbound-referral:self-test
+
       # MANDATE REFERENCES — a non-blocking job step (ruling D23). It reports
       # every Mandate this extension names, and every bypass, to the platform.
       # `continue-on-error` is the law, not a convenience: a reference check may

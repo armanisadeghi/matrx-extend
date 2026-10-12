@@ -65,6 +65,8 @@
     "check:canonical-pickers:self-test": "tsx scripts/check-canonical-pickers.ts --self-test",
     "check:signout-scope": "node scripts/check-signout-scope.mjs",
     "check:signout-scope:self-test": "node scripts/check-signout-scope.mjs --self-test",
+    "check:outbound-referral": "matrx-check-outbound-referral src",
+    "check:outbound-referral:self-test": "matrx-check-outbound-referral --self-test",
     "check:mandate-references": "uvx --from matrx-mandate-scan@latest matrx-mandate-scan check",
     "check:mandate-references:strict": "uvx --from matrx-mandate-scan@latest matrx-mandate-scan check --strict"
   },
@@ -158,6 +160,10 @@
       "@ai-matrx/associations": "latest",
       "@ai-matrx/design-system": "latest"
     },
-    "onlyBuiltDependencies": ["@biomejs/biome", "esbuild", "spawn-sync"]
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "spawn-sync"
+    ]
   }
 }

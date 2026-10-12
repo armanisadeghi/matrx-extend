@@ -7,6 +7,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import '@/styles/globals.css';
+import { installOutboundReferralDecorator } from '@ai-matrx/kit/outbound-react';
 
 startDebugRelay();
 log.info('sys', 'sidepanel mounted');
@@ -38,6 +39,9 @@ async function settingsReady(): Promise<void> {
 }
 
 await settingsReady();
+// Any third-party link in the extension's pages carries our referral data (@ai-matrx/kit/outbound).
+installOutboundReferralDecorator();
+
 const root = createRoot(document.getElementById('app')!);
 root.render(
   <React.StrictMode>

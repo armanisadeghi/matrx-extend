@@ -22,6 +22,7 @@ import { CodeBlock } from './CodeBlock';
 import { XmlBlock } from './XmlBlock';
 import { type Block, parseBlocks } from './block-parser';
 import type { MarkdownRegistry } from './registry';
+import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 export type { MarkdownRegistry } from './registry';
 export type {
@@ -158,10 +159,8 @@ const MD_COMPONENTS: Components = {
   ),
   hr: ({ node: _n, ...props }) => <hr className="my-4 border-border/60" {...props} />,
   a: ({ node: _n, ...props }) => (
-    <a
+    <OutboundLink
       className="break-words font-medium text-sky-600 underline underline-offset-2 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300"
-      target="_blank"
-      rel="noreferrer"
       {...props}
     />
   ),
