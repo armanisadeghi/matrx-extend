@@ -1,0 +1,50 @@
+{
+  "id": "EXT-D-0216",
+  "feature_id": "EXT-F-1011",
+  "case_ids": ["EXT-F-1011-T19"],
+  "title": "Annotation Gist embed attempts to load remote JavaScript in the extension",
+  "surface": "Guidance screenshot annotation editor and Chrome Web Store package",
+  "auth_mode": "member/admin; package-level policy risk independent of sign-in",
+  "preconditions": [
+    "Use the current tldraw 4.5.12 dependency consumed by the annotation editor.",
+    "Open a guidance screenshot annotation or restore a saved annotation containing a Gist embed."
+  ],
+  "reproduction": [
+    "Inspect the installed Gist renderer in tldraw/dist-esm/lib/shapes/embed/EmbedShapeUtil.mjs.",
+    "Render or paste a GitHub Gist URL and observe iframe srcDoc containing a script URL under gist.github.com ending in .js.",
+    "Observe the iframe has no sandbox attribute, so the isolated-frame exception to Chrome's remotely hosted code policy does not apply."
+  ],
+  "expected": "Annotation editing remains usable, while Gist embeds do not attempt to load remotely hosted executable code in the extension and the exact Store ZIP passes policy review.",
+  "actual": "The installed tldraw Gist renderer emits a remote script inside an unsandboxed srcDoc iframe. Extension CSP may block execution at runtime, but the packaged code still attempts a forbidden load. This path was found during the Blue Argon rejection audit; Google did not identify it in the rejection email.",
+  "severity": "S2: Gist embeds may not render and create a policy risk for a replacement Store submission; ordinary annotation tools remain available",
+  "priority": "P0: remove the remote executable path before the next Store submission",
+  "state": "in-fix",
+  "owner": "matrx_extend_release_recovery",
+  "evidence": [
+    "src/features/guidance/AnnotationEditor.tsx",
+    "scripts/vite/tldraw-gist-link.ts",
+    "tests/unit/annotation-gist-loader.test.ts",
+    "https://developer.chrome.com/docs/webstore/program-policies/mv3-requirements"
+  ],
+  "next_action": "Finish independent source review, verify the exact hosted Store ZIP contains no Gist remote-script renderer, then retest paste and saved-annotation restore in the signed-in browser before closure. No product pass or Store approval follows from source tests alone.",
+  "transition_history": [
+    {
+      "at": "2026-10-12T20:00:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Source audit found a second remote-script path while investigating the Store's Blue Argon rejection."
+    },
+    {
+      "at": "2026-10-12T20:02:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "The installed renderer, extension reachability and unsandboxed srcDoc boundary were independently inspected."
+    },
+    {
+      "at": "2026-10-12T20:04:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "A focused replacement is implemented; independent review found a remaining test-claim gap."
+    }
+  ]
+}

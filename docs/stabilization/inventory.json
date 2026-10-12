@@ -35012,6 +35012,9 @@
           "expected": [
             "Lazy editor loads over image; save persists annotation document and flattened image, refreshes preview; close exits; errors display."
           ],
+          "linked_defects": [
+            "EXT-D-0216"
+          ],
           "dimensions": [
             "warm",
             "reload",
