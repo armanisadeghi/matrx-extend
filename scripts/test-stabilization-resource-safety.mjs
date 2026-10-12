@@ -13,7 +13,7 @@ import {
 } from './stabilization-resource-safety.mjs';
 import { copyResourceGuardModules } from './stabilization-resource-test-measurements.mjs';
 
-test('focused acceptance admits only its exact command before profile validation', async () => {
+test('focused acceptance and Scrape admit only exact commands before profile validation', async () => {
   const scratch = await mkdtemp(join(tmpdir(), 'focused-command-admission-'));
   const scripts = join(scratch, 'scripts');
   const docs = join(scratch, 'docs/stabilization');
@@ -31,6 +31,9 @@ test('focused acceptance admits only its exact command before profile validation
     await writeFile(profile, 'not a directory');
     for (const [index, command] of [
       ['pnpm', 'test:focused-acceptance'],
+      ['node', 'tests/browser/scrape-guest-native-acceptance.mjs'],
+      ['node', 'tests/browser/scrape-guest-native-acceptance.mjs', '--'],
+      ['node', 'tests/browser/scrape-guest-native-acceptance.mjs', '--self-test'],
       ['pnpm', 'test:focused-acceptance', '--'],
       ['pnpm', 'test:focused-acceptance', '--test-concurrency=1'],
       ['pnpm', 'test:focused-acceptance-extra'],
@@ -54,7 +57,7 @@ test('focused acceptance admits only its exact command before profile validation
       const events = result.stdout.trim().split('\n').map(JSON.parse);
       assert.equal(
         events.at(-2).code,
-        index === 0
+        index < 2
           ? 'RESOURCE_PROFILE_INVALID'
           : 'RESOURCE_COMMAND_NOT_ALLOWED:see docs/stabilization/resource-policy.json',
       );

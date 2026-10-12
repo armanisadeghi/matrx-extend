@@ -4,6 +4,7 @@ import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { verifyImportedNativeEvidence } from '../../scripts/current-test-artifact.mjs';
 import { hashReleaseTree } from '../../scripts/sync-unpacked-release.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import {
@@ -951,9 +952,53 @@ try {
   const receipt = JSON.parse(await readFile(RECEIPT, 'utf8'));
   if (ARTIFACT_CHANNEL === 'development') {
     assert.equal(receipt.kind, 'local_dev_unpacked', 'scrape_development_receipt_required');
-    assert.match(process.env.MATRX_SCRAPE_CI_SOURCE_SHA ?? '', /^[a-f0-9]{40}$/);
-    assert.match(process.env.MATRX_SCRAPE_CI_RUN_ID ?? '', /^[1-9][0-9]*$/);
-    assert.match(process.env.MATRX_SCRAPE_CI_ARTIFACT_ID ?? '', /^[1-9][0-9]*$/);
+    assert.match(
+      process.env.MATRX_SCRAPE_CI_SOURCE_SHA ?? '',
+      /^[a-f0-9]{40}$/,
+      'scrape_ci_source_required',
+    );
+    for (const [name, label] of [
+      ['MATRX_SCRAPE_CI_RUN_ID', 'run_id'],
+      ['MATRX_SCRAPE_CI_RUN_ATTEMPT', 'run_attempt'],
+      ['MATRX_SCRAPE_CI_ARTIFACT_ID', 'artifact_id'],
+    ]) {
+      assert.match(process.env[name] ?? '', /^[1-9][0-9]*$/, `scrape_ci_${label}_required`);
+      assert.ok(Number.isSafeInteger(Number(process.env[name])), `scrape_ci_${label}_required`);
+    }
+    const imported = await verifyImportedNativeEvidence(EXTENSION_DIR, RECEIPT);
+    assert.equal(
+      imported.sourceSha,
+      process.env.MATRX_SCRAPE_CI_SOURCE_SHA,
+      'scrape_ci_source_mismatch',
+    );
+    assert.equal(
+      imported.runId,
+      Number(process.env.MATRX_SCRAPE_CI_RUN_ID),
+      'scrape_ci_run_mismatch',
+    );
+    assert.equal(
+      imported.runAttempt,
+      Number(process.env.MATRX_SCRAPE_CI_RUN_ATTEMPT),
+      'scrape_ci_attempt_mismatch',
+    );
+    assert.equal(
+      imported.artifactId,
+      Number(process.env.MATRX_SCRAPE_CI_ARTIFACT_ID),
+      'scrape_ci_artifact_mismatch',
+    );
+    assert.equal(
+      resolve(EXTENSION_DIR),
+      join(
+        REPO,
+        'test-results',
+        'ci-artifacts',
+        imported.sourceSha,
+        `${imported.runId}-${imported.runAttempt}`,
+        'chrome-mv3',
+      ),
+      'scrape_ci_exact_import_path_required',
+    );
+    report.imported_artifact = imported;
   } else {
     assert.equal(
       receipt.kind,
@@ -970,16 +1015,18 @@ try {
     version: receipt.version,
     source_sha:
       ARTIFACT_CHANNEL === 'development'
-        ? process.env.MATRX_SCRAPE_CI_SOURCE_SHA
+        ? report.imported_artifact.sourceSha
         : (receipt.sourceSha ?? null),
     tree_sha256: receipt.treeSha256,
     run_id:
+      ARTIFACT_CHANNEL === 'development' ? report.imported_artifact.runId : (receipt.runId ?? null),
+    run_attempt:
       ARTIFACT_CHANNEL === 'development'
-        ? Number(process.env.MATRX_SCRAPE_CI_RUN_ID)
-        : (receipt.runId ?? null),
+        ? report.imported_artifact.runAttempt
+        : (receipt.runAttempt ?? null),
     artifact_id:
       ARTIFACT_CHANNEL === 'development'
-        ? Number(process.env.MATRX_SCRAPE_CI_ARTIFACT_ID)
+        ? report.imported_artifact.artifactId
         : (receipt.artifactId ?? null),
   };
   await runNativeSidepanelQa({
@@ -2201,11 +2248,6 @@ try {
       await requireResourceHealth();
     },
   });
-  assert.equal(
-    hashReleaseTree(EXTENSION_DIR),
-    report.artifact.tree_sha256,
-    'scrape_artifact_changed_during_native_run',
-  );
   report.status = report.original_busy_failure
     ? 'unverified'
     : report.cases.every((c) => c.status === 'passed')
@@ -2232,6 +2274,24 @@ try {
     report.reload_lifecycle_failure = captureLifecycleEvidence(error.lifecycleEvidence);
   if (error?.contextBoundary) report.reload_context_failure = error.contextBoundary;
   process.exitCode = 1;
+}
+// Check even when browser work failed: a changed artifact can never retain acceptance.
+if (report.artifact) {
+  try {
+    assert.equal(
+      hashReleaseTree(EXTENSION_DIR),
+      report.artifact.tree_sha256,
+      'scrape_artifact_changed_during_native_run',
+    );
+    report.artifact.unchanged_after_run = true;
+  } catch (error) {
+    report.status = 'unverified';
+    report.failure = {
+      stage: 'artifact_unchanged',
+      code: String(error?.message ?? error).slice(0, 300),
+    };
+    process.exitCode = 1;
+  }
 }
 await writeFile(OUTPUT, `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
 process.stdout.write(`${report.status.toUpperCase()} scrape_${report.mode}_native ${OUTPUT}\n`);
