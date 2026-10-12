@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0214",
   "feature_id": "EXT-F-0003",
-  "case_ids": [
-    "EXT-F-0003-T13"
-  ],
+  "case_ids": ["EXT-F-0003-T13"],
   "title": "Generated-operation migration leaves twelve files failing Biome import checks",
   "surface": "Extension CI Lint",
   "auth_mode": "guest/member/admin; source lint is independent of sign-in",
@@ -34,9 +32,7 @@
   },
   "reproducibility_count": "CI Lint failure 1/1 at exact source 58f28a085",
   "fix_commits": [],
-  "original_retest_runs": [
-    38274879341
-  ],
+  "original_retest_runs": [38274879341],
   "surrounding_case_runs": [],
   "reviewer": null,
   "next_action": "Independent review and native acceptance remain pending; overall exact-source CI build is blocked by EXT-D-0215. Do not claim release readiness or case/mode pass.",
