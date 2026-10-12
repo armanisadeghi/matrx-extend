@@ -83,6 +83,20 @@
       "workflow_dispatches": false,
       "jobs_relocated": false,
       "budget_changed": false
+    },
+    "private_runner_admission_check": {
+      "observed_at_utc": "2026-10-12T22:00:00Z",
+      "repo": "AI-Matrix-Engine/aidream",
+      "job_url": "https://github.com/AI-Matrix-Engine/aidream/actions/runs/38313735661/job/115025313399",
+      "runner_id": 0,
+      "steps": 0,
+      "conclusion": "failure",
+      "github_annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the Billing & plans section in your settings.",
+      "interpretation": "GitHub refused private-runner admission before work; its message does not distinguish failed payment from spending-limit condition. Organization Actions budget API reports $1500 with prevent_further_usage=true, but the budget response does not identify the failed account condition.",
+      "post_optimization_billed_savings_verified": false,
+      "workflow_dispatches": false,
+      "jobs_relocated": false,
+      "budget_changed": false
     }
   },
   "source_snapshot": {
@@ -135,5 +149,14 @@
       "Establish the primary item status through permitted authenticated access; do not infer it from public listing or email.",
       "Only after blockers clear, run the authorized guarded hosted release and inspect its exact Store ZIP with all required release gates before submission."
     ]
+  },
+  "source_gate_latest": {
+    "observed_at_utc": "2026-10-12T22:06:00Z",
+    "extension_source_sha": "a7beecf42e87711cb2e9e11daf88aadda4e7fac0",
+    "ci_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38313661974",
+    "ci_conclusion": "success",
+    "focused_acceptance_run": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38313662078",
+    "focused_acceptance_conclusion": "success",
+    "scope": "source and test gates only; no replacement Store ZIP or native product acceptance"
   }
 }
