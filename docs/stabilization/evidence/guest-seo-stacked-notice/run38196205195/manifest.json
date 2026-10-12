@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "run_id": 38196205195,
+  "attempt": 1,
+  "workflow_run_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38196205195",
+  "workflow_source_sha": "473f540773556e3901d2e8009b358ad7c58cb2d2",
+  "workflow_sha256": "bc0f9f2a0205db4ae69a70f4d4b38a566b902b11e9c37ead3ae6be7a1826d745",
+  "product_source_sha": "4b35005c2c5d6870324522aa8058dd4060f303d5",
+  "development_run_id": 38195630562,
+  "development_artifact_id": 11723163206,
+  "hosted_artifact": {
+    "id": 11723139305,
+    "name": "hosted-guest-38196205195-1",
+    "sha256": "4b0dfa2141cf1213f329837fe8e807929b8b87ead35691dcb6da3ac453a8e079"
+  },
+  "admission": {
+    "plan": "PASS",
+    "dispatch": "PASS",
+    "verify_guest_seo": "REFUSED_HOSTED_RUN_NOT_SUCCESSFUL"
+  },
+  "native_result": {
+    "workflow_conclusion": "failure",
+    "driver_output": "UNVERIFIED seo_guest_native_batch",
+    "failure_stage": "stacked_notice_native_360",
+    "last_safe_stage": "owned_guest_panel_ready",
+    "last_safe_observable": { "nativePanel": true },
+    "targets": [],
+    "assertion_detail_retained": false,
+    "product_fail_inferred": false,
+    "fixture_cleanup": "unknown; the failure report contains no insertion/dismissal counts or cleanup result"
+  },
+  "resource_finals": {
+    "hosted-package-38196205195-1": "valid",
+    "hosted-browser-38196205195-1": "valid",
+    "hosted-guest-38196205195-1": {
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    }
+  },
+  "evidence_files": [
+    "native-report.sanitized.json",
+    "resource-journals/hosted-package-38196205195-1.jsonl",
+    "resource-journals/hosted-browser-38196205195-1.jsonl",
+    "resource-journals/hosted-guest-38196205195-1.jsonl"
+  ],
+  "independent_peer_review": "pending; no inventory credit or commit"
+}
