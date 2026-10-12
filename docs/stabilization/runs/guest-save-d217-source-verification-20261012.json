@@ -1,0 +1,346 @@
+{
+  "schema_version": 1,
+  "run_id": "guest-save-d217-source-verification-20261012",
+  "defect_id": "EXT-D-0217",
+  "feature_id": "EXT-F-1007",
+  "case_ids": ["EXT-F-1007-T05", "EXT-F-1007-T22"],
+  "status": "source_verified_browser_retest_pending",
+  "source_commit": "c5e739074325d553a59c42e2e9d113b668cbcd4d",
+  "source_binding": {
+    "red": "Original getCurrentUser admission, with regression test present; product repair had not been applied.",
+    "green": "Working-tree source and test bytes later committed unchanged in source_commit.",
+    "gut": "Mutation applied to repaired source by plant.py and restored identically.",
+    "compile": "Restored repaired tree later committed as source_commit."
+  },
+  "sut": "saveCaptureAsSource and retryUnsavedCapture through their shared send identity boundary",
+  "dependency_boundaries": "Identity verification, organization lookup and landing transport are controlled dependencies. Preparation, edited portions, original serialization, local queue writes, retry and cleanup run as production code. This is a guard, not live Supabase persistence proof.",
+  "valid_checks": [
+    {
+      "run_id": "guest-save-d217-red-ready-20261012",
+      "journal": "docs/stabilization/resource-journals/guest-save-d217-red-ready-20261012.jsonl",
+      "command_argv": [
+        "node",
+        "scripts/stabilization-resource.mjs",
+        "run",
+        "--run-id",
+        "guest-save-d217-red-ready-20261012",
+        "--",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=1",
+        "tests/unit/save-capture-guest.test.ts"
+      ],
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-12T20:29:19.937Z",
+        "runId": "guest-save-d217-red-ready-20261012",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "product_verdict": "expected_regression_failure",
+      "sanitized_output_excerpts": [
+        "tests/unit/save-capture-guest.test.ts (4 tests | 3 failed)",
+        "Guest Save expected lastRefusal {code: sign_in_required, remedy: sign_in, status: 401}; received {code: no_organization, remedy: choose_a_workspace, status: -2}.",
+        "Guest Retry expected sign_in_required/sign_in; received no_organization/choose_a_workspace.",
+        "Signed-in Retry expected provenance.user_id from verified identity; received cached profile identity.",
+        "Tests 3 failed | 1 passed (4); genuine verified organization-read refusal passed."
+      ]
+    },
+    {
+      "run_id": "guest-save-d217-green-20261012",
+      "journal": "docs/stabilization/resource-journals/guest-save-d217-green-20261012.jsonl",
+      "command_argv": [
+        "node",
+        "scripts/stabilization-resource.mjs",
+        "run",
+        "--run-id",
+        "guest-save-d217-green-20261012",
+        "--",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=1",
+        "tests/unit/save-capture-guest.test.ts",
+        "tests/unit/save-never-loses-input.test.tsx",
+        "tests/unit/source-landing-transport.test.ts"
+      ],
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-12T20:31:09.385Z",
+        "runId": "guest-save-d217-green-20261012",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "product_verdict": "pass",
+      "sanitized_output_excerpts": [
+        "Test Files 3 passed (3)",
+        "Tests 39 passed (39)",
+        "Duration 2.50s"
+      ]
+    },
+    {
+      "run_id": "guest-save-d217-gut-20261012",
+      "journal": "docs/stabilization/resource-journals/guest-save-d217-gut-20261012.jsonl",
+      "command_argv": [
+        "node",
+        "scripts/stabilization-resource.mjs",
+        "run",
+        "--run-id",
+        "guest-save-d217-gut-20261012",
+        "--",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=1",
+        "tests/unit/save-capture-guest.test.ts"
+      ],
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-12T20:33:12.212Z",
+        "runId": "guest-save-d217-gut-20261012",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "product_verdict": "expected_mutation_failure",
+      "sanitized_output_excerpts": [
+        "RESTORED src/lib/sources/save-capture.ts sha=8fce45ac75d1 original_sha=8fce45ac75d1 IDENTICAL",
+        "Signed-in Retry expected status landed; received status empty and message That unsaved capture is no longer on this device.",
+        "Verified organization-read refusal expected no_organization/choose_a_workspace; constant returned sign_in_required/sign_in.",
+        "VERDICT: RED (rc=1, expected RED)"
+      ],
+      "mutation": {
+        "kind": "return_expected_unsaved_response_without_persistence_or_identity_work",
+        "file": "src/lib/sources/save-capture.ts",
+        "old": "  let revision: number;",
+        "new": "  return { status: 'unsaved', persisted: true, unsaved: {\n    id: 'constant', url: soup.url, title: prepared.name, createdAt: 0, attempts: 1,\n    lastRefusal: { status: 401, code: 'sign_in_required', message: 'Sign in', remedy: 'sign_in', retryable: true }, prepared,\n  } };\n  let revision: number;",
+        "outer_command_argv": [
+          "python3",
+          ".claude/skills/forcing-function-tests/plant.py",
+          "--file",
+          "src/lib/sources/save-capture.ts",
+          "--old",
+          "  let revision: number;",
+          "--new-file",
+          "/Volumes/Samsung2TB/code/.stabilization-scratch/guest-save-d217-constant.txt",
+          "--expect",
+          "red",
+          "--must-mention",
+          "keeps the edited capture",
+          "--timeout",
+          "120",
+          "--",
+          "node",
+          "scripts/stabilization-resource.mjs",
+          "run",
+          "--run-id",
+          "guest-save-d217-gut-20261012",
+          "--",
+          "pnpm",
+          "exec",
+          "vitest",
+          "run",
+          "--maxWorkers=1",
+          "tests/unit/save-capture-guest.test.ts"
+        ],
+        "outer_exit_code": 0,
+        "restored_identically": true,
+        "restored_source_sha256": "8fce45ac75d15945ecb3153b4a23abcc3d4b48ce54c4f9fbb45a7cfe5fa785bd"
+      }
+    },
+    {
+      "run_id": "guest-save-d217-compile-20261012",
+      "journal": "docs/stabilization/resource-journals/guest-save-d217-compile-20261012.jsonl",
+      "command_argv": [
+        "node",
+        "scripts/stabilization-resource.mjs",
+        "run",
+        "--run-id",
+        "guest-save-d217-compile-20261012",
+        "--",
+        "pnpm",
+        "compile"
+      ],
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-12T20:35:00.149Z",
+        "runId": "guest-save-d217-compile-20261012",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 0,
+        "decision": "valid",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "product_verdict": "pass",
+      "sanitized_output_excerpts": [
+        "> tsc --noEmit",
+        "RESOURCE_JOB_EXIT childExitCode: 0",
+        "RESOURCE_FINAL_DECISION decision: valid, resourceInvalid: false, exitCode: 0"
+      ]
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "run_id": "guest-save-d217-red-20261012",
+      "journal": "docs/stabilization/resource-journals/guest-save-d217-red-20261012.jsonl",
+      "command_argv": [
+        "node",
+        "scripts/stabilization-resource.mjs",
+        "run",
+        "--run-id",
+        "guest-save-d217-red-20261012",
+        "--",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=1",
+        "tests/unit/save-capture-guest.test.ts"
+      ],
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-12T20:23:43.751Z",
+        "runId": "guest-save-d217-red-20261012",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "product_verdict": "excluded",
+      "sanitized_output_excerpts": [
+        "Initial child exit 1 lacked retained assertion diagnostics; identical fixture rerun red-observed exposed a happy-dom/Readability preparation failure. Excluded from product verdict."
+      ]
+    },
+    {
+      "run_id": "guest-save-d217-red-observed-20261012",
+      "journal": "docs/stabilization/resource-journals/guest-save-d217-red-observed-20261012.jsonl",
+      "command_argv": [
+        "node",
+        "scripts/stabilization-resource.mjs",
+        "run",
+        "--run-id",
+        "guest-save-d217-red-observed-20261012",
+        "--",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=1",
+        "tests/unit/save-capture-guest.test.ts"
+      ],
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-12T20:25:21.877Z",
+        "runId": "guest-save-d217-red-observed-20261012",
+        "admitted": true,
+        "resourceInvalid": false,
+        "exitCode": 1,
+        "decision": "child_failed",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "product_verdict": "excluded",
+      "sanitized_output_excerpts": [
+        "Fixture preparation failed with TypeError reading toUpperCase in happy-dom SelectorItem.match / Readability-readerable.js; no defect RED credit."
+      ]
+    },
+    {
+      "run_id": "guest-save-d217-red-proof-20261012",
+      "journal": "docs/stabilization/resource-journals/guest-save-d217-red-proof-20261012.jsonl",
+      "command_argv": [
+        "node",
+        "scripts/stabilization-resource.mjs",
+        "run",
+        "--run-id",
+        "guest-save-d217-red-proof-20261012",
+        "--",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=1",
+        "tests/unit/save-capture-guest.test.ts"
+      ],
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-12T20:23:53.646Z",
+        "runId": "guest-save-d217-red-proof-20261012",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "product_verdict": "excluded",
+      "sanitized_output_excerpts": [
+        "RESOURCE_LEGACY_RUNNER_BUSY; preflight refused while prior completed runner was exiting; no tests ran."
+      ]
+    },
+    {
+      "run_id": "guest-save-d217-red-boundary-20261012",
+      "journal": "docs/stabilization/resource-journals/guest-save-d217-red-boundary-20261012.jsonl",
+      "command_argv": [
+        "node",
+        "scripts/stabilization-resource.mjs",
+        "run",
+        "--run-id",
+        "guest-save-d217-red-boundary-20261012",
+        "--",
+        "pnpm",
+        "exec",
+        "vitest",
+        "run",
+        "--maxWorkers=1",
+        "tests/unit/save-capture-guest.test.ts"
+      ],
+      "resource_final": {
+        "schema": 1,
+        "at": "2026-10-12T20:26:50.561Z",
+        "runId": "guest-save-d217-red-boundary-20261012",
+        "admitted": false,
+        "resourceInvalid": false,
+        "exitCode": 2,
+        "decision": "refused",
+        "code": "RESOURCE_FINAL_DECISION"
+      },
+      "product_verdict": "excluded",
+      "sanitized_output_excerpts": [
+        "RESOURCE_PRESSURE_UNSAFE; preflight refused at memory pressure level 2; no tests ran."
+      ]
+    }
+  ],
+  "static_checks": {
+    "commands": [
+      [
+        "pnpm",
+        "exec",
+        "biome",
+        "check",
+        "src/lib/sources/save-capture.ts",
+        "tests/unit/save-capture-guest.test.ts",
+        "tests/unit/save-never-loses-input.test.tsx"
+      ],
+      ["git", "diff", "--check"]
+    ],
+    "exit_codes": [0, 0]
+  },
+  "limitations": [
+    "No browser retest of the repaired source or refreshed exact-source artifact was performed.",
+    "No Store-installed acceptance or live Source database row is proven by these unit checks.",
+    "Underlying sign-in restore failure was not diagnosed; the repair prevents a retained rendering profile from admitting guest Save/Retry.",
+    "Native pre-fix observations are tester-recorded and lack retained inspectable browser artifacts; their evidentiary limits remain in the separate native run report."
+  ],
+  "next_action": "Independent source review and integration, followed by artifact-bound warm and post-reload guest Save/Retry and signed-in Retry browser acceptance."
+}
