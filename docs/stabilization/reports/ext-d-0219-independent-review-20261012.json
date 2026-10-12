@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "review_id": "ext-d-0219-independent-review-20261012",
+  "defect_id": "EXT-D-0219",
+  "feature_id": "EXT-F-1009",
+  "reviewed_commit": "0b026ea97",
+  "review_type": "read-only source and harness review",
+  "verdicts": {
+    "A": {
+      "status": "pass",
+      "scope": "Current Screenshots acceptance harness follows the source UI for bounded T04/T05 actions.",
+      "evidence": [
+        "tests/browser/screenshot-capture-acceptance.mjs opens, observes, closes, and reopens the loaded thumbnail viewer before checking the separate Files tab.",
+        "tests/browser/screenshot-current-controls.mjs verifies the viewer image against the loaded card image and asserts browser tabs remain unchanged.",
+        "tests/browser/screenshot-current-controls.mjs creates, copies, and revokes the sole link for a fresh owned capture, with cleanup handling and fixed boolean evidence.",
+        "docs/feature-tests.md describes close/reopen and bounds remaining sharing criteria."
+      ],
+      "native_product_acceptance": "UNVERIFIED; no browser or hosted native run was performed."
+    },
+    "B": {
+      "status": "pass",
+      "evidence": [
+        "Gallery observers in capture and admin-readonly acceptance count cards only when each card owns exactly one View screenshot button and one Open in Files button.",
+        "Focused command: node --test tests/browser/screenshot-current-controls.test.mjs tests/browser/screenshot-owned-card-identity.test.mjs tests/browser/settings-panel-driver.guest.test.mjs; 17 tests passed, 0 failed.",
+        "node --check passed for screenshot-capture-acceptance.mjs, screenshot-admin-readonly-acceptance.mjs, screenshot-full-page-acceptance.mjs, and screenshot-current-controls.mjs.",
+        "The run record documents old-source RED for both gallery observers and the close/reopen sequence, plus mutations that remove the second viewer open or count all Files buttons; both mutations failed as expected."
+      ],
+      "limitations": [
+        "The reviewer reran the focused green suite and syntax checks, but did not independently recreate the old-source scratch fixtures or rerun the recorded mutations.",
+        "Tests establish harness behavior, not backend link persistence, anonymous access, expiration, view limits, or clipboard/service failure behavior."
+      ]
+    }
+  },
+  "applicability": {
+    "guest": "N/A for Screenshots content; the restricted-role negative case remains separately inventoried.",
+    "member": "Applicable; native member acceptance remains unverified.",
+    "admin": "Applicable; native admin acceptance remains unverified."
+  },
+  "historical_evidence": "Historical T04/T05 substeps remain marked stale and do not receive current-source credit.",
+  "other_boundaries": "No release or Store acceptance is claimed. No implementation files were changed by this review."
+}
