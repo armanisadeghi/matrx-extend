@@ -1907,7 +1907,7 @@ try {
           expectedTabs,
         );
         if (selection.mode === 'guest') {
-          report.stage = 'guest_behavior_after_reload';
+          report.stage = 'post_reload_scroll_sync';
           await requireResourceHealth();
           const scroll = await runGuestScrollSync({
             panel: replacement.panel,
@@ -1938,6 +1938,7 @@ try {
             scrollCase.status = 'passed';
             scrollCase.remaining = [];
           }
+          report.stage = 'post_reload_copy_menus';
           const copies = await runGuestCopyMenus({
             panel: replacement.panel,
             browserSession,
@@ -1961,6 +1962,9 @@ try {
         ];
         const postReloadPanes = { article: recaptured.resultText.includes(article) };
         const reloadExportBefore = await readCaptureExport({
+          onStage: (stage) => {
+            report.stage = `post_reload_export_before_${stage}`;
+          },
           panel: replacement.panel,
           browserSession,
           panelUrl: replacement.panelTarget?.url ?? panelTarget.url,
@@ -1976,6 +1980,7 @@ try {
           ['SEO', /SEO|Title|Description/i],
           ['Schema', /Dentist/],
         ]) {
+          report.stage = `post_reload_pane_${label.toLowerCase()}`;
           await resourceAction(() => click(replacement.panel, 'scrape-result-tab', label));
           const state = await waitFor(
             `scrape_post_reload_${label}`,
@@ -1987,6 +1992,7 @@ try {
         }
         for (const label of ['Images', 'Video']) {
           await requireResourceHealth();
+          report.stage = `post_reload_pane_${label.toLowerCase()}`;
           await resourceAction(() => click(replacement.panel, 'scrape-result-tab', label));
           const state = await waitFor(
             `scrape_post_reload_${label}_snapshot`,
@@ -1996,7 +2002,11 @@ try {
           );
           reloadPaneSnapshots[label] = capturePaneSnapshot(state);
         }
+        report.stage = 'post_reload_capture_invariance';
         const reloadCaptureInvariance = await verifyCaptureUnchanged({
+          onStage: (label) => {
+            report.stage = `post_reload_invariance_${label.toLowerCase()}`;
+          },
           panel: replacement.panel,
           baseline: reloadPaneSnapshots,
           labels: expectedTabs,
@@ -2008,6 +2018,9 @@ try {
           phase: 'reload',
         });
         const reloadExportAfter = await readCaptureExport({
+          onStage: (stage) => {
+            report.stage = `post_reload_export_after_${stage}`;
+          },
           panel: replacement.panel,
           browserSession,
           panelUrl: replacement.panelTarget?.url ?? panelTarget.url,
