@@ -40,6 +40,36 @@
       "path": "/organizations/AI-Matrix-Engine/settings/billing/usage?month=10&year=2026",
       "actions_net_amount_sum": 0,
       "meaning": "Separate October endpoint result, not proof that the mandatory modeled weekly cost gate passes."
+    },
+    "release_blocker_audit": {
+      "audited_at": "2026-10-12T17:10:00Z",
+      "aidream_source": "9cf1145c84f3fa594f246220a917174804b2439f",
+      "source_status": "Local aidream HEAD matched local origin/main; clean checkout at audit.",
+      "command": "python3 scripts/check_workflow_runner_cost.py --summary",
+      "exit_code": 1,
+      "aidream_repo_share_usd_per_week": 70,
+      "modeled_drivers_usd_per_week": {
+        "publish-npm-package.yml": 82.16,
+        "deploy.yml": 57.84,
+        "repo-only-checks.yml": 30.24,
+        "test.yml": 24.77,
+        "publish-watch.yml": 12.91,
+        "remaining_workflows": 42.12
+      },
+      "obsolete_publish_watch_forecast": {
+        "manifest_runs_per_week": 1434,
+        "current_behavior": "Job skips successful npm publishes; runs on failed publishes and successful four-hour verification batches, plus manual dispatches.",
+        "evidence": "Current workflow job condition and live skipped runs, including 38281864863 and 38281228818.",
+        "bounded_scenario": "42 verification batches/week at the existing 1.5-minute assumption would model $0.38/week before failure/manual allowance, reducing the shared total to $237.51 before that allowance. This is arithmetic only, not measured current billing savings."
+      },
+      "approved_cadence_constraint": "repo-only-checks.yml records the owner-approved hourly :05 schedule and requires the owner instruction before changing its cron. Preserve cadence; investigate reuse only when both aidream and frontend inputs match successful findings.",
+      "remaining_investigation": "Measure npm dispatch deduplication and deployment hashing effects before changing forecasts; inspect paid publish-lock waiting and repeated workspace installs while preserving consumer gates and publish ordering.",
+      "conclusion": "No substantiated narrow change clears the $100 shared ceiling or the separate $70 aidream share. Existing post-fix estimates require measured reconciliation; do not lower estimates merely to pass the gate.",
+      "current_billing_savings_claimed": false,
+      "workflow_edits": false,
+      "workflow_dispatches": false,
+      "budget_changed": false,
+      "jobs_relocated": false
     }
   },
   "source_snapshot": {
