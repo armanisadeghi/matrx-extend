@@ -26,8 +26,6 @@ import {
   CHAT_PATH,
   agentExecutePath,
   agentTargetExecutePath,
-  cancelPath,
-  conversationInboxPath,
   mandateExecutePath,
 } from './routes/ai';
 
@@ -41,15 +39,6 @@ describe('AI path versioning is the package policy, and the wire did not move', 
   it('still percent-encodes the interpolated segment', () => {
     expect(agentExecutePath('a/b c')).toBe('/v2/ai/agent/a%2Fb%20c');
     expect(mandateExecutePath(storedMandateKey('a/b'))).toBe('/v2/ai/mandates/a%2Fb');
-  });
-
-  it('leaves every endpoint with no v2 sibling on v1', () => {
-    // The package allowlist is anchored per whole path segment, which is what
-    // makes these sub-resources safe. If that ever changes, the extension
-    // would start POSTing to routes the backend does not expose — and this is
-    // the test that fails first.
-    expect(cancelPath('req-1')).toBe('/ai/cancel/req-1');
-    expect(conversationInboxPath('conv-1')).toBe('/ai/conversations/conv-1/inbox');
   });
 
   it('routes a mandate reference through the mandate door and an id through the agent door', () => {

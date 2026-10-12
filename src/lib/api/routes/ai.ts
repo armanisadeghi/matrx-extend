@@ -31,7 +31,14 @@
  * this file still produces the exact path it produced before the collapse.
  */
 
-import { apiDelete, apiGet, apiPatch, apiPost } from '@/lib/api/client';
+import { runOpAs } from '@/lib/api/matrx-api';
+import {
+  cancelRequest as cancelRequestOp,
+  conversationsCancelInboxItemDelete,
+  conversationsEditInboxItemPatch,
+  conversationsEnqueueInboxItemPost,
+  conversationsListInboxItemsGet,
+} from '@ai-matrx/api/chat';
 import type { RequestContextWire } from '@/lib/chat/context/request-context';
 import { type AnyMandateKey, mandateKeyFromAgentRef } from '@/lib/mandates';
 import { MATRX_AI_API_VERSION_DEFAULT, applyAiApiVersion } from '@ai-matrx/api';
@@ -197,11 +204,10 @@ export const CHAT_PATH = aiPath('/ai/chat');
  * POST /ai/cancel/{request_id} — cancel an in-flight stream.
  * No `/v2/ai/cancel/{request_id}` exists on the backend — stays on v1.
  */
-export const cancelPath = (requestId: string): string =>
-  `/ai/cancel/${encodeURIComponent(requestId)}`;
-
 export function cancelRequest(requestId: string) {
-  return apiPost<{ status: string }>(cancelPath(requestId), {});
+  return runOpAs<{ status: string }>((api, o) =>
+    cancelRequestOp(api, { path: { request_id: requestId } }, o),
+  );
 }
 
 /**
@@ -216,9 +222,6 @@ export function cancelRequest(requestId: string) {
  * allowlist would leave it on v1 anyway, and writing the call as if it had a
  * v2 form misstates the contract. See the file-header note.
  */
-export const conversationInboxPath = (conversationId: string): string =>
-  `/ai/conversations/${encodeURIComponent(conversationId)}/inbox`;
-
 export interface InboxEnqueueRequest {
   /** 'user_message' (default) shows in the transcript; 'system_message' steers. */
   kind?: 'user_message' | 'system_message';
@@ -237,12 +240,21 @@ export interface InboxEnqueueResponse {
 }
 
 export function enqueueInboxMessage(conversationId: string, body: InboxEnqueueRequest) {
-  return apiPost<InboxEnqueueResponse>(conversationInboxPath(conversationId), {
-    kind: 'user_message',
-    is_visible_to_user: true,
-    is_visible_to_model: true,
-    ...body,
-  });
+  return runOpAs<InboxEnqueueResponse>((api, o) =>
+    conversationsEnqueueInboxItemPost(
+      api,
+      {
+        path: { conversation_id: conversationId },
+        body: {
+          kind: 'user_message',
+          is_visible_to_user: true,
+          is_visible_to_model: true,
+          ...body,
+        },
+      },
+      o,
+    ),
+  );
 }
 
 /** A single still-pending inbox item, as returned by the list/mutate endpoints. */
@@ -256,15 +268,18 @@ export interface InboxItem {
   is_visible_to_model?: boolean;
 }
 
-const inboxItemPath = (conversationId: string, injectionId: string): string =>
-  `${conversationInboxPath(conversationId)}/${encodeURIComponent(injectionId)}`;
-
 /**
  * GET /ai/conversations/{id}/inbox?status=pending — list still-pending items.
  * Used to rebuild "waiting its turn" cards when client state was lost.
  */
 export function listPendingInboxMessages(conversationId: string) {
-  return apiGet<InboxItem[]>(`${conversationInboxPath(conversationId)}?status=pending`);
+  return runOpAs<InboxItem[]>((api, o) =>
+    conversationsListInboxItemsGet(
+      api,
+      { path: { conversation_id: conversationId }, query: { status: 'pending' } },
+      o,
+    ),
+  );
 }
 
 /**
@@ -273,8 +288,12 @@ export function listPendingInboxMessages(conversationId: string) {
  * should fall back to the delivered flow); 404 if absent.
  */
 export function cancelInboxMessage(conversationId: string, injectionId: string) {
-  return apiDelete<{ injection_id: string; status: string }>(
-    inboxItemPath(conversationId, injectionId),
+  return runOpAs<{ injection_id: string; status: string }>((api, o) =>
+    conversationsCancelInboxItemDelete(
+      api,
+      { path: { conversation_id: conversationId, injection_id: injectionId } },
+      o,
+    ),
   );
 }
 
@@ -283,8 +302,11 @@ export function cancelInboxMessage(conversationId: string, injectionId: string) 
  * text. `200 {status:'pending'}` on success; 409 if drained; 404 if absent.
  */
 export function editInboxMessage(conversationId: string, injectionId: string, text: string) {
-  return apiPatch<{ injection_id: string; status: string }>(
-    inboxItemPath(conversationId, injectionId),
-    { text },
+  return runOpAs<{ injection_id: string; status: string }>((api, o) =>
+    conversationsEditInboxItemPatch(
+      api,
+      { path: { conversation_id: conversationId, injection_id: injectionId }, body: { text } },
+      o,
+    ),
   );
 }
