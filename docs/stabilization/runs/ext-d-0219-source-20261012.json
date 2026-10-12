@@ -78,5 +78,52 @@
     "Release/Store/current-artifact native acceptance remain unverified."
   ],
   "owned_jobs": "None: all local test/compile/lint commands terminal; no browser/profile/hosted processes created.",
-  "next_action": "Parent independent review of one-defect commit, reconcile/push; hosted native dispatch requires GREEN spend admission, while separately scoped local native acceptance may run under its host resource guard and exact artifact receipt. Screenshots native acceptance remains unverified."
+  "next_action": "Parent independent review of one-defect commit, reconcile/push; hosted native dispatch requires GREEN spend admission, while separately scoped local native acceptance may run under its host resource guard and exact artifact receipt. Screenshots native acceptance remains unverified.",
+  "peer_followup": {
+    "at": "2026-10-12T22:24:34.156724+00:00",
+    "findings": {
+      "A": "Runner closed the viewer but did not reopen it before Files navigation.",
+      "B": "Gallery observation counted every Open in Files button in the pane, including unrelated controls."
+    },
+    "repairs": {
+      "A": "The capture runner now performs two separate native thumbnail open/image-observe/Close cycles before Files navigation and records reopenedThumbnail separately.",
+      "B": "Capture and readonly gallery observers count qualifying cards with exactly one viewer and one Files button owned by that card; unrelated controls, malformed cards and nested group wrappers cannot inflate cardinality. Authenticated row/signature agreement remains required by the existing separate guard."
+    },
+    "old_source_red": {
+      "source": "91bd09e7e",
+      "command": "Extract both acceptance runners at 91bd09e7e; SCREENSHOT_OLD_GALLERY_CAPTURE=<old-capture> SCREENSHOT_OLD_GALLERY_READONLY=<old-readonly> node --test tests/browser/screenshot-current-controls.test.mjs",
+      "exit_code": 1,
+      "failed_tests": [
+        "capture close/reopen orchestration",
+        "capture paired-card cardinality",
+        "readonly paired-card cardinality"
+      ]
+    },
+    "current_green": {
+      "command": "node --test tests/browser/screenshot-current-controls.test.mjs tests/browser/screenshot-owned-card-identity.test.mjs tests/browser/settings-panel-driver.guest.test.mjs",
+      "exit_code": 0,
+      "tests": 17,
+      "passed": 17
+    },
+    "mutations": [
+      {
+        "name": "skip the second viewer open and reuse the first result",
+        "exit_code": 1,
+        "caught": true
+      },
+      {
+        "name": "count all Files buttons in pane instead of qualifying cards",
+        "exit_code": 1,
+        "caught": true
+      }
+    ],
+    "checks": {
+      "compile": "PASS: pnpm compile",
+      "focused_lint": "PASS with pre-existing safeSurface unused warning",
+      "whole_repo_lint": "PASS: pnpm -s lint, 897 existing warnings and no errors",
+      "diff": "PASS: git diff --check"
+    },
+    "acceptance_boundary": "No native Screenshots observation or product pass claimed; historical statuses, owned-link cleanup and corrected host/spend scope preserved.",
+    "next_action": "Parent fresh peer re-verification of both findings, reconcile/push exact follow-up; native Screenshots remains unverified."
+  }
 }

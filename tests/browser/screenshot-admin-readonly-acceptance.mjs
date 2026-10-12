@@ -382,8 +382,12 @@ async function gallery(panel, expectedCanonical) {
       const visible=active&&pane.getBoundingClientRect().height>0;
       const text=pane?.innerText??'';
       const refresh=pane?.querySelector('button[title="Refresh"]');
-      const buttons=[...(pane?.querySelectorAll('button[title="Open in Files"]')??[])];
-      const cards=buttons.length;
+      const cards=[...(pane?.querySelectorAll('div.group')??[])].filter(card=> {
+        const ownButtons=title=>[...card.querySelectorAll('button[title="'+title+'"]')]
+          .filter(button=>button.closest('div.group')===card);
+        return ownButtons('Open in Files').length===1 && ownButtons('View screenshot').length===1;
+      });
+      const buttons=cards.flatMap(card=>[...card.querySelectorAll('button[title="Open in Files"]')]);
       const displayed=[...(pane?.querySelectorAll('span[title]')??[])]
         .filter(span=>span.textContent.trim()===expected);
       return {tabCount:tabs.length,selected:tab?.getAttribute('aria-selected')==='true',
@@ -392,7 +396,7 @@ async function gallery(panel, expectedCanonical) {
         refreshCount:refresh?1:0,refreshDisabled:refresh?.disabled??null,
         loading:!!pane?.querySelector('svg.animate-spin')&&buttons.length===0,
         empty:text.includes('No screenshots yet'),noPage:text.includes('No active page'),
-        error:text.includes("Couldn't load screenshots"),cardCount:cards,
+        error:text.includes("Couldn't load screenshots"),cardCount:cards.length,
         filesButtonCount:buttons.length,
         adminAvatar:document.querySelectorAll('button[title="${ADMIN_EMAIL}"]').length};
     })()`,

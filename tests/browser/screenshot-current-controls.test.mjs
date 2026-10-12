@@ -146,15 +146,41 @@ test('public-link orchestration copies the newly created link and revokes only t
   }
 });
 
+test('capture runner closes and reopens the loaded viewer before Files navigation', async () => {
+  const source = await readFile(
+    process.env.SCREENSHOT_OLD_GALLERY_CAPTURE ??
+      new URL('screenshot-capture-acceptance.mjs', import.meta.url),
+    'utf8',
+  );
+  const start = source.indexOf("    stage = 'thumbnail_viewer';");
+  const end = source.indexOf("    stage = 'icon_open_in_files';", start);
+  const run = new Function(
+    'screenshotViewer',
+    'panel',
+    `return (async()=>{let stage; ${source.slice(start, end)} })();`,
+  );
+  const f = fixture();
+  try {
+    await run(screenshotViewer, f.panel);
+    assert.deepEqual(f.hits, ['View screenshot', 'Close', 'View screenshot', 'Close']);
+    assert.equal(f.document.querySelector('[role="dialog"]'), null);
+  } finally {
+    await f.window.happyDOM.abort();
+  }
+});
+
 for (const driver of [
   'screenshot-capture-acceptance.mjs',
   'screenshot-admin-readonly-acceptance.mjs',
 ]) {
-  test(`${driver} gallery observation counts one Files button per card`, async () => {
+  test(`${driver} gallery counts qualifying paired cards despite stray or malformed controls`, async () => {
     const source = await readFile(
       process.env.SCREENSHOT_OLD_GALLERY_CAPTURE && driver === 'screenshot-capture-acceptance.mjs'
         ? process.env.SCREENSHOT_OLD_GALLERY_CAPTURE
-        : new URL(driver, import.meta.url),
+        : process.env.SCREENSHOT_OLD_GALLERY_READONLY &&
+            driver === 'screenshot-admin-readonly-acceptance.mjs'
+          ? process.env.SCREENSHOT_OLD_GALLERY_READONLY
+          : new URL(driver, import.meta.url),
       'utf8',
     );
     const start = source.indexOf('async function gallery(');
@@ -165,15 +191,26 @@ for (const driver of [
       'ADMIN_EMAIL',
       `${source.slice(start, end)}; return gallery;`,
     )(async (_panel, expression) => f.window.eval(expression), 'admin@admin.com');
+    const card =
+      '<div class="group"><button title="View screenshot"></button><button title="Open in Files"></button></div>';
+    const stray = '<button title="Open in Files">Unrelated pane control</button>';
+    const malformed = [
+      '<div class="group"><button title="Open in Files"></button></div>',
+      '<div class="group"><button title="View screenshot"></button></div>',
+      '<div class="group"><button title="View screenshot"></button><button title="Open in Files"></button><button title="Open in Files"></button></div>',
+    ];
     try {
       for (const count of [1, 2, 0]) {
-        const root = f.document.querySelector('#screens');
-        const card =
-          root.querySelector('.group')?.outerHTML ??
-          '<div class="group"><button title="View screenshot"></button><button title="Open in Files"></button></div>';
-        root.innerHTML = card.repeat(count);
-        assert.equal((await gallery(f.panel, 'localhost/harbor')).cardCount, count);
+        f.document.querySelector('#screens').innerHTML =
+          card.repeat(count) + stray + malformed.join('');
+        const observed = await gallery(f.panel, 'localhost/harbor');
+        assert.equal(observed.cardCount, count);
+        assert.equal(observed.filesButtonCount, count);
       }
+      f.document.querySelector('#screens').innerHTML = `<div class="group">${card}</div>`;
+      assert.equal((await gallery(f.panel, 'localhost/harbor')).cardCount, 1);
+      f.document.querySelector('#screens').innerHTML = stray;
+      assert.equal((await gallery(f.panel, 'localhost/harbor')).cardCount, 0);
     } finally {
       await f.window.happyDOM.abort();
     }

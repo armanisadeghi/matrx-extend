@@ -62,5 +62,15 @@
     "independent_review": "pending parent-dispatched fresh peer",
     "native_acceptance": "UNVERIFIED: no Screenshots native run performed; local testing requires host resource admission and exact artifact provenance",
     "release": "UNVERIFIED"
+  },
+  "peer_followup": {
+    "findings": [
+      "T04 close/reopen was not actually executed before Files navigation.",
+      "Gallery count admitted unrelated Files-title buttons."
+    ],
+    "repair": "Runner now opens/observes/closes the viewer twice before Files navigation; capture and readonly gallery counts require uniquely paired card-owned controls. Tests cover stray controls, missing/duplicate controls and nested wrappers.",
+    "source_evidence": "docs/stabilization/runs/ext-d-0219-source-20261012.json#peer_followup",
+    "independent_reverification": "pending parent fresh peer",
+    "native_acceptance": "UNVERIFIED"
   }
 }
