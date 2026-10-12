@@ -234,11 +234,6 @@ export const INTERNAL_ONLY: { fn: string; module: string; why: string }[] = [
   },
   {
     fn: 'removeItem',
-    module: 'src/lib/auth/chrome-storage-adapter.ts',
-    why: 'Supabase auth storage adapter. Called by the auth library, never by a control.',
-  },
-  {
-    fn: 'removeItem',
     module: 'src/lib/storage/zustand-adapter.ts',
     why: 'Zustand persistence adapter. Called by the store engine, never by a control.',
   },

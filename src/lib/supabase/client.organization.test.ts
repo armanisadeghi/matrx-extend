@@ -219,7 +219,8 @@ describe('Supabase outgoing organization boundary (real SDK and resolver)', () =
     expect(outgoing).toHaveLength(4);
     // The ordinary RPC uses the same real SDK endpoint and body as bootstrap,
     // but only the private bootstrap client may send it before resolution.
-    expect(outgoing.at(-1)?.url).toBe(outgoing[0]?.url);
+    // (the package's membership read pages the same RPC, so only the query string differs)
+    expect(new URL(outgoing.at(-1)!.url).pathname).toBe(new URL(outgoing[0]!.url).pathname);
     expect(await outgoing.at(-1)?.clone().json()).toEqual(await outgoing[0]?.clone().json());
     expect(outgoing[0]?.headers.get('X-Organization-Id')).toBeNull();
     expect(outgoing.at(-1)?.headers.get('X-Organization-Id')).toBe(state.org);
