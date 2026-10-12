@@ -1,6 +1,15 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { chmodSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  chmodSync,
+  copyFileSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  realpathSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { test } from 'node:test';
@@ -28,6 +37,35 @@ const seoInput = {
   developmentArtifactId: '11700000000',
   sourceSha: 'a'.repeat(40),
 };
+
+test('standalone hosted CLI reaches admission refusals without installed packages', () => {
+  const scratch = realpathSync(mkdtempSync(join(tmpdir(), 'hosted-admission-bootstrap-')));
+  try {
+    mkdirSync(join(scratch, 'scripts'));
+    mkdirSync(join(scratch, 'docs/stabilization'), { recursive: true });
+    for (const name of ['hosted-remote-admission.mjs', 'copy-hosted-resource-journal.mjs'])
+      copyFileSync(new URL(name, import.meta.url), join(scratch, 'scripts', name));
+    copyFileSync(
+      new URL('../docs/stabilization/resource-policy.json', import.meta.url),
+      join(scratch, 'docs/stabilization/resource-policy.json'),
+    );
+    for (const [args, refusal] of [
+      [['invalid-mode'], 'HOSTED_MODE_INVALID'],
+      [['plan', '--lane', 'C'], 'HOSTED_MEMBER_LANE_REFUSED'],
+    ]) {
+      const result = spawnSync(
+        process.execPath,
+        [join(scratch, 'scripts/hosted-remote-admission.mjs'), ...args],
+        { encoding: 'utf8', env: { ...process.env, NODE_PATH: '' } },
+      );
+      assert.equal(result.status, 1, result.stderr);
+      assert.equal(result.stdout, '');
+      assert.equal(result.stderr, `HOSTED_REMOTE_REFUSED ${refusal}\n`);
+    }
+  } finally {
+    rmSync(scratch, { recursive: true, force: true });
+  }
+});
 
 test('hosted run verification accepts attributed exact route names only', () => {
   const expected = 'Native B · guest-seo';

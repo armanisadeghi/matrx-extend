@@ -6,7 +6,6 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { sanitizeHostedResourceJournal } from './copy-hosted-resource-journal.mjs';
-import { isLowercaseUuidShape } from '@ai-matrx/kit/uuid';
 
 const OWNER = 'armanisadeghi/matrx-extend';
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
@@ -578,7 +577,8 @@ export function verifyHostedNotesReport(report, identity) {
     new Set(t02.cleanup.map((row) => row.note_id)).size !== 3 ||
     t02.cleanup.some(
       (row) =>
-        !isLowercaseUuidShape(row.note_id ?? '') ||
+        // This dispatcher also runs before package installation in resource-guard CI.
+        !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(row.note_id ?? '') ||
         row.live_delete !== true ||
         row.editor_title_confirmed !== true ||
         !Number.isInteger(row.response_status) ||
