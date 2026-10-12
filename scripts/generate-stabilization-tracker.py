@@ -329,7 +329,10 @@ def render(inventory, defects):
             if not case.get("expected"):
                 procedure_gaps["missing_expected"] += 1
             if not case.get("control_ids"):
-                procedure_gaps["missing_control_links"] += 1
+                if case.get("control_mapping_status") == "not-applicable":
+                    procedure_gaps["control_mapping_not_applicable"] += 1
+                else:
+                    procedure_gaps["missing_control_links"] += 1
             for mode in case.get("modes", []):
                 if not feature.get("applicability", {}).get(mode, {}).get("applicable", False):
                     continue
@@ -360,7 +363,7 @@ def render(inventory, defects):
                 f"Unverified splits into **{explicit_unverified_slots} explicitly marked unverified** and **{no_result_slots} with no result record**.",
                 f"Full feature-role pairs: **{fully_verified_pairs}/{feature_role_pairs}**. Procedure gaps: " +
                 f"{procedure_gaps['missing_steps']} cases without steps, {procedure_gaps['missing_expected']} without expected outcomes, " +
-                f"{procedure_gaps['missing_control_links']} without control links.",
+                f"{procedure_gaps['missing_control_links']} without control links; {procedure_gaps['control_mapping_not_applicable']} explicitly control-less.",
                 "A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. " +
                 "The current release receipt and scoped native results are listed separately in the checklist.", "",
                 "## Tab and surface overview", "",
@@ -397,7 +400,7 @@ def render(inventory, defects):
                  f"- Case results: " + ", ".join(f"{k.lower()} {slot_counts[k]}" for k in ("Pass", "Partial", "Fail", "Unverified", "N/A")) +
                  f"; {explicit_unverified_slots} explicitly unverified and {no_result_slots} with no result record. Missing results count as unverified, including later-wave surfaces.",
                  f"- Fully verified feature-role pairs: {fully_verified_pairs}/{feature_role_pairs} under the rule that every applicable case passes and every control maps to a case.",
-                 f"- Procedure gaps: {procedure_gaps['missing_steps']} missing steps; {procedure_gaps['missing_expected']} missing expected outcomes; {procedure_gaps['missing_control_links']} missing control links.",
+                 f"- Procedure gaps: {procedure_gaps['missing_steps']} missing steps; {procedure_gaps['missing_expected']} missing expected outcomes; {procedure_gaps['missing_control_links']} missing control links; {procedure_gaps['control_mapping_not_applicable']} explicitly control-less procedures.",
                  "- Defect states: " + ", ".join(f"{state} {defect_counts[state]}" for state in ("closed", "retest-pass", "fixed", "in-fix", "open") if defect_counts[state]) + ". A fixed or closed defect is not a feature-level UI pass.", "",
                  "## Current Store release observations", "", *current_store_release_lines(), "",
                  "## Historical audit checkpoint (coverage-audit-20261001.json)", ""]
@@ -427,7 +430,7 @@ def render(inventory, defects):
             elif scope == "Executable test procedures":
                 tool_cases = sum(len(f["cases"]) for f in features if f["surface"] == TOOL_SURFACE)
                 gap = (f"{procedure_gaps['missing_steps']} cases lack steps, {procedure_gaps['missing_expected']} lack expected outcomes, "
-                       f"and {procedure_gaps['missing_control_links']} lack control links. The registered-executor surface has "
+                       f"{procedure_gaps['missing_control_links']} lack control links; explicitly control-less procedures: {procedure_gaps['control_mapping_not_applicable']}. The registered-executor surface has "
                        f"{tool_cases} cases; its live catalog parity does not prove runtime behavior.")
             checklist.append(f"- **{scope}** — {gap} Next: {item.get('next', '')}")
         checklist.append("")

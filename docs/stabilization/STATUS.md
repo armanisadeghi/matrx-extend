@@ -1,6 +1,6 @@
 # Extension stabilization status
 
-Generated 2026-10-12 21:00 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T17:17:10Z. 207 features · 812 cases · 1400 controls · 217 linked defect records.
+Generated 2026-10-12 21:20 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T21:19:59Z. 207 features · 812 cases · 1400 controls · 217 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
@@ -8,7 +8,7 @@ A feature is fully verified for a role only when every applicable case explicitl
 
 Applicable case-by-role slots: **1299** — Pass: 101 · Partial: 96 · Fail: 2 · Unverified: 1098 · N/A: 2.
 Unverified splits into **146 explicitly marked unverified** and **952 with no result record**.
-Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 1 without control links.
+Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
 ## Tab and surface overview

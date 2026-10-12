@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T17:17:10Z",
+  "updated_at": "2026-10-12T21:19:59Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -2127,12 +2127,13 @@
           ],
           "control_ids": [],
           "mapping_provenance": {
-            "proposal": ".research/remaining-control-links-20261008.json",
-            "independent_review": ".research/remaining-control-links-peer-20261008.json",
-            "review_verdict": "preserve_unmapped"
+            "source_review": "tests/unit/popup-claim-recovery.test.tsx",
+            "classification": "not_applicable",
+            "basis": "This case verifies test-harness lifecycle: cleanup followed by vi.dynamicImportSettled() before Vitest teardown, while retaining the popup recovery assertions. It does not represent a user-facing or release control."
           },
-          "mapping_notes": "Independent source review found no existing control to link; this case remains unmapped. Unmapped reason: This is a test-harness lifecycle/unhandled-import check. The owning release controls govern candidate validation/publication and CI concurrency, not popup-test teardown behavior.",
-          "control_mapping_limit": "Non-product popup test-harness teardown invariant; no UI control invented. Remains explicitly unmapped."
+          "mapping_notes": "Control mapping is not applicable: this is a test-harness teardown procedure, not a product or release control.",
+          "control_mapping_status": "not-applicable",
+          "control_mapping_limit": "Test-harness lifecycle invariant; no user-facing or release control is represented."
         },
         {
           "id": "EXT-F-0003-T11",
