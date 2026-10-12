@@ -610,3 +610,12 @@ test('notice selection excludes clipboard, history credit and full-case acceptan
   assert.ok(seoCaseSelection('controlled').selected_cases.includes('T07'));
   assert.throws(() => seoCaseSelection('notice-everything'));
 });
+
+test('stacked notice selection isolates the previously unverified native target', () => {
+  assert.deepEqual(seoCaseSelection('notice-stacked'), {
+    scope: 'notice-stacked',
+    selected_cases: ['T02'],
+    selected_subtargets: ['multiple_and_long_notice_clearance_at_native_360px'],
+    excluded_cases: ['all other SEO targets; no full T02 or D199 closure'],
+  });
+});

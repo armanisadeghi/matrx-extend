@@ -11,7 +11,7 @@ const OWNER = 'armanisadeghi/matrx-extend';
 const PHASES = ['hosted-package', 'hosted-browser', 'hosted-guest'];
 // Reviewed bytes of this narrow lane's active hosted workflow. Any workflow edit needs review.
 // Notes CDP opt-in uses startup_display_mode; 25 inputs; phase/fixture guards unchanged.
-const REVIEWED_WORKFLOW_SHA256 = 'bf120de2e84356722122829790a52deeefb2177f3a87b93181368b2fdeb1910e';
+const REVIEWED_WORKFLOW_SHA256 = 'bc0f9f2a0205db4ae69a70f4d4b38a566b902b11e9c37ead3ae6be7a1826d745';
 const RESOURCE_POLICY = JSON.parse(
   readFileSync(new URL('../docs/stabilization/resource-policy.json', import.meta.url), 'utf8'),
 );

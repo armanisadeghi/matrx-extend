@@ -97,6 +97,7 @@ async function run(
     assert,
     SEO_CASE_SCOPE: 'notice',
     NOTICE_ONLY: true,
+    STACKED_NOTICE_ONLY: false,
     CHECK_NOTICE: true,
     PAGES: ['https://example.org/', 'https://www.iana.org/domains/reserved'],
     report: {},

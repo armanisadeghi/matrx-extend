@@ -97,6 +97,7 @@ on:
           - full
           - controlled
           - notice
+          - notice-stacked
           - readability
           - metadata
           - narrow
@@ -285,8 +286,8 @@ jobs:
             [[ "$SCRAPE_AUTH_MODE" == member ]] || { echo 'Member Data requires member auth.' >&2; exit 1; }
           fi
           [[ "$DESKTOP_SETTINGS_CASE" == full || "$DESKTOP_SETTINGS_CASE" == remaining || "$DESKTOP_SETTINGS_CASE" == pair-forget ]] || { echo 'Unknown Desktop Settings case.' >&2; exit 1; }
-          [[ "$SEO_CASE_SCOPE" == full || "$SEO_CASE_SCOPE" == controlled || "$SEO_CASE_SCOPE" == notice || "$SEO_CASE_SCOPE" == readability || "$SEO_CASE_SCOPE" == metadata || "$SEO_CASE_SCOPE" == narrow ]] || { echo 'Unknown SEO case scope.' >&2; exit 1; }
-          if [[ "$SEO_CASE_SCOPE" == notice ]]; then
+          [[ "$SEO_CASE_SCOPE" == full || "$SEO_CASE_SCOPE" == controlled || "$SEO_CASE_SCOPE" == notice || "$SEO_CASE_SCOPE" == notice-stacked || "$SEO_CASE_SCOPE" == readability || "$SEO_CASE_SCOPE" == metadata || "$SEO_CASE_SCOPE" == narrow ]] || { echo 'Unknown SEO case scope.' >&2; exit 1; }
+          if [[ "$SEO_CASE_SCOPE" == notice || "$SEO_CASE_SCOPE" == notice-stacked ]]; then
             [[ "$ACCEPTANCE_LANE" == B && "$SEO_METADATA_FIXTURE" == none && "$SEO_RESOURCE_DIAGNOSTIC" == 0 && "${SEO_INTERRUPT_AFTER_TARGET:-none}" == none ]] || { echo 'Notice scope requires lane B without metadata or diagnostic interruption.' >&2; exit 1; }
           fi
           [[ "$SEO_CASE_SCOPE" != readability || "$ACCEPTANCE_CASE" == guest-seo ]] || { echo 'Readability SEO scope requires guest-seo.' >&2; exit 1; }

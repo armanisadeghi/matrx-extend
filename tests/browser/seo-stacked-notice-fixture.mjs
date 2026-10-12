@@ -1,0 +1,222 @@
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { attachTargetSession } from './native-sidepanel-qa-harness.mjs';
+import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
+
+const TITLES = ['SEO fixture notice A', 'SEO fixture notice B'];
+const MESSAGES = [
+  'The saved audit could not be listed. Open this page again, then try Re-audit.',
+  'The saved audit could not be listed after the current page changed. Open this page again and try Re-audit. If the result is still unavailable, check this page and repeat the audit from the SEO panel.',
+];
+
+async function sample(panel) {
+  return evaluate(
+    panel,
+    `(() => {
+    const titles = ${JSON.stringify(TITLES)};
+    const notices = titles.map((title) => [...document.querySelectorAll('[role="alert"]')]
+      .filter((node) => node.querySelector('.font-medium')?.textContent.trim() === title));
+    const buttons = notices.map((group) => group.flatMap((node) =>
+      [...node.querySelectorAll('button[aria-label="Dismiss"]')]));
+    const visible = (node) => {
+      const rect = node?.getBoundingClientRect(), style = node && getComputedStyle(node);
+      return !!rect && rect.width > 0 && rect.height > 0 && rect.left < innerWidth &&
+        rect.right > 0 && rect.top < innerHeight && rect.bottom > 0 &&
+        style.display !== 'none' && style.visibility !== 'hidden';
+    };
+    const tab = [...document.querySelectorAll('button[role="tab"][title="SEO"]')]
+      .find((node) => !node.closest('[role="tabpanel"]'));
+    const pane = tab && document.getElementById(tab.getAttribute('aria-controls') ?? '');
+    const targets = [...(pane?.querySelectorAll('button') ?? [])]
+      .filter((node) => node.textContent.trim() === 'Re-audit');
+    const target = targets.length === 1 ? targets[0] : null;
+    target?.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' });
+    const rect = target?.getBoundingClientRect();
+    const points = rect ? [0.25, 0.5, 0.75].flatMap((fy) => [0.25, 0.5, 0.75]
+      .map((fx) => ({ x: rect.left + rect.width * fx, y: rect.top + rect.height * fy }))) : [];
+    const hits = points.map(({ x, y }) => document.elementFromPoint(x, y));
+    return { width: innerWidth, title_counts: notices.map((group) => group.length),
+      message_lengths: notices.map((group) => group[0]?.querySelector('p')?.textContent.length ?? 0),
+      dismiss_counts: buttons.map((group) => group.filter(visible).length),
+      notice_visible: notices.map((group) => visible(group[0])),
+      target_count: targets.length, target_enabled: target ? !target.disabled : false,
+      hit_point_count: hits.filter((hit) => hit === target || target?.contains(hit)).length,
+      notice_hit_point_count: hits.filter((hit) => notices.some((group) =>
+        group.some((node) => hit === node || node.contains(hit)))).length };
+  })()`,
+  );
+}
+
+function requireSample(s, expectedCounts, expectedMessageLengths) {
+  assert.equal(s.width, 360, 'stacked fixture requires actual native 360px');
+  assert.deepEqual(
+    s.title_counts,
+    expectedCounts,
+    'two distinct NoticeHost cards have expected presence',
+  );
+  assert.equal(s.target_count, 1, 'one SEO Re-audit target');
+  assert.equal(s.target_enabled, true, 'Re-audit remains enabled');
+  assert.equal(s.hit_point_count, 9, 'Re-audit owns all nine points');
+  assert.equal(s.notice_hit_point_count, 0, 'no fixture notice owns a Re-audit point');
+  for (let i = 0; i < 2; i++)
+    if (expectedCounts[i]) {
+      assert.equal(s.notice_visible[i], true, `fixture notice ${i} is visible`);
+      assert.equal(s.dismiss_counts[i], 1, `fixture notice ${i} has a visible Dismiss`);
+      assert.equal(
+        s.message_lengths[i],
+        expectedMessageLengths[i],
+        `fixture notice ${i} keeps its full message`,
+      );
+    }
+}
+
+export async function runStackedSeoNotices({
+  panel,
+  browserSession,
+  panelTarget,
+  currentTitle,
+  expectedMessageLengths,
+  seoContent,
+  runReaudit,
+  io = { click, evaluate, waitFor, sample },
+}) {
+  assert.deepEqual(
+    MESSAGES.map((message) => message.length),
+    expectedMessageLengths,
+    'fixture messages match the independent length contract',
+  );
+  const extensionId = new URL(panelTarget.url).hostname;
+  assert.equal(
+    await io.evaluate(panel, 'innerWidth'),
+    360,
+    'native panel starts at 360px without emulation',
+  );
+  const targets = (await browserSession.send('Target.getTargets')).targetInfos.filter(
+    (target) =>
+      target.type === 'service_worker' &&
+      target.url.startsWith(`chrome-extension://${extensionId}/`),
+  );
+  assert.equal(targets.length, 1, 'fixture requires one owned extension worker');
+  const worker = await attachTargetSession(browserSession, targets[0].targetId);
+  const ids = TITLES.map(() => randomUUID());
+  const injectedTitles = new Set();
+  try {
+    const before = await io.sample(panel);
+    assert.deepEqual(before.title_counts, [0, 0], 'fixture titles are absent before injection');
+    for (let i = 0; i < 2; i++) {
+      const payload = {
+        id: ids[i],
+        ts: Date.now(),
+        tone: 'error',
+        title: TITLES[i],
+        message: MESSAGES[i],
+      };
+      injectedTitles.add(TITLES[i]);
+      const response = await worker.send('Runtime.evaluate', {
+        expression: `chrome.runtime.sendMessage(${JSON.stringify({ __matrx: true, kind: 'db:failure-notice', payload })})`,
+        awaitPromise: true,
+        returnByValue: true,
+      });
+      assert.equal(
+        response.exceptionDetails,
+        undefined,
+        'owned worker relayed notice to NoticeHost',
+      );
+      assert.equal(response.result?.value?.ok, true, 'NoticeHost acknowledged injected notice');
+    }
+    const stacked = await io.waitFor(
+      'stacked_notice_visible',
+      () => io.sample(panel),
+      (s) => s.title_counts?.[0] === 1 && s.title_counts?.[1] === 1,
+      10000,
+      (s) => ({ counts: s?.title_counts, dismiss: s?.dismiss_counts }),
+    );
+    requireSample(stacked, [1, 1], expectedMessageLengths);
+    await runReaudit();
+    const settled = await io.waitFor(
+      'stacked_notice_current_page_settled',
+      async () => ({
+        sample: await io.sample(panel),
+        audit: await seoContent(panel),
+      }),
+      (s) =>
+        s.audit?.scopeValid &&
+        s.audit.title === currentTitle &&
+        s.audit.reAudit &&
+        !s.audit.auditButtonDisabled &&
+        !s.audit.error,
+      30000,
+      (s) => ({
+        counts: s?.sample?.title_counts,
+        scope: s?.audit?.scopeValid,
+        currentTitleMatched: s?.audit?.title === currentTitle,
+        reAudit: s?.audit?.reAudit,
+      }),
+    );
+    requireSample(settled.sample, [1, 1], expectedMessageLengths);
+    const dismissed = [];
+    for (let i = 0; i < 2; i++) {
+      await io.click(panel, 'seo-owned-notice-dismiss', TITLES[i]);
+      const state = await io.waitFor(
+        `fixture_notice_${i}_dismissed`,
+        () => io.sample(panel),
+        (s) => s.title_counts?.[i] === 0,
+        10000,
+        (s) => ({ counts: s?.title_counts, dismiss: s?.dismiss_counts }),
+      );
+      requireSample(state, i === 0 ? [0, 1] : [0, 0], expectedMessageLengths);
+      dismissed.push(state);
+    }
+    return {
+      viewport_width: 360,
+      viewport_source: 'native',
+      notice_count: 2,
+      long_message_length: expectedMessageLengths[1],
+      distinct_notice_titles: 2,
+      visible_dismiss_counts: stacked.dismiss_counts,
+      target_hit_points: stacked.hit_point_count,
+      notice_hit_points: stacked.notice_hit_point_count,
+      current_title_matched: true,
+      independently_dismissed: dismissed.map((s) => s.title_counts),
+      cleared_count: 0,
+    };
+  } finally {
+    let cleanupFailed = false;
+    for (const title of injectedTitles) {
+      try {
+        const state = await io.sample(panel);
+        const index = TITLES.indexOf(title);
+        const remaining = state.title_counts?.[index];
+        if (remaining === 0) continue;
+        if (remaining !== 1 || state.dismiss_counts?.[index] !== 1) {
+          cleanupFailed = true;
+          continue;
+        }
+        await io.click(panel, 'seo-owned-notice-dismiss', title);
+        const cleared = await io.waitFor(
+          'owned_notice_cleanup_cleared',
+          () => io.sample(panel),
+          (s) => s.title_counts?.[index] === 0,
+          10000,
+          (s) => ({ remaining: s?.title_counts?.[index] }),
+        );
+        if (cleared.title_counts?.[index] !== 0) cleanupFailed = true;
+      } catch {
+        cleanupFailed = true;
+      }
+    }
+    try {
+      const final = await io.sample(panel);
+      if (
+        TITLES.some(
+          (title) => injectedTitles.has(title) && final.title_counts?.[TITLES.indexOf(title)] !== 0,
+        )
+      )
+        cleanupFailed = true;
+    } catch {
+      cleanupFailed = true;
+    }
+    await worker.detach();
+    assert.equal(cleanupFailed, false, 'owned notice fixture cleanup completed');
+  }
+}

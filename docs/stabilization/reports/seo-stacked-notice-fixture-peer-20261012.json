@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "report_id": "seo-stacked-notice-fixture-peer-20261012",
+  "reviewed_at": "2026-10-12",
+  "review_type": "independent_source_and_guard_review",
+  "reviewed_scope": [
+    "Final stacked guest SEO notice acceptance fixture and hosted workflow scope",
+    "seo-new-coverage-oracle.mjs and changed oracle/scope tests",
+    "settings-panel-driver notice dismissal selector",
+    "Updated cleanup and independent message-length guard"
+  ],
+  "verdict_a_product_behavior": {
+    "verdict": "UNVERIFIED_LIVE",
+    "evidence": [
+      "No browser/build was run, as requested. Source flow checks native innerWidth=360, navigates to example.org, compares the initial and post-Re-audit SEO title, and requires a recorded trusted Re-audit transition.",
+      "The fixture attaches to the single service worker whose URL matches the owned extension ID and sends two unique db:failure-notice envelopes through the extension's canonical channel; it does not intercept product network responses.",
+      "The real panel sampler requires two distinct visible NoticeHost cards, a visible Dismiss button per card, independent expected message lengths [77,199], and 9/9 Re-audit hit points with zero notice-owned points. It then performs separate UI dismissals.",
+      "Native rendering, hit ownership, trusted Re-audit, and dismissal remain unverified until the guarded hosted workflow runs."
+    ]
+  },
+  "verdict_b_code_and_release_gate": {
+    "verdict": "PASS_SOURCE_AND_GUARDS",
+    "findings": [],
+    "verified": [
+      "Cleanup iterates only titles recorded by this fixture. It requires exactly one visible Dismiss for each still-present owned notice, performs the trusted UI click, waits for a zero count, then makes a final count check. Any unresolved notice or cleanup read/click failure fails acceptance. It does not dismiss pre-existing or unrelated notices.",
+      "The new hidden-Dismiss test proves the cleanup failure path and retains zero product credit. The independent [77,199] length contract is checked before worker attachment or injection; the test proves a shortened contract fails before any calls.",
+      "The 8/9 hit-point and truncated-message refusal cases still pass as negative tests.",
+      "The dispatch contract remains at 25 inputs; notice-stacked adds a choice value rather than a new input.",
+      "The workflow YAML parses successfully. Existing lane-B admission and resource-readiness/stabilization-resource workflow steps remain in place; the new notice scope disallows metadata and diagnostic interruption.",
+      "Focused Node tests passed: 49/49.",
+      "Focused Biome check completed with no errors; it reported two pre-existing noForEach warnings in unchanged Airbnb fixture locations in seo-guest-acceptance.mjs.",
+      "No credential or PID is added to the acceptance payload/evidence path, and no network response interception was found."
+    ],
+    "limitations": [
+      "Focused unit tests exercise orchestration with a fake panel/worker; live native acceptance remains necessary.",
+      "Biome's command checked seven supported files; YAML was separately parsed with Ruby YAML."
+    ]
+  },
+  "overall": "SOURCE_REVIEW_PASS_LIVE_ACCEPTANCE_PENDING"
+}
