@@ -1,6 +1,6 @@
 # Stabilization checklist
 
-Generated 2026-10-12 16:52 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-12T16:18:36Z.
+Generated 2026-10-12 16:59 UTC from inventory.json, defect records, daily Store records, and the historical coverage audit. Inventory updated 2026-10-12T16:18:36Z.
 
 ## Current truth
 
@@ -26,7 +26,7 @@ These observations are bounded to their recorded times; source versions and loca
 
 ## Inventory freshness review
 
-Since inventory source `636d00857f774a7b15fe70032dd9c35cef44c015`, **224 `src/` paths changed** through `9acee91f3fb129660245b39f3f89eac7388e3c02`. A direct path-anchor comparison matched 36 and left 188 without an exact inventory anchor.
+Since inventory source `636d00857f774a7b15fe70032dd9c35cef44c015`, **224 `src/` paths changed** through `0fec7f0298bf0e0c98a7710a83d20b3d56ae168c`. A direct path-anchor comparison matched 36 and left 188 without an exact inventory anchor.
 A direct anchor miss is only a census-review hint. Feature inventory anchors are not an exhaustive dependency graph, so it does not prove an omitted feature or behavior.
 
 ## Next test priorities
