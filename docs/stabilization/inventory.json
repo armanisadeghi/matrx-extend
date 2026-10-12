@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-12T22:20:09.073348+00:00",
+  "updated_at": "2026-10-12T23:55:31+00:00",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6831,32 +6831,36 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": "38018411295",
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "hosted_result_artifact_id": 11657092463,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "run_id": "ext-d-0220-theme-t04-20261012-01",
+              "source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
+              "development_ci_run_id": 38323077277,
+              "development_ci_attempt": 1,
+              "development_artifact_id": 11779353985,
+              "build_version": "0.2.509",
+              "artifact_digest": "sha256:e6ecb243273238079a6f7d18c7e2ec154b9bd0ecf9f1bb0c29c91918a64a665f",
+              "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+              "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
               "resource_valid": true,
+              "resource_final_decision": "child_failed because separate T10 initial-baseline observation failed; resourceInvalid=false",
+              "passed_criteria_count": 21,
               "passed_subtargets": [
-                "19/19 bounded guest assertions observed Dark, Light and System changes with rendered appearance, panel persistence and separate full-extension persistence. Effective System was restored."
+                "21/21 guest T04 criteria passed on the exact imported unpublished development artifact: Dark, Light, and System UI/storage/rendering; Settings-panel persistence; worker/panel replacement; full-extension persistence; and exact absent theme-key plus absent settings-container restoration before, through, and after full reload."
               ],
               "unverified": [
-                "Final absent-key restoration is unproved; member/admin and Store remain outside this run."
+                "Member and admin Theme T05/T06, Store behavior, and overall/full Settings acceptance remain unverified.",
+                "System appearance under a dark operating-system preference is outside this bounded result."
               ],
-              "detail": "Independent review accepts the guest theme behavior as a qualified pass. Dark, Light, and System all persisted through panel and separate full-extension reloads. The effective System state was restored, but the final absent-key restoration was not proved; no claim that the original missing storage key was restored. Reviewed frozen guest run38041519886: 19 passed criteria; native case pass.",
+              "detail": "Independent native peer review accepts guest Theme T04 as a bounded 21/21 pass on exact artifact source 8512a79ca1a30543c64a32cb8d2449b267ce75e1. This does not close EXT-D-0220: the same run separately failed T10 before its first choice behavior, and T10 diagnosis remains open.",
               "evidence": [
-                "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
-                "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/ext-d-0220-theme-t04-20261012-01.json",
+                "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/native-report.sanitized.json",
+                "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/resource-journal.sanitized.jsonl",
+                "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01-preflight.jsonl",
+                "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01.jsonl",
+                "docs/stabilization/reports/ext-d-0220-native-peer-20261012.json"
               ],
-              "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior.",
+              "independent_review": "docs/stabilization/reports/ext-d-0220-native-peer-20261012.json",
+              "scope": "Signed-out guest Theme T04 on exact-source imported unpublished development artifact 0.2.509; isolated Chrome for Testing 151.0.7922.34. This is one case only and does not establish member/admin, Store, or full Settings behavior.",
               "bounded_subtarget_evidence": [
                 {
                   "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
@@ -6982,6 +6986,38 @@
                   "unverified": [
                     "Original absent-key theme preference restoration after full extension reload is not proved."
                   ]
+                },
+                {
+                  "run_id": "ext-d-0220-theme-t04-20261012-01",
+                  "status": "pass",
+                  "native_case_status": "pass",
+                  "source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
+                  "development_ci_run_id": 38323077277,
+                  "development_artifact_id": 11779353985,
+                  "artifact_digest": "sha256:e6ecb243273238079a6f7d18c7e2ec154b9bd0ecf9f1bb0c29c91918a64a665f",
+                  "build_version": "0.2.509",
+                  "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+                  "resource_valid": true,
+                  "resource_final_decision": "child_failed for T10; resourceInvalid=false",
+                  "passed_criteria_count": 21,
+                  "full_extension_reload": {
+                    "status": "pass",
+                    "assertions": 13
+                  },
+                  "panel_document_reload": {
+                    "status": "pass",
+                    "assertions": 7
+                  },
+                  "independent_review": "docs/stabilization/reports/ext-d-0220-native-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/runs/ext-d-0220-theme-t04-20261012-01.json",
+                    "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/native-report.sanitized.json",
+                    "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/resource-journal.sanitized.jsonl",
+                    "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01-preflight.jsonl",
+                    "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01.jsonl",
+                    "docs/stabilization/reports/ext-d-0220-native-peer-20261012.json"
+                  ],
+                  "scope": "Bounded signed-out guest T04; no member/admin, Store, or full Settings claim."
                 }
               ]
             }
@@ -7157,6 +7193,36 @@
                 ]
               },
               "reason": "Preserve the cumulative reviewed v0.2.457 full-reload pass as primary; this v0.2.481 run adds only warm-state behavior and does not transfer reload proof."
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "38018411295",
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "19/19 bounded guest assertions observed Dark, Light and System changes with rendered appearance, panel persistence and separate full-extension persistence. Effective System was restored."
+                ],
+                "unverified": [
+                  "Final absent-key restoration is unproved; member/admin and Store remain outside this run."
+                ],
+                "detail": "Independent review accepts the guest theme behavior as a qualified pass. Dark, Light, and System all persisted through panel and separate full-extension reloads. The effective System state was restored, but the final absent-key restoration was not proved; no claim that the original missing storage key was restored. Reviewed frozen guest run38041519886: 19 passed criteria; native case pass.",
+                "evidence": [
+                  "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
+                  "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl",
+                  "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                ],
+                "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior."
+              },
+              "retained_reason": "Prior guest Theme evidence remains historical; the independently reviewed exact-source native retest below is the current bounded result."
             }
           ],
           "attempt_history": [
@@ -7569,33 +7635,35 @@
           ],
           "results": {
             "guest": {
-              "status": "pass",
-              "run_id": "38018411295",
-              "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
-              "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
-              "development_ci_run_id": 38017683667,
-              "development_artifact_id": 11657076101,
-              "hosted_result_artifact_id": 11657092463,
-              "build_version": "0.2.457",
-              "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+              "status": "unverified",
+              "run_id": "ext-d-0220-theme-t04-20261012-01",
+              "source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
+              "development_ci_run_id": 38323077277,
+              "development_ci_attempt": 1,
+              "development_artifact_id": 11779353985,
+              "build_version": "0.2.509",
+              "artifact_digest": "sha256:e6ecb243273238079a6f7d18c7e2ec154b9bd0ecf9f1bb0c29c91918a64a665f",
+              "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
               "resource_valid": true,
-              "passed_subtargets": [
-                "17/17 bounded guest assertions passed for Ask/Act choice, new-chat default inheritance, panel reload and full-extension reload."
-              ],
+              "resource_final_decision": "child_failed because T10 failed at initial_baseline_observation; resourceInvalid=false",
+              "failed_stage": "initial_baseline_observation",
+              "expected_observation": "Ask selected with preference key and settings container present",
+              "observed": "Ask selected with preference key and settings container both absent; no choice transport or later behavior reached",
+              "failed_run_status": "fail",
+              "passed_subtargets": [],
               "unverified": [
-                "Member/admin and Store behavior remain outside this run."
+                "T10 Ask/Act choice and new-chat default inheritance were not reached in this run; do not infer a product regression from the baseline failure.",
+                "Member/admin and Store behavior remain unverified."
               ],
-              "detail": "Independent review accepts the bounded guest default-mode case. Ask and Act selection, new-chat inheritance, and panel/full-extension persistence passed on the exact imported artifact. Reviewed frozen guest run38041519886: 17 passed criteria; native case pass.",
+              "detail": "The exact-source shared runner failed before T10 choice behavior at initial_baseline_observation. Record the run failure separately while keeping T10 behavior unverified; the earlier bounded pass is preserved in result_history and does not resolve this current baseline discrepancy.",
               "evidence": [
-                "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
-                "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
-                "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
-                "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                "docs/stabilization/runs/ext-d-0220-theme-t04-20261012-01.json",
+                "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/native-report.sanitized.json",
+                "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01.jsonl",
+                "docs/stabilization/reports/ext-d-0220-native-peer-20261012.json"
               ],
-              "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior.",
+              "independent_review": "docs/stabilization/reports/ext-d-0220-native-peer-20261012.json",
+              "scope": "T10 surrounding observation in the same signed-out guest run/artifact as T04. This failed at its initial expected-baseline observation before T10 behavior; no product regression or broader Settings result is inferred.",
               "bounded_subtarget_evidence": [
                 {
                   "source_sha": "129299df0a53a8a795ba1af054752817454357e3",
@@ -7640,6 +7708,28 @@
                     "docs/stabilization/resource-journals/local-settings-guest-20261012-1441.jsonl"
                   ],
                   "scope": "Isolated native guest panel on unpublished CI development artifact; no Store, member/admin, or user Chrome profile claim."
+                },
+                {
+                  "run_id": "ext-d-0220-theme-t04-20261012-01",
+                  "status": "unverified",
+                  "run_outcome": "fail",
+                  "failed_stage": "initial_baseline_observation",
+                  "source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
+                  "development_ci_run_id": 38323077277,
+                  "development_artifact_id": 11779353985,
+                  "resource_valid": true,
+                  "expected_observation": "Ask selected with stored key and settings container present",
+                  "observed": "Ask selected with both key and container absent",
+                  "independent_review": "docs/stabilization/reports/ext-d-0220-native-peer-20261012.json",
+                  "evidence": [
+                    "docs/stabilization/runs/ext-d-0220-theme-t04-20261012-01.json",
+                    "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/native-report.sanitized.json",
+                    "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/resource-journal.sanitized.jsonl",
+                    "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01-preflight.jsonl",
+                    "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01.jsonl",
+                    "docs/stabilization/reports/ext-d-0220-native-peer-20261012.json"
+                  ],
+                  "limits": "The first choice was not reached. No new T10 behavior acceptance or product regression claim."
                 }
               ]
             }
@@ -7724,6 +7814,36 @@
                 "scope": "Guest frozen artifact11568846736. Workflow success; overall receiptunverified. No Store/current-main acceptance."
               },
               "superseded_at": "2026-10-10T03:04:48Z"
+            },
+            {
+              "mode": "guest",
+              "result": {
+                "status": "pass",
+                "run_id": "38018411295",
+                "source_sha": "0735eb7a4e7e035dbf6b71c48fd1cb56e83255fc",
+                "workflow_source_sha": "56c27f70a13c87d97090a9ebe6bbb15e3b3c1d89",
+                "build_version": "0.2.457",
+                "tree_sha256": "fad335d71c9fb100f826b1df8ac7e1f1cf5e88e5503e0cdcdde9046e287be3b4",
+                "resource_valid": true,
+                "passed_subtargets": [
+                  "17/17 bounded guest assertions passed for Ask/Act choice, new-chat default inheritance, panel reload and full-extension reload."
+                ],
+                "unverified": [
+                  "Member/admin and Store behavior remain outside this run."
+                ],
+                "detail": "Independent review accepts the bounded guest default-mode case. Ask and Act selection, new-chat inheritance, and panel/full-extension persistence passed on the exact imported artifact. Reviewed frozen guest run38041519886: 17 passed criteria; native case pass.",
+                "evidence": [
+                  "docs/stabilization/evidence/settings-controls-hosted-38018411295/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-controls-hosted-38018411295/settings-local-controls-acceptance.sanitized.json",
+                  "docs/stabilization/resource-journals/hosted-package-38018411295-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-browser-38018411295-1.jsonl",
+                  "docs/stabilization/resource-journals/hosted-guest-38018411295-1.jsonl",
+                  "docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json",
+                  "docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json"
+                ],
+                "scope": "Hosted signed-out guest on exact imported CI development artifact 11657076101 (run 38017683667), source 0735eb7a; workflow checkout 56c27f70. Does not establish later-main, member/admin, or Store behavior."
+              },
+              "retained_reason": "The prior bounded guest Default mode pass remains in result history. The newer exact-source shared-runner attempt failed during initial baseline observation before T10 behavior was exercised, so current T10 behavior remains unverified."
             }
           ],
           "attempt_history": [
