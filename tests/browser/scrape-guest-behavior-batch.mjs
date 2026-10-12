@@ -1,4 +1,5 @@
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
+import { waitForCopyPopoverTeardown } from './scrape-copy-teardown.mjs';
 import { click, evaluate, waitFor } from './settings-panel-driver.mjs';
 
 export const GUEST_COPY_MENUS = [
@@ -213,12 +214,25 @@ export async function runGuestScrollSync({ panel, page, resourceAction, adapters
   const sample = adapters.evaluate ?? evaluate;
   const awaitSample = adapters.waitFor ?? waitFor;
   const arm = adapters.armArticleScroll ?? armArticleScroll;
-  await resourceAction(() => pointer(panel, 'scrape-result-tab', 'Article'));
+  const action = async (stage, kind, label) => {
+    try {
+      return await resourceAction(() => pointer(panel, kind, label));
+    } catch (error) {
+      if (error && typeof error === 'object') {
+        error.driverFailure = {
+          ...(error.driverFailure ?? { code: 'guest_scroll_sync_action_failed' }),
+          guestScrollSyncStage: stage,
+        };
+      }
+      throw error;
+    }
+  };
+  await action('article_tab', 'scrape-result-tab', 'Article');
   await page.evaluate(() => window.scrollTo(0, 0));
   const start = await sample(panel, articleScroll);
   start.pageY = await page.evaluate(() => window.scrollY);
   if (!(start?.max > 80)) throw new Error('scroll_sync_fixture_not_scrollable');
-  await resourceAction(() => pointer(panel, 'title', 'Sync scroll with the live page'));
+  await action('sync_enable', 'title', 'Sync scroll with the live page');
   await page.mouse.wheel(0, 650);
   const followed = await awaitSample(
     'article_follows_owned_page_scroll',
@@ -226,7 +240,7 @@ export async function runGuestScrollSync({ panel, page, resourceAction, adapters
     (sample) => sample?.on === true && sample.top > start.top + 20,
   );
   followed.pageY = await page.evaluate(() => window.scrollY);
-  await resourceAction(() => pointer(panel, 'title', 'Stop following the page scroll'));
+  await action('sync_disable', 'title', 'Stop following the page scroll');
   // The trusted pointer helper scrolls the control into view. That can move
   // the article before the click, so establish an independent nonzero article
   // position only after following is off, then reverse the live page.
@@ -439,6 +453,8 @@ export async function runGuestCopyMenus({
         };
         if (!entry.menuCorrect || !copyResultMatches(copied) || !entry.permissionRestored)
           throw new Error(`scrape_copy_mismatch:${title}:${option}`);
+        action.stage = 'wait_menu_teardown';
+        await waitForCopyPopoverTeardown({ panel, evaluate: sample, waitFor: poll });
         evidence.push(entry);
       }
     }

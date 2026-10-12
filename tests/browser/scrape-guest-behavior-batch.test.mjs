@@ -310,6 +310,8 @@ test('schema AI uses JSON fence; wrong fence, no-op, stale and wrong option fail
           if (kind === 'scrape-copy-option') clipboard = producer(option, clipboard);
         },
         evaluate: async (_panel, expression) => {
+          if (expression.includes('connectedOwnedDialogs'))
+            return { activeScrapePanel: true, connectedOwnedDialogs: 0, connectedClosedDialogs: 0 };
           if (expression.includes('[data-radix-popper-content-wrapper]'))
             return ['Markdown', 'JSON', 'For AI agent'];
           return Function('navigator', `return ${expression}`)(navigator);
@@ -416,4 +418,33 @@ test('scroll exercise holds an article position established after the trusted st
   assert.equal(broken.armed.top, 310);
   assert.equal(broken.stopped.top, 0);
   assert.equal(broken.passed, false);
+});
+
+test('scroll pointer failures identify the exact semantic action without copying the error', async () => {
+  for (const [index, stage] of ['article_tab', 'sync_enable', 'sync_disable'].entries()) {
+    let clicks = 0;
+    const failure = new Error('private URL and auth contents');
+    await assert.rejects(
+      runGuestScrollSync({
+        panel: {},
+        page: { evaluate: async () => 0, mouse: { wheel: async () => {} } },
+        resourceAction: (action) => action(),
+        adapters: {
+          click: async () => {
+            if (clicks++ === index) throw failure;
+          },
+          evaluate: async () => ({ max: 300, top: 0 }),
+          waitFor: async () => ({ top: 100 }),
+        },
+      }),
+      (error) => {
+        assert.equal(error, failure);
+        assert.deepEqual(error.driverFailure, {
+          code: 'guest_scroll_sync_action_failed',
+          guestScrollSyncStage: stage,
+        });
+        return true;
+      },
+    );
+  }
 });

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { withClipboardReadPermission } from './clipboard-observation.mjs';
+import { waitForCopyPopoverTeardown } from './scrape-copy-teardown.mjs';
 import { click, evaluate } from './settings-panel-driver.mjs';
 
 export function captureExportFingerprint(value, { mode, url, title }) {
@@ -60,18 +61,25 @@ export async function readCaptureExport({
   title,
   resourceAction,
   requireResourceHealth,
+  onStage = () => {},
 }) {
+  onStage('prior_copy_teardown');
   await requireResourceHealth();
+  await waitForCopyPopoverTeardown({ panel });
+  onStage('seed_clipboard');
   const sentinel = 'MATRX_QA_CAPTURE_EXPORT_SENTINEL';
   const seeded = await evaluate(
     panel,
     `(async () => { await navigator.clipboard.writeText(${JSON.stringify(sentinel)}); return true; })()`,
   );
   assert.equal(seeded, true, 'scrape_capture_export_seed_failed');
+  onStage('open_capture_menu');
   await resourceAction(() => click(panel, 'title', 'Copy capture'));
+  onStage('select_capture_option');
   await resourceAction(() =>
     click(panel, 'scrape-copy-option', mode === 'admin' ? 'Full capture (JSON)' : 'For AI agent'),
   );
+  onStage('read_clipboard');
   const permissionEvidence = {};
   const value = await withClipboardReadPermission({
     browserSession,
@@ -86,6 +94,8 @@ export async function readCaptureExport({
     'scrape_capture_export_permission_not_restored',
   );
   assert.notEqual(value, sentinel, 'scrape_capture_export_not_copied');
+  onStage('capture_menu_teardown');
+  await waitForCopyPopoverTeardown({ panel });
   await requireResourceHealth();
   return captureExportFingerprint(value, { mode, url, title });
 }
@@ -117,9 +127,11 @@ export async function verifyCaptureUnchanged({
   scrapeState,
   waitFor,
   phase,
+  onStage = () => {},
 }) {
   const observed = {};
   for (const label of labels) {
+    onStage(label);
     await requireResourceHealth();
     await resourceAction(() => click(panel, 'scrape-result-tab', label));
     const state = await waitFor(
