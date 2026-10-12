@@ -37,12 +37,13 @@
     "src/features/notes/NoteEditor.current-general.test.tsx",
     "docs/stabilization/runs/notes-lazy-general-member-run38204518274.json",
     "docs/stabilization/reports/notes-lazy-general-member-peer-run38204518274.json",
+    "docs/stabilization/reports/notes-t02-fixture-path-20261012.json",
     "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/native-report.sanitized.json",
     "docs/stabilization/evidence/notes-lazy-general-member/run38204518274/resource-finals.sanitized.json"
   ],
   "source_reproduction": "Focused HomePicker/NotesList tests against the real listMyHomes query reproduced omission of a synthetic platform.my_homes General when no context-tree scope row existed. The source-level reproduction remains distinct from runtime evidence: hosted run 38204518274 adds independently reviewed bounded member picker evidence only; the original full T02 and move path remain pending.",
   "verification_status": "Source reproduction and focused tests passed independent source review. Hosted member run 38204518274 on frozen unpublished v0.2.509/source 6692ecf independently passed the bounded lazy-General home-filter picker subtarget: synthetic General was visible, selected as filter, and stable while canonical General remained nullable and no scope was created. Strict verification and all three resource finals passed. Screenshots do not show Notes picker states; assertions carry behavior evidence. One-use secret deletion was execution-agent checked but is not independently demonstrated in archived sanitized evidence. Full T02, move/persistence, reload, admin, current-main, release, and Store remain unverified; defect stays fixed/open.",
-  "next_action": "Retest the original full T02 flow on a live Notes surface for member and admin, including note creation, lazy-General move/persistence, search/filter/open/cleanup and reload; obtain independent review before any retest-pass or closure.",
+  "next_action": "Use the source-backed cross-organization disposable fixture candidate in reports/notes-t02-fixture-path-20261012.json to retest the original lazy-General move while the target General is still synthetic. First verify a member belongs to both organizations and the target remains lazy; then test the move, organization/home persistence, reload, search/filter/open and exact-note cleanup. Separately cover admin and surrounding T02 cases; obtain independent review before retest-pass or closure. No current live fixture state or full move result is established.",
   "transition_history": [
     {
       "at": "2026-10-12T03:31:45Z",
