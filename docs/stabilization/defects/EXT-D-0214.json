@@ -19,23 +19,24 @@
   "sibling_census": "All twelve paths from the CI diagnostic census were passed explicitly to biome check --write; the resulting diff changes only import order and type-only syntax. No other files were formatted.",
   "severity": "S2: required CI Lint gate blocked",
   "priority": "P0",
-  "state": "fixed",
+  "state": "closed",
   "owner": "package_graph_sol_retry",
   "evidence": [
     "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274298374: Lint fails with 15 import diagnostics across 12 files.",
     "pnpm exec biome check --write on only those 12 files completed with 12 files fixed; git diff --check passed. Full CI retest remains pending.",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274879341: exact source fbd8713e7dba9732f5d880ca6e1f752f0b69ae55; CI Lint passed on this candidate. The same run passed 2476 unit tests and the guest observer, then failed the WXT build on EXT-D-0215. This validates the import-only lint repair; no native or overall-build success is claimed."
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274879341: exact source fbd8713e7dba9732f5d880ca6e1f752f0b69ae55; CI Lint passed on this candidate. The same run passed 2476 unit tests and the guest observer, then failed the WXT build on EXT-D-0215. This validates the import-only lint repair; no native or overall-build success is claimed.",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38277687185: exact source 0b912a3fc passed Lint, Typecheck, unit suite, guest observer and keyed WXT build; independent peer had reviewed the exact 12-file import-only diff. This closes the CI Lint defect without promoting native feature cases."
   ],
   "build_receipt": {
     "source_sha": "58f28a085622a3c41784ab317ec3753918bdd9bf",
     "ci_run_id": 38274298374
   },
   "reproducibility_count": "CI Lint failure 1/1 at exact source 58f28a085",
-  "fix_commits": [],
-  "original_retest_runs": [38274879341],
-  "surrounding_case_runs": [],
-  "reviewer": null,
-  "next_action": "Independent review and native acceptance remain pending; overall exact-source CI build is blocked by EXT-D-0215. Do not claim release readiness or case/mode pass.",
+  "fix_commits": ["fbd8713e7"],
+  "original_retest_runs": [38274879341, 38277687185],
+  "surrounding_case_runs": [38277687185],
+  "reviewer": "guest_chat_peer_review: independent 12-file import-only source review passed",
+  "next_action": "CI Lint defect is closed. Release and native guest/member/admin case acceptance remain separate and unverified.",
   "transition_history": [
     {
       "at": "2026-10-12T16:02:49Z",
@@ -60,6 +61,18 @@
       "from": "in-fix",
       "to": "fixed",
       "reason": "Exact-source CI on fbd8713e7dba9732f5d880ca6e1f752f0b69ae55 passed Lint, confirming the twelve-file import-only repair. The WXT build failed separately on EXT-D-0215; native acceptance and overall build remain pending."
+    },
+    {
+      "at": "2026-10-12T16:39:18Z",
+      "from": "fixed",
+      "to": "retest-pass",
+      "reason": "Full exact-source CI 38277687185 passed the original Lint gate and surrounding Typecheck, unit, guest observer and WXT build gates."
+    },
+    {
+      "at": "2026-10-12T16:39:18Z",
+      "from": "retest-pass",
+      "to": "closed",
+      "reason": "The defect surface is CI Lint and its original failure no longer reproduces in full exact-source CI; native/persona feature cases remain unverified."
     }
   ]
 }
