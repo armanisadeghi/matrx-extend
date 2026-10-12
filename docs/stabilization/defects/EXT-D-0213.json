@@ -23,19 +23,20 @@
     "@ai-matrx/api 0.1.10 published dist/index.js JSON request path awaits response.json() without converting SyntaxError (line 274).",
     "src/lib/api/client.ts existing successful-response parser returns STATUS_INVALID_BODY for body parse errors.",
     "src/lib/api/matrx-api-session.test.ts adds real generated-operation malformed-JSON and TypeError network cases; host pressure level 2 prevented guarded test admission, so test is unrun.",
-    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274879341: exact source fbd8713e7dba9732f5d880ca6e1f752f0b69ae55; Unit tests passed 2476 total, including src/lib/api/matrx-api-session.test.ts 5/5 and guest transport 21/21. Guest transport observer passed. The same run failed the WXT build on EXT-D-0215; this is bounded unit evidence for the adapter fix, not native acceptance or overall-build success."
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38274879341: exact source fbd8713e7dba9732f5d880ca6e1f752f0b69ae55; Unit tests passed 2476 total, including src/lib/api/matrx-api-session.test.ts 5/5 and guest transport 21/21. Guest transport observer passed. The same run failed the WXT build on EXT-D-0215; this is bounded unit evidence for the adapter fix, not native acceptance or overall-build success.",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38277687185: exact source 0b912a3fc passed adapter-session test 5/5, guest transport test 21/21, full unit suite, Typecheck, Lint, guest observer and keyed WXT build. This confirms the source adapter and bundle gates, while installed-extension malformed-body behavior remains unverified."
   ],
   "build_receipt": {
     "source_sha": "58f28a085622a3c41784ab317ec3753918bdd9bf",
     "installed_api_version": "0.1.9",
     "locked_api_version": "0.1.10"
   },
-  "reproducibility_count": "Source confirmed; runtime test not admitted due host resource pressure",
-  "fix_commits": [],
-  "original_retest_runs": [38274879341],
-  "surrounding_case_runs": [],
-  "reviewer": null,
-  "next_action": "Native installed-extension verification remains open; overall exact-source CI build is blocked by EXT-D-0215. Do not claim product-case or feature-mode pass from unit CI.",
+  "reproducibility_count": "Original source behavior confirmed; focused adapter test passed in CI runs 38274879341 and 38277687185. Native malformed-body reproduction remains unverified.",
+  "fix_commits": ["be957e83c"],
+  "original_retest_runs": [38274879341, 38277687185],
+  "surrounding_case_runs": [38277687185],
+  "reviewer": "guest_chat_peer_review: independent adapter source and test review passed",
+  "next_action": "Use the current installed extension against a controlled malformed HTTP 200 JSON response and true network failure in guest/member/admin modes, with source and artifact receipt. Keep EXT-F-0004-T02 and feature-mode cells unverified until native evidence exists.",
   "transition_history": [
     {
       "at": "2026-10-12T16:00:50Z",
