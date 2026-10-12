@@ -1,9 +1,7 @@
 {
   "id": "EXT-D-0220",
   "feature_id": "EXT-F-1003",
-  "case_ids": [
-    "EXT-F-1003-T04"
-  ],
+  "case_ids": ["EXT-F-1003-T04"],
   "title": "Settings full-reload harness replaces original absent-theme baseline with explicit System",
   "surface": "Native Settings acceptance harness",
   "auth_mode": "guest; member/admin runners unchanged",
@@ -63,10 +61,7 @@
     "native_acceptance": "FAIL / INCOMPLETE: T04 observed the absent theme key and absent settings container after the first full extension reload, and Dark/Light/System plus panel reload assertions passed. The complete T04 case failed later when restoring the absent baseline after choice cycles; restorationFailureStage=restore_baseline_select. No product-pass claim.",
     "independent_review": "pending parent review",
     "release": "pending",
-    "fix_commits": [
-      "011558f5c8ca113021c1cd20c9c8466867731755",
-      "3b21fa6db"
-    ],
+    "fix_commits": ["011558f5c8ca113021c1cd20c9c8466867731755", "3b21fa6db"],
     "independent_source_review": "PASS: docs/stabilization/reports/ext-d-0220-independent-review-20261012.json",
     "independent_native_review": "pending; do not close"
   },

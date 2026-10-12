@@ -45,9 +45,7 @@
       "fail": 1,
       "unverified": 7
     },
-    "failed_case_ids": [
-      "EXT-F-1003-T04"
-    ],
+    "failed_case_ids": ["EXT-F-1003-T04"],
     "unverified_case_ids": [
       "EXT-F-1003-T16",
       "EXT-F-1003-T19",
