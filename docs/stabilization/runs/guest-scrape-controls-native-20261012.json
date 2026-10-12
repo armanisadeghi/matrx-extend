@@ -34,10 +34,26 @@
     "cleanup": "closed the test tab; no shared fixture or account state changed"
   },
   "cases": [
-    {"case_id": "EXT-F-1007-T05", "status": "unverified", "reason": "Fixture capture was refused before article editor opened."},
-    {"case_id": "EXT-F-1007-T06", "status": "unverified", "reason": "Fixture capture was refused before article editor opened."},
-    {"case_id": "EXT-F-1007-T07", "status": "unverified", "reason": "Fixture capture was refused before article pane opened."},
-    {"case_id": "EXT-F-1007-T08", "status": "unverified", "reason": "Fixture capture was refused before result tabs rendered."}
+    {
+      "case_id": "EXT-F-1007-T05",
+      "status": "unverified",
+      "reason": "Fixture capture was refused before article editor opened."
+    },
+    {
+      "case_id": "EXT-F-1007-T06",
+      "status": "unverified",
+      "reason": "Fixture capture was refused before article editor opened."
+    },
+    {
+      "case_id": "EXT-F-1007-T07",
+      "status": "unverified",
+      "reason": "Fixture capture was refused before article pane opened."
+    },
+    {
+      "case_id": "EXT-F-1007-T08",
+      "status": "unverified",
+      "reason": "Fixture capture was refused before result tabs rendered."
+    }
   ],
   "limitations": [
     "No requested product case was exercised; no inventory result changed.",

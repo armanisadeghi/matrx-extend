@@ -26,10 +26,26 @@
     "capture_smoke": "not run"
   },
   "cases": [
-    {"case_id": "EXT-F-1007-T05", "status": "unverified", "reason": "No owned HTTP fixture could be served in the required existing profile through an admitted command."},
-    {"case_id": "EXT-F-1007-T06", "status": "unverified", "reason": "No owned HTTP fixture could be served in the required existing profile through an admitted command."},
-    {"case_id": "EXT-F-1007-T07", "status": "unverified", "reason": "No owned HTTP fixture could be served in the required existing profile through an admitted command."},
-    {"case_id": "EXT-F-1007-T08", "status": "unverified", "reason": "No owned HTTP fixture could be served in the required existing profile through an admitted command."}
+    {
+      "case_id": "EXT-F-1007-T05",
+      "status": "unverified",
+      "reason": "No owned HTTP fixture could be served in the required existing profile through an admitted command."
+    },
+    {
+      "case_id": "EXT-F-1007-T06",
+      "status": "unverified",
+      "reason": "No owned HTTP fixture could be served in the required existing profile through an admitted command."
+    },
+    {
+      "case_id": "EXT-F-1007-T07",
+      "status": "unverified",
+      "reason": "No owned HTTP fixture could be served in the required existing profile through an admitted command."
+    },
+    {
+      "case_id": "EXT-F-1007-T08",
+      "status": "unverified",
+      "reason": "No owned HTTP fixture could be served in the required existing profile through an admitted command."
+    }
   ],
   "limitations": [
     "No product case was exercised and no inventory status changed.",
