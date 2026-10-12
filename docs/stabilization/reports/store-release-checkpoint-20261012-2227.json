@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-12T22:27:13Z",
+  "lane": "Store rejection and release eligibility only",
+  "primary_item_id": "hnfolienncfklkgmdjjmhhegglimlamg",
+  "source": {
+    "local_head": "c2205e2daab3936b703b68d5a95404e7ce2e6d61",
+    "fetched_origin_main": "c2205e2daab3936b703b68d5a95404e7ce2e6d61",
+    "package_version": "0.2.509",
+    "lockfile_print_version": "0.12.34",
+    "working_tree_at_check": "clean",
+    "exact_source_ci_run": 38316662318,
+    "exact_source_ci_state_at_check": "pending",
+    "exact_source_focused_run": 38316662308,
+    "exact_source_focused_state_at_check": "in_progress"
+  },
+  "rejection": {
+    "evidence_basis": "Existing canonical common-docs systems/apps/extension/CHROME-WEB-STORE.md official-mail record; no fresh email body read in this lane",
+    "received_at_utc": "2026-10-12T05:10:00Z",
+    "reason_reference": "Blue Argon",
+    "routing_id": "FZSL",
+    "reason": "Manifest V3 remotely hosted code: chunks/jspdf.es.min-BeFHQiId.js contains the PDFObject CDN executable-script loader",
+    "rejected_version": null,
+    "version_limit": "The email does not identify a version; do not assign the rejection to last-observed pending 0.2.479 without private dashboard proof."
+  },
+  "store_state": {
+    "last_recorded_public_version": "0.2.205",
+    "last_observed_private_pending_version": "0.2.479",
+    "fresh_authenticated_dashboard": "unverified",
+    "fresh_email_body": "unverified",
+    "browser_boundary": "CUA getTab on the existing authenticated rejection tab timed out twice at Emulation.setFocusEmulationEnabled. Native CUA selected the existing Gmail tab but its page body was blank. Parent directed stopping after these access failures; no alternate CDP, dashboard navigation, credential retrieval or Store API workaround was attempted."
+  },
+  "bounded_source_verification": {
+    "remote_loader_regression_command": "node --test scripts/detect-remote-script-loader.test.mjs",
+    "remote_loader_regression_result": "4 passed; includes forcing the emitted-code gate to reject the captured loader with a dollar-sign minified script handle",
+    "typecheck_command": "pnpm compile",
+    "typecheck_exit_code": 0,
+    "installed_print_inspection": "Installed 0.12.34 ESM/CJS PDF and labels modules contain pdfobjectnewwindow branches throwing Remote PDF viewers are unavailable; use output('blob') or save().",
+    "scope_limit": "Source and installed dependency evidence only; no replacement Store ZIP exists or was scanned, and no exact-current-candidate guest/non-admin native acceptance was established."
+  },
+  "release_blockers": {
+    "modeled_spend_command": "python3 scripts/check_workflow_runner_cost.py --summary",
+    "modeled_spend_exit_code": 1,
+    "modeled_billed_usd_per_week": 250.04,
+    "ceiling_usd_per_week": 100,
+    "aidream_usd_per_week": 250.04,
+    "matrx_extend_usd_per_week": 0,
+    "private_runner_admission": {
+      "run_id": 38313735661,
+      "job_id": 115025313399,
+      "steps": 0,
+      "conclusion": "failure",
+      "annotation_verified_via": "gh api repos/AI-Matrix-Engine/aidream/check-runs/115025313399/annotations",
+      "annotation": "The job was not started because recent account payments have failed or your spending limit needs to be increased. Please check the 'Billing & plans' section in your settings",
+      "limit": "GitHub does not distinguish the failed-payment and spending-limit alternatives in this annotation."
+    },
+    "additional_required_proof": [
+      "Current authenticated primary-item dashboard state after rejection",
+      "Green exact-source release gates on synchronized main",
+      "Exact replacement Store ZIP manifest, policy surface, emitted-code scan and digest",
+      "Exact-candidate public guest and signed-in non-admin acceptance"
+    ]
+  },
+  "decision": {
+    "release_eligible": false,
+    "hosted_dispatch": false,
+    "local_build_or_release": false,
+    "upload": false,
+    "resubmission": false,
+    "baseline_changed": false,
+    "workflow_or_budget_changed": false,
+    "next_action": "The account owner must resolve GitHub's billing/spending admission failure; the modeled weekly cost gate must also clear with substantiated savings. Re-establish permitted authenticated primary-item dashboard access and exact status. After both blockers clear, synchronize main, obtain exact-source green checks, use the guarded hosted release, then scan and accept its exact Store ZIP before submission. Preserve any pending submission until its actual status is known."
+  },
+  "related_evidence": [
+    "docs/stabilization/reports/store-release-gates-20261012.json",
+    "docs/stabilization/reports/store-release-followthrough-20261011.json",
+    "docs/stabilization/reports/store-api-access-20261010.json"
+  ]
+}
