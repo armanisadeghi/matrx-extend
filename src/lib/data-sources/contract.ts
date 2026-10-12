@@ -192,7 +192,8 @@ function patternMatches(pattern: { host: string; path: string }, url: URL): bool
   try {
     return (
       new RegExp(pattern.host, 'i').test(url.hostname) &&
-      new RegExp(pattern.path, 'i').test(url.pathname)
+      // Path plus query, as the server matches it: a Google Maps place link carries its id in `?q=place_id:`.
+      new RegExp(pattern.path, 'i').test(url.pathname + url.search)
     );
   } catch {
     return false;

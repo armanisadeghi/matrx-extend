@@ -105,6 +105,27 @@ describe('live data sources', () => {
     expect(matchSourceForUrl('https://www.trustpilot.com/categories', c.sources)).toBeNull();
     expect(estimatePoints(c.sources[0] as never, 5)).toBe(150);
   });
+  it('matches the server pattern against path plus query', () => {
+    const c = parseCatalog({
+      sources: [
+        {
+          key: 'maps',
+          label: 'Google Maps place',
+          input: { kind: 'url' },
+          url_pattern: { host: '(^|\\.)google\\.com$', path: '^/maps/place/.*place_id' },
+          verified: true,
+          points_per_record: 30,
+        },
+      ],
+    });
+    expect(
+      matchSourceForUrl(
+        'https://www.google.com/maps/place/?q=place_id:ChIJN1t_tDeuEmsRUsoyG83frY4',
+        c.sources,
+      )?.key,
+    ).toBe('maps');
+    expect(matchSourceForUrl('https://www.google.com/maps/place/Sydney', c.sources)).toBeNull();
+  });
   it('builds the web table url', () => {
     expect(tableUrl('https://aimatrx.com/', 'abc')).toBe('https://aimatrx.com/data/abc');
   });
