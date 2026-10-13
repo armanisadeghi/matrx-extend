@@ -30,10 +30,10 @@ import {
 import { saveToSwipeFile } from '@/lib/swipe-file/save';
 import { useSwipeFileStore } from '@/state/swipe-file';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import { ArrowLeft, Bookmark, ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { StoredMedia } from './StoredMedia';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 const message = (cause: unknown) =>
   cause instanceof Error ? cause.message : 'Could not complete this action.';

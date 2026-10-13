@@ -28,9 +28,9 @@ import { type RunPhase, captureDrivenTab, runBatch } from '@/lib/capture-ladder/
 import type { Handoff } from '@/lib/capture-ladder/types';
 import { Badge, Button, BasicTextarea as Textarea } from '@ai-matrx/design-system';
 import { formatDurationSeconds } from '@ai-matrx/kit/format';
+import { withReferral } from '@ai-matrx/kit/outbound';
 import { ExternalLink, Loader2, RefreshCw } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { withReferral } from "@ai-matrx/kit/outbound";
 
 const PHASE_LABEL: Record<RunPhase, string> = {
   claiming: 'Taking it…',

@@ -12,9 +12,9 @@
  */
 
 import { cn } from '@/lib/utils';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import ReactMarkdown, { defaultUrlTransform, type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 export interface MarkdownViewProps {
   content: string;

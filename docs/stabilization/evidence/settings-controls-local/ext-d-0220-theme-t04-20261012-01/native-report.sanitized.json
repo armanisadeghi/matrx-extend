@@ -1,0 +1,910 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0220-theme-t04-20261012-01",
+  "defect_id": "EXT-D-0220",
+  "case_id": "EXT-F-1003-T04",
+  "result": "T04 all criteria passed; independent native review pending",
+  "auth": {
+    "role": "guest",
+    "signed_out": true
+  },
+  "build": {
+    "source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
+    "ci_run_id": 38323077277,
+    "ci_attempt": 1,
+    "ci_conclusion": "success",
+    "artifact_id": 11779353985,
+    "artifact_digest": "sha256:e6ecb243273238079a6f7d18c7e2ec154b9bd0ecf9f1bb0c29c91918a64a665f",
+    "import_status": "current_pushed_source",
+    "compatibility": "exact-source",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "store_eligible": false
+  },
+  "browser": {
+    "name": "Chrome for Testing",
+    "version": "151.0.7922.34",
+    "playwright_version": "1.56.1",
+    "isolated_profile": true
+  },
+  "t04": {
+    "status": "pass",
+    "criteria": [
+      {
+        "name": "Dark changes UI, persisted preference, and applied appearance",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Dark",
+          "stored": "dark",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": true,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(39, 39, 42)",
+            "body": "rgb(39, 39, 42)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Dark survives panel reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Dark",
+          "stored": "dark",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": true,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(39, 39, 42)",
+            "body": "rgb(39, 39, 42)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Light changes UI, persisted preference, and applied appearance",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Light",
+          "stored": "light",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Light survives panel reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Light",
+          "stored": "light",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "System changes UI, persisted preference, and applied appearance",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": "system",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "System survives panel reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": "system",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Original theme baseline restored after panel reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "before first extension reload: original Theme preference restored",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "full extension reload: pre-run Theme matches saved baseline",
+        "status": "pass",
+        "evidence": {
+          "before": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          },
+          "expectedValue": "system",
+          "expectedLabel": "System",
+          "expectedStoredPresent": false,
+          "expectedStoragePresent": false
+        }
+      },
+      {
+        "name": "full extension reload: initial: original preference matches",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "full extension reload: Dark changes visible and stored preference",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Dark",
+          "stored": "dark",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": true,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(39, 39, 42)",
+            "body": "rgb(39, 39, 42)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "full extension reload: Dark extension worker and panel were replaced",
+        "status": "pass",
+        "evidence": {
+          "managementReloadClicked": true,
+          "oldTargetsRetired": true,
+          "workerReplaced": true,
+          "panelReplaced": true,
+          "replacementTargetChanged": true,
+          "lifecyclePredicatePassed": true
+        }
+      },
+      {
+        "name": "full extension reload: Dark survives full extension reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Dark",
+          "stored": "dark",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": true,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(39, 39, 42)",
+            "body": "rgb(39, 39, 42)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "full extension reload: Light changes visible and stored preference",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Light",
+          "stored": "light",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "full extension reload: Light extension worker and panel were replaced",
+        "status": "pass",
+        "evidence": {
+          "managementReloadClicked": true,
+          "oldTargetsRetired": true,
+          "workerReplaced": true,
+          "panelReplaced": true,
+          "replacementTargetChanged": true,
+          "lifecyclePredicatePassed": true
+        }
+      },
+      {
+        "name": "full extension reload: Light survives full extension reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Light",
+          "stored": "light",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "full extension reload: original Theme preference restored",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "full extension reload: original preference restored before extension reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "full extension reload: System extension worker and panel were replaced",
+        "status": "pass",
+        "evidence": {
+          "managementReloadClicked": true,
+          "oldTargetsRetired": true,
+          "workerReplaced": true,
+          "panelReplaced": true,
+          "replacementTargetChanged": true,
+          "lifecyclePredicatePassed": true
+        }
+      },
+      {
+        "name": "full extension reload: System survives full extension reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "full extension reload: original preference restored after extension reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      }
+    ],
+    "panel_document_reload": [
+      {
+        "name": "Dark changes UI, persisted preference, and applied appearance",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Dark",
+          "stored": "dark",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": true,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(39, 39, 42)",
+            "body": "rgb(39, 39, 42)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Dark survives panel reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Dark",
+          "stored": "dark",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": true,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(39, 39, 42)",
+            "body": "rgb(39, 39, 42)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Light changes UI, persisted preference, and applied appearance",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Light",
+          "stored": "light",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Light survives panel reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Light",
+          "stored": "light",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "System changes UI, persisted preference, and applied appearance",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": "system",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "System survives panel reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": "system",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Original theme baseline restored after panel reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      }
+    ],
+    "full_extension_reload": [
+      {
+        "name": "pre-run Theme matches saved baseline",
+        "status": "pass",
+        "evidence": {
+          "before": {
+            "activeSettings": true,
+            "count": 1,
+            "selected": "System",
+            "stored": null,
+            "storedPresent": false,
+            "storagePresent": false,
+            "darkClass": false,
+            "systemDark": false,
+            "renderedBackgroundMatches": true,
+            "renderedBackgrounds": {
+              "token": "rgb(244, 244, 245)",
+              "body": "rgb(244, 244, 245)",
+              "root": null,
+              "activePanel": "rgba(0, 0, 0, 0)"
+            }
+          },
+          "expectedValue": "system",
+          "expectedLabel": "System",
+          "expectedStoredPresent": false,
+          "expectedStoragePresent": false
+        }
+      },
+      {
+        "name": "initial: original preference matches",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Dark changes visible and stored preference",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Dark",
+          "stored": "dark",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": true,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(39, 39, 42)",
+            "body": "rgb(39, 39, 42)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Dark extension worker and panel were replaced",
+        "status": "pass",
+        "evidence": {
+          "managementReloadClicked": true,
+          "oldTargetsRetired": true,
+          "workerReplaced": true,
+          "panelReplaced": true,
+          "replacementTargetChanged": true,
+          "lifecyclePredicatePassed": true
+        }
+      },
+      {
+        "name": "Dark survives full extension reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Dark",
+          "stored": "dark",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": true,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(39, 39, 42)",
+            "body": "rgb(39, 39, 42)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Light changes visible and stored preference",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Light",
+          "stored": "light",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "Light extension worker and panel were replaced",
+        "status": "pass",
+        "evidence": {
+          "managementReloadClicked": true,
+          "oldTargetsRetired": true,
+          "workerReplaced": true,
+          "panelReplaced": true,
+          "replacementTargetChanged": true,
+          "lifecyclePredicatePassed": true
+        }
+      },
+      {
+        "name": "Light survives full extension reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "Light",
+          "stored": "light",
+          "storedPresent": true,
+          "storagePresent": true,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "original Theme preference restored",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "original preference restored before extension reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "System extension worker and panel were replaced",
+        "status": "pass",
+        "evidence": {
+          "managementReloadClicked": true,
+          "oldTargetsRetired": true,
+          "workerReplaced": true,
+          "panelReplaced": true,
+          "replacementTargetChanged": true,
+          "lifecyclePredicatePassed": true
+        }
+      },
+      {
+        "name": "System survives full extension reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      },
+      {
+        "name": "original preference restored after extension reload",
+        "status": "pass",
+        "evidence": {
+          "activeSettings": true,
+          "count": 1,
+          "selected": "System",
+          "stored": null,
+          "storedPresent": false,
+          "storagePresent": false,
+          "darkClass": false,
+          "systemDark": false,
+          "renderedBackgroundMatches": true,
+          "renderedBackgrounds": {
+            "token": "rgb(244, 244, 245)",
+            "body": "rgb(244, 244, 245)",
+            "root": null,
+            "activePanel": "rgba(0, 0, 0, 0)"
+          }
+        }
+      }
+    ],
+    "lifecycle": {
+      "management_reload_clicked": true,
+      "old_targets_retired": true,
+      "worker_replaced": true,
+      "panel_replaced": true
+    },
+    "absent_baseline": {
+      "selection": "System",
+      "theme_key_present": false,
+      "settings_container_present": false,
+      "rendered_background_matches": true,
+      "verified_before_first_extension_reload": true,
+      "verified_after_full_extension_reload": true,
+      "verified_after_final_restoration": true
+    }
+  },
+  "broader_runner": {
+    "overall_status": "fail",
+    "scope": "The runner also executed other Settings cases; its process exited 1 despite T04 status pass. No broader Settings result is claimed.",
+    "child_exit_code": 1
+  },
+  "resource": {
+    "admitted": true,
+    "resource_invalid": false,
+    "child_exit_code": 1,
+    "final_decision": "child_failed",
+    "journal": "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01.jsonl",
+    "cleanup": "Guard terminal recorded child_failed with resourceInvalid=false; no owned Chrome or runner remains; native harness removed its temporary Chrome profile. Empty run-specific TMPDIR/profile container retained."
+  },
+  "raw_report": {
+    "path": "test-results/settings-local-controls-acceptance.json (ignored; not committed)",
+    "sha256": "d4b82a234d090b9403e923c1293d56f71edb58d15a86608a76b5f830d8c0f7ee"
+  },
+  "t10_surrounding_result": {
+    "case_id": "EXT-F-1003-T10",
+    "status": "fail",
+    "failure_stage": "initial_baseline_observation",
+    "restoration_failure_stage": "not_failed",
+    "first_choice_transport_class": "none",
+    "restoration_transport_class": "other",
+    "expected_default_mode": {
+      "selection": "Ask before acting",
+      "theme_key_present": true,
+      "settings_container_present": true
+    },
+    "observed_before_recheck": {
+      "selection": "Ask before acting",
+      "theme_key_present": false,
+      "settings_container_present": false
+    },
+    "interpretation": "Surrounding T10 full-extension recheck failed before testing the first choice; do not claim broad Settings acceptance or infer a product failure from this harness observation."
+  }
+}

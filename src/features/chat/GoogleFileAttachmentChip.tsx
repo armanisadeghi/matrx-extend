@@ -23,6 +23,7 @@ import { listRegisteredGoogleFiles } from '@/lib/google/files';
 import { cn } from '@/lib/utils';
 import { useGoogleFilesStore } from '@/state/google-files';
 import { Popover, PopoverContent, PopoverTrigger } from '@ai-matrx/design-system';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import {
   AlertTriangle,
   Check,
@@ -33,7 +34,6 @@ import {
   Sheet,
 } from 'lucide-react';
 import { useCallback, useState } from 'react';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 export function GoogleFileAttachmentChip() {
   const items = useGoogleFilesStore((s) => s.items);

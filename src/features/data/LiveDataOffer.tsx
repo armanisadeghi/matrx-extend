@@ -13,9 +13,9 @@ import {
 } from '@/lib/data-sources/contract';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { formatCount } from '@ai-matrx/kit/format';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import { Loader2, Table2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 /**
  * "Get as table" — offered when the current page belongs to a live-data source in the server's

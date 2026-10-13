@@ -28,13 +28,13 @@ import type {
   ChatOrganization,
 } from '@ai-matrx/chat/host';
 import { createMemoryNavigation, createUnhostedWindows, createWebPrefs } from '@ai-matrx/chat/host';
+import { withReferral } from '@ai-matrx/kit/outbound';
 import { createAiWatchWindowOpener } from './ai-watch-opener';
 import { browserDomContextSource, isBrowserDeviceRef } from './browser-dom-source';
 import { registerExtensionComposerExtensions } from './composer-extensions';
 import { extensionPageContextSource } from './context-source';
 import { extensionKnobs } from './knobs';
 import { registerExtensionToolRenderers } from './tool-renderers';
-import { withReferral } from "@ai-matrx/kit/outbound";
 
 /** The panel's last chat address survives a reopen (session storage); a side panel's own URL never moves. */
 const ADDRESS_KEY = 'matrx-extend:chat-address';

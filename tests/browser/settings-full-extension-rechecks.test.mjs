@@ -159,6 +159,7 @@ test('inner restoration serialization rejects unknown stages and strips arbitrar
 
 function fullRestartFixture({
   absentTheme = false,
+  absentMode = false,
   omitChoiceDriver = false,
   baselineStoragePresent = false,
   failBaselineRestore = null,
@@ -192,6 +193,13 @@ function fullRestartFixture({
       stored: null,
       storedPresent: false,
       storagePresent: baselineStoragePresent,
+    });
+  if (absentMode)
+    Object.assign(states.T10, {
+      selected: 'Ask before acting',
+      stored: null,
+      storedPresent: false,
+      storagePresent: false,
     });
   const calls = { reloads: [], options: [], chats: [], caseRunners: [] };
   let settingsCalls = 0;
@@ -243,13 +251,14 @@ function fullRestartFixture({
       if (script.includes('const originalStoragePresent =')) {
         if (failBaselineRestore === 'remove_absent_key')
           throw new TypeError('private token secret');
-        Object.assign(states.T04, {
+        const restored = script.includes('"defaultPermissionMode"') ? states.T10 : states.T04;
+        Object.assign(restored, {
           stored: null,
           storedPresent: false,
           storagePresent: baselineStoragePresent,
         });
       }
-      return { ...states.T04 };
+      return { ...(script.includes('"defaultPermissionMode"') ? states.T10 : states.T04) };
     },
     async click(panel, kind, label) {
       assert.equal(panel, activePanel);
@@ -265,6 +274,8 @@ function fullRestartFixture({
         const state = states[preference.caseId];
         state.selected = label;
         state.stored = value;
+        if (preference.caseId === 'T10' && absentMode)
+          Object.assign(state, { storedPresent: true, storagePresent: true });
         if (preference.caseId === 'T04') {
           state.darkClass = value === 'dark';
           if (absentTheme) Object.assign(state, { storedPresent: true, storagePresent: true });
@@ -497,7 +508,7 @@ test('each nonbaseline theme, mode, and capture choice survives its own real rep
   await f.run();
   const [theme, mode, sections, autoScrape, scrapeMode] = f.reportCases;
   assert.equal(theme.fullExtensionReload.status, 'pass');
-  assert.equal(mode.fullExtensionReload.status, 'pass');
+  assert.equal(mode.fullExtensionReload.status, 'pass', JSON.stringify(mode.fullExtensionReload));
   assert.equal(sections.fullExtensionReload.status, 'pass');
   assert.equal(autoScrape.fullExtensionReload.downstreamCapture.status, 'unverified');
   assert.equal(scrapeMode.fullExtensionReload.status, 'pass');
@@ -534,6 +545,19 @@ test('each nonbaseline theme, mode, and capture choice survives its own real rep
     ),
     true,
   );
+});
+
+test('implicit Ask survives T10 replacement and is restored without creating a Settings container', async () => {
+  const f = fullRestartFixture({ absentMode: true });
+  await f.run();
+  const mode = f.reportCases.find((item) => item.id.endsWith('T10'));
+  assert.equal(mode.fullExtensionReload.status, 'pass', JSON.stringify(mode.fullExtensionReload));
+  assert.equal(f.states.T10.selected, 'Ask before acting');
+  assert.equal(f.states.T10.stored, null);
+  assert.equal(f.states.T10.storedPresent, false);
+  assert.equal(f.states.T10.storagePresent, false);
+  assert.ok(f.calls.chats.some(({ mode }) => mode === 'act'));
+  assert.ok(f.calls.options.some(([id, label]) => id === 'T10' && label === 'Act without asking'));
 });
 
 test('a failed new-chat check still restores the original mode through another extension restart', async () => {

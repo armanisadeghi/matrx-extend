@@ -213,7 +213,7 @@ export async function runGuestPreferenceCase(
       await driver.openSection(panel, preference.section);
       let current = await observeGuestPreference(panel, preference, driver);
       if (
-        !themeBaselineSelectionMatches(
+        !baselineSelectionMatches(
           current,
           baselineValue,
           baselineLabel,
@@ -225,7 +225,7 @@ export async function runGuestPreferenceCase(
           await driver.click(panel, 'settings-select', preference.label);
           await driver.click(panel, 'option', baselineLabel);
         } else {
-          await restoreAbsentThemePreference(panel, preference, initial.storagePresent, driver);
+          await restoreAbsentPreference(panel, preference, initial.storagePresent, driver);
         }
       }
       await reloadSettings(panel);
@@ -234,7 +234,7 @@ export async function runGuestPreferenceCase(
         'T04_original_baseline_after_panel_reload',
         () => observeGuestPreference(panel, preference, driver),
         (state) =>
-          themeBaselineSelectionMatches(
+          baselineSelectionMatches(
             state,
             baselineValue,
             baselineLabel,
@@ -243,7 +243,7 @@ export async function runGuestPreferenceCase(
           ) && themeAppearanceMatches(state, baselineValue),
       );
       const restored =
-        themeBaselineSelectionMatches(
+        baselineSelectionMatches(
           current,
           baselineValue,
           baselineLabel,
@@ -281,7 +281,7 @@ export async function runGuestThemeRenderingProbe(
   assert.ok(baselineChoice, 'theme_probe_requires_visible_baseline');
   const [baselineValue, baselineLabel] = baselineChoice;
   const baselineWasStored = initial.storedPresent === true;
-  const baselineMatches = themeBaselineSelectionMatches(
+  const baselineMatches = baselineSelectionMatches(
     initial,
     baselineValue,
     baselineLabel,
@@ -331,7 +331,7 @@ export async function runGuestThemeRenderingProbe(
     let observed = await observeGuestPreference(panel, preference, driver);
     if (
       baselineWasStored &&
-      !themeBaselineSelectionMatches(
+      !baselineSelectionMatches(
         observed,
         baselineValue,
         baselineLabel,
@@ -345,7 +345,7 @@ export async function runGuestThemeRenderingProbe(
         'theme_probe_original_baseline_restored',
         () => observeGuestPreference(panel, preference, driver),
         (state) =>
-          themeBaselineSelectionMatches(
+          baselineSelectionMatches(
             state,
             baselineValue,
             baselineLabel,
@@ -354,12 +354,12 @@ export async function runGuestThemeRenderingProbe(
           ),
       );
     } else if (!baselineWasStored) {
-      await restoreAbsentThemePreference(panel, preference, initial.storagePresent, driver);
+      await restoreAbsentPreference(panel, preference, initial.storagePresent, driver);
       observed = await driver.waitFor(
         'theme_probe_original_unpersisted_baseline_restored',
         () => observeGuestPreference(panel, preference, driver),
         (state) =>
-          themeBaselineSelectionMatches(
+          baselineSelectionMatches(
             state,
             baselineValue,
             baselineLabel,
@@ -368,7 +368,7 @@ export async function runGuestThemeRenderingProbe(
           ),
       );
     }
-    const restored = themeBaselineSelectionMatches(
+    const restored = baselineSelectionMatches(
       observed,
       baselineValue,
       baselineLabel,
@@ -390,7 +390,7 @@ export async function runGuestThemeRenderingProbe(
   if (primaryError) throw primaryError;
 }
 
-function themeBaselineSelectionMatches(observed, value, label, stored, storagePresent) {
+function baselineSelectionMatches(observed, value, label, stored, storagePresent) {
   return (
     observed?.activeSettings === true &&
     observed?.count === 1 &&
@@ -406,7 +406,7 @@ function themeAppearanceMatches(observed, value) {
   return observed?.darkClass === expectedDark && observed?.renderedBackgroundMatches === true;
 }
 
-async function restoreAbsentThemePreference(panel, preference, storagePresent, driver) {
+async function restoreAbsentPreference(panel, preference, storagePresent, driver) {
   const key = JSON.stringify('matrx.settings.v1');
   const field = JSON.stringify(preference.key);
   const originalStoragePresent = JSON.stringify(storagePresent);
@@ -426,7 +426,7 @@ async function restoreAbsentThemePreference(panel, preference, storagePresent, d
       }
       const parsed = JSON.parse(raw);
       if (!parsed.state || typeof parsed.state !== 'object')
-        throw new Error('theme_probe_settings_state_missing');
+        throw new Error('preference_settings_state_missing');
       delete parsed.state[${field}];
       await chrome.storage.local.set({ [${key}]: JSON.stringify(parsed) });
     })()`,
@@ -456,16 +456,17 @@ export function preferenceBaseline(observation, preference) {
 }
 
 export function preferenceBaselineMatches(observed, preference, baseline) {
-  if (preference.key !== 'theme' || baseline?.storedPresent === undefined)
+  if (baseline?.storedPresent === undefined)
     return preferenceMatches(observed, preference, baseline?.value, baseline?.label);
   return (
-    themeBaselineSelectionMatches(
+    baselineSelectionMatches(
       observed,
       baseline.value,
       baseline.label,
       baseline.storedPresent,
       baseline.storagePresent,
-    ) && themeAppearanceMatches(observed, baseline.value)
+    ) &&
+    (preference.key !== 'theme' || themeAppearanceMatches(observed, baseline.value))
   );
 }
 
@@ -527,9 +528,9 @@ export async function restoreGuestPreferenceBaseline(
       stage = 'select_option';
       await driver.click(panel, 'option', label);
     }
-    if (preference.key === 'theme' && baseline.storedPresent === false) {
+    if (baseline.storedPresent === false) {
       stage = 'remove_absent_key';
-      await restoreAbsentThemePreference(panel, preference, baseline.storagePresent, driver);
+      await restoreAbsentPreference(panel, preference, baseline.storagePresent, driver);
     }
     stage = 'observe_restored_baseline';
     const restored = await driver.waitFor(

@@ -47,6 +47,8 @@ import { Button, Popover, PopoverContent, PopoverTrigger, Skeleton } from '@ai-m
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
 import { formatCount, formatRelativeTime, isKnownNumber } from '@ai-matrx/kit/format';
+import { withReferral } from '@ai-matrx/kit/outbound';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle,
@@ -69,8 +71,6 @@ import {
   Wand2,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
-import { withReferral } from "@ai-matrx/kit/outbound";
 
 type TaskStatus =
   | 'idle'

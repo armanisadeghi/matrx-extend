@@ -27,9 +27,9 @@ import type { PendingAskUserRequest } from '@/lib/tools/types';
 import { useToolInbox } from '@/state/tool-inbox';
 import { Button, BasicInput as Input } from '@ai-matrx/design-system';
 import { BasicTextarea as Textarea } from '@ai-matrx/design-system';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import { ExternalLink, Mail, Send } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 function parseAddressList(raw: string): string[] {
   return raw

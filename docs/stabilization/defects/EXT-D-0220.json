@@ -41,7 +41,18 @@
   "build_receipt": {
     "source_base": "6285466d1762f6f1647d13d4d97ba050fc31fe77",
     "native_evidence_commit": "8d2d93da0",
-    "fresh_native_artifact": "pending",
+    "fresh_native_artifact": {
+      "task_source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
+      "source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
+      "ci_run_id": 38323077277,
+      "ci_attempt": 1,
+      "ci_conclusion": "success",
+      "artifact_id": 11779353985,
+      "artifact_digest": "sha256:e6ecb243273238079a6f7d18c7e2ec154b9bd0ecf9f1bb0c29c91918a64a665f",
+      "version": "0.2.509",
+      "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a"
+    },
     "native_artifact": {
       "source_sha": "fe631ec14c443d025dec04c1fa00795b1feaddb0",
       "task_source_sha": "c2205e2daab3936b703b68d5a95404e7ce2e6d61",
@@ -63,9 +74,18 @@
     "release": "pending",
     "fix_commits": ["011558f5c8ca113021c1cd20c9c8466867731755", "3b21fa6db"],
     "independent_source_review": "PASS: docs/stabilization/reports/ext-d-0220-independent-review-20261012.json",
-    "independent_native_review": "pending; do not close"
+    "independent_native_review": "pending; do not close",
+    "latest_native_candidate": {
+      "run_id": "ext-d-0220-theme-t04-20261012-01",
+      "evidence": "docs/stabilization/runs/ext-d-0220-theme-t04-20261012-01.json",
+      "t04": "PASS candidate: 21/21 native criteria, including absent theme-key and absent settings-container verification before, across, and after full extension reload; pending independent review.",
+      "t10_surrounding": "FAIL at initial_baseline_observation: expected Ask with preference key/container present, observed Ask with both absent; full runner exited 1. Preserve separately; diagnose before closure.",
+      "resource": "admitted=true; resourceInvalid=false; childExitCode=1; final=child_failed",
+      "independent_native_review": "pending",
+      "defect_status_transition": "none; remain in-fix until independent review and T10 diagnosis"
+    }
   },
-  "next_action": "Sol diagnosis and repair of restore_baseline_select using docs/stabilization/evidence/settings-controls-local/run-ext-d-0220-native-20261012-2252/native-report.sanitized.json; then a fresh guarded exact-source native retest and independent UI review.",
+  "next_action": "Independent peer review of the bounded T04 result and diagnosis of the T10 initial_baseline_observation failure; then determine whether D220 acceptance is met. Do not close or claim full Settings acceptance yet.",
   "transition_history": [
     {
       "at": "2026-10-12T22:20:31.150692+00:00",

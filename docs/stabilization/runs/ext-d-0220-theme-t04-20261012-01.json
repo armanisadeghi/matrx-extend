@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "id": "ext-d-0220-theme-t04-20261012-01",
+  "created_at_utc": "2026-10-12T23:48:04.952Z",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T04", "EXT-F-1003-T10"],
+  "defect_id": "EXT-D-0220",
+  "mode": "guest",
+  "status": "T04_pass_pending_independent_review; T10_failed_full_reload_baseline_observation",
+  "scope": "One guard-admitted native guest Settings run on exact CI development artifact; T04 case plus shared-runner T10 surrounding case.",
+  "build": {
+    "task_source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
+    "artifact_source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
+    "source_relationship": "exact-source",
+    "ci_run_id": 38323077277,
+    "ci_attempt": 1,
+    "ci_conclusion": "success",
+    "artifact_id": 11779353985,
+    "artifact_digest": "sha256:e6ecb243273238079a6f7d18c7e2ec154b9bd0ecf9f1bb0c29c91918a64a665f",
+    "import_status": "current_pushed_source",
+    "promotion": "imported with scripts/current-test-artifact.mjs and promoted with scripts/promote-ci-dev-artifact.mjs",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "2f71dec09b54bb524ee1bf852a7767abed3bc9b49658923f3175a66e9703232a",
+    "eligible_store": false
+  },
+  "browser": {
+    "name": "Chrome for Testing",
+    "version": "151.0.7922.34",
+    "playwright_version": "1.56.1",
+    "isolated_profile": true,
+    "auth": "signed-out guest",
+    "organization": "none; local guest preferences"
+  },
+  "resource": {
+    "preflight_journal": "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01-preflight.jsonl",
+    "run_journal": "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01.jsonl",
+    "admitted": true,
+    "resource_invalid": false,
+    "child_exit_code": 1,
+    "final_decision": "child_failed",
+    "cleanup": "Guard terminal recorded child_failed with resourceInvalid=false; no owned Chrome or runner remains; native harness removed its temporary Chrome profile. Empty run-specific TMPDIR/profile container retained."
+  },
+  "verdicts": {
+    "EXT-F-1003-T04": "case pass: 21/21 criteria; exact absent theme key and settings container restored before first full extension reload, preserved through reload, and restored after final restoration; all appearance and lifecycle assertions passed.",
+    "EXT-F-1003-T10": "fail at initial_baseline_observation; expected Ask with stored key/container present, but observed Ask with both absent. No later choice behavior was reached.",
+    "overall_settings_runner": "failed (child exit 1); no full Settings pass claim.",
+    "defect_closure": "pending independent native review and T10 diagnosis; no close transition."
+  },
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/resource-journal.sanitized.jsonl",
+    "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01-preflight.jsonl",
+    "docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01.jsonl"
+  ],
+  "raw_report_sha256": "d4b82a234d090b9403e923c1293d56f71edb58d15a86608a76b5f830d8c0f7ee",
+  "limits": [
+    "T04 is a bounded candidate pass only until an independent peer reviews the native result.",
+    "The broader runner exited 1 because T10 failed its initial full-reload baseline observation; preserve this as a separate surrounding failure.",
+    "This run establishes only guest behavior for the exact imported unpublished development artifact; member/admin, Store, and full Settings acceptance remain unverified."
+  ],
+  "next_action": "Independent peer reviews T04 and diagnoses T10 initial_baseline_observation before any D220 closure or rerun."
+}

@@ -17,9 +17,9 @@ import { Badge, Button } from '@ai-matrx/design-system';
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
 import { formatDurationMs } from '@ai-matrx/kit/format';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import { Camera, Loader2, Pencil, Play } from 'lucide-react';
 import { Suspense, lazy, useCallback, useEffect, useState } from 'react';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 const AnnotationEditor = lazy(() =>
   import('./AnnotationEditor').then((m) => ({ default: m.AnnotationEditor })),

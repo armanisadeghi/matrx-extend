@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "review_id": "ext-d-0220-native-peer-20261012",
+  "reviewed_run": "ext-d-0220-theme-t04-20261012-01",
+  "reviewed_commit": "e3c44d451",
+  "defect_id": "EXT-D-0220",
+  "review_scope": "Independent review of sanitized native guest T04 evidence and the surrounding T10 failure. No browser launched, product code changed, or broader Settings health inferred.",
+  "verdict_a": {
+    "status": "PASS_BOUNDED_T04",
+    "finding": "T04 earns a bounded guest product pass on the exact unpublished development artifact. The native report contains 21/21 passing T04 criteria: Dark, Light, and System UI/storage/rendering behavior; panel persistence; full extension worker and panel replacement; full-extension persistence; and exact original absent-key baseline restoration.",
+    "defect_acceptance": "The original regression is directly exercised: theme key and settings container are both absent before the first full extension reload, remain absent with System selected after the worker/panel replacement, and remain absent after the final restoration. This demonstrates the changed behavior the D220 acceptance requires and resolves the previous retest's restore_baseline_select failure.",
+    "prior_run": "The prior native run observed absent-key shape after its first extension reload but failed its later restoration step; it correctly earned no pass. This run supplies the missing final-restoration evidence.",
+    "scope_limit": "Guest only, one exact CI development artifact. No member/admin, Store, or whole-Settings claim."
+  },
+  "verdict_b": {
+    "status": "PASS_EVIDENCE_WITH_LIMITS",
+    "provenance": "The run receipt, sanitized native report, and committed evidence agree on CI run 38323077277 attempt 1, successful conclusion, artifact 11779353985, source SHA 8512a79ca1a30543c64a32cb8d2449b267ce75e1 matching main, exact-source import, artifact digest sha256:e6ecb243273238079a6f7d18c7e2ec154b9bd0ecf9f1bb0c29c91918a64a665f, extension ID cihdmkcdjjckfhjpgoedmgfpoljebaml, and isolated Chrome for Testing guest profile. The raw report SHA in the receipt matched the raw file when checked; the raw file is ignored and is not part of this report.",
+    "resource": "The guard admitted the run and recorded resourceInvalid=false with healthy watch samples. Its terminal decision is child_failed (exit 1), not a clean job-success decision; this corresponds to the separate T10 failure and does not make resource admission invalid. The committed cleanup record states no owned Chrome/runner remains and the temporary Chrome profile was removed; the empty run-specific TMPDIR/profile container remains.",
+    "live_observation": "The sanitized native report records selected option, persisted storage value and presence, theme class, system mode, rendered token/body colors, plus old-target retirement and replacement worker/panel identities. Those observations support T04 without relying on source inspection alone.",
+    "t10": "T10 failed at initial_baseline_observation before any choice transport: Ask was selected but both the expected stored key and settings container were absent. Restoration did not fail because it was not reached. This blocks a clean shared-runner result and requires separate T10 diagnosis; it neither negates T04's isolated checks nor proves a product defect.",
+    "limits": "The resource final decision is child_failed; no broader runner pass is claimed. Cleanup is based on the sanitized committed terminal record, not an independent process inspection."
+  },
+  "counts": {
+    "t04_criteria_passed": 21,
+    "t04_criteria_total": 21,
+    "t04_panel_reload_assertions": 7,
+    "t04_full_extension_reload_assertions": 13,
+    "t10": "failed at initial baseline observation; first choice not reached"
+  },
+  "open_items": [
+    "Diagnose the separate T10 initial baseline observation before closing EXT-D-0220.",
+    "Do not promote member/admin, Store, or entire Settings coverage from this guest T04 run."
+  ],
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/native-report.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/resource-journal.sanitized.jsonl",
+    "docs/stabilization/runs/ext-d-0220-theme-t04-20261012-01.json",
+    "docs/stabilization/defects/EXT-D-0220.json",
+    "docs/stabilization/reports/ext-d-0220-independent-review-20261012.json",
+    "docs/stabilization/runs/ext-d-0220-native-retest-20261012.json"
+  ]
+}

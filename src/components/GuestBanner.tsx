@@ -1,8 +1,8 @@
 import { ENV } from '@/config/env';
 import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@ai-matrx/design-system';
+import { withReferral } from '@ai-matrx/kit/outbound';
 import { LogIn, Sparkles } from 'lucide-react';
-import { withReferral } from "@ai-matrx/kit/outbound";
 
 /**
  * Slim banner shown to guests. Mounts at the top of ChatView (and any

@@ -7,9 +7,9 @@ import { cn } from '@/lib/utils';
 // 2026-09-07): the fleet had ~35 duration, ~18 relative-time and ~20 byte-size
 // twins with no correct owner until kit became one.
 import { formatCount, formatFileSize } from '@ai-matrx/kit/format';
+import { OutboundLink } from '@ai-matrx/kit/outbound-react';
 import { ImageOff } from 'lucide-react';
 import { useState } from 'react';
-import { OutboundLink } from "@ai-matrx/kit/outbound-react";
 
 /**
  * The one renderer for an SEO audit's collected values.
