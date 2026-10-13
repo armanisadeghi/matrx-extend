@@ -23,12 +23,18 @@
     "tests/browser/settings-full-extension-rechecks.test.mjs"
   ],
   "build_receipt": {
-    "native_source_sha": "8512a79ca1a30543c64a32cb8d2449b267ce75e1",
-    "native_ci_run_id": 38323077277,
-    "native_artifact_id": 11779353985,
-    "native_artifact_digest": "sha256:e6ecb243273238079a6f7d18c7e2ec154b9bd0ecf9f1bb0c29c91918a64a665f",
+    "native_source_sha": "83d9cdac6291553eb5eb3c34202111cac4caff69",
+    "native_ci_run_id": 38324834365,
+    "native_ci_attempt": 1,
+    "native_ci_conclusion": "success",
+    "native_artifact_id": 11780193069,
+    "native_artifact_digest": "sha256:8dc05a5e060adc245c0544c83217ebeb6db21fb5625811f81fdd7a4b9126556e",
+    "native_artifact_tree_sha256": "04689643d1488038e01aca592790dabfab992abf67ce3448ee19bbd7d14906a6",
+    "native_version": "0.2.509",
+    "native_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "native_run_record": "docs/stabilization/runs/ext-d-0223-t10-native-20261013-01.json",
     "repair_base_sha": "1bf201b287233b6402bf7f201972aace5e33dba5",
-    "repair_native_artifact": "pending"
+    "repair_native_artifact": "imported and promoted from successful exact-source CI run; browser admission refused before launch"
   },
   "reproducibility": "Deterministic harness ordering; native report and focused production callback regression agree.",
   "severity": "S2: false T10 failure and no full-extension mode acceptance",
@@ -48,10 +54,10 @@
     "compile": "pass",
     "lint": "pass with existing repository warnings",
     "independent_source_review": "pending",
-    "native_acceptance": "pending",
+    "native_acceptance": "blocked before browser launch: valid resource preflight refused RESOURCE_DISK_LOW at 6.08 GiB system/safety free space, below the 20 GiB minimum; no product state observed and no T10 credit",
     "release": "pending"
   },
-  "next_action": "Independent source review, then exact-path push and guarded exact-source native T10 plus surrounding Settings retest. Do not promote native T10 or overall Settings coverage from source tests.",
+  "next_action": "After safe system-volume recovery restores at least 20 GiB free, run a fresh admitted exact-source native T10 retest with the imported development artifact, then independently review the native evidence. Do not promote native T10 or overall Settings coverage from source tests or this refused attempt.",
   "transition_history": [
     {
       "at": "2026-10-12T23:54:47Z",

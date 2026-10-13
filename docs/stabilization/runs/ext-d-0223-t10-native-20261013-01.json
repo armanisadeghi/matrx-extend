@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "id": "ext-d-0223-t10-native-20261013-01",
+  "created_at_utc": "2026-10-13T00:11:24.815Z",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T10"],
+  "defect_id": "EXT-D-0223",
+  "mode": "guest",
+  "status": "blocked_resource_admission_zero_product_credit",
+  "scope": "Fresh exact-source CI development artifact verified and promoted; native Settings runner was not started because the resource guard refused admission.",
+  "build": {
+    "task_source_sha": "83d9cdac6291553eb5eb3c34202111cac4caff69",
+    "artifact_source_sha": "83d9cdac6291553eb5eb3c34202111cac4caff69",
+    "source_relationship": "exact-source",
+    "ci_run_id": 38324834365,
+    "ci_attempt": 1,
+    "ci_conclusion": "success",
+    "artifact_id": 11780193069,
+    "artifact_digest": "sha256:8dc05a5e060adc245c0544c83217ebeb6db21fb5625811f81fdd7a4b9126556e",
+    "import_status": "current_pushed_source",
+    "promotion": "imported with scripts/current-test-artifact.mjs and promoted with scripts/promote-ci-dev-artifact.mjs",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "04689643d1488038e01aca592790dabfab992abf67ce3448ee19bbd7d14906a6",
+    "eligible_store": false
+  },
+  "browser": {
+    "name": "Chrome for Testing",
+    "version": "151.0.7922.34",
+    "playwright_version": "1.62.1",
+    "isolated_profile": true,
+    "auth": "signed-out guest",
+    "organization": "none; local guest preferences",
+    "launched": false
+  },
+  "resource": {
+    "preflight_journal": "docs/stabilization/resource-journals/ext-d-0223-t10-native-20261013-01-preflight.jsonl",
+    "admitted": false,
+    "resource_invalid": false,
+    "child_exit_code": 2,
+    "final_decision": "refused",
+    "refusal_code": "RESOURCE_DISK_LOW",
+    "cleanup": "No browser or native runner remains. The empty owned external scratch directory was removed."
+  },
+  "verdicts": {
+    "EXT-F-1003-T10": "unverified; no product state observed and no product credit",
+    "EXT-F-1003-T04": "not exercised",
+    "overall_settings_runner": "not started",
+    "defect_transition": "none; remain in-fix"
+  },
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-local/run-ext-d-0223-t10-native-20261013-01/native-report.sanitized.json",
+    "docs/stabilization/resource-journals/ext-d-0223-t10-native-20261013-01-preflight.jsonl",
+    "test-results/ci-artifacts/83d9cdac6291553eb5eb3c34202111cac4caff69/38324834365-1/import-status.json",
+    "test-results/ci-dev-promotion-receipt.json"
+  ],
+  "next_action": "After safe system-volume recovery restores at least 20 GiB free, perform fresh resource admission and an exact-source native T10 retest, then obtain independent native review."
+}

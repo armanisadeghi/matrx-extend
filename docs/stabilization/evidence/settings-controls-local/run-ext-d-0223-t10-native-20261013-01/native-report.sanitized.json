@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0223-t10-native-20261013-01",
+  "defect_id": "EXT-D-0223",
+  "case_id": "EXT-F-1003-T10",
+  "result": "blocked_before_browser_launch",
+  "auth": {
+    "role": "guest",
+    "signed_out": true
+  },
+  "build": {
+    "source_sha": "83d9cdac6291553eb5eb3c34202111cac4caff69",
+    "ci_run_id": 38324834365,
+    "ci_attempt": 1,
+    "ci_conclusion": "success",
+    "artifact_id": 11780193069,
+    "artifact_digest": "sha256:8dc05a5e060adc245c0544c83217ebeb6db21fb5625811f81fdd7a4b9126556e",
+    "import_status": "current_pushed_source",
+    "promotion": "verified exact-source CI development artifact imported and promoted",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "04689643d1488038e01aca592790dabfab992abf67ce3448ee19bbd7d14906a6",
+    "store_eligible": false
+  },
+  "browser": {
+    "name": "Chrome for Testing",
+    "version": "151.0.7922.34",
+    "playwright_version": "1.62.1",
+    "isolated_profile_prepared": false,
+    "launched": false
+  },
+  "resource": {
+    "preflight_journal": "docs/stabilization/resource-journals/ext-d-0223-t10-native-20261013-01-preflight.jsonl",
+    "admitted": false,
+    "resource_invalid": false,
+    "child_exit_code": 2,
+    "final_decision": "refused",
+    "refusal_code": "RESOURCE_DISK_LOW",
+    "sample": {
+      "pressure_level": 1,
+      "available_memory_gib": 10.24,
+      "required_memory_gib": 4,
+      "one_minute_load": 4.24,
+      "logical_cpus": 10,
+      "cpu_busy_fraction": 0.20571428571428568,
+      "swap_used_mib": 3410.5,
+      "repo_free_gib": 1646.229290008545,
+      "profile_free_gib": 1646.229290008545,
+      "safety_free_gib": 6.0793609619140625,
+      "system_free_gib": 6.0793609619140625,
+      "minimum_free_disk_gib": 20
+    },
+    "cleanup": "No browser or acceptance runner launched. The owned external scratch directory was empty and removed; no resource lease remains."
+  },
+  "verdicts": {
+    "EXT-F-1003-T10": "unverified; no product state observed and no product credit",
+    "EXT-F-1003-T04": "not exercised by this attempt",
+    "overall_settings_runner": "not started",
+    "defect_status_changed": false
+  },
+  "limits": [
+    "This is a valid resource-admission refusal, not a product failure.",
+    "The required 20 GiB system-volume floor was not met; no setting or guard threshold was changed.",
+    "The run does not establish guest, member, admin, Store, or overall Settings health."
+  ],
+  "next_action": "After safe system-volume recovery restores at least 20 GiB free, perform a fresh resource admission and exact-source native T10 retest."
+}
