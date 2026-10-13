@@ -389,10 +389,11 @@ export function requireSettingsMemberDispatchAdmission({
   return true;
 }
 
-/** Guest Settings controls on the isolated B lane, from one frozen CI development artifact. */
+/** Reviewed guest Settings cases on the isolated B lane, from one frozen CI development artifact. */
 export function planHostedSettingsGuest({ lane, acceptanceCase, runnerLabel, ...input }) {
   if (lane !== 'B') refuse('HOSTED_SETTINGS_GUEST_LANE_REFUSED');
-  if (acceptanceCase !== 'settings-controls') refuse('HOSTED_SETTINGS_GUEST_CASE_REFUSED');
+  if (!['settings-controls', 'settings-auto-scrape-capture'].includes(acceptanceCase))
+    refuse('HOSTED_SETTINGS_GUEST_CASE_REFUSED');
   if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_SETTINGS_GUEST_RUNNER_REFUSED');
   if (!SHA.test(input.sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
   planHostedMemberData({ ...input, lane: 'A' });
@@ -406,7 +407,7 @@ export function planHostedSettingsGuest({ lane, acceptanceCase, runnerLabel, ...
       'main',
       ...[
         'acceptance_lane=B',
-        'acceptance_case=settings-controls',
+        `acceptance_case=${acceptanceCase}`,
         `requested_by=${DISPATCH_REQUESTER}`,
         'scrape_auth_mode=guest',
         'runner_label=macos-15-intel',
@@ -992,7 +993,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         refuse('HOSTED_NOTES_CASE_MODE_MISMATCH');
       if (settings && args.get('--case') !== 'settings-account-popover-member')
         refuse('HOSTED_SETTINGS_MEMBER_CASE_MODE_MISMATCH');
-      if (settingsGuest && args.get('--case') !== 'settings-controls')
+      if (
+        settingsGuest &&
+        !['settings-controls', 'settings-auto-scrape-capture'].includes(args.get('--case'))
+      )
         refuse('HOSTED_SETTINGS_GUEST_CASE_MODE_MISMATCH');
       if (notes || scrape || settings || settingsGuest)
         for (const key of args.keys())

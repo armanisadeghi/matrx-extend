@@ -966,7 +966,7 @@ if (process.argv[1].endsWith('/git')) {
     writeFileSync(join(dir, name), fake);
     chmodSync(join(dir, name), 0o700);
   }
-  const execute = (mode, change = {}, extra = []) => {
+  const execute = (mode, change = {}, extra = [], guestCase = 'settings-controls') => {
     for (const name of ['local', 'remote', 'history']) rmSync(`${log}.${name}`, { force: true });
     const scrape = mode.endsWith('-scrape');
     const settingsGuest = mode.endsWith('-settings-guest');
@@ -981,7 +981,7 @@ if (process.argv[1].endsWith('/git')) {
         scrape
           ? 'guest-scrape-development'
           : settingsGuest
-            ? 'settings-controls'
+            ? guestCase
             : 'settings-account-popover-member',
         ...(scrape ? ['--scrape-scope', 'seo-schema-empty', '--auth-mode', 'guest'] : []),
         '--runner-label',
@@ -1018,6 +1018,45 @@ if (process.argv[1].endsWith('/git')) {
         acceptanceCase: 'settings-controls',
       }).args,
     );
+    const capturePlan = execute('plan-settings-guest', {}, [], 'settings-auto-scrape-capture');
+    assert.equal(capturePlan.status, 0, capturePlan.stderr);
+    const captureExpected = [
+      'workflow',
+      'run',
+      'hosted-guest-acceptance.yml',
+      '--ref',
+      'main',
+      '-f',
+      'acceptance_lane=B',
+      '-f',
+      'acceptance_case=settings-auto-scrape-capture',
+      '-f',
+      'requested_by=extend-stabilization',
+      '-f',
+      'scrape_auth_mode=guest',
+      '-f',
+      'runner_label=macos-15-intel',
+      '-f',
+      'development_run_id=38205458398',
+      '-f',
+      'development_artifact_id=11730000001',
+    ];
+    assert.deepEqual(JSON.parse(capturePlan.stdout).plan.args, captureExpected);
+    for (const guestCase of ['settings-theme-rendering', 'settings-persistence', 'member-data']) {
+      const refused = execute('dispatch-settings-guest', {}, [], guestCase);
+      assert.notEqual(refused.status, 0);
+      assert.match(refused.stderr, /HOSTED_SETTINGS_GUEST_CASE_MODE_MISMATCH/);
+      assert.throws(() => readFileSync(log), /ENOENT/);
+    }
+    const captureExtra = execute(
+      'dispatch-settings-guest',
+      {},
+      ['--auth-mode', 'member'],
+      'settings-auto-scrape-capture',
+    );
+    assert.notEqual(captureExtra.status, 0);
+    assert.match(captureExtra.stderr, /HOSTED_ARGUMENT_INVALID/);
+    assert.throws(() => readFileSync(log), /ENOENT/);
     for (const [change, reason] of [
       [{ wrongArtifact: '11700000001' }, 'HOSTED_DEVELOPMENT_ARTIFACT_INVALID'],
       [
@@ -1117,6 +1156,19 @@ if (process.argv[1].endsWith('/git')) {
         lane: 'B',
         acceptanceCase: 'settings-controls',
       }).args,
+      '-R',
+      'armanisadeghi/matrx-extend',
+    ]);
+    rmSync(log);
+    const captureDispatch = execute(
+      'dispatch-settings-guest',
+      {},
+      [],
+      'settings-auto-scrape-capture',
+    );
+    assert.equal(captureDispatch.status, 0, captureDispatch.stderr);
+    assert.deepEqual(JSON.parse(readFileSync(log)), [
+      ...captureExpected,
       '-R',
       'armanisadeghi/matrx-extend',
     ]);
