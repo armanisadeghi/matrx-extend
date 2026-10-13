@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "run_id": 38342265985,
+  "report_status": "unverified",
+  "suite_counts": { "total": 20, "pass": 13, "fail": 0, "unverified": 7 },
+  "cases": [
+    {
+      "id": "EXT-F-1003-T04",
+      "status": "pass",
+      "counts": { "pass": 21, "fail": 0, "unverified": 0 },
+      "full_extension_initial": {
+        "visible": "System",
+        "stored": null,
+        "stored_present": false,
+        "settings_storage_present": false
+      },
+      "result": "Effective default observed from absent storage; preference changes survived worker/panel replacement; absent baseline restored."
+    },
+    {
+      "id": "EXT-F-1003-T10",
+      "status": "pass",
+      "counts": { "pass": 18, "fail": 0, "unverified": 0 },
+      "full_extension_initial": {
+        "visible": "Ask before acting",
+        "stored": null,
+        "stored_present": false,
+        "settings_storage_present": false
+      },
+      "result": "Effective default observed from absent storage; preference changes survived worker/panel replacement; absent baseline restored."
+    },
+    {
+      "id": "EXT-F-1003-T40",
+      "status": "unverified",
+      "counts": { "pass": 12, "fail": 0, "unverified": 1 },
+      "full_extension_initial": {
+        "settings_storage_present": false,
+        "auto_scrape_visible": false,
+        "auto_scrape_effective_stored": false,
+        "mode_visible": "Capture",
+        "mode_stored_present": false,
+        "mode_effective_stored": "capture"
+      },
+      "verified": [
+        "On/Off UI and storage agree",
+        "settings reload preserves switch",
+        "cleanup restores baseline"
+      ],
+      "unverified": ["background capture follows the persisted switch"],
+      "result": "Absent-container effective defaults and settings behavior pass; downstream capture observation is missing, so the whole case remains unverified."
+    },
+    {
+      "id": "EXT-F-1003-T67",
+      "status": "pass",
+      "counts": { "pass": 15, "fail": 0, "unverified": 0 },
+      "full_extension_initial": {
+        "settings_storage_present": false,
+        "auto_scrape_effective_stored": false,
+        "mode_visible": "Capture",
+        "mode_stored_present": false,
+        "mode_effective_stored": "capture"
+      },
+      "verified": [
+        "Scroll & capture selection persists",
+        "worker and panel replacement survives",
+        "Capture selection persists",
+        "pre-T67 Settings container restored after panel reload"
+      ],
+      "result": "Explicit absent-container entry/default and restoration all observed."
+    }
+  ],
+  "limit": "Bounded case evidence only; no global Settings health or D224 closure claim."
+}

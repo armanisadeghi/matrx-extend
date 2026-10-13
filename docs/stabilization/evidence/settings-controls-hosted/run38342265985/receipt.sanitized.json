@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "run_id": 38342265985,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38342265985",
+  "workflow_source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
+  "development_ci_run_id": 38341429896,
+  "focused_acceptance_run_id": 38341429861,
+  "development_artifact_id": 11787535752,
+  "development_artifact_sha256": "b20c57389269d12c533a33486ce334b2c52800f4672bb3a87a05515ce7ba35a2",
+  "hosted_result_artifact_id": 11786864558,
+  "hosted_result_artifact_name": "hosted-guest-38342265985-1",
+  "hosted_result_artifact_size": 73649,
+  "hosted_result_artifact_sha256": "afb70bd2f8a3f0348fa5c7d72de6cf6f3acf96d5027fca7947581fddade24b67",
+  "downloaded_zip_sha256_matches": true,
+  "build_tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+  "resource_valid": true,
+  "suite_status": "unverified",
+  "source_drift": "Evidence source 6f0a20f; main at evidence time 8569fadc1 differs only by package-watch metadata in scripts/package-twins.json. This is not latest-main product coverage.",
+  "product_credit": "T04 pass; T10 pass; T67 pass from initially absent Settings container; T40 remains unverified because downstream background capture was not verified.",
+  "credentials_included": false
+}

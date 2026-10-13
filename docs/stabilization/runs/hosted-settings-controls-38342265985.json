@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "run_id": 38342265985,
+  "title": "Guarded guest Settings lane B D224 absent-container retest",
+  "status": "completed_bounded_acceptance",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38342265985",
+    "head_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
+    "conclusion": "success",
+    "workflow": "Hosted guest side-panel acceptance",
+    "product_artifact_source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
+    "product_artifact_kind": "ci_development_test",
+    "product_development_run_id": 38341429896,
+    "product_development_artifact_id": 11787535752,
+    "product_development_artifact_sha256": "b20c57389269d12c533a33486ce334b2c52800f4672bb3a87a05515ce7ba35a2",
+    "focused_acceptance_run_id": 38341429861,
+    "artifact_verified_by_hosted_provenance_gate": true,
+    "publish_state": "not_published"
+  },
+  "scope": "One normal-admission-helper guarded guest Settings run on isolated lane B; settings-controls; real Chrome-for-Testing native side panel; signed-out guest.",
+  "build": {
+    "kind": "local_dev_unpacked",
+    "version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+    "verified": true,
+    "publish_state": "not_published"
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "mode": "guest",
+      "status": "pass",
+      "pass": 21,
+      "fail": 0,
+      "unverified": 0,
+      "bounded_assertion": "Full-extension Theme recheck began with Settings storage absent; visible System matched effective default and absent persisted field, changes survived worker/panel replacement, and original absent baseline was restored."
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "mode": "guest",
+      "status": "pass",
+      "pass": 18,
+      "fail": 0,
+      "unverified": 0,
+      "bounded_assertion": "Full-extension Default mode recheck began with Settings storage absent; visible Ask before acting matched effective default and absent persisted field, changes survived worker/panel replacement, and original absent baseline was restored."
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "mode": "guest",
+      "status": "unverified",
+      "pass": 12,
+      "fail": 0,
+      "unverified": 1,
+      "bounded_assertion": "Full-extension recheck observed absent Settings storage, effective Auto-scrape Off and mode Capture; On/Off persisted across panel reload and cleanup passed. The separate background-capture-follows-switch criterion is unverified."
+    },
+    {
+      "case_id": "EXT-F-1003-T67",
+      "mode": "guest",
+      "status": "pass",
+      "pass": 15,
+      "fail": 0,
+      "unverified": 0,
+      "bounded_assertion": "Explicitly observed initially absent Settings container; effective defaults false/Capture; Scroll & capture and Capture choices persisted through extension worker/panel replacement; pre-T67 container/value was restored after panel reload."
+    }
+  ],
+  "suite_result": {
+    "status": "unverified",
+    "cases_total": 20,
+    "pass": 13,
+    "fail": 0,
+    "unverified": 7,
+    "health_claim": "No blanket Settings health claim; these are bounded case results only."
+  },
+  "resource_finals": {
+    "hosted-package-38342265985-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38342265985-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38342265985-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "journal_verification": "All three downloaded journals passed verifyHostedResourceJournals."
+  },
+  "artifact": {
+    "id": 11786864558,
+    "name": "hosted-guest-38342265985-1",
+    "size": 73649,
+    "sha256": "afb70bd2f8a3f0348fa5c7d72de6cf6f3acf96d5027fca7947581fddade24b67",
+    "downloaded_zip_sha256_matches": true,
+    "raw_location_ignored": "/Volumes/Samsung2TB/.cache/stabilization/hosted-run38342265985/hosted-guest-38342265985-1.zip"
+  },
+  "source_drift": {
+    "run_source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
+    "main_at_evidence_commit": "8569fadc10bd9f7a829890705b40b0f3a5e1f14c",
+    "intervening_change": "scripts/package-twins.json package-watch metadata only",
+    "latest_main_coverage": false
+  },
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-hosted/run38342265985/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38342265985/case-results.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38342265985/resource-finals.sanitized.json"
+  ],
+  "overall_limit": "Resource-valid guarded native acceptance establishes T04/T10/T67 pass and bounded T40 subchecks, but T40 remains unverified due to the downstream background-capture criterion. Suite overall is unverified; source is 6f0a, not latest main 8569fadc1. EXT-D-0224 remains open pending independent evidence review and T40 downstream coverage."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-13T02:13:55Z",
+  "updated_at": "2026-10-13T04:00:00Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -6831,22 +6831,25 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 38331187170,
+              "run_id": 38342265985,
               "resource_valid": true,
+              "source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
+              "development_ci_run_id": 38341429896,
+              "development_artifact_id": 11787535752,
               "build_version": "0.2.509",
-              "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
+              "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
               "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
               "passed_criteria_count": 21,
               "passed_subtargets": [
-                "21/21 guest Theme criteria passed on the verified unpublished development artifact: Dark, Light, and System selection/rendering/storage through panel reload; full-extension worker/panel replacement and persistence; and original absent preference/settings-container baseline restoration."
+                "21/21 guest Theme criteria passed; the full-extension recheck began with absent Settings storage and visible System matched the effective default; changes survived worker/panel replacement and the original absent baseline was restored."
               ],
               "unverified": [
                 "System with dark OS preference; member/admin, Store, and wider Settings behavior."
               ],
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38331187170.json"
+                "docs/stabilization/runs/hosted-settings-controls-38342265985.json"
               ],
-              "detail": "Hosted guest T04 pass on exact verified development artifact. Original absent Theme/settings baseline restored through full extension reload. This is a bounded case result only; no full Settings or Store claim."
+              "detail": "Bounded guest T04 pass on exact verified development artifact; run source 6f0a20f. The run is not latest-main or full Settings/Store coverage."
             }
           },
           "linked_defects": [
@@ -7700,22 +7703,25 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 38331187170,
+              "run_id": 38342265985,
               "resource_valid": true,
+              "source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
+              "development_ci_run_id": 38341429896,
+              "development_artifact_id": 11787535752,
               "build_version": "0.2.509",
-              "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
+              "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
               "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
               "passed_criteria_count": 18,
               "passed_subtargets": [
-                "18/18 guest Default mode criteria passed: Ask and Act selection/storage through panel reload; full-extension worker/panel replacement; new-chat inheritance after each selection; original absent preference/settings-container baseline restoration."
+                "18/18 guest Default mode criteria passed; the full-extension recheck began with absent Settings storage and visible Ask before acting matched the effective default; changes survived worker/panel replacement and the original absent baseline was restored."
               ],
               "unverified": [
                 "Member/admin, Store, and broader Settings behavior."
               ],
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38331187170.json"
+                "docs/stabilization/runs/hosted-settings-controls-38342265985.json"
               ],
-              "detail": "Hosted guest T10 pass on exact verified development artifact. Original absent Default mode/settings baseline restored through full extension reload. This is a bounded case result only; no full Settings or Store claim."
+              "detail": "Bounded guest T10 pass on exact verified development artifact; run source 6f0a20f. The run is not latest-main or full Settings/Store coverage."
             }
           },
           "linked_defects": [
@@ -10724,24 +10730,27 @@
           ],
           "results": {
             "guest": {
-              "status": "unverified",
-              "run_id": 38331187170,
+              "status": "partial",
+              "run_id": 38342265985,
               "resource_valid": true,
+              "source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
+              "development_ci_run_id": 38341429896,
+              "development_artifact_id": 11787535752,
               "build_version": "0.2.509",
-              "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
+              "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
               "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
               "passed_subtargets": [
-                "Visible On/Off and stored toggle matched through full extension reload.",
-                "Cleanup restored the original visible Off and stored false baseline."
+                "Full-extension recheck observed absent Settings storage with effective Auto-scrape Off and Capture defaults.",
+                "On/Off UI and storage matched through panel reload; baseline cleanup passed."
               ],
               "unverified": [
-                "Downstream background/page-load capture was not exercised, so the canonical T40 case remains unverified overall.",
+                "Downstream background/page-load capture following the persisted switch; canonical T40 remains unverified overall.",
                 "Member/admin, Store, and broader Settings behavior."
               ],
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38331187170.json"
+                "docs/stabilization/runs/hosted-settings-controls-38342265985.json"
               ],
-              "detail": "Hosted guest control/reload/cleanup subtargets passed on exact verified development artifact. Full T40 remains unverified because downstream background capture was not exercised; this run does not establish the full case or feature health."
+              "detail": "Bounded exact-source guest evidence: absent-container defaults, toggle persistence, reload, and cleanup pass; the dedicated downstream capture criterion remains unverified. Not latest-main or full Settings coverage."
             }
           },
           "result_history": [
@@ -13271,23 +13280,25 @@
           "results": {
             "guest": {
               "status": "pass",
-              "run_id": 38331187170,
+              "run_id": 38342265985,
               "resource_valid": true,
+              "source_sha": "6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1",
+              "development_ci_run_id": 38341429896,
+              "development_artifact_id": 11787535752,
               "build_version": "0.2.509",
-              "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
+              "tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
               "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
-              "passed_criteria_count": 13,
+              "passed_criteria_count": 15,
               "passed_subtargets": [
-                "Capture and Scroll & capture each displayed and persisted through panel and full-extension reload; cleanup restored Capture."
+                "15/15 guest criteria passed, including explicitly observed initially absent Settings storage and effective false/Capture defaults; Scroll & capture and Capture choices survived worker/panel replacement; pre-T67 container was restored after panel reload."
               ],
               "unverified": [
-                "Original absent-field/default-mode reproduction for EXT-D-0224: the initial observation already had stored=capture after T40.",
                 "Member/admin, Store, and broader Settings behavior."
               ],
               "evidence": [
-                "docs/stabilization/runs/hosted-settings-controls-38331187170.json"
+                "docs/stabilization/runs/hosted-settings-controls-38342265985.json"
               ],
-              "detail": "Hosted guest T67 persisted-mode behavior passed on exact verified development artifact. The initial value was already explicitly stored as capture after T40, so this is not evidence for D224’s absent-field reproduction; D224 remains open."
+              "detail": "Bounded guest T67 pass on exact verified development artifact, including the original absent-container reproduction; run source 6f0a20f. The run is not latest-main or full Settings/Store coverage."
             }
           },
           "linked_defects": [

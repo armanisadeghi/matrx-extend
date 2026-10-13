@@ -24,7 +24,12 @@
     "docs/stabilization/reports/ext-d-0224-source-peer-20261013.json",
     "src/state/settings.ts",
     "tests/browser/settings-guest-scrape-controls.test.mjs",
-    "docs/stabilization/runs/hosted-settings-controls-38339589962.json"
+    "docs/stabilization/runs/hosted-settings-controls-38339589962.json",
+    "docs/stabilization/runs/hosted-settings-controls-38342265985.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38342265985/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38342265985/case-results.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38342265985/resource-finals.sanitized.json",
+    "docs/stabilization/reports/peer-review-hosted-settings-controls-38342265985.json"
   ],
   "build_receipt": {
     "native_ci_run_id": 38328904848,
@@ -50,11 +55,12 @@
   "source_verification": {
     "focused_tests": "27/27 pass; focused absent-container guard failed on old behavior with null !== false",
     "compile": "pass",
-    "native_acceptance": "Hosted run 38331187170: T04/T10 pass; T40 control/reload/cleanup pass but full case unverified because downstream capture was not exercised; T67 persisted-mode pass began with explicit stored=capture. Run 38334606711 used the exact-source CI artifact for 99c647a56 but the guest resource watchdog invalidated acceptance with cpu-busy sample-count failure before a native report. One diagnosed retry, 38335625868 on 9df3fdd0a, was refused at browser resource admission for the same sampler failure before Chromium or Settings started. Both new runs grant zero credit to T04/T10/T40/T67 and establish no product failure. The original absent-field reproduction remains unverified. Latest single B attempt 38339589962 used exact eb0d262973dfe5558352559093b18bf9d38e6835 CI artifact (38338713040 / 11786472201); resource finals were valid through guest execution, but artifact import failed on api.github.com before Settings assertions. The upload step then timed out; no acceptance artifact or resource journals were available. Zero product assertions/cases ran and the attempt grants zero credit. No retry was launched.",
+    "native_acceptance": "Hosted run 38331187170: T04/T10 pass; T40 control/reload/cleanup pass but full case unverified because downstream capture was not exercised; T67 persisted-mode pass began with explicit stored=capture. Run 38334606711 used the exact-source CI artifact for 99c647a56 but the guest resource watchdog invalidated acceptance with cpu-busy sample-count failure before a native report. One diagnosed retry, 38335625868 on 9df3fdd0a, was refused at browser resource admission for the same sampler failure before Chromium or Settings started. Both new runs grant zero credit to T04/T10/T40/T67 and establish no product failure. Run 38339589962 on eb0d262973dfe5558352559093b18bf9d38e6835 failed importing its exact CI artifact before Settings assertions; no artifact/journals were available, so it grants zero credit. New run 38342265985 used exact source 6f0a20f20fd58932e3b9a2a343f08c0c3d849bb1, CI 38341429896, development artifact 11787535752 (sha256:b20c57389269d12c533a33486ce334b2c52800f4672bb3a87a05515ce7ba35a2). Three downloaded resource journals independently validate as resource-valid. T04 and T10 pass their absent-container initial default checks and restoration; T67 passes with an observed initially absent Settings container, effective defaults false/capture, choice persistence, worker/panel replacement survival, and restoration. T40 is unverified overall: its full-extension absent-container initial default, On/Off persistence, reload, and cleanup subchecks pass, but the separate downstream background-capture criterion remains unverified. The artifact suite overall remains unverified (13/20 pass, 7/20 unverified). No blanket Settings pass or D224 closure is claimed. Current main later advanced to 8569fadc10bd9f7a829890705b40b0f3a5e1f14c with a package-watch metadata-only change; this run is bound to 6f0a, not latest-main coverage.",
     "independent_source_review": "pass for source fix only: docs/stabilization/reports/ext-d-0224-source-peer-20261013.json",
+    "independent_acceptance_review": "pass for bounded case evidence, resource journal hashes, provenance, and redaction: docs/stabilization/reports/peer-review-hosted-settings-controls-38342265985.json",
     "release": "pending"
   },
-  "next_action": "Keep EXT-D-0224 in-fix/open. The latest exact-source guarded B attempt stopped before Settings assertions because the hosted guest could not connect to api.github.com while importing the CI artifact, and its result-artifact upload also timed out. Do not retry blindly. Resolve the hosted artifact API/import-upload path, then schedule a separately authorized guarded guest run that proves the Settings container and Scrape fields are initially absent before T40/T67, exercises neighboring T04/T10, separately exercises T40 downstream background capture, and preserves downloadable resource journals for independent peer review. No product verdict or case credit comes from run 38339589962.",
+  "next_action": "Keep EXT-D-0224 in-fix/open. Independent review accepts the bounded evidence. T04/T10/T67 pass on source 6f0a; T40 absent-container defaults, switch persistence, reload, and cleanup pass, but the case remains unverified until the dedicated downstream background-capture criterion is exercised. The run is not latest-main coverage, and no blanket Settings health claim is made.",
   "transition_history": [
     {
       "at": "2026-10-13T01:00:00Z",
@@ -97,6 +103,12 @@
       "from": "in-fix",
       "to": "in-fix",
       "reason": "One guarded lane B run 38339589962 on exact eb0d262973dfe5558352559093b18bf9d38e6835 CI artifact had valid resource finals through guest execution, then failed importing the artifact after an api.github.com connection error before any Settings assertion. Result upload timed out; no artifact or resource journals were available. Zero product cases ran; no retry or product verdict."
+    },
+    {
+      "at": "2026-10-13T04:00:00Z",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Guarded guest run 38342265985 on exact 6f0a20f source completed with valid downloaded resource journals and acceptance artifact. T04/T10/T67 pass, including T67 from an initially absent Settings container; T40 absent-container defaults, switch persistence, reload, and cleanup pass, while downstream background capture remains unverified. D224 stays open, with independent evidence review required; later main 8569fadc1 is not covered by this run."
     }
   ]
 }

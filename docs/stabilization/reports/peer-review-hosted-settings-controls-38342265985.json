@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "run_id": 38342265985,
+  "review_result": "pass",
+  "review_scope": [
+    "Sanitized case results compared with the downloaded native report.",
+    "Resource journal verification and SHA-256 comparison.",
+    "Artifact and source provenance, main drift statement, redaction, and scope of claims."
+  ],
+  "findings": {
+    "case_results": "Match: T04 21/0/0 pass; T10 18/0/0 pass; T40 12/0/1 and unverified solely for background capture following the persisted switch; T67 15/0/0 pass with absent Settings storage and effective false/Capture defaults.",
+    "suite": "Matches 13 pass, 0 fail, 7 unverified; overall unverified.",
+    "resources": "All three downloaded resource journals pass verifyHostedResourceJournals, and their SHA-256 values match resource-finals.sanitized.json.",
+    "provenance": "Run/source, CI/artifact IDs, artifact ZIP digest, build tree hash, and 6f0a-to-8569 metadata-only drift are internally consistent.",
+    "redaction_and_claims": "No credentials found. No overclaim: T40 stays unverified, D224 stays open, and no latest-main or blanket Settings-health claim is made."
+  },
+  "reviewed_files": [
+    "docs/stabilization/runs/hosted-settings-controls-38342265985.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38342265985/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38342265985/case-results.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38342265985/resource-finals.sanitized.json",
+    "docs/stabilization/defects/EXT-D-0224.json"
+  ],
+  "reviewer": "independent evidence reviewer agent"
+}

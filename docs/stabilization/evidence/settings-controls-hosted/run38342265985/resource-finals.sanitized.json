@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "run_id": 38342265985,
+  "verification": "Downloaded journals passed verifyHostedResourceJournals; final receipts all valid.",
+  "finals": [
+    {
+      "journal": "hosted-package-38342265985-1.jsonl",
+      "sha256": "960b21f7682d3f24491659bd0dc9cec7609295366e3d7a851bf1518c551ae239",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "journal": "hosted-browser-38342265985-1.jsonl",
+      "sha256": "a63bf4c03271486d787147784eff145b11cb88b176f8e20cb52a3ca5d87ffb0f",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    {
+      "journal": "hosted-guest-38342265985-1.jsonl",
+      "sha256": "de5ed67dadf2660db3d8e271559c5810107ef26869464c78bcfd890e8f79e61c",
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    }
+  ],
+  "raw_journal_location_ignored": "/Volumes/Samsung2TB/.cache/stabilization/hosted-run38342265985/matrx-extend/matrx-extend/docs/stabilization/resource-journals",
+  "credentials_included": false
+}
