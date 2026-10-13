@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "run_id": 38339589962,
+  "source": "GitHub Actions workflow and job logs",
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38339589962",
+  "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38339589962/job/115107360684",
+  "workflow_source_sha": "eb0d262973dfe5558352559093b18bf9d38e6835",
+  "development_ci_run_id": 38338713040,
+  "development_artifact_id": 11786472201,
+  "conclusion": "failure",
+  "failure_point": "Exact development artifact import failed after an api.github.com connection error; zero product assertions executed.",
+  "resource_finals": "All three resource finals were valid by fields recorded in the workflow job log; the guest child then exited 1 on artifact import.",
+  "acceptance_artifact_available": false,
+  "resource_journals_available": false,
+  "result_upload": "ArtifactService CreateArtifact timed out after retries.",
+  "product_credit": 0,
+  "retry": "none"
+}

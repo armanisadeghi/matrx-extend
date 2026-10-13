@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "run_id": 38339589962,
+  "title": "Hosted guest Settings lane B stopped during exact CI artifact import",
+  "status": "infrastructure_failure_zero_credit",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38339589962",
+    "job_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38339589962/job/115107360684",
+    "workflow": "Hosted guest side-panel acceptance",
+    "head_sha": "eb0d262973dfe5558352559093b18bf9d38e6835",
+    "conclusion": "failure",
+    "product_artifact_source_sha": "eb0d262973dfe5558352559093b18bf9d38e6835",
+    "product_artifact_kind": "ci_development_test",
+    "product_development_run_id": 38338713040,
+    "product_development_artifact_id": 11786472201,
+    "artifact_verified_by_hosted_provenance_gate": true,
+    "publish_state": "not_published"
+  },
+  "scope": "One guarded real Chrome-for-Testing guest Settings acceptance attempt; isolated lane B; selected case settings-controls.",
+  "resource_finals_from_job_log": {
+    "hosted-package-38339589962-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38339589962-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38339589962-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 1,
+      "decision": "child_failed"
+    }
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "mode": "guest",
+      "status": "zero_credit_not_started"
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "mode": "guest",
+      "status": "zero_credit_not_started"
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "mode": "guest",
+      "status": "zero_credit_not_started"
+    },
+    {
+      "case_id": "EXT-F-1003-T67",
+      "mode": "guest",
+      "status": "zero_credit_not_started"
+    }
+  ],
+  "failure_classification": "Infrastructure/API connectivity failure before product assertions: the guest step reported an error connecting to api.github.com during authenticated CI development artifact import, then failed the artifact-import assertion. No Settings case was entered.",
+  "artifact_and_journals": {
+    "acceptance_artifact_available": false,
+    "resource_journals_uploaded": false,
+    "native_report_generated": false,
+    "source_of_retained_evidence": "GitHub Actions job metadata and step logs only; resource finals above were read from those logs, not downloaded journal files. The result/screenshot upload step also failed after ArtifactService CreateArtifact timed out after retries.",
+    "product_assertions_executed": 0
+  },
+  "evidence": [
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38339589962",
+    "https://github.com/armanisadeghi/matrx-extend/actions/runs/38339589962/job/115107360684"
+  ],
+  "overall_limit": "This single guarded attempt gives zero product credit and establishes no product failure. It does not verify T67 from an initially absent Settings container, T40 behavior, or neighboring T04/T10 cases. No retry was launched; EXT-D-0224 remains in-fix/open."
+}
