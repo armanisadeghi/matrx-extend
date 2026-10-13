@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0221-admin-retry2-20261013-04",
+  "defect_id": "EXT-D-0221",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
+  "status": "unverified",
+  "scope": "One authorized hosted lane-A admin Screenshots dispatch on exact current main. CI artifact promotion and browser startup passed; the UI reached organization selection but the approved organization option was not present. Resource CPU pressure invalidated the run before any T04/T05 acceptance cases.",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 38335575756,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38335575756",
+    "checkout_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "case": "screenshots-capture-admin",
+    "requested_by": "extend-stabilization-d221-lane-a-20261013-retry2",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "first_product_failure": "approved_organization_selection_failed",
+    "resource_final_decision": "invalid"
+  },
+  "source_and_artifact": {
+    "development_ci_run_id": 38334891412,
+    "development_artifact_id": 11784319088,
+    "artifact_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+    "full_ci_conclusion": "success",
+    "focused_acceptance": "success",
+    "workflow_checkout_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+    "promotion": "exact-source; artifact accepted and prepared successfully"
+  },
+  "preconditions_and_resources": {
+    "temporary_repository_secrets": "staged privately from existing authorized sources; deleted after terminal completion and repository listing verified both absent",
+    "admin_identity": "observed email and role matched admin identity; avatar rendered",
+    "approved_organization_fixture": "The private fixture organization matched a current admin membership through the authorized read-only mbr_for_user RPC; no organization identifier was recorded.",
+    "resource_admission": "package, browser, and guest admission passed",
+    "resource_watch": "CPU busy fraction reached 0.95 and RESOURCE_CPU_BUSY; later sample was CPU_PENDING",
+    "resource_final_decision": "RESOURCE_FINAL_DECISION invalid, resourceInvalid=true, child acceptance exited 1"
+  },
+  "observations": {
+    "account_section": "collapsed before organization selection",
+    "organization_section": "expanded",
+    "organization_control_count": 1,
+    "approved_option_count": 0,
+    "approved_name_displayed": true,
+    "selection_stored": false,
+    "failure_stage": "select_approved_organization",
+    "failure_code": "approved_organization_selection_failed",
+    "failure_driver_code": "non_pointer_failure",
+    "acceptance_cases": [],
+    "fixture_only": false,
+    "created_row_may_need_ui_cleanup": false,
+    "result_artifact": "docs/stabilization/evidence/screenshots-admin/run38335575756/screenshot-capture-result.json"
+  },
+  "case_status": {
+    "admin_T04": "unverified; acceptance case not reached",
+    "admin_T05": "unverified; acceptance case not reached",
+    "member_T04_T05": "unverified"
+  },
+  "interpretation": "Zero acceptance credit. A current membership existed, yet the Settings organization control showed no approved option and did not store a selection. This is an unresolved product-or-harness selector issue; the accepted T04/T05 cases were not entered. Concurrent hosted CPU pressure invalidated the run. No screenshot mutation or screenshot case ran.",
+  "evidence": {
+    "hosted_artifact_id": 11785106491,
+    "hosted_artifact_name": "hosted-guest-38335575756-1",
+    "resource_journals": [
+      "docs/stabilization/resource-journals/hosted-package-38335575756-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38335575756-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38335575756-1.jsonl"
+    ],
+    "workflow_logs": "Sanitized logs show exact artifact promotion, browser readiness, identity recognition, the selector failure, and later CPU resource invalidation."
+  },
+  "cleanup": {
+    "temporary_repository_secrets": "both deleted; terminal cleanup and post-run secret-name listing verified absent",
+    "fixture_row": "no screenshot record was created",
+    "browser_or_runner_processes": "workflow completed; GitHub-hosted runner disposed"
+  },
+  "inventory_change": "none; neither T04 nor T05 acceptance ran",
+  "dispatch_policy": "One diagnosed retry was issued after the previous source synchronization failure. No further retry after selector and resource failure.",
+  "next_action": "Trace how current memberships populate Settings options and how selection persistence is verified, then rerun only after the sampler/resource issue is repaired and the diagnosis independently reviewed."
+}

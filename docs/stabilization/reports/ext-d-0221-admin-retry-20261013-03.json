@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0221 hosted Screenshots admin T04/T05 retry",
+  "status": "zero_credit_provenance_failure",
+  "run_record": "docs/stabilization/runs/ext-d-0221-admin-retry-20261013-03.json",
+  "workflow_run": {
+    "id": 38334845040,
+    "checkout_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38334845040"
+  },
+  "artifact": {
+    "ci_run_id": 38333710898,
+    "artifact_id": 11784395386,
+    "source_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "ci_conclusion": "success",
+    "hosted_artifact_id": 11784284401,
+    "workflow_source_drift": "CI artifact matched the workflow checkout. origin/main advanced to 9df3fdd0aa59ce2a2580738d5fb255eace458cc5 during execution, so the promotion guard refused the artifact."
+  },
+  "cause": {
+    "classification": "source synchronization race / provenance guard",
+    "failed_gate": "ci_dev_checkout_not_origin_main",
+    "safe_error": "promote-ci-dev-artifact.mjs sourceCompatibility found hosted HEAD and origin/main differed",
+    "resource_admission": "passed for package, browser, and guest steps; guest watch remained healthy",
+    "product_credit": false
+  },
+  "behavior": {
+    "browser_ready": true,
+    "product_artifact_promotion": false,
+    "admin_T04": "unverified, not reached",
+    "admin_T05": "unverified, not reached",
+    "fixture_cleanup": "not applicable; no product fixture was created"
+  },
+  "durable_evidence": {
+    "sanitized_result": "not produced; execution stopped before product interaction",
+    "resource_journals": [
+      "docs/stabilization/resource-journals/hosted-package-38334845040-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38334845040-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38334845040-1.jsonl"
+    ],
+    "hosted_artifact": "hosted-guest-38334845040-1; artifact 11784284401",
+    "workflow_logs": "Failed step log confirms ci_dev_checkout_not_origin_main."
+  },
+  "secret_cleanup": {
+    "names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "cleanup": "both temporary repository secrets deleted after terminal completion; repository secret listing verified both names absent",
+    "values": "never included in logs, tool output, or this record"
+  },
+  "inventory_change": "none; no product case was exercised",
+  "dispatch_policy": "One guarded retry was dispatched; no blind retry after provenance failure.",
+  "next_action": "A future run needs a successful exact-current-main development artifact and stable main synchronization throughout promotion."
+}

@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0221 hosted Screenshots admin T04/T05 exact-main retry",
+  "status": "zero_credit_precondition_and_resource_failure",
+  "run_record": "docs/stabilization/runs/ext-d-0221-admin-retry2-20261013-04.json",
+  "workflow_run": {
+    "id": 38335575756,
+    "checkout_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38335575756"
+  },
+  "artifact": {
+    "ci_run_id": 38334891412,
+    "artifact_id": 11784319088,
+    "source_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+    "ci_conclusion": "success",
+    "hosted_artifact_id": 11785106491,
+    "workflow_source_drift": "none; the CI artifact was exact to current main and promoted successfully"
+  },
+  "cause": {
+    "classification": "Settings approved-organization selection unresolved product-or-harness issue; hosted resource watchdog invalidated acceptance",
+    "first_failure": "approved_organization_selection_failed",
+    "failure_stage": "select_approved_organization",
+    "safe_details": "A current membership matched the private approved fixture. The expanded Settings selector reported zero approved options and did not store the target selection. The run also ended with resourceInvalid=true.",
+    "resource_outcome": "RESOURCE_CPU_BUSY observed at cpuBusyFraction 0.95; later CPU_PENDING; resourceInvalid=true at final decision",
+    "product_credit": false
+  },
+  "behavior": {
+    "admin_identity": "matched email and role in the UI",
+    "admin_T04": "unverified; acceptance case was not reached",
+    "admin_T05": "unverified; Files/public-share/cancel assertions were not reached",
+    "fixture_cleanup": "not applicable; no screenshot row was created"
+  },
+  "membership_check": {
+    "status": "fixture_current_member",
+    "method": "Authorized read-only canonical mbr_for_user RPC under authenticated admin identity, using the extension production Supabase configuration.",
+    "privacy": "The approved organization ID, membership rows, access token, and session were not recorded; the temporary session was logged out.",
+    "bounded_next_check": "Trace current mbr_for_user rows into Settings option generation and selection persistence; repeat only on a resource-valid run after sampler repair and independent diagnosis review."
+  },
+  "durable_evidence": {
+    "result": "docs/stabilization/evidence/screenshots-admin/run38335575756/screenshot-capture-result.json",
+    "resource_journals": [
+      "docs/stabilization/resource-journals/hosted-package-38335575756-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38335575756-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38335575756-1.jsonl"
+    ],
+    "workflow_logs": "Sanitized failed-step log; no credential values emitted."
+  },
+  "secret_cleanup": {
+    "names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "cleanup": "Both temporary repository secrets were deleted after terminal completion. Cleanup trap and independent post-run name listing confirmed absence.",
+    "values": "Never included in logs, tool output, or this report."
+  },
+  "inventory_change": "none; no acceptance case ran",
+  "dispatch_policy": "One exact-main guarded retry; no rerun after failed selector precondition and resource invalidation."
+}

@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1009",
+  "scope": "admin Visible capture on owned localhost fixture; refresh, viewer, Files route, public sharing, cancel and cleanup",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.509",
+    "treeSha256": "cc587d88f2d1aa216ba10b2811d737643207b4b3bc500cf76aa194fa8a24f97a",
+    "before": {
+      "kind": "ci_development_test_promotion",
+      "publishState": "not_published",
+      "extensionDir": "/Users/runner/work/matrx-extend/matrx-extend/.output/chrome-mv3-dev",
+      "sourceSha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+      "mainSha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+      "compatibility": "exact-source",
+      "version": "0.2.509",
+      "treeSha256": "cc587d88f2d1aa216ba10b2811d737643207b4b3bc500cf76aa194fa8a24f97a",
+      "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "runId": 38334891412,
+      "runAttempt": 1,
+      "artifactId": 11784319088,
+      "githubArtifactDigest": "sha256:870a95416f4bdfc76c06baa736befe02d803b2d6766ce73c72c0cce8506e42e3"
+    },
+    "after": null
+  },
+  "cases": [],
+  "operation": "approved_organization_selected",
+  "observations": {
+    "admin_identity": {
+      "email": true,
+      "role": true,
+      "avatar": 1
+    },
+    "account_collapsed_before_organization": ["false"],
+    "organization_control": 1,
+    "approved_organization_selected": {
+      "count": 1,
+      "displayed": true,
+      "stored": false
+    }
+  },
+  "failure": {
+    "stage": "select_approved_organization",
+    "code": "approved_organization_selection_failed",
+    "step": "approved_organization_selected",
+    "driverCode": "non_pointer_failure",
+    "pointerHitTarget": false,
+    "matchedTargetCount": null,
+    "visibleMatchCount": null,
+    "surface": {
+      "settingsTabActive": true,
+      "accountSectionCount": 1,
+      "accountExpanded": "false",
+      "organizationSectionCount": 1,
+      "organizationExpanded": "true",
+      "actingAsRowCount": 1,
+      "organizationControlCount": 1,
+      "approvedOptionCount": 0
+    },
+    "driver": {
+      "runtimeCode": null,
+      "timeout": false,
+      "assertion": false,
+      "driverCode": null,
+      "hitTarget": false,
+      "matchedTargetCount": null,
+      "visibleMatchCount": null
+    },
+    "fixtureOnly": false,
+    "createdRowMayNeedUiCleanup": false
+  },
+  "failureDiagnostic": {
+    "runtimeCode": null,
+    "timeout": false,
+    "assertion": false,
+    "driverCode": null,
+    "hitTarget": false,
+    "matchedTargetCount": null,
+    "visibleMatchCount": null
+  }
+}

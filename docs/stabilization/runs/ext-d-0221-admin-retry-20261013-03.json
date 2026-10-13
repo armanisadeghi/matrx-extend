@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0221-admin-retry-20261013-03",
+  "defect_id": "EXT-D-0221",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
+  "status": "unverified",
+  "scope": "One authorized hosted lane-A admin Screenshots dispatch. CI artifact provenance was accepted and hosted setup/resource admission passed, but promotion stopped before product interaction.",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 38334845040,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38334845040",
+    "checkout_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "case": "screenshots-capture-admin",
+    "requested_by": "extend-stabilization-d221-lane-a-20261013-retry",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "failure_code": "ci_dev_checkout_not_origin_main"
+  },
+  "source_and_artifact": {
+    "development_ci_run_id": 38333710898,
+    "development_artifact_id": 11784395386,
+    "artifact_name": "matrx-extend-development-test-99c647a56154ad9e190ba9c1c3bd8b0cfaaab161-38333710898-1",
+    "artifact_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "full_ci_conclusion": "success",
+    "focused_acceptance": "success",
+    "workflow_checkout_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "workflow_origin_main_at_promotion": "advanced while run was in progress; guard found HEAD and origin/main unequal",
+    "interpretation": "CI artifact matched workflow checkout, but origin/main advanced to 9df3fdd0aa59ce2a2580738d5fb255eace458cc5 during the run. The promoter correctly stopped before installing/using the artifact. This is provenance synchronization failure, not Screenshots behavior."
+  },
+  "preflight_and_resources": {
+    "both_required_repository_secrets_staged_privately": true,
+    "both_required_repository_secrets_removed_after_terminal_run": true,
+    "post_run_secret_name_listing": "confirmed both absent; secret values were not queried",
+    "artifact_provenance_step": "passed; specified CI artifact was imported and verified",
+    "package_resource_journal": "RESOURCE_ADMITTED; child exit 0",
+    "browser_resource_journal": "RESOURCE_ADMITTED; child exit 0",
+    "guest_resource_journal": "RESOURCE_ADMITTED; RESOURCE_WATCH_HEALTHY; promotion child exited 1",
+    "browser_ready": true,
+    "product_interaction": false,
+    "fixture_created": false,
+    "product_credit": false
+  },
+  "case_status": {
+    "admin_T04": "unverified; not reached",
+    "admin_T05": "unverified; not reached",
+    "member_T04_T05": "unverified"
+  },
+  "evidence": {
+    "workflow_logs": "Sanitized failure log identifies ci_dev_checkout_not_origin_main in promote-ci-dev-artifact.mjs sourceCompatibility. No credential values were emitted.",
+    "hosted_artifact_id": 11784284401,
+    "hosted_artifact_name": "hosted-guest-38334845040-1",
+    "hosted_artifact": "Contains three sanitized resource journals copied to docs/stabilization/resource-journals/; no browser result/screenshots because product interaction was not reached.",
+    "resource_journals": [
+      "docs/stabilization/resource-journals/hosted-package-38334845040-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38334845040-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38334845040-1.jsonl"
+    ]
+  },
+  "cleanup": {
+    "temporary_repository_secrets": "both deleted after terminal run; listing verified absent",
+    "browser_or_runner_processes": "workflow job completed; hosted runner disposed by GitHub Actions",
+    "fixture_row": "no fixture write occurred",
+    "local_download": "temporary downloaded artifact retained only for inspection under /tmp"
+  },
+  "dispatch_policy": "Exactly one retry dispatch was issued after the prior missing-secret preflight. No further dispatch was made after the source synchronization guard failed.",
+  "inventory_change": "none; no product case was exercised",
+  "next_action": "Before a later separately authorized lane-A run, require exact successful CI/dev artifact for current main and ensure origin/main remains unchanged through artifact promotion; then verify live admin membership/org context before any product credit."
+}
