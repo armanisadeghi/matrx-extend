@@ -201,13 +201,50 @@ test('real resource preflight preserves CPU limits and measurement refusal with 
   const scratch = await mkdtemp(join(tmpdir(), 'resource-repeated-header-'));
   const scripts = join(scratch, 'scripts');
   const docs = join(scratch, 'docs/stabilization');
+  const hostIsolation = join(scratch, 'reject-native-host.mjs');
   try {
+    // Replay Ubuntu's incompatible host boundary on every test host. This
+    // fixture tests macOS telemetry decisions, so it must supply its own host
+    // snapshots rather than accidentally consuming local process state.
+    await writeFile(
+      hostIsolation,
+      `import childProcess from 'node:child_process';
+import os from 'node:os';
+import { syncBuiltinESMExports } from 'node:module';
+os.platform = () => 'linux';
+Object.defineProperty(process, 'platform', { value: 'linux' });
+childProcess.execFile = () => { throw new Error('error: must set personality to get -x option'); };
+syncBuiltinESMExports();
+`,
+    );
     await mkdir(scripts);
     await mkdir(docs, { recursive: true });
     await copyResourceGuardModules(import.meta.dirname, scripts);
     await setHealthyHostMeasurements(scripts);
     const guardPath = join(scripts, 'stabilization-resource.mjs');
-    const guardSource = await readFile(guardPath, 'utf8');
+    let guardSource = await readFile(guardPath, 'utf8');
+    const hostPlatformImport = "import { platform } from 'node:os';";
+    assert.equal(guardSource.split(hostPlatformImport).length, 2);
+    guardSource = guardSource.replace(hostPlatformImport, "const platform = () => 'darwin';");
+    const hostOutput = `const output = async (cmd, args) =>
+  (
+    await run(cmd, args, { timeout: 5000, maxBuffer: policy.processSnapshotMaxBytes })
+  ).stdout.trim();`;
+    assert.equal(guardSource.split(hostOutput).length, 2);
+    // The SUT owns CPU parsing and preflight decisions. OS process discovery
+    // is an external dependency here, just like memory/swap/disk telemetry.
+    // Unexpected command shapes refuse rather than silently receiving data.
+    guardSource = guardSource.replace(
+      hostOutput,
+      `const output = async (cmd, args) => {
+      if (cmd !== '/bin/ps') throw new Error('UNEXPECTED_FIXTURE_HOST_COMMAND');
+      if (args.length === 4 && args[0] === '-p' && args[1] === String(process.pid) &&
+          args[2] === '-o' && args[3] === 'lstart=') return 'Mon Oct 12 19:20:04 2026';
+      if (JSON.stringify(args) === JSON.stringify(['-axo', 'pid=,ppid=,lstart=,comm='])) return '';
+      if (JSON.stringify(args) === JSON.stringify(['eww', '-axo', 'pid=,stat=,command='])) return '';
+      throw new Error('UNEXPECTED_FIXTURE_PROCESS_QUERY');
+    };`,
+    );
     const leasePath = join(scripts, 'stabilization-resource-lease.mjs');
     await writeFile(
       leasePath,
@@ -247,7 +284,16 @@ test('real resource preflight preserves CPU limits and measurement refusal with 
       );
       const result = spawnSync(
         process.execPath,
-        [guardPath, 'check', '--run-id', `repeated-${index}`, '--profile-dir', scratch],
+        [
+          '--import',
+          hostIsolation,
+          guardPath,
+          'check',
+          '--run-id',
+          `repeated-${index}`,
+          '--profile-dir',
+          scratch,
+        ],
         { encoding: 'utf8' },
       );
       const events = result.stdout.trim().split('\n').map(JSON.parse);

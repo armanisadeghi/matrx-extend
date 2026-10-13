@@ -1,0 +1,64 @@
+{
+  "task_id": "resource-sampler-portable-fixture-repair-20261013",
+  "status": "peer_reviewed_ready_for_exact_source_ubuntu_ci",
+  "summary": "Isolate the repeated-header resource preflight fixture from native process and OS discovery so its real CPU parser, thresholds and missing-measurement refusal run on Ubuntu CI and macOS without skipping behavior. Production guard code is unchanged.",
+  "changed_files": [
+    "scripts/test-stabilization-resource-safety.mjs",
+    "docs/stabilization/reports/resource-sampler-portable-fixture-repair-20261013.json"
+  ],
+  "failure_evidence": {
+    "run_id": "38336604674",
+    "runner": "Ubuntu checks",
+    "test": "real resource preflight preserves CPU limits and measurement refusal with repeated headers",
+    "command": "/bin/ps eww -axo pid=,stat=,command=",
+    "error": "must set personality to get -x option",
+    "effect": "External host census refused preflight before parser/threshold assertions"
+  },
+  "diagnosis": "The fixture controlled CPU/memory/swap/disk data but unintentionally invoked real macOS process discovery and platform detection on the Ubuntu checks runner. External OS/process inputs were missing from its controlled dependencies.",
+  "red_green": {
+    "red": "A child preload forces Linux platform identity and rejects native execFile commands with the captured Ubuntu error. The original fixture failed its expected safe admission with RESOURCE_MEASUREMENT_FAILED: error: must set personality to get -x option.",
+    "green": "The copied guard now supplies a macOS OS-adapter identity plus allowlisted external process snapshot outputs. The hostile preload remains active in all three cases, proving no native command is needed. Safe 11 percent admits, 75 percent refuses RESOURCE_CPU_BUSY, missing interval refuses cpu-busy:sample-count."
+  },
+  "verification": [
+    {
+      "command": "node --test scripts/test-stabilization-resource-safety.mjs",
+      "verdict": "13 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "node --test scripts/test-stabilization-resource-safety.mjs scripts/test-hosted-resource-measurement-copy.mjs scripts/test-stabilization-resource-journal.mjs scripts/test-stabilization-resource-process.mjs scripts/test-stabilization-resource-lease.mjs",
+      "verdict": "44 passed, 0 failed, 0 skipped"
+    },
+    {
+      "command": "pnpm compile",
+      "verdict": "exit 0"
+    },
+    {
+      "command": "pnpm exec biome check scripts/test-stabilization-resource-safety.mjs",
+      "verdict": "exit 0"
+    }
+  ],
+  "forcing_function_mutations": [
+    {
+      "mutation": "Disable production maximumSustainedCpuBusyFraction refusal",
+      "result": "RED: real scratch preflight improperly admitted measured 75 percent; plant.py restored byte-identically"
+    },
+    {
+      "mutation": "cpuBusyFraction returns constant 0.11",
+      "result": "RED: over-threshold case admitted; plant.py restored byte-identically"
+    },
+    {
+      "mutation": "Missing reading count returns 0.11 instead of throwing",
+      "result": "RED: missing-measurement case admitted; plant.py restored byte-identically"
+    }
+  ],
+  "limits": [
+    "Local host is macOS; the incompatible Linux external dependency was deterministically replayed in the child process. Native Ubuntu CI confirmation remains pending on the pushed revision.",
+    "No hosted product acceptance, browser test, or release claim. Production resource sampling and guard thresholds are unchanged."
+  ],
+  "next_action": "Require CI headSha equal to the enclosing commit, checks job Resource safety regression passing on Ubuntu, no skipped repeated-header preflight case, and the workflow conclusion success before using the source as an eligible hosted gate. No product acceptance is established by CI.",
+  "independent_review": {
+    "code_verdict": "PASS",
+    "behavior_verdict": "PASS",
+    "verification": "Fresh peer ran focused safety suite 13/13; no finding. Native Ubuntu confirmation remains pending on the pushed revision."
+  }
+}
