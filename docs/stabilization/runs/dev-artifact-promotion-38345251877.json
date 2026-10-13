@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-13T04:24:00Z",
+  "ci_run": 38345251877,
+  "ci_source_sha": "e52e24bfcf63142fc3707b65ce0df6bf60f3c3aa",
+  "ci_conclusion": "success",
+  "artifact_id": 11789170044,
+  "artifact_digest": "sha256:a9fda775058928a0113d3ee4203d34db1f330650c3e3c1e2a6f7644d680f7068",
+  "import_result": "DEVELOPMENT_TEST_IMPORTED current_pushed_source",
+  "promotion_result": "CI_DEV_PROMOTED",
+  "version": "0.2.509",
+  "product_tree_sha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+  "promoted_path": "/Volumes/Samsung2TB/code/matrx-extend/.output/chrome-mv3-dev",
+  "chrome_loaded_path_version_and_pin": "unverified; extension-manager browser control was previously refused by safety review",
+  "store_submission": "none from this artifact"
+}
