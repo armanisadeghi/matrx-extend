@@ -1,10 +1,7 @@
 {
   "id": "EXT-D-0224",
   "feature_id": "EXT-F-1003",
-  "case_ids": [
-    "EXT-F-1003-T40",
-    "EXT-F-1003-T67"
-  ],
+  "case_ids": ["EXT-F-1003-T40", "EXT-F-1003-T67"],
   "title": "Guest Scrape rechecks treat implicit Settings defaults as missing values",
   "surface": "Native Settings acceptance harness",
   "auth_mode": "guest",

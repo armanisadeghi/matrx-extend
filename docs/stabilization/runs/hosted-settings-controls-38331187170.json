@@ -52,9 +52,7 @@
         "All three themes passed full extension worker/panel replacement and persistence.",
         "Original absent theme/settings baseline restored after reload."
       ],
-      "limits": [
-        "No dark-OS System, other role, Store or full Settings claim."
-      ]
+      "limits": ["No dark-OS System, other role, Store or full Settings claim."]
     },
     {
       "case_id": "EXT-F-1003-T10",
@@ -66,9 +64,7 @@
         "Ask and Act persisted through panel/full extension reload and new chats inherited each value.",
         "Original absent mode/settings baseline restored."
       ],
-      "limits": [
-        "No other role, Store or full Settings claim."
-      ]
+      "limits": ["No other role, Store or full Settings claim."]
     },
     {
       "case_id": "EXT-F-1003-T40",
@@ -99,10 +95,7 @@
     "github_read_only_provenance": [
       {
         "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/38331187170",
-        "fields": [
-          "head_sha",
-          "conclusion"
-        ],
+        "fields": ["head_sha", "conclusion"],
         "values": {
           "head_sha": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
           "conclusion": "success"
@@ -111,10 +104,7 @@
       },
       {
         "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/38330393915",
-        "fields": [
-          "head_sha",
-          "conclusion"
-        ],
+        "fields": ["head_sha", "conclusion"],
         "values": {
           "head_sha": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
           "conclusion": "success"
