@@ -839,6 +839,9 @@ async function verifyOwnedFilesTab(panel, journal, fixtureUrl, fixtureCanonical,
         (tab) => tab.active && tab.id === original.id && tab.url === fixtureUrl,
       ),
     }),
+    activeFixtureIdentityMatched: returnedTabs.some(
+      (tab) => tab.active && tab.id === original.id && tab.url === fixtureUrl,
+    ),
     read: { started: false, completed: false, requestCount: 0 },
   };
   let restoredRead;
@@ -881,6 +884,14 @@ async function verifyOwnedFilesTab(panel, journal, fixtureUrl, fixtureCanonical,
     } catch {
       report.observations.filesReturn.card = { readFailed: true };
     }
+    report.observations.filesReturn.beforeRefresh = {
+      completedGet: true,
+      ownedRowCount: restoredRead.rows.filter(
+        (candidate) => candidate.id === row.id && candidate.file_id === row.file_id,
+      ).length,
+      galleryCardCount: report.observations.filesReturn.gallery.cardCount,
+      identityCardCount: report.observations.filesReturn.card.cardCount ?? null,
+    };
     // One trusted Refresh distinguishes a stale restored view from a read
     // that still cannot render the owned response. Keep the initial failure.
     const refresh = {
@@ -905,6 +916,14 @@ async function verifyOwnedFilesTab(panel, journal, fixtureUrl, fixtureCanonical,
       refresh.ownedFixtureActive = (await ownedTabs(panel)).some(
         (tab) => tab.active && tab.id === original.id && tab.url === fixtureUrl,
       );
+      report.observations.filesReturn.afterRefresh = {
+        activeFixtureIdentityMatched: refresh.ownedFixtureActive,
+        completedGet: discrimination.completedRead,
+        ownedRowCount: discrimination.ownedRowCount,
+        responseRowCount: discrimination.readRowCount,
+        galleryCardCount: refresh.gallery.cardCount,
+        identityCardCount: discrimination.cardCount,
+      };
     } catch {
       refresh.failureCode = 'refresh_observation_failed';
     }

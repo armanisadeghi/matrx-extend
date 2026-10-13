@@ -21,15 +21,18 @@ export async function discriminateRestoredScreenshotCard({
   await clickRefresh();
   const read = await readRows();
   const card = await cardForRows(read.rows);
-  const ownedRow =
-    read.rows.length === 1 &&
-    read.rows[0].id === owned.id &&
-    read.rows[0].file_id === owned.file_id;
+  const ownedRowCount = read.rows.filter(
+    (row) => row.id === owned.id && row.file_id === owned.file_id,
+  ).length;
+  const ownedRow = read.rows.length === 1 && ownedRowCount === 1;
   return {
     clicked: true,
     completedRead: true,
     readElapsedMs: Math.round(read.completedAt - read.startedAt),
+    readRowCount: read.rows.length,
+    ownedRowCount,
     ownedRow,
+    cardCount: card.cardCount,
     cardMatched: ownedRow && ownedScreenshotCardMatches(read.rows, owned, card),
     card,
   };

@@ -64,6 +64,9 @@ test('Files-return discrimination clicks Refresh once before the fresh read and 
   assert.deepEqual(order, ['refresh', 'read', 'card']);
   assert.equal(result.cardMatched, true);
   assert.equal(result.readElapsedMs, 15);
+  assert.equal(result.readRowCount, 1);
+  assert.equal(result.ownedRowCount, 1);
+  assert.equal(result.cardCount, 1);
 });
 
 test('Files-return discrimination records a mismatched row without accepting its card', async () => {
@@ -78,5 +81,23 @@ test('Files-return discrimination records a mismatched row without accepting its
   });
   assert.equal(clicks, 1);
   assert.equal(result.ownedRow, false);
+  assert.equal(result.cardMatched, false);
+  assert.equal(result.readRowCount, 1);
+  assert.equal(result.ownedRowCount, 0);
+  assert.equal(result.cardCount, 1);
+});
+
+test('Files-return discrimination exposes zero rendered cards despite a completed owned read', async () => {
+  const result = await discriminateRestoredScreenshotCard({
+    clickRefresh: async () => {},
+    readRows: async () => ({ rows: [owned], startedAt: 2, completedAt: 9 }),
+    cardForRows: async () => ({ cardCount: 0, ordered: false, distinct: true }),
+    owned,
+  });
+  assert.equal(result.completedRead, true);
+  assert.equal(result.readRowCount, 1);
+  assert.equal(result.ownedRowCount, 1);
+  assert.equal(result.ownedRow, true);
+  assert.equal(result.cardCount, 0);
   assert.equal(result.cardMatched, false);
 });
