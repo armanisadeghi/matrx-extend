@@ -727,8 +727,8 @@ async function run(prepared, artifactMode) {
       screenshotPrivateFiles.push(screenshotOrganizationPath);
     }
     const driver =
-      screenshotRoute?.driver ??
       notesFindRoute?.driver ??
+      screenshotRoute?.driver ??
       ([
         'settings-controls',
         'settings-theme-rendering',
