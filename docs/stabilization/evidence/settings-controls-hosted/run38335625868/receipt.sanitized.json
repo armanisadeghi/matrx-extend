@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_run_id": 38335625868,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38335625868",
+  "workflow_checkout_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+  "acceptance_case": "settings-controls",
+  "acceptance_lane": "B",
+  "role": "guest",
+  "requested_by": "extend-stabilization-d224-t40-t67-retry1-20261013",
+  "workflow_conclusion": "failure",
+  "source_boundary": {
+    "artifact_kind": "ci_development_test",
+    "source_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+    "ci_run_id": 38334891412,
+    "ci_artifact_id": 11784319088,
+    "ci_artifact_name": "matrx-extend-development-test-9df3fdd0aa59ce2a2580738d5fb255eace458cc5-38334891412-1",
+    "ci_artifact_digest": "sha256:870a95416f4bdfc76c06baa736befe02d803b2d6766ce73c72c0cce8506e42e3",
+    "artifact_verified_by_hosted_workflow": true,
+    "publish_state": "not_published"
+  },
+  "resource_finals": "docs/stabilization/evidence/settings-controls-hosted/run38335625868/resource-finals.sanitized.json",
+  "resource_journals": [
+    "docs/stabilization/evidence/settings-controls-hosted/run38335625868/resource-journals/hosted-package-38335625868-1.jsonl",
+    "docs/stabilization/evidence/settings-controls-hosted/run38335625868/resource-journals/hosted-browser-38335625868-1.jsonl"
+  ],
+  "raw_artifact": "Ignored locally under .cache/stabilization/hosted-run38335625868/",
+  "hosted_artifact": {
+    "id": 11785515062,
+    "name": "hosted-guest-38335625868-1",
+    "digest": "sha256:8f36da8e9da340ce41c2cbb55ba3ebb2676b49af3e3369af040767ce42186315",
+    "expired": false
+  },
+  "evidence_summary": "This diagnosed retry was refused during the guarded browser phase with RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count. Package preparation was resource-valid; browser preparation was refused with admitted=false, resourceInvalid=false, exitCode=2, decision=refused. There is no guest phase journal, full Chromium preparation, screenshot, native acceptance report, or Settings interaction. The retry gives zero acceptance credit and establishes no product failure."
+}

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "campaign": "extend-stabilization",
-  "updated_at": "2026-10-13T01:25:54.324Z",
+  "updated_at": "2026-10-13T02:13:55Z",
   "inventory_gate": "source-census-peer-reviewed-native-visibility-pending",
   "scope_complete": false,
   "source_sha": "636d00857f774a7b15fe70032dd9c35cef44c015",
@@ -11024,6 +11024,36 @@
                 ".research/settings-per-choice-binding-native-20261008.json"
               ],
               "detail": "Existing warm/panel toggle and baseline restoration remain bounded partial evidence. Full-extension recheck ended with generic exception; automatic page-load/background capture remains unverified."
+            },
+            {
+              "at": "2026-10-13T02:05:17Z",
+              "mode": "guest",
+              "run_id": "38334606711",
+              "source_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+              "development_ci_run_id": 38333710898,
+              "development_artifact_id": 11784395386,
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_invalid": true,
+              "evidence": [
+                "docs/stabilization/runs/hosted-settings-controls-38334606711.json"
+              ],
+              "detail": "Guest resource watchdog stopped the run after transient CPU pressure and RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count. No native case report was produced; T40 absent-container behavior and downstream background capture remain unverified."
+            },
+            {
+              "at": "2026-10-13T02:13:55Z",
+              "mode": "guest",
+              "run_id": "38335625868",
+              "source_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+              "development_ci_run_id": 38334891412,
+              "development_artifact_id": 11784319088,
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_refused": true,
+              "evidence": [
+                "docs/stabilization/runs/hosted-settings-controls-38335625868.json"
+              ],
+              "detail": "Diagnosed retry was refused at browser resource admission with RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count before full Chromium or Settings interaction; no product evidence. Stop after this second unusable B attempt."
             }
           ]
         },
@@ -13478,6 +13508,36 @@
                 ".research/settings-per-choice-binding-native-20261008.json"
               ],
               "detail": "Existing warm/panel choices and restoration remain bounded partial evidence. Full-extension recheck ended with generic exception before per-choice results; downstream capture and cause remain unverified."
+            },
+            {
+              "at": "2026-10-13T02:05:17Z",
+              "mode": "guest",
+              "run_id": "38334606711",
+              "source_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+              "development_ci_run_id": 38333710898,
+              "development_artifact_id": 11784395386,
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_invalid": true,
+              "evidence": [
+                "docs/stabilization/runs/hosted-settings-controls-38334606711.json"
+              ],
+              "detail": "Guest resource watchdog stopped the run with RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count before a native report; T67's fresh absent-container starting state and restoration remain unverified."
+            },
+            {
+              "at": "2026-10-13T02:13:55Z",
+              "mode": "guest",
+              "run_id": "38335625868",
+              "source_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+              "development_ci_run_id": 38334891412,
+              "development_artifact_id": 11784319088,
+              "status": "unverified",
+              "new_acceptance_credit": false,
+              "resource_refused": true,
+              "evidence": [
+                "docs/stabilization/runs/hosted-settings-controls-38335625868.json"
+              ],
+              "detail": "Diagnosed retry was refused at browser resource admission with RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count before full Chromium or Settings interaction; no product evidence. Stop after this second unusable B attempt."
             }
           ]
         },

@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "run_id": 38334606711,
+  "title": "Hosted guest Settings D224 retest stopped by resource watchdog",
+  "status": "invalid_infrastructure_zero_credit",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38334606711",
+    "workflow": "Hosted guest side-panel acceptance",
+    "head_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "conclusion": "failure",
+    "product_artifact_source_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "product_artifact_kind": "ci_development_test",
+    "product_development_run_id": 38333710898,
+    "product_development_artifact_id": 11784395386,
+    "artifact_verified": true,
+    "publish_state": "not_published"
+  },
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest; lane B",
+  "resource_finals": {
+    "hosted-package-38334606711-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38334606711-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38334606711-1": {
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid"
+    }
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "mode": "guest",
+      "status": "zero_credit_not_reported"
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "mode": "guest",
+      "status": "zero_credit_not_reported"
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "mode": "guest",
+      "status": "zero_credit_original_absent_container_unverified",
+      "downstream_capture": "unverified; no native case report was produced"
+    },
+    {
+      "case_id": "EXT-F-1003-T67",
+      "mode": "guest",
+      "status": "zero_credit_absent_container_path_unverified"
+    }
+  ],
+  "failure_classification": "Infrastructure/resource measurement failure, not product failure. The guest journal ends with RESOURCE_MEASUREMENT_FAILED:RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count, RESOURCE_WATCH_UNSAFE, RESOURCE_STOP_AT_SAFE_BOUNDARY, process-group SIGTERM, and invalid RESOURCE_FINAL_DECISION (exit 3).",
+  "native_report": "No native acceptance report was present in the artifact. Captured screenshots show the guest landing panel before Settings assertions.",
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-hosted/run38334606711/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38334606711/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38334606711/resource-journals/hosted-package-38334606711-1.jsonl",
+    "docs/stabilization/evidence/settings-controls-hosted/run38334606711/resource-journals/hosted-browser-38334606711-1.jsonl",
+    "docs/stabilization/evidence/settings-controls-hosted/run38334606711/resource-journals/hosted-guest-38334606711-1.jsonl"
+  ],
+  "ignored_raw_artifact": ".cache/stabilization/hosted-run38334606711/",
+  "overall_limit": "This infrastructure-invalid run does not retest or disprove D224. Previous accepted bounded T04/T10 results remain historical exact-artifact evidence; T40 remains unverified overall without downstream capture, and T67 remains unverified for the original absent-container start. D224 stays in-fix/open; no duplicate dispatch was made."
+}

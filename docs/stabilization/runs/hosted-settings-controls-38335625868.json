@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "run_id": 38335625868,
+  "title": "Hosted guest Settings diagnosed retry refused by resource sampler",
+  "status": "resource_refused_zero_credit",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38335625868",
+    "workflow": "Hosted guest side-panel acceptance",
+    "head_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+    "conclusion": "failure",
+    "product_artifact_source_sha": "9df3fdd0aa59ce2a2580738d5fb255eace458cc5",
+    "product_artifact_kind": "ci_development_test",
+    "product_development_run_id": 38334891412,
+    "product_development_artifact_id": 11784319088,
+    "artifact_verified": true,
+    "publish_state": "not_published"
+  },
+  "scope": "Attempted real isolated Chrome-for-Testing native side-panel Settings acceptance; signed-out guest; lane B",
+  "resource_finals": {
+    "hosted-package-38335625868-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38335625868-1": {
+      "admitted": false,
+      "resourceInvalid": false,
+      "exitCode": 2,
+      "decision": "refused"
+    }
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "mode": "guest",
+      "status": "zero_credit_not_started"
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "mode": "guest",
+      "status": "zero_credit_not_started"
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "mode": "guest",
+      "status": "zero_credit_absent_container_unverified"
+    },
+    {
+      "case_id": "EXT-F-1003-T67",
+      "mode": "guest",
+      "status": "zero_credit_absent_container_unverified"
+    }
+  ],
+  "failure_classification": "Resource admission refusal in browser phase: RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count. No product assertion or Settings interaction occurred.",
+  "native_report": "Not generated; the browser phase refused before full Chromium preparation and the guest phase never started.",
+  "evidence": [
+    "docs/stabilization/evidence/settings-controls-hosted/run38335625868/receipt.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38335625868/resource-finals.sanitized.json",
+    "docs/stabilization/evidence/settings-controls-hosted/run38335625868/resource-journals/hosted-package-38335625868-1.jsonl",
+    "docs/stabilization/evidence/settings-controls-hosted/run38335625868/resource-journals/hosted-browser-38335625868-1.jsonl"
+  ],
+  "ignored_raw_artifact": ".cache/stabilization/hosted-run38335625868/",
+  "overall_limit": "This is the second unusable B attempt and the final attempt in this lane. It gives zero product credit and does not close or disprove EXT-D-0224. D224 remains in-fix/open; the resource sampler/admission path now needs diagnosis before another native retest."
+}

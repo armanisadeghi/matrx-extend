@@ -19,6 +19,8 @@
   "actual": "T40 and T67 warm and panel-document checks passed, but both full-extension rechecks failed before observing a Scrape choice or replacement. The T40 report retains only AssertionError at settings-guest-scrape-controls.mjs:107; T67 retains AssertionError at settings-guest-extension-rechecks.mjs:108. No product failure is established by these two results.",
   "evidence": [
     "docs/stabilization/runs/hosted-settings-controls-38328904848.json",
+    "docs/stabilization/runs/hosted-settings-controls-38334606711.json",
+    "docs/stabilization/runs/hosted-settings-controls-38335625868.json",
     "docs/stabilization/reports/ext-d-0224-source-peer-20261013.json",
     "src/state/settings.ts",
     "tests/browser/settings-guest-scrape-controls.test.mjs"
@@ -47,11 +49,11 @@
   "source_verification": {
     "focused_tests": "27/27 pass; focused absent-container guard failed on old behavior with null !== false",
     "compile": "pass",
-    "native_acceptance": "bounded hosted run 38331187170: T04/T10 pass; T40 control/reload/cleanup pass but full case unverified because downstream capture was not exercised; T67 persisted-mode pass began with explicit stored=capture. Original absent-field reproduction remains unverified.",
+    "native_acceptance": "Hosted run 38331187170: T04/T10 pass; T40 control/reload/cleanup pass but full case unverified because downstream capture was not exercised; T67 persisted-mode pass began with explicit stored=capture. Run 38334606711 used the exact-source CI artifact for 99c647a56 but the guest resource watchdog invalidated acceptance with cpu-busy sample-count failure before a native report. One diagnosed retry, 38335625868 on 9df3fdd0a, was refused at browser resource admission for the same sampler failure before Chromium or Settings started. Both new runs grant zero credit to T04/T10/T40/T67 and establish no product failure. The original absent-field reproduction remains unverified.",
     "independent_source_review": "pass for source fix only: docs/stabilization/reports/ext-d-0224-source-peer-20261013.json",
     "release": "pending"
   },
-  "next_action": "Run a fresh admitted exact-source guest Settings test that proves absent Settings/Scrape fields are the starting state before any T40/T67 operation materializes them; separately exercise T40 downstream background capture and review its resource journals. Keep EXT-D-0224 in-fix and do not claim T40/T67 as proving the original absent-field reproduction.",
+  "next_action": "Hold D224's next hosted retest until the repeated cpu-busy sample-count admission/watchdog failures are independently diagnosed and repaired. Then run guest Settings on the exact repaired source, prove absent Settings/Scrape fields are the starting state before any T40/T67 operation materializes them, separately exercise T40 downstream background capture, and have an independent peer review behavior and resource journals. Keep EXT-D-0224 in-fix and do not claim T40/T67 as proving the original absent-field reproduction.",
   "transition_history": [
     {
       "at": "2026-10-13T01:00:00Z",
@@ -76,6 +78,18 @@
       "from": "in-fix",
       "to": "in-fix",
       "reason": "Hosted run 38331187170 accepts bounded T04/T10 passes, T40 toggle/reload/cleanup subtargets, and T67 persisted-mode behavior; T40 downstream capture was absent and T67 began with stored=capture, leaving the original absent-field reproduction unverified."
+    },
+    {
+      "at": "2026-10-13T02:05:17Z",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "Hosted run 38334606711 downloaded the exact-source CI artifact for 99c647a56, but the guest resource watchdog ended acceptance with RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count and an invalid resource final. No native report was produced; the run grants zero T04/T10/T40/T67 credit and establishes no product failure."
+    },
+    {
+      "at": "2026-10-13T02:13:55Z",
+      "from": "in-fix",
+      "to": "in-fix",
+      "reason": "One diagnosed retry, hosted run 38335625868 on exact CI artifact source 9df3fdd0a, was refused at the browser resource gate with RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count before full Chromium or guest acceptance. The second unusable B attempt grants no product credit; stop native retries pending resource-sampler diagnosis."
     }
   ]
 }

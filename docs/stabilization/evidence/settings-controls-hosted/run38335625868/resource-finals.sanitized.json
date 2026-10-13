@@ -1,0 +1,24 @@
+{
+  "workflow_run_id": 38335625868,
+  "source": "Terminal RESOURCE_FINAL_DECISION records in the downloaded hosted artifact journals.",
+  "phases": {
+    "hosted-package-38335625868-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38335625868-1": {
+      "admitted": false,
+      "resourceInvalid": false,
+      "exitCode": 2,
+      "decision": "refused"
+    },
+    "hosted-guest-38335625868-1": {
+      "status": "not_started",
+      "reason": "Browser phase failed resource admission before full Chromium preparation."
+    }
+  },
+  "refusal_reason": "RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count",
+  "retry_policy": "One diagnosed retry was used; stop after this second unusable B attempt."
+}

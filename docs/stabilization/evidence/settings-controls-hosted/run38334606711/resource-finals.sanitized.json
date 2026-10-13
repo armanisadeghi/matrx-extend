@@ -1,0 +1,26 @@
+{
+  "workflow_run_id": 38334606711,
+  "source": "Terminal RESOURCE_FINAL_DECISION records in the downloaded hosted artifact journals.",
+  "phases": {
+    "hosted-package-38334606711-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38334606711-1": {
+      "admitted": true,
+      "resourceInvalid": false,
+      "exitCode": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38334606711-1": {
+      "admitted": true,
+      "resourceInvalid": true,
+      "exitCode": 3,
+      "decision": "invalid"
+    }
+  },
+  "terminal_guest_reason": "RESOURCE_MEASUREMENT_FAILED:RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count",
+  "guest_watchdog_action": "Stopped the owned acceptance process group at a safe boundary; no retry was attempted."
+}

@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "workflow": "Hosted guest side-panel acceptance",
+  "workflow_run_id": 38334606711,
+  "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38334606711",
+  "workflow_checkout_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+  "acceptance_case": "settings-controls",
+  "acceptance_lane": "B",
+  "role": "guest",
+  "requested_by": "extend-stabilization-d224-t40-t67-20261013",
+  "workflow_conclusion": "failure",
+  "source_boundary": {
+    "artifact_kind": "ci_development_test",
+    "source_sha": "99c647a56154ad9e190ba9c1c3bd8b0cfaaab161",
+    "ci_run_id": 38333710898,
+    "ci_artifact_id": 11784395386,
+    "ci_artifact_name": "matrx-extend-development-test-99c647a56154ad9e190ba9c1c3bd8b0cfaaab161-38333710898-1",
+    "ci_artifact_digest": "sha256:5a98d51828b1e6a569f485ef6d9b50e06603678604bbc65dc835108a4f60a0d5",
+    "artifact_verified_by_hosted_workflow": true,
+    "publish_state": "not_published"
+  },
+  "driver_report_status": "not_generated_resource_watchdog_stopped_acceptance",
+  "resource_finals": "docs/stabilization/evidence/settings-controls-hosted/run38334606711/resource-finals.sanitized.json",
+  "resource_journals": [
+    "docs/stabilization/evidence/settings-controls-hosted/run38334606711/resource-journals/hosted-package-38334606711-1.jsonl",
+    "docs/stabilization/evidence/settings-controls-hosted/run38334606711/resource-journals/hosted-browser-38334606711-1.jsonl",
+    "docs/stabilization/evidence/settings-controls-hosted/run38334606711/resource-journals/hosted-guest-38334606711-1.jsonl"
+  ],
+  "raw_artifact": "Ignored locally under .cache/stabilization/hosted-run38334606711/",
+  "artifact_files": [
+    "docs/stabilization/resource-journals/hosted-package-38334606711-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-browser-38334606711-1.jsonl",
+    "docs/stabilization/resource-journals/hosted-guest-38334606711-1.jsonl",
+    "test-results/native-sidepanel-qa-0wQtnS/native-side-panel.png",
+    "test-results/native-sidepanel-qa-0wQtnS/normal-target-after-open.png"
+  ],
+  "evidence_summary": "The hosted guest resource watchdog stopped the native acceptance process with RESOURCE_MEASUREMENT_INVALID:cpu-busy:sample-count. The run has no native acceptance report; its screenshots show the guest landing panel before Settings assertions. This run gives zero acceptance credit to T04, T10, T40, and T67 and establishes no product failure."
+}
