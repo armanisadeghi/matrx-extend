@@ -969,15 +969,20 @@ if (process.argv[1].endsWith('/git')) {
   const execute = (mode, change = {}, extra = []) => {
     for (const name of ['local', 'remote', 'history']) rmSync(`${log}.${name}`, { force: true });
     const scrape = mode.endsWith('-scrape');
+    const settingsGuest = mode.endsWith('-settings-guest');
     return spawnSync(
       process.execPath,
       [
         resolve('scripts/hosted-remote-admission.mjs'),
         mode,
         '--lane',
-        scrape ? 'B' : 'A',
+        scrape || settingsGuest ? 'B' : 'A',
         '--case',
-        scrape ? 'guest-scrape-development' : 'settings-account-popover-member',
+        scrape
+          ? 'guest-scrape-development'
+          : settingsGuest
+            ? 'settings-controls'
+            : 'settings-account-popover-member',
         ...(scrape ? ['--scrape-scope', 'seo-schema-empty', '--auth-mode', 'guest'] : []),
         '--runner-label',
         'macos-15-intel',
@@ -1003,6 +1008,16 @@ if (process.argv[1].endsWith('/git')) {
     const plan = execute('plan-settings-member');
     assert.equal(plan.status, 0, plan.stderr);
     assert.equal(JSON.parse(plan.stdout).artifact.artifactId, input.developmentArtifactId);
+    const guestPlan = execute('plan-settings-guest');
+    assert.equal(guestPlan.status, 0, guestPlan.stderr);
+    assert.deepEqual(
+      JSON.parse(guestPlan.stdout).plan.args,
+      admission.planHostedSettingsGuest({
+        ...input,
+        lane: 'B',
+        acceptanceCase: 'settings-controls',
+      }).args,
+    );
     for (const [change, reason] of [
       [{ wrongArtifact: '11700000001' }, 'HOSTED_DEVELOPMENT_ARTIFACT_INVALID'],
       [
@@ -1058,6 +1073,50 @@ if (process.argv[1].endsWith('/git')) {
     );
     assert.deepEqual(JSON.parse(readFileSync(log)), [
       ...admission.planHostedSettingsMember(input).args,
+      '-R',
+      'armanisadeghi/matrx-extend',
+    ]);
+    rmSync(log);
+    for (const [change, reason] of [
+      [{ wrongArtifact: '11700000001' }, 'HOSTED_DEVELOPMENT_ARTIFACT_INVALID'],
+      [{ dirty: '?? concurrent.ts' }, 'HOSTED_DISPATCH_SOURCE_NOT_SYNCHRONIZED'],
+      [
+        { localSha: 'f'.repeat(40), remoteSha: 'f'.repeat(40) },
+        'HOSTED_SETTINGS_GUEST_SOURCE_DRIFT',
+      ],
+      [{ workflow: `${workflow}\n# unreviewed` }, 'HOSTED_WORKFLOW_BLOB_UNREVIEWED'],
+      [
+        { runs: [{ name: 'Native B · settings-controls', status: 'in_progress' }] },
+        'HOSTED_SETTINGS_GUEST_B_CAPACITY_REFUSED',
+      ],
+      [
+        { diagnosisRuns: [{ name: 'Hosted resource diagnosis', status: 'queued' }] },
+        'HOSTED_SETTINGS_GUEST_B_CAPACITY_REFUSED',
+      ],
+    ]) {
+      const refused = execute('dispatch-settings-guest', change);
+      assert.notEqual(refused.status, 0, reason);
+      assert.match(refused.stderr, new RegExp(reason));
+      assert.throws(() => readFileSync(log), /ENOENT/);
+    }
+    const guestUnknown = execute('dispatch-settings-guest', {}, ['--auth-mode', 'member']);
+    assert.notEqual(guestUnknown.status, 0);
+    assert.match(guestUnknown.stderr, /HOSTED_ARGUMENT_INVALID/);
+    const guestMoved = execute('dispatch-settings-guest', { moveAfterAdmission: true });
+    assert.notEqual(guestMoved.status, 0);
+    assert.match(guestMoved.stderr, /HOSTED_SETTINGS_GUEST_SOURCE_DRIFT/);
+    assert.throws(() => readFileSync(log), /ENOENT/);
+    const guestResult = execute('dispatch-settings-guest', {
+      runs: [{ name: 'Native A · settings-account-popover-member', status: 'in_progress' }],
+      noSecret: true,
+    });
+    assert.equal(guestResult.status, 0, guestResult.stderr);
+    assert.deepEqual(JSON.parse(readFileSync(log)), [
+      ...admission.planHostedSettingsGuest({
+        ...input,
+        lane: 'B',
+        acceptanceCase: 'settings-controls',
+      }).args,
       '-R',
       'armanisadeghi/matrx-extend',
     ]);

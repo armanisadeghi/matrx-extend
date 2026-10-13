@@ -389,6 +389,56 @@ export function requireSettingsMemberDispatchAdmission({
   return true;
 }
 
+/** Guest Settings controls on the isolated B lane, from one frozen CI development artifact. */
+export function planHostedSettingsGuest({ lane, acceptanceCase, runnerLabel, ...input }) {
+  if (lane !== 'B') refuse('HOSTED_SETTINGS_GUEST_LANE_REFUSED');
+  if (acceptanceCase !== 'settings-controls') refuse('HOSTED_SETTINGS_GUEST_CASE_REFUSED');
+  if (runnerLabel !== 'macos-15-intel') refuse('HOSTED_SETTINGS_GUEST_RUNNER_REFUSED');
+  if (!SHA.test(input.sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
+  planHostedMemberData({ ...input, lane: 'A' });
+  return {
+    command: 'gh',
+    args: [
+      'workflow',
+      'run',
+      'hosted-guest-acceptance.yml',
+      '--ref',
+      'main',
+      ...[
+        'acceptance_lane=B',
+        'acceptance_case=settings-controls',
+        `requested_by=${DISPATCH_REQUESTER}`,
+        'scrape_auth_mode=guest',
+        'runner_label=macos-15-intel',
+        `development_run_id=${input.developmentRunId}`,
+        `development_artifact_id=${input.developmentArtifactId}`,
+      ].flatMap((field) => ['-f', field]),
+    ],
+  };
+}
+
+export function requireSettingsGuestDispatchAdmission({
+  localSha,
+  remoteSha,
+  sourceSha,
+  dirty,
+  runs,
+}) {
+  requireExactDispatchSource(
+    localSha,
+    remoteSha,
+    dirty,
+    sourceSha,
+    'HOSTED_SETTINGS_GUEST_SOURCE_DRIFT',
+  );
+  if (
+    !Array.isArray(runs) ||
+    runs.some((run) => run.status !== 'completed' && !/^Native A · /.test(run.name ?? ''))
+  )
+    refuse('HOSTED_SETTINGS_GUEST_B_CAPACITY_REFUSED');
+  return true;
+}
+
 // The current native driver records no imported_artifact. Authenticated logs from the
 // same successful workflow bind its frozen CI import; never infer provenance from null.
 export function verifyHostedSettingsMemberLog(log, identity) {
@@ -918,6 +968,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       mode === 'dispatch-scrape' ||
       mode === 'plan-settings-member' ||
       mode === 'dispatch-settings-member' ||
+      mode === 'plan-settings-guest' ||
+      mode === 'dispatch-settings-guest' ||
       mode === 'plan-notes' ||
       mode === 'dispatch-notes' ||
       mode === 'plan-notes-lazy-general' ||
@@ -929,6 +981,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       const sourceSha = args.get('--source-sha');
       const guestSeo = mode.endsWith('-guest-seo');
       const settings = mode.endsWith('-settings-member');
+      const settingsGuest = mode.endsWith('-settings-guest');
       const notes = mode.endsWith('-notes') || mode.endsWith('-notes-lazy-general');
       const scrape = mode.endsWith('-scrape');
       if (
@@ -939,7 +992,9 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
         refuse('HOSTED_NOTES_CASE_MODE_MISMATCH');
       if (settings && args.get('--case') !== 'settings-account-popover-member')
         refuse('HOSTED_SETTINGS_MEMBER_CASE_MODE_MISMATCH');
-      if (notes || scrape || settings)
+      if (settingsGuest && args.get('--case') !== 'settings-controls')
+        refuse('HOSTED_SETTINGS_GUEST_CASE_MODE_MISMATCH');
+      if (notes || scrape || settings || settingsGuest)
         for (const key of args.keys())
           if (
             ![
@@ -953,49 +1008,63 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             ].includes(key)
           )
             refuse('HOSTED_ARGUMENT_INVALID');
-      const plan = scrape
-        ? planHostedScrape({
+      const plan = settingsGuest
+        ? planHostedSettingsGuest({
             lane,
             acceptanceCase: args.get('--case'),
-            scrapeScope: args.get('--scrape-scope'),
-            authMode: args.get('--auth-mode'),
             runnerLabel: args.get('--runner-label'),
             developmentRunId,
             developmentArtifactId,
             sourceSha,
           })
-        : notes
-          ? planHostedNotes({
+        : scrape
+          ? planHostedScrape({
               lane,
               acceptanceCase: args.get('--case'),
+              scrapeScope: args.get('--scrape-scope'),
+              authMode: args.get('--auth-mode'),
               runnerLabel: args.get('--runner-label'),
               developmentRunId,
               developmentArtifactId,
               sourceSha,
             })
-          : guestSeo
-            ? planHostedGuestSeo({
+          : notes
+            ? planHostedNotes({
                 lane,
                 acceptanceCase: args.get('--case'),
-                seoCaseScope: args.get('--seo-case-scope'),
-                seoMetadataFixture: args.get('--seo-metadata-fixture'),
-                seoResourceDiagnostic: args.get('--seo-resource-diagnostic'),
-                seoInterruptAfterTarget: args.get('--seo-interrupt-after-target'),
                 runnerLabel: args.get('--runner-label'),
                 developmentRunId,
                 developmentArtifactId,
                 sourceSha,
               })
-            : settings
-              ? planHostedSettingsMember({
+            : guestSeo
+              ? planHostedGuestSeo({
                   lane,
                   acceptanceCase: args.get('--case'),
+                  seoCaseScope: args.get('--seo-case-scope'),
+                  seoMetadataFixture: args.get('--seo-metadata-fixture'),
+                  seoResourceDiagnostic: args.get('--seo-resource-diagnostic'),
+                  seoInterruptAfterTarget: args.get('--seo-interrupt-after-target'),
                   runnerLabel: args.get('--runner-label'),
                   developmentRunId,
                   developmentArtifactId,
                   sourceSha,
                 })
-              : planHostedMemberData({ lane, developmentRunId, developmentArtifactId, sourceSha });
+              : settings
+                ? planHostedSettingsMember({
+                    lane,
+                    acceptanceCase: args.get('--case'),
+                    runnerLabel: args.get('--runner-label'),
+                    developmentRunId,
+                    developmentArtifactId,
+                    sourceSha,
+                  })
+                : planHostedMemberData({
+                    lane,
+                    developmentRunId,
+                    developmentArtifactId,
+                    sourceSha,
+                  });
       if (!SHA.test(sourceSha ?? '')) refuse('HOSTED_SOURCE_SHA_INVALID');
       const artifact = requireDevelopmentArtifact({
         runId: developmentRunId,
@@ -1004,6 +1073,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       });
       if (
         mode === 'dispatch-settings-member' ||
+        mode === 'dispatch-settings-guest' ||
         mode === 'dispatch' ||
         mode === 'dispatch-guest-seo' ||
         mode === 'dispatch-notes' ||
@@ -1018,7 +1088,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             'status',
             '--porcelain',
             '--',
-            ...(notes || scrape || settings
+            ...(notes || scrape || settings || settingsGuest
               ? []
               : [
                   '.github/workflows/hosted-guest-acceptance.yml',
@@ -1094,7 +1164,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
             'HOSTED_SETTINGS_MEMBER_SOURCE_DRIFT',
           );
         }
-        if (scrape) {
+        if (scrape || settingsGuest) {
           verifyHostedWorkflowCheckout({
             path: '.github/workflows/hosted-guest-acceptance.yml',
             head_sha: remoteSha,
@@ -1109,17 +1179,27 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
                   !Array.isArray(listing.workflow_runs) ||
                   listing.total_count !== listing.workflow_runs.length
                 )
-                  refuse('HOSTED_SCRAPE_B_CAPACITY_REFUSED');
+                  refuse(
+                    settingsGuest
+                      ? 'HOSTED_SETTINGS_GUEST_B_CAPACITY_REFUSED'
+                      : 'HOSTED_SCRAPE_B_CAPACITY_REFUSED',
+                  );
                 return listing.workflow_runs;
               }),
           );
-          requireScrapeDispatchAdmission({ localSha, remoteSha, dirty, sourceSha, runs });
+          (settingsGuest ? requireSettingsGuestDispatchAdmission : requireScrapeDispatchAdmission)({
+            localSha,
+            remoteSha,
+            dirty,
+            sourceSha,
+            runs,
+          });
           requireExactDispatchSource(
             execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim(),
             ghJson(`repos/${OWNER}/git/ref/heads/main`).object?.sha,
             execFileSync('git', ['status', '--porcelain'], { encoding: 'utf8' }).trim(),
             sourceSha,
-            'HOSTED_SCRAPE_SOURCE_DRIFT',
+            settingsGuest ? 'HOSTED_SETTINGS_GUEST_SOURCE_DRIFT' : 'HOSTED_SCRAPE_SOURCE_DRIFT',
           );
         }
         const result = spawnSync(plan.command, [...plan.args, '-R', OWNER], { stdio: 'inherit' });
