@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "run_id": 38328904848,
+  "title": "Hosted guest Settings bounded local-controls acceptance",
+  "status": "mixed_bounded_results",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38328904848",
+    "workflow": "Hosted guest side-panel acceptance",
+    "head_sha": "a7e57addf8eb5ac23b5dc761496f048cad10d848",
+    "conclusion": "failure",
+    "product_development_artifact_id": 11781602861,
+    "product_artifact_source_sha": "ca51b7ac2b7f40271d309af3171ad88ebe02f9e0",
+    "product_artifact_kind": "local_dev_unpacked",
+    "product_artifact_version": "0.2.509",
+    "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "tree_sha256": "fd3bad02842d27c65710aa8f583e9e5372a9dcfa0b39b701777f0c4778803e79",
+    "artifact_verified": true,
+    "publish_state": "not_published",
+    "development_ci_run_id": 38327753178
+  },
+  "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
+  "resource_finals": {
+    "hosted-package-38328904848-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-browser-38328904848-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 0,
+      "decision": "valid"
+    },
+    "hosted-guest-38328904848-1": {
+      "admitted": true,
+      "resource_invalid": false,
+      "exit_code": 1,
+      "decision": "child_failed"
+    },
+    "source": "Downloaded completed resource journals under the run artifact; all three had terminal RESOURCE_FINAL_DECISION events."
+  },
+  "case_verdicts": [
+    {
+      "case_id": "EXT-F-1003-T04",
+      "mode": "guest",
+      "status": "pass_bounded_exact_artifact",
+      "panel_document_reload": {
+        "status": "pass",
+        "passed": 7,
+        "failed": 0
+      },
+      "full_extension_reload": {
+        "status": "pass",
+        "passed": 13,
+        "failed": 0
+      },
+      "observed": [
+        "Dark, Light and System each changed selected value, storage value and rendered theme, and persisted across panel reload.",
+        "Dark and Light each persisted across full extension worker/panel replacement.",
+        "System setting and the original absent preference/settings-container baseline were restored, including after full extension reload."
+      ],
+      "limits": [
+        "System was observed with systemDark=false; System under a dark OS preference is unverified.",
+        "This is guest T04 only; it does not establish other roles, Store behavior or full Settings health."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T10",
+      "mode": "guest",
+      "status": "pass_bounded_exact_artifact",
+      "panel_document_reload": {
+        "status": "pass",
+        "passed": 6,
+        "failed": 0
+      },
+      "full_extension_reload": {
+        "status": "pass",
+        "passed": 12,
+        "failed": 0
+      },
+      "observed": [
+        "Act and Ask each persisted across panel reload and full extension worker/panel replacement.",
+        "A new chat inherited each selected default mode after warm selection and after full extension reload.",
+        "Original absent preference/settings-container baseline was restored."
+      ],
+      "limits": [
+        "This is guest T10 only; it does not establish other roles, Store behavior or full Settings health."
+      ]
+    },
+    {
+      "case_id": "EXT-F-1003-T40",
+      "mode": "guest",
+      "status": "partial_full_reload_unverified",
+      "panel_document_reload": {
+        "status": "unverified",
+        "passed": 5,
+        "failed": 0
+      },
+      "warm_and_cleanup": "Warm ON/OFF visible/storage state, panel reload observations, and original OFF baseline cleanup passed.",
+      "full_extension_reload": {
+        "status": "failed_diagnostic_assertion",
+        "source": "tests/browser/settings-guest-scrape-controls.mjs:107",
+        "assertion": "auto_scrape_initial_ui_storage_disagree",
+        "meaning": "At artifact source ca51b7ac2 this asserts initial visible toggle equals stored toggle before the full-reload recheck proceeds. The error serialization omitted the values and operation-stage context.",
+        "classification": "Observed assertion, product cause unproven; full-reload verdict unverified pending a diagnostic rerun."
+      },
+      "product_defect": "Not established by this evidence."
+    },
+    {
+      "case_id": "EXT-F-1003-T67",
+      "mode": "guest",
+      "status": "partial_full_reload_unverified",
+      "panel_document_reload": {
+        "status": "pass",
+        "passed": 5,
+        "failed": 0
+      },
+      "warm_and_panel": "Capture and Scroll & capture each displayed and retained the selected mode across panel reload.",
+      "full_extension_reload": {
+        "status": "failed_harness_precondition",
+        "source": "tests/browser/settings-guest-extension-rechecks.mjs:108",
+        "assertion": "baseline && choices.some(([value]) => value === baseline.value)",
+        "meaning": "The helper was called without a valid baseline/choice input; failure occurs at function entry before product reload behavior is tested."
+      },
+      "product_defect": "Not established; retain full-reload portion as unverified."
+    }
+  ],
+  "other_selected_case_statuses": {
+    "EXT-F-1003-T13": "pass",
+    "EXT-F-1003-T16": "unverified",
+    "EXT-F-1003-T19": "unverified",
+    "EXT-F-1003-T22": "pass",
+    "EXT-F-1003-T28": "pass",
+    "EXT-F-1003-T31": "unverified",
+    "EXT-F-1003-T34": "unverified",
+    "EXT-F-1003-T37": "pass",
+    "EXT-F-1003-T46": "pass",
+    "EXT-F-1003-T63": "unverified",
+    "EXT-F-1003-T64": "pass",
+    "EXT-F-1003-T70": "unverified",
+    "EXT-F-1003-T73": "pass",
+    "EXT-F-1003-T76": "pass",
+    "EXT-F-1003-T92": "pass",
+    "EXT-F-1003-T93": "pass"
+  },
+  "overall_limit": "The workflow failed because T40 and T67 full-extension rechecks raised assertions. Individual bounded passes remain usable on the exact artifact; this is not a full Settings verdict.",
+  "evidence_source": "Sanitized summary of test-results/settings-local-controls-acceptance.json and the three completed resource journals from the downloaded hosted run artifact. Raw downloaded files are not committed.",
+  "independent_review": {
+    "reviewed_by": "independent peer agent",
+    "result": "T04/T10 exact-artifact bounded passes accepted; T40/T67 full-reload verdicts remain unresolved as classified above.",
+    "browser_launched": false
+  }
+}

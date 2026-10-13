@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "run_id": 38328930763,
+  "title": "Hosted guest Scrape acceptance blocked at resource readiness",
+  "status": "resource_readiness_refusal_no_product_credit",
+  "workflow": {
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38328930763",
+    "workflow": "Hosted guest side-panel acceptance",
+    "job": "guest",
+    "head_sha": "a7e57addf8eb5ac23b5dc761496f048cad10d848",
+    "conclusion": "failure",
+    "selected_case": "guest-scrape-development"
+  },
+  "product_credit": "none; browser preparation and selected native acceptance steps were skipped.",
+  "resource_observation": {
+    "step": "Wait for measured package readiness",
+    "command": "node scripts/hosted-resource-readiness.mjs",
+    "terminal_error": "RESOURCE_READINESS_EXPIRED",
+    "samples": [
+      {
+        "at": "2026-10-13T00:47:46Z",
+        "busy": 0.16,
+        "load_per_cpu": 2.975,
+        "healthy": true
+      },
+      {
+        "at": "2026-10-13T00:48:02Z",
+        "busy": 1.0,
+        "load_per_cpu": 2.375,
+        "healthy": false
+      },
+      {
+        "at": "2026-10-13T00:48:18Z",
+        "busy": 0.99,
+        "load_per_cpu": 2.6725,
+        "healthy": false
+      },
+      {
+        "at": "2026-10-13T00:48:34Z",
+        "busy": 0.15,
+        "load_per_cpu": 2.225,
+        "healthy": true
+      },
+      {
+        "at": "2026-10-13T00:48:50Z",
+        "busy": 0.93,
+        "load_per_cpu": 2.0175,
+        "healthy": false
+      },
+      {
+        "at": "2026-10-13T00:49:06Z",
+        "busy": 0.93,
+        "load_per_cpu": 1.7925,
+        "healthy": false
+      },
+      {
+        "at": "2026-10-13T00:49:22Z",
+        "busy": 0.15,
+        "load_per_cpu": 1.49,
+        "healthy": true
+      }
+    ],
+    "resource_journals": "The upload log lists pending package/browser/guest/startup journals and no completed journals; no terminal RESOURCE_FINAL_DECISION is available, so this run has no valid resource final.",
+    "classification": "Hosted resource-readiness boundary; no evidence of a product failure or product behavior."
+  },
+  "limitations": [
+    "Do not infer Scrape pass/fail from this attempt.",
+    "Retry only through the normal hosted resource guard after fresh admission; existing failed readiness attempt is not resource-valid acceptance evidence."
+  ],
+  "evidence": [
+    "GitHub run/job log: https://github.com/armanisadeghi/matrx-extend/actions/runs/38328930763/job/115073974150"
+  ],
+  "review_note": "No browser launched by peer reviewer; verdict derived from completed workflow logs."
+}

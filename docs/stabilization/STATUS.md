@@ -1,13 +1,13 @@
 # Extension stabilization status
 
-Generated 2026-10-12 23:55 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-12T23:55:31+00:00. 207 features · 812 cases · 1400 controls · 222 linked defect records.
+Generated 2026-10-13 01:01 UTC from inventory.json and defects/*.json. Inventory updated 2026-10-13T01:00:51+00:00. 207 features · 812 cases · 1400 controls · 222 linked defect records.
 
 A feature is fully verified for a role only when every applicable case explicitly passes and every inventoried control has a mapped case. A pass on one case does not verify the whole feature. Unrecorded results remain unverified. Matrix passes retain their original build boundary; they count as current-build acceptance only when a receipt-bound report says so. A fixed or closed defect does not itself prove native behavior.
 
 ## Current coverage snapshot
 
-Applicable case-by-role slots: **1299** — Pass: 100 · Partial: 96 · Fail: 1 · Unverified: 1100 · N/A: 2.
-Unverified splits into **148 explicitly marked unverified** and **952 with no result record**.
+Applicable case-by-role slots: **1299** — Pass: 101 · Partial: 96 · Fail: 1 · Unverified: 1099 · N/A: 2.
+Unverified splits into **147 explicitly marked unverified** and **952 with no result record**.
 Full feature-role pairs: **0/402**. Procedure gaps: 0 cases without steps, 0 without expected outcomes, 0 without control links; 1 explicitly control-less.
 A recorded pass is historical or bounded until its evidence explicitly binds it to the current artifact. The current release receipt and scoped native results are listed separately in the checklist.
 
@@ -21,7 +21,7 @@ A recorded pass is historical or bounded until its evidence explicitly binds it 
 | [Generated API request, credential and result transport](#generated-api-request,-credential-and-result-transport) | 1 | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 12, n/a 0 | 1 |
 | [Navigation / shell](#navigation--shell) | 1 | 4 pass · 3 partial · 0 fail · 4 unverified · 0 deferred; 0/1 full | 3 pass · 0 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | pass 7, partial 6, fail 0, unverified 20, n/a 0 | 0 |
 | [Popup / options / mic permission](#popup--options--mic-permission) | 1 | 0 pass · 0 partial · 0 fail · 6 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | 0 pass · 0 partial · 0 fail · 9 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 24, n/a 0 | 0 |
-| [Settings](#settings) | 1 | 18 pass · 6 partial · 0 fail · 3 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 32, partial 16, fail 0, unverified 49, n/a 1 | 5 |
+| [Settings](#settings) | 1 | 19 pass · 6 partial · 0 fail · 2 unverified · 0 deferred; 0/1 full | 2 pass · 3 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | 12 pass · 7 partial · 0 fail · 23 unverified · 0 deferred; 0/1 full | pass 33, partial 16, fail 0, unverified 48, n/a 1 | 5 |
 | [Profile](#profile) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 5 pass · 3 partial · 0 fail · 8 unverified · 0 deferred; 0/1 full | 0 pass · 3 partial · 0 fail · 13 unverified · 0 deferred; 0/1 full | pass 5, partial 6, fail 0, unverified 21, n/a 0 | 5 |
 | [Debug log](#debug-log) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 4 pass · 1 partial · 0 fail · 46 unverified · 0 deferred; 0/1 full | pass 4, partial 1, fail 0, unverified 46, n/a 0 | 0 |
 | [Debug bridges](#debug-bridges) | 1 | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 0 unverified · 0 deferred; 0/0 full | 0 pass · 0 partial · 0 fail · 28 unverified · 0 deferred; 0/1 full | pass 0, partial 0, fail 0, unverified 28, n/a 0 | 1 |
@@ -439,7 +439,7 @@ These historical checks retain their original artifact boundary; they do not est
 | EXT-F-1003-T07 guest: Default agent | Pass | N/A | N/A | EXT-F-1003-C03 |
 | EXT-F-1003-T08 member: Default agent | N/A | Unverified | N/A | EXT-F-1003-C03 |
 | EXT-F-1003-T09 admin: Default agent | N/A | N/A | Pass | EXT-F-1003-C03 |
-| EXT-F-1003-T10 guest: Default mode | Unverified | N/A | N/A | EXT-F-1003-C04 |
+| EXT-F-1003-T10 guest: Default mode | Pass | N/A | N/A | EXT-F-1003-C04 |
 | EXT-F-1003-T11 member: Default mode | N/A | Unverified | N/A | EXT-F-1003-C04 |
 | EXT-F-1003-T12 admin: Default mode | N/A | N/A | Unverified | EXT-F-1003-C04 |
 | EXT-F-1003-T13 guest: Default speed | Pass | N/A | N/A | EXT-F-1003-C05 |
@@ -532,8 +532,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T03 · admin: Pass. Initialunset did not chooseimplicitly; explicitfixture selected, Actingas and fullreload persistence verified. Nonexistent clear-step corrected from source/UI.
   Evidence / build / date recorded: admin-org-001, docs/stabilization/runs/admin-org-001.json
-- EXT-F-1003-T04 · guest: Pass. Independent native peer review accepts guest Theme T04 as a bounded 21/21 pass on exact artifact source 8512a79ca1a30543c64a32cb8d2449b267ce75e1. This does not close EXT-D-0220: the same run separately failed T10 before its first choice behavior, and T10 diagnosis remains open.
-  Evidence / build / date recorded: ext-d-0220-theme-t04-20261012-01, ['docs/stabilization/runs/ext-d-0220-theme-t04-20261012-01.json', 'docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/native-report.sanitized.json', 'docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/resource-journal.sanitized.jsonl', 'docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01-preflight.jsonl', 'docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01.jsonl', 'docs/stabilization/reports/ext-d-0220-native-peer-20261012.json']
+- EXT-F-1003-T04 · guest: Pass. Exact artifact guest T04 pass, independently adjudicated. System appearance observed while OS preference was light (systemDark=false).
+  Evidence / build / date recorded: 38328904848, ['docs/stabilization/runs/hosted-settings-controls-38328904848.json']
 - EXT-F-1003-T05 · member: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
   Evidence / build / date recorded: settings-mounted-member-full6-20261003-01, ['.research/settings-all-modes-evidence-peer.json', '.research/settings-mounted-native.json']
 - EXT-F-1003-T06 · admin: Partial. Six native cases: changed Light/System saves, rejected Dark write with visible error/Retry, retry Dark persistence after panel reload, and latest rapid System choice before/after panel reload. Rendered theme appearance and full extension Reload not established by this run.
@@ -542,8 +542,8 @@ These historical checks retain their original artifact boundary; they do not est
   Evidence / build / date recorded: guest-settings-007, docs/stabilization/runs/guest-settings-007.json
 - EXT-F-1003-T09 · admin: Pass. FreshSol visual+AX/detail reconciled sameQuickTestAgent plus2memberbadge; actualchosenidentity persisted afterfullreload, originalMatrxBrowserAgent restored.
   Evidence / build / date recorded: admin-default-agent-002, docs/stabilization/runs/admin-default-agent-002.json
-- EXT-F-1003-T10 · guest: Unverified. The exact-source shared runner failed before T10 choice behavior at initial_baseline_observation. Record the run failure separately while keeping T10 behavior unverified; the earlier bounded pass is preserved in result_history and does not resolve this current baseline discrepancy.
-  Evidence / build / date recorded: ext-d-0220-theme-t04-20261012-01, ['docs/stabilization/runs/ext-d-0220-theme-t04-20261012-01.json', 'docs/stabilization/evidence/settings-controls-local/ext-d-0220-theme-t04-20261012-01/native-report.sanitized.json', 'docs/stabilization/resource-journals/ext-d-0220-theme-t04-20261012-01.jsonl', 'docs/stabilization/reports/ext-d-0220-native-peer-20261012.json']
+- EXT-F-1003-T10 · guest: Pass. Exact artifact guest T10 pass, independently adjudicated.
+  Evidence / build / date recorded: 38328904848, ['docs/stabilization/runs/hosted-settings-controls-38328904848.json']
 - EXT-F-1003-T13 · guest: Pass. Independent review confirms original guest criteria. Reviewed frozen guest run38041519886: 4 passed criteria; native case pass.
   Evidence / build / date recorded: 37822887930, ['.research/settings-reload-native-20261008.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/receipt.sanitized.json', 'docs/stabilization/evidence/settings-controls-hosted/run38041519886/native-report.sanitized.json']
 - EXT-F-1003-T15 · admin: Pass. Actual adminUI on0.2.51; full control criteria includingreload verified, System/Fast/groups restored; resourcehealthy.
