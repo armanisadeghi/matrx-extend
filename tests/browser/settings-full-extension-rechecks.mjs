@@ -14,6 +14,7 @@ import {
   observeGuestAutoScrapeMode,
   scrapeModeMatches,
 } from './settings-guest-scrape-controls.mjs';
+import { runWithAbsentScrapeModeBaseline } from './settings-scrape-mode-baseline.mjs';
 
 export const FULL_EXTENSION_RECHECK_IDS = ['T04', 'T10', 'T28', 'T40', 'T67'];
 
@@ -385,37 +386,47 @@ export async function rerunGuestSettingsAfterExtensionReload({
 
     const modeCase = cases.find((candidate) => candidate.id.endsWith('T67'));
     await runFullExtensionRecheck(modeCase, async (record, result) => {
-      const initial = await observeAutoScrapeMode(activePanel);
-      const labels = { capture: 'Capture', 'scroll-capture': 'Scroll & capture' };
-      await runGuestChoicesAcrossExtensionRestarts({
-        panel: activePanel,
-        section: 'Scrape',
-        controlLabel: 'Auto-scrape mode',
-        choices: [
-          ['capture', 'Capture'],
-          ['scroll-capture', 'Scroll & capture'],
-        ],
-        baseline: {
-          value: initial.mode?.stored,
-          label: labels[initial.mode?.stored] ?? null,
-        },
+      await runWithAbsentScrapeModeBaseline({
+        getPanel: () => activePanel,
+        reloadSettings,
         settings,
         openSection,
-        read: async (target) => {
-          const state = await observeAutoScrapeMode(target);
-          return { ...state.mode, active: state.active, sectionOpen: state.sectionOpen };
-        },
-        matches: (state, value, label) => scrapeModeMatches(state, value, label),
-        reloadExtension,
-        acquireLivePanel,
-        onPanelChanged: (target) => {
-          activePanel = target;
-        },
+        observe: observeAutoScrapeMode,
         record,
-        failureCategory: 'auto_scrape_mode_recheck_failed',
-        safeStages: AUTO_SCRAPE_MODE_FAILURE_STAGES,
-        transportFailureClass,
         ...(choiceDriver && { driver: choiceDriver }),
+        execute: async (initial) => {
+          const labels = { capture: 'Capture', 'scroll-capture': 'Scroll & capture' };
+          await runGuestChoicesAcrossExtensionRestarts({
+            panel: activePanel,
+            section: 'Scrape',
+            controlLabel: 'Auto-scrape mode',
+            choices: [
+              ['capture', 'Capture'],
+              ['scroll-capture', 'Scroll & capture'],
+            ],
+            baseline: {
+              value: initial.mode?.stored,
+              label: labels[initial.mode?.stored] ?? null,
+            },
+            settings,
+            openSection,
+            read: async (target) => {
+              const state = await observeAutoScrapeMode(target);
+              return { ...state.mode, active: state.active, sectionOpen: state.sectionOpen };
+            },
+            matches: (state, value, label) => scrapeModeMatches(state, value, label),
+            reloadExtension,
+            acquireLivePanel,
+            onPanelChanged: (target) => {
+              activePanel = target;
+            },
+            record,
+            failureCategory: 'auto_scrape_mode_recheck_failed',
+            safeStages: AUTO_SCRAPE_MODE_FAILURE_STAGES,
+            transportFailureClass,
+            ...(choiceDriver && { driver: choiceDriver }),
+          });
+        },
       });
       result.downstreamCapture = {
         status: 'unverified',

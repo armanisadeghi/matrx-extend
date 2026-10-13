@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { runInNewContext } from 'node:vm';
 import {
   FULL_EXTENSION_RECHECK_IDS,
   enforceFullExtensionRechecks,
@@ -168,6 +169,8 @@ function fullRestartFixture({
   failSettingsCalls = [],
   failAcquireLivePanel = false,
   transportClasses = [],
+  scrapeContainerPresent = true,
+  materializeScrapeInT40 = false,
 } = {}) {
   const reportCases = cases();
   initializeFullExtensionRechecks(reportCases);
@@ -201,7 +204,20 @@ function fullRestartFixture({
       storedPresent: false,
       storagePresent: false,
     });
-  const calls = { reloads: [], options: [], chats: [], caseRunners: [] };
+  const settingsKey = 'matrx.settings.v1';
+  const scrapeBaseline = JSON.stringify({
+    state: { scrapeAutoMode: 'capture', scrapeAutoOnLoad: false, theme: 'system' },
+    version: 0,
+  });
+  const storage = scrapeContainerPresent ? { [settingsKey]: scrapeBaseline } : {};
+  const calls = { reloads: [], options: [], chats: [], caseRunners: [], scrapeBaseline };
+  const local = {
+    get: async () => ({ ...storage }),
+    remove: async (key) => {
+      delete storage[key];
+    },
+    set: async (entries) => Object.assign(storage, entries),
+  };
   let settingsCalls = 0;
   // CDP is the external dependency in the native-default-driver lane. The real
   // click/wait/restore helpers and production rerun callback remain in use.
@@ -248,6 +264,13 @@ function fullRestartFixture({
   const choiceDriver = {
     async evaluate(panel, script) {
       assert.equal(panel, activePanel);
+      if (
+        script.includes('chrome.storage.local') &&
+        !script.includes('const originalStoragePresent =') &&
+        !script.includes('document.')
+      ) {
+        return runInNewContext(script, { chrome: { storage: { local } } });
+      }
       if (script.includes('const originalStoragePresent =')) {
         if (failBaselineRestore === 'remove_absent_key')
           throw new TypeError('private token secret');
@@ -270,6 +293,11 @@ function fullRestartFixture({
       if (preference.caseId === 'T67') {
         states.T67.mode.visible = label;
         states.T67.mode.stored = value;
+        const parsed = storage[settingsKey]
+          ? JSON.parse(storage[settingsKey])
+          : { state: {}, version: 0 };
+        parsed.state.scrapeAutoMode = value;
+        storage[settingsKey] = JSON.stringify(parsed);
       } else {
         const state = states[preference.caseId];
         state.selected = label;
@@ -315,7 +343,17 @@ function fullRestartFixture({
   const observeAutoScrapeMode = async (panel) => {
     assert.equal(panel, activePanel);
     currentPreference = { caseId: 'T67' };
-    return structuredClone(states.T67);
+    return {
+      ...structuredClone(states.T67),
+      storagePresent: Object.hasOwn(storage, settingsKey),
+      mode: {
+        ...states.T67.mode,
+        storedPresent: Boolean(
+          storage[settingsKey] &&
+            Object.hasOwn(JSON.parse(storage[settingsKey]).state, 'scrapeAutoMode'),
+        ),
+      },
+    };
   };
   const reloadExtension = async () => {
     const previous = activePanel;
@@ -347,6 +385,7 @@ function fullRestartFixture({
   };
   return {
     reportCases,
+    storage,
     states,
     calls,
     get activePanel() {
@@ -364,7 +403,14 @@ function fullRestartFixture({
         panel: activePanel,
         cases: reportCases,
         preferences: GUEST_PREFERENCES,
-        reloadSettings: async (panel) => assert.equal(panel, activePanel),
+        reloadSettings: async (panel) => {
+          assert.equal(panel, activePanel);
+          const mode = storage[settingsKey]
+            ? (JSON.parse(storage[settingsKey]).state.scrapeAutoMode ?? 'capture')
+            : 'capture';
+          states.T67.mode.stored = mode;
+          states.T67.mode.visible = mode === 'capture' ? 'Capture' : 'Scroll & capture';
+        },
         settings,
         openSection,
         observeNewChatDefault: async (panel, mode, label) => {
@@ -399,6 +445,7 @@ function fullRestartFixture({
         },
         runAutoScrapeCase: async (_panel, _reload, record) => {
           calls.caseRunners.push('T40');
+          if (materializeScrapeInT40) storage[settingsKey] = scrapeBaseline;
           record('switch', 'warm', { restored: true }, true);
         },
         reloadExtension,
@@ -706,4 +753,59 @@ test('native callback invokes tested orchestration after replacement Settings op
     packageJson.scripts['test:focused-acceptance'],
     /settings-full-extension-rechecks\.test\.mjs/,
   );
+});
+
+for (const scrapeContainerPresent of [false, true]) {
+  test(`T67 reestablishes absent container after T40 and restores prior raw baseline (present=${scrapeContainerPresent})`, async () => {
+    const f = fullRestartFixture({ scrapeContainerPresent, materializeScrapeInT40: true });
+    await f.run();
+    const result = f.reportCases[4].fullExtensionReload;
+    assert.equal(result.status, 'pass', JSON.stringify(result));
+    const initial = result.criteria.find(
+      (entry) => entry.name === 'initial absent Settings container observed',
+    );
+    assert.equal(initial.status, 'pass');
+    assert.equal(initial.evidence.storagePresent, false);
+    assert.equal(initial.evidence.mode.storedPresent, false);
+    assert.equal(initial.evidence.mode.stored, 'capture');
+    assert.equal(initial.evidence.mode.visible, 'Capture');
+    assert.equal(f.calls.caseRunners.includes('T40'), true);
+    assert.equal(f.storage['matrx.settings.v1'], f.calls.scrapeBaseline);
+    assert.equal(result.criteria.at(-1).evidence.exactBaselineRestored, true);
+    assert.equal(f.reportCases[0].fullExtensionReload.status, 'pass');
+    assert.equal(f.reportCases[1].fullExtensionReload.status, 'pass');
+    assert.deepEqual(
+      f.calls.options.filter(([id]) => id === 'T67'),
+      [
+        ['T67', 'Scroll & capture'],
+        ['T67', 'Capture'],
+      ],
+    );
+  });
+}
+
+test('T67 restores the preceding T40 container even when the original choice assertion fails', async () => {
+  const f = fullRestartFixture({
+    scrapeContainerPresent: false,
+    materializeScrapeInT40: true,
+    skipChoice: 'Scroll & capture',
+  });
+  await f.run();
+  const result = f.reportCases[4].fullExtensionReload;
+  assert.equal(result.status, 'fail');
+  assert.equal(result.firstChoiceFailureStage, 'choice_observation');
+  assert.equal(f.storage['matrx.settings.v1'], f.calls.scrapeBaseline);
+  assert.equal(
+    result.criteria.find(
+      (entry) => entry.name === 'pre-T67 Settings container restored after panel reload',
+    ).evidence.exactBaselineRestored,
+    true,
+  );
+});
+
+test('T67 restores an originally absent container after exercising explicit capture choices', async () => {
+  const f = fullRestartFixture({ scrapeContainerPresent: false });
+  await f.run();
+  assert.equal(f.reportCases[4].fullExtensionReload.status, 'pass');
+  assert.equal(Object.hasOwn(f.storage, 'matrx.settings.v1'), false);
 });

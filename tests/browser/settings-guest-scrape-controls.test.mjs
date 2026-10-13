@@ -27,16 +27,21 @@ test('Scrape observation applies product defaults only to absent persisted field
       },
     });
   const fresh = await observe(undefined);
+  assert.equal(fresh.storagePresent, false);
+  assert.equal(fresh.mode.storedPresent, false);
   assert.equal(fresh.toggle.stored, false);
   assert.equal(fresh.mode.stored, 'capture');
   const conflicting = await observe(
     JSON.stringify({ state: { scrapeAutoOnLoad: true, scrapeAutoMode: 'scroll-capture' } }),
   );
+  assert.equal(conflicting.storagePresent, true);
+  assert.equal(conflicting.mode.storedPresent, true);
   assert.equal(conflicting.toggle.stored, true);
   assert.equal(conflicting.mode.stored, 'scroll-capture');
   const partial = await observe(JSON.stringify({ state: { scrapeAutoOnLoad: true } }));
   assert.equal(partial.toggle.stored, true);
   assert.equal(partial.mode.stored, 'capture');
+  assert.equal(partial.mode.storedPresent, false);
   const malformed = await observe('{');
   assert.equal(malformed.toggle.stored, null);
   assert.equal(malformed.mode.stored, null);

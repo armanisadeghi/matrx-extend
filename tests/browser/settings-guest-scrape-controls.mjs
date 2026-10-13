@@ -89,12 +89,14 @@ export function scrapeObservationExpression() {
       } catch {}
     }
     return { active: pane?.matches('[role="tabpanel"][data-state="active"]') === true,
+      storagePresent: raw !== undefined,
       sectionOpen: section.length === 1 && section[0].getAttribute('aria-expanded') === 'true',
       toggle: { count: toggle.length,
         visible: toggle[0]?.getAttribute('aria-checked') === 'true',
         stored: stored === null ? null : !Object.hasOwn(stored, 'scrapeAutoOnLoad') ? false :
           typeof stored.scrapeAutoOnLoad === 'boolean' ? stored.scrapeAutoOnLoad : null },
-      mode: { count: picker.length, visible: picker[0]?.textContent.trim() ?? null,
+      mode: { storedPresent: stored !== null && Object.hasOwn(stored, 'scrapeAutoMode'),
+        count: picker.length, visible: picker[0]?.textContent.trim() ?? null,
         stored: stored === null ? null : !Object.hasOwn(stored, 'scrapeAutoMode') ? 'capture' :
           ['capture', 'scroll-capture'].includes(stored.scrapeAutoMode) ? stored.scrapeAutoMode : null } };
   })()`;
@@ -107,6 +109,15 @@ export async function observeGuestAutoScrapeMode(panel, driver = nativeDriver) {
 export async function runGuestAutoScrapeCase(panel, reloadSettings, record, driver = nativeDriver) {
   await driver.openSection(panel, 'Scrape');
   const initial = await observeScrape(panel, driver);
+  record(
+    'initial',
+    'Auto-scrape initial UI and storage observed',
+    initial,
+    scrapeSwitchMatches(
+      { ...initial.toggle, active: initial.active, sectionOpen: initial.sectionOpen },
+      initial.toggle.stored,
+    ),
+  );
   assert.equal(
     initial.active && initial.sectionOpen && initial.toggle.count === 1,
     true,
