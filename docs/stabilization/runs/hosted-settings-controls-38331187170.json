@@ -6,16 +6,18 @@
   "workflow": {
     "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38331187170",
     "workflow": "Hosted guest side-panel acceptance",
-    "head_sha": null,
-    "conclusion": "not available in downloaded files; all three hosted resource jobs completed valid with exit code 0",
-    "product_artifact_source_sha": null,
+    "head_sha": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
+    "conclusion": "success",
+    "product_artifact_source_sha": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
     "product_artifact_kind": "local_dev_unpacked",
     "product_artifact_version": "0.2.509",
     "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
     "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
     "artifact_verified": true,
     "publish_state": "not_published",
-    "development_ci_run_id": null
+    "development_ci_run_id": 38330393915,
+    "development_artifact_id": 11783185672,
+    "hosted_result_artifact_id": 11783291783
   },
   "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
   "resource_finals": {
@@ -92,7 +94,47 @@
     }
   ],
   "overall_limit": "Bounded guest development-artifact results only. T40 remains unverified overall without downstream capture; T67 does not retest the absent-field starting state. D224 remains in-fix/open pending an exact-source run that verifies absent fields before any control materializes stored values.",
-  "evidence_source": "Sanitized summary of the downloaded native report and the three terminal hosted resource journals. Raw screenshots and runner-local artifacts are not committed.",
+  "evidence_source": {
+    "native_and_journals": "Sanitized summary of the downloaded native report and the three terminal hosted resource journals. Raw screenshots and runner-local artifacts are not committed.",
+    "github_read_only_provenance": [
+      {
+        "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/38331187170",
+        "fields": [
+          "head_sha",
+          "conclusion"
+        ],
+        "values": {
+          "head_sha": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
+          "conclusion": "success"
+        },
+        "retrieved_with": "gh run view"
+      },
+      {
+        "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/38330393915",
+        "fields": [
+          "head_sha",
+          "conclusion"
+        ],
+        "values": {
+          "head_sha": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
+          "conclusion": "success"
+        },
+        "retrieved_with": "gh run view"
+      },
+      {
+        "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/38330393915/artifacts",
+        "artifact_id": 11783185672,
+        "artifact_name": "matrx-extend-development-test-134696fcab7944fdcaf38a97b2d9fb59a439f48d-38330393915-1",
+        "retrieved_with": "gh api"
+      },
+      {
+        "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/38331187170/artifacts",
+        "artifact_id": 11783291783,
+        "artifact_name": "hosted-guest-38331187170-1",
+        "retrieved_with": "gh api"
+      }
+    ]
+  },
   "evidence": [
     "docs/stabilization/evidence/settings-controls-hosted/run38331187170/receipt.sanitized.json",
     "docs/stabilization/evidence/settings-controls-hosted/run38331187170/native-report.sanitized.json",

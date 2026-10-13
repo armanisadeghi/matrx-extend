@@ -3,21 +3,22 @@
   "workflow": "Hosted guest side-panel acceptance",
   "workflow_run_id": 38331187170,
   "workflow_url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38331187170",
-  "workflow_result_artifact_id": null,
-  "workflow_checkout_sha": null,
+  "workflow_result_artifact_id": 11783291783,
+  "workflow_checkout_sha": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
   "acceptance_case": "settings-local-controls",
   "role": "guest",
   "driver_report": "docs/stabilization/evidence/settings-controls-hosted/run38331187170/native-report.sanitized.json",
   "driver_report_status": "unverified",
   "source_boundary": {
     "artifact_kind": "ci_development_test",
-    "source_sha": null,
+    "source_sha": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
     "version": "0.2.509",
     "tree_sha256": "ccb46c1db5f9cfd781478553e46fe30e44118669dc3ef36c39562e8edce9999f",
     "extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
     "publish_state": "not_published",
     "artifact_verified": true,
-    "note": "Downloaded hosted result contains the verified build identity and tree hash; source SHA, CI artifact ID, workflow checkout SHA and workflow conclusion were not present in the downloaded files."
+    "ci_run_id": 38330393915,
+    "ci_artifact_id": 11783185672
   },
   "scope": "real isolated Chrome-for-Testing native side panel; signed-out guest",
   "resource_finals": {
@@ -113,5 +114,34 @@
     "Native report status is unverified overall; hosted resource jobs are valid and exited 0.",
     "No downstream background capture occurred; no T40 full-case pass.",
     "T67 began with explicit stored=capture, so D224’s original absent-field/default path remains unverified."
-  ]
+  ],
+  "workflow_conclusion": "success",
+  "evidence_source": {
+    "github_read_only_provenance": [
+      {
+        "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/38331187170",
+        "head_sha": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
+        "conclusion": "success",
+        "retrieved_with": "gh run view"
+      },
+      {
+        "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/38330393915",
+        "head_sha": "134696fcab7944fdcaf38a97b2d9fb59a439f48d",
+        "conclusion": "success",
+        "retrieved_with": "gh run view"
+      },
+      {
+        "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/38330393915/artifacts",
+        "artifact_id": 11783185672,
+        "artifact_name": "matrx-extend-development-test-134696fcab7944fdcaf38a97b2d9fb59a439f48d-38330393915-1",
+        "retrieved_with": "gh api"
+      },
+      {
+        "url": "https://api.github.com/repos/armanisadeghi/matrx-extend/actions/runs/38331187170/artifacts",
+        "artifact_id": 11783291783,
+        "artifact_name": "hosted-guest-38331187170-1",
+        "retrieved_with": "gh api"
+      }
+    ]
+  }
 }
