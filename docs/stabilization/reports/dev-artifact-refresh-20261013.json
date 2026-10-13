@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-10-13T00:43:20Z",
+  "purpose": "Current exact-source development artifact and Chrome installation boundary",
+  "source_sha": "ca51b7ac2b7f40271d309af3171ad88ebe02f9e0",
+  "origin_main_sha_at_promotion": "ca51b7ac2b7f40271d309af3171ad88ebe02f9e0",
+  "working_tree_at_promotion": "clean",
+  "ci_run_id": 38327753178,
+  "ci_conclusion": "success",
+  "focused_acceptance_run_id": 38327753213,
+  "focused_acceptance_conclusion": "success",
+  "artifact_id": 11781602861,
+  "version": "0.2.509",
+  "promotion": {
+    "compatibility": "exact-source",
+    "destination": ".output/chrome-mv3-dev",
+    "tree_sha256": "fd3bad02842d27c65710aa8f583e9e5372a9dcfa0b39b701777f0c4778803e79",
+    "receipt": "test-results/ci-dev-promotion-receipt.json",
+    "result": "CI_DEV_PROMOTED"
+  },
+  "remote_loader_scan": {
+    "scope": "promoted development JavaScript only",
+    "searched": [
+      "cdnjs.cloudflare.com/ajax/libs/pdfobject",
+      "pdfobject.min.js"
+    ],
+    "matches": 0,
+    "store_zip_scanned": false
+  },
+  "chrome_installation": {
+    "loaded_version": "unverified",
+    "loaded_path": "unverified",
+    "pin": "unverified",
+    "observation": "Chrome internal extension-management tab could not be claimed by permitted browser control; no alternate control path was used."
+  },
+  "product_acceptance": "No new native product case passed from artifact import or promotion.",
+  "resource_limit": "Internal system disk remained about 4 GiB free, below the 20 GiB native-test admission floor.",
+  "release_limit": "Development artifact is not a Store ZIP and cannot be submitted. Shared modeled CI spend and GitHub billing admission remain blocked."
+}
