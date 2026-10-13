@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "feature": "EXT-F-1009",
+  "scope": "admin Visible capture on owned localhost fixture; refresh, viewer, Files route, public sharing, cancel and cleanup",
+  "status": "unverified",
+  "build": {
+    "version": "0.2.509",
+    "treeSha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+    "before": {
+      "kind": "ci_development_test_promotion",
+      "publishState": "not_published",
+      "extensionDir": "/Users/runner/work/matrx-extend/matrx-extend/.output/chrome-mv3-dev",
+      "sourceSha": "eb0d262973dfe5558352559093b18bf9d38e6835",
+      "mainSha": "eb0d262973dfe5558352559093b18bf9d38e6835",
+      "compatibility": "exact-source",
+      "version": "0.2.509",
+      "treeSha256": "91579c910284cb8d3a7a5a4232af805249ae854d89113375a0c835bfd3f9b177",
+      "extensionId": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+      "runId": 38338713040,
+      "runAttempt": 1,
+      "artifactId": 11786472201,
+      "githubArtifactDigest": "sha256:eb92681ca0f1756b2fae6a02dd41e4d223c6515db015dd624f02636cfc91ccd2"
+    },
+    "after": null
+  },
+  "cases": [],
+  "operation": "owned_native_profile",
+  "failureDiagnostic": {
+    "runtimeCode": null,
+    "timeout": false,
+    "assertion": false,
+    "driverCode": null,
+    "hitTarget": false,
+    "matchedTargetCount": null,
+    "visibleMatchCount": null
+  },
+  "failure": {
+    "stage": "owned_native_profile",
+    "code": "owned_harness_or_ui_stage_failed"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "task": "EXT-D-0221 hosted Screenshots admin T04/T05 exact-main retest",
+  "status": "zero_credit_harness_startup_and_resource_failure",
+  "run_record": "docs/stabilization/runs/ext-d-0221-admin-retry3-20261013-05.json",
+  "workflow_run": {
+    "id": 38339527232,
+    "checkout_sha": "eb0d262973dfe5558352559093b18bf9d38e6835",
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38339527232"
+  },
+  "artifact": {
+    "ci_run_id": 38338713040,
+    "focused_acceptance_run_id": 38338713058,
+    "ci_artifact_id": 11786472201,
+    "ci_artifact_digest": "sha256:eb92681ca0f1756b2fae6a02dd41e4d223c6515db015dd624f02636cfc91ccd2",
+    "hosted_artifact_id": 11785807872,
+    "hosted_artifact_digest": "sha256:6d9479a97afe0b39a5acb9915da8b174da18c5dd39a03ae6ddd9ea59f83f2df9",
+    "source_sha": "eb0d262973dfe5558352559093b18bf9d38e6835",
+    "ci_conclusion": "success",
+    "focused_acceptance": "success",
+    "workflow_source_drift": "none; workflow checkout and promoted CI development artifact matched exact current main"
+  },
+  "cause": {
+    "classification": "hosted harness browser-startup timeout followed by guest resource invalidation",
+    "first_failure": "owned_cdp_endpoint_timeout",
+    "failure_stage": "owned_native_profile",
+    "safe_details": "The sanitized workflow log reports that browser process spawn was observed and launch did not report failure, but DevTools did not begin listening before the 8013 ms owned-CDP timeout. The final artifact has no ready panel context and no executed cases. The guest resource journal later recorded RESOURCE_CPU_BUSY at 0.78, RESOURCE_CPU_PENDING, and resourceInvalid=true.",
+    "resource_outcome": "package and browser journals valid; guest admission and initial watch healthy; later CPU busy/pending; final guest decision invalid",
+    "product_credit": false
+  },
+  "behavior": {
+    "admin_identity": "unverified; browser panel context never became ready",
+    "admin_T04": "unverified; acceptance case was not reached",
+    "admin_T05": "unverified; acceptance case was not reached",
+    "fixture_cleanup": "not applicable; no screenshot row was created"
+  },
+  "durable_evidence": {
+    "result": "docs/stabilization/evidence/screenshots-admin/run38339527232/screenshot-capture-result.json",
+    "resource_journals": [
+      "docs/stabilization/resource-journals/hosted-package-38339527232-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38339527232-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38339527232-1.jsonl"
+    ],
+    "workflow_logs": "Sanitized failed-step log; no credential values emitted."
+  },
+  "secret_cleanup": {
+    "names": [
+      "MATRX_PREPARE_ADMIN_CREDENTIALS_JSON",
+      "MATRX_PROFILE_APPROVED_ORGANIZATION_JSON"
+    ],
+    "cleanup": "Both temporary repository secrets were deleted after terminal completion. Cleanup trap and independent post-run name listing confirmed absence.",
+    "values": "Never included in logs, tool output, or this report."
+  },
+  "inventory_change": "none; no acceptance case ran",
+  "dispatch_policy": "One exact-main guarded run after source repair, resource sampler repair, and passing exact-source CI/focused acceptance. No retry after the harness startup timeout and resource invalidation."
+}

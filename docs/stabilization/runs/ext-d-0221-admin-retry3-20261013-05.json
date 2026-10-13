@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "run_id": "ext-d-0221-admin-retry3-20261013-05",
+  "defect_id": "EXT-D-0221",
+  "feature_id": "EXT-F-1009",
+  "case_ids": ["EXT-F-1009-T04", "EXT-F-1009-T05"],
+  "status": "unverified",
+  "scope": "One authorized hosted lane-A admin Screenshots dispatch using the reviewed organization-selector driver repair and portable resource sampler on exact current main. Browser setup completed, but the acceptance harness timed out waiting for its owned CDP endpoint. The resource guard subsequently invalidated the run before any T04/T05 case executed.",
+  "workflow": {
+    "name": "hosted-guest-acceptance.yml",
+    "run_id": 38339527232,
+    "url": "https://github.com/armanisadeghi/matrx-extend/actions/runs/38339527232",
+    "checkout_sha": "eb0d262973dfe5558352559093b18bf9d38e6835",
+    "lane": "A",
+    "runner_label": "macos-15-intel",
+    "runner_id": 1000105220,
+    "case": "screenshots-capture-admin",
+    "requested_by": "extend-stabilization-d221-lane-a-20261013-retry3",
+    "terminal_status": "completed",
+    "conclusion": "failure",
+    "failed_step": "Exercise the selected Chrome side-panel case",
+    "first_failure": "owned_cdp_endpoint_timeout",
+    "resource_final_decision": "invalid"
+  },
+  "source_and_artifact": {
+    "development_ci_run_id": 38338713040,
+    "focused_acceptance_run_id": 38338713058,
+    "development_artifact_id": 11786472201,
+    "artifact_sha": "eb0d262973dfe5558352559093b18bf9d38e6835",
+    "development_artifact_digest": "sha256:eb92681ca0f1756b2fae6a02dd41e4d223c6515db015dd624f02636cfc91ccd2",
+    "full_ci_conclusion": "success",
+    "focused_acceptance": "success",
+    "workflow_checkout_sha": "eb0d262973dfe5558352559093b18bf9d38e6835",
+    "promotion": "exact-source; artifact accepted and prepared successfully"
+  },
+  "preconditions_and_resources": {
+    "temporary_repository_secrets": "staged privately at point of use from existing authorized local sources; deleted after terminal completion; both secret names absent in post-run repository listing",
+    "admin_identity": "not verified in UI; browser panel context did not become ready",
+    "approved_organization_fixture": "not evaluated by this run",
+    "lane_isolation": "hosted lane A runner 1000105220; concurrent guest-only lane B used runner 1000105221 and a separate per-run profile",
+    "resource_admission": "package, browser, and guest admission passed; browser resource journal remained valid",
+    "resource_watch": "guest sample reported RESOURCE_CPU_BUSY at cpuBusyFraction 0.78, then RESOURCE_CPU_PENDING",
+    "resource_final_decision": "guest journal recorded resourceInvalid=true, exitCode=3, decision=invalid after the acceptance child exited 1"
+  },
+  "observations": {
+    "browser_startup": "Sanitized workflow log reports owned CDP endpoint timeout after 8013 ms; spawn was observed, launch did not report failure, and DevTools did not begin listening",
+    "panel_context_ready": false,
+    "acceptance_result_status": "unverified",
+    "acceptance_cases": [],
+    "first_failed_stage": "owned_native_profile",
+    "failure_code": "owned_harness_or_ui_stage_failed",
+    "assertion": false,
+    "target_hit": false,
+    "fixture_only": false,
+    "created_row_may_need_ui_cleanup": false,
+    "result_artifact": "docs/stabilization/evidence/screenshots-admin/run38339527232/screenshot-capture-result.json"
+  },
+  "case_status": {
+    "admin_T04": "unverified; acceptance case not reached",
+    "admin_T05": "unverified; acceptance case not reached",
+    "member_T04_T05": "unverified"
+  },
+  "interpretation": "Zero acceptance credit. The hosted browser panel never reached a ready context, so the admin identity, approved organization, T04/T05 assertions, and fixture cleanup path were not exercised. The owned-CDP startup timeout is the first harness failure; the guest resource watchdog later marked the run invalid. No product behavior or screenshot mutation was observed.",
+  "evidence": {
+    "hosted_artifact_id": 11785807872,
+    "hosted_artifact_name": "hosted-guest-38339527232-1",
+    "hosted_artifact_digest": "sha256:6d9479a97afe0b39a5acb9915da8b174da18c5dd39a03ae6ddd9ea59f83f2df9",
+    "hosted_artifact_expired": false,
+    "resource_journals": [
+      "docs/stabilization/resource-journals/hosted-package-38339527232-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-browser-38339527232-1.jsonl",
+      "docs/stabilization/resource-journals/hosted-guest-38339527232-1.jsonl"
+    ],
+    "workflow_logs": "Sanitized failed-step output confirms owned_cdp_endpoint_timeout, no ready DevTools endpoint, and a later invalid guest resource decision."
+  },
+  "cleanup": {
+    "temporary_repository_secrets": "both deleted; terminal cleanup trap and post-run secret-name listing verified absent",
+    "fixture_row": "no screenshot record was created",
+    "browser_or_runner_processes": "workflow completed; GitHub-hosted runner disposed"
+  },
+  "inventory_change": "none; neither T04 nor T05 acceptance ran",
+  "dispatch_policy": "One guarded retry after exact-source CI and focused acceptance succeeded. No further retry after owned-CDP startup failure and resource invalidation.",
+  "next_action": "Diagnose why owned Chromium spawn did not expose DevTools during the bounded startup window; repair and independently review the harness, then wait for exact-main CI and focused acceptance before any separately authorized retest."
+}
