@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "task": "D221 organization-selection prerequisite diagnosis",
+  "status": "source_repair_independently_verified_native_retest_pending",
+  "evidence": "docs/stabilization/evidence/screenshots-admin/run38335575756/screenshot-capture-result.json",
+  "captured_truth": {
+    "first_failed_step": "approved_organization_selected",
+    "displayed": true,
+    "stored": false,
+    "approved_option_was_found_and_clicked": true,
+    "zero_options_at_failure": "Observed after option click closed the portal; does not establish a missing membership option.",
+    "resource_valid": false,
+    "product_case_credit": false
+  },
+  "diagnosis": {
+    "proven": "The old acceptance oracle falsely refuses a valid load-ladder selection without device storage. Product resolution intentionally holds ladder choices in memory, and the controlled Select does not dispatch onValueChange when the same value is chosen.",
+    "historical_run_limit": "The captured run did not record whether storage was absent, malformed or contradictory, nor the checked option before selection. The same-value ladder explanation is strongly consistent but is not established as the unique historical cause.",
+    "ruled_out": [
+      "The recorded failure was not approved_option_ready or a pointer-target error.",
+      "Zero options in the post-click failure surface cannot prove membership-to-UI option loss.",
+      "An absent device preference alone cannot prove absence of an effective request organization."
+    ],
+    "other_hypotheses": [
+      "Malformed or contradictory existing storage remains distinguishable on the next run.",
+      "A true checked-value mismatch remains distinguishable on the next run.",
+      "Resource invalidation prevents native product credit for the historical run."
+    ]
+  },
+  "repair": {
+    "scope": "Two Screenshots acceptance drivers and shared DOM observation helper; Settings PillSelect exposes its existing bound option value through data-value. No product selection behavior changes. package.json registers the new node guard in test:focused-acceptance.",
+    "behavior": "Observe the unique approved checked option before selection, reopen after native click to observe effective value, and require exactly one checked approved option and matching displayed value. A changed selection must persist; an already-active selection may have absent storage. Contradictory and malformed storage refuse. Close the verified menu with the same native option click. Compare stored identity to the uniquely approved option bound value privately; missing identity and wrong-ID same-name storage refuse.",
+    "sibling_census": "The two Screenshots drivers shared the exact oracle and are repaired together. Source workspace and source recognition drivers also require device storage; those include switching/restoration behavior and remain outside this assigned slice."
+  },
+  "verification": {
+    "dom_guard": "node --test tests/browser/screenshot-organization-selection.test.mjs: four tests pass.",
+    "red_proof": "In-memory old storage-only predicate: assertion failures on valid ladder and wrong-effective cases. No shared file mutation.",
+    "gut_checks": "In-memory constant true and constant false predicates both fail with assertion failures.",
+    "negative_cases": "Changed selection without persistence; wrong or missing checked option despite matching storage/display; contradictory storage; malformed storage; duplicate approved options; wrong display. Wrong-ID same-name storage and absent bound option identity.",
+    "syntax": "Both acceptance drivers pass node --check.",
+    "biome": "Formatting and imports fixed; pre-existing unused safeSurface warning remains in capture driver.",
+    "compile": "Not executed: guarded preflight RESOURCE_DISK_LOW; system/safety free 5.3235 GiB. Completed journal docs/stabilization/resource-journals/d221-org-selector-compile-20261013-01.jsonl. No threshold bypass.",
+    "request_ladder": "Existing src/lib/api/client-organization-ladder.test.ts directly verifies effective request organization with absent device storage; not rerun after compile admission refused.",
+    "native": "unverified; no browser launched by this lane",
+    "review_correction": "First peer found same-name wrong-ID acceptance. Added negative case and observed true!==false assertion, then bound storage identity to the controlled option value; four tests now pass.",
+    "mutation_pass": "Final in-memory old storage-only, constant true, constant false, and dropped stored-ID comparison all exit 1 with ERR_ASSERTION; no shared file plants.",
+    "ci_registration": "tests/browser/screenshot-organization-selection.test.mjs appended to test:focused-acceptance."
+  },
+  "review": "Fresh independent re-verification: behavior/spec PASS; code/test quality PASS. Wrong-ID same-name finding addressed; only pre-existing safeSurface unused warning. Native browser verdict remains unverified.",
+  "privacy": "No credential, token, membership identifier, fixture name, organization row or private visible text is recorded.",
+  "next_action": "Independent source/guard review, then hosted compile and separately admitted exact-main native retest recording before/after checked state and storage presence. Preserve zero T04/T05 credit until actual cases complete."
+}

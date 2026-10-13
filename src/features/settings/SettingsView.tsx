@@ -900,7 +900,7 @@ function PillSelect({
       </SelectTrigger>
       <SelectContent align="end">
         {options.map((o) => (
-          <SelectItem key={o.value} value={o.value}>
+          <SelectItem key={o.value} value={o.value} data-value={o.value}>
             {o.label}
           </SelectItem>
         ))}

@@ -15,6 +15,10 @@ import { nativeRuntimeFailureCode } from './native-runtime-failure.mjs';
 import { runNativeSidepanelQa } from './native-sidepanel-qa-harness.mjs';
 import { screenshotPublicLink, screenshotViewer } from './screenshot-current-controls.mjs';
 import {
+  approvedOrganizationSelectionMatches,
+  approvedOrganizationStateExpression,
+} from './screenshot-organization-selection.mjs';
+import {
   discriminateRestoredScreenshotCard,
   ownedScreenshotCardMatches,
 } from './screenshot-owned-card-identity.mjs';
@@ -336,33 +340,25 @@ async function selectApprovedOrganization(panel, approved) {
     step = 'organization_control_click';
     await click(panel, 'organization', 'Acting as');
     step = 'approved_option_ready';
-    const offered = await evaluate(
-      panel,
-      `(() => [...document.querySelectorAll('[role="option"]')]
-        .filter(option=>option.textContent.trim()===${JSON.stringify(approved)}).length)()`,
-    );
-    if (offered !== 1) fail('approved_option_not_unique');
+    const offered = await evaluate(panel, approvedOrganizationStateExpression(approved));
+    if (offered?.approvedOptionCount !== 1) fail('approved_option_not_unique');
+    const alreadyActive = offered.checkedOptionCount === 1 && offered.approvedCheckedCount === 1;
+    report.observations ??= {};
+    report.observations.organization_before_selection = safeObservation(offered);
     step = 'approved_option_click';
     await click(panel, 'option', approved);
+    // Reopen to observe the Select's effective value after the native click.
+    // A same-value choice closes the menu without calling onValueChange.
+    step = 'organization_effective_value_reopen';
+    await click(panel, 'organization', 'Acting as');
     step = 'approved_organization_selected';
     await observedWait(
       'approved_organization_selected',
-      () =>
-        evaluate(
-          panel,
-          `(async () => {
-            const row=[...document.querySelectorAll('span')]
-              .find(span=>span.textContent.trim()==='Acting as');
-            const controls=[...(row?.parentElement?.parentElement?.querySelectorAll(
-              'button[role="combobox"]')??[])];
-            const stored=(await chrome.storage.local.get('matrx.org.active'))['matrx.org.active'];
-            return {count:controls.length,displayed:controls[0]?.textContent.trim()===
-              ${JSON.stringify(approved)},stored:stored?.name===${JSON.stringify(approved)}&&
-              typeof stored?.id==='string'};
-          })()`,
-        ),
-      (state) => state?.count === 1 && state.displayed && state.stored,
+      () => evaluate(panel, approvedOrganizationStateExpression(approved)),
+      (state) => approvedOrganizationSelectionMatches(state, alreadyActive),
     );
+    step = 'organization_verified_menu_close';
+    await click(panel, 'option', approved);
   } catch (error) {
     const pointer = error?.driverFailure;
     report.failure ??= {
