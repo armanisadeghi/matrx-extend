@@ -1,0 +1,75 @@
+{
+  "id": "EXT-D-0224",
+  "feature_id": "EXT-F-1003",
+  "case_ids": ["EXT-F-1003-T40", "EXT-F-1003-T67"],
+  "title": "Guest Scrape rechecks treat implicit Settings defaults as missing values",
+  "surface": "Native Settings acceptance harness",
+  "auth_mode": "guest",
+  "organization_context": "Guest local preferences; no authenticated backend mutation",
+  "preconditions": [
+    "The T04 and T10 full-extension rechecks restore the original absent matrx.settings.v1 container.",
+    "The Scrape controls then render the product defaults: Auto-scrape Off and mode Capture."
+  ],
+  "reproduction": [
+    "Run hosted guest Settings acceptance 38328904848 against the verified v0.2.509 unpacked development artifact.",
+    "T04 and T10 pass full-extension checks and restore their absent Settings baseline; T28 also passes.",
+    "T40's initial assertion compares the visible Off switch with a null raw stored field; T67's initial assertion rejects a null raw mode field before any choice or reload."
+  ],
+  "expected": "The harness compares visible Scrape controls with the effective product defaults when their persisted fields are absent, while rejecting explicit UI/storage disagreements and malformed persisted state.",
+  "actual": "T40 and T67 warm and panel-document checks passed, but both full-extension rechecks failed before observing a Scrape choice or replacement. The T40 report retains only AssertionError at settings-guest-scrape-controls.mjs:107; T67 retains AssertionError at settings-guest-extension-rechecks.mjs:108. No product failure is established by these two results.",
+  "evidence": [
+    "test-results/hosted-review-38328904848/matrx-extend/matrx-extend/test-results/settings-local-controls-acceptance.json",
+    "test-results/hosted-review-38328904848/matrx-extend/matrx-extend/docs/stabilization/resource-journals/hosted-guest-38328904848-1.jsonl",
+    "src/state/settings.ts",
+    "tests/browser/settings-guest-scrape-controls.test.mjs"
+  ],
+  "build_receipt": {
+    "native_ci_run_id": 38328904848,
+    "native_version": "0.2.509",
+    "native_extension_id": "cihdmkcdjjckfhjpgoedmgfpoljebaml",
+    "native_artifact_tree_sha256": "fd3bad02842d27c65710aa8f583e9e5372a9dcfa0b39b701777f0c4778803e79",
+    "resource_valid": true,
+    "guest_job_exit": 1
+  },
+  "reproducibility": "Deterministic focused DOM/storage reproduction of absent persisted fields; the hosted report's T40 pre-assertion raw values were not serialized, so a fresh native retest remains required.",
+  "severity": "S2: false guest Scrape full-extension failures leave T40 and T67 unverified",
+  "priority": "P1: repair before the next guarded Settings native run",
+  "state": "in-fix",
+  "owner": "root/settings_reload_diagnosis",
+  "cause": "The harness read absent scrapeAutoOnLoad and scrapeAutoMode fields as null, despite the product store merging absent persisted fields with defaults false and capture. Earlier Theme and Default mode baseline restoration intentionally removed the whole Settings container.",
+  "sibling_census": "Both T40 and T67 use observeScrape. The observer now applies the same implicit defaults to absent fields; explicit differing fields and malformed persisted state still remain distinguishable.",
+  "acceptance_criteria": [
+    "An absent Settings container or absent Scrape field yields effective false/capture observations.",
+    "An explicit contradictory stored value remains visible to the harness and fails the control assertion.",
+    "Focused guard fails on the old observer and passes on the repaired observer.",
+    "Fresh admitted exact-source guest native T40/T67 rechecks and independent review pass before any product or case pass claim."
+  ],
+  "source_verification": {
+    "focused_tests": "27/27 pass; focused absent-container guard failed on old behavior with null !== false",
+    "compile": "pass",
+    "native_acceptance": "pending fresh guarded run",
+    "independent_source_review": "pending",
+    "release": "pending"
+  },
+  "next_action": "Obtain independent source review, then run a fresh admitted exact-source guest Settings T40/T67 native check and independently review its receipt. Keep existing hosted failure and downstream capture limits; do not claim a product pass from source tests.",
+  "transition_history": [
+    {
+      "at": "2026-10-13T01:00:00Z",
+      "from": null,
+      "to": "open",
+      "reason": "Resource-valid hosted guest run 38328904848 reported full-extension assertion failures at the Scrape entry boundaries."
+    },
+    {
+      "at": "2026-10-13T01:00:00Z",
+      "from": "open",
+      "to": "triaged",
+      "reason": "Earlier absent-container restoration, product defaults, and a red focused observer test identify a harness default-value mismatch."
+    },
+    {
+      "at": "2026-10-13T01:00:00Z",
+      "from": "triaged",
+      "to": "in-fix",
+      "reason": "Narrow observer repair and focused tests pass; independent source and native acceptance remain pending."
+    }
+  ]
+}

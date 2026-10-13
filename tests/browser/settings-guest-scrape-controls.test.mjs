@@ -9,8 +9,49 @@ import {
   runGuestAutoScrapeCase,
   runGuestAutoScrapeModeCase,
   runGuestSectionsCase,
+  scrapeObservationExpression,
   settingsSectionObservationExpression,
 } from './settings-guest-scrape-controls.mjs';
+
+test('Scrape observation applies product defaults only to absent persisted fields', async () => {
+  const window = new Window();
+  window.document.body.innerHTML =
+    '<button role="tab" title="Settings" data-state="active" aria-controls="pane"></button><div id="pane" role="tabpanel" data-state="active"><button aria-expanded="true" aria-controls="scrape">Scrape</button><div id="scrape"><button role="switch" aria-label="Auto-scrape on load" aria-checked="false"></button><div><span>Auto-scrape mode</span><button role="combobox">Capture</button></div></div></div>';
+  const observe = async (raw) =>
+    runInNewContext(scrapeObservationExpression(), {
+      document: window.document,
+      chrome: {
+        storage: {
+          local: { get: async () => (raw === undefined ? {} : { 'matrx.settings.v1': raw }) },
+        },
+      },
+    });
+  const fresh = await observe(undefined);
+  assert.equal(fresh.toggle.stored, false);
+  assert.equal(fresh.mode.stored, 'capture');
+  const conflicting = await observe(
+    JSON.stringify({ state: { scrapeAutoOnLoad: true, scrapeAutoMode: 'scroll-capture' } }),
+  );
+  assert.equal(conflicting.toggle.stored, true);
+  assert.equal(conflicting.mode.stored, 'scroll-capture');
+  const partial = await observe(JSON.stringify({ state: { scrapeAutoOnLoad: true } }));
+  assert.equal(partial.toggle.stored, true);
+  assert.equal(partial.mode.stored, 'capture');
+  const malformed = await observe('{');
+  assert.equal(malformed.toggle.stored, null);
+  assert.equal(malformed.mode.stored, null);
+  await window.happyDOM.abort();
+});
+
+test('T40 still rejects an explicit UI and storage disagreement', async () => {
+  const { state, driver, reload } = simulatedPanel();
+  state.switchStored = true;
+  await assert.rejects(
+    runGuestAutoScrapeCase(null, reload, () => {}, driver),
+    /auto_scrape_initial_ui_storage_disagree/,
+  );
+  assert.equal(state.clicks.length, 0);
+});
 
 const headings = [
   'Account',

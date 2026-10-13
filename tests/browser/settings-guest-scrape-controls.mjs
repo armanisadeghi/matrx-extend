@@ -66,9 +66,11 @@ export function scrapeModeMatches(state, value, label) {
 }
 
 async function observeScrape(panel, driver = nativeDriver) {
-  return driver.evaluate(
-    panel,
-    `(async () => {
+  return driver.evaluate(panel, scrapeObservationExpression());
+}
+
+export function scrapeObservationExpression() {
+  return `(async () => {
     const tab = [...document.querySelectorAll('button[role="tab"][title="Settings"][data-state="active"]')];
     const pane = tab.length === 1 ? document.getElementById(tab[0].getAttribute('aria-controls') ?? '') : null;
     const section = [...(pane?.querySelectorAll('button[aria-expanded]') ?? [])]
@@ -79,17 +81,23 @@ async function observeScrape(panel, driver = nativeDriver) {
       .filter((node) => node.textContent.trim() === 'Auto-scrape mode');
     const picker = rows.flatMap((row) => [...row.parentElement.parentElement.querySelectorAll('button[role="combobox"]')]);
     const raw = (await chrome.storage.local.get(${JSON.stringify(STORAGE_KEY)}))[${JSON.stringify(STORAGE_KEY)}];
-    let stored = {};
-    try { stored = JSON.parse(raw).state ?? {}; } catch {}
+    let stored = raw === undefined ? {} : null;
+    if (raw !== undefined) {
+      try {
+        const parsed = JSON.parse(raw)?.state;
+        if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) stored = parsed;
+      } catch {}
+    }
     return { active: pane?.matches('[role="tabpanel"][data-state="active"]') === true,
       sectionOpen: section.length === 1 && section[0].getAttribute('aria-expanded') === 'true',
       toggle: { count: toggle.length,
         visible: toggle[0]?.getAttribute('aria-checked') === 'true',
-        stored: typeof stored.scrapeAutoOnLoad === 'boolean' ? stored.scrapeAutoOnLoad : null },
+        stored: stored === null ? null : !Object.hasOwn(stored, 'scrapeAutoOnLoad') ? false :
+          typeof stored.scrapeAutoOnLoad === 'boolean' ? stored.scrapeAutoOnLoad : null },
       mode: { count: picker.length, visible: picker[0]?.textContent.trim() ?? null,
-        stored: ['capture', 'scroll-capture'].includes(stored.scrapeAutoMode) ? stored.scrapeAutoMode : null } };
-  })()`,
-  );
+        stored: stored === null ? null : !Object.hasOwn(stored, 'scrapeAutoMode') ? 'capture' :
+          ['capture', 'scroll-capture'].includes(stored.scrapeAutoMode) ? stored.scrapeAutoMode : null } };
+  })()`;
 }
 
 export async function observeGuestAutoScrapeMode(panel, driver = nativeDriver) {
